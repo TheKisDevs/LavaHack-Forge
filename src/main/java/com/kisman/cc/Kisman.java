@@ -1,9 +1,10 @@
 package com.kisman.cc;
 
 import com.kisman.cc.module.ModuleManager;
-import me.zero.alpine.EventManager;
-import me.zero.alpine.EventBus;
-import net.minecraft.init.Blocks;
+import me.zero.alpine.bus.EventBus;
+import me.zero.alpine.bus.EventManager;
+import me.zero.alpine.listener.Listenable;
+import me.zero.alpine.listener.Listener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -23,23 +24,47 @@ public class Kisman
 
     @Instance
     public static final Kisman Instance = new Kisman();
-    //private static final Logger LOGGER = LogManager.getLogger(NAME);
-    public static final EventManager EVENT_BUS = new EventManager();
+    public static final Logger LOGGER = LogManager.getLogger(NAME);
+    public static final EventManager EVENT_BUS = new EventManager() {
+//        @Override
+//        public void subscribe(Listenable listenable) {
+//
+//        }
 
-    public ModuleManager moduleManager;
+        @Override
+        public void subscribe(Listener listener) {
 
-//    @EventHandler
-//    public void preInit(FMLPreInitializationEvent event)
-//    {
-//        LOGGER = event.getModLog();
-//    }
+        }
+
+        @Override
+        public void unsubscribe(Listenable listenable) {
+
+        }
+
+        @Override
+        public void unsubscribe(Listener listener) {
+
+        }
+
+        @Override
+        public void post(Object event) {
+
+        }
+    };
+    private static ModuleManager moduleManager;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {}
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
         Display.setTitle(NAME + " " + VERSION);
-        //MinecraftForge.EVENT_BUS.register(Instance);
-        moduleManager = new ModuleManager();
-        // some example code
+        MinecraftForge.EVENT_BUS.register(Instance);
         //logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+    }
+
+    public static void load() {
+        LOGGER.info("\n\nLoading kisman.cc");
+        moduleManager = new ModuleManager();
     }
 }

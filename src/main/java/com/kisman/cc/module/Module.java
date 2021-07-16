@@ -9,7 +9,7 @@ public class Module {
     public Category category;
     public boolean toggled;
 
-    public Module(String name,int key, Category category) {
+    public Module(String name, int key, Category category) {
         this.name = name;
         this.key = key;
         this.category = category;
@@ -28,12 +28,12 @@ public class Module {
     public void render() {}
 
     public void enable() {
-        Kisman.EVENT_BUS.subscribe(this);
+//        Kisman.EVENT_BUS.subscribe(this);
         MinecraftForge.EVENT_BUS.register(this);
         onEnable();
     }
     public void disable() {
-        Kisman.EVENT_BUS.unsubscribe(this);
+//        Kisman.EVENT_BUS.unsubscribe(this);
         MinecraftForge.EVENT_BUS.unregister(this);
         onDisable();
     }

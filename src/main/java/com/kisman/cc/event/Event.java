@@ -1,6 +1,6 @@
 package com.kisman.cc.event;
 
-import me.zero.alpine.type.Cancellable;
+import me.zero.alpine.event.type.Cancellable;
 import net.minecraft.client.Minecraft;
 
 public class Event extends Cancellable {
