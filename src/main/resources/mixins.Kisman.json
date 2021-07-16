@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "com.kisman.cc.mixin.mixins",
+  "refmap": "mixins.kisman.refmap.json",
+  "mixins": [
+    "MixinGuiMainMenu"
+  ]
+}
