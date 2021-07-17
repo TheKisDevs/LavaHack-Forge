@@ -2,6 +2,7 @@ package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Module {
     public String name;
@@ -10,6 +11,7 @@ public class Module {
     public boolean toggled;
 
     public Module(String name, int key, Category category) {
+        Kisman.LOGGER.info("module init");
         this.name = name;
         this.key = key;
         this.category = category;
@@ -28,7 +30,7 @@ public class Module {
     public void render() {}
 
     public void enable() {
-//        Kisman.EVENT_BUS.subscribe(this);
+        //Kisman.EVENT_BUS.subscribe(this);
         MinecraftForge.EVENT_BUS.register(this);
         onEnable();
     }

@@ -31,6 +31,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2768"
     runDir = "run"
+    coreMod = 'com.kisman.cc.mixin.KismanMixinLoader'
 
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -46,18 +47,18 @@ repositories {
         name = 'spongepowered-repo'
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
-//    maven {
-//        name = 'swt-repo'
-//        url = "http://maven-eclipse.github.io/maven"
-//    }
-//    maven {
-//        name = "jitpack.io"
-//        url = "https://jitpack.io"
-//    }
-//    maven {
-//        name = 'lukflug'
-//        url = 'https://lukflug.github.io/maven'
-//    }
+    maven {
+        name = 'swt-repo'
+        url = "http://maven-eclipse.github.io/maven"
+    }
+    maven {
+        name = "jitpack.io"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = 'lukflug'
+        url = 'https://lukflug.github.io/maven'
+    }
     mavenCentral()
 }
 
@@ -68,11 +69,11 @@ dependencies {
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
-//    compile('com.lukflug:panelstudio:0.1.8')
-//    compile('com.lukflug:panelstudio-mc12:0.1.8')
+    compile('com.lukflug:panelstudio:0.1.8')
+    compile('com.lukflug:panelstudio-mc12:0.1.8')
     compile group: 'net.jodah', name: 'typetools', version: '0.5.0'
     compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
-//    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
+    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
 }
 
 processResources {
@@ -120,9 +121,9 @@ shadowJar {
         include(dependency('org.spongepowered:mixin'))
         include(dependency('net.jodah:typetools'))
         include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
-//        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
-//        include(dependency('com.lukflug:panelstudio'))
-//        include(dependency('com.lukflug:panelstudio-mc12'))
+        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
+        include(dependency('com.lukflug:panelstudio'))
+        include(dependency('com.lukflug:panelstudio-mc12'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

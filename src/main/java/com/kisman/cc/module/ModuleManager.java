@@ -1,5 +1,6 @@
 package com.kisman.cc.module;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.modules.movement.Step;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,6 +20,8 @@ public class ModuleManager {
     }
 
     public void init() {
+        Kisman.LOGGER.info("moduleManager init");
+        //Movement
         modules.add(new Step());
     }
 
@@ -36,7 +39,7 @@ public class ModuleManager {
     }
 
     public ArrayList<Module> getModsInCategory(Category cat) {
-        ArrayList<Module> mods = new ArrayList<Module>();
+        ArrayList<Module> mods = new ArrayList<>();
         for(Module m : modules) {
             if(m.getCategory() == cat) {
                 mods.add(m);

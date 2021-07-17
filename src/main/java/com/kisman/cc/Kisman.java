@@ -23,34 +23,30 @@ public class Kisman
     public static final String VERSION = "b0.0.1";
 
     @Instance
-    public static final Kisman Instance = new Kisman();
+    //public static final Kisman Instance = new Kisman();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    public static final EventManager EVENT_BUS = new EventManager() {
+    public static final EventBus EVENT_BUS = new EventManager() {
 //        @Override
-//        public void subscribe(Listenable listenable) {
+//        public void subscribe(Listenable listenable) {}
 //
-//        }
-
-        @Override
-        public void subscribe(Listener listener) {
-
-        }
-
-        @Override
-        public void unsubscribe(Listenable listenable) {
-
-        }
-
-        @Override
-        public void unsubscribe(Listener listener) {
-
-        }
-
-        @Override
-        public void post(Object event) {
-
-        }
+//        @Override
+//        public void subscribe(Listener listener) {}
+//
+//        @Override
+//        public void unsubscribe(Listenable listenable) {}
+//
+//        @Override
+//        public void unsubscribe(Listener listener) {}
+//
+//        @Override
+//        public void post(Object event) {}
     };
+
+    @Mod.Instance
+    public static Kisman INSTANCE;
+    public Kisman() {
+        INSTANCE = this;
+    }
     private static ModuleManager moduleManager;
 
     @EventHandler
@@ -58,9 +54,12 @@ public class Kisman
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        LOGGER.info("kisman.cc Starting!");
         Display.setTitle(NAME + " " + VERSION);
-        MinecraftForge.EVENT_BUS.register(Instance);
-        //logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+        LOGGER.info("START LOAD!");
+        //MinecraftForge.EVENT_BUS.register();
+        load();
+        LOGGER.info("Finish load");
     }
 
     public static void load() {

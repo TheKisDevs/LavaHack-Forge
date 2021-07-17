@@ -14,6 +14,6 @@ public class MixinGuiMainMenu extends GuiScreen {
     @Inject(method = {"drawScreen"}, at = {@At("TAIL")}, cancellable = true)
     public void drawText(CallbackInfo ci) {
         mc.fontRenderer.drawStringWithShadow(TextFormatting.WHITE + "kisman.cc" + TextFormatting.GRAY + Kisman.VERSION, 1, 1, -1);
-        mc.fontRenderer.drawStringWithShadow(TextFormatting.WHITE + "mae by" + TextFormatting.GRAY + "kisman and lava_frai", 1, mc.fontRenderer.FONT_HEIGHT, -1);
+        mc.fontRenderer.drawStringWithShadow(TextFormatting.WHITE + "made by" + TextFormatting.GRAY + "kisman and lava_frai", 1, mc.fontRenderer.FONT_HEIGHT, -1);
     }
 }

@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 public class EventProcessor {
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
+        Kisman.LOGGER.info("events load");
     }
 
     @SubscribeEvent
