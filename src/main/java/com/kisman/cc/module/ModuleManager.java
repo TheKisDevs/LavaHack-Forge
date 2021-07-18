@@ -1,7 +1,12 @@
 package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.modules.client.ClickGuiModule;
+import com.kisman.cc.module.modules.movement.AutoJump;
+import com.kisman.cc.module.modules.movement.Sprint;
 import com.kisman.cc.module.modules.movement.Step;
+import com.kisman.cc.module.modules.player.Velocity;
+import com.kisman.cc.module.modules.render.FullBright;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,6 +19,7 @@ public class ModuleManager {
     public ArrayList<Module> modules;
 
     public ModuleManager() {
+        Kisman.LOGGER.info("modules init!");
         modules = new ArrayList<Module>();
         MinecraftForge.EVENT_BUS.register(this);
         init();
@@ -22,7 +28,18 @@ public class ModuleManager {
     public void init() {
         Kisman.LOGGER.info("moduleManager init");
         //Movement
+        modules.add(new AutoJump());
         modules.add(new Step());
+        modules.add(new Sprint());
+
+        //Client
+        modules.add(new ClickGuiModule());
+
+        //Render
+        modules.add(new FullBright());
+
+        //Player
+        modules.add(new Velocity());
     }
 
     public ArrayList<Module> getModules() {

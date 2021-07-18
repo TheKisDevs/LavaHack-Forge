@@ -39,7 +39,9 @@ public class KismanMixinLoader implements IFMLLoadingPlugin {
     }
 
     @Override
-    public void injectData(Map<String, Object> data){}
+    public void injectData(Map<String, Object> data){
+        //isObfuscatedEnvironment = (boolean) (Boolean) data.get ( "runtimeDeobfuscationEnabled" );
+    }
 
     @Override
     public String getAccessTransformerClass(){
