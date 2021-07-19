@@ -18,8 +18,8 @@ public class KismanMixinLoader implements IFMLLoadingPlugin {
             Kisman.LOGGER.info("mixin init");
             MixinBootstrap.init();
             Mixins.addConfiguration("mixins.Kisman.json");
-            MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
-            Kisman.LOGGER.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
+//            MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
+//            Kisman.LOGGER.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
     }
 
     @Override

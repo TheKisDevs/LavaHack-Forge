@@ -4,6 +4,9 @@ import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.module.ModuleManager;
 import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
+import me.zero.alpine.listener.Listenable;
+import me.zero.alpine.listener.Listener;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -43,10 +46,10 @@ public class Kisman
 
     @Mod.Instance
     public static Kisman instance = new Kisman();
-//    public static Kisman INSTANCE;
-//    public Kisman() {
-//        INSTANCE = this;
-//    }
+    public static Kisman INSTANCE;
+    public Kisman() {
+        INSTANCE = this;
+    }
     public ModuleManager moduleManager;
     public SettingManager settingManager;
     public ClickGui clickGui;
@@ -57,9 +60,9 @@ public class Kisman
     @EventHandler
     public void init(FMLInitializationEvent event) {
         LOGGER.info("kisman.cc Starting!");
-        Display.setTitle(NAME + " " + VERSION);
+        //Display.setTitle(NAME + " " + VERSION);
         LOGGER.info("START LOAD!");
-        //MinecraftForge.EVENT_BUS.register();
+        //MinecraftForge.EVENT_BUS.register(instance);
         load();
         LOGGER.info("Finish load");
     }
