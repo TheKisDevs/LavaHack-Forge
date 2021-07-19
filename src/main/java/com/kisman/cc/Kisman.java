@@ -27,7 +27,7 @@ public class Kisman
     @Instance
     //public static final Kisman Instance = new Kisman();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    public static final EventBus EVENT_BUS = new EventManager() {
+    public static final EventBus EVENT_BUS = new EventManager(); //{
 //        @Override
 //        public void subscribe(Listenable listenable) {}
 //
@@ -42,7 +42,7 @@ public class Kisman
 //
 //        @Override
 //        public void post(Object event) {}
-    };
+    //};
 
     @Mod.Instance
     public static Kisman instance = new Kisman();
