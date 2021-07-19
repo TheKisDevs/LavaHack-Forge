@@ -56,7 +56,7 @@ public class ModuleManager {
     }
 
     public ArrayList<Module> getModsInCategory(Category cat) {
-        ArrayList<Module> mods = new ArrayList<>();
+        ArrayList<Module> mods = new ArrayList<Module>();
         for(Module m : modules) {
             if(m.getCategory() == cat) {
                 mods.add(m);

@@ -109,7 +109,7 @@ jar {
                 'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',
+                'FMLCorePlugin': 'com.kisman.cc.Kisman',
                 'ForceLoadAsMod': 'true',
                 'FMLAT': '***_at.cfg'
         )

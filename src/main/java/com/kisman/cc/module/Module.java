@@ -5,6 +5,7 @@ import com.kisman.cc.setting.settings.SettingBoolean;
 import com.kisman.cc.setting.settings.SettingDouble;
 import com.kisman.cc.setting.settings.SettingInteger;
 import com.kisman.cc.setting.settings.SettingMode;
+import me.zero.alpine.listener.Listenable;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
@@ -35,12 +36,12 @@ public class Module {
     public void render() {}
 
     public void enable() {
-        //Kisman.EVENT_BUS.subscribe(this);
+       //Kisman.EVENT_BUS.subscribe(this);
         MinecraftForge.EVENT_BUS.register(this);
         onEnable();
     }
     public void disable() {
-//        Kisman.EVENT_BUS.unsubscribe(this);
+        //Kisman.EVENT_BUS.unsubscribe((Listenable) this);
         MinecraftForge.EVENT_BUS.unregister(this);
         onDisable();
     }

@@ -13,7 +13,7 @@ public class ClickGui extends GuiScreen {
 
     public ClickGui() {
         int offset = 0;
-        frames = new ArrayList<>();
+        frames = new ArrayList<Frame>();
         for(Category c : Category.values()) {
             Frame frame = new Frame(c.name(), 100 + offset, 20 ,100, 12);
             for(Module m : Kisman.instance.moduleManager.getModsInCategory(c)) {
