@@ -1,5 +1,5 @@
 # lava_hack
-Full stack Minecraft cheat for playing on anarchy servers
+Full stack Minecraft cheat for playing at anarchy servers
 
 ###### **Dev team:**
 `_kisman_` 
