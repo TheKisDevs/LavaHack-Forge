@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 public class KismanMixinLoader implements IFMLLoadingPlugin {
 
     public KismanMixinLoader(){
-            Kisman.LOGGER.info("mixin init");
+            //Kisman.LOGGER.info("mixin init");
             MixinBootstrap.init();
             Mixins.addConfiguration("mixins.Kisman.json");
             //MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");

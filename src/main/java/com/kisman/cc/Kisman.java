@@ -26,7 +26,7 @@ public class Kisman
 
     @Instance
     //public static final Kisman Instance = new Kisman();
-    public static final Logger LOGGER = LogManager.getLogger(NAME);
+    public final Logger LOGGER = LogManager.getLogger();//
     public static final EventManager EVENT_BUS = new EventManager(); //{
 //        @Override
 //        public void subscribe(Listenable listenable) {}
@@ -54,13 +54,11 @@ public class Kisman
     public SettingManager settingManager;
     public ClickGui clickGui;
 
-//    @EventHandler
-//    public void preInit(FMLPreInitializationEvent event) {
-//
-//    }
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {}
 
     @EventHandler
-    public void init(FMLPreInitializationEvent event) {
+    public void init(FMLInitializationEvent event) {
         LOGGER.info("kisman.cc Starting!");
         //Display.setTitle(NAME + " " + VERSION);
         LOGGER.info("START LOAD!");

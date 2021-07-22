@@ -19,14 +19,14 @@ public class ModuleManager {
     public ArrayList<Module> modules;
 
     public ModuleManager() {
-        Kisman.LOGGER.info("modules init!");
+        //Kisman.LOGGER.info("modules init!");
         modules = new ArrayList<Module>();
         MinecraftForge.EVENT_BUS.register(this);
         init();
     }
 
     public void init() {
-        Kisman.LOGGER.info("moduleManager init");
+        //Kisman.LOGGER.info("moduleManager init");
         //Movement
         modules.add(new AutoJump());
         modules.add(new Step());

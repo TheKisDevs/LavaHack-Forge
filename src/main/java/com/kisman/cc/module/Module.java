@@ -17,7 +17,7 @@ public class Module {
     public boolean toggled;
 
     public Module(String name, int key, Category category) {
-        Kisman.LOGGER.info("module init");
+        //Kisman.LOGGER.info("module init");
         this.name = name;
         this.key = key;
         this.category = category;

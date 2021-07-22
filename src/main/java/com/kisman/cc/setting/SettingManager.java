@@ -9,7 +9,7 @@ public class SettingManager {
     public ArrayList<Setting> settings;
 
     public SettingManager() {
-        Kisman.LOGGER.info("Settings init!");
+        //Kisman.LOGGER.info("Settings init!");
         settings = new ArrayList<>();
     }
 

@@ -3,7 +3,7 @@
   "modid": "kisman",
   "name": "kisman.cc",
   "description": "Minecraft client",
-  "version": "b0.01",
+  "version": "b0.0.1",
   "mcversion": "1.12.2",
   "url": "",
   "updateUrl": "",
