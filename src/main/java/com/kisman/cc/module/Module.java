@@ -1,5 +1,6 @@
 package com.kisman.cc.module;
 
+import com.kisman.cc.Kisman;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -77,4 +78,7 @@ public class Module {
 	public Category getCategory() {
 		return this.category;
 	}
+
+	public void update(){}
+	public void render() {}
 }

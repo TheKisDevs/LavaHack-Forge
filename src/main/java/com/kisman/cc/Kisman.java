@@ -4,6 +4,7 @@ import com.kisman.cc.clickgui.ClickGui;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
+import me.zero.alpine.bus.EventManager;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ public class Kisman
     public static final String VERSION = "b1";
 
     public static Kisman instance;
+    public static final EventManager EVENT_BUS = new EventManager();
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;

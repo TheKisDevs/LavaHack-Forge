@@ -17,7 +17,7 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
-        
+
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -97,13 +97,13 @@ reobf {
 jar {
     manifest {
         attributes(
-            'MixinConfigs': 'mixins.Kisman.json',
-            'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'TweakOrder': 0,
-            'FMLCorePluginContainsFMLMod': 'true',
-            'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',
-            'ForceLoadAsMod': 'true',
-            'FMLAT': '***_at.cfg'
+                'MixinConfigs': 'mixins.Kisman.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'Main',//com.kisman.cc.mixin.KismanMixinLoader
+                'ForceLoadAsMod': 'true',
+                'FMLAT': '***_at.cfg'
         )
     }
 }

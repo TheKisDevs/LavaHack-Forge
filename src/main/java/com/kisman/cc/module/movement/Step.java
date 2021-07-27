@@ -5,6 +5,8 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Step extends Module {
     public Step() {
@@ -12,7 +14,8 @@ public class Step extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Heigth", this, 0.5f, 0.5f, 2.5f, false));
     }
 
-    public void update() {
+    @SubscribeEvent
+    public void update(TickEvent.ClientTickEvent event) {
         float height = (float) Kisman.instance.settingsManager.getSettingByName(this, "Heigth").getValDouble();
         Minecraft.getMinecraft().player.stepHeight = height;
     }

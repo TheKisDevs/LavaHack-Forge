@@ -5,6 +5,8 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class CustomFov extends Module {
     public CustomFov() {
@@ -12,12 +14,13 @@ public class CustomFov extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("FOV", this, 30, 30, 150, true));
     }
 
-    public void update() {
+    @SubscribeEvent
+    public void update(TickEvent.ClientTickEvent event) {
         int fov = (int) Kisman.instance.settingsManager.getSettingByName(this, "FOV").getValDouble();
         Minecraft.getMinecraft().gameSettings.fovSetting = fov;
     }
 
     public void onDisable() {
-        Minecraft.getMinecraft().gameSettings.fovSetting = 30;
+        Minecraft.getMinecraft().gameSettings.fovSetting = 110;
     }
 }

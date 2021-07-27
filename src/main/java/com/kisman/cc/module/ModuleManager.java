@@ -2,12 +2,18 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.module.combat.Criticals;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.Velocity;
 import com.kisman.cc.module.render.*;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 
 public class ModuleManager {
 
@@ -15,16 +21,20 @@ public class ModuleManager {
 	
 	public ModuleManager() {
 		(modules = new ArrayList<Module>()).clear();
-		this.modules.add(new ClickGUI());
-		this.modules.add(new HUD());
-		this.modules.add(new Sprint());
+		init();
+	}
+
+	public void init() {
+		modules.add(new AutoJump());
+		modules.add(new CustomFov());
+		//modules.add(new Criticals());
+		modules.add(new ClickGUI());
+		modules.add(new Sprint());
+		modules.add(new Step());
+		modules.add(new HUD());
 		//this.modules.add(new AutoClicker());
-		this.modules.add(new Velocity());
-		this.modules.add(new FullBright());
-		this.modules.add(new AutoJump());
-		this.modules.add(new CustomFov());
-		this.modules.add(new Criticals());
-		this.modules.add(new Step());
+		modules.add(new Velocity());
+		modules.add(new FullBright());
 		//this.modules.add(new AntiBot());
 		//this.modules.add(new NoFall())
 	}
@@ -39,7 +49,7 @@ public class ModuleManager {
 	}
 	
 	public ArrayList<Module> getModuleList() {
-		return this.modules;
+		return modules;
 	}
 	
 	public ArrayList<Module> getModulesInCategory(Category c) {
@@ -50,5 +60,34 @@ public class ModuleManager {
 			}
 		}
 		return mods;
+	}
+
+	@SubscribeEvent
+	public void onKey(InputEvent.KeyInputEvent event) {
+//		if(Keyboard.getEventKeyState()) {
+//			for(Module m : modules) {
+//				if(m.getKey() == Keyboard.getEventKey()) {
+//					m.toggle();
+//				}
+//			}
+//		}
+	}
+
+	@SubscribeEvent
+	public void onTick(TickEvent.ClientTickEvent event) {
+		for(Module m : modules) {
+			if(m.isToggled()) {
+				m.update();
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRender(RenderGameOverlayEvent event) {
+		for(Module m : modules) {
+			if(m.isToggled()) {
+				m.render();
+			}
+		}
 	}
 }
