@@ -1,10 +1,12 @@
 package com.kisman.cc.module;
 
 public enum Category {
-    COMBAT,
-    MOVEMENT,
-    PLAYER,
-    RENDER,
-    CLIENT,
-    MISC
+	COMBAT,
+	CLIENT,
+	CHAT,
+	MOVEMENT,
+	PLAYER,
+	RENDER,
+	MISC,
+	EXPLOIT
 }

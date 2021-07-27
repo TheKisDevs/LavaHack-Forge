@@ -2,13 +2,13 @@
 {
   "modid": "kisman",
   "name": "kisman.cc",
-  "description": "Minecraft client",
-  "version": "b0.0.1",
-  "mcversion": "1.12.2",
+  "description": "A minecraft utility mod by _kisman_",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["_kisman_", "lava_frai"],
-  "credits": "da",
+  "authorList": ["_kisman_"],
+  "credits": "_kisman_",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

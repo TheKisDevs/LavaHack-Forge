@@ -8,11 +8,14 @@ import org.lwjgl.input.Keyboard;
 
 public class ClickGuiModule extends Module {
     public ClickGuiModule() {
-        super("ClickGui", Keyboard.KEY_RSHIFT, Category.CLIENT);
+        super("ClickGui", "Click gui", Category.CLIENT);
     }
 
     public void onEnable() {
-        Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.clickGui);
-        toggle();
+        super.onEnable();
+        mc.displayGuiScreen(Kisman.instance.clickGui);
+        //Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.clickGui);
+        //toggle();
+        this.setToggled(false);
     }
 }

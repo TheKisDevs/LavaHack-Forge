@@ -1,6 +1,8 @@
 package com.kisman.cc.gui;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.component.Component;
+import com.kisman.cc.gui.component.Frame;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,55 +11,93 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ClickGui extends GuiScreen {
-    public ArrayList<Frame> frames;
+
+    public static ArrayList<Frame> frames;
+    public static int color = -1;
 
     public ClickGui() {
-        int offset = 0;
-        frames = new ArrayList<>();
-        for(Category c : Category.values()) {
-            Frame frame = new Frame(c.name(), 100 + offset, 20 ,100, 12);
-            for(Module m : Kisman.instance.moduleManager.getModsInCategory(c)) {
-                Button button = new Button(frame, m);
-                frame.buttons.add(button);
-            }
+        this.frames = new ArrayList<Frame>();
+        int frameX = 5;
+        for(Category category : Category.values()) {
+            Frame frame = new Frame(category);
+            frame.setX(frameX);
             frames.add(frame);
-            offset += 150;
+            frameX += frame.getWidth() + 1;
         }
+    }
+
+    @Override
+    public void initGui() {
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        for(Frame f : frames) {
-            f.update(mouseX, mouseY);
-            f.drawScreen(mouseX, mouseY, partialTicks);
+        this.drawDefaultBackground();
+        for(Frame frame : frames) {
+            frame.renderFrame(this.fontRenderer);
+            frame.updatePosition(mouseX, mouseY);
+            for(Component comp : frame.getComponents()) {
+                comp.updateComponent(mouseX, mouseY);
+            }
         }
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-        for(Frame f : frames) {
-            f.keyTyped(typedChar, keyCode);
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
+        for(Frame frame : frames) {
+            if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 0) {
+                frame.setDrag(true);
+                frame.dragX = mouseX - frame.getX();
+                frame.dragY = mouseY - frame.getY();
+            }
+            if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 1) {
+                frame.setOpen(!frame.isOpen());
+            }
+            if(frame.isOpen()) {
+                if(!frame.getComponents().isEmpty()) {
+                    for(Component component : frame.getComponents()) {
+                        component.mouseClicked(mouseX, mouseY, mouseButton);
+                    }
+                }
+            }
         }
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        for(Frame f : frames) {
-            f.mouseClicked(mouseX, mouseY, mouseButton);
+    protected void keyTyped(char typedChar, int keyCode) {
+        for(Frame frame : frames) {
+            if(frame.isOpen() && keyCode != 1) {
+                if(!frame.getComponents().isEmpty()) {
+                    for(Component component : frame.getComponents()) {
+                        component.keyTyped(typedChar, keyCode);
+                    }
+                }
+            }
+        }
+        if (keyCode == 1) {
+            this.mc.displayGuiScreen(null);
         }
     }
+
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
-        for(Frame f : frames) {}
+        for(Frame frame : frames) {
+            frame.setDrag(false);
+        }
+        for(Frame frame : frames) {
+            if(frame.isOpen()) {
+                if(!frame.getComponents().isEmpty()) {
+                    for(Component component : frame.getComponents()) {
+                        component.mouseReleased(mouseX, mouseY, state);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean doesGuiPauseGame() {
-        return super.doesGuiPauseGame();
+        return true;
     }
 }

@@ -10,14 +10,6 @@ buildscript {
             name = 'SpongePowered'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
-        maven {
-            url "https://plugins.gradle.org/m2"
-        }
-
-        maven {
-            url "http://files.minecraftforge.net/maven"
-        }
-        //
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -25,26 +17,23 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
+        
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = "1.0"
-group = "com.kisman.cc"
-archivesBaseName = "kisman.cc"
+version = 'b0.0.1'
+group = 'com.kisman.cc'
+archivesBaseName = 'kisman.cc'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
     version = "1.12.2-14.23.5.2768"
     runDir = "run"
-//    mappings = project.mcpVersion
     mappings = "snapshot_20171003"
-    //mappings channel: 'snapshot', version: '20171003-1.12'
-//    coreMod = "com.kisman.cc.mixin.KIsmanMixinLoader"
-//    makeObfSourceJar = false
 }
 
 repositories {
@@ -105,21 +94,19 @@ reobf {
         classpath = sourceSets.main.compileClasspath
     }
 }
-
 jar {
     manifest {
         attributes(
-                'MixinConfigs': 'mixins.Kisman.json',
-                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-                'TweakOrder': 0,
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.kisman.cc.Kisman',
-                'ForceLoadAsMod': 'true',
-                'FMLAT': '***_at.cfg'
+            'MixinConfigs': 'mixins.Kisman.json',
+            'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'TweakOrder': 0,
+            'FMLCorePluginContainsFMLMod': 'true',
+            'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',
+            'ForceLoadAsMod': 'true',
+            'FMLAT': '***_at.cfg'
         )
     }
 }
-
 shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
