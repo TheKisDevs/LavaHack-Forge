@@ -2,38 +2,40 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.module.combat.Criticals;
+import com.kisman.cc.module.dl.DLGui;
 import com.kisman.cc.module.movement.*;
-import com.kisman.cc.module.player.Velocity;
+import com.kisman.cc.module.player.AntiKnokBack;
 import com.kisman.cc.module.render.*;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.input.Keyboard;
 
 public class ModuleManager {
 
 	public ArrayList<Module> modules;
 	
 	public ModuleManager() {
-		(modules = new ArrayList<Module>()).clear();
+		modules = new ArrayList<Module>();
+		MinecraftForge.EVENT_BUS.register(this);
 		init();
 	}
 
 	public void init() {
+		modules.add(new AntiKnokBack());
 		modules.add(new AutoJump());
 		modules.add(new CustomFov());
 		//modules.add(new Criticals());
 		modules.add(new ClickGUI());
+		modules.add(new DLGui());
 		modules.add(new Sprint());
 		modules.add(new Step());
 		modules.add(new HUD());
 		//this.modules.add(new AutoClicker());
-		modules.add(new Velocity());
+		modules.add(new Fly());
 		modules.add(new FullBright());
 		//this.modules.add(new AntiBot());
 		//this.modules.add(new NoFall())

@@ -47,7 +47,7 @@ public class SettingsManager {
 				return set;
 			}
 		}
-		System.err.println("[Tutorial] Error Setting NOT found: '" + name +"'!");
+		System.err.println("[kisman.cc] Error Setting NOT found: '" + name +"'!");
 		return null;
 	}
 

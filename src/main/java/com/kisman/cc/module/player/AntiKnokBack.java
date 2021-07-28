@@ -7,10 +7,10 @@ import com.kisman.cc.settings.Setting;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Velocity extends Module {
+public class AntiKnokBack extends Module {
 
-	public Velocity() {
-		super("Velocity", "i hate being knocked back", Category.PLAYER);
+	public AntiKnokBack() {
+		super("AntiKnokBack", "i hate being knocked back", Category.PLAYER);
 		Kisman.instance.settingsManager.rSetting(new Setting("Horizontal", this, 90, 0, 100, true));
 		Kisman.instance.settingsManager.rSetting(new Setting("Vertical", this, 100, 0, 100, true));
 	}

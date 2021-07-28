@@ -15,7 +15,7 @@ public class Module {
 	public boolean visible = true;
 	
 	public Module(String name, String description, Category category) {
-		super();
+		//super();
 		this.name = name;
 		this.description = description;
 		this.key = 0;

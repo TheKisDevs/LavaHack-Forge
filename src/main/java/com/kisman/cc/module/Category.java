@@ -8,5 +8,6 @@ public enum Category {
 	PLAYER,
 	RENDER,
 	MISC,
-	EXPLOIT
+	EXPLOIT,
+	DL
 }

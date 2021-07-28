@@ -16,7 +16,9 @@ public class Setting {
 	private String name;
 	private Module parent;
 	private String mode;
-	
+
+	private String string;
+
 	private String sval;
 	private ArrayList<String> options;
 	
@@ -26,7 +28,6 @@ public class Setting {
 	private double min;
 	private double max;
 	private boolean onlyint = false;
-	
 
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
