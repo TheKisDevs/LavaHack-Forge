@@ -3,7 +3,10 @@ package com.kisman.cc.module;
 import java.util.ArrayList;
 
 import com.kisman.cc.module.client.ClickGUI;
+import com.kisman.cc.module.client.Color;
 import com.kisman.cc.module.client.HUD;
+import com.kisman.cc.module.combat.AntiBot;
+import com.kisman.cc.module.combat.Criticals;
 import com.kisman.cc.module.dl.DLGui;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.AntiKnokBack;
@@ -25,18 +28,21 @@ public class ModuleManager {
 	}
 
 	public void init() {
+		modules.add(new AntiBot());
 		modules.add(new AntiKnokBack());
 		modules.add(new AutoJump());
 		modules.add(new CustomFov());
-		//modules.add(new Criticals());
+		modules.add(new Criticals());
 		modules.add(new ClickGUI());
+		modules.add(new Color());
 		modules.add(new DLGui());
-		modules.add(new Sprint());
-		modules.add(new Step());
 		modules.add(new HUD());
 		//this.modules.add(new AutoClicker());
 		modules.add(new Fly());
 		modules.add(new FullBright());
+		//modules.add(new LongJump());
+		modules.add(new Sprint());
+		modules.add(new Step());
 		//this.modules.add(new AntiBot());
 		//this.modules.add(new NoFall())
 	}

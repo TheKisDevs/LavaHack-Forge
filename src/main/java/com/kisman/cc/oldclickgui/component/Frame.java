@@ -1,10 +1,11 @@
-package com.kisman.cc.clickgui.component;
+package com.kisman.cc.oldclickgui.component;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.clickgui.ClickGui;
-import com.kisman.cc.clickgui.component.components.Button;
+import com.kisman.cc.oldclickgui.ClickGui;
+import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import org.lwjgl.opengl.GL11;
@@ -80,17 +81,18 @@ public class Frame {
 	}
 	
 	public void renderFrame(FontRenderer fontRenderer) {
-		Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.barHeight, ClickGui.color);
+		Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.barHeight, new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), 150).getRGB());
+		//Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), 150).getRGB());
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		fontRenderer.drawStringWithShadow(this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, 0xe8baff);
+		fontRenderer.drawStringWithShadow(this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, -1);//0xe8baff
 		fontRenderer.drawStringWithShadow(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, -1);
 		GL11.glPopMatrix();
 		if(this.open) {
 			if(!this.components.isEmpty()) {
-				//Gui.drawRect(this.x, this.y + this.barHeight, this.x + 1, this.y + this.barHeight + (12 * components.size()), new Color(0, 200, 20, 150).getRGB());
-				//Gui.drawRect(this.x, this.y + this.barHeight + (12 * components.size()), this.x + this.width, this.y + this.barHeight + (12 * components.size()) + 1, new Color(0, 200, 20, 150).getRGB());
-				//Gui.drawRect(this.x + this.width, this.y + this.barHeight, this.x + this.width - 1, this.y + this.barHeight + (12 * components.size()), new Color(0, 200, 20, 150).getRGB());
+				Gui.drawRect(this.x, this.y + this.barHeight, this.x + 1, this.y + this.barHeight + (12 * components.size()), new Color(0, 200, 20, 150).getRGB());
+				Gui.drawRect(this.x, this.y + this.barHeight + (12 * components.size()), this.x + this.width, this.y + this.barHeight + (12 * components.size()) + 1, new Color(0, 200, 20, 150).getRGB());
+				Gui.drawRect(this.x + this.width, this.y + this.barHeight, this.x + this.width - 1, this.y + this.barHeight + (12 * components.size()), new Color(0, 200, 20, 150).getRGB());
 				for(Component component : components) {
 					component.renderComponent();
 				}

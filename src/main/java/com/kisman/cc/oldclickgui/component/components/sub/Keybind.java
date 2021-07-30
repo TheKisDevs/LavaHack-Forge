@@ -1,7 +1,7 @@
-package com.kisman.cc.clickgui.component.components.sub;
+package com.kisman.cc.oldclickgui.component.components.sub;
 
-import com.kisman.cc.clickgui.component.components.Button;
-import com.kisman.cc.clickgui.component.Component;
+import com.kisman.cc.oldclickgui.component.components.Button;
+import com.kisman.cc.oldclickgui.component.Component;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 

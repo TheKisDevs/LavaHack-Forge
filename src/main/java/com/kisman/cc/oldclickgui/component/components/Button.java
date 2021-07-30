@@ -1,13 +1,13 @@
-package com.kisman.cc.clickgui.component.components;
+package com.kisman.cc.oldclickgui.component.components;
 
 import java.awt.Color;
 import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.clickgui.ClickGui;
-import com.kisman.cc.clickgui.component.Component;
-import com.kisman.cc.clickgui.component.Frame;
-import com.kisman.cc.clickgui.component.components.sub.*;
+import com.kisman.cc.oldclickgui.ClickGui;
+import com.kisman.cc.oldclickgui.component.Component;
+import com.kisman.cc.oldclickgui.component.Frame;
+import com.kisman.cc.oldclickgui.component.components.sub.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.opengl.GL11;
@@ -76,7 +76,7 @@ public class Button extends Component {
 				for(Component comp : this.subcomponents) {
 					comp.renderComponent();
 				}
-				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), ClickGui.color);
+				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), -1);
 			}
 		}
 	}

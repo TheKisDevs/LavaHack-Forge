@@ -1,10 +1,10 @@
-package com.kisman.cc.clickgui.component.components.sub;
+package com.kisman.cc.oldclickgui.component.components.sub;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import com.kisman.cc.clickgui.component.Component;
-import com.kisman.cc.clickgui.component.components.Button;
+import com.kisman.cc.oldclickgui.component.Component;
+import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.opengl.GL11;
 

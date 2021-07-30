@@ -7,7 +7,7 @@ import com.kisman.cc.module.Module;
 /**
  *  Made by HeroCode
  *  it's free to use
- *  but you have to credit him
+ *  but you havяe to credit him
  *
  *  @author HeroCode
  */

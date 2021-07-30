@@ -10,11 +10,11 @@ public class Sprint extends Module {
 		super("Sprint", "i like sprinting", Category.MOVEMENT);
 	}
 
-	public void render() {
-		KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), true);
+	public void update() {
+		mc.player.setSprinting(true);
 	}
 
 	public void onDisable() {
-		KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), false);
+		mc.player.setSprinting(false);
 	}
 }

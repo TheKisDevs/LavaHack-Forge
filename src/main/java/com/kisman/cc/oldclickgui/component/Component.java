@@ -1,4 +1,4 @@
-package com.kisman.cc.clickgui.component;
+package com.kisman.cc.oldclickgui.component;
 
 public class Component {
 

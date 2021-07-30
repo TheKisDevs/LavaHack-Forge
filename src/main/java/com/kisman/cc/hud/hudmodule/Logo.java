@@ -8,6 +8,6 @@ public class Logo extends GuiMainMenu {
     Minecraft mc = Minecraft.getMinecraft();
 
     public Logo(String name, String version) {
-        mc.fontRenderer.drawString(name + " " + version, 1, 1, -1);
+        mc.fontRenderer.drawString(name + " " + version, 4, 4, -1);
     }
 }

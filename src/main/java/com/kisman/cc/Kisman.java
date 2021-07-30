@@ -1,10 +1,13 @@
 package com.kisman.cc;
 
-import com.kisman.cc.clickgui.ClickGui;
+import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
+import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -21,9 +24,12 @@ public class Kisman
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
+    public static final Logger LOGGER = LogManager.getLogger(NAME);
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;
+
+    //Coord Exploit
     
     public void init() {
         Display.setTitle(NAME + " " + VERSION);
@@ -31,6 +37,8 @@ public class Kisman
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
     	clickGui = new ClickGui();
+
+        //Coord Exploit
     }
     
     @SubscribeEvent
