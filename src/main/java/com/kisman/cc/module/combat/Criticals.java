@@ -19,6 +19,7 @@ public class Criticals extends Module {
         super("Criticals", "all criticals hit", Category.COMBAT);
         ArrayList<String> options = new ArrayList<>();
         options.add("MiniJump");
+        options.add("Vanilla");
         Kisman.instance.settingsManager.rSetting(new Setting("Mode:", this, "MiniJump", options));
         Kisman.instance.settingsManager.rSetting(new Setting("OnlySword", this, false));
     }

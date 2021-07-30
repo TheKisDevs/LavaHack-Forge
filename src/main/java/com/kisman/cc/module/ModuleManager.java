@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.Color;
 import com.kisman.cc.module.client.HUD;
+import com.kisman.cc.module.client.NewClickGui;
 import com.kisman.cc.module.combat.AntiBot;
 import com.kisman.cc.module.combat.Criticals;
 import com.kisman.cc.module.dl.DLGui;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.AntiKnokBack;
 import com.kisman.cc.module.render.*;
+import com.kisman.cc.oldclickgui.ClickGui;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,14 +39,11 @@ public class ModuleManager {
 		modules.add(new Color());
 		modules.add(new DLGui());
 		modules.add(new HUD());
-		//this.modules.add(new AutoClicker());
+		modules.add(new NewClickGui());
 		modules.add(new Fly());
 		modules.add(new FullBright());
-		//modules.add(new LongJump());
 		modules.add(new Sprint());
 		modules.add(new Step());
-		//this.modules.add(new AntiBot());
-		//this.modules.add(new NoFall())
 	}
 	
 	public Module getModule(String name) {

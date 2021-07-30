@@ -14,7 +14,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
 public class Frame {
-
 	public ArrayList<Component> components;
 	public Category category;
 	private boolean open;

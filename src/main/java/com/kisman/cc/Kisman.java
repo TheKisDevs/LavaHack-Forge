@@ -1,10 +1,10 @@
 package com.kisman.cc;
 
+import com.kisman.cc.clickgui.NewClickGUI;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
-import me.zero.alpine.bus.EventBus;
 import me.zero.alpine.bus.EventManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +27,7 @@ public class Kisman
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
+    public NewClickGUI clickGUI;
     public ClickGui clickGui;
 
     //Coord Exploit
@@ -36,6 +37,7 @@ public class Kisman
     	MinecraftForge.EVENT_BUS.register(this);
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
+        clickGUI = new NewClickGUI();
     	clickGui = new ClickGui();
 
         //Coord Exploit
