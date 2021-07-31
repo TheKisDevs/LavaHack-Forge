@@ -9,7 +9,7 @@ import com.kisman.cc.module.Category;
 import net.minecraft.client.gui.GuiScreen;
 
 public class ClickGui extends GuiScreen {
-	public static int RLine = 256;
+	public static int RLine = 255;
 	public static int GLine = 0;
 	public static int BLine = 0;
 

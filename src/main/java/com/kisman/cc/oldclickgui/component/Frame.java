@@ -81,7 +81,7 @@ public class Frame {
 	
 	public void renderFrame(FontRenderer fontRenderer) {
 		Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.barHeight, new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), 150).getRGB());
-		//Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), 150).getRGB());
+		Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), 150).getRGB());
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
 		fontRenderer.drawStringWithShadow(this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, -1);//0xe8baff

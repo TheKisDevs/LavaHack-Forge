@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.Color;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.module.client.NewClickGui;
 import com.kisman.cc.module.combat.AntiBot;
 import com.kisman.cc.module.combat.Criticals;
 import com.kisman.cc.module.dl.DLGui;
@@ -39,7 +38,6 @@ public class ModuleManager {
 		modules.add(new Color());
 		modules.add(new DLGui());
 		modules.add(new HUD());
-		modules.add(new NewClickGui());
 		modules.add(new Fly());
 		modules.add(new FullBright());
 		modules.add(new Sprint());
