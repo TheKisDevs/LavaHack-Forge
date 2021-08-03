@@ -2,6 +2,7 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
+import com.kisman.cc.event.events.DeathEvent;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.Color;
 import com.kisman.cc.module.client.HUD;
@@ -19,7 +20,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ModuleManager {
-
 	public ArrayList<Module> modules;
 	
 	public ModuleManager() {

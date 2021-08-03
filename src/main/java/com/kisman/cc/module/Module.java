@@ -1,6 +1,7 @@
 package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.notification.Notification;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -65,6 +66,9 @@ public class Module {
 	
 	public void onEnable() {
 		MinecraftForge.EVENT_BUS.register(this);
+		if(Notification.isModuleEnabled()) {
+
+		}
 	}
 	
 	public void onDisable() {
