@@ -3,13 +3,13 @@
   "modid": "kisman",
   "name": "kisman.cc",
   "description": "A minecraft utility mod by _kisman_",
-  "version": "${version}",
+  "version": "b0.1.1",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["_kisman_"],
   "credits": "_kisman_",
-  "logoFile": "",
+  "logoFile": "banner.png",
   "screenshots": [],
   "dependencies": []
 }

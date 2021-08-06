@@ -3,6 +3,7 @@ package com.kisman.cc.oldclickgui.component.components.sub;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.oldclickgui.component.Component;
+import com.kisman.cc.util.ColorUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +17,7 @@ public class Keybind extends Component {
 	private boolean hovered;
 	private boolean binding;
 	private Button parent;
+	private ColorUtil colorUtil = new ColorUtil();
 	private int offset;
 	private int x;
 	private int y;

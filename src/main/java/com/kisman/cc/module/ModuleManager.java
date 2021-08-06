@@ -2,17 +2,14 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
-import com.kisman.cc.event.events.DeathEvent;
-import com.kisman.cc.module.client.ClickGUI;
-import com.kisman.cc.module.client.Color;
-import com.kisman.cc.module.client.HUD;
+import com.kisman.cc.module.chat.AutoEZ;
+import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.AntiBot;
 import com.kisman.cc.module.combat.Criticals;
 import com.kisman.cc.module.dl.DLGui;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.AntiKnokBack;
 import com.kisman.cc.module.render.*;
-import com.kisman.cc.oldclickgui.ClickGui;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -29,6 +26,7 @@ public class ModuleManager {
 	}
 
 	public void init() {
+		modules.add(new AutoEZ());
 		modules.add(new AntiBot());
 		modules.add(new AntiKnokBack());
 		modules.add(new AutoJump());
@@ -36,10 +34,14 @@ public class ModuleManager {
 		modules.add(new Criticals());
 		modules.add(new ClickGUI());
 		modules.add(new Color());
+		modules.add(new CustomFont());
 		modules.add(new DLGui());
 		modules.add(new HUD());
+		modules.add(new NotificationModule());
+		modules.add(new RPCModule());
 		modules.add(new Fly());
 		modules.add(new FullBright());
+		modules.add(new TestRenderModule());
 		modules.add(new Sprint());
 		modules.add(new Step());
 	}
@@ -68,15 +70,7 @@ public class ModuleManager {
 	}
 
 	@SubscribeEvent
-	public void onKey(InputEvent.KeyInputEvent event) {
-//		if(Keyboard.getEventKeyState()) {
-//			for(Module m : modules) {
-//				if(m.getKey() == Keyboard.getEventKey()) {
-//					m.toggle();
-//				}
-//			}
-//		}
-	}
+	public void onKey(InputEvent.KeyInputEvent event) {}
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {

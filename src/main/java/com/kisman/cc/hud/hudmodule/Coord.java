@@ -3,6 +3,7 @@ package com.kisman.cc.hud.hudmodule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.util.text.TextFormatting;
 
 public class Coord extends GuiMainMenu {
     Minecraft mc = Minecraft.getMinecraft();
@@ -12,10 +13,6 @@ public class Coord extends GuiMainMenu {
     private int offsetY = mc.displayHeight  -  (fr.FONT_HEIGHT + 4);
 
     public Coord() {
-        fr.drawString("X: " + mc.player.posX, offsetX,  offsetY, -1);
-        offsetX += fr.getStringWidth("X: " + mc.player.posX) + 4;
-        fr.drawString("Y: " + mc.player.posY, offsetX, offsetY, -1);
-        offsetX += fr.getStringWidth("Y: " + mc.player.posY) + 4;
-        fr.drawString("Z: " + mc.player.posZ, offsetX, offsetY, -1);
+        fr.drawString(TextFormatting.AQUA + "X: " + TextFormatting.GRAY + mc.player.posX + TextFormatting.AQUA + " Y: " + TextFormatting.GRAY + mc.player.posY + TextFormatting.AQUA + " Z: " + TextFormatting.GRAY + mc.player.posZ, 4, mc.displayHeight - 4 - fr.FONT_HEIGHT, -1);
     }
 }

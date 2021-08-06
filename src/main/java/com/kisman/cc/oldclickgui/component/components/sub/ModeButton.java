@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.ColorUtil;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ public class ModeButton extends Component {
 	private boolean hovered;
 	private Button parent;
 	private Setting set;
+	private ColorUtil colorUtil = new ColorUtil();
 	private int offset;
 	private int x;
 	private int y;

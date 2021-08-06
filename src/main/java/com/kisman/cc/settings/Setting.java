@@ -18,6 +18,7 @@ public class Setting {
 	private String mode;
 
 	private String string;
+	private String title;
 
 	private String sval;
 	private ArrayList<String> options;
@@ -28,6 +29,13 @@ public class Setting {
 	private double min;
 	private double max;
 	private boolean onlyint = false;
+
+	public Setting(String name, Module parent, String title) {
+		this.name = name;
+		this.title = title;
+		this.parent = parent;
+		this.mode = "Line";
+	}
 
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
@@ -53,7 +61,15 @@ public class Setting {
 		this.onlyint = onlyint;
 		this.mode = "Slider";
 	}
-	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public String getName(){
 		return name;
 	}
@@ -111,6 +127,10 @@ public class Setting {
 	
 	public boolean isSlider(){
 		return this.mode.equalsIgnoreCase("Slider") ? true : false;
+	}
+
+	public boolean isLine() {
+		return this.mode.equalsIgnoreCase("Line") ? true : false;
 	}
 	
 	public boolean onlyInt(){

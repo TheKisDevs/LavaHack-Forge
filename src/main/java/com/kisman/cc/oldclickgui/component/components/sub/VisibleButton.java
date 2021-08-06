@@ -4,6 +4,7 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.util.ColorUtil;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ public class VisibleButton extends Component { // Remove this class if you don't
 
 	private boolean hovered;
 	private Button parent;
+	private ColorUtil colorUtil = new ColorUtil();
 	private int offset;
 	private int x;
 	private int y;

@@ -1,12 +1,12 @@
 package com.kisman.cc.oldclickgui;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
 import com.kisman.cc.module.Category;
+import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.HoveredMode;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.TextMode;
@@ -14,6 +14,8 @@ import net.minecraft.client.gui.GuiScreen;
 
 public class ClickGui extends GuiScreen {
 	public static boolean line = false;
+	public static boolean rainbowLine = false;
+	public static boolean rainbowBackground = false;
 
 	public static LineMode lineMode = LineMode.LEFT;
 	public static TextMode textMode = TextMode.DEFAULT;
@@ -137,6 +139,22 @@ public class ClickGui extends GuiScreen {
 	@Override
 	public boolean doesGuiPauseGame() {
 		return true;
+	}
+
+	public static boolean isRainbowBackground() {
+		return rainbowBackground;
+	}
+
+	public static void setRainbowBackground(boolean rainbowBackground) {
+		ClickGui.rainbowBackground = rainbowBackground;
+	}
+
+	public static boolean isRainbowLine() {
+		return rainbowLine;
+	}
+
+	public static void setRainbowLine(boolean rainbowLine) {
+		ClickGui.rainbowLine = rainbowLine;
 	}
 
 	public static HoveredMode getHoveredMode() {

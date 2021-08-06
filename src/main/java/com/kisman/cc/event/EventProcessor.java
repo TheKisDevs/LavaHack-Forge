@@ -1,7 +1,7 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.DeathEvent;
+import com.kisman.cc.event.events.LivingDeathEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.*;
@@ -23,13 +23,10 @@ public class EventProcessor {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         Kisman.instance.moduleManager.onTick(event);
-
         for(EntityPlayer player : Minecraft.getMinecraft().world.playerEntities) {
             if(player == null || player.getHealth() > 0) {
                 continue;
             }
-            //MinecraftForge.EVENT_BUS.post(new DeathEvent(player));
-            //nekoplus.totemPopManager.onDeath(player);
         }
         Kisman.EVENT_BUS.post(this);
     }
@@ -41,6 +38,11 @@ public class EventProcessor {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
+        Kisman.EVENT_BUS.post(this);
+    }
+
+    @SubscribeEvent
+    public void onLivingDeathEvent(LivingDeathEvent event) {
         Kisman.EVENT_BUS.post(this);
     }
 }

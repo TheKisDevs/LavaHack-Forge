@@ -13,14 +13,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class HUD extends Module {
 	ArrayList arrList;
-	//Coord coord;
+	Coord coord;
 	Fps fps;
 	Logo logo;
 
 	public HUD() {
 		super("HUD", "hud editor", Category.CLIENT);
 		Kisman.instance.settingsManager.rSetting(new Setting("ArrayList", this, false));
-		//Kisman.instance.settingsManager.rSetting(new Setting("Coords", this, false));
+		Kisman.instance.settingsManager.rSetting(new Setting("Coords", this, false));
 		Kisman.instance.settingsManager.rSetting(new Setting("FPS", this, false));
 		Kisman.instance.settingsManager.rSetting(new Setting("Logo", this, false));
 	}
@@ -28,7 +28,7 @@ public class HUD extends Module {
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent event) {
 		boolean arrList = Kisman.instance.settingsManager.getSettingByName(this, "ArrayList").getValBoolean();
-		//boolean coord = Kisman.instance.settingsManager.getSettingByName(this, "Coords").getValBoolean();
+		boolean coord = Kisman.instance.settingsManager.getSettingByName(this, "Coords").getValBoolean();
 		boolean fps = Kisman.instance.settingsManager.getSettingByName(this ,"FPS").getValBoolean();
 		boolean logo = Kisman.instance.settingsManager.getSettingByName(this, "Logo").getValBoolean();
 		if(arrList) {
@@ -40,8 +40,8 @@ public class HUD extends Module {
 		if(fps) {
 			this.fps = new Fps();
 		}
-//		if(coord) {
-//			this.coord = new Coord();
-//		}
+		if(coord) {
+			this.coord = new Coord();
+		}
 	}
 }
