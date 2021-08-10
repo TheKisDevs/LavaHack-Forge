@@ -12,9 +12,11 @@ import com.kisman.cc.module.Module;
  *  @author HeroCode
  */
 public class Setting {
+	private int index = 0;
 	
 	private String name;
 	private Module parent;
+	private Setting setParent;
 	private String mode;
 
 	private String string;
@@ -28,6 +30,7 @@ public class Setting {
 	private double dval;
 	private double min;
 	private double max;
+
 	private boolean onlyint = false;
 
 	public Setting(String name, Module parent, String title) {
@@ -60,6 +63,39 @@ public class Setting {
 		this.max = max;
 		this.onlyint = onlyint;
 		this.mode = "Slider";
+	}
+
+	public Setting(String name, Module parent, int index, String title) {
+		this.name = name;
+		this.parent = parent;
+		this.index = index;
+		this.title = title;
+		this.mode = "Category";
+	}
+
+	public Setting(String name, Module modParent, Setting setParent, int index, String title) {
+		this.name = name;
+		this.parent = modParent;
+		this.setParent = setParent;
+		this.index = index;
+		this.title = title;
+		this.mode = "CategoryLine";
+	}
+
+	public Setting getSetParent() {
+		return setParent;
+	}
+
+	public void setSetParent(Setting setParent) {
+		this.setParent = setParent;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public String getTitle() {
@@ -132,7 +168,15 @@ public class Setting {
 	public boolean isLine() {
 		return this.mode.equalsIgnoreCase("Line") ? true : false;
 	}
-	
+
+	public boolean isCategory() {
+		return this.mode.equalsIgnoreCase("Category") ? true : false;
+	}
+
+	public boolean isCategoryLine() {
+		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
+	}
+
 	public boolean onlyInt(){
 		return this.onlyint;
 	}

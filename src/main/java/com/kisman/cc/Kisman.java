@@ -1,7 +1,10 @@
 package com.kisman.cc;
 
-import com.kisman.cc.notification.Notification;
-import com.kisman.cc.notification.NotificationType;
+import com.kisman.cc.hud.hudgui.HudGui;
+import com.kisman.cc.hud.hudmodule.ArrayList;
+import com.kisman.cc.hud.hudmodule.Coord;
+import com.kisman.cc.hud.hudmodule.Fps;
+import com.kisman.cc.hud.hudmodule.Logo;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
@@ -24,7 +27,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.1";
+    public static final String VERSION = "b0.1.2";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -32,17 +35,30 @@ public class Kisman
     public static boolean notificatonModule = false;
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
-    public Notification notification;
     public ClickGui clickGui;
+    public HudGui hudGui;
     public CustomFontRenderer customFontRenderer;
+    public ArrayList arrayList;
+    public Coord coord;
+    public Logo logo;
+    public Fps fps;
     
     public void init() {
         Display.setTitle(NAME + " " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
+    	MinecraftForge.EVENT_BUS.register(new ArrayList());
+    	MinecraftForge.EVENT_BUS.register(new Coord());
+    	MinecraftForge.EVENT_BUS.register(new Logo(NAME, VERSION));
+    	MinecraftForge.EVENT_BUS.register(new Fps());
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
     	clickGui = new ClickGui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, false);
+    	hudGui = new HudGui();
+        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
+        arrayList = new ArrayList();
+        coord = new Coord();
+        logo = new Logo(NAME, VERSION);
+        fps = new Fps();
     }
     
     @SubscribeEvent

@@ -1,18 +1,26 @@
 package com.kisman.cc.hud.hudmodule;
 
+import com.kisman.cc.module.client.HUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Coord extends GuiMainMenu {
+public class Coord extends Gui {
     Minecraft mc = Minecraft.getMinecraft();
-    FontRenderer fr = mc.fontRenderer;
 
-    private int offsetX = 4;
-    private int offsetY = mc.displayHeight  -  (fr.FONT_HEIGHT + 4);
 
-    public Coord() {
-        fr.drawString(TextFormatting.AQUA + "X: " + TextFormatting.GRAY + mc.player.posX + TextFormatting.AQUA + " Y: " + TextFormatting.GRAY + mc.player.posY + TextFormatting.AQUA + " Z: " + TextFormatting.GRAY + mc.player.posZ, 4, mc.displayHeight - 4 - fr.FONT_HEIGHT, -1);
+    @SubscribeEvent
+    public void  renderOverlay(RenderGameOverlayEvent event) {
+        ScaledResolution sr = new ScaledResolution(mc);
+        FontRenderer fr = mc.fontRenderer;
+
+        if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT && HUD.isCoord) {
+            fr.drawStringWithShadow(TextFormatting.AQUA + "X: " + TextFormatting.GRAY + (int)  mc.player.posX + TextFormatting.AQUA + " Y: " + TextFormatting.GRAY + (int) mc.player.posY + TextFormatting.AQUA + " Z: " + TextFormatting.GRAY + (int) mc.player.posZ, 1, sr.getScaledHeight() - fr.FONT_HEIGHT - 1, -1);
+        }
     }
 }

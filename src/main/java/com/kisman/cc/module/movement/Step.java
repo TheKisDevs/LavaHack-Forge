@@ -21,11 +21,6 @@ public class Step extends Module {
         Minecraft.getMinecraft().player.stepHeight = height;
     }
 
-//    public void render() {
-//        notification = new com.kisman.cc.notification.Notification(NotificationType.INFO, "test title", "test message", 100, 100, 100, 90, 40);
-//        notification.render();
-//    }
-
     public void onDisable() {
         Minecraft.getMinecraft().player.stepHeight = 0.5f;
     }

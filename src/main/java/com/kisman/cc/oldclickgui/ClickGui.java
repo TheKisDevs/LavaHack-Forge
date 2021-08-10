@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
 import com.kisman.cc.module.Category;
-import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.HoveredMode;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.TextMode;
@@ -64,6 +63,10 @@ public class ClickGui extends GuiScreen {
 			frames.add(frame);
 			frameX += frame.getWidth() + 1;
 		}
+//		if(HUDGui.enable) {
+//			this.frame = new com.kisman.cc.hud.hudgui.frame.Frame();
+//			this.frame.renderFrame(fontRenderer);
+//		}
 	}
 
 	@Override

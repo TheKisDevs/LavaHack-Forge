@@ -5,7 +5,6 @@ buildscript {
             url = "http://files.minecraftforge.net/maven"//https://repo.spongepowered.org/repository/maven-public/
         }
 
-        //mavenCentral()
         maven {
             name = 'SpongePowered'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
@@ -13,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'//spongepowered
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
@@ -24,7 +23,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = 'b0.0.1'
+version = 'b0.1.2 beta'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 

@@ -74,7 +74,6 @@ public class ModeButton extends Component {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public boolean isMouseOnButton(int x, int y) {

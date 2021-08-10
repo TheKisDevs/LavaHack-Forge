@@ -60,4 +60,17 @@ public class SettingsManager {
 		System.err.println("[kisman.cc] Error Setting NOT found: '" + name +"'!");
 		return null;
 	}
+
+	public Setting getSettingByIndex(int index) {
+		try {
+			for(Setting set : getSettings()) {
+				if(set.getIndex() == index) {
+					return set;
+				}
+			}
+		} catch (Exception e) {
+			return null;
+		}
+		return null;
+	}
 }

@@ -2,14 +2,14 @@
 {
   "modid": "kisman",
   "name": "kisman.cc",
-  "description": "A minecraft utility mod by _kisman_",
-  "version": "b0.1.1",
+  "description": "A the very best minecraft utility mod by _kisman_",
+  "version": "b0.1.2",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://discord.gg/CJMhy74NYF",
   "updateUrl": "",
   "authorList": ["_kisman_"],
-  "credits": "_kisman_",
-  "logoFile": "banner.png",
+  "credits": "_kisman_#7777",
+  "logoFile": "assets/kismancc/textures/banner.png",
   "screenshots": [],
   "dependencies": []
 }

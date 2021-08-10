@@ -8,14 +8,20 @@ import com.kisman.cc.hud.hudmodule.Logo;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class HUD extends Module {
-	ArrayList arrList;
-	Coord coord;
-	Fps fps;
-	Logo logo;
+	ArrayList arrList = new ArrayList();
+	Coord coord = new Coord();
+	Fps fps = new Fps();
+	Logo logo = new Logo(Kisman.NAME, Kisman.VERSION);
+
+	public static boolean isArrList = false;
+	public static boolean isCoord = false;
+	public static boolean isFps = false;
+	public static boolean isLogo = false;
 
 	public HUD() {
 		super("HUD", "hud editor", Category.CLIENT);
@@ -25,23 +31,30 @@ public class HUD extends Module {
 		Kisman.instance.settingsManager.rSetting(new Setting("Logo", this, false));
 	}
 
-	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent event) {
+	public void update() {
 		boolean arrList = Kisman.instance.settingsManager.getSettingByName(this, "ArrayList").getValBoolean();
 		boolean coord = Kisman.instance.settingsManager.getSettingByName(this, "Coords").getValBoolean();
 		boolean fps = Kisman.instance.settingsManager.getSettingByName(this ,"FPS").getValBoolean();
 		boolean logo = Kisman.instance.settingsManager.getSettingByName(this, "Logo").getValBoolean();
 		if(arrList) {
-			this.arrList = new ArrayList();
+			isArrList = true;
+		} else {
+			isArrList = false;
 		}
 		if(logo) {
-			this.logo = new Logo(Kisman.NAME, Kisman.VERSION);
+			isLogo = true;
+		} else {
+			isLogo = false;
 		}
 		if(fps) {
-			this.fps = new Fps();
+			isFps = true;
+		} else {
+			isFps = false;
 		}
 		if(coord) {
-			this.coord = new Coord();
+			isCoord = true;
+		} else {
+			isCoord = false;
 		}
 	}
 }

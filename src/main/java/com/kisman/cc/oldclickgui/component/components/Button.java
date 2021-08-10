@@ -53,6 +53,10 @@ public class Button extends Component {
 					this.subcomponents.add(new Line(s, this, opY));
 					opY += 12;
 				}
+				if(s.isCategory()) {
+					this.subcomponents.add(new CategoryButton(s, this, opY, 1));
+					opY += 12;
+				}
 			}
 		}
 		this.subcomponents.add(new Keybind(this, opY));
