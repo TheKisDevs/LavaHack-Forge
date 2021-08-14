@@ -16,7 +16,6 @@ public class Setting {
 	
 	private String name;
 	private Module parent;
-	private Setting setParent;
 	private String mode;
 
 	private String string;
@@ -73,21 +72,26 @@ public class Setting {
 		this.mode = "Category";
 	}
 
-	public Setting(String name, Module modParent, Setting setParent, int index, String title) {
+	public Setting(String name, Module parent, String title, int index) {
 		this.name = name;
-		this.parent = modParent;
-		this.setParent = setParent;
+		this.parent = parent;
 		this.index = index;
 		this.title = title;
 		this.mode = "CategoryLine";
 	}
 
-	public Setting getSetParent() {
-		return setParent;
+	public Setting(String name, Module parent, int index, String title, boolean bval) {
+		this.name = name;
+		this.parent = parent;
+		this.index = index;
+		this.bval = bval;
+		this.mode = "CategoryCheck";
 	}
 
-	public void setSetParent(Setting setParent) {
-		this.setParent = setParent;
+	public Setting(String name, Module parent) {
+		this.name = name;
+		this.parent = parent;
+		this.mode = "ColorPicker";
 	}
 
 	public int getIndex() {
@@ -175,6 +179,14 @@ public class Setting {
 
 	public boolean isCategoryLine() {
 		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
+	}
+
+	public boolean isCategoryCheck() {
+		return this.mode.equalsIgnoreCase("CategoryCheck") ? true : false;
+	}
+
+	public boolean isColorPicker() {
+		return this.mode.equalsIgnoreCase("ColorPicker") ? true : false;
 	}
 
 	public boolean onlyInt(){

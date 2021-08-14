@@ -2,13 +2,12 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
-import com.kisman.cc.module.chat.AutoEZ;
+import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
-import com.kisman.cc.module.combat.AntiBot;
-import com.kisman.cc.module.combat.Criticals;
-import com.kisman.cc.module.dl.DLGui;
+import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.dl.*;
 import com.kisman.cc.module.movement.*;
-import com.kisman.cc.module.player.AntiKnokBack;
+import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +36,7 @@ public class ModuleManager {
 		modules.add(new CrossHairPlus());
 		modules.add(new CustomFont());
 		modules.add(new DLGui());
+		modules.add(new EntityESP());
 		//modules.add(new KillAura());
 		modules.add(new HUD());
 		modules.add(new HUDGui());
@@ -45,10 +45,13 @@ public class ModuleManager {
 		modules.add(new Fly());
 		modules.add(new FullBright());
 		modules.add(new NoRender());
+		modules.add(new Tracers());
 		modules.add(new ReverseStep());
+		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
 		modules.add(new ExampleModule());
+		modules.add(new FastBreak());
 	}
 	
 	public Module getModule(String name) {

@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
+import com.kisman.cc.oldclickgui.component.components.sub.sub.CheckBox;
 import com.kisman.cc.oldclickgui.component.components.sub.sub.LineButton;
 import com.kisman.cc.oldclickgui.component.components.sub.sub.SubComponent;
 import com.kisman.cc.oldclickgui.component.components.Button;
@@ -27,21 +28,23 @@ public class CategoryButton extends Component {
     public Button button;
     public Setting line;
 
-    public int x = 0;
-    public int y = 0;
+    public int x;
+    public int y;
     public int x1;
     public int y1;
     public int x2;
     public int y2;
     public int offset;
-    public int index = 0;
+    public int index;
 
     public boolean open = false;
 
-    public CategoryButton(Setting line, Button button, int offset, int index) {
+    public CategoryButton(Setting line, Button button, int offset, int index) {//, int index
         this.subSubComponent = new ArrayList<>();
         this.button = button;
         this.line = line;
+        this.x = sr.getScaledWidth() - 44;
+        this.y = sr.getScaledHeight() - 6;
         this.x1 = button.parent.getX();
         this.y1 = button.parent.getY();
         this.x2 = button.parent.getX() + button.parent.getWidth();
@@ -49,12 +52,16 @@ public class CategoryButton extends Component {
         this.offset = offset;
         this.index = index;
 
+        int opY = 12;
         for(Setting set : Kisman.instance.settingsManager.getSettings()) {
-            if (Kisman.instance.settingsManager.getSettingByIndex(this.index).getIndex() == this.index) {
-                set.getSetParent();
-                LineButton lineButton = new LineButton();
+            if(set.getIndex() == this.index) {
                 if(set.isCategoryLine()) {
-                    this.subSubComponent.add(lineButton);
+                    this.subSubComponent.add(new LineButton());
+                    opY += 12;
+                }
+                if(set.isCategoryCheck()) {
+                    this.subSubComponent.add(new CheckBox(set, button, opY));
+                    opY += 12;
                 }
             }
         }
@@ -69,18 +76,11 @@ public class CategoryButton extends Component {
         CustomFontUtil.drawString(line.getTitle(), (button.parent.getX() + 4) * 2, (button.parent.getY() + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
         GL11.glPopMatrix();
         if(open) {
-            //Minecraft.getMinecraft().player.sendChatMessage("i open category!!!");
-            //Gui.drawRect( mc.displayWidth / 2, mc.displayHeight / 2, mc.displayWidth / 2 + 88, mc.displayHeight / 2 + 12, -1);
-            Gui.drawRect((sr.getScaledWidth() / 2) * 2 - 44, (sr.getScaledHeight() / 2) * 2 - 6, (sr.getScaledWidth() / 2) * 2 + 44, (sr.getScaledHeight() / 2) * 2 + 7, new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
-            //Gui.drawRect(((mc.displayWidth / 2)), ((mc.displayHeight / 2)), ((mc.displayWidth / 2) + 44), ((mc.displayHeight / 2) + 6), new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
+            Gui.drawRect(sr.getScaledWidth() - 44, sr.getScaledHeight() - 6, sr.getScaledWidth() + 44, sr.getScaledHeight() + 7, new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
             GL11.glPushMatrix();
             GL11.glScalef(0.5f, 0.5f, 0.5f);
-
-            //Gui.drawRect(sr.getScaledWidth() / 2 - 44, sr.getScaledHeight() / 2 - 6, sr.getScaledWidth() / 2 + 88, sr.getScaledHeight() / 2 + 12, new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
             mc.fontRenderer.drawString(line.getTitle(), ((mc.displayWidth / 2) - 42), ((mc.displayHeight / 2) - 5), -1);
             GL11.glPopMatrix();
-            //(this.x + 2) * 2 + 5, (this.y + 2.5f)
-            //((12 - mc.fontRenderer.FONT_HEIGHT) / 2)
             for(SubComponent subComp : subSubComponent) {
                 subComp.renderComponent();
             }
@@ -89,20 +89,44 @@ public class CategoryButton extends Component {
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(isMouseOnButton(mouseX, mouseY) && button == 1) {
-            Minecraft.getMinecraft().player.sendChatMessage("i open category!!!1");
-            this.x = mouseX;
-            this.y = mouseY;
-            this.open = !this.open;
+        if(button == 0) {
+            if(isMouseOnScreen(mouseX, mouseY)) {
+                if(!isMouseOnFrame(mouseX, mouseY)) {
+                    this.open = false;
+                }
+            }
         }
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) {
-            this.open = false;
-            Minecraft.getMinecraft().player.sendChatMessage("i open category!!!2");
+        if(button == 1) {
+            if(isMouseOnButton(mouseX, mouseY)) {
+                this.open = !this.open;
+            }
+            if(isMouseOnScreen(mouseX, mouseY)) {
+                if(!isMouseOnFrame(mouseX, mouseY)) {
+                    this.open = false;
+                }
+            }
         }
     }
 
     public boolean isMouseOnButton(int x, int y) {
         if(x > button.parent.getX() && x < button.parent.getX() + 88 && y > button.parent.getY() + offset && y < button.parent.getY() + 12 + offset) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMouseOnScreen(int x, int y) {
+        if(!(x < this.x && x > this.x + 88 && y < this.y && y > this.y + 12)) {
+            if(!isMouseOnButton(x, y)) {
+                 return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isMouseOnFrame(int x, int y) {
+        if(x < this.x && x > this.x + 88 && y < this.y && y > this.y + 12) {
             return true;
         }
         return false;

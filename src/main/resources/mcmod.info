@@ -9,7 +9,7 @@
   "updateUrl": "",
   "authorList": ["_kisman_"],
   "credits": "_kisman_#7777",
-  "logoFile": "assets/kismancc/textures/banner.png",
+  "logoFile": "assets/minecraft/textures/banner.png",
   "screenshots": [],
   "dependencies": []
 }

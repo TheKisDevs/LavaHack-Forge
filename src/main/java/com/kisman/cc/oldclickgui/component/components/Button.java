@@ -54,8 +54,12 @@ public class Button extends Component {
 					opY += 12;
 				}
 				if(s.isCategory()) {
-					this.subcomponents.add(new CategoryButton(s, this, opY, 1));
+					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));//s.getIndex()
 					opY += 12;
+				}
+				if(s.isColorPicker()) {
+					this.subcomponents.add(new ColorPicker(s, this, opY));
+					opY += 100;
 				}
 			}
 		}

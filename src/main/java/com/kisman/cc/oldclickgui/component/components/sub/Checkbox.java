@@ -58,7 +58,7 @@ public class Checkbox extends Component {
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
 		if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.parent.open) {
-			this.op.setValBoolean(!op.getValBoolean());;
+			this.op.setValBoolean(!op.getValBoolean());
 		}
 	}
 	

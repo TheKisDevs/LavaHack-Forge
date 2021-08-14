@@ -3,6 +3,7 @@ package com.kisman.cc.module;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.notification.Notification;
 import com.kisman.cc.notification.NotificationType;
+
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
