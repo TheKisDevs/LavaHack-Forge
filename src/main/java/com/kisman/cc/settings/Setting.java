@@ -30,6 +30,8 @@ public class Setting {
 	private double min;
 	private double max;
 
+	private int r, g, b, a;
+
 	private boolean onlyint = false;
 
 	public Setting(String name, Module parent, String title) {
@@ -88,9 +90,10 @@ public class Setting {
 		this.mode = "CategoryCheck";
 	}
 
-	public Setting(String name, Module parent) {
+	public Setting(String name, Module parent, String title, boolean no) {//, int dColor
 		this.name = name;
 		this.parent = parent;
+		this.title = title;
 		this.mode = "ColorPicker";
 	}
 
@@ -155,6 +158,38 @@ public class Setting {
 	
 	public double getMax(){
 		return this.max;
+	}
+
+	public int getR() {
+		return r;
+	}
+
+	public int getG() {
+		return g;
+	}
+
+	public int getB() {
+		return b;
+	}
+
+	public int getA() {
+		return a;
+	}
+
+	public void setR(int r) {
+		this.r = r;
+	}
+
+	public void setG(int g) {
+		this.g = g;
+	}
+
+	public void setB(int b) {
+		this.b = b;
+	}
+
+	public void setA(int a) {
+		this.a = a;
 	}
 	
 	public boolean isCombo(){

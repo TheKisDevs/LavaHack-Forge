@@ -18,7 +18,6 @@ import net.minecraft.client.gui.Gui;
 
 public class Button extends Component {
 
-	int test = 0;
 	int color;
 	public Module mod;
 	public Frame parent;
@@ -60,8 +59,8 @@ public class Button extends Component {
 					opY += 12;
 				}
 				if(s.isColorPicker()) {
-					this.subcomponents.add(new ColorPicker(s, this, opY, (int) (85 / 2), Color.WHITE, this::setColor));
-					test = 1;
+					this.subcomponents.add(new ColorPickerButton(s, this, opY));
+					//this.subcomponents.add(new ColorPicker(s, this, opY, (int) (85 / 2), Color.WHITE, this::setColor));
 					opY += 85;
 				}
 			}
@@ -76,13 +75,7 @@ public class Button extends Component {
 		int opY = offset + 12;
 		for(Component comp : this.subcomponents) {
 			comp.setOff(opY);
-			if(test == 0) {
-				opY += 12;
-			} else if(test == 1) {
-				opY += 85;
-				test = 0;
-			}
-			
+			opY += 12;
 		}
 	}
 	
@@ -101,7 +94,7 @@ public class Button extends Component {
 					comp.renderComponent();
 				}
 				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), ClickGui.isRainbowLine() ? colorUtil.getColor() : new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
-				Gui.drawRect(parent.getX(), parent.getY() + this.offset + 12, parent.getX() + 1, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), this.color);
+				//Gui.drawRect(parent.getX(), parent.getY() + this.offset + 12, parent.getX() + 1, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), this.color);
 			}
 		}
 	}

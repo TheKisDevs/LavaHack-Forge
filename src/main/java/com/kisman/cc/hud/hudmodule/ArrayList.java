@@ -3,7 +3,6 @@ package com.kisman.cc.hud.hudmodule;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.module.render.CrossHairPlus;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.DrawLineMode;

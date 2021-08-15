@@ -1,61 +1,63 @@
 package com.kisman.cc.util;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL11.*;
+import java.awt.Color;
 
-import java.awt.*;
+import static org.lwjgl.opengl.GL11.*;
 
 public class RenderHelper {
-    public static void drawCircle(int x, int y, int radius, int color) {
-        GL11.glPushMatrix();
 
-        color(color);
-        GL11.glBegin(GL11.GL_POLYGON);
+  public static void drawCircle(double x, double y, double radius, int color) {
+    glPushMatrix();
 
-        for(int i = 0; i < 360; i++) {
-            GL11.glVertex2i(
-                x + (int) Math.sin(Math.toRadians(i)) + radius, 
-                y + (int) Math.cos(Math.toRadians(i)) + radius
-            );
-        }
-        
-        GL11.glEnd();
+    color(color);
 
-        GL11.glPopMatrix();
+    glBegin(GL_POLYGON);
+    for ( int i = 0; i < 360; i++ ) {
+      glVertex2d(
+        (int) (x + Math.sin(Math.toRadians(i)) * radius),
+        (int) (y + Math.cos(Math.toRadians(i)) * radius)
+      );
     }
+    glEnd();
 
-    public static void drawColoredCircle(int x, int y, int radius) {
-        GL11.glPushMatrix();
+    glPopMatrix();
+  }
 
-        GL11.glLineWidth(3.5f);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glShadeModel(GL11.GL_SMOOTH);
+  public static void drawColoredCircle(double x, double y, double radius) {
+    glPushMatrix();
 
-        GL11.glBegin(GL11.GL_LINE_STRIP);
-        for(int i = 0; i < 360; i++) {
-            color(-1);
-            GL11.glVertex2i(x, y);
+    //You don't have to do this in Minecraft
+    glLineWidth(3.5f);
 
-            color(Color.HSBtoRGB(i / 360f, 1, 1));
-            GL11.glVertex2i(
-                x + (int) Math.sin(Math.toRadians(i)) + radius, 
-                y + (int) Math.cos(Math.toRadians(i)) + radius
-            );
-        }
-        GL11.glEnd();
+    glEnable(GL_LINE_SMOOTH);
+    glShadeModel(GL_SMOOTH);
 
-        GL11.glShadeModel(GL11.GL_FLAT);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-
-        GL11.glPopMatrix();
-    } 
-
-    public static void color(int argb) {
-        float alpha = (argb >> 24 & 255) / 255f;
-        float red = (argb >> 16 & 255) / 255f;
-        float green = (argb >> 8 & 255) / 255f;
-        float blue = (argb & 255) / 255f;
-
-        GL11.glColor4f(red, green, blue, alpha);
+    glBegin(GL_LINE_STRIP);
+    for ( int i = 0; i < 360; i++ ) {
+      color(-1);
+      glVertex2d(x, y);
+      color(Color.HSBtoRGB(i / 360f, 1, 1));
+      glVertex2d(
+        (int) (x + Math.sin(Math.toRadians(i)) * radius),
+        (int) (y + Math.cos(Math.toRadians(i)) * radius)
+      );
     }
+    glEnd();
+
+    glShadeModel(GL_FLAT);
+    glDisable(GL_LINE_SMOOTH);
+
+    glPopMatrix();
+  }
+
+  public static void color(int argb) {
+
+    float alpha = (argb >> 24 & 255) / 255f;
+    float red = (argb >> 16 & 255) / 255f;
+    float green = (argb >> 8 & 255) / 255f;
+    float blue = (argb & 255) / 255f;
+
+    glColor4f(red, green, blue, alpha);
+  }
+
 }

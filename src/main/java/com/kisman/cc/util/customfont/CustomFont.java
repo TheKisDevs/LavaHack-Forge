@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class CustomFont {
-    private final float imgSize = 512.0F;
+    private final float imgSize = 1024.0F;//512
     protected CharData[] charData = new CharData[256];
     protected Font font;
     protected boolean antiAlias;

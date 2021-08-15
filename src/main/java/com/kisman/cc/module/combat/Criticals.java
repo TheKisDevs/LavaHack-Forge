@@ -32,10 +32,12 @@ public class Criticals extends Module {
         if(onlySword == false) {
             mc.player.jump();
             mc.player.motionY -= .30000001192092879;
+            mc.player.motionY += .30000001192092879;
         } else if(onlySword == true) {
             if(mainSword) {
                 mc.player.jump();
                 mc.player.motionY -= .30000001192092879;
+                mc.player.motionY += .30000001192092879;
             }
         }
     }

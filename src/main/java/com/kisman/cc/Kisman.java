@@ -6,6 +6,7 @@ import com.kisman.cc.hud.hudmodule.Coord;
 import com.kisman.cc.hud.hudmodule.Fps;
 import com.kisman.cc.hud.hudmodule.Logo;
 import com.kisman.cc.oldclickgui.ClickGui;
+import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
@@ -36,6 +37,7 @@ public class Kisman
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;
+    public ColorPicker colorPicker;
     public HudGui hudGui;
     public CustomFontRenderer customFontRenderer;
     public ArrayList arrayList;
@@ -53,6 +55,7 @@ public class Kisman
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
     	clickGui = new ClickGui();
+        colorPicker = new ColorPicker();
     	hudGui = new HudGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
         arrayList = new ArrayList();
