@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 
+import com.kisman.cc.util.customfont.CustomFontUtil;
+
 public class ColorPicker extends GuiScreen {
 
     private final float[] color;
@@ -45,11 +47,11 @@ public class ColorPicker extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (this.rainbowState) {
-            double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
-            rainbowState %= 360.0;
-            this.color[0] = (float) (rainbowState / 360.0);
-        }
+        // if (this.rainbowState) {
+        //     double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
+        //     rainbowState %= 360.0;
+        //     this.color[0] = (float) (rainbowState / 360.0);
+        // }
         this.drawDefaultBackground();
         if (this.pickingHue) {
             if (this.hueSliderWidth > this.hueSliderHeight) {
@@ -93,6 +95,13 @@ public class ColorPicker extends GuiScreen {
         this.selectedColorFinal = alpha(new Color(Color.HSBtoRGB(this.color[0], this.color[1], this.color[2])), this.color[3]);
         Gui.drawRect(selectedX - 2, selectedY - 2, selectedX + selectedWidth + 2, selectedY + selectedHeight + 2, 0xFC000000);
         Gui.drawRect(selectedX, selectedY, selectedX + selectedWidth, selectedY + selectedHeight, this.selectedColorFinal);
+
+        Gui.drawRect(selectedX - 2, selectedY + (selectedHeight * 2) - 2, selectedX + 2 + selectedWidth, selectedY + (selectedHeight * 3) + 2, 0xFC000000);
+        CustomFontUtil.drawString("RainBow", selectedX - 2 - CustomFontUtil.getStringWidth("RainBow"), (selectedY + (selectedHeight * 2) - ((selectedHeight - CustomFontUtil.getFontHeight()) / 2)), 0xFC000000);
+        if(rainbowState) {
+            Gui.drawRect(selectedX, selectedY + (selectedHeight * 2), selectedX + selectedWidth, selectedY + (selectedHeight * 3), -1);
+        }
+
         {
             final int cursorX = (int) (pickerX + color[1]*pickerWidth);
             final int cursorY = (int) ((pickerY + pickerHeight) - color[2]*pickerHeight);
@@ -253,6 +262,10 @@ public class ColorPicker extends GuiScreen {
         return this.selectedColorFinal;
     }
 
+    public void setColor(int color) {
+        this.selectedColorFinal = color;
+    }
+
     public float getColor(int index) {
         try {
             return this.color[index];
@@ -260,5 +273,21 @@ public class ColorPicker extends GuiScreen {
             return this.color[2];
             //e.printStackTrace();
         }
+    }
+
+    public void setColor(int index, float color) {
+        try {
+            this.color[index] = color;
+        } catch(Exception e) {
+            this.color[3] = color;
+        }
+    }
+
+    public boolean isRainbowState() {
+        return this.rainbowState;
+    }
+
+    public void setRainbowState(boolean rainbowState) {
+        this.rainbowState = rainbowState;
     }
 }

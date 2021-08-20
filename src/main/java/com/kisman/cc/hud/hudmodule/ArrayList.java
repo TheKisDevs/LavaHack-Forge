@@ -19,12 +19,18 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ArrayList extends Gui {
+public class ArrayList{
     Minecraft mc = Minecraft.getMinecraft();
     FontRenderer fr = mc.fontRenderer;
 
+    public static float[] color;
+
     Render2DUtil render2DUtil = new Render2DUtil();
     ColorUtil colorUtil = new ColorUtil();
+
+    // public ArrayList() {
+    //     this.color = new float[] {0.4f, 1.0f, 1.0f, 1.0f};
+    // }
 
     public static class ModuleComparator implements Comparator<Module>{
         @Override
@@ -51,7 +57,28 @@ public class ArrayList extends Gui {
 
                 if (m.isToggled() && m.visible == true) {
                     fr.drawStringWithShadow(m.getName(), sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 4, 4 + offset, -1);
-                    Gui.drawRect(sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 8, offset, sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 7, offset + fr.FONT_HEIGHT + 6, ClickGui.isRainbowLine() ? colorUtil.getColor() : new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+                    Gui.drawRect(
+                        sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 8, 
+                        offset, 
+                        sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 7, 
+                        offset + fr.FONT_HEIGHT + 6, 
+                        // Kisman.instance.colorUtil.alpha(
+                        //     new Color(
+                        //         Color.HSBtoRGB(
+                        //             color[0],
+                        //             color[1],
+                        //             color[2]
+                        //         ) 
+                        //     ),
+                        //     color[3]
+                        // )
+                        new Color(
+                            HUD.arrR,
+                            HUD.arrG,
+                            HUD.arrB,
+                            HUD.arrA
+                        ).getRGB()
+                    );
                     count++;
                 } else if(m.visible == false){
                     continue;

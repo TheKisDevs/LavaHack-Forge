@@ -23,12 +23,7 @@ public class Sprint extends Module {
 		mc.player.setSprinting(true);
 	}
 
-	public void onEnable() {
-		moduleNotification.start();
-	}
-
 	public void onDisable() {
 		mc.player.setSprinting(false);
-		moduleNotification.stop();
 	}
 }

@@ -28,6 +28,7 @@ public class ModuleManager {
 		modules.add(new AntiBot());
 		modules.add(new AntiKnokBack());
 		modules.add(new AutoJump());
+		modules.add(new AutoWalk());
 		modules.add(new CustomFov());
 		modules.add(new Criticals());
 		modules.add(new ClickGUI());
@@ -43,11 +44,14 @@ public class ModuleManager {
 		modules.add(new FullBright());
 		modules.add(new NoRender());
 		modules.add(new ReverseStep());
+		modules.add(new Spammer());
+		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
 		modules.add(new ExampleModule());
 		modules.add(new FastBreak());
+		modules.add(new Xray());
 	}
 	
 	public Module getModule(String name) {

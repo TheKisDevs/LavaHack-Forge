@@ -17,11 +17,12 @@ public class Spider extends Module{
 	}
 	
 	public void update() {
-        if(!Wrapper.INSTANCE.player().isOnLadder() 
+		if(!(mc.world == null || mc.player == null)) {
+			if(!Wrapper.INSTANCE.player().isOnLadder() 
         		&& Wrapper.INSTANCE.player().collidedHorizontally 
         		&& Wrapper.INSTANCE.player().motionY < 0.2) {
-        	Wrapper.INSTANCE.player().motionY = 0.2;
-        }
+        		Wrapper.INSTANCE.player().motionY = 0.2;
+        	}
+		}
 	}
-	
 }

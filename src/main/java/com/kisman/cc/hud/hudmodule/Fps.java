@@ -1,5 +1,6 @@
 package com.kisman.cc.hud.hudmodule;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.HUD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,7 +19,15 @@ public class Fps extends Gui {
     @SubscribeEvent
     public void renderOverlay(RenderGameOverlayEvent event) {
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT && HUD.isFps) {
-            fr.drawStringWithShadow(TextFormatting.AQUA + "FPS: " + TextFormatting.GRAY + Minecraft.getDebugFPS(), 1,2 + fr.FONT_HEIGHT , -1);
+            fr.drawStringWithShadow(
+                TextFormatting.AQUA + 
+                "FPS: " + 
+                TextFormatting.GRAY + 
+                Minecraft.getDebugFPS(), 
+                1,
+                Kisman.instance.logo.getHeight(), 
+                -1
+            );
         }
     }
 }

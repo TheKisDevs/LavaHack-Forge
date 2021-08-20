@@ -10,6 +10,7 @@ import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
+import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import me.zero.alpine.bus.EventManager;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.2";
+    public static final String VERSION = "b0.1.2.6 beta";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -38,6 +39,7 @@ public class Kisman
     public SettingsManager settingsManager;
     public ClickGui clickGui;
     public ColorPicker colorPicker;
+    public ColorUtil colorUtil;
     public HudGui hudGui;
     public CustomFontRenderer customFontRenderer;
     public ArrayList arrayList;
@@ -56,6 +58,7 @@ public class Kisman
     	moduleManager = new ModuleManager();
     	clickGui = new ClickGui();
         colorPicker = new ColorPicker();
+        colorUtil = new ColorUtil();
     	hudGui = new HudGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
         arrayList = new ArrayList();

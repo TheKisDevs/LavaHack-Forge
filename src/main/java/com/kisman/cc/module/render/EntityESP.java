@@ -117,7 +117,7 @@ public class EntityESP extends Module{
                         e.setGlowing(false);
                 }
                 if(!monstersMode.equalsIgnoreCase("None")) {
-                    if(e instanceof  EntityCreature || e instanceof EntitySlime || e instanceof EntitySquid) {
+                    if(e instanceof EntityCreature || e instanceof EntitySlime || e instanceof EntitySquid) {
                         if(monstersMode.equalsIgnoreCase("Box1")) {
                             if(e.isGlowing())
                                 e.setGlowing(false);

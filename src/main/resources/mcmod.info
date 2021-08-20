@@ -2,13 +2,13 @@
 {
   "modid": "kisman",
   "name": "kisman.cc",
-  "description": "A the very best minecraft utility mod by _kisman_",
-  "version": "b0.1.2",
+  "description": "A the very best minecraft utility mod by _kisman_, DenYoyo",
+  "version": "b0.1.2.6 beta",
   "mcversion": "${mcversion}",
   "url": "https://discord.gg/CJMhy74NYF",
   "updateUrl": "",
-  "authorList": ["_kisman_"],
-  "credits": "_kisman_#7777",
+  "authorList": ["_kisman_", "DenYoyo"],
+  "credits": "_kisman_#7777, L3gandary#4009",
   "logoFile": "assets/kismancc/banner.png",
   "screenshots": [],
   "dependencies": []

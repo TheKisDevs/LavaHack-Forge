@@ -10,10 +10,6 @@ public class AutoJump extends Module {
     }
 
     public void update() {
-        Minecraft.getMinecraft().gameSettings.autoJump = true;
-    }
-
-    public void onDisable() {
-        Minecraft.getMinecraft().gameSettings.autoJump = false;
+        mc.player.jump();
     }
 }

@@ -13,6 +13,9 @@ import com.kisman.cc.oldclickgui.*;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
+import i.gishreloaded.gishcode.xray.XRayData;
+import i.gishreloaded.gishcode.xray.XRayManager;
+
 import java.awt.Color;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,6 +36,7 @@ public class ExampleModule extends Module {
     // }
 
     public void onEnable() {
+        //XRayManager.add();
         //ClickGui.
         //this.subcomponents.add(new ColorPicker(s, this, opY, ));
         //ColorPicker colorPicker = new ColorPicker(5, 85 / 2, Color.WHITE, this::setColor);

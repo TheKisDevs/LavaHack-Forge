@@ -3,6 +3,7 @@ package com.kisman.cc.settings;
 import java.util.ArrayList;
 
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.ColorPicker;
 
 /**
  *  Made by HeroCode
@@ -12,7 +13,10 @@ import com.kisman.cc.module.Module;
  *  @author HeroCode
  */
 public class Setting {
+	private ColorPicker colorPicker;
+
 	private int index = 0;
+	private int color;
 	
 	private String name;
 	private Module parent;
@@ -25,6 +29,7 @@ public class Setting {
 	private ArrayList<String> options;
 	
 	private boolean bval;
+	private boolean rainbow;
 	
 	private double dval;
 	private double min;
@@ -190,6 +195,30 @@ public class Setting {
 
 	public void setA(int a) {
 		this.a = a;
+	}
+
+	public boolean isRainbow() {
+		return this.rainbow;
+	}
+
+	public void setRainbow(boolean rainbow) {
+		this.rainbow = rainbow;
+	}
+
+	public int getColor() {
+		return this.color;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
+	}
+
+	public ColorPicker getColorPicker() {
+		return this.colorPicker;
+	}
+
+	public void setColorPicker(ColorPicker colorPicker) {
+		this.colorPicker = colorPicker;
 	}
 	
 	public boolean isCombo(){
