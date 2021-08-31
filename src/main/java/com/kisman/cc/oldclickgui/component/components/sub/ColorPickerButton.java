@@ -43,6 +43,7 @@ public class ColorPickerButton extends Component{
       this.x1 = button.parent.getX() + button.parent.getWidth();
       this.y1 = button.parent.getY() + button.offset;
       this.offset = offset;
+      colorPicker.setColor(set.getColorHSB());
   }
 
   public void setOff(int offset) {

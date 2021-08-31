@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Category;
@@ -19,6 +20,8 @@ import net.minecraft.client.gui.Gui;
 public class Frame {
 	public ArrayList<Component> components;
 	public Category category;
+	public HudCategory hudCategory;
+	public boolean hud;
 	public ColorUtil colorUtil = new ColorUtil();
 	private boolean open;
 	private int width;
@@ -39,6 +42,7 @@ public class Frame {
 		this.dragX = 0;
 		this.open = false;
 		this.isDragging = false;
+		this.hud = false;
 		int tY = this.barHeight;
 		
 		/**
@@ -53,6 +57,26 @@ public class Frame {
 		 */
 		
 		for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(category)) {
+			Button modButton = new Button(mod, this, tY);
+			this.components.add(modButton);
+			tY += 12;
+		}
+	}
+
+	public Frame(HudCategory cat) {
+		this.components = new ArrayList<Component>();
+		this.hudCategory = cat;
+		this.width = 88;
+		this.x = 5;
+		this.y = 5;
+		this.barHeight = 13;
+		this.dragX = 0;
+		this.open = false;
+		this.isDragging = false;
+		this.hud = true;
+		int tY = this.barHeight;
+		
+		for(HudModule mod : Kisman.instance.hudModuleManager.getModulesInCategory(hudCategory)) {
 			Button modButton = new Button(mod, this, tY);
 			this.components.add(modButton);
 			tY += 12;
@@ -100,7 +124,7 @@ public class Frame {
 		}
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		CustomFontUtil.drawString(this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		CustomFontUtil.drawString(this.hud ? this.hudCategory.name() : this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		CustomFontUtil.drawString(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 
 		GL11.glPopMatrix();

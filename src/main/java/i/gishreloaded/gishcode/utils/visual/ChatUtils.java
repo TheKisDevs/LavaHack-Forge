@@ -9,6 +9,7 @@ import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 
 public class ChatUtils{	// TODO Rewrite to LogManager 
 	
@@ -23,16 +24,16 @@ public class ChatUtils{	// TODO Rewrite to LogManager
 	
 	public static void message(Object message)
 	{
-		component(new TextComponentTranslation("\u00a78" + Kisman.NAME + "\u00a77 " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void warning(Object message)
 	{
-		message("\u00a78[\u00a7eWARNING\u00a78]\u00a7e " + message);
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GOLD + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void error(Object message)
 	{
-		message("\u00a78[\u00a74ERROR\u00a78]\u00a7c " + message);
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.RED + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 }

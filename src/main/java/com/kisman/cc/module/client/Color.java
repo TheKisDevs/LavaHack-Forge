@@ -39,15 +39,15 @@ public class Color extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("LineSetting",this, "Line"));
         Kisman.instance.settingsManager.rSetting(new Setting("Line", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("LineMode", this, "LeftLine", lineMode));
-        Kisman.instance.settingsManager.rSetting(new Setting("LineColor", this, "LineColor", false));
+        Kisman.instance.settingsManager.rSetting(new Setting("LineColor", this, "LineColor", new float[] {0f, 1f, 1f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("BackgroundSetting", this, "Background"));
-        Kisman.instance.settingsManager.rSetting(new Setting("BackgroundColor", this, "BackgroundColor", false));
+        Kisman.instance.settingsManager.rSetting(new Setting("BackgroundColor", this, "BackgroundColor", new float[] {0f, 0.02f, 0.59f, 0.6f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("TextSetting", this, "Text"));
-        Kisman.instance.settingsManager.rSetting(new Setting("TextColor", this, "TextColor", false));
-        Kisman.instance.settingsManager.rSetting(new Setting("ATextColor", this, "ATextColor", false));
+        Kisman.instance.settingsManager.rSetting(new Setting("TextColor", this, "TextColor", new float[] {3.5f, 0.04f, 0.65f, 1f}, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ATextColor", this, "ATextColor", new float[] {1f, 1f, 1f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("DifferentSetting", this, "Different"));
-        Kisman.instance.settingsManager.rSetting(new Setting("HoveredColor", this, "HoveredColor", false));
-        Kisman.instance.settingsManager.rSetting(new Setting("NoHoveredColor", this, "NoHoveredColor", false));
+        Kisman.instance.settingsManager.rSetting(new Setting("HoveredColor", this, "HoveredColor", new float[] {0.6f, 0.03f, 0.62f, 0.6f}, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("NoHoveredColor", this, "NoHoveredColor", new float[] {0f, 0f, 0.05f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Default", this, false));
     }
 
@@ -126,64 +126,9 @@ public class Color extends Module {
         ClickGui.setGNoHoveredModule(GNoHovered);
         ClickGui.setBNoHoveredModule(BNoHovered);
         ClickGui.setANoHoveredModule(ANoHovered);
-        // if(isDefault) {
-        //     ClickGui.setLine(false);
-        //     ClickGui.setRainbowLine(false);
-        //     ClickGui.setRainbowBackground(false);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "RainBowMode").setValString("NoRainBow");
-        //     Kisman.instance.settingsManager.getSettingByName(this, "Line").setValBoolean(false);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "Seconds").setValDouble(2);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "Saturation").setValDouble(1);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "Briqhtness").setValDouble(1);
-        //     if(ClickGui.getTextMode() == TextMode.DEFAULT) {
-        //         Kisman.instance.settingsManager.getSettingByName(this, "RText").setValDouble(255);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "GText").setValDouble(255);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "BText").setValDouble(255);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "AText").setValDouble(255);
-        //         ClickGui.setRText(166);
-        //         ClickGui.setGText(161);
-        //         ClickGui.setBText(160);
-        //         ClickGui.setAText(255);
-        //     } else {
-        //         Kisman.instance.settingsManager.getSettingByName(this, "RText").setValDouble(166);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "GText").setValDouble(161);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "BText").setValDouble(160);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "AText").setValDouble(255);
-        //         ClickGui.setRActiveText(255);
-        //         ClickGui.setGActiveText(255);
-        //         ClickGui.setBActiveText(255);
-        //         ClickGui.setAActiveText(255);
-        //     }
-        //     if(ClickGui.getHoveredMode() == HoveredMode.NOHOVERED) {
-        //         Kisman.instance.settingsManager.getSettingByName(this, "RHovered").setValDouble(14);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "GHovered").setValDouble(14);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "BHovered").setValDouble(14);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "AHovered").setValDouble(255);
-        //         ClickGui.setRHoveredModule(95);
-        //         ClickGui.setGHoveredModule(95);
-        //         ClickGui.setBHoveredModule(87);
-        //         ClickGui.setAHoveredModule(150);
-        //     } else {
-        //         Kisman.instance.settingsManager.getSettingByName(this, "RHovered").setValDouble(95);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "GHovered").setValDouble(95);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "BHovered").setValDouble(87);
-        //         Kisman.instance.settingsManager.getSettingByName(this, "AHovered").setValDouble(150);
-        //         ClickGui.setRNoHoveredModule(14);
-        //         ClickGui.setGNoHoveredModule(14);
-        //         ClickGui.setBNoHoveredModule(14);
-        //         ClickGui.setANoHoveredModule(255);
-        //     }
-        //     Kisman.instance.settingsManager.getSettingByName(this, "TextMode").setValString("Default");
-        //     Kisman.instance.settingsManager.getSettingByName(this, "HoveredMode").setValString("Hovered");
-        //     Kisman.instance.settingsManager.getSettingByName(this, "RLine").setValDouble(255);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "GLine").setValDouble(0);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "BLine").setValDouble(0);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "ALine").setValDouble(150);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "RBackground").setValDouble(80);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "GBackground").setValDouble(75);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "BBackground").setValDouble(75);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "ABackground").setValDouble(150);
-        //     Kisman.instance.settingsManager.getSettingByName(this, "Default").setValBoolean(false);
-        //}
+
+        if(isDefault) {
+            
+        }
     }
 }

@@ -10,6 +10,8 @@ public class AutoJump extends Module {
     }
 
     public void update() {
-        mc.player.jump();
+        if(mc.player.onGround) {
+            mc.player.jump();
+        }
     }
 }

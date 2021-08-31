@@ -33,7 +33,7 @@ public class ClickGui extends GuiScreen {
 	public static int RHoveredModule = 95;
 	public static int GHoveredModule = 95;
 	public static int BHoveredModule = 87;
-	public static int AHoveredModule = 	150;
+	public static int AHoveredModule = 150;
 
 	public static int RNoHoveredModule = 14;
 	public static int GNoHoveredModule = 14;

@@ -40,8 +40,8 @@ import i.gishreloaded.gishcode.wrappers.Wrapper;
 
 // import i.gishreloaded.gishcode.utils.TimerUtils;
 // import i.gishreloaded.gishcode.wrappers.Wrapper;
-import i.gishreloaded.gishcode.xray.XRayBlock;
-import i.gishreloaded.gishcode.xray.XRayData;
+// import i.gishreloaded.gishcode.xray.XRayBlock;
+// import i.gishreloaded.gishcode.xray.XRayData;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -315,44 +315,44 @@ public class RenderUtil {
         glPopMatrix();
 	}
 	
-	public static void drawXRayBlocks(LinkedList<XRayBlock> blocks, float ticks) {
-		glPushMatrix();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glLineWidth(1);
-        glDisable(GL_TEXTURE_2D);
-        glEnable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL11.GL_LIGHTING);
+	// public static void drawXRayBlocks(LinkedList<XRayBlock> blocks, float ticks) {
+	// 	glPushMatrix();
+    //     glEnable(GL_BLEND);
+    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //     glEnable(GL_LINE_SMOOTH);
+    //     glLineWidth(1);
+    //     glDisable(GL_TEXTURE_2D);
+    //     glEnable(GL_CULL_FACE);
+    //     glDisable(GL_DEPTH_TEST);
+    //     glDisable(GL11.GL_LIGHTING);
 
-        WorldClient world = Wrapper.INSTANCE.world();
-        EntityPlayerSP player = Wrapper.INSTANCE.player();
+    //     WorldClient world = Wrapper.INSTANCE.world();
+    //     EntityPlayerSP player = Wrapper.INSTANCE.player();
 
-        for(XRayBlock block : blocks) {
-            BlockPos pos = block.getBlockPos();
-            XRayData data = block.getxRayData();
+    //     for(XRayBlock block : blocks) {
+    //         BlockPos pos = block.getBlockPos();
+    //         XRayData data = block.getxRayData();
 
-            IBlockState iblockstate = world.getBlockState(pos);
+    //         IBlockState iblockstate = world.getBlockState(pos);
 
-            double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)ticks;
-            double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)ticks;
-            double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)ticks;
+    //         double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)ticks;
+    //         double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)ticks;
+    //         double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)ticks;
 
-            int color = new Color(data.getRed(), data.getGreen(), data.getBlue(), 255).getRGB();
-            GLUtils.glColor(color);
+    //         int color = new Color(data.getRed(), data.getGreen(), data.getBlue(), 255).getRGB();
+    //         GLUtils.glColor(color);
 
-            AxisAlignedBB boundingBox = iblockstate.getSelectedBoundingBox(world, pos).grow(0.0020000000949949026D).offset(-x, -y, -z);
-            drawSelectionBoundingBox(boundingBox);
-        }
+    //         AxisAlignedBB boundingBox = iblockstate.getSelectedBoundingBox(world, pos).grow(0.0020000000949949026D).offset(-x, -y, -z);
+    //         drawSelectionBoundingBox(boundingBox);
+    //     }
 
-        glEnable(GL11.GL_LIGHTING);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        glPopMatrix();
-	}
+    //     glEnable(GL11.GL_LIGHTING);
+    //     glEnable(GL_DEPTH_TEST);
+    //     glEnable(GL_TEXTURE_2D);
+    //     glDisable(GL_BLEND);
+    //     glDisable(GL_LINE_SMOOTH);
+    //     glPopMatrix();
+	// }
 	
 	public static void drawBlockESP(BlockPos pos, float red, float green, float blue) {
 		glPushMatrix();

@@ -3,7 +3,6 @@ package com.kisman.cc.module.movement;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.Setting;
 
 public class ReverseStep extends Module {

@@ -2,6 +2,7 @@ package com.kisman.cc.settings;
 
 import java.util.ArrayList;
 
+import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 
@@ -20,6 +21,7 @@ public class Setting {
 	
 	private String name;
 	private Module parent;
+	private HudModule hudParent;
 	private String mode;
 
 	private String string;
@@ -30,12 +32,17 @@ public class Setting {
 	
 	private boolean bval;
 	private boolean rainbow;
+	private boolean hud = false;
 	
 	private double dval;
 	private double min;
 	private double max;
 
+	private float[] colorHSB;
+
 	private int r, g, b, a;
+
+	private int x1, y1, x2, y2;
 
 	private boolean onlyint = false;
 
@@ -95,11 +102,73 @@ public class Setting {
 		this.mode = "CategoryCheck";
 	}
 
-	public Setting(String name, Module parent, String title, boolean no) {//, int dColor
+	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {//, int dColor
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
-		this.mode = "ColorPicker";
+		this.colorHSB = colorHSB;
+		this.mode = simpleMode ? "ColorPickerSimple" : "ColorPicker";
+	}
+
+	public Setting(String name, HudModule parent, String title, float[] colorHSB) {//, int dColor
+		this.name = name;
+		this.hudParent = parent;
+		this.title = title;
+		this.colorHSB = colorHSB;
+		this.mode = "ColorPickerHud";
+		this.hud = true;
+	}
+
+	public Setting(String name, HudModule parent, int x1, int y1, int x2, int y2) {
+		this.name = name;
+		this.hudParent = parent;
+		this.mode = "DrawHud";
+		this.hud = true;
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x2;
+		this.y2 = y2;
+	}
+
+	public int getX1() {
+		return this.x1;
+	}
+	
+	public int getY1() {
+		return this.y1;
+	}
+
+	
+	public int getX2() {
+		return this.x2;
+	}
+	
+	public int getY2() {
+		return this.y2;
+	}
+
+	public void setX1(int num) {
+		this.x1 = num;
+	}
+
+	public void setY1(int num) {
+		this.y1 = num;
+	}
+
+	public void setX2(int num) {
+		this.x2 = num;
+	}
+
+	public void setY2(int num) {
+		this.y2 = num;
+	}
+
+	public HudModule getParentHudModule() {
+		return this.hudParent;
+	}
+
+	public boolean isHud() {
+		return this.hud;
 	}
 
 	public int getIndex() {
@@ -217,6 +286,22 @@ public class Setting {
 		return this.colorPicker;
 	}
 
+	public float getColor(int index) {
+		return this.colorHSB[index];
+	}
+
+	public float[] getColorHSB() {
+		return this.colorHSB;
+	}
+
+	public void setColor(float color, int index) {
+		this.colorHSB[index] = color;
+	}
+
+	public void setColor(float[] color) {
+		this.colorHSB = color;
+	}
+
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
@@ -251,6 +336,18 @@ public class Setting {
 
 	public boolean isColorPicker() {
 		return this.mode.equalsIgnoreCase("ColorPicker") ? true : false;
+	}
+
+	public boolean isColorPickerSimple() {
+		return this.mode.equalsIgnoreCase("ColorPickerSimple") ? true : false;
+	}
+
+	public boolean isColorPickerHud() {
+		return this.mode.equalsIgnoreCase("ColorPickerHud") ? true : false;
+	}
+
+	public boolean isDrawHud() {
+		return this.mode.equalsIgnoreCase("DrawHud") ? true : false;
 	}
 
 	public boolean onlyInt(){

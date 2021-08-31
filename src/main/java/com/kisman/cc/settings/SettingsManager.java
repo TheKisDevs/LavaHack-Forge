@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.kisman.cc.module.Module;
 
+import com.kisman.cc.hud.hudmodule.*;
+
 
 /**
  *  Made by HeroCode
@@ -31,6 +33,44 @@ public class SettingsManager {
 	public ArrayList<Setting> getSettingsByMod(Module mod){
 		ArrayList<Setting> out = new ArrayList<Setting>();
 		for(Setting s : getSettings()){
+			if(!s.isHud()) {
+				if(s.getParentMod().equals(mod)){
+					out.add(s);
+				}
+			}
+			// try {
+
+			// } catch(Exception e) {
+			// 	//e.printStackTrace();
+			// }
+		}
+		if(out.isEmpty()){
+			return null;
+		}
+		return out;
+	}
+
+	public ArrayList<Setting> getSettingsByHudMod(HudModule mod) {
+		ArrayList<Setting> out = new ArrayList<Setting>();
+		for(Setting s : getSettings()) {
+			if(s.isHud()) {
+				if(s.getParentHudModule().equals(mod)) {
+					out.add(s);
+				}
+			}
+			// try {
+
+			// } catch(Exception e) {}
+		}
+		if(out.isEmpty()) {
+			return null;
+		}
+		return out;
+	}
+
+	public ArrayList<Setting> getSettingsByMod(HudModule mod){
+		ArrayList<Setting> out = new ArrayList<Setting>();
+		for(Setting s : getSettings()){
 			if(s.getParentMod().equals(mod)){
 				out.add(s);
 			}
@@ -51,13 +91,13 @@ public class SettingsManager {
 		return null;
 	}
 
-	public Setting getSettingByName(String name) {
-		for(Setting set : getSettings()){
-			if(set.getName().equalsIgnoreCase(name)){
+	public Setting getSettingByName(HudModule mod, String name) {
+		for(Setting set : getSettings()) {
+			if(set.getName().equalsIgnoreCase(name) && set.getParentHudModule() == mod) {
 				return set;
 			}
 		}
-		System.err.println("[kisman.cc] Error Setting NOT found: '" + name +"'!");
+		System.err.println("[kisman.cc] Error HUD Setting NOT found: '" + name +"'!");
 		return null;
 	}
 

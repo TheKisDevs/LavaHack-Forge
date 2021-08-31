@@ -1,17 +1,14 @@
 package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.notification.Notification;
-import com.kisman.cc.notification.NotificationType;
 
+import i.gishreloaded.gishcode.utils.system.Connection;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
 public class Module {
 
 	protected static Minecraft mc = Minecraft.getMinecraft();
-
-	private Notification notification;
 
 	private String name, description;
 	private int key;
@@ -70,18 +67,10 @@ public class Module {
 	
 	public void onEnable() {
 		MinecraftForge.EVENT_BUS.register(this);
-		if(Kisman.isNotificatonModule()) {
-			notification = new com.kisman.cc.notification.Notification(NotificationType.INFO, getName(), "Module enable", 100, Minecraft.getMinecraft().displayWidth - 90, Minecraft.getMinecraft().displayHeight - 40, 90, 40);
-			notification.render();
-		}
 	}
 	
 	public void onDisable() {
 		MinecraftForge.EVENT_BUS.unregister(this);
-		if(Kisman.isNotificatonModule()) {
-			notification = new com.kisman.cc.notification.Notification(NotificationType.INFO, getName(), "Module disable", 100, Minecraft.getMinecraft().displayWidth - 90, Minecraft.getMinecraft().displayHeight - 40, 90, 40);
-			notification.render();
-		}
 	}
 	
 	public String getName() {
@@ -94,4 +83,5 @@ public class Module {
 
 	public void update(){}
 	public void render(){}
+	public boolean packet(Object packet, Connection.Side side){ return true; }
 }

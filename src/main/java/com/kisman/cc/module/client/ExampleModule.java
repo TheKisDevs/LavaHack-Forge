@@ -13,9 +13,6 @@ import com.kisman.cc.oldclickgui.*;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import i.gishreloaded.gishcode.xray.XRayData;
-import i.gishreloaded.gishcode.xray.XRayManager;
-
 import java.awt.Color;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,7 +24,8 @@ public class ExampleModule extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleCCheckBox", this, 1, "ExampleCCheckBox", false));
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory1", this, 2, "ExampleCategory1"));
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleCLine1", this, "ExampleCLine1", 2));
-        Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ExampleSimpleColorPicker", this, "ExampleSimpleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, true));
     }
 
     // @SubscribeEvent
@@ -36,6 +34,9 @@ public class ExampleModule extends Module {
     // }
 
     public void onEnable() {
+        // super.onEnable();
+        // mc.displayGuiScreen(Kisman.instance.guiConsole);
+        // this.setToggled(false);
         //XRayManager.add();
         //ClickGui.
         //this.subcomponents.add(new ColorPicker(s, this, opY, ));

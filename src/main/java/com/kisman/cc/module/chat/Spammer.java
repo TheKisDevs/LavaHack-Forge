@@ -50,7 +50,7 @@ public class Spammer extends Module{
         boolean globalMode = Kisman.instance.settingsManager.getSettingByName(this, "GlobalMode").getValBoolean();
         int delay = (int) Kisman.instance.settingsManager.getSettingByName(this, "Delay").getValDouble();
 
-        if(timer.isDelay((long) (100 * delay))) {
+        if(timer.isDelay((long) (1000 * delay))) {
             mc.player.sendChatMessage(globalMode ? "!" + msg[count] : msg[count]);
         }
         timer.setLastMS();

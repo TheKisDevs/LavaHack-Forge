@@ -1,6 +1,7 @@
 package com.kisman.cc.oldclickgui.component;
 
 public class Component {
+	boolean i = false;
 
 	public void renderComponent() {
 		
@@ -31,5 +32,9 @@ public class Component {
 	
 	public int getHeight() {
 		return 0;
+	}
+
+	public boolean isI() {
+		return i;
 	}
 }

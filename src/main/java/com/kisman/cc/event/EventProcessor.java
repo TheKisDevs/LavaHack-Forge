@@ -1,7 +1,7 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.LivingDeathEvent;
+// import com.kisman.cc.event.events.LivingDeathEvent;
 
 import me.zero.alpine.listener.EventHandler;
 import net.minecraft.client.Minecraft;
@@ -43,8 +43,5 @@ public class EventProcessor {
         Kisman.EVENT_BUS.post(this);
     }
 
-    @SubscribeEvent
-    public void onLivingDeathEvent(LivingDeathEvent event) {
-        Kisman.EVENT_BUS.post(this);
-    }
+
 }

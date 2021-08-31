@@ -275,12 +275,23 @@ public class ColorPicker extends GuiScreen {
         }
     }
 
+    public float[] getColorHSB() {
+        return this.color;
+    }
+
     public void setColor(int index, float color) {
         try {
             this.color[index] = color;
         } catch(Exception e) {
             this.color[3] = color;
         }
+    }
+
+    public void setColor(float[] color) {
+        this.color[0] = color[0];
+        this.color[1] = color[1];
+        this.color[2] = color[2];
+        this.color[3] = color[3];
     }
 
     public boolean isRainbowState() {

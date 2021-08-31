@@ -15,65 +15,65 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    public static int findObsidianSlot(boolean offHandActived, boolean activeBefore) {
-        int slot = -1;
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-
-        // if (offHandActived && OffHand.isActive()) {
-        //     if (!activeBefore) {
-        //         OffHand.requestObsidian();
-        //     }
-        //     return 9;
-        // }
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = mainInventory.get(i);
-
-            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
-                continue;
-            }
-
-            Block block = ((ItemBlock) stack.getItem()).getBlock();
-            if (block instanceof BlockObsidian) {
-                slot = i;
-                break;
-            }
-        }
-        return slot;
-    }
-
-    public static int findSkullSlot(boolean offHandActived, boolean activeBefore) {
-        int slot = -1;
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-
-        if (offHandActived) {
-            if (!activeBefore)
-                //OffHand.requestSkull();
-            return 9;
-        }
-
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = mainInventory.get(i);
-
-            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemSkull)
-                return i;
-        }
-        return slot;
-    }
-
-    public static int findTotemSlot(int lower, int upper) {
-        int slot = -1;
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-        for (int i = lower; i <= upper; i++) {
-            ItemStack stack = mainInventory.get(i);
-            if (stack == ItemStack.EMPTY || stack.getItem() != Items.TOTEM_OF_UNDYING)
-                continue;
-
-            slot = i;
-            break;
-        }
-        return slot;
-    }
+//    public static int findObsidianSlot(boolean offHandActived, boolean activeBefore) {
+//        int slot = -1;
+//        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
+//
+//        if (offHandActived && OffHand.isActive()) {
+//            if (!activeBefore) {
+//                OffHand.requestObsidian();
+//            }
+//            return 9;
+//        }
+//
+//        for (int i = 0; i < 9; i++) {
+//            ItemStack stack = mainInventory.get(i);
+//
+//            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
+//                continue;
+//            }
+//
+//            Block block = ((ItemBlock) stack.getItem()).getBlock();
+//            if (block instanceof BlockObsidian) {
+//                slot = i;
+//                break;
+//            }
+//        }
+//        return slot;
+//    }
+//
+//    public static int findSkullSlot(boolean offHandActived, boolean activeBefore) {
+//        int slot = -1;
+//        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
+//
+//        if (offHandActived) {
+//            if (!activeBefore)
+//                OffHand.requestSkull();
+//            return 9;
+//        }
+//
+//        for (int i = 0; i < 9; i++) {
+//            ItemStack stack = mainInventory.get(i);
+//
+//            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemSkull)
+//                return i;
+//        }
+//        return slot;
+//    }
+//
+//    public static int findTotemSlot(int lower, int upper) {
+//        int slot = -1;
+//        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
+//        for (int i = lower; i <= upper; i++) {
+//            ItemStack stack = mainInventory.get(i);
+//            if (stack == ItemStack.EMPTY || stack.getItem() != Items.TOTEM_OF_UNDYING)
+//                continue;
+//
+//            slot = i;
+//            break;
+//        }
+//        return slot;
+//    }
 
     public static int findFirstItemSlot(Class<? extends Item> itemToFind, int lower, int upper) {
         int slot = -1;

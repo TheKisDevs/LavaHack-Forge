@@ -2,12 +2,15 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
+import i.gishreloaded.gishcode.utils.system.Connection;
+import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -24,34 +27,41 @@ public class ModuleManager {
 	}
 
 	public void init() {
-		modules.add(new AutoEZ());
+		//combat
 		modules.add(new AntiBot());
-		modules.add(new AntiKnokBack());
-		modules.add(new AutoJump());
-		modules.add(new AutoWalk());
-		modules.add(new CustomFov());
-		modules.add(new Criticals());
+		modules.add(new AutoTotem());
+		modules.add(new OffHand());
+		//client
 		modules.add(new ClickGUI());
 		modules.add(new Color());
+		modules.add(new Console());
 		modules.add(new CustomFont());
-		modules.add(new EntityESP());
-		//modules.add(new KillAura());
 		modules.add(new HUD());
-		modules.add(new HUDGui());
-		//modules.add(new NotificationModule());
-		//modules.add(new RPCModule());
-		modules.add(new Fly());
+		modules.add(new ExampleModule());
+		//chat
+		modules.add(new AutoEZ());
+		modules.add(new Spammer());
+		//render
+		modules.add(new CustomFov());
+		modules.add(new EntityESP());
 		modules.add(new FullBright());
 		modules.add(new NoRender());
+		modules.add(new StorageESP());
+		//movement
+		modules.add(new AutoJump());
+		modules.add(new AutoWalk());
+		modules.add(new Fly());
 		modules.add(new ReverseStep());
-		modules.add(new Spammer());
 		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
-		modules.add(new ExampleModule());
+		//player
+		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
-		modules.add(new Xray());
+		modules.add(new Velocity());
+		//exploit
+		//misc
 	}
 	
 	public Module getModule(String name) {

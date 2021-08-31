@@ -1,10 +1,10 @@
 package com.kisman.cc;
 
+import com.kisman.cc.command.CommandManager;
+import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.hud.hudgui.HudGui;
-import com.kisman.cc.hud.hudmodule.ArrayList;
-import com.kisman.cc.hud.hudmodule.Coord;
-import com.kisman.cc.hud.hudmodule.Fps;
-import com.kisman.cc.hud.hudmodule.Logo;
+import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.hud.hudmodule.HudModuleManager;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
@@ -12,6 +12,7 @@ import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
+import i.gishreloaded.gishcode.EventsHandler;
 import me.zero.alpine.bus.EventManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,37 +35,32 @@ public class Kisman
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    public static boolean notificatonModule = false;
     public ModuleManager moduleManager;
+    public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;
+    public GuiConsole guiConsole;
     public ColorPicker colorPicker;
     public ColorUtil colorUtil;
     public HudGui hudGui;
     public CustomFontRenderer customFontRenderer;
-    public ArrayList arrayList;
-    public Coord coord;
-    public Logo logo;
-    public Fps fps;
+    public CommandManager commandManager;
+    public EventsHandler eventsHandler;
     
     public void init() {
-        Display.setTitle(NAME + " " + VERSION);
+        Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
-    	MinecraftForge.EVENT_BUS.register(new ArrayList());
-    	MinecraftForge.EVENT_BUS.register(new Coord());
-    	MinecraftForge.EVENT_BUS.register(new Logo(NAME, VERSION));
-    	MinecraftForge.EVENT_BUS.register(new Fps());
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
+        hudModuleManager = new HudModuleManager();
     	clickGui = new ClickGui();
+        guiConsole = new GuiConsole();
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
-        arrayList = new ArrayList();
-        coord = new Coord();
-        logo = new Logo(NAME, VERSION);
-        fps = new Fps();
+        commandManager = new CommandManager();
+        eventsHandler = new EventsHandler();
     }
     
     @SubscribeEvent
@@ -72,26 +68,23 @@ public class Kisman
     	if (Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null)
     		return; 
     	try {
-             if (Keyboard.isCreated()) {
-                 if (Keyboard.getEventKeyState()) {
-                     int keyCode = Keyboard.getEventKey();
-                     if (keyCode <= 0)
-                    	 return;
-                     for (Module m : moduleManager.modules) {
-                    	 if (m.getKey() == keyCode && keyCode > 0) {
-                    		 m.toggle();
-                    	 }
-                     }
-                 }
-             }
-         } catch (Exception q) { q.printStackTrace(); }
-    }
-
-    public static boolean isNotificatonModule() {
-        return notificatonModule;
-    }
-
-    public static void setNotificatonModule(boolean notificatonModule) {
-        Kisman.notificatonModule = notificatonModule;
+            if (Keyboard.isCreated()) {
+                if (Keyboard.getEventKeyState()) {
+                    int keyCode = Keyboard.getEventKey();
+                    if (keyCode <= 0)
+                    	return;
+                    for (Module m : moduleManager.modules) {
+                    	if (m.getKey() == keyCode && keyCode > 0) {
+                    		m.toggle();
+                    	}
+                    }
+                    for (HudModule m : hudModuleManager.modules) {
+                        if (m.getKey() == keyCode && keyCode > 0) {
+                            m.toggle();
+                        }
+                    }
+                }
+            }
+        } catch (Exception q) { q.printStackTrace(); }
     }
 }
