@@ -66,12 +66,11 @@ public class Button extends Component {
 					opY += 12;
 				}
 				if(s.isCategory()) {
-					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));//s.getIndex()
+					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));
 					opY += 12;
 				}
 				if(s.isColorPicker()) {
 					this.subcomponents.add(new ColorPickerButton(s, this, opY));
-					//this.subcomponents.add(new ColorPicker(s, this, opY, (int) (85 / 2), Color.WHITE, this::setColor));
 					opY += 12;
 				}
 				if(s.isColorPickerSimple()) {
@@ -96,30 +95,13 @@ public class Button extends Component {
 		int opY = offset + 12;
 		if(Kisman.instance.settingsManager.getSettingsByHudMod(hudMod) != null) {
 			for(Setting s : Kisman.instance.settingsManager.getSettingsByHudMod(hudMod)){
-				// if(s.isCombo()){
-				// 	this.subcomponents.add(new ModeButton(s, this, mod, opY));
-				// 	opY += 12;
-				// }
-				// if(s.isSlider()){
-				// 	this.subcomponents.add(new Slider(s, this, opY));
-				// 	opY += 12;
-				// }
-				// if(s.isCheck()){
-				// 	this.subcomponents.add(new Checkbox(s, this, opY));
-				// 	opY += 12;
-				// }
-				// if(s.isLine()) {
-				// 	this.subcomponents.add(new Line(s, this, opY));
-				// 	opY += 12;
-				// }
-				// if(s.isCategory()) {
-				// 	this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));//s.getIndex()
-				// 	opY += 12;
-				// }
+				if(s.isCheckHud()) {
+					this.subcomponents.add(new Checkbox(s, this, opY));
+					opY += 12;
+				}
 				if(s.isColorPickerHud()) {
 					this.subcomponents.add(new ColorPickerButton(s, this, opY));
-					//this.subcomponents.add(new ColorPicker(s, this, opY, (int) (85 / 2), Color.WHITE, this::setColor));
-					opY += 85;
+					opY += 12;
 				}
 				if(s.isDrawHud()) {
 					this.drawBoxHud.add(new DrawHudButton(s, this));

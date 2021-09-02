@@ -67,6 +67,14 @@ public class Setting {
 		this.bval = bval;
 		this.mode = "Check";
 	}
+
+	public Setting(String name, HudModule parent, boolean bval) {
+		this.name = name;
+		this.hudParent = parent;
+		this.bval = bval;
+		this.mode = "CheckHud";
+		this.hud = true;
+	}
 	
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
@@ -313,6 +321,8 @@ public class Setting {
 	public boolean isCheck(){
 		return this.mode.equalsIgnoreCase("Check") ? true : false;
 	}
+
+	public boolean isCheckHud() { return this.mode.equalsIgnoreCase("CheckHud") ? true : false; }
 	
 	public boolean isSlider(){
 		return this.mode.equalsIgnoreCase("Slider") ? true : false;

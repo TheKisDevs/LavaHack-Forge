@@ -29,6 +29,7 @@ public class ModuleManager {
 	public void init() {
 		//combat
 		modules.add(new AntiBot());
+		modules.add(new AutoArmor());
 		modules.add(new AutoTotem());
 		modules.add(new OffHand());
 		//client
@@ -47,6 +48,8 @@ public class ModuleManager {
 		modules.add(new FullBright());
 		modules.add(new NoRender());
 		modules.add(new StorageESP());
+		modules.add(new SwingAnimation());
+		modules.add(new ViemModel());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());

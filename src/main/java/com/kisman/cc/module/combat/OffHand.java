@@ -8,7 +8,6 @@ import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -65,39 +64,18 @@ public class OffHand extends Module {
         }
 
         if((int) mc.player.getHealth() < totemHealth && totem) {
-            if(offhand == null || offhand.getItem() == Items.END_CRYSTAL || offhand.getItem() == Items.GOLDEN_APPLE) {
-                if(slots[0] != 0) {
-                    mc.playerController.windowClick(0, slots[0], 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
-                }
+            if(slots[0] != 0) {
+                mc.playerController.windowClick(0, slots[0], 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
             }
-            if(offhand != null) {
-                if(slots[0] != 0) {
-                    mc.playerController.windowClick(0, slots[0], 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
-                }
-            }
-        }
-        if(mc.player.getHealth() >= totemHealth) {
-            if(offHandMode.equalsIgnoreCase("Crystal")) {
-                if(slots[1] != 0 && offhand.getItem() != Items.END_CRYSTAL) {
-                    mc.playerController.windowClick(0, slots[1], 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
-                }
-            } else if(offHandMode.equalsIgnoreCase("Gapple")) {
-                if(slots[2] != 0 && offhand.getItem() != Items.GOLDEN_APPLE) {
-                    mc.playerController.windowClick(0, slots[2], 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
-                }
-            } else {
-                return;
+        } else if(mc.player.getHealth() >= totemHealth) {
+            if(offHandMode.equalsIgnoreCase("Crystal") && slots[1] != 0) {
+                mc.playerController.windowClick(0, slots[1], 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
+            } else if(offHandMode.equalsIgnoreCase("Gapple") && slots[2] != 0) {
+                mc.playerController.windowClick(0, slots[2], 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
             }
         }
-
-//        if(offhand == null) {// || offhand.getItem() == Items.TOTEM_OF_UNDYING
-//
-//        } else {
-//            return;
-//        }
     }
 }

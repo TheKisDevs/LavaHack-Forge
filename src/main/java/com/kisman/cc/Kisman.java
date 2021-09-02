@@ -30,7 +30,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.2.6 beta";
+    public static final String VERSION = "b0.1.3";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
