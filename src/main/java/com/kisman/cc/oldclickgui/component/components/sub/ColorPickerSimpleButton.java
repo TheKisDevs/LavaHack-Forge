@@ -5,8 +5,6 @@ import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.*;
 
 public class ColorPickerSimpleButton extends Component{
-    boolean i = true;
-
     private Setting set;
     private Button parent;
 
@@ -28,9 +26,5 @@ public class ColorPickerSimpleButton extends Component{
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
         
-    }
-
-    public boolean isI() {
-        return i;
     }
 }

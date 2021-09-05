@@ -31,18 +31,11 @@ public class SettingsManager {
 	}
 	
 	public ArrayList<Setting> getSettingsByMod(Module mod){
-		ArrayList<Setting> out = new ArrayList<Setting>();
+		ArrayList<Setting> out = new ArrayList<>();
 		for(Setting s : getSettings()){
-			if(!s.isHud()) {
-				if(s.getParentMod().equals(mod)){
-					out.add(s);
-				}
+			if(s.getParentMod() == mod){
+				out.add(s);
 			}
-			// try {
-
-			// } catch(Exception e) {
-			// 	//e.printStackTrace();
-			// }
 		}
 		if(out.isEmpty()){
 			return null;
@@ -58,24 +51,8 @@ public class SettingsManager {
 					out.add(s);
 				}
 			}
-			// try {
-
-			// } catch(Exception e) {}
 		}
 		if(out.isEmpty()) {
-			return null;
-		}
-		return out;
-	}
-
-	public ArrayList<Setting> getSettingsByMod(HudModule mod){
-		ArrayList<Setting> out = new ArrayList<Setting>();
-		for(Setting s : getSettings()){
-			if(s.getParentMod().equals(mod)){
-				out.add(s);
-			}
-		}
-		if(out.isEmpty()){
 			return null;
 		}
 		return out;
@@ -83,6 +60,9 @@ public class SettingsManager {
 	
 	public Setting getSettingByName(Module mod, String name){
 		for(Setting set : getSettings()){
+			if(set.isHud()) {
+				return null;
+			}
 			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod){
 				return set;
 			}
@@ -91,14 +71,22 @@ public class SettingsManager {
 		return null;
 	}
 
-	public Setting getSettingByName(HudModule mod, String name) {
-		for(Setting set : getSettings()) {
-			if(set.getName().equalsIgnoreCase(name) && set.getParentHudModule() == mod) {
-				return set;
+	public Setting getHudSettingByName(HudModule mod, String name) {
+		try {
+			for(Setting set : getSettings()) {
+				if(!set.isHud()) {
+					return null;
+				}
+
+				if(set.getName().equalsIgnoreCase(name) && set.getParentHudModule() == mod) {
+					return set;
+				}
 			}
+			System.err.println("[kisman.cc] Error HUD Setting NOT found: '" + name +"'!");
+			return null;
+		} catch (Exception e) {
+			return null;
 		}
-		System.err.println("[kisman.cc] Error HUD Setting NOT found: '" + name +"'!");
-		return null;
 	}
 
 	public Setting getSettingByIndex(int index) {

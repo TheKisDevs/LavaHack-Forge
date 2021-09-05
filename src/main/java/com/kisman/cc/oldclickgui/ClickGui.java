@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -9,14 +10,17 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.util.HoveredMode;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.TextMode;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
 public class ClickGui extends GuiScreen {
 	public static boolean line = false;
 	public static boolean rainbowLine = false;
 	public static boolean rainbowBackground = false;
+	public static boolean renderDesc = false;
 
 	public static LineMode lineMode = LineMode.LEFT;
+	public static LineMode setLineMode = LineMode.SETTINGDEFAULT;
 	public static TextMode textMode = TextMode.DEFAULT;
 	public static HoveredMode hoveredMode = HoveredMode.HOVERED;
 
@@ -29,6 +33,11 @@ public class ClickGui extends GuiScreen {
 	public static int GBackground = 75;
 	public static int BBackground = 75;
 	public static int ABackground = 150;
+
+	public static int RABackground = 136;
+	public static int GABackground = 189;
+	public static int BABackground = 189;
+	public static int AABackground = 255;
 
 	public static int RHoveredModule = 95;
 	public static int GHoveredModule = 95;
@@ -51,6 +60,8 @@ public class ClickGui extends GuiScreen {
 	public static int BActiveText = 255;
 	public static int AActiveText = 255;
 
+	public static String descStr = "";
+
 	public static ArrayList<Frame> frames;
 	//public static int color = -1;
 
@@ -63,10 +74,6 @@ public class ClickGui extends GuiScreen {
 			frames.add(frame);
 			frameX += frame.getWidth() + 1;
 		}
-//		if(HUDGui.enable) {
-//			this.frame = new com.kisman.cc.hud.hudgui.frame.Frame();
-//			this.frame.renderFrame(fontRenderer);
-//		}
 	}
 
 	@Override
@@ -82,6 +89,10 @@ public class ClickGui extends GuiScreen {
 			for(Component comp : frame.getComponents()) {
 				comp.updateComponent(mouseX, mouseY);
 			}
+		}
+		if(renderDesc) {
+			Gui.drawRect(mouseX, mouseY, mouseX + 2 + fontRenderer.getStringWidth(descStr), mouseY + 2 + fontRenderer.FONT_HEIGHT, new Color(RNoHoveredModule, GNoHoveredModule, BNoHoveredModule, ANoHoveredModule).getRGB());
+			fontRenderer.drawStringWithShadow(descStr, (float) (mouseX + 1), (float) (mouseY + 1), new Color(RText, GText, BText, AText).getRGB());
 		}
 	}
 
@@ -142,6 +153,62 @@ public class ClickGui extends GuiScreen {
 	@Override
 	public boolean doesGuiPauseGame() {
 		return true;
+	}
+
+	public static LineMode getSetLineMode() {
+		return setLineMode;
+	}
+
+	public static void setSetLineMode(LineMode setLineMode) {
+		ClickGui.setLineMode = setLineMode;
+	}
+
+	public static int getRABackground() {
+		return RABackground;
+	}
+
+	public static void setRABackground(int RABackground) {
+		ClickGui.RABackground = RABackground;
+	}
+
+	public static int getGABackground() {
+		return GABackground;
+	}
+
+	public static void setGABackground(int GABackground) {
+		ClickGui.GABackground = GABackground;
+	}
+
+	public static int getBABackground() {
+		return BABackground;
+	}
+
+	public static void setBABackground(int BABackground) {
+		ClickGui.BABackground = BABackground;
+	}
+
+	public static int getAABackground() {
+		return AABackground;
+	}
+
+	public static void setAABackground(int AABackground) {
+		ClickGui.AABackground = AABackground;
+	}
+
+	public static boolean isRenderDesc() {
+		return renderDesc;
+	}
+
+	public static void setRenderDesc(boolean renderDesc) {
+		ClickGui.renderDesc = renderDesc;
+	}
+
+	public static String getDescStr() {
+		return descStr;
+	}
+
+	public static void setDescStr(String descStr) {
+		ClickGui.descStr = descStr;
 	}
 
 	public static boolean isRainbowBackground() {

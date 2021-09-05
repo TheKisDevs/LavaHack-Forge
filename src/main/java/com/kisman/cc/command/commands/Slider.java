@@ -2,6 +2,7 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
+import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 
@@ -50,6 +51,7 @@ public class Slider extends Command{
         try {
             Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name).setValDouble(value);
             ChatUtils.message("Slider " + name + " change value to " + value);
+            SaveConfig.init();
         } catch(Exception e) {
             ChatUtils.error("Usage: " + getSyntax());
         }

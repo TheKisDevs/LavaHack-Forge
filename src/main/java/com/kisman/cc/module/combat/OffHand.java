@@ -67,14 +67,17 @@ public class OffHand extends Module {
             if(slots[0] != 0) {
                 mc.playerController.windowClick(0, slots[0], 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, slots[0], 0, ClickType.PICKUP, mc.player);
             }
         } else if(mc.player.getHealth() >= totemHealth) {
             if(offHandMode.equalsIgnoreCase("Crystal") && slots[1] != 0) {
                 mc.playerController.windowClick(0, slots[1], 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, slots[1], 0, ClickType.PICKUP, mc.player);
             } else if(offHandMode.equalsIgnoreCase("Gapple") && slots[2] != 0) {
                 mc.playerController.windowClick(0, slots[2], 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, slots[2], 0, ClickType.PICKUP, mc.player);
             }
         }
     }

@@ -22,33 +22,31 @@ public class Color extends Module {
     public Color() {
         super("Color", "color setting", Category.CLIENT);
         colorUtil = new ColorUtil();
+
         ArrayList<String> lineMode = new ArrayList<>();
         lineMode.add("LeftLine");
         lineMode.add("LLine+TLine");
         lineMode.add("Box");
-        ArrayList<String> rainbowLineMode = new ArrayList<>();
-        rainbowLineMode.add("NoRainBow");
-        rainbowLineMode.add("SimpleRainBow");
-        rainbowLineMode.add("RainBow");
-        ArrayList<String> textMode = new ArrayList<>();
-        textMode.add("Default");
-        textMode.add("ActiveText");
-        ArrayList<String> hoveredMode = new ArrayList<>();
-        hoveredMode.add("Hovered");
-        hoveredMode.add("NoHovered");
+
+        ArrayList<String> setLineMode = new ArrayList<>();
+        setLineMode.add("Default");
+        setLineMode.add("All");
+        setLineMode.add("OnlySettings");
+
         Kisman.instance.settingsManager.rSetting(new Setting("LineSetting",this, "Line"));
         Kisman.instance.settingsManager.rSetting(new Setting("Line", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("LineMode", this, "LeftLine", lineMode));
+        Kisman.instance.settingsManager.rSetting(new Setting("SetLineMode", this, "Default", setLineMode));
         Kisman.instance.settingsManager.rSetting(new Setting("LineColor", this, "LineColor", new float[] {0f, 1f, 1f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("BackgroundSetting", this, "Background"));
         Kisman.instance.settingsManager.rSetting(new Setting("BackgroundColor", this, "BackgroundColor", new float[] {0f, 0.02f, 0.59f, 0.6f}, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ABackgroundColor", this, "ABackgroundColor", new float[] {0.52f, 0.74f, 0.73f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("TextSetting", this, "Text"));
         Kisman.instance.settingsManager.rSetting(new Setting("TextColor", this, "TextColor", new float[] {3.5f, 0.04f, 0.65f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("ATextColor", this, "ATextColor", new float[] {1f, 1f, 1f, 1f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("DifferentSetting", this, "Different"));
         Kisman.instance.settingsManager.rSetting(new Setting("HoveredColor", this, "HoveredColor", new float[] {0.6f, 0.03f, 0.62f, 0.6f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("NoHoveredColor", this, "NoHoveredColor", new float[] {0f, 0f, 0.05f, 1f}, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("Default", this, false));
     }
 
     public void update() {
@@ -59,6 +57,7 @@ public class Color extends Module {
 
         boolean line = Kisman.instance.settingsManager.getSettingByName(this, "Line").getValBoolean();
         String lineMode = Kisman.instance.settingsManager.getSettingByName(this, "LineMode").getValString();
+        String setLineMode = Kisman.instance.settingsManager.getSettingByName(this, "SetLineMode").getValString();
         int RBackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getR();
         int GBackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getG();
         int BBackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getB();
@@ -79,7 +78,7 @@ public class Color extends Module {
         int GNoHovered = Kisman.instance.settingsManager.getSettingByName(this, "NoHoveredColor").getG();
         int BNoHovered = Kisman.instance.settingsManager.getSettingByName(this, "NoHoveredColor").getB();
         int ANoHovered = Kisman.instance.settingsManager.getSettingByName(this, "NoHoveredColor").getA();
-        boolean isDefault = Kisman.instance.settingsManager.getSettingByName(this, "Default").getValBoolean();
+
         ClickGui.setLine(line);
         if(lineMode.equalsIgnoreCase("LeftLine")) {
             ClickGui.setLineMode(LineMode.LEFT);
@@ -89,22 +88,18 @@ public class Color extends Module {
             ClickGui.setLineMode(LineMode.BOX);
         }
 
+        if(setLineMode.equalsIgnoreCase("Default")) {
+            ClickGui.setSetLineMode(LineMode.SETTINGDEFAULT);
+        } else if(setLineMode.equalsIgnoreCase("All")) {
+            ClickGui.setSetLineMode(LineMode.SETTINGALL);
+        } else {
+            ClickGui.setSetLineMode(LineMode.SETTINGONLYSET);
+        }
+
         ClickGui.setRLine(RLine);
         ClickGui.setGLine(GLine);
         ClickGui.setBLine(BLine);
         ClickGui.setALine(ALine);
-        // colorPicker.setColor(
-        //     colorPicker.alpha(
-        //         new java.awt.Color(
-        //             java.awt.Color.HSBtoRGB(
-        //                 colorPicker.getColor(0), 
-        //                 colorPicker.getColor(1), 
-        //                 colorPicker.getColor(2)
-        //             )
-        //         ),
-        //         colorPicker.getColor(3)
-        //     )
-        // );
 
         ClickGui.setRBackground(RBackground);
         ClickGui.setGBackground(GBackground);
@@ -126,9 +121,5 @@ public class Color extends Module {
         ClickGui.setGNoHoveredModule(GNoHovered);
         ClickGui.setBNoHoveredModule(BNoHovered);
         ClickGui.setANoHoveredModule(ANoHovered);
-
-        if(isDefault) {
-            
-        }
     }
 }

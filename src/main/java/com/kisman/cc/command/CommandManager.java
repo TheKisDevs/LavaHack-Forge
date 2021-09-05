@@ -3,16 +3,20 @@ package com.kisman.cc.command;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.commands.*;
 
+import com.kisman.cc.file.SaveConfig;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 
 public class CommandManager {
     public static ArrayList<Command> commands = new ArrayList<Command>();
-    //private volatile static CommandManager instance;
 	
-	public static char cmdPrefix = '.';
+	public char cmdPrefix = '.';
 
 	public CommandManager()
 	{
@@ -21,26 +25,12 @@ public class CommandManager {
 
 	public void addCommands()
 	{
-		// commands.add(new Help());
-		// commands.add(new Hacks());
 		commands.add(new Bind());
+		commands.add(new LoadConfigCommand());
         commands.add(new Slider());
+        commands.add(new OpenDir());
+        commands.add(new SaveConfigCommand());
         commands.add(new Toggle());
-		// commands.add(new VClip());
-		// commands.add(new Login());
-		// commands.add(new Say());
-		// commands.add(new Effect());
-		// commands.add(new DumpPlayers());
-		// commands.add(new DumpClasses());
-		// commands.add(new SkinSteal());
-		// commands.add(new SelfDamage());
-		// commands.add(new SelfKick());
-		// commands.add(new Friend());
-		// commands.add(new Enemy());
-		// commands.add(new Toggle());
-		// commands.add(new PFilter());
-		// commands.add(new OpenDir());
-		// commands.add(new XRay());
 	}
 
 	public void runCommands(String s)
@@ -52,7 +42,11 @@ public class CommandManager {
 		String[] args = hasArgs ? readString.substring(commandName.length()).trim().split(" ") : new String[0];
 
 		for(Command command : commands)
-		{	
+		{
+			if(!command.getSyntax().equalsIgnoreCase("loadconfig") || !command.getSyntax().equalsIgnoreCase("saveconfig")) {
+				SaveConfig.init();
+			}
+
 			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) 
 			{
 				command.runCommand(readString, args);
@@ -64,18 +58,12 @@ public class CommandManager {
 			ChatUtils.error("Cannot resolve internal command: \u00a7c" + commandName);
 		}
 	}
-	
-	public static void onKeyPressed(int key) {
+
+	@SubscribeEvent
+	public void onKeyPressed(InputEvent.KeyInputEvent event) {
 		if (Wrapper.INSTANCE.mc().currentScreen != null) return;
 		for(Command cmd : commands)
-    		if(cmd.getKey() == key)
+    		if(cmd.getKey() == Keyboard.getEventKey())
     			Kisman.instance.commandManager.runCommands("." + cmd.getExecute());
 	}
-	
-	// public static CommandManager getInstance(){
-	// 	if(instance == null){
-	// 		instance = new CommandManager();
-	// 	}
-	// 	return instance;
-	// }
 }

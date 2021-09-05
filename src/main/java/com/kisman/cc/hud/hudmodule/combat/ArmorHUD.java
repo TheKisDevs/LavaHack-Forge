@@ -32,9 +32,9 @@ public class ArmorHUD extends HudModule {
     }
 
     public void update() {
-        this.offhand = Kisman.instance.settingsManager.getSettingByName(this, "OffHandRender").getValBoolean();
-        this.extraInfo = Kisman.instance.settingsManager.getSettingByName(this, "ExtraInfo").getValBoolean();
-        this.damage = Kisman.instance.settingsManager.getSettingByName(this, "Damage").getValBoolean();
+        this.offhand = Kisman.instance.settingsManager.getHudSettingByName(this, "OffHandRender").getValBoolean();
+        this.extraInfo = Kisman.instance.settingsManager.getHudSettingByName(this, "ExtraInfo").getValBoolean();
+        this.damage = Kisman.instance.settingsManager.getHudSettingByName(this, "Damage").getValBoolean();
     }
 
     @SubscribeEvent

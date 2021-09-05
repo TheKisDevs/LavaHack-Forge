@@ -1,11 +1,11 @@
 package com.kisman.cc.hud.hudmodule.render;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.Render2DUtil;
 import net.minecraft.client.Minecraft;
@@ -19,16 +19,18 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static java.awt.Color.*;
+
 public class ArrayList extends HudModule{
     Minecraft mc = Minecraft.getMinecraft();
     FontRenderer fr = mc.fontRenderer;
 
-    int arrR;
-    int arrG;
-    int arrB;
-    int arrA;
+    int arrR = 255;
+    int arrG = 255;
+    int arrB = 255;
+    int arrA = 255;
 
-    public static float[] color;
+    public float[] color;
 
     Render2DUtil render2DUtil = new Render2DUtil();
     ColorUtil colorUtil = new ColorUtil();
@@ -53,10 +55,10 @@ public class ArrayList extends HudModule{
     }
 
     public void update() {
-    	arrR = Kisman.instance.settingsManager.getSettingByName(this, "arrColor").getR();
-		arrG = Kisman.instance.settingsManager.getSettingByName(this, "arrColor").getG();
-		arrB = Kisman.instance.settingsManager.getSettingByName(this, "arrColor").getB();
-		arrA = Kisman.instance.settingsManager.getSettingByName(this, "arrColor").getA();
+        arrR = HUD.arrR;
+        arrG = HUD.arrG;
+        arrB = HUD.arrB;
+        arrA = HUD.arrA;
     }
 
     public static class ModuleComparator implements Comparator<Module>{
@@ -88,12 +90,12 @@ public class ArrayList extends HudModule{
                         sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 8, 
                         offset, 
                         sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 7, 
-                        offset + fr.FONT_HEIGHT + 6, 
+                        offset + fr.FONT_HEIGHT + 6,
                         new Color(
-                            arrR,
-                            arrG,
-                            arrB,
-                            arrA
+                                arrR,
+                                arrG,
+                                arrB,
+                                arrA
                         ).getRGB()
                     );
                     count++;

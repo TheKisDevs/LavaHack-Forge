@@ -2,6 +2,8 @@ package com.kisman.cc;
 
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
+import com.kisman.cc.file.LoadConfig;
+import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.hud.hudmodule.HudModuleManager;
@@ -30,7 +32,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.3";
+    public static final String VERSION = "b0.1.3.1";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -58,9 +60,12 @@ public class Kisman
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
+        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 50), false, false);
         commandManager = new CommandManager();
         eventsHandler = new EventsHandler();
+
+        //load configs
+        LoadConfig.init();
     }
     
     @SubscribeEvent
@@ -76,6 +81,7 @@ public class Kisman
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode && keyCode > 0) {
                     		m.toggle();
+                            SaveConfig.init();
                     	}
                     }
                     for (HudModule m : hudModuleManager.modules) {

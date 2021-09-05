@@ -46,6 +46,19 @@ public class Setting {
 
 	private boolean onlyint = false;
 
+/*	public Setting(Module parent, boolean da, boolean net) {
+		this.parent = parent;
+		this.mode = "Void";
+	}*/
+
+	public Setting(String name, Module parent, String gays, String lgbtq) {
+		this.name = name;
+		this.parent = parent;
+		this.title = gays;
+		this.sval = lgbtq;
+		this.mode = "yep";
+	}
+
 	public Setting(String name, Module parent, String title) {
 		this.name = name;
 		this.title = title;
@@ -86,29 +99,29 @@ public class Setting {
 		this.mode = "Slider";
 	}
 
-	public Setting(String name, Module parent, int index, String title) {
-		this.name = name;
-		this.parent = parent;
-		this.index = index;
-		this.title = title;
-		this.mode = "Category";
-	}
-
-	public Setting(String name, Module parent, String title, int index) {
-		this.name = name;
-		this.parent = parent;
-		this.index = index;
-		this.title = title;
-		this.mode = "CategoryLine";
-	}
-
-	public Setting(String name, Module parent, int index, String title, boolean bval) {
-		this.name = name;
-		this.parent = parent;
-		this.index = index;
-		this.bval = bval;
-		this.mode = "CategoryCheck";
-	}
+//	public Setting(String name, Module parent, int index, String title) {
+//		this.name = name;
+//		this.parent = parent;
+//		this.index = index;
+//		this.title = title;
+//		this.mode = "Category";
+//	}
+//
+//	public Setting(String name, Module parent, String title, int index) {
+//		this.name = name;
+//		this.parent = parent;
+//		this.index = index;
+//		this.title = title;
+//		this.mode = "CategoryLine";
+//	}
+//
+//	public Setting(String name, Module parent, int index, String title, boolean bval) {
+//		this.name = name;
+//		this.parent = parent;
+//		this.index = index;
+//		this.bval = bval;
+//		this.mode = "CategoryCheck";
+//	}
 
 	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {//, int dColor
 		this.name = name;
@@ -313,6 +326,8 @@ public class Setting {
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
+
+	public boolean isVoid() { return this.mode.equalsIgnoreCase("Void") ? true : false; }
 	
 	public boolean isCombo(){
 		return this.mode.equalsIgnoreCase("Combo") ? true : false;
@@ -332,17 +347,17 @@ public class Setting {
 		return this.mode.equalsIgnoreCase("Line") ? true : false;
 	}
 
-	public boolean isCategory() {
-		return this.mode.equalsIgnoreCase("Category") ? true : false;
-	}
-
-	public boolean isCategoryLine() {
-		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
-	}
-
-	public boolean isCategoryCheck() {
-		return this.mode.equalsIgnoreCase("CategoryCheck") ? true : false;
-	}
+//	public boolean isCategory() {
+//		return this.mode.equalsIgnoreCase("Category") ? true : false;
+//	}
+//
+//	public boolean isCategoryLine() {
+//		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
+//	}
+//
+//	public boolean isCategoryCheck() {
+//		return this.mode.equalsIgnoreCase("CategoryCheck") ? true : false;
+//	}
 
 	public boolean isColorPicker() {
 		return this.mode.equalsIgnoreCase("ColorPicker") ? true : false;

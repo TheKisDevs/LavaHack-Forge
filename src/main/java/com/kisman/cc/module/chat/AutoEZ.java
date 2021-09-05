@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 
+import com.kisman.cc.settings.Setting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -11,6 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class AutoEZ extends Module {
     public AutoEZ() {
         super("AutoEZ", "", Category.CHAT);
+
+        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
 
         //Kisman.instance.settingsManager.rSetting(new Setting("Log", this, false));
     }

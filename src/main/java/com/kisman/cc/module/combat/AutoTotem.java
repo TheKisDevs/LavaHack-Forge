@@ -49,6 +49,7 @@ public class AutoTotem extends Module {
             if(totemSlot != 0) {
                 mc.playerController.windowClick(0, totemSlot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(0,45,0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(0, totemSlot, 0, ClickType.PICKUP, mc.player);
             }
         }
     }

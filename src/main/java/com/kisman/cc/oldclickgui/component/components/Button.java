@@ -11,16 +11,15 @@ import com.kisman.cc.oldclickgui.component.components.sub.*;
 import com.kisman.cc.hud.hudgui.component.components.sub.DrawHudButton;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.component.components.sub.Void;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.Gui;
 
 public class Button extends Component {
-
-	int i = 0;
-
 	int color;
 	public Module mod;
 	public HudModule hudMod;
@@ -65,18 +64,22 @@ public class Button extends Component {
 					this.subcomponents.add(new Line(s, this, opY));
 					opY += 12;
 				}
-				if(s.isCategory()) {
-					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));
-					opY += 12;
-				}
+//				if(s.isCategory()) {
+//					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));
+//					opY += 12;
+//				}
 				if(s.isColorPicker()) {
 					this.subcomponents.add(new ColorPickerButton(s, this, opY));
 					opY += 12;
 				}
 				if(s.isColorPickerSimple()) {
 					this.subcomponents.add(new ColorPickerSimpleButton(s, this, opY));
-					opY += 90;
+					opY += 12;
 				}
+/*				if(s.isVoid()) {
+					this.subcomponents.add(new Void());
+					opY += 12;
+				}*/
 			}
 		}
 		this.subcomponents.add(new Keybind(this, opY));
@@ -108,8 +111,6 @@ public class Button extends Component {
 				}
 			}
 		}
-		//this.subcomponents.add(new Keybind(this, opY));
-		// this.subcomponents.add(new VisibleButton(this, mod, opY));
 	}
 	
 	@Override
@@ -117,14 +118,8 @@ public class Button extends Component {
 		offset = newOff;
 		int opY = offset + 12;
 		for(Component comp : this.subcomponents) {
-			if(comp.isI()) {
-				comp.setOff(opY);
-				opY += 90;
-				i++;
-			} else {
-				comp.setOff(opY);
-				opY += 12;
-			}
+			comp.setOff(opY);
+			opY += 12;
 		}
 	}
 	
@@ -132,15 +127,45 @@ public class Button extends Component {
 	public void renderComponent() {
 		Gui.drawRect(
 			this.parent.getX(), 
-			this.parent.getY() + this.offset, this.parent.getX() + this.parent.getWidth(), 
+			this.parent.getY() + this.offset,
+				this.parent.getX() + this.parent.getWidth(),
 			this.parent.getY() + 12 + this.offset,
 			this.hud ?  
 			this.isHovered ? (this.hudMod.isToggled() ? num1 : num2) : (this.hudMod.isToggled() ? num3 : num4) : 
 			this.isHovered ? (this.mod.isToggled() ? num1 : num2) : (this.mod.isToggled() ? num3 : num4)
 		);
+		if(ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+			Gui.drawRect(
+					this.parent.getX(),
+					this.parent.getY() + this.offset,
+					this.parent.getX() + 1,
+					this.parent.getY() + this.offset + 12,
+					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+			);
+			Gui.drawRect(
+					this.parent.getX() + parent.getWidth() - 1,
+					this.parent.getY() + offset,
+					this.parent.getX() + parent.getWidth(),
+					parent.getY() + this.offset + 12,
+					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+			);
+
+			if(parent.components.size() == parent.components.indexOf(this)) {
+				Gui.drawRect(
+						parent.getX(),
+						parent.getY() + this.offset - 1,
+						parent.getX() + parent.getWidth(),
+						parent.getY() + this.offset,
+						new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+				);
+			}
+		}
+
+
+
 		GL11.glPushMatrix();
-		GL11.glScalef(0.5f,0.5f, 0.5f);
-		CustomFontUtil.drawString(
+		GL11.glScalef(0.5f,0.5f, 0.5f);//0.5f,0.5f, 0.5f
+		CustomFontUtil.drawStringWithShadow(
 			this.hud ? this.hudMod.getName() : this.mod.getName(), 
 			(parent.getX() + 2) * 2, 
 			(parent.getY() + offset + 2) * 2 + 4, 
@@ -154,14 +179,34 @@ public class Button extends Component {
 		);
 		if(this.subcomponents.size() > 2)
 			CustomFontUtil.drawString(this.open ? "-" : "+", (parent.getX() + parent.getWidth() - 10) * 2, (parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+
 		GL11.glPopMatrix();
+		if(this.open && (parent.components.indexOf(this) == parent.components.size()) && ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+			Gui.drawRect(
+					parent.getX(),
+					parent.getY() + offset + 11,
+					parent.getX() + parent.getWidth(),
+					parent.getY() + this.offset + 12,
+					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+			);
+		}
+
 		if(this.open) {
 			if(!this.subcomponents.isEmpty()) {
 				for(Component comp : this.subcomponents) {
 					comp.renderComponent();
 				}
-				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12) + (90 * i), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() : 
-				//Gui.drawRect(parent.getX(), parent.getY() + this.offset + 12, parent.getX() + 1, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), this.color);
+				if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+					Gui.drawRect(
+							parent.getX() + parent.getWidth() - 3,
+							parent.getY() + this.offset + 12,
+							parent.getX() + parent.getWidth() - 2,
+							parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12),
+							new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+					);
+				}
+
+				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() :
 			}
 		}
 		if(hud) {
@@ -173,6 +218,7 @@ public class Button extends Component {
 				}
 			}
 		}
+
 	}
 	
 	@Override
@@ -190,6 +236,12 @@ public class Button extends Component {
 			for(Component comp : this.subcomponents) {
 				comp.updateComponent(mouseX, mouseY);
 			}
+		}
+		if(this.isHovered) {
+			ClickGui.setRenderDesc(true);
+			ClickGui.setDescStr(this.hud ? hudMod.getDescription() : mod.getDescription());
+		} else {
+			ClickGui.setRenderDesc(false);
 		}
 	}
 	

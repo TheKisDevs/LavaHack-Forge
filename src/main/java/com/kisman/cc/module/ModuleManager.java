@@ -6,6 +6,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.exploit.PacketMine;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
@@ -28,7 +29,6 @@ public class ModuleManager {
 
 	public void init() {
 		//combat
-		modules.add(new AntiBot());
 		modules.add(new AutoArmor());
 		modules.add(new AutoTotem());
 		modules.add(new OffHand());
@@ -43,6 +43,7 @@ public class ModuleManager {
 		modules.add(new AutoEZ());
 		modules.add(new Spammer());
 		//render
+		modules.add(new BlockOutline());
 		modules.add(new CustomFov());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
@@ -64,6 +65,7 @@ public class ModuleManager {
 		modules.add(new FastBreak());
 		modules.add(new Velocity());
 		//exploit
+		modules.add(new PacketMine());
 		//misc
 	}
 	

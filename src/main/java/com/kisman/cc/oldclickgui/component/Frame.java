@@ -31,6 +31,7 @@ public class Frame {
 	private boolean isDragging;
 	public int dragX;
 	public int dragY;
+	public int offset;
 	
 	public Frame(Category cat) {
 		this.components = new ArrayList<Component>();
@@ -130,9 +131,6 @@ public class Frame {
 		GL11.glPopMatrix();
 		if(this.open) {
 			if(!this.components.isEmpty()) {
-//				Gui.drawRect(this.x, this.y + this.barHeight, this.x + 1, this.y + this.barHeight + (12 * components.size()), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
-//				Gui.drawRect(this.x, this.y + this.barHeight + (12 * components.size()), this.x + this.width, this.y + this.barHeight + (12 * components.size()) + 1, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
-//				Gui.drawRect(this.x + this.width, this.y + this.barHeight, this.x + this.width - 1, this.y + this.barHeight + (12 * components.size()), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 				for(Component component : components) {
 					component.renderComponent();
 				}
@@ -145,6 +143,7 @@ public class Frame {
 		for(Component comp : components) {
 			comp.setOff(off);
 			off += comp.getHeight();
+			this.offset = off;
 		}
 	}
 	
