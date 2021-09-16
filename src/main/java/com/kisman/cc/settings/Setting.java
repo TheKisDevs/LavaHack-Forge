@@ -6,10 +6,12 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 
+import javax.management.OperationsException;
+
 /**
  *  Made by HeroCode
  *  it's free to use
- *  but you havяe to credit him
+ *  but you have to credit him
  *
  *  @author HeroCode
  */
@@ -28,11 +30,13 @@ public class Setting {
 	private String title;
 
 	private String sval;
+	private String dString;
 	private ArrayList<String> options;
 	
 	private boolean bval;
 	private boolean rainbow;
 	private boolean hud = false;
+	private boolean opening;
 	
 	private double dval;
 	private double min;
@@ -46,10 +50,14 @@ public class Setting {
 
 	private boolean onlyint = false;
 
-/*	public Setting(Module parent, boolean da, boolean net) {
+	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
+		this.name = name;
 		this.parent = parent;
-		this.mode = "Void";
-	}*/
+		this.sval = sval;
+		this.dString = dString;
+		this.opening = opening;
+		this.mode = "String";
+	}
 
 	public Setting(String name, Module parent, String gays, String lgbtq) {
 		this.name = name;
@@ -99,30 +107,6 @@ public class Setting {
 		this.mode = "Slider";
 	}
 
-//	public Setting(String name, Module parent, int index, String title) {
-//		this.name = name;
-//		this.parent = parent;
-//		this.index = index;
-//		this.title = title;
-//		this.mode = "Category";
-//	}
-//
-//	public Setting(String name, Module parent, String title, int index) {
-//		this.name = name;
-//		this.parent = parent;
-//		this.index = index;
-//		this.title = title;
-//		this.mode = "CategoryLine";
-//	}
-//
-//	public Setting(String name, Module parent, int index, String title, boolean bval) {
-//		this.name = name;
-//		this.parent = parent;
-//		this.index = index;
-//		this.bval = bval;
-//		this.mode = "CategoryCheck";
-//	}
-
 	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {//, int dColor
 		this.name = name;
 		this.parent = parent;
@@ -149,6 +133,22 @@ public class Setting {
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
+	}
+
+	public String getdString() {
+		return dString;
+	}
+
+	public void setdString(String dString) {
+		this.dString = dString;
+	}
+
+	public boolean isOpening() {
+		return opening;
+	}
+
+	public void setOpening(boolean opening) {
+		this.opening = opening;
 	}
 
 	public int getX1() {
@@ -326,6 +326,10 @@ public class Setting {
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
+
+	public boolean isStringStrong() { return this.mode.equalsIgnoreCase("StringStrong") ? true : false; }
+
+	public boolean isString() { return this.mode.equalsIgnoreCase("String") ? true : false; }
 
 	public boolean isVoid() { return this.mode.equalsIgnoreCase("Void") ? true : false; }
 	

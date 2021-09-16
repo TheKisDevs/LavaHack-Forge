@@ -10,34 +10,31 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class AutoEZ extends Module {
+    String[] no_team = new String[] {
+            "mudonna",
+            "magisteroff",
+            "momkilla",
+            "ebatte_sratte",
+            "azazel",
+            "tem4ik"
+    };
+
     public AutoEZ() {
         super("AutoEZ", "", Category.CHAT);
 
         Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
-
-        //Kisman.instance.settingsManager.rSetting(new Setting("Log", this, false));
     }
 
-//    public void update() {
-//        //boolean ezLog = Kisman.instance.settingsManager.getSettingByName(this, "Log").getValBoolean();
-//
-//        mc.world.loadedEntityList.stream()
-//            .filter(e -> e != mc.player)
-//            .forEach(e -> {
-//                if(e instanceof EntityPlayer) {
-//                    if(e.isDead) {
-//                        mc.player.sendChatMessage(e.getName() + "ez! " + Kisman.NAME + " " + Kisman.VERSION + " on top!");
-//                    }
-//                    // if(ezLog) {
-//                    //     mc.player.sendChatMessage(e.getName() + " ez log, kisman.cc on top!");
-//                    // }
-//                }
-//            }
-//        );
-//    }
      @SubscribeEvent
      public void onLivingDeathEvent(LivingDeathEvent event) {
          if(event.getEntity().isDead) {
+             for(int i = 0; i < no_team.length; i++) {
+                 if(event.getEntity().getName().equalsIgnoreCase(no_team[i])) {
+                     mc.player.sendChatMessage("I fuck NO team member " + no_team[i] + " and all NO team! | kisman.cc on top!");
+                     return;
+                 }
+             }
+
              mc.player.sendChatMessage(event.getEntity().getName() + " ez! " + Kisman.NAME + " " + Kisman.VERSION + "on Top!");
          }
      }

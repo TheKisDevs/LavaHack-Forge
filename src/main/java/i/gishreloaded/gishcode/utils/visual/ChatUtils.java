@@ -11,15 +11,20 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
-public class ChatUtils{	// TODO Rewrite to LogManager 
+public class ChatUtils {
+	// TODO Rewrite to LogManager
 	
 	public static void component(ITextComponent component)
 	{
-		if(Wrapper.INSTANCE.player() == null || Wrapper.INSTANCE.mc().ingameGUI.getChatGUI() == null)// || GhostMode.enabled
+		if(Wrapper.INSTANCE.player() == null || Wrapper.INSTANCE.mc().ingameGUI.getChatGUI() == null)
 			return;
 			Wrapper.INSTANCE.mc().ingameGUI.getChatGUI()
 				.printChatMessage(new TextComponentTranslation("")
 					.appendSibling(component));
+	}
+
+	public static void simpleMessage(Object message) {
+		component(new TextComponentTranslation((String) message));
 	}
 	
 	public static void message(Object message)

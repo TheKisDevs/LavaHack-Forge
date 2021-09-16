@@ -19,12 +19,17 @@ public class Fly extends Module {
 
     public void update() {
         flySpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "FlySpeed").getValDouble();
-        mc.player.capabilities.isFlying = true;
-        mc.player.capabilities.setFlySpeed(flySpeed);
+        if(mc.player != null && mc.world != null) {
+            mc.player.capabilities.isFlying = true;
+            mc.player.capabilities.setFlySpeed(flySpeed);
+        }
+
     }
 
     public void onDisable() {
-        mc.player.capabilities.isFlying = false;
-        mc.player.capabilities.setFlySpeed(0.1f);
+        if(mc.player != null && mc.world != null) {
+            mc.player.capabilities.isFlying = false;
+            mc.player.capabilities.setFlySpeed(0.1f);
+        }
     }
 }

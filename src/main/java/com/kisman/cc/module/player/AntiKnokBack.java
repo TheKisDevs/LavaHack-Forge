@@ -19,7 +19,9 @@ public class AntiKnokBack extends Module {
 	public void onLivingUpdate(LivingUpdateEvent e) {
 		float horizontal = (float) Kisman.instance.settingsManager.getSettingByName(this, "Horizontal").getValDouble();
 		float vertical = (float) Kisman.instance.settingsManager.getSettingByName(this, "Vertical").getValDouble();
-		
+
+		if(mc.player == null && mc.world == null) return;
+
 		if (mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
 			mc.player.motionX *= (float) horizontal / 100;
 			mc.player.motionY *= (float) vertical / 100;

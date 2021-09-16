@@ -23,6 +23,8 @@ public class Speed extends Module{
 
         boolean boost = Math.abs(Wrapper.INSTANCE.player().rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
 
+        if(mc.player == null && mc.world == null) return;
+
         if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5) {
             if(mode.equalsIgnoreCase("OnGround") && mc.player.onGround) {
                 mc.player.motionY = 0.405;

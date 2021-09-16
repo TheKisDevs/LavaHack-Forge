@@ -1,10 +1,8 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
-// import com.kisman.cc.event.events.LivingDeathEvent;
+ import com.kisman.cc.event.events.*;
 
-import com.kisman.cc.command.Command;
-import me.zero.alpine.listener.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.*;

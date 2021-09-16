@@ -6,7 +6,11 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.exploit.NoDamage;
 import com.kisman.cc.module.exploit.PacketMine;
+import com.kisman.cc.module.exploit.WaterLeave;
+import com.kisman.cc.module.exploit.WebLeave;
+import com.kisman.cc.module.misc.FakePlayer;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
@@ -41,12 +45,15 @@ public class ModuleManager {
 		modules.add(new ExampleModule());
 		//chat
 		modules.add(new AutoEZ());
+		modules.add(new Notification());
 		modules.add(new Spammer());
 		//render
 		modules.add(new BlockOutline());
 		modules.add(new CustomFov());
+		modules.add(new Charms());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
+		modules.add(new KismanESP());
 		modules.add(new NoRender());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
@@ -55,6 +62,7 @@ public class ModuleManager {
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
+		modules.add(new NoSlow());
 		modules.add(new ReverseStep());
 		modules.add(new Speed());
 		modules.add(new Spider());
@@ -65,8 +73,12 @@ public class ModuleManager {
 		modules.add(new FastBreak());
 		modules.add(new Velocity());
 		//exploit
+		modules.add(new NoDamage());
 		modules.add(new PacketMine());
+		modules.add(new WaterLeave());
+		modules.add(new WebLeave());
 		//misc
+		modules.add(new FakePlayer());
 	}
 	
 	public Module getModule(String name) {

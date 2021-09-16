@@ -125,8 +125,8 @@ public class Frame {
 		}
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		CustomFontUtil.drawString(this.hud ? this.hudCategory.name() : this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
-		CustomFontUtil.drawString(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		fontRenderer.drawStringWithShadow(this.hud ? this.hudCategory.name() : this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		fontRenderer.drawStringWithShadow(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 
 		GL11.glPopMatrix();
 		if(this.open) {

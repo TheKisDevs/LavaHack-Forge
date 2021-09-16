@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui;
 
+import com.kisman.cc.Kisman;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
@@ -250,6 +251,9 @@ public class ColorPicker extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
+        if(keyCode == Keyboard.KEY_ESCAPE) {
+            mc.displayGuiScreen(Kisman.instance.clickGui);
+        }
         if (keyCode == Keyboard.KEY_R) {
             this.rainbowState = !this.rainbowState;
         }

@@ -60,23 +60,26 @@ public class Coord extends HudModule {
         FontRenderer fr = mc.fontRenderer;
         Minecraft mc = Minecraft.getMinecraft();
 
-        if(mc.player.dimension == 0) {
-            posX = (int) mc.player.posX;
-            posY = (int) mc.player.posY;
-            posZ = (int) mc.player.posZ;
+        if(mc.player != null && mc.world != null) {
+            if(mc.player.dimension == 0) {
+                posX = (int) mc.player.posX;
+                posY = (int) mc.player.posY;
+                posZ = (int) mc.player.posZ;
 
-            nPosX = (int) (mc.player.posX / 8);
-            nPosY = (int) (mc.player.posY / 8);
-            nPosZ = (int) (mc.player.posZ / 8);
-        } else if(mc.player.dimension == -1) {
-            posX = (int) mc.player.posX;
-            posY = (int) mc.player.posY;
-            posZ = (int) mc.player.posZ;
+                nPosX = (int) (mc.player.posX / 8);
+                nPosY = (int) (mc.player.posY / 8);
+                nPosZ = (int) (mc.player.posZ / 8);
+            } else if(mc.player.dimension == -1) {
+                posX = (int) mc.player.posX;
+                posY = (int) mc.player.posY;
+                posZ = (int) mc.player.posZ;
 
-            nPosX = (int) (mc.player.posX * 8);
-            nPosY = (int) (mc.player.posY * 8);
-            nPosZ = (int) (mc.player.posZ * 8);
+                nPosX = (int) (mc.player.posX * 8);
+                nPosY = (int) (mc.player.posY * 8);
+                nPosZ = (int) (mc.player.posZ * 8);
+            }
         }
+
         // x1 = 0;
         // y1 = mc.gameSettings.overrideHeight - 2 - fr.FONT_HEIGHT;
         // x2 = fr.getStringWidth("X: " + "(" + posX + ")[" + 

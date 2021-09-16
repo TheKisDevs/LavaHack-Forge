@@ -24,7 +24,7 @@ public class LoadConfig {
         try {
             loadModules();
             loadEnabledModules();
-            loadModuleKeybinds();
+//            loadModuleKeybinds();
 //            loadDrawnModules();
 //            loadToggleMessageModules();
         } catch (IOException e) {
@@ -63,6 +63,7 @@ public class LoadConfig {
         }
 
         JsonObject settingObject = moduleObject.get("Settings").getAsJsonObject();
+        JsonElement keyObject = settingObject.get("key");
 
         for(Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
             JsonElement dataObject = settingObject.get(setting.getName());
@@ -83,6 +84,17 @@ public class LoadConfig {
                 System.out.println(dataObject);
             }
         }
+
+        if(keyObject != null && keyObject.isJsonPrimitive()) {
+            module.setKey(Keyboard.getKeyIndex(keyObject.getAsString()));
+/*            try {
+                module.setKey(Keyboard.getKeyIndex(keyObject.getAsString()));
+            } catch (Exception e) {
+                System.out.println("invalid key");
+                System.out.println(keyObject);
+            }*/
+        }
+
         inputStream.close();
     }
 

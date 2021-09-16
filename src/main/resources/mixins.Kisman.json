@@ -5,7 +5,9 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "MixinGuiMainMenu",
+    "MixinItemRenderer",
     "MixinMinecraft",
-    "MixinNetworkManager"
+    "MixinNetworkManager",
+    "MixinPenderPlayer"
   ]
 }

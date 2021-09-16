@@ -14,7 +14,7 @@ public class Step extends Module {
 
     public void update() {
         float height = (float) Kisman.instance.settingsManager.getSettingByName(this, "Heigth").getValDouble();
-        Minecraft.getMinecraft().player.stepHeight = height;
+        if(mc.player != null && mc.world != null) Minecraft.getMinecraft().player.stepHeight = height;
     }
 
     public void onDisable() {

@@ -20,12 +20,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ExampleModule extends Module {
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);
+        Kisman.instance.settingsManager.rSetting(new Setting("ExampleString", this, "kisman", "kisman", true));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, 1, "ExampleCategory"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCCheckBox", this, 1, "ExampleCCheckBox", false));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory1", this, 2, "ExampleCategory1"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCLine1", this, "ExampleCLine1", 2));
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, false));
-//        Kisman.instance.settingsManager.rSetting(new Setting("ExampleSimpleColorPicker", this, "ExampleSimpleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, true));
+        //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleSimpleColorPicker", this, "ExampleSimpleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, true));
 //        Kisman.instance.settingsManager.rSetting(new Setting(this));
     }
 
@@ -35,6 +36,7 @@ public class ExampleModule extends Module {
     // }
 
     public void onEnable() {
+        mc.displayGuiScreen(Kisman.instance.blockGui);
         // super.onEnable();
         // mc.displayGuiScreen(Kisman.instance.guiConsole);
         // this.setToggled(false);

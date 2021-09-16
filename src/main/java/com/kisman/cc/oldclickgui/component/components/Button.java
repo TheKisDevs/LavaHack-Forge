@@ -80,6 +80,10 @@ public class Button extends Component {
 					this.subcomponents.add(new Void());
 					opY += 12;
 				}*/
+				if(s.isString()) {
+					this.subcomponents.add(new StringButton(s, this, opY));
+					opY += 12;
+				}
 			}
 		}
 		this.subcomponents.add(new Keybind(this, opY));

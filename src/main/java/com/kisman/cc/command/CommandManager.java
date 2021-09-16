@@ -43,14 +43,13 @@ public class CommandManager {
 
 		for(Command command : commands)
 		{
-			if(!command.getSyntax().equalsIgnoreCase("loadconfig") || !command.getSyntax().equalsIgnoreCase("saveconfig")) {
-				SaveConfig.init();
-			}
-
 			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) 
 			{
 				command.runCommand(readString, args);
 				commandResolved = true;
+/*				if(!command.getSyntax().equalsIgnoreCase("loadconfig") || !command.getSyntax().equalsIgnoreCase("saveconfig")) {
+					SaveConfig.init();
+				}*/
 				break;
 			}
 		}

@@ -25,7 +25,7 @@ public class SaveConfig {
             saveConfig();
             saveModules();
             saveEnabledModules();
-            saveModuleKeybinds();
+//            saveModuleKeybinds();
 //            saveDrawnModules();
 //            saveToggleMessagesModules();
 //            saveCommandPrefix();
@@ -108,6 +108,8 @@ public class SaveConfig {
                     }
                 }
             }
+
+            settingObject.add("key", new JsonPrimitive(Keyboard.getKeyName(module.getKey())));
         }
 
 

@@ -17,11 +17,11 @@ public class LoadConfigCommand extends Command {
                 return;
             }
 
-            ChatUtils.warning("Start saving configs!");
+            ChatUtils.warning("Start loading configs!");
             LoadConfig.init();
-            ChatUtils.message("Saved Config!");
+            ChatUtils.message("Loaded Config!");
         } catch (Exception e) {
-            ChatUtils.error("Saving config is failed!");
+            ChatUtils.error("Loaded config is failed!");
             e.printStackTrace();
         }
     }

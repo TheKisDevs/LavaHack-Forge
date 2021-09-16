@@ -21,6 +21,7 @@ public class HudModuleManager {
 	public void init() {
 		//combat
 		modules.add(new ArmorHUD());
+		modules.add(new TargetInfo());
 		//render
         modules.add(new ArrayList());
 		modules.add(new Coord());

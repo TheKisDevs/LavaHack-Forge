@@ -12,7 +12,10 @@ import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.TextMode;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
 
+@SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
 	public static boolean line = false;
 	public static boolean rainbowLine = false;

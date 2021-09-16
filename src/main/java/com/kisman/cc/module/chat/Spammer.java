@@ -8,7 +8,13 @@ import com.kisman.cc.settings.Setting;
 
 import i.gishreloaded.gishcode.utils.TimerUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
 public class Spammer extends Module{
+    ArrayList<String> spam;
+
     String[] msg = new String[] {
         "xlllGhostlllx on top!",
         "_kisman_ on top!",
@@ -43,18 +49,21 @@ public class Spammer extends Module{
         timer = new TimerUtils();
 
         Kisman.instance.settingsManager.rSetting(new Setting("GlobalMode", this, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("Delay", this, 5.0, 1.0, 10.0, true));
+        Kisman.instance.settingsManager.rSetting(new Setting("Delay", this, 5000, 1000, 10000, true));
+
+        this.spam = new ArrayList<>(Arrays.asList(msg));
     }
 
     public void update() {
         boolean globalMode = Kisman.instance.settingsManager.getSettingByName(this, "GlobalMode").getValBoolean();
-        int delay = (int) Kisman.instance.settingsManager.getSettingByName(this, "Delay").getValDouble();
+        long delay = (int) Kisman.instance.settingsManager.getSettingByName(this, "Delay").getValDouble();
 
-        if(timer.isDelay((long) (1000 * delay))) {
-            mc.player.sendChatMessage(globalMode ? "!" + msg[count] : msg[count]);
+        if (timer.delay(delay)) {
+            Random r = new Random();
+            int index = r.nextInt(spam.size());
+            String message = spam.get(index);
+            mc.player.sendChatMessage(globalMode ? "!" + message : message);
+            timer.setLastMS();
         }
-        timer.setLastMS();
-    
-        count = count == msg.length - 1 ? 0 : count++;
     }
 }

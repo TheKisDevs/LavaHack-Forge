@@ -9,30 +9,14 @@ import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glColor4f;
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLineWidth;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glTranslated;
-import static org.lwjgl.opengl.GL11.glVertex3d;
+import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Locale;
 
-import com.kisman.cc.Kisman;
-
 import org.lwjgl.opengl.GL11;
-
-import i.gishreloaded.gishcode.wrappers.Wrapper;
 
 // import i.gishreloaded.gishcode.hack.hacks.ClickGui;
 // import i.gishreloaded.gishcode.hack.hacks.KillAura;
@@ -75,24 +59,24 @@ public class RenderUtil {
         Minecraft.getMinecraft().fontRenderer.drawString(string, x, y, colorString);
     }
 	
-	// public static void drawSplash(String text) {
-	// 	ScaledResolution sr = new ScaledResolution(Wrapper.INSTANCE.mc());
-	// 	drawStringWithRect(text, sr.getScaledWidth() + 2 - splashTickPos, sr.getScaledHeight() - 10, ClickGui.getColor(), 
-	// 			ColorUtils.color(0.0F, 0.0F, 0.0F, 0.0F), ColorUtils.color(0.0F, 0.0F, 0.0F, 0.5F));
-	// 	if(splashTimer.isDelay(10)) {
-	// 		splashTimer.setLastMS();
-	// 		if(isSplash) {
-	// 			splashTickPos++;
-	// 			if(splashTickPos == Wrapper.INSTANCE.fontRenderer().getStringWidth(text) + 10) {
-	// 				isSplash = false;
-	// 			}
-	// 		} else {
-	// 			if(splashTickPos > 0) {
-	// 				splashTickPos--;
-	// 			}
-	// 		}
-	// 	}
-	// }
+/*	 public static void drawSplash(String text) {
+	 	ScaledResolution sr = new ScaledResolution(Wrapper.INSTANCE.mc());
+	 	drawStringWithRect(text, sr.getScaledWidth() + 2 - splashTickPos, sr.getScaledHeight() - 10, ClickGui.getColor(),
+	 			ColorUtils.color(0.0F, 0.0F, 0.0F, 0.0F), ColorUtils.color(0.0F, 0.0F, 0.0F, 0.5F));
+	 	if(splashTimer.isDelay(10)) {
+	 		splashTimer.setLastMS();
+	 		if(isSplash) {
+	 			splashTickPos++;
+	 			if(splashTickPos == Wrapper.INSTANCE.fontRenderer().getStringWidth(text) + 10) {
+	 				isSplash = false;
+	 			}
+	 		} else {
+	 			if(splashTickPos > 0) {
+	 				splashTickPos--;
+	 			}
+	 		}
+	 	}
+	 }*/
 	
 	public static void drawBorderedRect(double x, double y, double x2, double y2, float l1, int col1, int col2) {
         drawRect((int)x, (int)y, (int)x2, (int)y2, col2);
@@ -353,7 +337,97 @@ public class RenderUtil {
     //     glDisable(GL_LINE_SMOOTH);
     //     glPopMatrix();
 	// }
-	
+
+    public static void drawBlockFlatESP(BlockPos pos, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
+        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
+        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+
+        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
+        /*glTranslated(pos.getX(), pos.getY(), pos.getZ());*/
+
+        glColor4f(red, green, blue, 0.30F);
+        drawSolidBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
+    public static void drawBlockOutlineESP(BlockPos pos, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
+        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
+        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+
+        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
+        glTranslated(pos.getX(), pos.getY(), pos.getZ());
+
+        glColor4f(red, green, blue, 0.7F);
+        drawOutlinedBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
+    public static void drawBlockBoxESP(BlockPos pos, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
+        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
+        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+
+        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
+        glTranslated(pos.getX(), pos.getY(), pos.getZ());
+
+        glColor4f(red, green, blue, 0.30F);
+        drawSolidBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
 	public static void drawBlockESP(BlockPos pos, float red, float green, float blue) {
 		glPushMatrix();
         glEnable(GL_BLEND);

@@ -7,15 +7,19 @@ import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.hud.hudmodule.HudModuleManager;
+import com.kisman.cc.oldclickgui.BlockGui;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
+import com.kisman.cc.oldclickgui.GuiTextField;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import i.gishreloaded.gishcode.EventsHandler;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -32,7 +36,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.3.1";
+    public static final String VERSION = "b0.1.4.1";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -41,6 +45,7 @@ public class Kisman
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;
+    public BlockGui blockGui;
     public GuiConsole guiConsole;
     public ColorPicker colorPicker;
     public ColorUtil colorUtil;
@@ -56,6 +61,7 @@ public class Kisman
     	moduleManager = new ModuleManager();
         hudModuleManager = new HudModuleManager();
     	clickGui = new ClickGui();
+    	blockGui = new BlockGui();
         guiConsole = new GuiConsole();
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
@@ -81,6 +87,7 @@ public class Kisman
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode && keyCode > 0) {
                     		m.toggle();
+                            if(this.moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
                             SaveConfig.init();
                     	}
                     }

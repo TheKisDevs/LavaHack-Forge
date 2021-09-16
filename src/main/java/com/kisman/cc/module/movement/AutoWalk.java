@@ -15,10 +15,10 @@ public class AutoWalk extends Module{
     }
 
     public void update() {
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), true);
+        if(mc.player != null && mc.world != null) KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), true);
     }
 
     public void onDisable() {
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), false);
+        if(mc.player != null && mc.world != null) KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), false);
     }
 }
