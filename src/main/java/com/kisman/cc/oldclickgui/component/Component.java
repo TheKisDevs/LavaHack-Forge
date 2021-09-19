@@ -1,6 +1,12 @@
 package com.kisman.cc.oldclickgui.component;
 
+import java.util.ArrayList;
+
 public class Component {
+	public ArrayList<Component> components;
+
+	public boolean category = false;
+
 	public void renderComponent() {
 		
 	}
@@ -31,4 +37,8 @@ public class Component {
 	public int getHeight() {
 		return 0;
 	}
+
+	public boolean isCategory() { return this.category; }
+
+	public ArrayList<Component> getComponents() { return this.category ? this.components : null; }
 }

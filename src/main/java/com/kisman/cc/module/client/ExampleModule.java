@@ -20,6 +20,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ExampleModule extends Module {
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);
+        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, "ExampleCategory", true));
+        Kisman.instance.settingsManager.rSubSetting(new Setting(
+                "ExampleCLine",
+                this,
+                Kisman.instance.settingsManager.getSettingByName(this, "ExampleCategory"),
+                "ExampleLine"
+                )
+        );
+
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleString", this, "kisman", "kisman", true));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, 1, "ExampleCategory"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCCheckBox", this, 1, "ExampleCCheckBox", false));
@@ -36,7 +45,7 @@ public class ExampleModule extends Module {
     // }
 
     public void onEnable() {
-        mc.displayGuiScreen(Kisman.instance.blockGui);
+//        mc.displayGuiScreen(Kisman.instance.blockGui);
         // super.onEnable();
         // mc.displayGuiScreen(Kisman.instance.guiConsole);
         // this.setToggled(false);

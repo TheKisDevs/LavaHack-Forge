@@ -32,6 +32,10 @@ public class StringButton extends Component {
         this.dString = set.getdString();
     }
 
+    public void setOff(int offset) {
+        this.offset = offset;
+    }
+
     public void renderComponent() {
         GuiScreen.drawRect(this.button.parent.getX(), this.button.parent.getY() + offset, this.button.parent.getX() + 88, this.button.parent.getY() + 12 + offset, this.active ? new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
 

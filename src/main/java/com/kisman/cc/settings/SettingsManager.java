@@ -17,11 +17,16 @@ import com.kisman.cc.hud.hudmodule.*;
 public class SettingsManager {
 	
 	private ArrayList<Setting> settings;
+
+	private ArrayList<Setting> subsetting;
 	
 	public SettingsManager(){
-		this.settings = new ArrayList<Setting>();
+		this.settings = new ArrayList<>();
+		this.subsetting = new ArrayList<>();
 	}
-	
+
+	public void rSubSetting(Setting in) { this.subsetting.add(in); }
+
 	public void rSetting(Setting in){
 		this.settings.add(in);
 	}
@@ -29,8 +34,20 @@ public class SettingsManager {
 	public ArrayList<Setting> getSettings(){
 		return this.settings;
 	}
+
+	public ArrayList<Setting> getSubSettingsByMod(Module mod, Setting set) {
+		ArrayList<Setting> out = new ArrayList<>();
+		for(Setting s : this.subsetting) {
+			if(s.getParentMod() == mod && s.getSetparent() == set) {
+				out.add(s);
+			}
+		}
+		if(out.isEmpty()) return null;
+
+		return out;
+	}
 	
-	public ArrayList<Setting> getSettingsByMod(Module mod){
+	public ArrayList<Setting> getSettingsByMod(Module mod) {
 		ArrayList<Setting> out = new ArrayList<>();
 		for(Setting s : getSettings()){
 			if(s.getParentMod() == mod){
@@ -56,6 +73,16 @@ public class SettingsManager {
 			return null;
 		}
 		return out;
+	}
+
+	public Setting getSubSettingByName(Module mod, Setting set, String name) {
+		for(Setting s : this.subsetting) {
+			if(set.isHud()) return null;
+
+			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod && set.getSetparent() == set) return set;
+		}
+		System.out.println("[kisman.cc] Error Sub Setting NOT found: '" + name +"'!");
+		return null;
 	}
 	
 	public Setting getSettingByName(Module mod, String name){

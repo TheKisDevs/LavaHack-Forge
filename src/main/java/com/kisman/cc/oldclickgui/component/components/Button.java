@@ -42,7 +42,7 @@ public class Button extends Component {
 		this.mod = mod;
 		this.parent = parent;
 		this.offset = offset;
-		this.subcomponents = new ArrayList<Component>();
+		this.subcomponents = new ArrayList<>();
 		this.open = false;
 		height = 12;
 		int opY = offset + 12;
@@ -64,10 +64,6 @@ public class Button extends Component {
 					this.subcomponents.add(new Line(s, this, opY));
 					opY += 12;
 				}
-//				if(s.isCategory()) {
-//					this.subcomponents.add(new CategoryButton(s, this, opY, s.getIndex()));
-//					opY += 12;
-//				}
 				if(s.isColorPicker()) {
 					this.subcomponents.add(new ColorPickerButton(s, this, opY));
 					opY += 12;
@@ -76,13 +72,12 @@ public class Button extends Component {
 					this.subcomponents.add(new ColorPickerSimpleButton(s, this, opY));
 					opY += 12;
 				}
-/*				if(s.isVoid()) {
-					this.subcomponents.add(new Void());
-					opY += 12;
-				}*/
 				if(s.isString()) {
 					this.subcomponents.add(new StringButton(s, this, opY));
 					opY += 12;
+				}
+				if(s.isCategory()) {
+					this.subcomponents.add(new Category(this, s, opY));
 				}
 			}
 		}
@@ -123,7 +118,11 @@ public class Button extends Component {
 		int opY = offset + 12;
 		for(Component comp : this.subcomponents) {
 			comp.setOff(opY);
-			opY += 12;
+			if(comp.isCategory()) {
+				opY += comp.getComponents().size() * 12;
+			} else {
+				opY += 12;
+			}
 		}
 	}
 	
@@ -168,7 +167,7 @@ public class Button extends Component {
 
 
 		GL11.glPushMatrix();
-		GL11.glScalef(0.5f,0.5f, 0.5f);//0.5f,0.5f, 0.5f
+		GL11.glScalef(0.5f,0.5f, 0.5f);
 		CustomFontUtil.drawStringWithShadow(
 			this.hud ? this.hudMod.getName() : this.mod.getName(), 
 			(parent.getX() + 2) * 2, 

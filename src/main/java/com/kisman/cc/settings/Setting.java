@@ -23,6 +23,7 @@ public class Setting {
 	
 	private String name;
 	private Module parent;
+	private Setting setparent;
 	private HudModule hudParent;
 	private String mode;
 
@@ -49,6 +50,22 @@ public class Setting {
 	private int x1, y1, x2, y2;
 
 	private boolean onlyint = false;
+
+	public Setting(String name, Module parent, Setting setparent, String title) {
+		this.name = name;
+		this.parent = parent;
+		this.setparent = setparent;
+		this.title = title;
+		this.mode = "CategoryLine";
+	}
+
+	public Setting(String name, Module parent, String title, boolean open) {
+		this.name = name;
+		this.parent = parent;
+		this.title = title;
+		this.opening = open;
+		this.mode = "Category";
+	}
 
 	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
 		this.name = name;
@@ -133,6 +150,14 @@ public class Setting {
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
+	}
+
+	public Setting getSetparent() {
+		return setparent;
+	}
+
+	public void setSetparent(Setting setparent) {
+		this.setparent = setparent;
 	}
 
 	public String getdString() {
@@ -327,7 +352,7 @@ public class Setting {
 		this.colorPicker = colorPicker;
 	}
 
-	public boolean isStringStrong() { return this.mode.equalsIgnoreCase("StringStrong") ? true : false; }
+	public boolean isCategory() { return this.mode.equalsIgnoreCase("Category") ? true : false; }
 
 	public boolean isString() { return this.mode.equalsIgnoreCase("String") ? true : false; }
 
@@ -355,9 +380,9 @@ public class Setting {
 //		return this.mode.equalsIgnoreCase("Category") ? true : false;
 //	}
 //
-//	public boolean isCategoryLine() {
-//		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
-//	}
+	public boolean isCategoryLine() {
+		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
+	}
 //
 //	public boolean isCategoryCheck() {
 //		return this.mode.equalsIgnoreCase("CategoryCheck") ? true : false;
