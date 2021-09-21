@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;

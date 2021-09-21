@@ -34,7 +34,9 @@ public class ModuleManager {
 	public void init() {
 		//combat
 		modules.add(new AutoArmor());
+		modules.add(new AutoClicker());
 		modules.add(new AutoTotem());
+		modules.add(new KillAura());
 		modules.add(new OffHand());
 		//client
 		modules.add(new ClickGUI());
@@ -58,6 +60,7 @@ public class ModuleManager {
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new ViemModel());
+		modules.add(new Particle());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());

@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 public class FullBright extends Module {
     public FullBright() {
         super("FullBright", "Gamma setting", Category.RENDER);
+
         Kisman.instance.settingsManager.rSetting(new Setting("Gamma", this, 1, 1, 100, true));
     }
 

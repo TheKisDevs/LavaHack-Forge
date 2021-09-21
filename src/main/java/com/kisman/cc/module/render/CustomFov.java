@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 public class CustomFov extends Module {
     public CustomFov() {
         super("CustomFOV", "customisated your fov", Category.RENDER);
+
         Kisman.instance.settingsManager.rSetting(new Setting("FOV", this, 30, 30, 150, true));
     }
 

@@ -1,6 +1,7 @@
 package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
+import com.kisman.cc.hud.hudmodule.movement.Speed;
 import com.kisman.cc.hud.hudmodule.render.*;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -22,6 +23,8 @@ public class HudModuleManager {
 		//combat
 		modules.add(new ArmorHUD());
 		modules.add(new TargetInfo());
+		//movement
+		modules.add(new Speed());
 		//render
         modules.add(new ArrayList());
 		modules.add(new Coord());

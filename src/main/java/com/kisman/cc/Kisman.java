@@ -12,7 +12,6 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
-import com.kisman.cc.oldclickgui.GuiTextField;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;

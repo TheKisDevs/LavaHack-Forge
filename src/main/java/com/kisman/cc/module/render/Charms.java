@@ -11,4 +11,10 @@ public class Charms extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("Texture", this, false));
     }
+
+    public void onEnable() {
+        if(Kisman.instance.moduleManager.getModule("KismanESP").isToggled()) {
+            Kisman.instance.moduleManager.getModule("KismanESP").setToggled(false);
+        }
+    }
 }

@@ -23,9 +23,9 @@ public class ViemModel extends Module {
     public ViemModel() {
         super("ViemModel", "modeL vieM", Category.RENDER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("test", this, false));
+        /*Kisman.instance.settingsManager.rSetting(new Setting("test", this, false));*/
 
-        Kisman.instance.settingsManager.rSetting(new Setting("XLine", this, "X"));
+        /*Kisman.instance.settingsManager.rSetting(new Setting("XLine", this, "X"));
         Kisman.instance.settingsManager.rSetting(new Setting("XA", this, x, -2, 2, false));
         Kisman.instance.settingsManager.rSetting(new Setting("YLine", this, "Y"));
         Kisman.instance.settingsManager.rSetting(new Setting("YA", this, y, -2, 2, false));
@@ -38,16 +38,22 @@ public class ViemModel extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("SizeLine", this, "Size"));
         Kisman.instance.settingsManager.rSetting(new Setting("SizeX", this, sx, 0, 2, false));
         Kisman.instance.settingsManager.rSetting(new Setting("SizeY", this, sy, 0, 2, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("SizeZ", this, sz, 0, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("SizeZ", this, sz, 0, 2, false));*/
         Kisman.instance.settingsManager.rSetting(new Setting("RightX", this, 0, -2, 2, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RightY", this, 0, -2, 2, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RightZ", this, 0, -2, 2, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightX", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightY", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightZ", this, 0, 0, 360, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftX", this, 0, -2, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftY", this, 0, -2, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftZ", this, 0, -2, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftX", this, 0, 0, 360, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftY", this, 0, 0, 360, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftZ", this, 0, 0, 360, false));
     }
 
-    public void update() {
+/*    public void update() {
         this.test = Kisman.instance.settingsManager.getSettingByName(this, "test").getValBoolean();
 
         this.x = Kisman.instance.settingsManager.getSettingByName(this, "XA").getValDouble();
@@ -61,9 +67,9 @@ public class ViemModel extends Module {
         this.sx = Kisman.instance.settingsManager.getSettingByName(this, "SizeX").getValDouble();
         this.sy = Kisman.instance.settingsManager.getSettingByName(this, "SizeY").getValDouble();
         this.sz = Kisman.instance.settingsManager.getSettingByName(this, "SizeZ").getValDouble();
-    }
+    }*/
 
-    @SubscribeEvent
+/*    @SubscribeEvent
     public void onRenderArms(final RenderSpecificHandEvent event) {
         if(test) {
             glTranslated(x, y, z);
@@ -73,5 +79,5 @@ public class ViemModel extends Module {
             glScaled(sx, sy, sz);
         }
 
-    }
+    }*/
 }

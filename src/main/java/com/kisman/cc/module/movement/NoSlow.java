@@ -1,7 +1,9 @@
 package com.kisman.cc.module.movement;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.settings.Setting;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -13,6 +15,8 @@ import org.apache.commons.lang3.RandomUtils;
 public class NoSlow extends Module {
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
+
+        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
     }
 
     public void update() {

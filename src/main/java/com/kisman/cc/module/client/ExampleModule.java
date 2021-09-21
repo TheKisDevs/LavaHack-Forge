@@ -20,6 +20,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ExampleModule extends Module {
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);
+
+        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
+
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, "ExampleCategory", true));
         Kisman.instance.settingsManager.rSubSetting(new Setting(
                 "ExampleCLine",
