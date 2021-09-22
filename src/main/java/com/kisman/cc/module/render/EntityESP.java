@@ -37,56 +37,56 @@ public class EntityESP extends Module{
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 100, 10, 260, true));
         //SettingUtil.ColorSetting(this, "Players");
         Kisman.instance.settingsManager.rSetting(new Setting("PlayersLine", this, "Players"));
-        Kisman.instance.settingsManager.rSetting(new Setting("PlayersR", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("PlayersG", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("PlayersB", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("PlayersA", this, 255, 0, 255, true));
+        Kisman.instance.settingsManager.rSetting(new Setting("PlayersR", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("PlayersG", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("PlayersB", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("PlayersA", this, 1, 0, 1, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Players", this, "None", new ArrayList<String>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
         SettingUtil.ColorSetting(this, "Monsters");
         Kisman.instance.settingsManager.rSetting(new Setting("MonstersLine", this, "Monsters"));
-        Kisman.instance.settingsManager.rSetting(new Setting("MonstersR", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("MonstersG", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("MonstersB", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("MonstersA", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Monsters", this, "None", new ArrayList<String>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("MonstersR", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("MonstersG", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("MonstersB", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("MonstersA", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Monsters", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
         Kisman.instance.settingsManager.rSetting(new Setting("ItemsLine", this, "Items"));
-        Kisman.instance.settingsManager.rSetting(new Setting("ItemsR", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("ItemsG", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("ItemsB", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("ItemsA", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Items", this, "None", new ArrayList<String>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("ItemsR", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ItemsG", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ItemsB", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("ItemsA", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Items", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
         Kisman.instance.settingsManager.rSetting(new Setting("EntityLine", this, "Entity"));
-        Kisman.instance.settingsManager.rSetting(new Setting("EntityR", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("EntityG", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("EntityB", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("EntityA", this, 255, 0, 255, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Entity", this, "None", new ArrayList<String>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("EntityR", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("EntityG", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("EntityB", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("EntityA", this, 1, 0, 1, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Entity", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
         
     }
 
     @SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event) {
-        int distance = (int) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
+        float distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
 
-        int playerR = (int) Kisman.instance.settingsManager.getSettingByName(this, "MonstersR").getValDouble();
-        int playerG = (int) Kisman.instance.settingsManager.getSettingByName(this, "MonstersG").getValDouble();
-        int playerB = (int) Kisman.instance.settingsManager.getSettingByName(this, "MonstersB").getValDouble();
-        int playerA = (int) Kisman.instance.settingsManager.getSettingByName(this, "MonstersA").getValDouble();
+        float playerR = (float) Kisman.instance.settingsManager.getSettingByName(this, "MonstersR").getValDouble();
+        float playerG = (float) Kisman.instance.settingsManager.getSettingByName(this, "MonstersG").getValDouble();
+        float playerB = (float) Kisman.instance.settingsManager.getSettingByName(this, "MonstersB").getValDouble();
+        float playerA = (float) Kisman.instance.settingsManager.getSettingByName(this, "MonstersA").getValDouble();
 
-        int monsterR = (int) Kisman.instance.settingsManager.getSettingByName(this, "PlayersR").getValDouble();
-        int monsterG = (int) Kisman.instance.settingsManager.getSettingByName(this, "PlayersG").getValDouble();
-        int monsterB = (int) Kisman.instance.settingsManager.getSettingByName(this, "PlayersB").getValDouble();
-        int monsterA = (int) Kisman.instance.settingsManager.getSettingByName(this, "PlayersA").getValDouble();
+        float monsterR = (float) Kisman.instance.settingsManager.getSettingByName(this, "PlayersR").getValDouble();
+        float monsterG = (float) Kisman.instance.settingsManager.getSettingByName(this, "PlayersG").getValDouble();
+        float monsterB = (float) Kisman.instance.settingsManager.getSettingByName(this, "PlayersB").getValDouble();
+        float monsterA = (float) Kisman.instance.settingsManager.getSettingByName(this, "PlayersA").getValDouble();
 
-        int itemR = (int) Kisman.instance.settingsManager.getSettingByName(this, "itemsR").getValDouble();
-        int itemG = (int) Kisman.instance.settingsManager.getSettingByName(this, "itemsG").getValDouble();
-        int itemB = (int) Kisman.instance.settingsManager.getSettingByName(this, "itemsB").getValDouble();
-        int itemA = (int) Kisman.instance.settingsManager.getSettingByName(this, "itemsA").getValDouble();
+        float itemR = (float) Kisman.instance.settingsManager.getSettingByName(this, "itemsR").getValDouble();
+        float itemG = (float) Kisman.instance.settingsManager.getSettingByName(this, "itemsG").getValDouble();
+        float itemB = (float) Kisman.instance.settingsManager.getSettingByName(this, "itemsB").getValDouble();
+        float itemA = (float) Kisman.instance.settingsManager.getSettingByName(this, "itemsA").getValDouble();
 
-        int crystalR = (int) Kisman.instance.settingsManager.getSettingByName(this, "EntityR").getValDouble();
-        int crystalG = (int) Kisman.instance.settingsManager.getSettingByName(this, "EntityG").getValDouble();
-        int crystalB = (int) Kisman.instance.settingsManager.getSettingByName(this, "EntityB").getValDouble();
-        int crystalA = (int) Kisman.instance.settingsManager.getSettingByName(this, "EntityA").getValDouble();
+        float crystalR = (float) Kisman.instance.settingsManager.getSettingByName(this, "EntityR").getValDouble();
+        float crystalG = (float) Kisman.instance.settingsManager.getSettingByName(this, "EntityG").getValDouble();
+        float crystalB = (float) Kisman.instance.settingsManager.getSettingByName(this, "EntityB").getValDouble();
+        float crystalA = (float) Kisman.instance.settingsManager.getSettingByName(this, "EntityA").getValDouble();
 
         String playersMode = Kisman.instance.settingsManager.getSettingByName(this, "Players").getValString();
         String monstersMode = Kisman.instance.settingsManager.getSettingByName(this, "Monsters").getValString();

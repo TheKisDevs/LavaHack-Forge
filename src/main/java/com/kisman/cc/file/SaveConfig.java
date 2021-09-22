@@ -75,17 +75,26 @@ public class SaveConfig {
     private static void saveModules() throws IOException {
         for (Module module : Kisman.instance.moduleManager.getModuleList()) {
             try {
-                if(Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
-                   return;
+                boolean setting;
+
+                if(Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
+                    if (Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
+                        setting = false;
+                    } else {
+                        setting = true;
+                    }
+                } else {
+                    setting = false;
                 }
-                saveModuleDirect(module);
+
+                saveModuleDirect(module, setting);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static void saveModuleDirect(Module module) throws IOException {
+    private static void saveModuleDirect(Module module, boolean settings) throws IOException {
         registerFiles(moduleName, module.getName());
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -94,17 +103,19 @@ public class SaveConfig {
         JsonObject settingObject = new JsonObject();
         moduleObject.add("Module", new JsonPrimitive(module.getName()));
 
-        if(!(Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty())) {
-            for(Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
-                if(setting != null) {
-                    if(setting.isCheck()) {
-                        settingObject.add(setting.getName(), new JsonPrimitive(setting.getValBoolean()) );
-                    }
-                    if(setting.isCombo()) {
-                        settingObject.add(setting.getName(), new JsonPrimitive(setting.getValString()));
-                    }
-                    if(setting.isSlider()) {
-                        settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
+        if(settings) {
+            if(!(Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty())) {
+                for (Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
+                    if (setting != null) {
+                        if (setting.isCheck()) {
+                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValBoolean()));
+                        }
+                        if (setting.isCombo()) {
+                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValString()));
+                        }
+                        if (setting.isSlider()) {
+                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
+                        }
                     }
                 }
             }
