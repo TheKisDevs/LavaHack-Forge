@@ -9,7 +9,6 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.network.play.client.*;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class PacketCancel extends Module {
     private boolean input;
@@ -31,10 +30,8 @@ public class PacketCancel extends Module {
     }
 
     public void onEnable() {
-        System.out.println(1);
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(this.sendListener);
-        System.out.println(2);
         this.input = Kisman.instance.settingsManager.getSettingByName(this, "CPacketInput").getValBoolean();
         this.player = Kisman.instance.settingsManager.getSettingByName(this, "CPacketPlayer").getValBoolean();
         this.entityAction = Kisman.instance.settingsManager.getSettingByName(this, "CPacketEntityAction").getValBoolean();

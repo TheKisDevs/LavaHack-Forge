@@ -31,7 +31,7 @@ public class KillAura extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, "Distance"));
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 0.1f, 4.25f, 4.25f, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 4.25f, false));
     }
 
     public void update() {

@@ -26,7 +26,7 @@ public class ModuleManager {
 	public ArrayList<Module> modules;
 	
 	public ModuleManager() {
-		modules = new ArrayList<Module>();
+		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
 		init();
 	}
@@ -61,10 +61,12 @@ public class ModuleManager {
 		modules.add(new SwingAnimation());
 		modules.add(new ViemModel());
 		modules.add(new Particle());
+		modules.add(new Zoom());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
+		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new ReverseStep());
 		modules.add(new Speed());

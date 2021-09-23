@@ -8,23 +8,52 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.block.Block;
 import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.network.play.server.SPacketExplosion;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.util.math.BlockPos;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Velocity extends Module{
+    private String mode;
+
+    private boolean subscribing;
+
     public Velocity() {
         super("Velocity", "akb", Category.PLAYER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
+        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix"))));
     }
 
     public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(receiveListener);
+        this.mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
+
+        if(this.mode.equalsIgnoreCase("Packet")) {
+            this.subscribing = true;
+            Kisman.EVENT_BUS.subscribe(receiveListener);
+        }
+    }
+
+    public void update() {
+        if(!this.subscribing && this.mode.equalsIgnoreCase("Matrix")) {
+            if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) {
+                if (mc.player.hurtTime > 0) {
+                    float ticks = 0.2f;
+                    mc.player.motionY = -ticks;
+                    ticks += 1.5f;
+                }
+            }
+        }
     }
 
     public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(receiveListener);
+        if(subscribing) {
+            this.subscribing = false;
+            Kisman.EVENT_BUS.unsubscribe(receiveListener);
+        }
+
     }
 
     @EventHandler
