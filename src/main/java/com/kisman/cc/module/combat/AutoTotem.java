@@ -19,6 +19,10 @@ public class AutoTotem extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) {
+            return;
+        }
+
         int totemSlot = 0;
 
         NonNullList<ItemStack> inv;
@@ -27,10 +31,6 @@ public class AutoTotem extends Module {
         inv = Wrapper.INSTANCE.inventory().mainInventory;
 
         int health = (int) Kisman.instance.settingsManager.getSettingByName(this, "Health").getValDouble();
-
-        if(mc.player == null && mc.world == null) {
-            return;
-        }
 
         for(inventoryIndex = 0; inventoryIndex < inv.size(); inventoryIndex++) {
             if(inv.get(inventoryIndex) != ItemStack.EMPTY) {

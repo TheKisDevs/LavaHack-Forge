@@ -16,6 +16,8 @@ public class KillAura extends Module {
 
     private boolean hitsound;
 
+    private float distance;
+
     public KillAura() {
         super("KillAura", "8", Category.COMBAT);
 
@@ -26,24 +28,30 @@ public class KillAura extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Player", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("Monster", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("Passive", this, true));
+
+        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, "Distance"));
+
+        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 0.1f, 4.25f, 4.25f, false));
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         this.player = Kisman.instance.settingsManager.getSettingByName(this,"Player").getValBoolean();
         this.monster = Kisman.instance.settingsManager.getSettingByName(this,"Monster").getValBoolean();
         this.passive = Kisman.instance.settingsManager.getSettingByName(this,"Passive").getValBoolean();
 
         this.hitsound = Kisman.instance.settingsManager.getSettingByName(this,"HitSound").getValBoolean();
 
-        if(mc.player == null && mc.world == null) return;
+        this.distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
 
         for(int i = 0; i < mc.world.loadedEntityList.size(); i++) {
             if(mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof  EntityAnimal && this.passive))) {
-                if(mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.25f && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
+                if(mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= this.distance && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
                     mc.player.swingArm(mc.player.swingingHand);
                     mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
                     if(this.hitsound) {
-                        mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 0.5f, 0.5f);
+                        mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 1, 1);
                     }
                 }
             }

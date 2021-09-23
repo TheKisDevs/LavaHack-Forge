@@ -35,7 +35,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.4.1";
+    public static final String VERSION = "b0.1.4.1 beta";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();

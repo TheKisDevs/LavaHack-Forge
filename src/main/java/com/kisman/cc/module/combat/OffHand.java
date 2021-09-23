@@ -30,6 +30,10 @@ public class OffHand extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) {
+            return;
+        }
+
         int[] slots = new int[]{
                 0,//totem
                 0,//crystal
@@ -44,10 +48,6 @@ public class OffHand extends Module {
         int totemHealth = (int) Kisman.instance.settingsManager.getSettingByName(this, "TotemHP").getValDouble();
         String offHandMode = Kisman.instance.settingsManager.getSettingByName(this, "OffHandMode").getValString();
         boolean totem = Kisman.instance.settingsManager.getSettingByName(this, "Totem").getValBoolean();
-
-        if(mc.player == null && mc.world == null) {
-            return;
-        }
 
         for(inventoryIndex = 0; inventoryIndex < inv.size(); inventoryIndex++) {
             if(inv.get(inventoryIndex) != ItemStack.EMPTY) {

@@ -10,12 +10,21 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.network.play.server.SPacketExplosion;
+import net.minecraftforge.fml.common.Mod;
 
 public class Velocity extends Module{
     public Velocity() {
         super("Velocity", "akb", Category.PLAYER);
 
         Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
+    }
+
+    public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(receiveListener);
+    }
+
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(receiveListener);
     }
 
     @EventHandler

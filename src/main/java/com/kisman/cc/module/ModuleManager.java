@@ -74,6 +74,7 @@ public class ModuleManager {
 		//player
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
+		modules.add(new PacketCancel());
 		modules.add(new Velocity());
 		//exploit
 		modules.add(new NoDamage());

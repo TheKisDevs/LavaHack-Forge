@@ -36,8 +36,17 @@ public class LoadConfig {
         String moduleLocation = fileName + moduleName;
 
         for (Module module : Kisman.instance.moduleManager.modules) {
+            boolean settings;
+
             try {
-                loadModuleDirect(moduleLocation, module);
+                if(Kisman.instance.settingsManager.getSettingsByMod(module) == null) {
+                    settings = false;
+                } else if(Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
+                    settings = false;
+                } else {
+                    settings = true;
+                }
+                loadModuleDirect(moduleLocation, module, settings);
             } catch (IOException e) {
                 System.out.println(module.getName());
                 e.printStackTrace();
@@ -45,7 +54,7 @@ public class LoadConfig {
         }
     }
 
-    private static void loadModuleDirect(String moduleLocation, Module module)  throws IOException {
+    private static void loadModuleDirect(String moduleLocation, Module module, boolean settings)  throws IOException {
         if (!Files.exists(Paths.get(moduleLocation + module.getName() + ".json"))) {
             return;
         }
@@ -65,23 +74,25 @@ public class LoadConfig {
         JsonObject settingObject = moduleObject.get("Settings").getAsJsonObject();
         JsonElement keyObject = settingObject.get("key");
 
-        for(Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
-            JsonElement dataObject = settingObject.get(setting.getName());
-            try {
-                if(dataObject != null && dataObject.isJsonPrimitive()) {
-                    if(setting.isCheck()) {
-                        setting.setValBoolean(dataObject.getAsBoolean());
+        if(settings) {
+            for (Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
+                JsonElement dataObject = settingObject.get(setting.getName());
+                try {
+                    if (dataObject != null && dataObject.isJsonPrimitive()) {
+                        if (setting.isCheck()) {
+                            setting.setValBoolean(dataObject.getAsBoolean());
+                        }
+                        if (setting.isCombo()) {
+                            setting.setValString(dataObject.getAsString());
+                        }
+                        if (setting.isSlider()) {
+                            setting.setValDouble(dataObject.getAsDouble());
+                        }
                     }
-                    if(setting.isCombo()) {
-                        setting.setValString(dataObject.getAsString());
-                    }
-                    if(setting.isSlider()) {
-                        setting.setValDouble(dataObject.getAsDouble());
-                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(setting.getName() + " " + module.getName());
+                    System.out.println(dataObject);
                 }
-            } catch (NumberFormatException e) {
-                System.out.println(setting.getName() + " " + module.getName());
-                System.out.println(dataObject);
             }
         }
 
