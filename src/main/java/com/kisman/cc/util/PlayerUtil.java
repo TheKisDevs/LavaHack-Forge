@@ -1,5 +1,6 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.module.combat.Surround;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +18,15 @@ public class PlayerUtil {
 
     public static BlockPos getPlayerPos() {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
+    }
+
+    public static BlockPos[][] SurroundBlockPos() {
+        if(mc.player == null && mc.world == null) return null;
+        return new BlockPos[][] {
+                {null, new BlockPos(Math.floor(mc.player.posX) + 1, Math.floor(mc.player.posY), Math.floor(mc.player.posZ)), null},
+                {new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ) + 1), null, new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ) - 1)},
+                {null, new BlockPos(Math.floor(mc.player.posX) - 1, Math.floor(mc.player.posY), Math.floor(mc.player.posZ)), null}
+        };
     }
 
     // Find closest target

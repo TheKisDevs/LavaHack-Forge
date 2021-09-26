@@ -18,6 +18,6 @@ public class Step extends Module {
     }
 
     public void onDisable() {
-        Minecraft.getMinecraft().player.stepHeight = 0.5f;
+        if(mc.player != null && mc.world != null) Minecraft.getMinecraft().player.stepHeight = 0.5f;
     }
 }

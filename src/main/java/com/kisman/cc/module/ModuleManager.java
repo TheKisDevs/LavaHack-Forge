@@ -2,20 +2,14 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
-import com.kisman.cc.module.exploit.NoDamage;
-import com.kisman.cc.module.exploit.PacketMine;
-import com.kisman.cc.module.exploit.WaterLeave;
-import com.kisman.cc.module.exploit.WebLeave;
-import com.kisman.cc.module.misc.FakePlayer;
+import com.kisman.cc.module.exploit.*;
+import com.kisman.cc.module.misc.*;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
-import i.gishreloaded.gishcode.utils.system.Connection;
-import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,17 +27,21 @@ public class ModuleManager {
 
 	public void init() {
 		//combat
+		modules.add(new Anchor());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoTotem());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
+		modules.add(new Rubberband());
+		modules.add(new Surround());
 		//client
 		modules.add(new ClickGUI());
 		modules.add(new Color());
 		modules.add(new Console());
 		modules.add(new CustomFont());
 		modules.add(new HUD());
+//		modules.add(new NewGuiModue());
 		modules.add(new ExampleModule());
 		//chat
 		modules.add(new AutoEZ());
@@ -61,11 +59,13 @@ public class ModuleManager {
 		modules.add(new SwingAnimation());
 		modules.add(new ViemModel());
 		modules.add(new Particle());
+		modules.add(new Spin());
 		modules.add(new Zoom());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
+		modules.add(new IceSpeed());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new ReverseStep());
@@ -79,12 +79,14 @@ public class ModuleManager {
 		modules.add(new PacketCancel());
 		modules.add(new Velocity());
 		//exploit
-		modules.add(new NoDamage());
+//		modules.add(new BowExploit());
 		modules.add(new PacketMine());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc
+		modules.add(new AutoLog());
 		modules.add(new FakePlayer());
+		modules.add(new WeaknessLog());
 	}
 	
 	public Module getModule(String name) {

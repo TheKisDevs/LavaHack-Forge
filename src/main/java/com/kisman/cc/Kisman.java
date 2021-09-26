@@ -7,6 +7,7 @@ import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.hud.hudmodule.HudModuleManager;
+import com.kisman.cc.newclickgui.NewGui;
 import com.kisman.cc.oldclickgui.BlockGui;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
@@ -35,7 +36,7 @@ public class Kisman
 {
     public static final String NAME = "kisman.cc";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.4.1 beta";
+    public static final String VERSION = "b0.1.5";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -49,6 +50,7 @@ public class Kisman
     public ColorPicker colorPicker;
     public ColorUtil colorUtil;
     public HudGui hudGui;
+    public NewGui newGui;
     public CustomFontRenderer customFontRenderer;
     public CommandManager commandManager;
     public EventsHandler eventsHandler;
@@ -65,7 +67,8 @@ public class Kisman
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 50), false, false);
+        newGui = new NewGui();
+        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
         commandManager = new CommandManager();
         eventsHandler = new EventsHandler();
 

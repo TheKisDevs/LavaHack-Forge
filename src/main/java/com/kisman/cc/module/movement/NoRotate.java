@@ -24,7 +24,7 @@ public class NoRotate extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
-        if(event.getPacket() instanceof CPacketPlayer.PositionRotation) {
+        if(event.getPacket() instanceof CPacketPlayer.Rotation) {
             event.cancel();
         }
     });

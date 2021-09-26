@@ -48,6 +48,8 @@ public class ExampleModule extends Module {
     // }
 
     public void onEnable() {
+        mc.displayGuiScreen(Kisman.instance.newGui);
+        this.setToggled(false);
 //        mc.displayGuiScreen(Kisman.instance.blockGui);
         // super.onEnable();
         // mc.displayGuiScreen(Kisman.instance.guiConsole);

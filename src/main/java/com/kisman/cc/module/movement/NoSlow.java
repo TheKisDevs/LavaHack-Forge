@@ -20,6 +20,7 @@ public class NoSlow extends Module {
     }
 
     public void update() {
+
         if (this.mc.player.getHeldItemMainhand().getItem() instanceof ItemSword) {
 
             mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, new BlockPos(Math.random() * 100, Math.random() * 100, Math.random() * 100), EnumFacing.DOWN));

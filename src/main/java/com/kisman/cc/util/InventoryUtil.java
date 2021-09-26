@@ -146,4 +146,33 @@ public class InventoryUtil {
         }
         return slots;
     }
+
+    public static boolean holdingItem(Class clazz) {
+        boolean result = false;
+        ItemStack stack = mc.player.getHeldItemMainhand();
+
+        result = isInstanceOf(stack, clazz);
+
+        return result;
+    }
+
+    //zero two
+    public static
+    boolean isInstanceOf ( ItemStack stack , Class clazz ) {
+        if ( stack == null ) {
+            return false;
+        }
+
+        Item item = stack.getItem ( );
+        if ( clazz.isInstance ( item ) ) {
+            return true;
+        }
+
+        if ( item instanceof ItemBlock ) {
+            Block block = Block.getBlockFromItem ( item );
+            return clazz.isInstance ( block );
+        }
+
+        return false;
+    }
 }

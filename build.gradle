@@ -23,7 +23,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = 'b0.1.4.1'
+version = 'b0.1.5'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 

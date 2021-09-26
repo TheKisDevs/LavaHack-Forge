@@ -53,7 +53,7 @@ public class Line extends Component {
             Gui.drawRect(button.parent.getX() + (this.cat ? 4 : 3), (button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 5) + 5, (button.parent.getX() + 7 + button.parent.getWidth() - 7) - (this.cat ? 4 : 3),(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
             GL11.glPushMatrix();
             GL11.glScalef(0.5f,0.5f, 0.5f);
-            CustomFontUtil.drawStringWithShadow(line.getTitle(), (button.parent.getX() + 4) * 2, (button.parent.getY() + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line.getTitle(), (button.parent.getX() + 4) * 2, (button.parent.getY() + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
             GL11.glPopMatrix();
         } else {
             System.out.println("test");
@@ -61,7 +61,7 @@ public class Line extends Component {
             Gui.drawRect(parent.x + (this.cat ? 4 : 3), (parent.y + offset + cOffset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 5) + 5, (parent.x + 7 + 88 - 7) - (this.cat ? 4 : 3),(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
             GL11.glPushMatrix();
             GL11.glScalef(0.5f,0.5f, 0.5f);
-            CustomFontUtil.drawStringWithShadow(line.getTitle(), (parent.x + 4) * 2, (parent.y + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line.getTitle(), (parent.x + 4) * 2, (parent.y + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
             GL11.glPopMatrix();
         }
     }

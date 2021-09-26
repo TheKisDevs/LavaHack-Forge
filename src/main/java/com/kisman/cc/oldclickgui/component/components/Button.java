@@ -16,6 +16,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.Gui;
 
@@ -168,7 +169,7 @@ public class Button extends Component {
 
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		CustomFontUtil.drawStringWithShadow(
+		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(
 			this.hud ? this.hudMod.getName() : this.mod.getName(), 
 			(parent.getX() + 2) * 2, 
 			(parent.getY() + offset + 2) * 2 + 4, 

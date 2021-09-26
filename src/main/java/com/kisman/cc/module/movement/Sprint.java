@@ -4,9 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Sprint extends Module {
 	public Sprint() {
@@ -16,10 +13,10 @@ public class Sprint extends Module {
 	}
 
 	public void update() {
-		mc.player.setSprinting(true);
+		if(mc.player != null && mc.world != null) mc.player.setSprinting(true);
 	}
 
 	public void onDisable() {
-		mc.player.setSprinting(false);
+		if(mc.player != null && mc.world != null) mc.player.setSprinting(false);
 	}
 }

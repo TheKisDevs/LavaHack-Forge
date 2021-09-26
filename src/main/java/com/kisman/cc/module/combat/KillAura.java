@@ -16,7 +16,7 @@ public class KillAura extends Module {
 
     private boolean hitsound;
 
-    private float distance;
+    private double distance;
 
     public KillAura() {
         super("KillAura", "8", Category.COMBAT);
@@ -43,13 +43,14 @@ public class KillAura extends Module {
 
         this.hitsound = Kisman.instance.settingsManager.getSettingByName(this,"HitSound").getValBoolean();
 
-        this.distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
+        this.distance = Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
 
         for(int i = 0; i < mc.world.loadedEntityList.size(); i++) {
             if(mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof  EntityAnimal && this.passive))) {
-                if(mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= this.distance && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
-                    mc.player.swingArm(mc.player.swingingHand);
+                if(mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
                     mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
+//                    mc.player.swingArm(mc.player.swingingHand);
+                    mc.player.resetCooldown();
                     if(this.hitsound) {
                         mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 1, 1);
                     }
