@@ -68,6 +68,7 @@ public class ModuleManager {
 		modules.add(new IceSpeed());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
+		modules.add(new Parkour());
 		modules.add(new ReverseStep());
 		modules.add(new Speed());
 		modules.add(new Spider());
@@ -86,6 +87,7 @@ public class ModuleManager {
 		//misc
 		modules.add(new AutoLog());
 		modules.add(new FakePlayer());
+		modules.add(new MurderFinder());
 		modules.add(new WeaknessLog());
 	}
 	

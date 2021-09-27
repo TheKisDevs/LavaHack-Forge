@@ -26,6 +26,8 @@
      }
 
      public void update() {
+         if(mc.player == null && mc.world == null) return;
+
          boolean noThorns = Kisman.instance.settingsManager.getSettingByName(this, "NoThorns").getValBoolean();
 
          if (mc.player.ticksExisted % 2 == 0) return;

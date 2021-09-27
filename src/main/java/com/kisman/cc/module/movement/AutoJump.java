@@ -14,6 +14,8 @@ public class AutoJump extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         if(mc.player.onGround && mc.player != null && mc.world != null) {
             mc.player.jump();
         }

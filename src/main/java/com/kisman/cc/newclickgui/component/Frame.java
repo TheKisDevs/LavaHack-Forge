@@ -13,6 +13,8 @@ import java.util.ArrayList;
 public class Frame {
     private ArrayList<CatButton> cat;
 
+    private CatButton listenCat;
+
     private FontRenderer fr;
 
     private String title;
@@ -42,12 +44,13 @@ public class Frame {
         this.fr = fr;
 
         this.cat = new ArrayList<>();
+        this.listenCat = null;
 
         this.catOffset = 0;
         this.catWidth = CustomFontUtil.getStringWidth(Category.MOVEMENT.name());
 
         for(Category cat : Category.values()) {
-            this.cat.add(new CatButton(this.barX + 1, this.barY + 1, this.catOffset, this.catWidth, cat.name()));
+            this.cat.add(new CatButton(this.barX + 1, this.barY + 1, this.catOffset, this.catWidth, cat.name(), this, cat));
 
             this.catOffset += CustomFontUtil.getFontHeight() + 2;
         }
@@ -61,19 +64,20 @@ public class Frame {
     }
 
     public void updateComponent(int mouseX, int mouseY) {
-
+        this.cat.stream().forEach(catButton -> {
+            catButton.updateComponent(mouseX, mouseY);
+        });
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-
-
-/*        if(isMouseOnFrame(mouseX, mouseY)) {
-            if(isMouseOnCategoryFrame(mouseX, mouseY) && button == 0) {
-                 this.cat.stream().filter(catButton -> catButton.isListen()).forEach(catButton -> {
-                     catButton.setListen(false);
-                 });
+        if(isMouseOnCategoryFrame(mouseX, mouseY)) {
+            if (this.listenCat != null) {
+                System.out.println("4");
+                this.listenCat.setListen(false);
+            } else {
+                System.out.println("5");
             }
-        }*/
+        }
 
         mouseClickedComponent(mouseX, mouseY, button);
     }
@@ -85,7 +89,7 @@ public class Frame {
     }
 
     public boolean isMouseOnCategoryFrame(int x, int y) {
-        if(x > this.barX && x < this.barX + 2 + fr.getStringWidth(Category.MOVEMENT.name()) && y > this.barY && y < this.barY + this.catOffset) return true;
+        if(x > this.barX && x < this.barX + 2 + CustomFontUtil.getStringWidth(Category.MOVEMENT.name()) && y > this.barY && y < this.barY + this.catOffset) return true;
 
         return false;
     }
@@ -104,5 +108,81 @@ public class Frame {
 
     private void setOff(int offset) {
         this.catOffset += offset;
+    }
+
+    public String getCatListenName() {
+        return this.listenCat.getName();
+    }
+
+    public CatButton getCatListen() {
+        return this.listenCat;
+    }
+
+    public void setListenCat(CatButton cat) {
+        this.listenCat = cat;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getBarX() {
+        return barX;
+    }
+
+    public void setBarX(int barX) {
+        this.barX = barX;
+    }
+
+    public int getBarY() {
+        return barY;
+    }
+
+    public void setBarY(int barY) {
+        this.barY = barY;
+    }
+
+    public int getCatOffset() {
+        return catOffset;
+    }
+
+    public void setCatOffset(int catOffset) {
+        this.catOffset = catOffset;
+    }
+
+    public int getCatWidth() {
+        return catWidth;
+    }
+
+    public void setCatWidth(int catWidth) {
+        this.catWidth = catWidth;
+    }
+
+    public int getHeigth() {
+        return heigth;
+    }
+
+    public void setHeigth(int heigth) {
+        this.heigth = heigth;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 }

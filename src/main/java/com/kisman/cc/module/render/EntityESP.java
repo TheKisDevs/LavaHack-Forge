@@ -3,7 +3,6 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.util.SettingUtil;
 
@@ -12,10 +11,7 @@ import java.util.Arrays;
 
 import com.kisman.cc.Kisman;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityExpBottle;
 import net.minecraft.entity.item.EntityItem;
@@ -23,12 +19,8 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.ServerStatusResponse.Players;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import i.gishreloaded.gishcode.utils.*;
-import i.gishreloaded.gishcode.managers.*;
-import i.gishreloaded.gishcode.wrappers.*;
 
 public class EntityESP extends Module{
     public EntityESP() {

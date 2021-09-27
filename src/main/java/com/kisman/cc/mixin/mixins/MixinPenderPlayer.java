@@ -59,7 +59,7 @@ public abstract class MixinPenderPlayer extends RenderLivingBase<AbstractClientP
     @Inject(method = "doRender", at = @At(value = "JUMP", ordinal = 1), cancellable = true)
     public void render(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         if(!entity.isUser() || this.renderManager.renderViewEntity == entity) {
-            if(Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Render").getValBoolean()) {
+            if(Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Render").getValBoolean() && entity != Minecraft.getMinecraft().player) {
                 double d0 = y;
 
                 if(entity.isSneaking()) {
