@@ -12,7 +12,7 @@ public class NewGui extends GuiScreen {
     private Frame frame;
 
     public NewGui() {
-        this.frame = new Frame(1, 1, 250, 300, fontRenderer);
+        this.frame = new Frame(1, 1, 250, 400, fontRenderer);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class NewGui extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+        this.frame.keyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class NewGui extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
+        this.frame.mouseReleased(mouseX, mouseY, state);
     }
 
     @Override

@@ -20,6 +20,7 @@ public class CatButton {
     private int moduleOffset;
 
     private Category cat;
+    private ModuleButton listenSet;
 
     private int x;
     private int y;
@@ -29,6 +30,7 @@ public class CatButton {
     private String name;
 
     private boolean listen;
+    private boolean listenSetb;
     private boolean hover;
 
     private Frame parent;
@@ -56,7 +58,6 @@ public class CatButton {
             this.modules.add(new ModuleButton(this.moduleX, this.moduleY, this.moduleOffset, module.getName(), module, this));
 
             this.moduleOffset += CustomFontUtil.getFontHeight() + 2;
-            System.out.println(this.moduleOffset);
         });
     }
 
@@ -82,6 +83,14 @@ public class CatButton {
         this.hover = isMouseOnButton(mouseX, mouseY);
     }
 
+    public void keyTyped(char typedChar, int keyCode) {
+        if(this.listen) {
+            for (ModuleButton mod : modules) {
+                mod.keyTyped(typedChar, keyCode);
+            }
+        }
+    }
+
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) {
 
@@ -92,16 +101,37 @@ public class CatButton {
             return;
         }
 
-        System.out.println("8888888888");
-
-        if(this.parent.getCatListen() == this) {
-            System.out.println("ezzzzzz8888888");
-            for(ModuleButton mod : this.modules) {
-                System.out.println("65477568568");
-                mod.mouseClicked(mouseX, mouseY, button);
-                System.out.println("uuuu");
+        if(da(mouseX, mouseY) && button == 1) {
+            if(this.listenSet != null) {
+//                this.listenSet.setListen(false);
+//                this.listenSet.setListenSet(null);
+                for(ModuleButton mod : this.modules) {
+                    mod.setListen(false);
+                }
             }
         }
+
+        if(this.parent.getCatListen() == this) {
+            for(ModuleButton mod : this.modules) {
+                mod.mouseClicked(mouseX, mouseY, button);
+            }
+        }
+    }
+
+    public void mouseReleased(int mouseX, int mouseY, int button) {
+        if(this.listen) {
+            for(ModuleButton mod : this.modules) {
+                mod.mouseReleased(mouseX, mouseY, button);
+            }
+        }
+    }
+
+    public boolean da(int x, int y) {
+        if(x > this.moduleX && x < this.parent.getX() + 200 && y > this.moduleY && y < this.moduleY + this.offset) {
+            return true;
+        }
+
+        return false;
     }
 
     public boolean isMouseOnButton(int x, int y) {
@@ -110,7 +140,7 @@ public class CatButton {
         return false;
     }
 
-    public boolean isMouseOnModuleFrame(int x, int y) {
+    private boolean isMouseOnModuleFrame(int x, int y) {
         if(x > this.moduleX - 1 && x < this.moduleX + 100 + 1 && y > this.moduleY - 1 && y < this.moduleY + this.offset + 1) return true;
 
         return false;
@@ -126,5 +156,21 @@ public class CatButton {
 
     public String getName() {
         return this.name;
+    }
+
+    public ModuleButton getListenSet() {
+        return listenSet;
+    }
+
+    public void setListenSet(ModuleButton listenSet) {
+        this.listenSet = listenSet;
+    }
+
+    public boolean isListenSetB() {
+        return listenSetb;
+    }
+
+    public void setListenSetB(boolean listenSet) {
+        this.listenSetb = listenSet;
     }
 }

@@ -69,17 +69,24 @@ public class Frame {
         });
     }
 
+    public void keyTyped(char typedChar, int keyCode) {
+        for(CatButton cat : this.cat) {
+            cat.keyTyped(typedChar, keyCode);
+        }
+    }
+
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnCategoryFrame(mouseX, mouseY)) {
             if (this.listenCat != null) {
-                System.out.println("4");
                 this.listenCat.setListen(false);
-            } else {
-                System.out.println("5");
             }
         }
 
         mouseClickedComponent(mouseX, mouseY, button);
+    }
+
+    public void mouseReleased(int mouseX, int mouseY, int button) {
+        mouseReleasedComponent(mouseX, mouseY, button);
     }
 
     public boolean isMouseOnFrame(int x, int y) {
@@ -103,6 +110,12 @@ public class Frame {
     private void mouseClickedComponent(int mouseX, int mouseY, int button) {
         for(CatButton cat : this.cat) {
             cat.mouseClicked(mouseX, mouseY, button);
+        }
+    }
+
+    private void mouseReleasedComponent(int mouseX, int mouseY, int button) {
+        for(CatButton cat : this.cat) {
+            cat.mouseReleased(mouseX, mouseY, button);
         }
     }
 
