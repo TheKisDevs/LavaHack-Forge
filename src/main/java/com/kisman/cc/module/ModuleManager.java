@@ -65,6 +65,7 @@ public class ModuleManager {
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
 		modules.add(new IceSpeed());
+		modules.add(new Jesus());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new Parkour());

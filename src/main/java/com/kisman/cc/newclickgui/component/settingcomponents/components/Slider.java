@@ -32,7 +32,7 @@ public class Slider extends Component {
         this.heigth = heigth;
         this.offset = offset;
 
-        this.sX = this.x + 1;
+        this.sX = this.x;
         this.sY = (this.y + this.offset + 1) + (CustomFontUtil.getFontHeight() + ((this.heigth - CustomFontUtil.getFontHeight() - 6) / 2 + 2));
 
         this.button = button;
@@ -41,11 +41,11 @@ public class Slider extends Component {
     }
 
     public void renderComponent() {
-        GuiScreen.drawRect(this.x, this.y + this.offset, this.x + this.width, this.y + this.offset + this.heigth, -1);
+//        GuiScreen.drawRect(this.x, this.y + this.offset, this.x + this.width, this.y + this.offset + this.heigth, -1);
 
         CustomFontUtil.drawStringWithShadow(this.set.getName(), this.x + 1, this.y + this.offset + 1, 0x303030);
 
-        GuiScreen
+        GuiScreen.drawRect(this.sX, this.sY, this.sX + 200, this.sY + 6, -1);
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
