@@ -28,9 +28,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RenderPlayer.class)
-public abstract class MixinPenderPlayer extends RenderLivingBase<AbstractClientPlayer>{
+public abstract class MixinPenderPlayer {//extends RenderLivingBase<AbstractClientPlayer>{
 
-    @Shadow
+/*    @Shadow
     private final boolean smallArms;
 
     public MixinPenderPlayer(RenderManager renderManager)
@@ -58,7 +58,7 @@ public abstract class MixinPenderPlayer extends RenderLivingBase<AbstractClientP
 
     @Inject(method = "doRender", at = @At(value = "JUMP", ordinal = 1), cancellable = true)
     public void render(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        if(!entity.isUser() || this.renderManager.renderViewEntity == entity) {
+        if((!entity.isUser() || this.renderManager.renderViewEntity == entity) && Minecraft.getMinecraft().player != entity) {
             if(Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Render").getValBoolean() && entity != Minecraft.getMinecraft().player) {
                 double d0 = y;
 
@@ -78,9 +78,9 @@ public abstract class MixinPenderPlayer extends RenderLivingBase<AbstractClientP
                 GLUtil.disableCharmsProfile();
             }
         }
-    }
+    }*/
 
-    private void setModelVisibilities(AbstractClientPlayer clientPlayer)
+    /*private void setModelVisibilities(AbstractClientPlayer clientPlayer)
     {
         ModelPlayer modelplayer = this.getMainModel();
 
@@ -155,7 +155,7 @@ public abstract class MixinPenderPlayer extends RenderLivingBase<AbstractClientP
                 modelplayer.leftArmPose = modelbiped$armpose;
             }
         }
-    }
+    }*/
 
     @Inject(method = "preRenderCallback", at = @At("HEAD"))
     public void renderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime, CallbackInfo ci) {

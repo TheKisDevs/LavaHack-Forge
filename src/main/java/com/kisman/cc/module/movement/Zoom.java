@@ -1,4 +1,4 @@
-package com.kisman.cc.module.render;
+package com.kisman.cc.module.movement;
 
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class Zoom extends Module {
     public Zoom() {
-        super("Zoom", "Zoom", Category.RENDER);
+        super("Zoom", "Zoom", Category.MOVEMENT);
     }
 
     public void update() {

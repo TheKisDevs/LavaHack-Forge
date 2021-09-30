@@ -26,7 +26,7 @@ public class BindButton {
     }
 
     public void renderComponent() {
-        CustomFontUtil.drawStringWithShadow(this.str, this.x, this.y + this.offset, this.listen ? new Color(255, 0, 0, 255).getRGB() : new Color(59, 59, 59, 255).getRGB());
+        CustomFontUtil.drawStringWithShadow(this.str, this.x, this.y + this.offset, this.listen ? new Color(0x6156CB).hashCode() : new Color(0x202020).hashCode());
     }
 
     public void updateComponent(int mouseX, int mouseY) {

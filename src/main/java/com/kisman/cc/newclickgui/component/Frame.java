@@ -57,8 +57,8 @@ public class Frame {
     }
 
     public void renderComponent() {
-        GuiScreen.drawRect(x, y, x + width, y + heigth, b1.getRGB());
-        GuiScreen.drawRect(x + 7, y + 7, x + width - 7, y + heigth - 7, b2.getRGB());
+        GuiScreen.drawRect(x, y, x + width, y + heigth, new Color(0x252525).hashCode());
+        GuiScreen.drawRect(x + 7, y + 7, x + width - 7, y + heigth - 7, new Color(0x151515).hashCode());
 
         renderCategories();
     }

@@ -60,7 +60,6 @@ public class ModuleManager {
 		modules.add(new ViemModel());
 		modules.add(new Particle());
 		modules.add(new Spin());
-		modules.add(new Zoom());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
@@ -74,6 +73,7 @@ public class ModuleManager {
 		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
+		modules.add(new Zoom());
 		//player
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());

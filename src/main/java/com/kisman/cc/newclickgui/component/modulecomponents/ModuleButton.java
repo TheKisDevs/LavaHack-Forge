@@ -48,9 +48,9 @@ public class ModuleButton {
     }
 
     public void renderComponent() {
-        if(this.hover) GuiScreen.drawRect(this.x, this.y + this.offset, this.x + CustomFontUtil.getStringWidth(this.name) + 1, this.y + this.offset + 2 + CustomFontUtil.getFontHeight(), this.b1.getRGB());
+        if(this.hover) GuiScreen.drawRect(this.x, this.y + this.offset, this.x + CustomFontUtil.getStringWidth(this.name) + 1, this.y + this.offset + 2 + CustomFontUtil.getFontHeight(), 0x252525);
 
-        CustomFontUtil.drawStringWithShadow(this.name, this.x, this.y + this.offset, this.toggle ? new Color(255, 0, 0, 255).getRGB() : -1);
+        CustomFontUtil.drawStringWithShadow(this.name, this.x, this.y + this.offset, this.toggle ? 0x6156CB : 0x303030);
 
         this.bind.renderComponent();
 
