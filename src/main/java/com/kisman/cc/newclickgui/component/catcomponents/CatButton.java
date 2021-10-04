@@ -92,21 +92,17 @@ public class CatButton {
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) {
 
-            this.listen = !this.listen;
 
-            if(this.listen) this.parent.setListenCat(this);
 
-            return;
-        }
 
         if(da(mouseX, mouseY) && button == 1) {
             if(this.listenSet != null) {
-//                this.listenSet.setListen(false);
-//                this.listenSet.setListenSet(null);
+                this.listenSet.setListen(false);
+                this.listenSet.setListenSet(null);
                 for(ModuleButton mod : this.modules) {
                     mod.setListen(false);
+                    System.out.println("1");
                 }
             }
         }
@@ -116,6 +112,17 @@ public class CatButton {
                 mod.mouseClicked(mouseX, mouseY, button);
             }
         }
+
+        if(isMouseOnButton(mouseX, mouseY) && button == 0) {
+
+            this.listen = !this.listen;
+
+            if(this.listen) this.parent.setListenCat(this);
+
+            return;
+        }
+
+
     }
 
     public void mouseReleased(int mouseX, int mouseY, int button) {

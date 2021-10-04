@@ -1,6 +1,8 @@
 package com.kisman.cc.module.client;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.Event;
+import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.EventWorldRender;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
@@ -10,12 +12,17 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.oldclickgui.*;
 
+/*import net.minecraft.network.play.INetHandlerPlayServer;
+import net.minecraft.network.play.client.*;
+import net.minecraft.util.text.ITextComponent;*/
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import java.awt.Color;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+//import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ExampleModule extends Module {
     public ExampleModule() {
@@ -47,9 +54,22 @@ public class ExampleModule extends Module {
     //     RenderUtil.drawLine(1, 1, 100, 100, 10f, 0xFFFFFF);
     // }
 
+
     public void onEnable() {
-        mc.displayGuiScreen(Kisman.instance.newGui);
-        this.setToggled(false);
+        Kisman.EVENT_BUS.subscribe(playerMotionUpdateListener);
+
+//        mc.player
+
+/*        mc.displayGuiScreen(Kisman.instance.newGui);
+        this.setToggled(false);*/
+
+/*        mc.player.connection.sendPacket(new CPacketPlayerTryUseItem().processPacket(new INetHandlerPlayServer() {
+
+            @Override
+            public void processTryUseItem(CPacketPlayerTryUseItem packetIn) {
+
+            }
+        }));*/
 //        mc.displayGuiScreen(Kisman.instance.blockGui);
         // super.onEnable();
         // mc.displayGuiScreen(Kisman.instance.guiConsole);
@@ -61,5 +81,26 @@ public class ExampleModule extends Module {
         //colorPicker.draw(Mouse.getX(), Display.getHeight() - Mouse.getY());
         //ColorPicker colorPicker = new ColorPicker();
         //mc.displayGuiScreen(colorPicker);//Kisman.instance.colorPicker
+    }
+
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(playerMotionUpdateListener);
+    }
+
+    @EventHandler
+    private final Listener<EventPlayerMotionUpdate> playerMotionUpdateListener = new Listener<>(event -> {
+        mc.player.sendChatMessage("event player motion update is done!");
+
+        if(event.getEra() != Event.Era.PRE) {
+            return;
+        }
+
+        mc.player.sendChatMessage("6666");
+    });
+
+    public void motion(EventPlayerMotionUpdate event) {
+        mc.player.sendChatMessage(
+                "?"
+        );
     }
 }

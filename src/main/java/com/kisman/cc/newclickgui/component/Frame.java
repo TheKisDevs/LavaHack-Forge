@@ -39,7 +39,7 @@ public class Frame {
         this.barX = x + 7;
         this.barY = y + 7;
         this.heigth = heigth;
-        this.width = width;
+        this.width = width + 6;
 
         this.fr = fr;
 

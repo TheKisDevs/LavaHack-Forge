@@ -25,6 +25,8 @@ public class Slider extends Component {
 
     private boolean dragging;
 
+    private double renderWidth;
+
     public Slider(int x, int y, int offset, int width, int heigth, SettingButton button, Setting set, Module mod) {
         this.x = x;
         this.y = y;
@@ -33,7 +35,8 @@ public class Slider extends Component {
         this.offset = offset;
 
         this.sX = this.x;
-        this.sY = (this.y + this.offset + 1) + (CustomFontUtil.getFontHeight() + ((this.heigth - CustomFontUtil.getFontHeight() - 6) / 2 + 2));
+        this.sY = this.y + this.offset + 2 + CustomFontUtil.getFontHeight();
+//        this.sY = (this.y + this.offset + 1) + (CustomFontUtil.getFontHeight() + ((this.heigth - CustomFontUtil.getFontHeight() - 6) / 2 + 2));
 
         this.button = button;
         this.set = set;
@@ -45,7 +48,26 @@ public class Slider extends Component {
 
         CustomFontUtil.drawStringWithShadow(this.set.getName(), this.x + 1, this.y + this.offset + 1, 0x303030);
 
-        GuiScreen.drawRect(this.sX, this.sY, this.sX + 200, this.sY + 6, -1);
+        GuiScreen.drawRect(this.sX - 1, this.sY, this.sX + (int) this.renderWidth - 1, this.sY + 1, -1);
+    }
+
+    public void updateComponent(int mouseX, int mouseY) {
+        double diff = Math.min(200, Math.max(0, mouseX - this.x));
+
+        double min = set.getMin();
+        double max = set.getMax();
+
+        renderWidth = (200) * (set.getValDouble() - min) / (max - min);
+
+        if (dragging) {
+            if (diff == 0) {
+                set.setValDouble(set.getMin());
+            }
+            else {
+                double newValue = roundToPlace(((diff / 200) * (max - min) + min), 2);
+                set.setValDouble(newValue);
+            }
+        }
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
@@ -71,14 +93,14 @@ public class Slider extends Component {
     }
 
     public boolean isMouseOnButtonD(int x, int y) {
-        if(x > this.x && x < this.x + (200 / 2 + 1) && y > this.y && y < this.y + 12) {
+        if(x > this.x && x < this.x + (200 / 2 + 1) && y > this.y + this.offset && y < this.y + this.offset + 12) {
             return true;
         }
         return false;
     }
 
     public boolean isMouseOnButtonI(int x, int y) {
-        if(x > this.x + 200 / 2 && x < this.x + 200 && y > this.y && y < this.y + 12) {
+        if(x > this.x + 200 / 2 && x < this.x + 200 && y > this.y && y < this.y + this.offset + this.offset + 12) {
             return true;
         }
         return false;

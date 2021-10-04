@@ -4,10 +4,13 @@
   "package": "com.kisman.cc.mixin.mixins",
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
+    "MixinAbstractClientPlayer",
+    "MixinEntityPlayerSP",
     "MixinGuiMainMenu",
     "MixinItemRenderer",
     "MixinMinecraft",
     "MixinNetworkManager",
-    "MixinPenderPlayer"
+    "MixinPenderPlayer",
+    "MixinRendererLivingEntity"
   ]
 }

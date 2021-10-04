@@ -1,3 +1,4 @@
+/*
 package i.gishreloaded.gishcode.utils.system;
 
 import i.gishreloaded.gishcode.EventsHandler;
@@ -36,4 +37,4 @@ public class Connection extends ChannelDuplexHandler {
         if (!eventHandler.onPacket(packet, Side.OUT)) return;
         super.write(ctx, packet, promise);
     }
-}
+}*/

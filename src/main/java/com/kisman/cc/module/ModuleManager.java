@@ -2,6 +2,7 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
+import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -30,12 +31,14 @@ public class ModuleManager {
 		modules.add(new Anchor());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
+		modules.add(new AutoCrystal());
 		modules.add(new AutoTotem());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
 		modules.add(new Rubberband());
 		modules.add(new Surround());
 		//client
+		modules.add(new Cape());
 		modules.add(new ClickGUI());
 		modules.add(new Color());
 		modules.add(new Console());
@@ -51,15 +54,17 @@ public class ModuleManager {
 		modules.add(new BlockOutline());
 		modules.add(new CustomFov());
 		modules.add(new Charms());
+		modules.add(new ChinaHat());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
 		modules.add(new KismanESP());
 		modules.add(new NoRender());
+		modules.add(new SkyColor());
+		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new ViemModel());
 		modules.add(new Particle());
-		modules.add(new Spin());
 		//movement
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
@@ -78,10 +83,15 @@ public class ModuleManager {
 		//player
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
+		modules.add(new FastPlace());
 		modules.add(new PacketCancel());
+		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
 //		modules.add(new BowExploit());
+		modules.add(new CactusLeave());
+		modules.add(new KismansDupe());
+		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
@@ -134,5 +144,11 @@ public class ModuleManager {
 				m.render();
 			}
 		}
+	}
+
+	public void onMotion(EventPlayerMotionUpdate event) {
+		this.modules.stream().filter(module -> module.isToggled()).forEach(module -> {
+			module.motion(event);
+		});
 	}
 }

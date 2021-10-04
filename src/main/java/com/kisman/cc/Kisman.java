@@ -16,9 +16,9 @@ import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
-import i.gishreloaded.gishcode.EventsHandler;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
+import net.minecraft.util.Timer;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +41,7 @@ public class Kisman
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
+
     public ModuleManager moduleManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
@@ -53,7 +54,6 @@ public class Kisman
     public NewGui newGui;
     public CustomFontRenderer customFontRenderer;
     public CommandManager commandManager;
-    public EventsHandler eventsHandler;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -70,7 +70,6 @@ public class Kisman
         newGui = new NewGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
         commandManager = new CommandManager();
-        eventsHandler = new EventsHandler();
 
         //load configs
         LoadConfig.init();

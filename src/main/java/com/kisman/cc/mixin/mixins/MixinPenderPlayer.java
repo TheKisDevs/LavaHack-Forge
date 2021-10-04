@@ -28,9 +28,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RenderPlayer.class)
-public abstract class MixinPenderPlayer {//extends RenderLivingBase<AbstractClientPlayer>{
+public class MixinPenderPlayer {//extends RenderLivingBase<AbstractClientPlayer>
 
-/*    @Shadow
+    /*@Shadow
     private final boolean smallArms;
 
     public MixinPenderPlayer(RenderManager renderManager)
@@ -45,8 +45,8 @@ public abstract class MixinPenderPlayer {//extends RenderLivingBase<AbstractClie
         this.addLayer(new LayerBipedArmor(this));
         this.addLayer(new LayerHeldItem(this));
         this.addLayer(new LayerArrow(this));
-//        this.addLayer(new LayerDeadmau5Head());
-//        this.addLayer(new LayerCape(this));
+//        this.addLayer(new LayerDeadmau5Head(this));
+//        this.addLayer(new LayerCape());
         this.addLayer(new LayerCustomHead(this.getMainModel().bipedHead));
         this.addLayer(new LayerElytra(this));
         this.addLayer(new LayerEntityOnShoulder(renderManager));
@@ -78,9 +78,9 @@ public abstract class MixinPenderPlayer {//extends RenderLivingBase<AbstractClie
                 GLUtil.disableCharmsProfile();
             }
         }
-    }*/
+    }
 
-    /*private void setModelVisibilities(AbstractClientPlayer clientPlayer)
+    private void setModelVisibilities(AbstractClientPlayer clientPlayer)
     {
         ModelPlayer modelplayer = this.getMainModel();
 
@@ -172,17 +172,17 @@ public abstract class MixinPenderPlayer {//extends RenderLivingBase<AbstractClie
     @Overwrite
     public ResourceLocation getEntityTexture(AbstractClientPlayer entity) {
         if (Kisman.instance.moduleManager.getModule("KismanESP").isToggled() && entity != Minecraft.getMinecraft().player) {
-            glColor4f(1, 1, 1, 1);
+            glColor4f(1f, 1f, 1f, 1f);
             if (entity.getName().equalsIgnoreCase("_kisman_")) {
                 return new ResourceLocation("kismancc:kisman/kisman.png");
             } else {
                 return new ResourceLocation("kismancc:kisman/nokisman.png");
             }
         } else if(Kisman.instance.moduleManager.getModule("Charms").isToggled()  && !Kisman.instance.moduleManager.getModule("KismanESP").isToggled() && entity != Minecraft.getMinecraft().player && Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Texture").getValBoolean()) {
-            glColor4f(1, 1, 1, 0.5f);
+            glColor4f(1f, 1f, 1f, 0.5f);
             return new ResourceLocation("kismancc:charms/charms1.png");
         } else {
-            glColor4f(1, 1, 1, 1);
+            glColor4f(1f, 1f, 1f, 1f);
             return entity.getLocationSkin();
         }
     }

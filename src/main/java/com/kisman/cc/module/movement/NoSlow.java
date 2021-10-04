@@ -13,6 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.RandomUtils;
 
 public class NoSlow extends Module {
+    //TODO: update noslow
+
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
 

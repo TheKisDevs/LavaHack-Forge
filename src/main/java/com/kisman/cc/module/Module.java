@@ -2,13 +2,16 @@ package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
 
-import i.gishreloaded.gishcode.utils.system.Connection;
+import com.kisman.cc.event.events.EventPlayerMotionUpdate;
+import com.kisman.cc.settings.SettingsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
 public class Module {
 
 	protected static Minecraft mc = Minecraft.getMinecraft();
+
+	protected static SettingsManager setmgr = Kisman.instance.settingsManager;
 
 	private String name, description;
 	private int key;
@@ -83,5 +86,5 @@ public class Module {
 
 	public void update(){}
 	public void render(){}
-	public boolean packet(Object packet, Connection.Side side){ return true; }
+	public void motion(EventPlayerMotionUpdate event){}
 }

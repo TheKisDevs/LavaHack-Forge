@@ -85,9 +85,15 @@ public class ModuleButton {
         if(isMouseOnButton(this.mouseX, this.mouseY) && button == 1) {
             this.listen = !this.listen;
 
-            if(this.listen) this.catParent.setListenSet(this);
+            if(this.listen) {
+                this.catParent.setListenSet(this);
+                return;
+            }
 
-            return;
+            if(!this.listen) {
+                this.catParent.setListenSet(null);
+                return;
+            }
         }
 
         this.bind.mouseClicked(mouseX, mouseY, button);

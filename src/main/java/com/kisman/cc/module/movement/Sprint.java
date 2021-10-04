@@ -6,8 +6,12 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 
 public class Sprint extends Module {
+	public static Sprint instance;
+
 	public Sprint() {
 		super("Sprint", "i like sprinting", Category.MOVEMENT);
+
+		instance = this;
 
 		Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
 	}

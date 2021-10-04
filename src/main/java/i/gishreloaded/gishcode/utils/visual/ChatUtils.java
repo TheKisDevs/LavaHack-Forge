@@ -19,7 +19,7 @@ public class ChatUtils {
 		if(Wrapper.INSTANCE.player() == null || Wrapper.INSTANCE.mc().ingameGUI.getChatGUI() == null)
 			return;
 			Wrapper.INSTANCE.mc().ingameGUI.getChatGUI()
-				.printChatMessage(new TextComponentTranslation("")
+				.printChatMessage(new TextComponentTranslation(TextFormatting.WHITE + "")
 					.appendSibling(component));
 	}
 
@@ -30,6 +30,10 @@ public class ChatUtils {
 	public static void message(Object message)
 	{
 		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.NAME + TextFormatting.GRAY + "] " + message));
+	}
+
+	public static void complete(Object message) {
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GREEN + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void warning(Object message)

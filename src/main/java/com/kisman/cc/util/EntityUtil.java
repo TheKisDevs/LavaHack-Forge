@@ -1,5 +1,6 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.Kisman;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
@@ -173,5 +174,13 @@ public class EntityUtil {
             }
         }
         return blocks;
+    }
+
+    public static void setTimer(float speed) {
+        mc.timer.tickLength = 50.0f / speed;
+    }
+
+    public static void resetTimer() {
+        mc.timer.tickLength = 50;
     }
 }

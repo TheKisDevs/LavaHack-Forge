@@ -26,6 +26,8 @@ public class EntityESP extends Module{
     public EntityESP() {
         super("EntityESP", "esp 1", Category.RENDER);
 
+        //TODO: optimisate settings
+
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 100, 10, 260, true));
         //SettingUtil.ColorSetting(this, "Players");
         Kisman.instance.settingsManager.rSetting(new Setting("PlayersLine", this, "Players"));

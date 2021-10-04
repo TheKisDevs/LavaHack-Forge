@@ -12,7 +12,7 @@ public class NewGui extends GuiScreen {
     private Frame frame;
 
     public NewGui() {
-        this.frame = new Frame(1, 1, 250, 400, fontRenderer);
+        this.frame = new Frame(1, 1, 250 + 6, 400, fontRenderer);
     }
 
     @Override

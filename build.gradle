@@ -102,7 +102,7 @@ jar {
                 'FMLCorePluginContainsFMLMod': 'true',
                 'FMLCorePlugin': 'Main',//com.kisman.cc.mixin.KismanMixinLoader
                 'ForceLoadAsMod': 'true',
-                'FMLAT': '***_at.cfg'
+                'FMLAT': 'kisman_at.cfg'
         )
     }
 }

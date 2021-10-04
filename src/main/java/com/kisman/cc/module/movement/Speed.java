@@ -7,32 +7,53 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.*;
 
+import com.kisman.cc.util.EntityUtil;
+import com.kisman.cc.util.PlayerUtil;
 import i.gishreloaded.gishcode.utils.Utils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
+import ibxm.Player;
 import net.minecraft.util.math.MathHelper;
 
-public class Speed extends Module{
+public class Speed extends Module {
+    private float yPortSpeed;
+
+    private Setting yPoryLine = new Setting("YPortLine", this, "YPort");
+    private Setting yWater = new Setting("Water", this, false);
+    private Setting yLava = new Setting("Lava", this, false);
+
     public Speed() {
         super("Speed", "SPID", Category.MOVEMENT);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("SpeedMode", this, "Strafe", new ArrayList<String>(Arrays.asList("Strafe", "OnGround"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort"))));
+
+        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false));
+
+        setmgr.rSetting(yPoryLine);
+        setmgr.rSetting(yWater);
+        setmgr.rSetting(yLava);
+    }
+
+    public void onDisable() {
+        EntityUtil.resetTimer();
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         String mode = Kisman.instance.settingsManager.getSettingByName(this, "SpeedMode").getValString();
 
         boolean boost = Math.abs(Wrapper.INSTANCE.player().rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
 
-        if(mc.player == null && mc.world == null) return;
+        this.yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
 
-        if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5) {
-            if(mode.equalsIgnoreCase("OnGround") && mc.player.onGround) {
+        if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5 && mode.equalsIgnoreCase("Strafe")) {
+            if(mc.player.onGround) {
                 mc.player.motionY = 0.405;
                 float f = Utils.getDirection();
 
-                mc.player.motionX -= (double)(MathHelper.sin(f) * 0.2F);
-                mc.player.motionZ += (double)(MathHelper.cos(f) * 0.2F);
-            } else if(mode.equalsIgnoreCase("OnGround")) {
+                mc.player.motionX -= (double) (MathHelper.sin(f) * 0.2F);
+                mc.player.motionZ += (double) (MathHelper.cos(f) * 0.2F);
+            } else {
                 double currentSpeed = Math.sqrt(Wrapper.INSTANCE.player().motionX * Wrapper.INSTANCE.player().motionX + Wrapper.INSTANCE.player().motionZ * Wrapper.INSTANCE.player().motionZ);
                 double speed = boost ? 1.0064 : 1.001;
   
@@ -41,6 +62,25 @@ public class Speed extends Module{
                 Wrapper.INSTANCE.player().motionX = -Math.sin(direction) * speed * currentSpeed;
                 Wrapper.INSTANCE.player().motionZ = Math.cos(direction) * speed * currentSpeed;
             }
+        }
+
+        if(mode.equalsIgnoreCase("YPort")) {
+            handleYPortSpeed();
+        }
+    }
+
+    private void handleYPortSpeed() {
+        if(!PlayerUtil.isMoving(mc.player) || (mc.player.isInWater() && !yWater.getValBoolean()) && (mc.player.isInLava() && !yLava.getValBoolean()) || mc.player.collidedHorizontally) {
+            return;
+        }
+
+        if(mc.player.onGround) {
+            EntityUtil.setTimer(1.15f);
+            mc.player.jump();
+            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + this.yPortSpeed);
+        } else {
+            mc.player.motionY = -1;
+            EntityUtil.resetTimer();
         }
     }
 }

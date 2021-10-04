@@ -1,7 +1,7 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
- import com.kisman.cc.event.events.*;
+import com.kisman.cc.event.events.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +10,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.input.Keyboard;
 
 public class EventProcessor {
     public EventProcessor() {
@@ -49,6 +48,4 @@ public class EventProcessor {
     public void onRenderWorld(RenderWorldLastEvent event) {
         Kisman.EVENT_BUS.post(this);
     }
-
-
 }

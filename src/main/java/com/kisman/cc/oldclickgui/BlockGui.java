@@ -1,7 +1,6 @@
 package com.kisman.cc.oldclickgui;
 
 import com.kisman.cc.oldclickgui.block.Frame;
-import i.gishreloaded.gishcode.utils.system.Connection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
