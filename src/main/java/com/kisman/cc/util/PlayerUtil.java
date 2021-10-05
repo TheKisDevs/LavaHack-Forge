@@ -5,6 +5,7 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemFood;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -218,5 +219,24 @@ public class PlayerUtil {
         double[] dir = forward(speed);
         entity.motionX = dir[0];
         entity.motionZ = dir[1];
+    }
+
+    public static boolean IsEating() {
+        return mc.player != null && mc.player.getHeldItemMainhand().getItem() instanceof ItemFood && mc.player.isHandActive();
+    }
+
+    public static boolean isCurrentViewEntity() {
+        return mc.getRenderViewEntity() == mc.player;
+    }
+
+    public static boolean CanSeeBlock(BlockPos p_Pos) {
+        if (mc.player == null)
+            return false;
+
+        return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(p_Pos.getX(), p_Pos.getY(), p_Pos.getZ()), false, true, false) == null;
+    }
+
+    public static BlockPos GetLocalPlayerPosFloored() {
+        return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 }

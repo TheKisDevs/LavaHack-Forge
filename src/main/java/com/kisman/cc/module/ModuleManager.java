@@ -28,7 +28,7 @@ public class ModuleManager {
 
 	public void init() {
 		//combat
-		modules.add(new Anchor());
+		modules.add(new AimBot());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystal());
@@ -66,6 +66,7 @@ public class ModuleManager {
 		modules.add(new ViemModel());
 		modules.add(new Particle());
 		//movement
+		modules.add(new Anchor());
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
@@ -90,6 +91,7 @@ public class ModuleManager {
 		//exploit
 //		modules.add(new BowExploit());
 		modules.add(new CactusLeave());
+		modules.add(new Ghost());
 		modules.add(new KismansDupe());
 		modules.add(new PacketFly());
 		modules.add(new PacketMine());

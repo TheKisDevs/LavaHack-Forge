@@ -19,7 +19,7 @@ public class FakePlayer extends Module {
     public FakePlayer() {
         super("FakePlayer", "FakePlayer", Category.MISC);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Name", this, "Nevis_", "Nevis_", true));
+        Kisman.instance.settingsManager.rSetting(new Setting("Name", this, "FinLicorice", "FinLicorice", true));
 
         Kisman.instance.settingsManager.rSetting(new Setting("CopyInv", this, false));
     }
@@ -45,7 +45,12 @@ public class FakePlayer extends Module {
     public void onEnable() {
         this.name = Kisman.instance.settingsManager.getSettingByName(this, "Name").getValString();
 
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null && mc.world == null) {
+            if(super.isToggled()) {
+                super.setToggled(false);
+            }
+            return;
+        }
 
         boolean armor = Kisman.instance.settingsManager.getSettingByName(this, "CopyInv").getValBoolean();
 

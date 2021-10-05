@@ -6,6 +6,12 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.passive.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -22,6 +28,68 @@ import java.util.List;
 public class EntityUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static boolean isPassive(Entity e)
+    {
+        if (e instanceof EntityWolf && ((EntityWolf) e).isAngry())
+            return false;
+        if (e instanceof EntityAnimal || e instanceof EntityAgeable || e instanceof EntityTameable
+                || e instanceof EntityAmbientCreature || e instanceof EntitySquid)
+            return true;
+        if (e instanceof EntityIronGolem && ((EntityIronGolem) e).getRevengeTarget() == null)
+            return true;
+        return false;
+    }
+
+    public static boolean isMobAggressive(Entity entity)
+    {
+        if (entity instanceof EntityPigZombie)
+        {
+            // arms raised = aggressive, angry = either game or we have set the anger
+            // cooldown
+            if (((EntityPigZombie) entity).isArmsRaised() || ((EntityPigZombie) entity).isAngry())
+            {
+                return true;
+            }
+        }
+        else if (entity instanceof EntityWolf)
+        {
+            return ((EntityWolf) entity).isAngry()
+                    && !Minecraft.getMinecraft().player.equals(((EntityWolf) entity).getOwner());
+        }
+        else if (entity instanceof EntityEnderman)
+        {
+            return ((EntityEnderman) entity).isScreaming();
+        }
+        return isHostileMob(entity);
+    }
+
+    /**
+     * If the mob by default wont attack the player, but will if the player attacks
+     * it
+     */
+    public static boolean isNeutralMob(Entity entity)
+    {
+        return entity instanceof EntityPigZombie || entity instanceof EntityWolf || entity instanceof EntityEnderman;
+    }
+
+    /**
+     * If the mob is friendly (not aggressive)
+     */
+    public static boolean isFriendlyMob(Entity entity)
+    {
+        return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity))
+                || (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager
+                || entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
+    }
+
+    /**
+     * If the mob is hostile
+     */
+    public static boolean isHostileMob(Entity entity)
+    {
+        return (entity.isCreatureType(EnumCreatureType.MONSTER, false) && !EntityUtil.isNeutralMob(entity));
+    }
 
     public static Block isColliding(double posX, double posY, double posZ) {
         Block block = null;
@@ -182,5 +250,13 @@ public class EntityUtil {
 
     public static void resetTimer() {
         mc.timer.tickLength = 50;
+    }
+
+    public static double getDistance(double p_X, double p_Y, double p_Z, double x, double y, double z)
+    {
+        double d0 = p_X - x;
+        double d1 = p_Y - y;
+        double d2 = p_Z - z;
+        return (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
     }
 }
