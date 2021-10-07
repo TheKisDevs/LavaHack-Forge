@@ -12,6 +12,7 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.*;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,6 +29,10 @@ import java.util.List;
 public class EntityUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static float getHealth(EntityPlayer entity) {
+        return entity.getHealth();
+    }
 
     public static boolean isPassive(Entity e)
     {

@@ -16,12 +16,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BlockOutline extends Module {
+    public static BlockOutline instance;
+
     float[] color = new float[] {0.78f, 0.62f, 0.88f, 1f};
 
     String renderMode = "";
 
     public BlockOutline() {
         super("BlockOutline", "BlockOutline", Category.RENDER);
+
+        instance = this;
 
         Kisman.instance.settingsManager.rSetting(new Setting("RenderMode", this, "Outline", new ArrayList<>(Arrays.asList("Outline", "Box", "OutlineBox", "Flat"))));
 

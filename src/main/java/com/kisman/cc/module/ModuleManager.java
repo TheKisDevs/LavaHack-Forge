@@ -32,6 +32,7 @@ public class ModuleManager {
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystal());
+		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
@@ -43,6 +44,7 @@ public class ModuleManager {
 		modules.add(new Color());
 		modules.add(new Console());
 		modules.add(new CustomFont());
+		modules.add(new DiscordRPC());
 		modules.add(new HUD());
 //		modules.add(new NewGuiModue());
 		modules.add(new ExampleModule());
@@ -58,6 +60,7 @@ public class ModuleManager {
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
 		modules.add(new KismanESP());
+		modules.add(new NameTags());
 		modules.add(new NoRender());
 		modules.add(new SkyColor());
 		modules.add(new Spin());
@@ -85,6 +88,7 @@ public class ModuleManager {
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
 		modules.add(new FastPlace());
+		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
@@ -148,9 +152,9 @@ public class ModuleManager {
 		}
 	}
 
-	public void onMotion(EventPlayerMotionUpdate event) {
+/*	public void onMotion(EventPlayerMotionUpdate event) {
 		this.modules.stream().filter(module -> module.isToggled()).forEach(module -> {
 			module.motion(event);
 		});
-	}
+	}*/
 }

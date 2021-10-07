@@ -16,8 +16,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         EventPlayerMotionUpdate event = new EventPlayerMotionUpdate(Event.Era.PRE);
         Kisman.EVENT_BUS.post(event);
 
-        Kisman.instance.moduleManager.onMotion(event);
-
         if(event.isCancelled()) {
             ci.cancel();
         }
@@ -27,8 +25,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     public void onPostUpdateWalkingPlayer(CallbackInfo ci) {
         EventPlayerMotionUpdate event = new EventPlayerMotionUpdate(Event.Era.POST);
         Kisman.EVENT_BUS.post(event);
-
-        Kisman.instance.moduleManager.onMotion(event);
 
         if(event.isCancelled()) {
             ci.cancel();

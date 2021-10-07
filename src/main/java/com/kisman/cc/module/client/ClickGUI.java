@@ -8,9 +8,17 @@ import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
 
 public class ClickGUI extends Module {
+    public static ClickGUI instance;
+
+    public Setting scrollSpeed = new Setting("ScrollSpeed", this, 15, 1, 100, true);
+
     public ClickGUI() {
         super("ClickGUI", "ClickGUI", Category.CLIENT);
         this.setKey(Keyboard.KEY_U);
+
+        instance = this;
+
+        setmgr.rSetting(scrollSpeed);
 
         Kisman.instance.settingsManager.rSetting(new Setting("TestButton", this, false));
     }

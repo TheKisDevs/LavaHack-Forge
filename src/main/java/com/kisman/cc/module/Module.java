@@ -86,5 +86,4 @@ public class Module {
 
 	public void update(){}
 	public void render(){}
-	public void motion(EventPlayerMotionUpdate event){}
 }

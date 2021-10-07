@@ -1,11 +1,18 @@
 package com.kisman.cc.util;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
+import com.kisman.cc.settings.Setting;
+import net.minecraft.util.text.TextFormatting;
 
 public class ColorUtil {
+    public static List<String> colors = Arrays.asList("Black", "Dark Green", "Dark Red", "Gold", "Dark Gray", "Green", "Red", "Yellow", "Dark Blue", "Dark Aqua", "Dark Purple", "Gray", "Blue", "Aqua", "Light Purple", "White");
+    public static ArrayList<String> colours = new ArrayList<>(Arrays.asList("Black", "Dark Green", "Dark Red", "Gold", "Dark Gray", "Green", "Red", "Yellow", "Dark Blue", "Dark Aqua", "Dark Purple", "Gray", "Blue", "Aqua", "Light Purple", "White"));
+
     public static float seconds = 2;
     public static float saturation = 1;
     public static float briqhtness = 1;
@@ -70,6 +77,58 @@ public class ColorUtil {
         b = (int) blue;
         a = (int) alpha;
         return new Color(red, green, blue, alpha).getRGB();
+    }
+
+    public static TextFormatting settingToTextFormatting(Setting setting) {
+        if (setting.getValString().equalsIgnoreCase("Black")) {
+            return TextFormatting.BLACK;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Green")) {
+            return TextFormatting.DARK_GREEN;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Red")) {
+            return TextFormatting.DARK_RED;
+        }
+        if (setting.getValString().equalsIgnoreCase("Gold")) {
+            return TextFormatting.GOLD;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Gray")) {
+            return TextFormatting.DARK_GRAY;
+        }
+        if (setting.getValString().equalsIgnoreCase("Green")) {
+            return TextFormatting.GREEN;
+        }
+        if (setting.getValString().equalsIgnoreCase("Red")) {
+            return TextFormatting.RED;
+        }
+        if (setting.getValString().equalsIgnoreCase("Yellow")) {
+            return TextFormatting.YELLOW;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Blue")) {
+            return TextFormatting.DARK_BLUE;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Aqua")) {
+            return TextFormatting.DARK_AQUA;
+        }
+        if (setting.getValString().equalsIgnoreCase("Dark Purple")) {
+            return TextFormatting.DARK_PURPLE;
+        }
+        if (setting.getValString().equalsIgnoreCase("Gray")) {
+            return TextFormatting.GRAY;
+        }
+        if (setting.getValString().equalsIgnoreCase("Blue")) {
+            return TextFormatting.BLUE;
+        }
+        if (setting.getValString().equalsIgnoreCase("Light Purple")) {
+            return TextFormatting.LIGHT_PURPLE;
+        }
+        if (setting.getValString().equalsIgnoreCase("White")) {
+            return TextFormatting.WHITE;
+        }
+        if (setting.getValString().equalsIgnoreCase("Aqua")) {
+            return TextFormatting.AQUA;
+        }
+        return null;
     }
 
     public static float getSeconds() {

@@ -21,10 +21,16 @@ public class Velocity extends Module{
 
     private boolean subscribing;
 
+    private Setting packet = new Setting("Packet", this, "Packet");
+    private Setting exp = new Setting("Explotion", this, true);
+
     public Velocity() {
         super("Velocity", "akb", Category.PLAYER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix1", "Matrix2"))));
+
+        setmgr.rSetting(packet);
+        setmgr.rSetting(exp);
     }
 
     public void onEnable() {
@@ -37,12 +43,18 @@ public class Velocity extends Module{
     }
 
     public void update() {
-        if(!this.subscribing && this.mode.equalsIgnoreCase("Matrix")) {
-            if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) {
-                if (mc.player.hurtTime > 0) {
-                    float ticks = 0.2f;
-                    mc.player.motionY = -ticks;
-                    ticks += 1.5f;
+        if(!this.subscribing) {
+            if(this.mode.equalsIgnoreCase("Matrix1")) {
+                if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) {
+                    if (mc.player.hurtTime > 0) {
+                        float ticks = 0.2f;
+                        mc.player.motionY = -ticks;
+                        ticks += 1.5f;
+                    }
+                }
+            } else if(mode.equalsIgnoreCase("Matrix2")) {
+                if(mc.player.hurtTime > 8){
+                    mc.player.onGround = true;
                 }
             }
         }
@@ -63,7 +75,7 @@ public class Velocity extends Module{
                 event.cancel();
             }
         }
-        if(event.getPacket() instanceof SPacketExplosion) {
+        if(event.getPacket() instanceof SPacketExplosion && exp.getValBoolean()) {
             event.cancel();
         }
     });

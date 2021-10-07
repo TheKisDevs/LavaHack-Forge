@@ -30,7 +30,7 @@ public abstract class MixinItemRenderer {
             GlStateManager.rotate((float) (getSet("RotateLeftZ").getValDouble()), 0, 0, 1);
         }
 
-        if (!Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
+/*        if (!Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
             GlStateManager.translate(-0.2785682F, 0.18344387F, 0.15731531F);
             GlStateManager.rotate(-13.935F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(35.3F, 0.0F, 1.0F, 0.0F);
@@ -41,7 +41,7 @@ public abstract class MixinItemRenderer {
             GlStateManager.rotate(-13.935F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(35.3F, 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate(-9.785F, 0.0F, 0.0F, 1.0F);
-        }
+        }*/
     }
 
     private Setting getSet(String name) {

@@ -11,4 +11,12 @@ public class FastPlace extends Module {
 
         instance = this;
     }
+
+    public void onEnable() {
+        mc.rightClickDelayTimer = 1;
+    }
+
+    public void onDisable() {
+        mc.rightClickDelayTimer = 6;
+    }
 }

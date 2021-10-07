@@ -15,12 +15,14 @@ import com.kisman.cc.oldclickgui.*;
 /*import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.text.ITextComponent;*/
+import javafx.scene.input.ScrollEvent;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 
 //import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 

@@ -5,7 +5,9 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -238,5 +240,51 @@ public class PlayerUtil {
 
     public static BlockPos GetLocalPlayerPosFloored() {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
+    }
+
+    public static int GetItemSlot(Item input)
+    {
+        if (mc.player == null)
+            return 0;
+
+        for (int i = 0; i < mc.player.inventoryContainer.getInventory().size(); ++i)
+        {
+            if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
+                continue;
+
+            ItemStack s = mc.player.inventoryContainer.getInventory().get(i);
+
+            if (s.isEmpty())
+                continue;
+
+            if (s.getItem() == input)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int GetRecursiveItemSlot(Item input)
+    {
+        if (mc.player == null)
+            return 0;
+
+        for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i)
+        {
+            if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
+                continue;
+
+            ItemStack s = mc.player.inventoryContainer.getInventory().get(i);
+
+            if (s.isEmpty())
+                continue;
+
+            if (s.getItem() == input)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }

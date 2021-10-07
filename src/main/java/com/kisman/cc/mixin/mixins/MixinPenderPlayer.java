@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventRenderEntityName;
 import com.kisman.cc.module.render.Charms;
 import com.kisman.cc.module.render.Spin;
 import com.kisman.cc.util.GLUtil;
@@ -28,134 +29,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RenderPlayer.class)
-public class MixinPenderPlayer {//extends RenderLivingBase<AbstractClientPlayer>
+public class MixinPenderPlayer {
+    @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
+    public void onRenderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo ci) {
+        EventRenderEntityName event = new EventRenderEntityName(entityIn, x, y, z, name, distanceSq);
+        Kisman.EVENT_BUS.post(event);
 
-    /*@Shadow
-    private final boolean smallArms;
-
-    public MixinPenderPlayer(RenderManager renderManager)
-    {
-        this(renderManager, false);
-    }
-
-    public MixinPenderPlayer(RenderManager renderManager, boolean useSmallArms)
-    {
-        super(renderManager, new ModelPlayer(0.0F, useSmallArms), 0.5F);
-        this.smallArms = useSmallArms;
-        this.addLayer(new LayerBipedArmor(this));
-        this.addLayer(new LayerHeldItem(this));
-        this.addLayer(new LayerArrow(this));
-//        this.addLayer(new LayerDeadmau5Head(this));
-//        this.addLayer(new LayerCape());
-        this.addLayer(new LayerCustomHead(this.getMainModel().bipedHead));
-        this.addLayer(new LayerElytra(this));
-        this.addLayer(new LayerEntityOnShoulder(renderManager));
-    }
-
-    @Shadow public abstract ModelPlayer getMainModel();
-
-    private RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-
-    @Inject(method = "doRender", at = @At(value = "JUMP", ordinal = 1), cancellable = true)
-    public void render(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        if((!entity.isUser() || this.renderManager.renderViewEntity == entity) && Minecraft.getMinecraft().player != entity) {
-            if(Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Render").getValBoolean() && entity != Minecraft.getMinecraft().player) {
-                double d0 = y;
-
-                if(entity.isSneaking()) {
-                    d0 = y - 0.125D;
-                }
-
-                this.setModelVisibilities(entity);
-                GLUtil.enableCharmsProfile();
-                glEnable(32823);
-                glPolygonOffset(1.0F, -1100000.0F);
-                glDisable(2896);
-                super.doRender(entity, x, d0, z, entityYaw, partialTicks);
-                glDisable(32823);
-                glPolygonOffset(1.0F, 1100000.0F);
-                glEnable(2896);
-                GLUtil.disableCharmsProfile();
-            }
+        if(event.isCancelled()) {
+            ci.cancel();
         }
     }
 
-    private void setModelVisibilities(AbstractClientPlayer clientPlayer)
-    {
-        ModelPlayer modelplayer = this.getMainModel();
-
-        if (clientPlayer.isSpectator())
-        {
-            modelplayer.setVisible(false);
-            modelplayer.bipedHead.showModel = true;
-            modelplayer.bipedHeadwear.showModel = true;
-        }
-        else
-        {
-            ItemStack itemstack = clientPlayer.getHeldItemMainhand();
-            ItemStack itemstack1 = clientPlayer.getHeldItemOffhand();
-            modelplayer.setVisible(true);
-            modelplayer.bipedHeadwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.HAT);
-            modelplayer.bipedBodyWear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.JACKET);
-            modelplayer.bipedLeftLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_PANTS_LEG);
-            modelplayer.bipedRightLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.RIGHT_PANTS_LEG);
-            modelplayer.bipedLeftArmwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_SLEEVE);
-            modelplayer.bipedRightArmwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.RIGHT_SLEEVE);
-            modelplayer.isSneak = clientPlayer.isSneaking();
-            ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.EMPTY;
-            ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.EMPTY;
-
-            if (!itemstack.isEmpty())
-            {
-                modelbiped$armpose = ModelBiped.ArmPose.ITEM;
-
-                if (clientPlayer.getItemInUseCount() > 0)
-                {
-                    EnumAction enumaction = itemstack.getItemUseAction();
-
-                    if (enumaction == EnumAction.BLOCK)
-                    {
-                        modelbiped$armpose = ModelBiped.ArmPose.BLOCK;
-                    }
-                    else if (enumaction == EnumAction.BOW)
-                    {
-                        modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
-                    }
-                }
-            }
-
-            if (!itemstack1.isEmpty())
-            {
-                modelbiped$armpose1 = ModelBiped.ArmPose.ITEM;
-
-                if (clientPlayer.getItemInUseCount() > 0)
-                {
-                    EnumAction enumaction1 = itemstack1.getItemUseAction();
-
-                    if (enumaction1 == EnumAction.BLOCK)
-                    {
-                        modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
-                    }
-                    // FORGE: fix MC-88356 allow offhand to use bow and arrow animation
-                    else if (enumaction1 == EnumAction.BOW)
-                    {
-                        modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
-                    }
-                }
-            }
-
-            if (clientPlayer.getPrimaryHand() == EnumHandSide.RIGHT)
-            {
-                modelplayer.rightArmPose = modelbiped$armpose;
-                modelplayer.leftArmPose = modelbiped$armpose1;
-            }
-            else
-            {
-                modelplayer.rightArmPose = modelbiped$armpose1;
-                modelplayer.leftArmPose = modelbiped$armpose;
-            }
-        }
-    }*/
 
     @Inject(method = "preRenderCallback", at = @At("HEAD"))
     public void renderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime, CallbackInfo ci) {

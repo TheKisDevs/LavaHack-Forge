@@ -17,8 +17,8 @@ import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import kisman.pasta.salhack.util.customfont.FontManager;
 import me.zero.alpine.bus.EventManager;
-import net.minecraft.util.Timer;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +34,7 @@ import java.awt.*;
 
 public class Kisman
 {
-    public static final String NAME = "kisman.cc";
+    public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";
     public static final String VERSION = "b0.1.5";
 
@@ -53,7 +53,9 @@ public class Kisman
     public HudGui hudGui;
     public NewGui newGui;
     public CustomFontRenderer customFontRenderer;
+    public FontManager fontManager;
     public CommandManager commandManager;
+    public RPC discord;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -69,10 +71,14 @@ public class Kisman
     	hudGui = new HudGui();
         newGui = new NewGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
+        fontManager = new FontManager();
         commandManager = new CommandManager();
+        discord = new RPC();
 
         //load configs
         LoadConfig.init();
+
+        fontManager.load();
     }
     
     @SubscribeEvent

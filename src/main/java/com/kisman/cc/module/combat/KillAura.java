@@ -9,6 +9,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.EnumHand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class KillAura extends Module {
             if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && this.passive))) {
                 if (mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
                     mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
-//                    mc.player.swingArm(mc.player.swingingHand);
+                    mc.player.swingArm(EnumHand.MAIN_HAND);
                     mc.player.resetCooldown();
                     if (this.hitsound) {
                         mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 1, 1);

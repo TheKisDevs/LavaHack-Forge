@@ -14,10 +14,6 @@ public class NetworkPacketEvent extends Event {
         m_Packet = p_Packet;
     }
 
-    public Packet GetPacket() {
-        return m_Packet;
-    }
-
     public Packet getPacket() {
         return m_Packet;
     }

@@ -11,6 +11,7 @@
     "MixinMinecraft",
     "MixinNetworkManager",
     "MixinPenderPlayer",
-    "MixinRendererLivingEntity"
+    "MixinRendererLivingEntity",
+    "MixinRenderGlobal"
   ]
 }

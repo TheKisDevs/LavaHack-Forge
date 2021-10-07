@@ -1,25 +1,37 @@
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
         maven {
             url = "http://files.minecraftforge.net/maven"//https://repo.spongepowered.org/repository/maven-public/
         }
-
+        maven {
+            name = 'gradle plugins'
+            url "https://plugins.gradle.org/m2/"
+        }
         maven {
             name = 'SpongePowered'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
+        maven {
+            name = 'sonatype'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'com.google.code.gson:gson:2.8.6'
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.9'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
@@ -41,6 +53,10 @@ repositories {
         url = 'https://repo.spongepowered.org/repository/maven-public/'
     }
     maven {
+        name = 'impactdevelopment-repo'
+        url = 'https://impactdevelopment.github.io/maven/'
+    }
+    maven {
         name = 'swt-repo'
         url = "http://maven-eclipse.github.io/maven"
     }
@@ -53,6 +69,7 @@ repositories {
         url = 'https://lukflug.github.io/maven'
     }
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -67,6 +84,10 @@ dependencies {
     compile group: 'net.jodah', name: 'typetools', version: '0.6.3'
     compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
     compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.19'
+    compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
+        exclude group: 'com.google.guava', module: 'guava'
+    }
 }
 
 processResources {
@@ -114,6 +135,9 @@ shadowJar {
         include(dependency('club.minnced:java-discord-rpc:2.0.1'))
         include(dependency('com.lukflug:panelstudio'))
         include(dependency('com.lukflug:panelstudio-mc12'))
+        include(dependency('org.yaml:snakeyaml'))
+        include(dependency('org.reflections:reflections'))
+        include(dependency('org.javassist:javassist'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

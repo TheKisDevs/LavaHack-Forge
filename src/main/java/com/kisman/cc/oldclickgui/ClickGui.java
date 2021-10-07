@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
 import com.kisman.cc.module.Category;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
@@ -85,6 +87,7 @@ public class ClickGui extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		scrollWheelCheck();
 		this.drawDefaultBackground();
 		for(Frame frame : frames) {
 			frame.renderFrame(this.fontRenderer);
@@ -149,6 +152,20 @@ public class ClickGui extends GuiScreen {
 						component.mouseReleased(mouseX, mouseY, state);
 					}
 				}
+			}
+		}
+	}
+
+	private void scrollWheelCheck() {
+		int dWheel = Mouse.getDWheel();
+		if(dWheel < 0){
+			for(Frame frame : frames) {
+				frame.setY(frame.getY() - (int) ClickGUI.instance.scrollSpeed.getValDouble());
+			}
+		}
+		else if(dWheel > 0){
+			for(Frame frame : frames){
+				frame.setY(frame.getY() + (int) ClickGUI.instance.scrollSpeed.getValDouble());
 			}
 		}
 	}
