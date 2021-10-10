@@ -2,7 +2,6 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 
-import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -32,8 +31,10 @@ public class ModuleManager {
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystal());
+		modules.add(new AutoCrystalBypass());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
+		modules.add(new CevBreaker());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
 		modules.add(new Rubberband());
@@ -41,13 +42,13 @@ public class ModuleManager {
 		//client
 		modules.add(new Cape());
 		modules.add(new ClickGUI());
-		modules.add(new Color());
+		modules.add(new ColorModule());
 		modules.add(new Console());
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
 		modules.add(new HUD());
-//		modules.add(new NewGuiModue());
 		modules.add(new ExampleModule());
+		modules.add(new ParticleGui());
 		//chat
 		modules.add(new AutoEZ());
 		modules.add(new Notification());
@@ -93,16 +94,19 @@ public class ModuleManager {
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
-//		modules.add(new BowExploit());
+		modules.add(new BowExploit());
 		modules.add(new CactusLeave());
 		modules.add(new Ghost());
 		modules.add(new KismansDupe());
+		modules.add(new MiddleClick());
+		modules.add(new NoMiningTrace());
 		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc
 		modules.add(new AutoLog());
+		modules.add(new BurrowCounter());
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
 		modules.add(new WeaknessLog());
@@ -122,7 +126,7 @@ public class ModuleManager {
 	}
 	
 	public ArrayList<Module> getModulesInCategory(Category c) {
-		ArrayList<Module> mods = new ArrayList<Module>();
+		ArrayList<Module> mods = new ArrayList<>();
 		for (Module m : this.modules) {
 			if (m.getCategory() == c) {
 				mods.add(m);
@@ -151,10 +155,4 @@ public class ModuleManager {
 			}
 		}
 	}
-
-/*	public void onMotion(EventPlayerMotionUpdate event) {
-		this.modules.stream().filter(module -> module.isToggled()).forEach(module -> {
-			module.motion(event);
-		});
-	}*/
 }

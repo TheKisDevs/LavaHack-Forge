@@ -24,9 +24,6 @@ public class LoadConfig {
         try {
             loadModules();
             loadEnabledModules();
-//            loadModuleKeybinds();
-//            loadDrawnModules();
-//            loadToggleMessageModules();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,6 +74,14 @@ public class LoadConfig {
         if(settings) {
             for (Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
                 JsonElement dataObject = settingObject.get(setting.getName());
+                JsonElement[] colour = new JsonElement[] {
+                        settingObject.get(setting.getName() + "H"),
+                        settingObject.get(setting.getName() + "S"),
+                        settingObject.get(setting.getName() + "B"),
+                        settingObject.get(setting.getName() + "A"),
+                        settingObject.get(setting.getName() + "RainBow")
+                };
+
                 try {
                     if (dataObject != null && dataObject.isJsonPrimitive()) {
                         if (setting.isCheck()) {
@@ -87,6 +92,13 @@ public class LoadConfig {
                         }
                         if (setting.isSlider()) {
                             setting.setValDouble(dataObject.getAsDouble());
+                        }
+                        if(setting.isColorPicker()) {
+                            setting.getColorPicker().setColor(0, colour[0].getAsFloat());
+                            setting.getColorPicker().setColor(1, colour[1].getAsFloat());
+                            setting.getColorPicker().setColor(2, colour[2].getAsFloat());
+                            setting.getColorPicker().setColor(3, colour[3].getAsFloat());
+                            setting.getColorPicker().setRainbowState(colour[4].getAsBoolean());
                         }
                     }
                 } catch (NumberFormatException e) {

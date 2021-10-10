@@ -22,6 +22,7 @@ public class ColorPicker extends GuiScreen {
     private int alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight;
     private float rainbowSpeed = 20.0f;
     private boolean rainbowState = false;
+    public boolean syns = false;
 
     private int selectedColorFinal;
 
@@ -99,8 +100,18 @@ public class ColorPicker extends GuiScreen {
 
         Gui.drawRect(selectedX - 2, selectedY + (selectedHeight * 2) - 2, selectedX + 2 + selectedWidth, selectedY + (selectedHeight * 3) + 2, 0xFC000000);
         CustomFontUtil.drawString("RainBow", selectedX - 2 - CustomFontUtil.getStringWidth("RainBow"), (selectedY + (selectedHeight * 2) - ((selectedHeight - CustomFontUtil.getFontHeight()) / 2)), 0xFC000000);
+
+        Gui.drawRect(selectedX - 2, selectedY + (selectedHeight * 2) - 2 + selectedWidth, selectedX + 2 + selectedWidth, selectedY + (selectedHeight * 3) + 2 + selectedWidth, 0xFC000000);
+        CustomFontUtil.drawString("Syns", selectedX - 2 - CustomFontUtil.getStringWidth("Syns"), (selectedY + (selectedHeight * 2) - ((selectedHeight - CustomFontUtil.getFontHeight()) / 2)), 0xFC000000);
+
+
         if(rainbowState) {
             Gui.drawRect(selectedX, selectedY + (selectedHeight * 2), selectedX + selectedWidth, selectedY + (selectedHeight * 3), -1);
+        }
+
+        if(syns) {
+            Gui.drawRect(selectedX, selectedY + (selectedHeight * 2) + selectedWidth, selectedX + selectedWidth, selectedY + (selectedHeight * 3) + selectedWidth, -1);
+
         }
 
         {
@@ -256,6 +267,9 @@ public class ColorPicker extends GuiScreen {
         }
         if (keyCode == Keyboard.KEY_R) {
             this.rainbowState = !this.rainbowState;
+        }
+        if(keyCode == Keyboard.KEY_S) {
+            syns = !syns;
         }
         if (keyCode == Keyboard.KEY_LEFT) {
             this.rainbowSpeed -= 0.1;

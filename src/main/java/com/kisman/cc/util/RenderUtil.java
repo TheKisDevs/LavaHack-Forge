@@ -73,26 +73,7 @@ public class RenderUtil {
     	//Wrapper.INSTANCE.fontRenderer().drawString(string, x, y, colorString);
         Minecraft.getMinecraft().fontRenderer.drawString(string, x, y, colorString);
     }
-	
-/*	 public static void drawSplash(String text) {
-	 	ScaledResolution sr = new ScaledResolution(Wrapper.INSTANCE.mc());
-	 	drawStringWithRect(text, sr.getScaledWidth() + 2 - splashTickPos, sr.getScaledHeight() - 10, ClickGui.getColor(),
-	 			ColorUtils.color(0.0F, 0.0F, 0.0F, 0.0F), ColorUtils.color(0.0F, 0.0F, 0.0F, 0.5F));
-	 	if(splashTimer.isDelay(10)) {
-	 		splashTimer.setLastMS();
-	 		if(isSplash) {
-	 			splashTickPos++;
-	 			if(splashTickPos == Wrapper.INSTANCE.fontRenderer().getStringWidth(text) + 10) {
-	 				isSplash = false;
-	 			}
-	 		} else {
-	 			if(splashTickPos > 0) {
-	 				splashTickPos--;
-	 			}
-	 		}
-	 	}
-	 }*/
-	
+
 	public static void drawBorderedRect(double x, double y, double x2, double y2, float l1, int col1, int col2) {
         drawRect((int)x, (int)y, (int)x2, (int)y2, col2);
 
@@ -957,6 +938,36 @@ public class RenderUtil {
         GL11.glPopMatrix();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
+    }
+
+    public static
+    void drawLine ( float x , float y , float x1 , float y1 , float thickness , int hex ) {
+        float red = ( hex >> 16 & 0xFF ) / 255.0F;
+        float green = ( hex >> 8 & 0xFF ) / 255.0F;
+        float blue = ( hex & 0xFF ) / 255.0F;
+        float alpha = ( hex >> 24 & 0xFF ) / 255.0F;
+
+        GlStateManager.pushMatrix ( );
+        GlStateManager.disableTexture2D ( );
+        GlStateManager.enableBlend ( );
+        GlStateManager.disableAlpha ( );
+        GlStateManager.tryBlendFuncSeparate ( 770 , 771 , 1 , 0 );
+        GlStateManager.shadeModel ( GL11.GL_SMOOTH );
+        GL11.glLineWidth ( thickness );
+        GL11.glEnable ( GL11.GL_LINE_SMOOTH );
+        GL11.glHint ( GL11.GL_LINE_SMOOTH_HINT , GL11.GL_NICEST );
+        final Tessellator tessellator = Tessellator.getInstance ( );
+        final BufferBuilder bufferbuilder = tessellator.getBuffer ( );
+        bufferbuilder.begin ( GL11.GL_LINE_STRIP , DefaultVertexFormats.POSITION_COLOR );
+        bufferbuilder.pos ( (double) x , (double) y , (double) 0 ).color ( red , green , blue , alpha ).endVertex ( );
+        bufferbuilder.pos ( (double) x1 , (double) y1 , (double) 0 ).color ( red , green , blue , alpha ).endVertex ( );
+        tessellator.draw ( );
+        GlStateManager.shadeModel ( GL11.GL_FLAT );
+        GL11.glDisable ( GL11.GL_LINE_SMOOTH );
+        GlStateManager.disableBlend ( );
+        GlStateManager.enableAlpha ( );
+        GlStateManager.enableTexture2D ( );
+        GlStateManager.popMatrix ( );
     }
 
     public static void drawCircle(float x, float y, float z, float radius, float red, float green, float blue, float alpha){

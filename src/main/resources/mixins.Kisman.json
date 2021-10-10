@@ -5,12 +5,16 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "MixinAbstractClientPlayer",
+    "MixinEntity",
+    "MixinEntityLivingBase",
+    "MixinEntityPlayer",
     "MixinEntityPlayerSP",
+    "MixinEntityRenderer",
     "MixinGuiMainMenu",
     "MixinItemRenderer",
-    "MixinMinecraft",
     "MixinNetworkManager",
     "MixinPenderPlayer",
+    "MixinPlayerControllerMP",
     "MixinRendererLivingEntity",
     "MixinRenderGlobal"
   ]

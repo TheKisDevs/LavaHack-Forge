@@ -1,7 +1,7 @@
 [
 {
   "modid": "kisman",
-  "name": "kisman.cc",
+  "name": "kisman.cc+",
   "description": "The Very Best Minecraft Pvp and Pve client by _kisman_, DenYoyo",
   "version": "${version}",
   "mcversion": "${mcversion}",

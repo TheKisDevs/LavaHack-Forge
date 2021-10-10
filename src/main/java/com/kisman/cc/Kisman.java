@@ -15,11 +15,13 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.RotationUtils;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import kisman.pasta.salhack.util.customfont.FontManager;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
+import net.naimad.client.apperance.particles.ParticleManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -56,6 +58,8 @@ public class Kisman
     public FontManager fontManager;
     public CommandManager commandManager;
     public RPC discord;
+    public RotationUtils rotationUtils;
+    public ParticleManager particles;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -74,6 +78,8 @@ public class Kisman
         fontManager = new FontManager();
         commandManager = new CommandManager();
         discord = new RPC();
+        rotationUtils = new RotationUtils();
+        particles = new ParticleManager();
 
         //load configs
         LoadConfig.init();

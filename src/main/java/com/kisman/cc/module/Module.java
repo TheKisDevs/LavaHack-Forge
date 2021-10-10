@@ -11,10 +11,11 @@ public class Module {
 
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
-	protected static SettingsManager setmgr = Kisman.instance.settingsManager;
+	public static SettingsManager setmgr = Kisman.instance.settingsManager;
 
 	private String name, description;
 	private int key;
+	private int priority;
 	private Category category;
 	private boolean toggled;
 	public boolean visible = true;
@@ -26,6 +27,7 @@ public class Module {
 		this.key = 0;
 		this.category = category;
 		this.toggled = false;
+		this.priority = 1;
 	}
 
 	public String getDescription() {
@@ -38,6 +40,14 @@ public class Module {
 
 	public int getKey() {
 		return key;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
 	public void setKey(int key) {

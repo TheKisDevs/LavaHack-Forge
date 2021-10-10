@@ -3,7 +3,6 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
 

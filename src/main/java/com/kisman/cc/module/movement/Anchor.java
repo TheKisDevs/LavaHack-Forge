@@ -48,6 +48,7 @@ public class Anchor extends Module {
         if (holeblocks >= 9) return true;
         else return false;
     }
+
     private Vec3d Center = Vec3d.ZERO;
 
     public Vec3d GetCenter(double posX, double posY, double posZ) {

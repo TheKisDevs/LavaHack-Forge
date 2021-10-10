@@ -25,17 +25,6 @@ public class SaveConfig {
             saveConfig();
             saveModules();
             saveEnabledModules();
-//            saveModuleKeybinds();
-//            saveDrawnModules();
-//            saveToggleMessagesModules();
-//            saveCommandPrefix();
-//            saveCustomFont();
-//            saveFriendsList();
-//            saveEnemiesList();
-//            saveClickGUIPositions();
-//            saveAutoGG();
-//            saveAutoReply();
-//            saveAutoRespawn();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,10 +46,6 @@ public class SaveConfig {
     }
 
     private static void registerFiles(String location, String name) throws IOException {
-/*        if(!Files.exists(Paths.get(fileName + location + name + ".json"))) {
-            Files.createFile(Paths.get(fileName + location + name + ".json"));
-        }*/
-
         if (Files.exists(Paths.get(fileName + location + name + ".json"))) {
             File file = new File(fileName + location + name + ".json");
 
@@ -115,6 +100,13 @@ public class SaveConfig {
                         }
                         if (setting.isSlider()) {
                             settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
+                        }
+                        if(setting.isColorPicker()) {
+                            settingObject.add(setting.getName() + "H", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
+                            settingObject.add(setting.getName() + "S", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
+                            settingObject.add(setting.getName() + "B", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
+                            settingObject.add(setting.getName() + "A", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
+                            settingObject.add(setting.getName() + "RainBow", new JsonPrimitive(setting.getColorPicker().isRainbowState()));
                         }
                     }
                 }

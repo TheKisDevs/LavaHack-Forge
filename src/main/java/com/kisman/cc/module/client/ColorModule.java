@@ -4,24 +4,27 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ClickGui;
-import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
-import com.kisman.cc.util.HoveredMode;
 import com.kisman.cc.util.LineMode;
-import com.kisman.cc.util.TextMode;
 
 import java.util.ArrayList;
-import java.awt.*;
 
-public class Color extends Module {
+public class ColorModule extends Module {
+    public static ColorModule instance;
+
+    private Setting synsLine = new Setting("SynsLine", this, "Syns");
+    public Setting synsColor = new Setting("Syns", this, "SynsColor", new float[] {1, 1, 1, 1}, false);
+
     ColorUtil colorUtil;
 
     boolean rainbowLine = false;
 
-    public Color() {
+    public ColorModule() {
         super("Color", "color setting", Category.CLIENT);
         colorUtil = new ColorUtil();
+
+        instance = this;
 
         ArrayList<String> lineMode = new ArrayList<>();
         lineMode.add("LeftLine");
@@ -47,6 +50,8 @@ public class Color extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("DifferentSetting", this, "Different"));
         Kisman.instance.settingsManager.rSetting(new Setting("HoveredColor", this, "HoveredColor", new float[] {0.6f, 0.03f, 0.62f, 0.6f}, false));
         Kisman.instance.settingsManager.rSetting(new Setting("NoHoveredColor", this, "NoHoveredColor", new float[] {0f, 0f, 0.05f, 1f}, false));
+        setmgr.rSetting(synsLine);
+        setmgr.rSetting(synsColor);
     }
 
     public void update() {

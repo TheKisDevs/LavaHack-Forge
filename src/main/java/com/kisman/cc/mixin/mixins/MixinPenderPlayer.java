@@ -52,22 +52,4 @@ public class MixinPenderPlayer {
             GlStateManager.rotate(hue, 1, 0, hue);
         }
     }
-
-    @Overwrite
-    public ResourceLocation getEntityTexture(AbstractClientPlayer entity) {
-        if (Kisman.instance.moduleManager.getModule("KismanESP").isToggled() && entity != Minecraft.getMinecraft().player) {
-            glColor4f(1f, 1f, 1f, 1f);
-            if (entity.getName().equalsIgnoreCase("_kisman_")) {
-                return new ResourceLocation("kismancc:kisman/kisman.png");
-            } else {
-                return new ResourceLocation("kismancc:kisman/nokisman.png");
-            }
-        } else if(Kisman.instance.moduleManager.getModule("Charms").isToggled()  && !Kisman.instance.moduleManager.getModule("KismanESP").isToggled() && entity != Minecraft.getMinecraft().player && Kisman.instance.settingsManager.getSettingByName(Charms.instance, "Texture").getValBoolean()) {
-            glColor4f(1f, 1f, 1f, 0.5f);
-            return new ResourceLocation("kismancc:charms/charms1.png");
-        } else {
-            glColor4f(1f, 1f, 1f, 1f);
-            return entity.getLocationSkin();
-        }
-    }
 }

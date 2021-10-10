@@ -43,7 +43,6 @@ public class PacketCancel extends Module {
         Kisman.EVENT_BUS.unsubscribe(this.sendListener);
     }
 
-    @SuppressWarnings("unused")
     @EventHandler
     private final Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
        if(

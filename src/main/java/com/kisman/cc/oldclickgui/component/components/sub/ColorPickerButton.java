@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.component.components.sub;
 
+import com.kisman.cc.module.client.ColorModule;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
@@ -68,59 +69,68 @@ public class ColorPickerButton extends Component{
   @Override
   public void updateComponent(int mouseX, int mouseY) {
     set.setColor(alpha(new Color(Color.HSBtoRGB(colorPicker.getColor(0), colorPicker.getColor(1), colorPicker.getColor(2))), colorPicker.getColor(3)));
-    set.setR(
-      colour(
-        new Color(
-          Color.HSBtoRGB(
-            colorPicker.getColor(0), 
-            colorPicker.getColor(1), 
-            colorPicker.getColor(2)
-          )
-        ), 
-        colorPicker.getColor(3),
-        1
-      )
-    );
-    set.setG(
-      colour(
-        new Color(
-          Color.HSBtoRGB(
-            colorPicker.getColor(0), 
-            colorPicker.getColor(1), 
-            colorPicker.getColor(2)
-          )
-        ), 
-        colorPicker.getColor(3),
-        2
-      )
-    );
-    set.setB(
-      colour(
-        new Color(
-          Color.HSBtoRGB(
-            colorPicker.getColor(0), 
-            colorPicker.getColor(1), 
-            colorPicker.getColor(2)
-          )
-        ), 
-        colorPicker.getColor(3),
-        3
-      )
-    );
-    set.setA(
-      colour(
-        new Color(
-          Color.HSBtoRGB(
-            colorPicker.getColor(0), 
-            colorPicker.getColor(1), 
-            colorPicker.getColor(2)
-          )
-        ), 
-        colorPicker.getColor(3),
-        4
-      )
-    );
+    if(!colorPicker.syns) {
+        set.setR(
+                colour(
+                        new Color(
+                                Color.HSBtoRGB(
+                                        colorPicker.getColor(0),
+                                        colorPicker.getColor(1),
+                                        colorPicker.getColor(2)
+                                )
+                        ),
+                        colorPicker.getColor(3),
+                        1
+                )
+        );
+        set.setG(
+                colour(
+                        new Color(
+                                Color.HSBtoRGB(
+                                        colorPicker.getColor(0),
+                                        colorPicker.getColor(1),
+                                        colorPicker.getColor(2)
+                                )
+                        ),
+                        colorPicker.getColor(3),
+                        2
+                )
+        );
+        set.setB(
+                colour(
+                        new Color(
+                                Color.HSBtoRGB(
+                                        colorPicker.getColor(0),
+                                        colorPicker.getColor(1),
+                                        colorPicker.getColor(2)
+                                )
+                        ),
+                        colorPicker.getColor(3),
+                        3
+                )
+        );
+        set.setA(
+                colour(
+                        new Color(
+                                Color.HSBtoRGB(
+                                        colorPicker.getColor(0),
+                                        colorPicker.getColor(1),
+                                        colorPicker.getColor(2)
+                                )
+                        ),
+                        colorPicker.getColor(3),
+                        4
+                )
+        );
+    } else {
+        set.setR(ColorModule.instance.synsColor.getR());
+        set.setG(ColorModule.instance.synsColor.getG());
+        set.setB(ColorModule.instance.synsColor.getB());
+        set.setA(ColorModule.instance.synsColor.getA());
+        set.setColor(ColorModule.instance.synsColor.getColorHSB());
+    }
     set.setRainbow(colorPicker.isRainbowState());
+    set.setColorPicker(colorPicker);
 
     //colorUtil.getColorPickerRainBow(colorPicker);
     Kisman.instance.colorUtil.getColorPickerRainBow(colorPicker);
