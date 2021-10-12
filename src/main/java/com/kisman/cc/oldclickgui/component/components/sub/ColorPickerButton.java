@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.oldclickgui.ClickGui;
@@ -122,6 +123,18 @@ public class ColorPickerButton extends Component{
                         4
                 )
         );
+        set.setColour(
+                getColour(
+                        new Color(
+                                Color.HSBtoRGB(
+                                        colorPicker.getColor(0),
+                                        colorPicker.getColor(1),
+                                        colorPicker.getColor(2)
+                                )
+                        ),
+                        colorPicker.getColor(3)
+                )
+        );
     } else {
         set.setR(ColorModule.instance.synsColor.getR());
         set.setG(ColorModule.instance.synsColor.getG());
@@ -187,5 +200,11 @@ public class ColorPickerButton extends Component{
     } else {
       return 5;
     }
+  }
+
+  final Colour getColour(Color color, float alpha) {
+      final int alpha1eee = (int) (alpha * 255);
+
+      return new Colour(color.getRed(), color.getGreen(), color.getGreen(), alpha1eee);
   }
 }

@@ -2,7 +2,6 @@ package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
 
-import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.settings.SettingsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -11,7 +10,7 @@ public class Module {
 
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
-	public static SettingsManager setmgr = Kisman.instance.settingsManager;
+	public static SettingsManager setmgr;
 
 	private String name, description;
 	private int key;
@@ -28,6 +27,8 @@ public class Module {
 		this.category = category;
 		this.toggled = false;
 		this.priority = 1;
+
+		setmgr = Kisman.instance.settingsManager;
 	}
 
 	public String getDescription() {

@@ -1,13 +1,27 @@
 package com.kisman.cc.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class HoleUtil implements Globals {
+
+    public static boolean isPartOfHole(BlockPos blockPos) {
+        List<Entity> entities = new ArrayList<>();
+        entities.addAll(mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(blockPos.add(1, 0, 0))));
+        entities.addAll(mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(blockPos.add(-1, 0, 0))));
+        entities.addAll(mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(blockPos.add(0, 0, 1))));
+        entities.addAll(mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, new AxisAlignedBB(blockPos.add(0, 0, -1))));
+        return entities.stream().anyMatch(entity -> entity instanceof EntityPlayer);
+    }
 
     public static BlockSafety isBlockSafe(Block block) {
         if (block == Blocks.BEDROCK) {
@@ -17,6 +31,14 @@ public class HoleUtil implements Globals {
             return BlockSafety.RESISTANT;
         }
         return BlockSafety.BREAKABLE;
+    }
+
+    public static boolean isInHole(double posX, double posY, double posZ) {
+        return isObsidianHole(new BlockPos(posX, Math.round(posY), posZ)) || isBedRockHole(new BlockPos(posX, Math.round(posY), posZ));
+    }
+
+    public static boolean isInHole(Entity entity) {
+        return isObsidianHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ)) || isBedRockHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ));
     }
 
     public static HoleInfo isHole(BlockPos centreBlock, boolean onlyOneWide, boolean ignoreDown) {
@@ -216,4 +238,11 @@ public class HoleUtil implements Globals {
         }
     }
 
+    public static boolean isObsidianHole(BlockPos blockPos) {
+        return !(BlockUtil.getBlockResistance(blockPos.add(0, 1, 0)) != BlockUtil.BlockResistance.BLANK || isBedRockHole(blockPos) || BlockUtil.getBlockResistance(blockPos.add(0, 0, 0)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, 2, 0)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(0.5, 0.5, 0.5)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) != BlockUtil.BlockResistance.UNBREAKABLE);
+    }
+
+    public static boolean isBedRockHole(BlockPos blockPos) {
+        return BlockUtil.getBlockResistance(blockPos.add(0, 1, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 0, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 2, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(0.5, 0.5, 0.5)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) == BlockUtil.BlockResistance.UNBREAKABLE;
+    }
 }

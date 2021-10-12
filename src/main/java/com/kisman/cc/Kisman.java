@@ -2,6 +2,7 @@ package com.kisman.cc;
 
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
+import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
@@ -60,6 +61,7 @@ public class Kisman
     public RPC discord;
     public RotationUtils rotationUtils;
     public ParticleManager particles;
+    public EventProcessor eventProcessor;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -80,6 +82,7 @@ public class Kisman
         discord = new RPC();
         rotationUtils = new RotationUtils();
         particles = new ParticleManager();
+        eventProcessor = new EventProcessor();
 
         //load configs
         LoadConfig.init();

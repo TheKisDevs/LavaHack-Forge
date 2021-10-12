@@ -4,8 +4,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
+import com.kisman.cc.oldclickgui.component.components.sub.sub.LineButton;
+import com.kisman.cc.oldclickgui.component.components.sub.sub.SubComponent;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
@@ -19,7 +20,7 @@ public class Category extends Component {
     public int x;
     public int y;
 
-    private ArrayList<Component> components;
+    private ArrayList<SubComponent> components;
 
     private Button button;
     private Setting set;
@@ -43,7 +44,7 @@ public class Category extends Component {
 
         Kisman.instance.settingsManager.getSubSettingsByMod(set.getParentMod(), set).forEach(setting -> {
             if(setting.isCategoryLine()) {
-                this.components.add(new Line(setting, offset, opY, this));
+                this.components.add(new LineButton());//setting, offset, opY, this
                 this.opY += 12;
             }
         });
@@ -54,7 +55,6 @@ public class Category extends Component {
     }
 
     public void renderComponent() {
-//        System.out.println("lox");
         Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + (button.parent.getWidth() * 1) - 3, button.parent.getY() + offset + 12, true ? -1 : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
         Gui.drawRect(button.parent.getX() + 3, (button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 5) + 5, (button.parent.getX() + 7 + button.parent.getWidth() - 7) - 3,(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
         GL11.glPushMatrix();
@@ -63,36 +63,36 @@ public class Category extends Component {
         GL11.glPopMatrix();
 
         if(this.open) {
-            System.out.println("testing");
-            for(Component comp : this.components) {
+            for(SubComponent comp : this.components) {
                 comp.renderComponent();
             }
-/*            this.components.forEach(component -> {
-                component.renderComponent();
-            });*/
         }
     }
 
     public void updateComponent(int mouseX, int mouseY) {
-        if(isMouseOnButton(mouseX, mouseY)) {
-            System.out.println("ez");
-        }
-/*        if(this.open) {
+        if(this.open) {
             this.components.forEach(component -> {
                 component.updateComponent(mouseX, mouseY);
             });
-        }*/
+        }
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-/*        if(this.open) {
+        if(this.open) {
             this.components.forEach(component -> {
                 component.mouseClicked(mouseX, mouseY, button);
             });
-        }*/
+        }
 
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) {
+        if(isMouseOnButton(mouseX, mouseY) && button == 1) {
             this.open = !this.open;
+            if(open) {
+                this.button.setOff(opY + offset - 12, this);
+            } else {
+                this.button.setOff(offset - 12, this);
+            }
+
+            this.button.parent.refresh();
         }
     }
 
@@ -100,11 +100,20 @@ public class Category extends Component {
         return this.category;
     }
 
-    public ArrayList<Component> getComponents() { return this.components; }
+    public ArrayList<SubComponent> getComponents() { return this.components; }
 
     public boolean isMouseOnButton(int x, int y) {
         if(x > button.parent.getX() && x < button.parent.getX() + 88 && y > button.parent.getY() + offset && y < button.parent.getY() + offset + 12) return true;
 
         return false;
     }
+
+    public int getHeight() {
+        if(open) {
+            return 12 * (components.size() + 1);
+        } else {
+            return 0;
+        }
+    }
+
 }

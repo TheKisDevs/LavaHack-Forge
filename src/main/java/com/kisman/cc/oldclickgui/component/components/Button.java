@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.clickguiEvents.keyTyped.KeyTypedPreEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
@@ -11,7 +14,6 @@ import com.kisman.cc.oldclickgui.component.components.sub.*;
 import com.kisman.cc.hud.hudgui.component.components.sub.DrawHudButton;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.oldclickgui.component.components.sub.Void;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
@@ -28,6 +30,7 @@ public class Button extends Component {
 	public Frame parent;
 	public ColorUtil colorUtil = new ColorUtil();
 	public int offset;
+	public int opY;
 	private boolean isHovered;
 	private ArrayList<Component> subcomponents;
 	private ArrayList<Component> drawBoxHud;
@@ -46,7 +49,7 @@ public class Button extends Component {
 		this.subcomponents = new ArrayList<>();
 		this.open = false;
 		height = 12;
-		int opY = offset + 12;
+		opY = offset + 12;
 		if(Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
 			for(Setting s : Kisman.instance.settingsManager.getSettingsByMod(mod)){
 				if(s.isCombo()){
@@ -119,11 +122,25 @@ public class Button extends Component {
 		int opY = offset + 12;
 		for(Component comp : this.subcomponents) {
 			comp.setOff(opY);
-			if(comp.isCategory()) {
-				opY += comp.getComponents().size() * 12;
-			} else {
-				opY += 12;
+			opY += 12;
+		}
+	}
+
+	public void setOff(int newOff, Component comp) {
+		boolean finded = false;
+		int opY = 12;
+		for(Component comp1 : subcomponents) {
+			if(comp1 == comp) {
+				finded = true;
+				opY	+= 12;
+				continue;
 			}
+
+			if(finded) {
+				comp1.setOff(opY + newOff);
+			}
+
+			opY += 12;
 		}
 	}
 	
@@ -197,10 +214,27 @@ public class Button extends Component {
 
 		if(this.open) {
 			if(!this.subcomponents.isEmpty()) {
+				int compCount = 0;
+
 				for(Component comp : this.subcomponents) {
 					comp.renderComponent();
+
+					//renderline
+
+					if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+						Gui.drawRect(
+								parent.getX() + parent.getWidth() - 3,
+								parent.getY() + offset + 12 + (12 * compCount),
+								parent.getX() + parent.getWidth() - 2,
+								parent.getY() + offset + 24 + (12 * compCount),
+								new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+						);
+					}
+
+					compCount++;
 				}
-				if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+
+/*				if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 					Gui.drawRect(
 							parent.getX() + parent.getWidth() - 3,
 							parent.getY() + this.offset + 12,
@@ -208,7 +242,7 @@ public class Button extends Component {
 							parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12),
 							new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
 					);
-				}
+				}*/
 
 				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() :
 			}
@@ -228,7 +262,13 @@ public class Button extends Component {
 	@Override
 	public int getHeight() {
 		if(this.open) {
-			return (12 * (this.subcomponents.size() + 1));
+			int subHeigth = 0;
+
+			for(Component comp : subcomponents) {
+				subHeigth += comp.getHeight();
+			}
+
+			return (12 * (this.subcomponents.size() + 1)) + subHeigth;
 		}
 		return 12;
 	}
@@ -251,6 +291,15 @@ public class Button extends Component {
 	
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
+		MouseClickedPreEvent event = new MouseClickedPreEvent();
+		for(Component comp : this.subcomponents) {
+			comp.mouseClickedPre(mouseX, mouseY, button, event);
+		}
+
+		if(event.isCancelled()) {
+			return;
+		}
+
 		if(isMouseOnButton(mouseX, mouseY) && button == 0) {
 			if(this.hud) {
 				this.hudMod.toggle();
@@ -269,6 +318,15 @@ public class Button extends Component {
 	
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+		MouseReleasedPreEvent event = new MouseReleasedPreEvent();
+		for(Component comp : this.subcomponents) {
+			comp.mouseReleasedPre(mouseX, mouseY, mouseButton, event);
+		}
+
+		if(event.isCancelled()) {
+			return;
+		}
+
 		for(Component comp : this.subcomponents) {
 			comp.mouseReleased(mouseX, mouseY, mouseButton);
 		}
@@ -276,6 +334,15 @@ public class Button extends Component {
 	
 	@Override
 	public void keyTyped(char typedChar, int key) {
+		KeyTypedPreEvent event = new KeyTypedPreEvent();
+		for(Component comp : this.subcomponents) {
+			comp.keyTypedPre(typedChar, key, event);
+		}
+
+		if(event.isCancelled()) {
+			return;
+		}
+
 		for(Component comp : this.subcomponents) {
 			comp.keyTyped(typedChar, key);
 		}

@@ -4,6 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class MathUtil {
     public static double degToRad(double deg)
     {
@@ -48,5 +51,17 @@ public class MathUtil {
         final double posX = (forward * speed * cos + side * speed * sin);
         final double posZ = (forward * speed * sin - side * speed * cos);
         return new double[] {posX, posZ};
+    }
+
+    public static double roundDouble(double number, int scale) {
+        BigDecimal bd = new BigDecimal(number);
+        bd = bd.setScale(scale, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    public static float roundFloat(double number, int scale) {
+        BigDecimal bd = BigDecimal.valueOf(number);
+        bd = bd.setScale(scale, RoundingMode.FLOOR);
+        return bd.floatValue();
     }
 }

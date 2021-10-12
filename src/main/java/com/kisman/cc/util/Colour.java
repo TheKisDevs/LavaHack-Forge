@@ -23,7 +23,27 @@ public class Colour {
         this.a = 255;
     }
 
+    public Color getColor() {
+        return new Color(r, g, b, a);
+    }
+
     public int getRGB() {
         return new Color(r, g, b, a).getRGB();
+    }
+
+    public float getR() {
+        return r / 255;
+    }
+
+    public float getG() {
+        return g / 255;
+    }
+
+    public float getB() {
+        return b / 255;
+    }
+
+    public float getA() {
+        return a / 255;
     }
 }

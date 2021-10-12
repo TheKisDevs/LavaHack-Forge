@@ -1,10 +1,12 @@
 package com.kisman.cc.settings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
+import com.kisman.cc.util.Colour;
 
 import javax.management.OperationsException;
 
@@ -17,6 +19,7 @@ import javax.management.OperationsException;
  */
 public class Setting {
 	private ColorPicker colorPicker;
+	private Colour colour;
 
 	private int index = 0;
 	private int color;
@@ -33,6 +36,8 @@ public class Setting {
 	private String sval;
 	private String dString;
 	private ArrayList<String> options;
+	private Enum optionEnum;
+	private Enum svalEnum;
 	
 	private boolean bval;
 	private boolean rainbow;
@@ -95,7 +100,19 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.sval = sval;
+		this.svalEnum = null;
 		this.options = options;
+		this.optionEnum = null;
+		this.mode = "Combo";
+	}
+
+	public Setting(String name, Module parent, Enum options){
+		this.name = name;
+		this.parent = parent;
+		this.sval = options.name();
+		this.svalEnum = options;
+		this.options = null;
+		this.optionEnum = options;
 		this.mode = "Combo";
 	}
 	
@@ -150,6 +167,41 @@ public class Setting {
 		this.y1 = y1;
 		this.x2 = x2;
 		this.y2 = y2;
+	}
+
+	public Enum getNextModeEnum() {
+		if(optionEnum != null) {
+			Enum enumVal = optionEnum;
+			String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+			index = index + 1 > values.length - 1 ? 0 : index + 1;
+			return Enum.valueOf(enumVal.getClass(), values[index]);
+		} else {
+			return null;
+		}
+	}
+
+	public Colour getColour() {
+		return colour;
+	}
+
+	public void setColour(Colour colour) {
+		this.colour = colour;
+	}
+
+	public Enum getValEnum() {
+		return svalEnum;
+	}
+
+	public void setValEnum(Enum svalEnum) {
+		this.svalEnum = svalEnum;
+	}
+
+	public Enum getOptionEnum() {
+		return optionEnum;
+	}
+
+	public void setOptionEnum(Enum optionEnum) {
+		this.optionEnum = optionEnum;
 	}
 
 	public Setting getSetparent() {

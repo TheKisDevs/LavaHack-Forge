@@ -2,8 +2,10 @@ package kisman.pasta.salhack.util.render;
 
 import java.awt.Color;
 
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.EntityUtil;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
+import kisman.pasta.salhack.util.Hole;
 import kisman.pasta.salhack.util.HoleTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -152,21 +154,21 @@ public class ESPUtil {
         return true;
     }
 
-    public static HoleTypes isBlockValid(IBlockState blockState, BlockPos blockPos)
+    public static Hole.HoleTypes isBlockValid(IBlockState blockState, BlockPos blockPos)
     {
         if (blockState.getBlock() != Blocks.AIR)
-            return HoleTypes.None;
+            return Hole.HoleTypes.None;
 
         if (Minecraft.getMinecraft().world.getBlockState(blockPos.up()).getBlock() != Blocks.AIR)
-            return HoleTypes.None;
+            return Hole.HoleTypes.None;
 
         if (Minecraft.getMinecraft().world.getBlockState(blockPos.up(2)).getBlock() != Blocks.AIR) // ensure the area is
                                                                              // tall enough for
                                                                              // the player
-            return HoleTypes.None;
+            return Hole.HoleTypes.None;
 
         if (Minecraft.getMinecraft().world.getBlockState(blockPos.down()).getBlock() == Blocks.AIR)
-            return HoleTypes.None;
+            return Hole.HoleTypes.None;
 
         final BlockPos[] touchingBlocks = new BlockPos[]
         { blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west() };
@@ -194,14 +196,14 @@ public class ESPUtil {
         }
 
         if (validHorizontalBlocks < 4)
-            return HoleTypes.None;
+            return Hole.HoleTypes.None;
 
         if (l_Bedrock)
-            return HoleTypes.Bedrock;
+            return Hole.HoleTypes.Bedrock;
         if (l_Obsidian)
-            return HoleTypes.Obsidian;
+            return Hole.HoleTypes.Obsidian;
 
-        return HoleTypes.Normal;
+        return Hole.HoleTypes.Normal;
     }
 
     public enum HoleModes
@@ -213,22 +215,20 @@ public class ESPUtil {
         Full,
     }
     
-    public static void Render(HoleModes p_Mode, final AxisAlignedBB bb, float p_Red, float p_Green, float p_Blue, float p_Alpha)
-    {
-        switch (p_Mode)
-        {
-            case Flat:
-                RenderGlobal.renderFilledBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.minY, bb.maxZ, p_Red, p_Green, p_Blue, p_Alpha);
+    public static void Render(String holeMode, final AxisAlignedBB bb, Colour color) {
+        switch (holeMode) {
+            case "Flat":
+                RenderGlobal.renderFilledBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.minY, bb.maxZ, color.getR(), color.getG(), color.getB(), color.getA());
                 break;
-            case FlatOutline:
-                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.minY, bb.maxZ, p_Red, p_Green, p_Blue, p_Alpha);
+            case "FlatOutline":
+                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.minY, bb.maxZ, color.getR(), color.getG(), color.getB(), color.getA());
                 break;
-            case Full:
-                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, p_Red, p_Green, p_Blue, p_Alpha);
-                RenderGlobal.renderFilledBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, p_Red, p_Green, p_Blue, p_Alpha);
+            case "Full":
+                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, color.getR(), color.getG(), color.getB(), color.getA());
+                RenderGlobal.renderFilledBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, color.getR(), color.getG(), color.getB(), color.getA());
                 break;
-            case Outline:
-                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, p_Red, p_Green, p_Blue, p_Alpha);
+            case "Outline":
+                RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, color.getR(), color.getG(), color.getB(), color.getA());
                 break;
             default:
                 break;

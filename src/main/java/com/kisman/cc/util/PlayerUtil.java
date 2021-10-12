@@ -5,11 +5,14 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -20,6 +23,22 @@ import java.util.List;
 public class PlayerUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static void swingArm(Hand hand) {
+        switch (hand) {
+            case MAINHAND:
+                mc.player.swingArm(EnumHand.MAIN_HAND);
+                break;
+            case OFFHAND:
+                mc.player.swingArm(EnumHand.OFF_HAND);
+                break;
+            case PACKET:
+                mc.player.connection.sendPacket(new CPacketAnimation(mc.player.getHeldItemMainhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+                break;
+            case NONE:
+                break;
+        }
+    }
 
     public static BlockPos getPlayerPos() {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
@@ -286,5 +305,9 @@ public class PlayerUtil {
             }
         }
         return -1;
+    }
+
+    public enum Hand {
+        MAINHAND, OFFHAND, PACKET, NONE
     }
 }

@@ -3,9 +3,15 @@ package com.kisman.cc.util;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -110,6 +116,31 @@ public class BlockUtil {
         shulkerList = Arrays.asList(Blocks.WHITE_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.SILVER_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX);
     }
 
+    public static void placeBlock(BlockPos blockPos, boolean packet, boolean antiGlitch) {
+        for (EnumFacing enumFacing : EnumFacing.values()) {
+            if (!(getBlockResistance(blockPos.offset(enumFacing)) == BlockResistance.BLANK)) {
+                for (Entity entity : mc.world.loadedEntityList) {
+                    if (new AxisAlignedBB(blockPos).intersects(entity.getEntityBoundingBox()))
+                        return;
+                }
+
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+
+                if (packet)
+                    mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(blockPos.offset(enumFacing), enumFacing.getOpposite(), EnumHand.MAIN_HAND, 0, 0, 0));
+                else
+                    mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos.offset(enumFacing), enumFacing.getOpposite(), new Vec3d(blockPos), EnumHand.MAIN_HAND);
+
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+
+                if (antiGlitch)
+                    mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos.offset(enumFacing), enumFacing.getOpposite()));
+
+                return;
+            }
+        }
+    }
+
     public static EnumFacing getPlaceableSide(BlockPos pos) {
 
         for (EnumFacing side : EnumFacing.values()) {
@@ -158,5 +189,26 @@ public class BlockUtil {
         double newZ = Math.floor(playerZ) + 0.5;
 
         return new Vec3d(newX, newY, newZ);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static BlockResistance getBlockResistance(BlockPos block) {
+        if (mc.world.isAirBlock(block))
+            return BlockResistance.BLANK;
+
+        else if (mc.world.getBlockState(block).getBlock().getBlockHardness(mc.world.getBlockState(block), mc.world, block) != -1 && !(mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST)))
+            return BlockResistance.BREAKABLE;
+
+        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST))
+            return BlockResistance.RESISTANT;
+
+        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(block).getBlock().equals(Blocks.BARRIER))
+            return BlockResistance.UNBREAKABLE;
+
+        return null;
+    }
+
+    public enum BlockResistance {
+        BLANK, BREAKABLE, RESISTANT, UNBREAKABLE
     }
 }

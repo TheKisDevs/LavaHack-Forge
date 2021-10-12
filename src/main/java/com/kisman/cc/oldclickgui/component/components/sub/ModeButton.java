@@ -62,14 +62,20 @@ public class ModeButton extends Component {
 	public void mouseClicked(int mouseX, int mouseY, int button) {
 		try {
 			if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.parent.open) {
-				int maxIndex = set.getOptions().size();
+				if(set.getOptions() != null) {
+					int maxIndex = set.getOptions().size();
 
-				if(modeIndex + 1 > maxIndex)
-					modeIndex = 0;
-				else
-					modeIndex++;
+					if(modeIndex + 1 > maxIndex)
+						modeIndex = 0;
+					else
+						modeIndex++;
 
-				set.setValString(set.getOptions().get(modeIndex));
+					set.setValString(set.getOptions().get(modeIndex));
+				} else if(set.getOptionEnum() != null) {
+					Enum nextSettingValue = set.getNextModeEnum();
+					set.setValString(nextSettingValue.name());
+					set.setValEnum(nextSettingValue);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

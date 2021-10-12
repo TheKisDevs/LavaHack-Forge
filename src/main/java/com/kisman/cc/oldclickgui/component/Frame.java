@@ -41,21 +41,10 @@ public class Frame {
 		this.y = 5;
 		this.barHeight = 13;
 		this.dragX = 0;
-		this.open = false;
+		this.open = true;
 		this.isDragging = false;
 		this.hud = false;
 		int tY = this.barHeight;
-		
-		/**
-		 * 		public ArrayList<Module> getModulesInCategory(Category categoryIn){
-		 * 			ArrayList<Module> mods = new ArrayList<Module>();
-		 * 			for(Module m : this.modules){
-		 * 				if(m.getCategory() == categoryIn)
-		 * 					mods.add(m);
-		 * 			}
-		 * 			return mods;
-		 * 		}
-		 */
 		
 		for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(category)) {
 			Button modButton = new Button(mod, this, tY);

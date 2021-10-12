@@ -60,6 +60,7 @@ public class ModuleManager {
 		modules.add(new ChinaHat());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
+		modules.add(new HoleESP());
 		modules.add(new KismanESP());
 		modules.add(new NameTags());
 		modules.add(new NoRender());
@@ -109,7 +110,9 @@ public class ModuleManager {
 		modules.add(new BurrowCounter());
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
+		modules.add(new TeamRusherLag());
 		modules.add(new WeaknessLog());
+		modules.add(new XCarry());
 	}
 	
 	public Module getModule(String name) {

@@ -1,44 +1,37 @@
 package com.kisman.cc.oldclickgui.component;
 
+import com.kisman.cc.event.events.clickguiEvents.keyTyped.*;
+import com.kisman.cc.event.events.clickguiEvents.mouseClicked.*;
+import com.kisman.cc.event.events.clickguiEvents.mouseReleased.*;
+
 import java.util.ArrayList;
 
 public class Component {
-	public ArrayList<Component> components;
+	public void renderComponent() {}
 
-	public boolean category = false;
+	public void renderComponentPost() {}
+	
+	public void updateComponent(int mouseX, int mouseY) {}
 
-	public void renderComponent() {
-		
-	}
+	public void mouseClickedPre(int mouseX, int mouseY, int button, MouseClickedPreEvent event) {}
 	
-	public void updateComponent(int mouseX, int mouseY) {
-		
-	}
+	public void mouseClicked(int mouseX, int mouseY, int button) {}
+
+	public void mouseReleasedPre(int mouseX, int mouseY, int mouseButton, MouseReleasedPreEvent event) {}
 	
-	public void mouseClicked(int mouseX, int mouseY, int button) {
-		
-	}
-	
-	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-	}
+	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {}
 	
 	public int getParentHeight() {
 		return 0;
 	}
+
+	public void keyTypedPre(char typedChar, int key, KeyTypedPreEvent event) {}
 	
-	public void keyTyped(char typedChar, int key) {
-		
-	}
+	public void keyTyped(char typedChar, int key) {}
 	
-	public void setOff(int newOff) {
-		
-	}
+	public void setOff(int newOff) {}
 	
 	public int getHeight() {
 		return 0;
 	}
-
-	public boolean isCategory() { return this.category; }
-
-	public ArrayList<Component> getComponents() { return this.category ? this.components : null; }
 }
