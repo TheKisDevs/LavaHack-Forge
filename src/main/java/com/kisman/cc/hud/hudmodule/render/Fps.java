@@ -2,6 +2,7 @@ package com.kisman.cc.hud.hudmodule.render;
 
 import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.text.TextFormatting;
@@ -19,7 +20,7 @@ public class Fps extends HudModule {
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent event) {
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            fr.drawStringWithShadow(
+            CustomFontUtil.drawStringWithShadow(
                 TextFormatting.WHITE + 
                 "FPS: " + 
                 TextFormatting.GRAY + 

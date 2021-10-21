@@ -7,7 +7,7 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Toggle extends Command{
     public Toggle() {
-        super("Toggle");
+        super("toggle");
     }
 
     @Override

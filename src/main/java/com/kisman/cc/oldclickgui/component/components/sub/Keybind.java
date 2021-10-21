@@ -3,6 +3,7 @@ package com.kisman.cc.oldclickgui.component.components.sub;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.oldclickgui.component.Component;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -17,6 +18,7 @@ public class Keybind extends Component {
 	private boolean hovered;
 	private boolean binding;
 	private Button parent;
+	private Setting set;
 	private ColorUtil colorUtil = new ColorUtil();
 	private int offset;
 	private int x;
@@ -24,6 +26,15 @@ public class Keybind extends Component {
 	
 	public Keybind(Button button, int offset) {
 		this.parent = button;
+		this.set = null;
+		this.x = button.parent.getX() + button.parent.getWidth();
+		this.y = button.parent.getY() + button.offset;
+		this.offset = offset;
+	}
+
+	public Keybind(Button button, Setting set, int offset) {
+		this.parent = button;
+		this.set = set;
 		this.x = button.parent.getX() + button.parent.getWidth();
 		this.y = button.parent.getY() + button.offset;
 		this.offset = offset;
@@ -60,9 +71,15 @@ public class Keybind extends Component {
 	
 	@Override
 	public void keyTyped(char typedChar, int key) {
+		System.out.println("5");
 		if(this.binding) {
-			this.parent.mod.setKey(key);
-			this.binding = false;
+			if(set == null) {
+				this.parent.mod.setKey(key);
+				this.binding = false;
+			} else {
+				set.setKey(key);
+				binding = false;
+			}
 		}
 	}
 	

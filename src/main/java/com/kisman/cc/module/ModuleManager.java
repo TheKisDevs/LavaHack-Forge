@@ -1,6 +1,8 @@
 package com.kisman.cc.module;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
@@ -10,6 +12,8 @@ import com.kisman.cc.module.misc.*;
 import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -18,6 +22,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ModuleManager {
 	public ArrayList<Module> modules;
+
+	private Minecraft mc = Minecraft.getMinecraft();
 	
 	public ModuleManager() {
 		modules = new ArrayList<>();
@@ -34,10 +40,12 @@ public class ModuleManager {
 		modules.add(new AutoCrystalBypass());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
+		modules.add(new BowSpam());
 		modules.add(new CevBreaker());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
 		modules.add(new Rubberband());
+		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
 		modules.add(new Cape());
@@ -51,8 +59,10 @@ public class ModuleManager {
 		modules.add(new ParticleGui());
 		//chat
 		modules.add(new AutoEZ());
+		modules.add(new ChatSuffix());
 		modules.add(new Notification());
 		modules.add(new Spammer());
+		modules.add(new TraceTeleport());
 		//render
 		modules.add(new BlockOutline());
 		modules.add(new CustomFov());
@@ -64,12 +74,13 @@ public class ModuleManager {
 		modules.add(new KismanESP());
 		modules.add(new NameTags());
 		modules.add(new NoRender());
+		modules.add(new Particle());
+		modules.add(new PenisESP());
 		modules.add(new SkyColor());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new ViemModel());
-		modules.add(new Particle());
 		//movement
 		modules.add(new Anchor());
 		modules.add(new AutoJump());
@@ -81,6 +92,7 @@ public class ModuleManager {
 		modules.add(new NoSlow());
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());
+		modules.add(new SafeWalk());
 		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new Sprint());
@@ -95,6 +107,7 @@ public class ModuleManager {
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
+//		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new CactusLeave());
 		modules.add(new Ghost());
@@ -102,7 +115,8 @@ public class ModuleManager {
 		modules.add(new MiddleClick());
 		modules.add(new NoMiningTrace());
 		modules.add(new PacketFly());
-		modules.add(new PacketMine());
+//		modules.add(new PacketMine());
+		modules.add(new SilentClose());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc
@@ -110,6 +124,7 @@ public class ModuleManager {
 		modules.add(new BurrowCounter());
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
+		modules.add(new NameProtect());
 		modules.add(new TeamRusherLag());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
@@ -138,6 +153,26 @@ public class ModuleManager {
 		return mods;
 	}
 
+	public ArrayList<Module> getEnabledModules() {
+		ArrayList<Module> enabled = new ArrayList<>();
+		modules.stream().forEach(module -> {
+			if(module.isToggled()) {
+				enabled.add(module);
+			}
+		});
+
+		return enabled;
+	}
+
+	public ArrayList<Module> getSortModuleList(boolean reverse) {
+		ArrayList<Module> sorted = new ArrayList<>();
+		getEnabledModules().stream().filter(module -> module.visible)
+				.sorted(Comparator.comparing(module -> CustomFontUtil.getStringWidth(module.getName() + " " + module.getDisplayInfo()) * (reverse ? -1 : 1)))
+				.collect(Collectors.toList());
+
+		return sorted;
+	}
+
 	@SubscribeEvent
 	public void onKey(InputEvent.KeyInputEvent event) {}
 
@@ -156,6 +191,14 @@ public class ModuleManager {
 			if(m.isToggled()) {
 				m.render();
 			}
+		}
+	}
+
+	public void key(char typedChar, int key, Module mod) {
+		if(mod.isToggled()) {
+			mod.key();
+			mod.key(key);
+			mod.key(typedChar, key);
 		}
 	}
 }

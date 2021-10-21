@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class OffHand extends Module {
+    public static OffHand instance;
+
     private Setting health = new Setting("Health", this, 11, 0, 20, true);
 
     private Setting mode = new Setting("Mode", this, "Totem", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
@@ -35,6 +37,9 @@ public class OffHand extends Module {
 
     public OffHand() {
         super("OffHand", "gg", Category.COMBAT);
+        super.setDisplayInfo("[" + mode.getValString() + "]");
+
+        instance = this;
 
         setmgr.rSetting(health);
         setmgr.rSetting(mode);

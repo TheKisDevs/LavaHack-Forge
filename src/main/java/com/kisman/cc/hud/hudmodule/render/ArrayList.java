@@ -8,10 +8,12 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -25,11 +27,6 @@ public class ArrayList extends HudModule{
     Minecraft mc = Minecraft.getMinecraft();
     FontRenderer fr = mc.fontRenderer;
 
-    int arrR = 255;
-    int arrG = 255;
-    int arrB = 255;
-    int arrA = 255;
-
     public float[] color;
 
     Render2DUtil render2DUtil = new Render2DUtil();
@@ -37,71 +34,38 @@ public class ArrayList extends HudModule{
 
     public ArrayList() {
         super("ArrayList", "arrList", HudCategory.RENDER);
-        // this.color = new float[] {0.4f, 1.0f, 1.0f, 1.0f};
-        // Kisman.instance.settingsManager.rSetting(new Setting("ArrList", this, ));
-        Kisman.instance.settingsManager.rSetting(
-            new Setting(
-                "arrColor", 
-                this, 
-                "Color", 
-                new float[] {
-                    0.4f, 
-                    1.0f, 
-                    1.0f, 
-                    1.0f
-                }
-            )
-        );
-    }
-
-    public void update() {
-        arrR = HUD.arrR;
-        arrG = HUD.arrG;
-        arrB = HUD.arrB;
-        arrA = HUD.arrA;
-    }
-
-    public static class ModuleComparator implements Comparator<Module>{
-        @Override
-        public int compare(Module arg0, Module arg1){
-            if(Minecraft.getMinecraft().fontRenderer.getStringWidth(arg0.getName()) > Minecraft.getMinecraft().fontRenderer.getStringWidth(arg1.getName())){
-                return -1;
-            }
-            if(Minecraft.getMinecraft().fontRenderer.getStringWidth(arg0.getName()) > Minecraft.getMinecraft().fontRenderer.getStringWidth(arg1.getName())) {
-                return 1;
-            }
-            return 0;
-        }
     }
 
     @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent event) {
-        Collections.sort(Kisman.instance.moduleManager.modules, new ModuleComparator());
+    public void onRender(RenderGameOverlayEvent.Text event) {
+        java.util.ArrayList<Module> mods = new java.util.ArrayList<>();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        int count = 0;
-        if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            for (Module m : Kisman.instance.moduleManager.getModuleList()) {
-                int offset = count * (fr.FONT_HEIGHT + 6);
+        for(Module mod : Kisman.instance.moduleManager.modules) {
+            if(mod != null && mod.isToggled() && mod.visible) {
+                mods.add(mod);
+            }
+        }
 
-                if (m.isToggled() && m.visible == true) {
-                    fr.drawStringWithShadow(m.getName(), sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 4, 4 + offset, -1);
-                    Gui.drawRect(
-                        sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 8, 
-                        offset, 
-                        sr.getScaledWidth() - fr.getStringWidth(m.getName()) - 7, 
-                        offset + fr.FONT_HEIGHT + 6,
-                        new Color(
-                                arrR,
-                                arrG,
-                                arrB,
-                                arrA
-                        ).getRGB()
-                    );
-                    count++;
-                } else if(m.visible == false){
-                    continue;
-                }
+        Comparator<Module> comparator = (first, second) -> {
+            String firstName = first.getName() + (first.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + first.getDisplayInfo());
+            String secondName = second.getName() + (second.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + second.getDisplayInfo());
+            float dif = CustomFontUtil.getStringWidth(secondName) - CustomFontUtil.getStringWidth(firstName);
+            return (dif != 0) ? ((int) dif) : secondName.compareTo(firstName);
+        };
+
+        mods.sort(comparator);
+
+        int count = 0;
+        float heigth = CustomFontUtil.getFontHeight() + 2;
+
+        for(Module mod : mods) {
+            if(mod != null && mod.isToggled() && mod.visible) {
+                String name = mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo());
+
+                CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA()).getRGB());
+
+                count++;
             }
         }
     }

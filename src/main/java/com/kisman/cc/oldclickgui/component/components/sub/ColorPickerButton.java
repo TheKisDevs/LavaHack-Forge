@@ -58,8 +58,8 @@ public class ColorPickerButton extends Component{
       //Gui.drawRect(button.parent.getX() + 3, (button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 5) + 5, button.parent.getX() + 7 + button.parent.getWidth() - 7,(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, ClickGui.isRainbowLine() ? colorUtil.getColor() : new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
       GL11.glPushMatrix();
       GL11.glScalef(0.5f,0.5f, 0.5f);
-      CustomFontUtil.drawString(set.getTitle(), (button.parent.getX() + 4) * 2, (button.parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
-      CustomFontUtil.drawString(this.open ? "+" : "-", (button.parent.getX() + button.parent.getWidth() - 10) * 2, (button.parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+      Minecraft.getMinecraft().fontRenderer.drawString(set.getTitle(), (button.parent.getX() + 4) * 2, (button.parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+      Minecraft.getMinecraft().fontRenderer.drawString(this.open ? "+" : "-", (button.parent.getX() + button.parent.getWidth() - 10) * 2, (button.parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
       GL11.glPopMatrix();
       if(this.open) {
         Minecraft.getMinecraft().displayGuiScreen(colorPicker);

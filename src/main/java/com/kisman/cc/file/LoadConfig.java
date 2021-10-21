@@ -79,7 +79,8 @@ public class LoadConfig {
                         settingObject.get(setting.getName() + "S"),
                         settingObject.get(setting.getName() + "B"),
                         settingObject.get(setting.getName() + "A"),
-                        settingObject.get(setting.getName() + "RainBow")
+                        settingObject.get(setting.getName() + "RainBow"),
+                        settingObject.get(setting.getName() + "Syns")
                 };
 
                 try {
@@ -98,7 +99,8 @@ public class LoadConfig {
                             setting.getColorPicker().setColor(1, colour[1].getAsFloat());
                             setting.getColorPicker().setColor(2, colour[2].getAsFloat());
                             setting.getColorPicker().setColor(3, colour[3].getAsFloat());
-                            setting.getColorPicker().setRainbowState(colour[4].getAsBoolean());
+                            setting.setRainbow(colour[4].getAsBoolean());
+                            setting.setSyns(colour[5].getAsBoolean());
                         }
                     }
                 } catch (NumberFormatException e) {

@@ -14,7 +14,7 @@ public class HudModuleManager {
     public java.util.ArrayList<HudModule> modules;
 	
 	public HudModuleManager() {
-		modules = new java.util.ArrayList<HudModule>();
+		modules = new java.util.ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
 		init();
 	}
@@ -22,6 +22,7 @@ public class HudModuleManager {
 	public void init() {
 		//combat
 		modules.add(new ArmorHUD());
+		modules.add(new PvpInfo());
 		modules.add(new TargetInfo());
 		//movement
 		modules.add(new Speed());
@@ -30,6 +31,7 @@ public class HudModuleManager {
 		modules.add(new Coord());
 		modules.add(new Fps());
 		modules.add(new Logo());
+		modules.add(new Welcomer());
 	}
 	
 	public HudModule getModule(String name) {

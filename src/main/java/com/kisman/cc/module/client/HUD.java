@@ -18,25 +18,47 @@ import java.awt.*;
 import java.util.*;
 
 public class HUD extends Module {
+	public static HUD instance;
 
-	public static int arrR = 0;
-	public static int arrG = 0;
-	public static int arrB = 0;
-	public static int arrA = 0;
+	private Setting arrLine = new Setting("ArrLine", this, "ArrayList");
+	public Setting arrMode = new Setting("ArrayListMode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT")));
+	public Setting arrY = new Setting("ArrayListY", this, 150, 0, mc.displayHeight, true);
+	public Setting arrColor = new Setting("ArrayListColor", this, "Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
+
+	private Setting welLine = new Setting("WelLine", this, "Welcomer");
+	public Setting welColor = new Setting("WelColor", this, "WelcomerColor", new float[] {3f, 0.03f, 0.33f, 1f}, false);
+
+	private Setting pvpLine = new Setting("PvpLine", this, "PvpInfo");
+	public Setting pvpY = new Setting("PvpInfoY", this, mc.displayHeight / 3, 0, mc.displayHeight, true);
+
+	private Setting armLine = new Setting("ArmLine", this, "Armor");
+	public Setting armOffRender = new Setting("OffHandRender", this, false);
+	public Setting armExtra = new Setting("ExtraInfo", this, false);
+	public Setting armDmg = new Setting("Damage", this, false);
 
 	public HUD() {
 		super("HUD", "hud editor", Category.CLIENT);
-		Kisman.instance.settingsManager.rSetting(new Setting("ArrayList", this, false));
-		Kisman.instance.settingsManager.rSetting(new Setting("ArrListColor", this, "ArrayListColor", new float[] {3f, 0.03f, 0.33f, 1f}, false));
-		Kisman.instance.settingsManager.rSetting(new Setting("LogoLine", this, "Logo"));
-		Kisman.instance.settingsManager.rSetting(new Setting("LogoMode", this, "Simple", new ArrayList<String>(Arrays.asList("Simple", "Best","SimpeBird", "Bird", "Kisman", "Nevis"))));
-	}
 
-	public void update() {
-		arrR = Kisman.instance.settingsManager.getSettingByName(this, "ArrayListColor").getR();
-		arrG = Kisman.instance.settingsManager.getSettingByName(this, "ArrayListColor").getG();
-		arrB = Kisman.instance.settingsManager.getSettingByName(this, "ArrayListColor").getB();
-		arrA = Kisman.instance.settingsManager.getSettingByName(this, "ArrayListColor").getA();
+		instance = this;
+
+		setmgr.rSetting(arrLine);
+		setmgr.rSetting(arrMode);
+		setmgr.rSetting(arrY);
+		setmgr.rSetting(arrColor);
+
+		setmgr.rSetting(welLine);
+		setmgr.rSetting(welColor);
+
+		setmgr.rSetting(pvpLine);
+		setmgr.rSetting(pvpY);
+
+		setmgr.rSetting(arrLine);
+		setmgr.rSetting(armOffRender);
+		setmgr.rSetting(armExtra);
+		setmgr.rSetting(armDmg);
+
+		Kisman.instance.settingsManager.rSetting(new Setting("LogoLine", this, "Logo"));
+		Kisman.instance.settingsManager.rSetting(new Setting("LogoMode", this, "Simple", new ArrayList<>(Arrays.asList("Simple", "Best","SimpeBird", "Bird", "Kisman", "Nevis"))));
 	}
 
 	public void onEnable() {

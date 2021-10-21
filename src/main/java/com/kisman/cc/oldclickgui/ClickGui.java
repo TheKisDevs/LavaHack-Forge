@@ -8,6 +8,7 @@ import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
 import com.kisman.cc.module.Category;
+import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.util.HoveredMode;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.TextMode;
@@ -19,6 +20,8 @@ import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
+	public ParticleSystem particle;
+
 	public static boolean line = false;
 	public static boolean rainbowLine = false;
 	public static boolean rainbowBackground = false;
@@ -79,6 +82,8 @@ public class ClickGui extends GuiScreen {
 			frames.add(frame);
 			frameX += frame.getWidth() + 1;
 		}
+
+		particle = new ParticleSystem(100, true, 150);
 	}
 
 	@Override
@@ -87,6 +92,7 @@ public class ClickGui extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+//		particle.render();
 		scrollWheelCheck();
 		this.drawDefaultBackground();
 		for(Frame frame : frames) {
@@ -170,10 +176,10 @@ public class ClickGui extends GuiScreen {
 		}
 	}
 
-	@Override
+/*	@Override
 	public boolean doesGuiPauseGame() {
 		return true;
-	}
+	}*/
 
 	public static LineMode getSetLineMode() {
 		return setLineMode;

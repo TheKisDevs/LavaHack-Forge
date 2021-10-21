@@ -15,7 +15,7 @@ public class WeaknessLog extends Module {
         if(mc.player == null && mc.world == null) return;
 
         if(mc.player.isPotionActive(MobEffects.WEAKNESS)) {
-            mc.player.connection.sendPacket(new SPacketDisconnect(new TextComponentString("weakness")));
+            mc.getConnection().handleDisconnect(new SPacketDisconnect(new TextComponentString("weakness")));
             toggle();
         }
     }

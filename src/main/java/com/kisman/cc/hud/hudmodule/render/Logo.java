@@ -6,6 +6,7 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.util.LogoMode;
 import com.kisman.cc.util.Render2DUtil;
 
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -27,7 +28,7 @@ public class Logo extends HudModule{
     public static int height = 0;
     public static int x = 1;
     public static int y = 1;
-    public static int x1 = x = Minecraft.getMinecraft().fontRenderer.getStringWidth(Kisman.NAME + " " + Kisman.VERSION);
+    public static int x1 = x = CustomFontUtil.getStringWidth(Kisman.NAME + " " + Kisman.VERSION);
     public static int y1 = y + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
 
     String name = Kisman.NAME;
@@ -41,7 +42,7 @@ public class Logo extends HudModule{
     public void onRender(RenderGameOverlayEvent event) {
         if(logoMode == LogoMode.SIMPLE) {
             if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-                fr.drawStringWithShadow(TextFormatting.WHITE + name + " " + TextFormatting.GRAY + version, 1, 1, -1);
+                CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + name + " " + TextFormatting.GRAY + version, 1, 1, -1);
                 setHeight(1 + fr.FONT_HEIGHT + 2);
             }
         } else if(logoMode == LogoMode.ADVANCED) {

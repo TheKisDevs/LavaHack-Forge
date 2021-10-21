@@ -14,7 +14,8 @@ import java.util.*;
 public class CommandManager {
     public static ArrayList<Command> commands = new ArrayList<Command>();
 	
-	public char cmdPrefix = '.';
+	public char cmdPrefix = '-';
+	public String cmdPrefixStr = "" + cmdPrefix;
 
 	public CommandManager()
 	{
@@ -24,10 +25,13 @@ public class CommandManager {
 	public void addCommands()
 	{
 		commands.add(new Bind());
+		commands.add(new Flip());
 		commands.add(new LoadConfigCommand());
         commands.add(new Slider());
         commands.add(new OpenDir());
+		commands.add(new Peek());
         commands.add(new SaveConfigCommand());
+		commands.add(new SetKey());
         commands.add(new Toggle());
 	}
 

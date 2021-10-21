@@ -135,6 +135,16 @@ public class Frame {
 			this.offset = off;
 		}
 	}
+
+	public void setRefresh(int newOff) {
+		int off = barHeight;
+
+		for(Component comp : components) {
+			comp.setOff(comp.getOff() + newOff);
+			off += comp.getHeight();
+			this.offset = off;
+		}
+	}
 	
 	public int getX() {
 		return x;

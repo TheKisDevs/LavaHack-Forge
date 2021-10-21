@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class KillAura extends Module {
+    public static KillAura instance;
+
     private boolean player;
     private boolean monster;
     private boolean passive;
@@ -27,6 +29,8 @@ public class KillAura extends Module {
 
     public KillAura() {
         super("KillAura", "8", Category.COMBAT);
+
+        instance = this;
 
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
 

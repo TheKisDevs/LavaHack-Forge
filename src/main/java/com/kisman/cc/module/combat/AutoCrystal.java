@@ -42,6 +42,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -137,7 +138,7 @@ public class AutoCrystal extends Module{
 
     private ArrayList<CPacketPlayer.PositionRotation> packets = new ArrayList<CPacketPlayer.PositionRotation>();
     private ArrayList<BlockPos> placedCrystal = new ArrayList<>();
-    private EntityLivingBase e_target = null;
+    public EntityLivingBase e_target = null;
     private AimBot aimBot;
     private ICamera camera = new Frustum();
     private int waitTicks = 0;
@@ -245,6 +246,12 @@ public class AutoCrystal extends Module{
     public void update() {
         if (mc.player == null && mc.world == null) {
             return;
+        }
+
+        if(e_target != null) {
+            super.setDisplayInfo("[" +  e_target.getDisplayName().getFormattedText() + TextFormatting.GRAY + "]");
+        } else {
+            super.setDisplayInfo("");
         }
 
         if(!mode.getValString().equalsIgnoreCase("ClientTick")) return;
@@ -432,7 +439,7 @@ public class AutoCrystal extends Module{
 
 //                    RenderUtil.drawColorBox(bb, render.getR(), render.getG(), render.getB(), render.getA());
 //                    RenderUtil.drawFilledBox(bb, l_Color);
-                RenderUtil.drawBoundingBox(bb, 1f, render.getR(), render.getG(), render.getB(), render.getA());
+                RenderUtil.drawBoundingBox(bb, 1f, render.getR() / 255, render.getG() / 255, render.getB() / 255, render.getA() / 255);
                 glDisable(GL_LINE_SMOOTH);
                 depthMask(true);
                 enableDepth();
@@ -791,7 +798,7 @@ public class AutoCrystal extends Module{
                         e_target = getNearTarget(mc.player);
 
                     if (e_target != null && l_Target != e_target && l_Target != null && Notification.instance.target.getValBoolean()) {
-                        ChatUtils.message(String.format("Found new target %s", l_Target.getName()));
+                        ChatUtils.complete(String.format("Found new target %s", l_Target.getName()));
                     }
 
                     e_target = l_Target;

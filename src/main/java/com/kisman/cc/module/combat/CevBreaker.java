@@ -29,6 +29,7 @@ import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
@@ -171,7 +172,9 @@ public class CevBreaker extends Module {
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener1);
-        Kisman.EVENT_BUS.unsubscribe(listener2);
+        try {
+            Kisman.EVENT_BUS.unsubscribe(listener2);
+        } catch (Exception e) {}
 
         ROTATION_UTIL.onDisable();
         if (mc.player == null) {
@@ -247,13 +250,16 @@ public class CevBreaker extends Module {
 
     @EventHandler
     private final Listener<DestroyBlockEvent> listener2 = new Listener<>(event -> {
-        if(enemyCoordsInt == null) return;
+        try {
+            if(enemyCoordsInt == null) return;
 
-        // If the destruction is on the enemy's idea
-        if (event.getBlockPos().getX() + (event.getBlockPos().getX() < 0 ? 1 : 0) == enemyCoordsInt[0] && event.getBlockPos().getZ() + (event.getBlockPos().getZ() < 0 ? 1 : 0) == enemyCoordsInt[2]) {
-            // Destroy
-            destroyCrystalAlgo();
-        }
+            // If the destruction is on the enemy's idea
+            if (event.getBlockPos().getX() + (event.getBlockPos().getX() < 0 ? 1 : 0) == enemyCoordsInt[0] && event.getBlockPos().getZ() + (event.getBlockPos().getZ() < 0 ? 1 : 0) == enemyCoordsInt[2]) {
+                // Destroy
+                destroyCrystalAlgo();
+            }
+        } catch (Exception e) {}
+
     });
 
     private String getMissingMaterials() {

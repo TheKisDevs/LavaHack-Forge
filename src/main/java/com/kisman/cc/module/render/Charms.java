@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Charms extends Module {
+    public Setting targetRender = new Setting("TargetRender", this, true);
+
     public static Charms instance;
 
     public Charms() {
@@ -18,6 +20,8 @@ public class Charms extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("Texture", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Render", this, false));
+
+        setmgr.rSetting(targetRender);
     }
 
     public void onEnable() {

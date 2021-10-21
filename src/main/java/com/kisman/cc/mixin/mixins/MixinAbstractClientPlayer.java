@@ -2,7 +2,9 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.Cape;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,6 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
+    Minecraft mc = Minecraft.getMinecraft();
+
+    @Shadow
+    public NetworkPlayerInfo playerInfo;
+
     @Shadow
     protected abstract boolean isSpectator();
 
@@ -23,7 +30,7 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
-        if(Cape.instance.isToggled()) {
+        if(Cape.instance.isToggled() && playerInfo == mc.player.getPlayerInfo()) {
             cir.setReturnValue(new ResourceLocation("kismancc:cape/cape1.png"));
         }
     }

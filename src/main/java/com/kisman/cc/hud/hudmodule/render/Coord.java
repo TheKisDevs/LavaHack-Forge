@@ -3,6 +3,7 @@ package com.kisman.cc.hud.hudmodule.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.settings.*;
 
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import org.lwjgl.opengl.GL11;
 
 import com.kisman.cc.hud.hudmodule.HudCategory;
@@ -30,7 +31,7 @@ public class Coord extends HudModule {
     int posZ;
     int nPosZ;
 
-    int x1 = 1, x2 = fr.getStringWidth("X: " + "(" + posX + ")[" + 
+    int x1 = 1, x2 = CustomFontUtil.getStringWidth("X: " + "(" + posX + ")[" +
     nPosX +
     "]" +
     " Y: " + 
@@ -112,7 +113,7 @@ public class Coord extends HudModule {
         // y4 = y3 + fr.FONT_HEIGHT + 1;
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-            fr.drawStringWithShadow(
+            CustomFontUtil.drawStringWithShadow(
                 TextFormatting.WHITE + 
                 "X: " + 
                 TextFormatting.GRAY + 

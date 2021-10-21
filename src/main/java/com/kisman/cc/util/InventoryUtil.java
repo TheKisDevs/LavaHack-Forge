@@ -2,12 +2,9 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.mixin.mixins.accessor.IPlayerControllerMP;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockObsidian;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 
@@ -18,6 +15,8 @@ public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void switchToSlot(int slot, Switch switchMode) {
+        if(mc.player == null && mc.world == null) return;
+
         if (slot != -1 && mc.player.inventory.currentItem != slot) {
             switch (switchMode) {
                 case NORMAL:

@@ -12,7 +12,7 @@ public class Module {
 
 	public static SettingsManager setmgr;
 
-	private String name, description;
+	private String name, description, displayInfo;
 	private int key;
 	private int priority;
 	private Category category;
@@ -23,6 +23,7 @@ public class Module {
 		//super();
 		this.name = name;
 		this.description = description;
+		this.displayInfo = "";
 		this.key = 0;
 		this.category = category;
 		this.toggled = false;
@@ -95,6 +96,17 @@ public class Module {
 		return this.category;
 	}
 
+	public String getDisplayInfo() {
+		return this.displayInfo;
+	}
+
+	public void setDisplayInfo(String displayInfo) {
+		this.displayInfo = displayInfo;
+	}
+
 	public void update(){}
 	public void render(){}
+	public void key() {}
+	public void key(int key) {}
+	public void key(char typedChar, int key) {}
 }

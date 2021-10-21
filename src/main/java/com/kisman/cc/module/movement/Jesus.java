@@ -8,15 +8,19 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Jesus extends Module {
+    private Setting mode = new Setting("Mode", this, "Matrix", new ArrayList<>(Arrays.asList("Matrix", "Solid")));
+
     public Jesus() {
         super("Jesus", "", Category.MOVEMENT);
+        super.setDisplayInfo("[" + mode.getValString() + TextFormatting.GRAY + "]");
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Matrix", new ArrayList<>(Arrays.asList("Matrix", "Solid"))));
+        setmgr.rSetting(mode);
 
         Kisman.instance.settingsManager.rSetting(new Setting("SpeedMatrix", this, 0.6f, 0, 1, false));
         Kisman.instance.settingsManager.rSetting(new Setting("SpeedSolid", this, 1, 0, 2, false));
@@ -25,9 +29,7 @@ public class Jesus extends Module {
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        String mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
-
-        if(mode.equalsIgnoreCase("Matrix")) {
+        if(mode.getValString().equalsIgnoreCase("Matrix")) {
             float speed = (float) Kisman.instance.settingsManager.getSettingByName(this, "SpeedMatrix").getValDouble();
 
             if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY - -0.37f, mc.player.posZ)).getBlock() == Blocks.WATER) {
@@ -42,7 +44,7 @@ public class Jesus extends Module {
                     mc.player.onGround = false;
                 }
             }
-        } else if(mode.equalsIgnoreCase("Solid")) {
+        } else if(mode.getValString().equalsIgnoreCase("Solid")) {
             float speed = (float) Kisman.instance.settingsManager.getSettingByName(this, "SpeedSolid").getValDouble();
 
             if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + 1, mc.player.posZ)).getBlock() == Block.getBlockById(9)) {

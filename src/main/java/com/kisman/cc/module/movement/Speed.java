@@ -11,24 +11,27 @@ import com.kisman.cc.util.EntityUtil;
 import com.kisman.cc.util.PlayerUtil;
 import i.gishreloaded.gishcode.utils.Utils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
-import ibxm.Player;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 
 public class Speed extends Module {
     private float yPortSpeed;
 
-    private Setting yPoryLine = new Setting("YPortLine", this, "YPort");
+    private Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort")));
+
+    private Setting yPortLine = new Setting("YPortLine", this, "YPort");
     private Setting yWater = new Setting("Water", this, false);
     private Setting yLava = new Setting("Lava", this, false);
 
     public Speed() {
         super("Speed", "SPID", Category.MOVEMENT);
+        super.setDisplayInfo("[" + speedMode.getValString() + TextFormatting.GRAY + "]");
 
-        Kisman.instance.settingsManager.rSetting(new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort"))));
+        setmgr.rSetting(speedMode);
 
         Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false));
 
-        setmgr.rSetting(yPoryLine);
+        setmgr.rSetting(yPortLine);
         setmgr.rSetting(yWater);
         setmgr.rSetting(yLava);
     }
@@ -40,13 +43,11 @@ public class Speed extends Module {
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        String mode = Kisman.instance.settingsManager.getSettingByName(this, "SpeedMode").getValString();
-
         boolean boost = Math.abs(Wrapper.INSTANCE.player().rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
 
         this.yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
 
-        if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5 && mode.equalsIgnoreCase("Strafe")) {
+        if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
             if(mc.player.onGround) {
                 mc.player.motionY = 0.405;
                 float f = Utils.getDirection();
@@ -64,7 +65,7 @@ public class Speed extends Module {
             }
         }
 
-        if(mode.equalsIgnoreCase("YPort")) {
+        if(speedMode.getValString().equalsIgnoreCase("YPort")) {
             handleYPortSpeed();
         }
     }

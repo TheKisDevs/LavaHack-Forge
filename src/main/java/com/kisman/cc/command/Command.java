@@ -3,6 +3,7 @@ package com.kisman.cc.command;
 import net.minecraft.client.Minecraft;
 
 public abstract class Command {
+	public static Minecraft mc = Minecraft.getMinecraft();
 	
 	private String command;
 	private String execute;

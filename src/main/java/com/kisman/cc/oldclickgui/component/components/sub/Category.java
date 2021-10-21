@@ -86,13 +86,18 @@ public class Category extends Component {
 
         if(isMouseOnButton(mouseX, mouseY) && button == 1) {
             this.open = !this.open;
-            if(open) {
-                this.button.setOff(opY + offset - 12, this);
-            } else {
-                this.button.setOff(offset - 12, this);
-            }
 
             this.button.parent.refresh();
+
+            if(open) {
+                this.button.setOff(opY + offset - 12, this);
+//                this.button.parent.setRefresh(opY - 12);
+                Minecraft.getMinecraft().player.sendChatMessage("1");
+            } else {
+                this.button.setOff(offset - 12, this);
+//                this.button.parent.setRefresh(-opY + 12);
+                Minecraft.getMinecraft().player.sendChatMessage("2");
+            }
         }
     }
 

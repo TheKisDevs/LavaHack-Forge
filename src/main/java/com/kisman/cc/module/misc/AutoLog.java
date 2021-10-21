@@ -20,7 +20,7 @@ public class AutoLog extends Module {
         int health = (int) Kisman.instance.settingsManager.getSettingByName(this, "Health").getValDouble();
 
         if(mc.player.getHealth() < health) {
-            mc.player.connection.sendPacket(new SPacketDisconnect(new TextComponentString("your health < " + health)));
+            mc.getConnection().handleDisconnect(new SPacketDisconnect(new TextComponentString("your health < " + health)));
             toggle();
         }
     }

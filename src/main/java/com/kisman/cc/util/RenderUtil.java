@@ -24,17 +24,10 @@ import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
-// import i.gishreloaded.gishcode.hack.hacks.ClickGui;
-// import i.gishreloaded.gishcode.hack.hacks.KillAura;
-// import i.gishreloaded.gishcode.hack.hacks.Scaffold;
-
-// import i.gishreloaded.gishcode.utils.TimerUtils;
-// import i.gishreloaded.gishcode.wrappers.Wrapper;
-// import i.gishreloaded.gishcode.xray.XRayBlock;
-// import i.gishreloaded.gishcode.xray.XRayData;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -49,14 +42,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL32;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.lwjgl.util.glu.Cylinder;
+import org.lwjgl.util.glu.Sphere;
 
 public class RenderUtil {
 
     private static Minecraft mc = Minecraft.getMinecraft();
 	
 	private static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-	//public static TimerUtils splashTimer = new TimerUtils();
 	public static int splashTickPos = 0;
 	public static boolean isSplash = false;
 
@@ -158,9 +151,7 @@ public class RenderUtil {
             double xPos = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks) - renderPosX;
             double yPos = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks)  + entity.height / 2.0f - renderPosY;
             double zPos = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks) - renderPosZ;
-            
-            // float playerViewY = Wrapper.INSTANCE.mc().getRenderManager().playerViewY;
-            // float playerViewX1 = Wrapper.INSTANCE.mc().getRenderManager().playerViewX;
+
             float playerViewY = Minecraft.getMinecraft().getRenderManager().playerViewY;
             float playerViewX = Minecraft.getMinecraft().getRenderManager().playerViewX;
             boolean thirdPersonView = Minecraft.getMinecraft().getRenderManager().options.thirdPersonView == 2;
@@ -204,60 +195,6 @@ public class RenderUtil {
         	exception.printStackTrace();
         }
     }
-	/*
-	public static void drawString2D(FontRenderer fontRendererIn, String str, Entity entity, double posX, double posY, double posZ, int colorString, float colorRed, float colorGreen, float colorBlue, float colorAlpha, int verticalShift) {
-		try {
-			if(str != "") {
-				float distance = Wrapper.INSTANCE.player().getDistance(entity);
-				float playerViewY = Wrapper.INSTANCE.mc().getRenderManager().playerViewY;
-				float playerViewX = Wrapper.INSTANCE.mc().getRenderManager().playerViewX;
-				boolean thirdPersonView = Wrapper.INSTANCE.mc().getRenderManager().options.thirdPersonView == 2;
-				float f1 = entity.height + 0.5F;
-				
-				if(distance <= 50) {
-					GlStateManager.pushMatrix();
-					GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
-					GlStateManager.translate(posX, posY, posZ);
-					GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-					GlStateManager.rotate(-playerViewY, 0.0F, 1.0F, 0.0F);
-					GlStateManager.rotate((float)(thirdPersonView ? -1 : 1) * playerViewX, 1.0F, 0.0F, 0.0F);
-        
-					if(distance <= 11) {
-						GlStateManager.scale(-0.027F, -0.027F, 0.027F);
-					} else {
-						GlStateManager.scale(-distance / 350, -distance / 350, distance / 350);
-					}
-					GlStateManager.disableLighting();
-					GlStateManager.depthMask(false);
-
-					GlStateManager.enableBlend();
-					GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-					int i = fontRendererIn.getStringWidth(str) / 2;
-					GlStateManager.disableTexture2D();
-					Tessellator tessellator = Tessellator.getInstance();
-					BufferBuilder bufferbuilder = tessellator.getBuffer();
-					bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-					bufferbuilder.pos((double)(-i - 1), (double)(-1 + verticalShift), 0.0D).color(colorRed, colorGreen, colorBlue, colorAlpha).endVertex();
-					bufferbuilder.pos((double)(-i - 1), (double)(8 + verticalShift), 0.0D).color(colorRed, colorGreen, colorBlue, colorAlpha).endVertex();
-					bufferbuilder.pos((double)(i + 1), (double)(8 + verticalShift), 0.0D).color(colorRed, colorGreen, colorBlue, colorAlpha).endVertex();
-					bufferbuilder.pos((double)(i + 1), (double)(-1 + verticalShift), 0.0D).color(colorRed, colorGreen, colorBlue, colorAlpha).endVertex();
-					tessellator.draw();
-					GlStateManager.enableTexture2D();
-					GlStateManager.depthMask(true);
-					fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, colorString);
-					GL11.glEnable(GL11.GL_DEPTH_TEST);
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GlStateManager.enableLighting();
-					GlStateManager.disableBlend();
-					GlStateManager.popMatrix();
-				}
-			}
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
-    }
-	*/
 	
 	public static void drawNukerBlocks(Iterable<BlockPos> blocks, float r, float g, float b, float ticks) {
 		glPushMatrix();
@@ -353,6 +290,7 @@ public class RenderUtil {
 
         glColor4f(red, green, blue, 0.30F);
         drawSolidBox();
+        drawOutlinedBox();
 
         glColor4f(1, 1, 1, 1);
 
@@ -1181,5 +1119,46 @@ public class RenderUtil {
         GlStateManager.enableAlpha();
         glEnable(GL11.GL_LINE_SMOOTH);
         glEnable(GL32.GL_DEPTH_CLAMP);
+    }
+
+    public static void drawPenis(EntityPlayer player, double x, double y, double z, float spin, float cumsize, float amount) {
+        GL11.glDisable((int)2896);
+        GL11.glDisable((int)3553);
+        GL11.glEnable((int)3042);
+        GL11.glBlendFunc((int)770, (int)771);
+        GL11.glDisable((int)2929);
+        GL11.glEnable((int)2848);
+        GL11.glDepthMask((boolean)true);
+        GL11.glLineWidth((float)1.0f);
+        GL11.glTranslated((double)x, (double)y, (double)z);
+        GL11.glRotatef((float)(-player.rotationYaw), (float)0.0f, (float)player.height, (float)0.0f);
+        GL11.glTranslated((double)(-x), (double)(-y), (double)(-z));
+        GL11.glTranslated((double)x, (double)(y + (double)(player.height / 2.0f) - (double)0.225f), (double)z);
+        GL11.glColor4f((float)1.38f, (float)0.55f, (float)2.38f, (float)1.0f);
+        GL11.glRotated((double)((float)(player.isSneaking() ? 35 : 0) + spin), (double)(1.0f + spin), (double)0.0, (double)cumsize);
+        GL11.glTranslated((double)0.0, (double)0.0, (double)0.075f);
+        Cylinder shaft = new Cylinder();
+        shaft.setDrawStyle(100013);
+        shaft.draw(0.1f, 0.11f, 0.4f, 25, 20);
+        GL11.glTranslated((double)0.0, (double)0.0, (double)-0.12500000298023223);
+        GL11.glTranslated((double)-0.09000000074505805, (double)0.0, (double)0.0);
+        Sphere right = new Sphere();
+        right.setDrawStyle(100013);
+        right.draw(0.14f, 10, 20);
+        GL11.glTranslated((double)0.16000000149011612, (double)0.0, (double)0.0);
+        Sphere left = new Sphere();
+        left.setDrawStyle(100013);
+        left.draw(0.14f, 10, 20);
+        GL11.glColor4f((float)1.35f, (float)0.0f, (float)0.0f, (float)1.0f);
+        GL11.glTranslated((double)-0.07000000074505806, (double)0.0, (double)0.589999952316284);
+        Sphere tip = new Sphere();
+        tip.setDrawStyle(100013);
+        tip.draw(0.13f, 15, 20);
+        GL11.glDepthMask((boolean)true);
+        GL11.glDisable((int)2848);
+        GL11.glEnable((int)2929);
+        GL11.glDisable((int)3042);
+        GL11.glEnable((int)2896);
+        GL11.glEnable((int)3553);
     }
 }

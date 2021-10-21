@@ -17,7 +17,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.tileentity.TileEntityShulkerBox;
 
 public class StorageESP extends Module{
-    int distance;
+    private Setting distance = new Setting("Distance", this, 100, 10, 100, true);
 
     boolean chest = true;
     boolean eChest = true;
@@ -30,7 +30,7 @@ public class StorageESP extends Module{
     public StorageESP() {
         super("StorageESP", "sosat", Category.RENDER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 100, 10, 100, true));
+        setmgr.rSetting(distance);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Chest", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("EChest", this, true));
@@ -42,8 +42,6 @@ public class StorageESP extends Module{
     }
 
     public void update() {
-        distance = (int) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
-
         chest = Kisman.instance.settingsManager.getSettingByName(this, "Chest").getValBoolean();
         eChest = Kisman.instance.settingsManager.getSettingByName(this, "EChest").getValBoolean();
         shulkerBox = Kisman.instance.settingsManager.getSettingByName(this, "ShulkerBox").getValBoolean();
@@ -56,7 +54,7 @@ public class StorageESP extends Module{
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         mc.world.loadedTileEntityList.stream()
-            .filter(tileEntity -> tileEntity.getDistanceSq(mc.player.posX, mc.player.posY, mc.player.posZ) <= distance)
+            .filter(tileEntity -> tileEntity.getDistanceSq(mc.player.posX, mc.player.posY, mc.player.posZ) <= distance.getValDouble())
             .forEach(tileEntity -> {
                 if(tileEntity instanceof TileEntityChest && chest) {
                     RenderUtil.drawBlockESP(tileEntity.getPos(), 0.94f, 0.60f, 0.11f);

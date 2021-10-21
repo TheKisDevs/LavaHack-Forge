@@ -106,7 +106,8 @@ public class SaveConfig {
                             settingObject.add(setting.getName() + "S", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "B", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "A", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
-                            settingObject.add(setting.getName() + "RainBow", new JsonPrimitive(setting.getColorPicker().isRainbowState()));
+                            settingObject.add(setting.getName() + "RainBow", new JsonPrimitive(setting.isRainbow()));
+                            settingObject.add(setting.getName() + "Syns", new JsonPrimitive(setting.isSyns()));
                         }
                     }
                 }

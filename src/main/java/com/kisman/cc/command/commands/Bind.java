@@ -11,7 +11,7 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Bind extends Command{
     public Bind() {
-        super("Bind");
+        super("bind");
     }
 
     @Override
@@ -31,6 +31,7 @@ public class Bind extends Command{
             }
 
             if(args.length == 1 && isList.equalsIgnoreCase("list")) {
+                ChatUtils.message("Bind List:");
                 for(Module mod : Kisman.instance.moduleManager.modules) {
                     if(Keyboard.KEY_NONE != mod.getKey()) {
                         ChatUtils.message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));

@@ -50,11 +50,11 @@ public abstract class MixinEntity {
     @Override
     public abstract boolean equals(final Object p0);
 
-    @Shadow
+/*    @Shadow
     public abstract boolean isSprinting();
 
     @Shadow
-    public abstract boolean isRiding();
+    public abstract boolean isRiding();*/
 
     @Shadow
     public void move(final MoverType type, final double x, final double y, final double z) {

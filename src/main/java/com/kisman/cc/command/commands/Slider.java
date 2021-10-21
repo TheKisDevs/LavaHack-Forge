@@ -10,7 +10,7 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Slider extends Command{
     public Slider() {
-        super("Slider");
+        super("slider");
     }
 
     @Override

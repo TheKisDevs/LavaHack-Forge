@@ -14,8 +14,7 @@ import net.minecraft.util.text.TextFormatting;
 public class ChatUtils {
 	// TODO Rewrite to LogManager
 	
-	public static void component(ITextComponent component)
-	{
+	public static void component(ITextComponent component) {
 		if(Wrapper.INSTANCE.player() == null || Wrapper.INSTANCE.mc().ingameGUI.getChatGUI() == null)
 			return;
 			Wrapper.INSTANCE.mc().ingameGUI.getChatGUI()
@@ -27,8 +26,7 @@ public class ChatUtils {
 		component(new TextComponentTranslation((String) message));
 	}
 	
-	public static void message(Object message)
-	{
+	public static void message(Object message) {
 		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 
@@ -36,13 +34,11 @@ public class ChatUtils {
 		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GREEN + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 	
-	public static void warning(Object message)
-	{
+	public static void warning(Object message) {
 		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GOLD + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 	
-	public static void error(Object message)
-	{
+	public static void error(Object message) {
 		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.RED + Kisman.NAME + TextFormatting.GRAY + "] " + message));
 	}
 }

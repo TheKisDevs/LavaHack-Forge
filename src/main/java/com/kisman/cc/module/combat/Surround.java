@@ -89,7 +89,6 @@ public class Surround extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
-        Kisman.EVENT_BUS.subscribe(listener1);
 
         previousPosition = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
 
@@ -121,10 +120,11 @@ public class Surround extends Module {
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
-        Kisman.EVENT_BUS.unsubscribe(listener1);
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         surroundPlaced = 0;
 
         switch ((Completion) completion.getValEnum()) {
@@ -202,12 +202,12 @@ public class Surround extends Module {
         }
     });
 
-    @EventHandler
+/*    @EventHandler
     private final Listener<DestroyBlockEvent> listener1 = new Listener<>(event -> {
         if (HoleUtil.isPartOfHole(event.getBlockPos().down()) && reactive.getValBoolean()) {
             BlockUtil.placeBlock(event.getBlockPos().down(), packet.getValBoolean(), confirm.getValBoolean());
         }
-    });
+    });*/
 
     public void handleSurround() {
         previousSlot = mc.player.inventory.currentItem;
@@ -255,7 +255,43 @@ public class Surround extends Module {
     }
 
     public enum SurroundVectors {
-        BASE(new ArrayList<>(Arrays.asList(new Vec3d(0, -1, 0), new Vec3d(1, -1, 0), new Vec3d(0, -1, 1), new Vec3d(-1, -1, 0), new Vec3d(0, -1, -1), new Vec3d(1, 0, 0), new Vec3d(0, 0, 1), new Vec3d(-1, 0, 0), new Vec3d(0, 0, -1)))), STANDARD(new ArrayList<>(Arrays.asList(new Vec3d(0, -1, 0), new Vec3d(1, 0, 0), new Vec3d(-1, 0, 0), new Vec3d(0, 0, 1), new Vec3d(0, 0, -1)))), PROTECT(new ArrayList<>(Arrays.asList(new Vec3d(0, -1, 0), new Vec3d(1, 0, 0), new Vec3d(-1, 0, 0), new Vec3d(0, 0, 1), new Vec3d(0, 0, -1), new Vec3d(2, 0, 0), new Vec3d(-2, 0, 0), new Vec3d(0, 0, 2), new Vec3d(0, 0, -2), new Vec3d(3, 0, 0), new Vec3d(-3, 0, 0), new Vec3d(0, 0, 3), new Vec3d(0, 0, -3))));
+        BASE(new ArrayList<>(Arrays.asList(new Vec3d(0, -1, 0), new Vec3d(1, -1, 0), new Vec3d(0, -1, 1), new Vec3d(-1, -1, 0), new Vec3d(0, -1, -1), new Vec3d(1, 0, 0), new Vec3d(0, 0, 1), new Vec3d(-1, 0, 0), new Vec3d(0, 0, -1)))),
+        STANDARD(new ArrayList<>(Arrays.asList(new Vec3d(0, -1, 0), new Vec3d(1, 0, 0), new Vec3d(-1, 0, 0), new Vec3d(0, 0, 1), new Vec3d(0, 0, -1)))),
+        PROTECT(new ArrayList<>(Arrays.asList(
+                new Vec3d(0, -1, 0),
+                new Vec3d(1, 0, 0),
+                new Vec3d(-1, 0, 0),
+                new Vec3d(0, 0, 1),
+                new Vec3d(0, 0, -1),
+                new Vec3d(2, 0, 0),
+                new Vec3d(-2, 0, 0),
+                new Vec3d(0, 0, 2),
+                new Vec3d(0, 0, -2),
+                new Vec3d(3, 0, 0),
+                new Vec3d(-3, 0, 0),
+                new Vec3d(0, 0, 3),
+                new Vec3d(0, 0, -3)
+        ))),
+        PROTECTplus(new ArrayList<>(Arrays.asList(
+                new Vec3d(0, -1, 0),
+                new Vec3d(1, -1, 0),
+                new Vec3d(0, -1, 1),
+                new Vec3d(-1, -1, 0),
+                new Vec3d(0, -1, 1),
+                new Vec3d(1, 0, 0),
+                new Vec3d(-1, 0, 0),
+                new Vec3d(0, 0, 1),
+                new Vec3d(0, 0, -1),
+                new Vec3d(2, 0, 0),
+                new Vec3d(-2, 0, 0),
+                new Vec3d(0, 0, 2),
+                new Vec3d(0, 0, -2),
+                new Vec3d(3, 0, 0),
+                new Vec3d(-3, 0, 0),
+                new Vec3d(0, 0, 3),
+                new Vec3d(0, 0, -3)
+        )));
+
 
         private final List<Vec3d> vectors;
 

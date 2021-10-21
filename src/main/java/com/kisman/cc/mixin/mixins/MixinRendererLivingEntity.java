@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.module.combat.AutoCrystal;
 import com.kisman.cc.module.render.Charms;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
@@ -25,6 +26,11 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
         if(Charms.instance.isToggled()) {
             glEnable(32823);
             glPolygonOffset(1f, -1100000);
+
+            if(Charms.instance.targetRender.getValBoolean()) {
+                if(AutoCrystal.instance.e_target == (EntityLivingBase) entity)
+                glColor4f(1, 0.03f, 0.9f, 0.5f);
+            }
         }
     }
 

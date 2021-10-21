@@ -1,5 +1,6 @@
 package com.kisman.cc.settings;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,6 +8,7 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.util.Colour;
+import org.lwjgl.input.Keyboard;
 
 import javax.management.OperationsException;
 
@@ -23,6 +25,7 @@ public class Setting {
 
 	private int index = 0;
 	private int color;
+	private int key = Keyboard.KEY_NONE;
 	
 	private String name;
 	private Module parent;
@@ -41,8 +44,10 @@ public class Setting {
 	
 	private boolean bval;
 	private boolean rainbow;
+	private boolean syns;
 	private boolean hud = false;
 	private boolean opening;
+	private boolean onlyOneWord;
 	
 	private double dval;
 	private double min;
@@ -55,6 +60,13 @@ public class Setting {
 	private int x1, y1, x2, y2;
 
 	private boolean onlyint = false;
+
+	public Setting(String name, Module parent, int key) {
+		this.name = name;
+		this.parent = parent;
+		this.key = key;
+		this.mode = "Bind";
+	}
 
 	public Setting(String name, Module parent, Setting setparent, String title) {
 		this.name = name;
@@ -78,6 +90,17 @@ public class Setting {
 		this.sval = sval;
 		this.dString = dString;
 		this.opening = opening;
+		this.onlyOneWord = false;
+		this.mode = "String";
+	}
+
+	public Setting(String name, Module parent, String sval, String dString, boolean opening, boolean onlyOneWord) {
+		this.name = name;
+		this.parent = parent;
+		this.sval = sval;
+		this.dString = dString;
+		this.opening = opening;
+		this.onlyOneWord = onlyOneWord;
 		this.mode = "String";
 	}
 
@@ -149,6 +172,14 @@ public class Setting {
 		this.mode = simpleMode ? "ColorPickerSimple" : "ColorPicker";
 	}
 
+	public Setting(String name, Module parent, String title, float[] colorHSB) {//, int dColor
+		this.name = name;
+		this.parent = parent;
+		this.title = title;
+		this.colorHSB = colorHSB;
+		this.mode = "ColorPicker";
+	}
+
 	public Setting(String name, HudModule parent, String title, float[] colorHSB) {//, int dColor
 		this.name = name;
 		this.hudParent = parent;
@@ -178,6 +209,30 @@ public class Setting {
 		} else {
 			return null;
 		}
+	}
+
+	public boolean isOnlyOneWord() {
+		return onlyOneWord;
+	}
+
+	public void setOnlyOneWord(boolean onlyOneWord) {
+		this.onlyOneWord = onlyOneWord;
+	}
+
+	public boolean isSyns() {
+		return syns;
+	}
+
+	public void setSyns(boolean syns) {
+		this.syns = syns;
+	}
+
+	public int getKey() {
+		return key;
+	}
+
+	public void setKey(int key) {
+		this.key = key;
 	}
 
 	public Colour getColour() {
@@ -376,6 +431,15 @@ public class Setting {
 		return this.color;
 	}
 
+	public Color getColor(boolean colorPicker) {
+		return new Color(
+				getR(),
+				getG(),
+				getB(),
+				getA()
+		);
+	}
+
 	public void setColor(int color) {
 		this.color = color;
 	}
@@ -403,6 +467,8 @@ public class Setting {
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
+
+	public boolean isBind() { return mode.equalsIgnoreCase("Bind") ? true : false; }
 
 	public boolean isCategory() { return this.mode.equalsIgnoreCase("Category") ? true : false; }
 

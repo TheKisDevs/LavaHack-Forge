@@ -31,7 +31,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("RETURN"), cancellable = true)
     public void onPostUpdateWalkingPlayer(CallbackInfo ci) {
-        EventPlayerMotionUpdate event = new EventPlayerMotionUpdate(Event.Era.PRE, this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround);
+        EventPlayerMotionUpdate event = new EventPlayerMotionUpdate(Event.Era.POST, this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround);
         Kisman.EVENT_BUS.post(event);
 
         if(event.isCancelled()) {

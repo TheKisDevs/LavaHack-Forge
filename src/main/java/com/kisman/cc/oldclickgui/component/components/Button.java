@@ -82,6 +82,11 @@ public class Button extends Component {
 				}
 				if(s.isCategory()) {
 					this.subcomponents.add(new Category(this, s, opY));
+					opY += 12;
+				}
+				if(s.isBind()) {
+					subcomponents.add(new Keybind(this, s, opY));
+					opY += 12;
 				}
 			}
 		}
@@ -114,6 +119,11 @@ public class Button extends Component {
 				}
 			}
 		}
+	}
+
+	@Override
+	public int getOff() {
+		return offset;
 	}
 	
 	@Override

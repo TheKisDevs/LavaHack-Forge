@@ -4,6 +4,7 @@
   "package": "com.kisman.cc.mixin.mixins",
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
+    "accessor.ISession",
     "accessor.ICPacketPlayer",
     "accessor.IPlayerControllerMP",
     "MixinAbstractClientPlayer",
@@ -13,6 +14,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinGuiMainMenu",
+    "MixinGuiMultiplayer",
     "MixinItemRenderer",
     "MixinNetworkManager",
     "MixinPenderPlayer",

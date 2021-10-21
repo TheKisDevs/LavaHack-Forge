@@ -4,6 +4,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.RenderUtil;
 import kisman.pasta.salhack.util.Hole;
 import kisman.pasta.salhack.util.Hole.HoleTypes;
 import net.minecraft.block.state.IBlockState;
@@ -114,14 +115,14 @@ public class HoleESP extends Module {
     public void onRender(RenderWorldLastEvent event) {
         if(!render.getValString().equalsIgnoreCase("None")) {
             new ArrayList<Hole>(holes).forEach(hole -> {
-                final AxisAlignedBB bb = new AxisAlignedBB(
+/*                final AxisAlignedBB bb = new AxisAlignedBB(
                         hole.getX() - mc.renderManager.viewerPosX,
                         hole.getY() - mc.renderManager.viewerPosY,
                         hole.getZ() - mc.renderManager.viewerPosZ,
                         hole.getX() + 1 - mc.renderManager.viewerPosX,
                         hole.getY() + (hole.isTall() ? 2 : 1) - mc.renderManager.viewerPosY,
                         hole.getZ() + 1 - mc.renderManager.viewerPosZ
-                );
+                );*/
 
                 GlStateManager.pushMatrix();
                 GlStateManager.enableBlend();
@@ -133,13 +134,16 @@ public class HoleESP extends Module {
                 GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
                 GL11.glLineWidth(1.5f);
 
-                switch (hole.getHoleType())
-                {
+                switch (hole.getHoleType()) {
                     case Bedrock:
-                        Render(render.getValString(), bb, new Colour(bedrockColor.getR(), bedrockColor.getG(), bedrockColor.getB(), bedrockColor.getA()));
+                        RenderUtil.drawBlockESP(hole.getBlockPos(), bedrockColor.getR() / 255, bedrockColor.getG() / 255, bedrockColor.getB() / 255);
+
+//                        Render(render.getValString(), bb, new Colour(bedrockColor.getR(), bedrockColor.getG(), bedrockColor.getB(), bedrockColor.getA()));
                         break;
                     case Obsidian:
-                        Render(render.getValString(), bb, new Colour(obbyColor.getR(), obbyColor.getG(), obbyColor.getB(), obbyColor.getA()));
+                        RenderUtil.drawBlockESP(hole.getBlockPos(), obbyColor.getR() / 255, obbyColor.getG() / 255, obbyColor.getB() / 255);
+
+//                        Render(render.getValString(), bb, new Colour(obbyColor.getR(), obbyColor.getG(), obbyColor.getB(), obbyColor.getA()));
                         break;
                     default:
                         break;

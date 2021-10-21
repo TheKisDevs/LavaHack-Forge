@@ -28,6 +28,8 @@ public class Component {
 	public void keyTypedPre(char typedChar, int key, KeyTypedPreEvent event) {}
 	
 	public void keyTyped(char typedChar, int key) {}
+
+	public int getOff() { return 0; }
 	
 	public void setOff(int newOff) {}
 	

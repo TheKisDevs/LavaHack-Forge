@@ -4,7 +4,6 @@ import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.file.LoadConfig;
-import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.hud.hudmodule.HudModuleManager;
@@ -14,6 +13,7 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
+import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.RotationUtils;
@@ -22,7 +22,6 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import kisman.pasta.salhack.util.customfont.FontManager;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
-import net.naimad.client.apperance.particles.ParticleManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -35,8 +34,7 @@ import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 
-public class Kisman
-{
+public class Kisman {
     public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";
     public static final String VERSION = "b0.1.5";
@@ -60,8 +58,8 @@ public class Kisman
     public CommandManager commandManager;
     public RPC discord;
     public RotationUtils rotationUtils;
-    public ParticleManager particles;
     public EventProcessor eventProcessor;
+    public ParticleSystem particleSystem;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -81,12 +79,13 @@ public class Kisman
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
-        particles = new ParticleManager();
         eventProcessor = new EventProcessor();
+        particleSystem = new ParticleSystem(100, true, 150);
 
         //load configs
         LoadConfig.init();
 
+        //salhack font manager load
         fontManager.load();
     }
     
@@ -104,8 +103,15 @@ public class Kisman
                     	if (m.getKey() == keyCode && keyCode > 0) {
                     		m.toggle();
                             if(this.moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-                            SaveConfig.init();
+//                            SaveConfig.init();
                     	}
+
+/*                        for(Setting set : settingsManager.getSettingsByMod(m)) {
+                            if(set.isBind() && set.getKey() == keyCode) {
+                                System.out.println("3");
+                                moduleManager.key(Keyboard.getEventCharacter(), Keyboard.getEventKey(), m);
+                            }
+                        }*/
                     }
                     for (HudModule m : hudModuleManager.modules) {
                         if (m.getKey() == keyCode && keyCode > 0) {

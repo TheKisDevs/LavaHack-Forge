@@ -17,6 +17,7 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.util.text.ITextComponent;*/
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
@@ -26,6 +27,8 @@ import java.awt.event.MouseEvent;
 //import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ExampleModule extends Module {
+    private Setting exampleBind = new Setting("ExampleBind", this, Keyboard.KEY_NONE);
+
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);
 
@@ -48,6 +51,8 @@ public class ExampleModule extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, false));
         //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleSimpleColorPicker", this, "ExampleSimpleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, true));
 //        Kisman.instance.settingsManager.rSetting(new Setting(this));
+
+        setmgr.rSetting(exampleBind);
     }
 
     // @SubscribeEvent
@@ -85,7 +90,11 @@ public class ExampleModule extends Module {
     }
 
     public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(playerMotionUpdateListener);
+//        Kisman.EVENT_BUS.unsubscribe(playerMotionUpdateListener);
+    }
+
+    public void key(int key) {
+        mc.player.sendChatMessage("Typed Key " + key + " | " + Keyboard.getKeyName(key));
     }
 
     @EventHandler
