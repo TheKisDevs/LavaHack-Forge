@@ -22,8 +22,10 @@ import com.kisman.cc.module.client.CustomFont;
 import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
@@ -33,9 +35,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -63,7 +62,6 @@ public class RenderUtil {
 	
 	public static void drawStringWithRect(String string, int x, int y, int colorString, int colorRect, int colorRect2) {
         RenderUtil.drawBorderedRect(x - 2, y - 2, x + Minecraft.getMinecraft().fontRenderer.getStringWidth(string) + 2, y + 10, 1, colorRect, colorRect2);
-    	//Wrapper.INSTANCE.fontRenderer().drawString(string, x, y, colorString);
         Minecraft.getMinecraft().fontRenderer.drawString(string, x, y, colorString);
     }
 
@@ -100,13 +98,10 @@ public class RenderUtil {
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 	
-	public static void drawTracer(Entity entity, float red, float green, float blue, float alpha, float ticks) {   
-        //double renderPosX1 = Wrapper.INSTANCE.mc().getRenderManager().viewerPosX;
+	public static void drawTracer(Entity entity, float red, float green, float blue, float alpha, float ticks) {
         double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
         double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
         double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
-        // double renderPosY = Wrapper.INSTANCE.mc().getRenderManager().viewerPosY;
-        // double renderPosZ = Wrapper.INSTANCE.mc().getRenderManager().viewerPosZ;
         double xPos = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks) - renderPosX;
         double yPos = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks)  + entity.height / 2.0f - renderPosY;
         double zPos = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks) - renderPosZ;
@@ -332,27 +327,40 @@ public class RenderUtil {
         glPopMatrix();
     }
 
-    public static void drawBlockBoxESP(BlockPos pos, float red, float green, float blue) {
+    public static void drawBox(BlockPos blockPos, double height, Colour color, int sides) {
+        drawBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1, height, 1, color, color.getAlpha(), sides);
+    }
+
+    public static void drawBox(AxisAlignedBB bb, boolean check, double height, Colour color, int sides) {
+        drawBox(bb, check, height, color, color.getAlpha(), sides);
+    }
+
+    public static void drawBox(AxisAlignedBB bb, boolean check, double height, Colour color, int alpha, int sides) {
+        if (check) {
+            drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ, color, alpha, sides);
+        } else {
+            drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, height, bb.maxZ - bb.minZ, color, alpha, sides);
+        }
+    }
+
+    public static void drawBox(double x, double y, double z, double w, double h, double d, Colour color, int alpha, int sides) {
         glPushMatrix();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
-        glLineWidth(1);
         glDisable(GL_TEXTURE_2D);
         glEnable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
         glDisable(GL11.GL_LIGHTING);
-        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
-        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
-        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
 
-        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
-        glTranslated(pos.getX(), pos.getY(), pos.getZ());
-
-        glColor4f(red, green, blue, 0.30F);
-        drawSolidBox();
-
-        glColor4f(1, 1, 1, 1);
+        GlStateManager.disableAlpha();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        color.glColor();
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        doVerticies(new AxisAlignedBB(x, y, z, x + w, y + h, z + d), color, alpha, bufferbuilder, sides, false);
+        tessellator.draw();
+        GlStateManager.enableAlpha();
 
         glEnable(GL11.GL_LIGHTING);
         glEnable(GL_DEPTH_TEST);
@@ -393,6 +401,60 @@ public class RenderUtil {
         glDisable(GL_LINE_SMOOTH);
         glPopMatrix();
 	}
+
+    public static void drawBoundingBox(BlockPos bp, double height, float width, Colour color) {
+        drawBoundingBox(getBoundingBox(bp, 1, height, 1), width, color, color.getAlpha());
+    }
+
+    public static void drawBoundingBox(AxisAlignedBB bb, double width, Colour color) {
+        drawBoundingBox(bb, width, color, color.getAlpha());
+    }
+
+    public static void drawBoundingBox(AxisAlignedBB bb, double width, Colour color, int alpha) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.glLineWidth((float) width);
+        color.glColor();
+        bufferbuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        colorVertex(bb.minX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.minX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.maxX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.maxX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.minX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.minX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
+        colorVertex(bb.minX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
+        colorVertex(bb.minX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.maxX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.maxX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
+        colorVertex(bb.minX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
+        colorVertex(bb.maxX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
+        colorVertex(bb.maxX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
+        colorVertex(bb.maxX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
+        colorVertex(bb.maxX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
+        colorVertex(bb.minX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
+        tessellator.draw();
+    }
+
+    public static void drawBoundingBoxWithSides(BlockPos blockPos, int width, Colour color, int sides) {
+        drawBoundingBoxWithSides(getBoundingBox(blockPos, 1, 1, 1), width, color, color.getAlpha(), sides);
+    }
+
+    public static void drawBoundingBoxWithSides(BlockPos blockPos, int width, Colour color, int alpha, int sides) {
+        drawBoundingBoxWithSides(getBoundingBox(blockPos, 1, 1, 1), width, color, alpha, sides);
+    }
+
+    public static void drawBoundingBoxWithSides(AxisAlignedBB axisAlignedBB, int width, Colour color, int sides) {
+        drawBoundingBoxWithSides(axisAlignedBB, width, color, color.getAlpha(), sides);
+    }
+
+    public static void drawBoundingBoxWithSides(AxisAlignedBB axisAlignedBB, int width, Colour color, int alpha, int sides) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        GlStateManager.glLineWidth(width);
+        bufferbuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        doVerticies(axisAlignedBB, color, alpha, bufferbuilder, sides, true);
+        tessellator.draw();
+    }
 	
 	public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox)
 	{
@@ -1160,5 +1222,143 @@ public class RenderUtil {
         GL11.glDisable((int)3042);
         GL11.glEnable((int)2896);
         GL11.glEnable((int)3553);
+    }
+    private static void colorVertex(double x, double y, double z, Colour color, int alpha, BufferBuilder bufferbuilder) {
+        bufferbuilder.pos(x - mc.getRenderManager().viewerPosX, y - mc.getRenderManager().viewerPosY, z - mc.getRenderManager().viewerPosZ).color(color.r, color.g, color.b, alpha).endVertex();
+    }
+
+    private static void doVerticies(AxisAlignedBB axisAlignedBB, Colour color, int alpha, BufferBuilder bufferbuilder, int sides, boolean five) {
+        if ((sides & GeometryMasks.Quad.EAST) != 0) {
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+        }
+        if ((sides & GeometryMasks.Quad.WEST) != 0) {
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+        }
+        if ((sides & GeometryMasks.Quad.NORTH) != 0) {
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+        }
+        if ((sides & GeometryMasks.Quad.SOUTH) != 0) {
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+        }
+        if ((sides & GeometryMasks.Quad.UP) != 0) {
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, alpha, bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ, color, alpha, bufferbuilder);
+        }
+        if ((sides & GeometryMasks.Quad.DOWN) != 0) {
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ, color, color.getAlpha(), bufferbuilder);
+            colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+            if (five)
+                colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ, color, color.getAlpha(), bufferbuilder);
+        }
+    }
+
+    private static AxisAlignedBB getBoundingBox(BlockPos bp, double width, double height, double depth) {
+        double x = bp.getX();
+        double y = bp.getY();
+        double z = bp.getZ();
+        return new AxisAlignedBB(x, y, z, x + width, y + height, z + depth);
+    }
+
+    public static void drawEntityOnScreen(Entity entity, int mouseX, int mouseY, int scale, float posX, float posY) {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float)((float)posX), (float)((float)posY), (float)Float.intBitsToFloat(Float.floatToIntBits(1.6824397f) ^ 0x7D9F5A2F));
+        GlStateManager.scale((float)((float)(-scale)), (float)((float)scale), (float)((float)scale));
+        GlStateManager.rotate((float)Float.intBitsToFloat(Float.floatToIntBits(0.010010559f) ^ 0x7F100354), (float)Float.intBitsToFloat(Float.floatToIntBits(3.2874774E38f) ^ 0x7F775283), (float)Float.intBitsToFloat(Float.floatToIntBits(1.277499E38f) ^ 0x7EC03779), (float)Float.intBitsToFloat(Float.floatToIntBits(7.556555f) ^ 0x7F71CF4C));
+        GlStateManager.rotate((float)Float.intBitsToFloat(Float.floatToIntBits(0.08215728f) ^ 0x7EAF4213), (float)Float.intBitsToFloat(Float.floatToIntBits(3.2189796E38f) ^ 0x7F722B4B), (float)Float.intBitsToFloat(Float.floatToIntBits(11.650432f) ^ 0x7EBA682B), (float)Float.intBitsToFloat(Float.floatToIntBits(1.8456703E38f) ^ 0x7F0ADA51));
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate((float)Float.intBitsToFloat(Float.floatToIntBits(-0.07293611f) ^ 0x7E925F87), (float)Float.intBitsToFloat(Float.floatToIntBits(4.4185975E37f) ^ 0x7E04F7A3), (float)Float.intBitsToFloat(Float.floatToIntBits(7.4331884f) ^ 0x7F6DDCAE), (float)Float.intBitsToFloat(Float.floatToIntBits(1.0855388E38f) ^ 0x7EA3556F));
+        GlStateManager.rotate((float)(-((float)Math.atan((double)(mouseY / Float.intBitsToFloat(Float.floatToIntBits(0.04850099f) ^ 0x7F66A8F9)))) * Float.intBitsToFloat(Float.floatToIntBits(0.45494023f) ^ 0x7F48EDED)), (float)Float.intBitsToFloat(Float.floatToIntBits(7.337801f) ^ 0x7F6ACF44), (float)Float.intBitsToFloat(Float.floatToIntBits(5.3653236E37f) ^ 0x7E2174F3), (float)Float.intBitsToFloat(Float.floatToIntBits(2.4617955E38f) ^ 0x7F393475));
+        GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(9.835158E37f) ^ 0x7E93FBA7), (float)Float.intBitsToFloat(Float.floatToIntBits(2.4084867E38f) ^ 0x7F3531C4), (float)Float.intBitsToFloat(Float.floatToIntBits(2.8240162E38f) ^ 0x7F547493));
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(Float.intBitsToFloat(Float.floatToIntBits(0.009158009f) ^ 0x7F220B79));
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntity(entity, Double.longBitsToDouble(Double.doubleToLongBits(1.5829156308224974E308) ^ 0x7FEC2D44F635CC31L), Double.longBitsToDouble(Double.doubleToLongBits(1.7339437041438026E308) ^ 0x7FEEDD7F3831FB25L), Double.longBitsToDouble(Double.doubleToLongBits(8.225454125242748E307) ^ 0x7FDD4899452B1C5FL), Float.intBitsToFloat(Float.floatToIntBits(4.1008535E37f) ^ 0x7DF6CFA7), Float.intBitsToFloat(Float.floatToIntBits(4.240404f) ^ 0x7F07B164), false);
+        rendermanager.setRenderShadow(true);
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture((int) OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture((int)OpenGlHelper.defaultTexUnit);
+    }
+
+    public static void GLPre(float lineWidth) {
+        boolean depth = GL11.glIsEnabled((int)2896);
+        boolean texture = GL11.glIsEnabled((int)3042);
+        boolean clean = GL11.glIsEnabled((int)3553);
+        boolean bind = GL11.glIsEnabled((int)2929);
+        boolean override = GL11.glIsEnabled((int)2848);
+        GLPre(depth, texture, clean, bind, override, lineWidth);
+    }
+
+    public static void GlPost() {
+        GLPost(false, false, false, false, false);
+    }
+
+    public static void GLPre(boolean depth, boolean texture, boolean clean, boolean bind, boolean override, float lineWidth) {
+        if (depth) {
+            GL11.glDisable((int)2896);
+        }
+        if (texture == false) {
+            GL11.glEnable((int)3042);
+        }
+        GL11.glLineWidth((float)lineWidth);
+        if (clean != false) {
+            GL11.glDisable((int)3553);
+        }
+        if (bind != false) {
+            GL11.glDisable((int)2929);
+        }
+        if (override == false) {
+            GL11.glEnable((int)2848);
+        }
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GL11.glHint((int)3154, (int)4354);
+        GlStateManager.depthMask((boolean)false);
+    }
+
+    public static void GLPost(boolean depth, boolean texture, boolean clean, boolean bind, boolean override) {
+        GlStateManager.depthMask((boolean)true);
+        if (override == false) {
+            GL11.glDisable((int)2848);
+        }
+        if (bind != false) {
+            GL11.glEnable((int)2929);
+        }
+        if (clean != false) {
+            GL11.glEnable((int)3553);
+        }
+        if (texture == false) {
+            GL11.glDisable((int)3042);
+        }
+        if (!depth) return;
+        GL11.glEnable((int)2896);
     }
 }

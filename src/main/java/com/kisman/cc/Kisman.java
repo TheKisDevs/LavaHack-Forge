@@ -13,6 +13,7 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
+import com.kisman.cc.oldclickgui.notification.NotificationManager;
 import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.ColorUtil;
@@ -54,12 +55,14 @@ public class Kisman {
     public HudGui hudGui;
     public NewGui newGui;
     public CustomFontRenderer customFontRenderer;
+    public CustomFontRenderer customFontRenderer1;
     public FontManager fontManager;
     public CommandManager commandManager;
     public RPC discord;
     public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ParticleSystem particleSystem;
+    public NotificationManager notificationManager;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -75,12 +78,14 @@ public class Kisman {
     	hudGui = new HudGui();
         newGui = new NewGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
+        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 45), false, true);
         fontManager = new FontManager();
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
         eventProcessor = new EventProcessor();
         particleSystem = new ParticleSystem(100, true, 150);
+        notificationManager = new NotificationManager();
 
         //load configs
         LoadConfig.init();

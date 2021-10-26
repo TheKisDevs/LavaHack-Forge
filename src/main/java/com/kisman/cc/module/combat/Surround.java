@@ -16,20 +16,19 @@ import com.kisman.cc.util.cosmos.CosmosRenderUtil;
 import com.kisman.cc.util.cosmos.Raytrace;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.kisman.cc.module.combat.Surround.Center.*;
@@ -136,7 +135,7 @@ public class Surround extends Module {
 
                 break;
             case SURROUNDED:
-                if (HoleUtil.isInHole(mc.player)) {
+                if (isInHole(mc.player)) {
                     super.setToggled(false);
                     return;
                 }
@@ -185,7 +184,7 @@ public class Surround extends Module {
 
     @SubscribeEvent
     public void onTotemPop(TotemPopEvent event) {
-        if (!HoleUtil.isInHole(mc.player) && event.getPopEntity().equals(mc.player) && chainPop.getValBoolean()) {
+        if (!isInHole(mc.player) && event.getPopEntity().equals(mc.player) && chainPop.getValBoolean()) {
             InventoryUtil.switchToSlot(Item.getItemFromBlock(Blocks.OBSIDIAN), (Switch) autoSwitch.getValEnum());
 
             placeSurround();
@@ -212,7 +211,7 @@ public class Surround extends Module {
     public void handleSurround() {
         previousSlot = mc.player.inventory.currentItem;
 
-        if (!HoleUtil.isInHole(mc.player)) {
+        if (!isInHole(mc.player)) {
             InventoryUtil.switchToSlot(Item.getItemFromBlock(Blocks.OBSIDIAN), (Switch) autoSwitch.getValEnum());
 
             placeSurround();
@@ -310,5 +309,136 @@ public class Surround extends Module {
 
     public enum Completion {
         AIR, SURROUNDED, PERSISTENT
+    }
+
+    public static HoleUtil.BlockSafety isBlockSafe(Block block) {
+        if (block == Blocks.BEDROCK) {
+            return HoleUtil.BlockSafety.UNBREAKABLE;
+        }
+        if (block == Blocks.OBSIDIAN || block == Blocks.ENDER_CHEST || block == Blocks.ANVIL) {
+            return HoleUtil.BlockSafety.RESISTANT;
+        }
+        return HoleUtil.BlockSafety.BREAKABLE;
+    }
+
+    public static boolean isInHole(double posX, double posY, double posZ) {
+        return isObsidianHole(new BlockPos(posX, Math.round(posY), posZ)) || isBedRockHole(new BlockPos(posX, Math.round(posY), posZ));
+    }
+
+    public static boolean isInHole(Entity entity) {
+        return isObsidianHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ)) || isBedRockHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ));
+    }
+
+    public static HoleUtil.HoleInfo isHole(BlockPos centreBlock, boolean onlyOneWide, boolean ignoreDown) {
+        HoleUtil.HoleInfo output = new HoleUtil.HoleInfo();
+        HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> unsafeSides = HoleUtil.getUnsafeSides(centreBlock);
+
+        if (unsafeSides.containsKey(HoleUtil.BlockOffset.DOWN)) {
+            if (unsafeSides.remove(HoleUtil.BlockOffset.DOWN, HoleUtil.BlockSafety.BREAKABLE)) {
+                if (!ignoreDown) {
+                    output.setSafety(HoleUtil.BlockSafety.BREAKABLE);
+                    return output;
+                }
+            }
+        }
+
+        int size = unsafeSides.size();
+
+        unsafeSides.entrySet().removeIf(entry -> entry.getValue() == HoleUtil.BlockSafety.RESISTANT);
+
+        // size has changed so must have weak side
+        if (unsafeSides.size() != size) {
+            output.setSafety(HoleUtil.BlockSafety.RESISTANT);
+        }
+
+        size = unsafeSides.size();
+
+        // is it a perfect hole
+        if (size == 0) {
+            output.setType(HoleUtil.HoleType.SINGLE);
+            output.setCentre(new AxisAlignedBB(centreBlock));
+            return output;
+        }
+        // have one open side
+        else if (size == 1 && !onlyOneWide) {
+            return isDoubleHole(output, centreBlock, unsafeSides.keySet().stream().findFirst().get());
+        } else {
+            output.setSafety(HoleUtil.BlockSafety.BREAKABLE);
+            return output;
+        }
+    }
+
+    private static HoleUtil.HoleInfo isDoubleHole(HoleUtil.HoleInfo info, BlockPos centreBlock, HoleUtil.BlockOffset weakSide) {
+        BlockPos unsafePos = weakSide.offset(centreBlock);
+
+        HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> unsafeSides = HoleUtil.getUnsafeSides(unsafePos);
+
+        int size = unsafeSides.size();
+
+        unsafeSides.entrySet().removeIf(entry -> entry.getValue() == HoleUtil.BlockSafety.RESISTANT);
+
+        // size has changed so must have weak side
+        if (unsafeSides.size() != size) {
+            info.setSafety(HoleUtil.BlockSafety.RESISTANT);
+        }
+
+        if (unsafeSides.containsKey(HoleUtil.BlockOffset.DOWN)) {
+            info.setType(HoleUtil.HoleType.CUSTOM);
+            unsafeSides.remove(HoleUtil.BlockOffset.DOWN);
+        }
+
+        // is it a safe hole
+        if (unsafeSides.size() > 1) {
+            info.setType(HoleUtil.HoleType.NONE);
+            return info;
+        }
+
+        // it is
+        double minX = Math.min(centreBlock.getX(), unsafePos.getX());
+        double maxX = Math.max(centreBlock.getX(), unsafePos.getX()) + 1;
+        double minZ = Math.min(centreBlock.getZ(), unsafePos.getZ());
+        double maxZ = Math.max(centreBlock.getZ(), unsafePos.getZ()) + 1;
+
+        info.setCentre(new AxisAlignedBB(minX, centreBlock.getY(), minZ, maxX, centreBlock.getY() + 1, maxZ));
+
+        if (info.getType() != HoleUtil.HoleType.CUSTOM) {
+            info.setType(HoleUtil.HoleType.DOUBLE);
+        }
+        return info;
+    }
+
+    public static HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> getUnsafeSides(BlockPos pos) {
+        HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> output = new HashMap<>();
+        HoleUtil.BlockSafety temp;
+
+        temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.DOWN.offset(pos)).getBlock());
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
+            output.put(HoleUtil.BlockOffset.DOWN, temp);
+
+        temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.NORTH.offset(pos)).getBlock());
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
+            output.put(HoleUtil.BlockOffset.NORTH, temp);
+
+        temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.SOUTH.offset(pos)).getBlock());
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
+            output.put(HoleUtil.BlockOffset.SOUTH, temp);
+
+        temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.EAST.offset(pos)).getBlock());
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
+            output.put(HoleUtil.BlockOffset.EAST, temp);
+
+        temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.WEST.offset(pos)).getBlock());
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
+            output.put(HoleUtil.BlockOffset.WEST, temp);
+
+        return output;
+    }
+
+    public static boolean isObsidianHole(BlockPos blockPos) {
+        return !(BlockUtil.getBlockResistance(blockPos.add(0, 1, 0)) != BlockUtil.BlockResistance.BLANK || isBedRockHole(blockPos) || BlockUtil.getBlockResistance(blockPos.add(0, 0, 0)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, 2, 0)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) != BlockUtil.BlockResistance.UNBREAKABLE || BlockUtil.getBlockResistance(blockPos.add(0.5, 0.5, 0.5)) != BlockUtil.BlockResistance.BLANK || BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) != BlockUtil.BlockResistance.RESISTANT && BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) != BlockUtil.BlockResistance.UNBREAKABLE);
+    }
+
+    public static boolean isBedRockHole(BlockPos blockPos) {
+        return BlockUtil.getBlockResistance(blockPos.add(0, 1, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 0, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 2, 0)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, 0, -1)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(1, 0, 0)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(-1, 0, 0)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(0, 0, 1)) == BlockUtil.BlockResistance.UNBREAKABLE && BlockUtil.getBlockResistance(blockPos.add(0.5, 0.5, 0.5)) == BlockUtil.BlockResistance.BLANK && BlockUtil.getBlockResistance(blockPos.add(0, -1, 0)) == BlockUtil.BlockResistance.UNBREAKABLE;
     }
 }

@@ -258,21 +258,18 @@ public class BlockInteractionHelper
          */
     }
 
-    public enum PlaceResult
-    {
+    public enum PlaceResult {
         NotReplaceable,
         Neighbors,
         CantPlace,
         Placed,
     }
 
-    public static PlaceResult place(BlockPos pos, float p_Distance, boolean p_Rotate, boolean p_UseSlabRule)
-    {
+    public static PlaceResult place(BlockPos pos, float p_Distance, boolean p_Rotate, boolean p_UseSlabRule) {
         return place(pos, p_Distance, p_Rotate, p_UseSlabRule, false);
     }
     
-    public static PlaceResult place(BlockPos pos, float p_Distance, boolean p_Rotate, boolean p_UseSlabRule, boolean packetSwing)
-    {
+    public static PlaceResult place(BlockPos pos, float p_Distance, boolean p_Rotate, boolean p_UseSlabRule, boolean packetSwing) {
         IBlockState l_State = mc.world.getBlockState(pos);
 
         boolean l_Replaceable = l_State.getMaterial().isReplaceable();
@@ -284,57 +281,48 @@ public class BlockInteractionHelper
         if (!BlockInteractionHelper.checkForNeighbours(pos))
             return PlaceResult.Neighbors;
 
-        if (!l_IsSlabAtBlock)
-        {
+        if (!l_IsSlabAtBlock) {
             ValidResult l_Result = valid(pos);
 
             if (l_Result != ValidResult.Ok && !l_Replaceable)
                 return PlaceResult.CantPlace;
         }
 
-        if (p_UseSlabRule)
-        {
+        if (p_UseSlabRule) {
             if (l_IsSlabAtBlock && !l_State.isFullCube())
                 return PlaceResult.CantPlace;
         }
 
         final Vec3d eyesPos = new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ);
 
-        for (final EnumFacing side : EnumFacing.values())
-        {
+        for (final EnumFacing side : EnumFacing.values()) {
             final BlockPos neighbor = pos.offset(side);
             final EnumFacing side2 = side.getOpposite();
 
             boolean l_IsWater = mc.world.getBlockState(neighbor).getBlock() == Blocks.WATER;
 
             if (mc.world.getBlockState(neighbor).getBlock().canCollideCheck(mc.world.getBlockState(neighbor), false)
-                    || (l_IsWater && LiquidInteract.instance.isToggled()))
-            {
+                    || (l_IsWater && LiquidInteract.instance.isToggled())) {
                 final Vec3d hitVec = new Vec3d((Vec3i) neighbor).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(side2.getDirectionVec()).scale(0.5));
-                if (eyesPos.distanceTo(hitVec) <= p_Distance)
-                {
+                if (eyesPos.distanceTo(hitVec) <= p_Distance) {
                     final Block neighborPos = mc.world.getBlockState(neighbor).getBlock();
 
                     final boolean activated = neighborPos.onBlockActivated(mc.world, pos, mc.world.getBlockState(pos), mc.player, EnumHand.MAIN_HAND, side, 0, 0, 0);
 
-                    if (BlockInteractionHelper.blackList.contains(neighborPos) || BlockInteractionHelper.shulkerList.contains(neighborPos) || activated)
-                    {
+                    if (BlockInteractionHelper.blackList.contains(neighborPos) || BlockInteractionHelper.shulkerList.contains(neighborPos) || activated) {
                         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
                     }
-                    if (p_Rotate)
-                    {
+                    if (p_Rotate) {
                         BlockInteractionHelper.faceVectorPacketInstant(hitVec);
                     }
                     EnumActionResult l_Result2 = mc.playerController.processRightClickBlock(mc.player, mc.world, neighbor, side2, hitVec, EnumHand.MAIN_HAND);
 
-                    if (l_Result2 != EnumActionResult.FAIL)
-                    {
+                    if (l_Result2 != EnumActionResult.FAIL) {
                         if (packetSwing)
                             mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
                         else
                             mc.player.swingArm(EnumHand.MAIN_HAND);
-                        if (activated)
-                        {
+                        if (activated) {
                             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
                         }
                         return PlaceResult.Placed;
@@ -345,15 +333,13 @@ public class BlockInteractionHelper
         return PlaceResult.CantPlace;
     }
 
-    public static boolean IsLiquidOrAir(BlockPos p_Pos)
-    {
+    public static boolean IsLiquidOrAir(BlockPos p_Pos) {
         IBlockState l_State = mc.world.getBlockState(p_Pos);
 
         return l_State.getBlock() == Blocks.WATER || l_State.getBlock() == Blocks.LAVA || l_State.getBlock() == Blocks.AIR;
     }
 
-    public static float[] getFacingRotations(int x, int y, int z, EnumFacing facing)
-    {
+    public static float[] getFacingRotations(int x, int y, int z, EnumFacing facing) {
         return getFacingRotations(x, y, z, facing, 1);
     }
 

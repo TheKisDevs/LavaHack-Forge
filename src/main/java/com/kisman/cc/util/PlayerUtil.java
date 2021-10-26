@@ -1,15 +1,20 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.module.combat.AutoCrystal;
 import com.kisman.cc.module.combat.Surround;
 import net.minecraft.block.BlockAir;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumHand;
@@ -19,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlayerUtil {
 
@@ -44,7 +50,36 @@ public class PlayerUtil {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 
-    public static BlockPos[][] SurroundBlockPos() {
+    public static List<EntityPlayer> getPlayersInRadius(double range) {
+        return getPlayersInRadius(mc.player.getPositionVector(), range);
+    }
+
+    public static List<EntityPlayer> getPlayersInRadius(Vec3d center, double range) {
+        return getEntitiesInRadius(EntityPlayer.class, center, range);
+    }
+
+    public static <T extends Entity> List<T> getEntitiesInRadius(Class<T> entityClass, Vec3d center, double range) {
+        List<T> entity = new ArrayList<>();
+
+        for(Entity entity1 : mc.world.loadedEntityList) {
+            if(entity1.getDistance(mc.player) <= range) {
+                entity.add((T) entity1);
+            }
+        }
+
+        return entity;
+    }
+
+    public static List<EntityPlayer> getPlayerTargets(double withinDistance) {
+        List<EntityPlayer> targets = new ArrayList<>();
+
+        targets.addAll(getPlayersInRadius(withinDistance).stream().filter(player -> AutoCrystal.instance.isValidTarget(player)).collect(Collectors.toList()));
+        targets.sort(Comparators.entityDistance);
+
+        return targets;
+    }
+
+    public static BlockPos[][] surroundBlockPos() {
         if(mc.player == null && mc.world == null) return null;
         return new BlockPos[][] {
                 {null, new BlockPos(Math.floor(mc.player.posX) + 1, Math.floor(mc.player.posY), Math.floor(mc.player.posZ)), null},
@@ -97,6 +132,10 @@ public class PlayerUtil {
         }
 
         return closestTarget;
+    }
+
+    public static double getEyeY(EntityPlayer player) {
+        return player.getPositionVector().y + player.getEyeHeight();
     }
 
     // Find player you are looking
@@ -261,13 +300,15 @@ public class PlayerUtil {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 
-    public static int GetItemSlot(Item input)
-    {
+    public static BlockPos entityPosToFloorBlockPos(Entity e) {
+        return new BlockPos(Math.floor(e.posX), Math.floor(e.posY), Math.floor(e.posZ));
+    }
+
+    public static int GetItemSlot(Item input) {
         if (mc.player == null)
             return 0;
 
-        for (int i = 0; i < mc.player.inventoryContainer.getInventory().size(); ++i)
-        {
+        for (int i = 0; i < mc.player.inventoryContainer.getInventory().size(); ++i) {
             if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
                 continue;
 
@@ -276,21 +317,18 @@ public class PlayerUtil {
             if (s.isEmpty())
                 continue;
 
-            if (s.getItem() == input)
-            {
+            if (s.getItem() == input) {
                 return i;
             }
         }
         return -1;
     }
 
-    public static int GetRecursiveItemSlot(Item input)
-    {
+    public static int GetRecursiveItemSlot(Item input) {
         if (mc.player == null)
             return 0;
 
-        for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i)
-        {
+        for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i) {
             if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
                 continue;
 
@@ -299,12 +337,137 @@ public class PlayerUtil {
             if (s.isEmpty())
                 continue;
 
-            if (s.getItem() == input)
-            {
+            if (s.getItem() == input) {
                 return i;
             }
         }
         return -1;
+    }
+
+    public static void packetFacePitchAndYaw(float p_Pitch, float p_Yaw) {
+        boolean l_IsSprinting = mc.player.isSprinting();
+
+        if (l_IsSprinting != mc.player.serverSprintState) {
+            if (l_IsSprinting) {
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
+            }
+            else {
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
+            }
+
+            mc.player.serverSprintState = l_IsSprinting;
+        }
+
+        boolean l_IsSneaking = mc.player.isSneaking();
+
+        if (l_IsSneaking != mc.player.serverSneakState) {
+            if (l_IsSneaking) {
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            }
+            else {
+                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+            }
+
+            mc.player.serverSneakState = l_IsSneaking;
+        }
+
+        if (PlayerUtil.isCurrentViewEntity()) {
+            float l_Pitch = p_Pitch;
+            float l_Yaw = p_Yaw;
+
+            AxisAlignedBB axisalignedbb = mc.player.getEntityBoundingBox();
+            double l_PosXDifference = mc.player.posX - mc.player.lastReportedPosX;
+            double l_PosYDifference = axisalignedbb.minY - mc.player.lastReportedPosY;
+            double l_PosZDifference = mc.player.posZ - mc.player.lastReportedPosZ;
+            double l_YawDifference = (double)(l_Yaw - mc.player.lastReportedYaw);
+            double l_RotationDifference = (double)(l_Pitch - mc.player.lastReportedPitch);
+            ++mc.player.positionUpdateTicks;
+            boolean l_MovedXYZ = l_PosXDifference * l_PosXDifference + l_PosYDifference * l_PosYDifference + l_PosZDifference * l_PosZDifference > 9.0E-4D || mc.player.positionUpdateTicks >= 20;
+            boolean l_MovedRotation = l_YawDifference != 0.0D || l_RotationDifference != 0.0D;
+
+            if (mc.player.isRiding()) {
+                mc.player.connection.sendPacket(new CPacketPlayer.PositionRotation(mc.player.motionX, -999.0D, mc.player.motionZ, l_Yaw, l_Pitch, mc.player.onGround));
+                l_MovedXYZ = false;
+            } else if (l_MovedXYZ && l_MovedRotation) {
+                mc.player.connection.sendPacket(new CPacketPlayer.PositionRotation(mc.player.posX, axisalignedbb.minY, mc.player.posZ, l_Yaw, l_Pitch, mc.player.onGround));
+            } else if (l_MovedXYZ) {
+                mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, axisalignedbb.minY, mc.player.posZ, mc.player.onGround));
+            } else if (l_MovedRotation) {
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(l_Yaw, l_Pitch, mc.player.onGround));
+            } else if (mc.player.prevOnGround != mc.player.onGround) {
+                mc.player.connection.sendPacket(new CPacketPlayer(mc.player.onGround));
+            }
+
+            if (l_MovedXYZ) {
+                mc.player.lastReportedPosX = mc.player.posX;
+                mc.player.lastReportedPosY = axisalignedbb.minY;
+                mc.player.lastReportedPosZ = mc.player.posZ;
+                mc.player.positionUpdateTicks = 0;
+            }
+
+            if (l_MovedRotation) {
+                mc.player.lastReportedYaw = l_Yaw;
+                mc.player.lastReportedPitch = l_Pitch;
+            }
+
+            mc.player.prevOnGround = mc.player.onGround;
+            mc.player.autoJumpEnabled = mc.player.mc.gameSettings.autoJump;
+        }
+    }
+
+    public static boolean isPlayerTrapped()
+    {
+        BlockPos playerPos = GetLocalPlayerPosFloored();
+
+        final BlockPos[] trapPos = {
+                playerPos.down(),
+                playerPos.up().up(),
+                playerPos.north(),
+                playerPos.south(),
+                playerPos.east(),
+                playerPos.west(),
+                playerPos.north().up(),
+                playerPos.south().up(),
+                playerPos.east().up(),
+                playerPos.west().up(),
+        };
+
+        for (BlockPos pos : trapPos)
+        {
+            IBlockState state = mc.world.getBlockState(pos);
+
+            if (state.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(pos).getBlock() != Blocks.BEDROCK)
+                return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isEntityTrapped(Entity e)
+    {
+        BlockPos playerPos = entityPosToFloorBlockPos(e);
+
+        final BlockPos[] l_TrapPositions = {
+                playerPos.up().up(),
+                playerPos.north(),
+                playerPos.south(),
+                playerPos.east(),
+                playerPos.west(),
+                playerPos.north().up(),
+                playerPos.south().up(),
+                playerPos.east().up(),
+                playerPos.west().up(),
+        };
+
+        for (BlockPos l_Pos : l_TrapPositions)
+        {
+            IBlockState l_State = mc.world.getBlockState(l_Pos);
+
+            if (l_State.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(l_Pos).getBlock() != Blocks.BEDROCK)
+                return false;
+        }
+
+        return true;
     }
 
     public enum Hand {

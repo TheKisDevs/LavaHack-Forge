@@ -49,12 +49,6 @@ public class ColorPicker extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        // if (this.rainbowState) {
-        //     double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
-        //     rainbowState %= 360.0;
-        //     this.color[0] = (float) (rainbowState / 360.0);
-        // }
-        this.drawDefaultBackground();
         if (this.pickingHue) {
             if (this.hueSliderWidth > this.hueSliderHeight) {
                 float restrictedX = (float) Math.min(Math.max(hueSliderX, mouseX), hueSliderX + hueSliderWidth);

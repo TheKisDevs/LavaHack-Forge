@@ -21,6 +21,18 @@ public
 class DamageUtil {
     private static Minecraft mc = Minecraft.getMinecraft();
 
+    public static boolean shouldBreakArmor(EntityLivingBase entity, int targetPercent) {
+        for (ItemStack stack : entity.getArmorInventoryList()) {
+            if (stack == null || stack.getItem() == Items.AIR) {
+                return true;
+            }
+            float armorPercent = (float)(stack.getMaxDamage() - stack.getItemDamage()) / (float)stack.getMaxDamage() * Float.intBitsToFloat(Float.floatToIntBits(0.11806387f) ^ 0x7F39CB78);
+            if (!(targetPercent >= armorPercent) || stack.stackSize >= 2) continue;
+            return true;
+        }
+        return false;
+    }
+
     public static
     boolean isArmorLow ( EntityPlayer player , int durability ) {
         for (ItemStack piece : player.inventory.armorInventory) {

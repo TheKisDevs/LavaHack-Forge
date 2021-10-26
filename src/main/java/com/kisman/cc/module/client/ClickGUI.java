@@ -17,21 +17,21 @@ public class ClickGUI extends Module {
     public Setting scrollSpeed = new Setting("ScrollSpeed", this, 15, 1, 100, true);
 
     private Setting chatLine = new Setting("ChatLine", this, "Chat");
-    public Setting dPrefix = new Setting("ChatPrefix", this, Kisman.instance.commandManager.cmdPrefixStr, Kisman.instance.commandManager.cmdPrefixStr, true, true);
+//    public Setting dPrefix = new Setting("ChatPrefix", this, Kisman.instance.commandManager.cmdPrefixStr, Kisman.instance.commandManager.cmdPrefixStr, true, true);
 
     public ClickGUI() {
         super("ClickGUI", "ClickGUI", Category.CLIENT);
         this.setKey(Keyboard.KEY_U);
 
-        Kisman.EVENT_BUS.subscribe(listener);
+//        Kisman.EVENT_BUS.subscribe(listener);
 
         instance = this;
 
         setmgr.rSetting(clickLine);
         setmgr.rSetting(scrollSpeed);
 
-        setmgr.rSetting(chatLine);
-        setmgr.rSetting(dPrefix);
+//        setmgr.rSetting(chatLine);
+//        setmgr.rSetting(dPrefix);
 
         Kisman.instance.settingsManager.rSetting(new Setting("TestButton", this, false));
     }

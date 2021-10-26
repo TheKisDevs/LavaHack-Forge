@@ -8,6 +8,9 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 
 import com.kisman.cc.module.chat.Notification;
+import com.kisman.cc.module.client.HUD;
+import com.kisman.cc.oldclickgui.notification.NotificationManager;
+import com.kisman.cc.oldclickgui.notification.NotificationType;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
@@ -49,7 +52,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class AutoCrystal extends Module{
+public class AutoCrystal extends Module {
     private Setting ticks = new Setting("Ticks", this, 1, 0, 10, true);
 
 
@@ -58,7 +61,6 @@ public class AutoCrystal extends Module{
     private Setting mode = new Setting("Mode", this, "ClientTick", new ArrayList<>(Arrays.asList("ClientTick", "MotionTick")));
     private Setting placeMode = new Setting("PlaceMode", this, "None", new ArrayList<>(Arrays.asList("None", "Nearest", "Priority", "MostDamage")));
     private Setting destroyMode = new Setting("DestroyMode", this, "None", new ArrayList<>(Arrays.asList("None", "Smart", "Always", "OnlyOwn")));
-
 
     private Setting target = new Setting("Target", this, "Target");
 
@@ -70,11 +72,16 @@ public class AutoCrystal extends Module{
 
 
     private Setting place = new Setting("Place", this, "Place");
+
     private Setting raytrace = new Setting("RayTrace", this, true);
     private Setting facePlace = new Setting("FacePlace", this, false);
-    private Setting multiPlace = new Setting("MultiPlace", this, false);
+    private Setting multiPlace = new Setting("MultiPlace", this, MultiPlace.None);
     private Setting onlyPlaceWithCrystal = new Setting("OnlyPlaceWithCrystal", this, false);
     private Setting placeObsidianIfNoValidSpots = new Setting("PlaceObsidianIfNoValidSpots", this, false);
+    private Setting placeUnderBlock = new Setting("PlaceUnderBlock", this, false);
+    private Setting holePlace = new Setting("HolePlace", this, true);
+    private Setting armorBreaker = new Setting("ArmorBreaker", this, true);
+    private Setting armorPercent = new Setting("ArmorPercent", this, 20 , 0, 100, true);
 
 
     private Setting _break = new Setting("Break", this, "Break");
@@ -129,6 +136,10 @@ public class AutoCrystal extends Module{
     private Setting switchBack = new Setting("SwitchBack", this, false);
 
 
+    private Setting _calculate = new Setting("Calculate", this, "Calculate");
+    private Setting placeCalculate = new Setting("PlaceCalculate", this, "First", new ArrayList<>(Arrays.asList("First", "Second")));
+
+
     private Setting _render = new Setting("_Render", this, "Render");
 
     private Setting __render = new Setting("Render", this, true);
@@ -136,7 +147,7 @@ public class AutoCrystal extends Module{
 
 
 
-    private ArrayList<CPacketPlayer.PositionRotation> packets = new ArrayList<CPacketPlayer.PositionRotation>();
+    private ArrayList<CPacketPlayer.PositionRotation> packets = new ArrayList<>();
     private ArrayList<BlockPos> placedCrystal = new ArrayList<>();
     public EntityLivingBase e_target = null;
     private AimBot aimBot;
@@ -173,6 +184,10 @@ public class AutoCrystal extends Module{
         setmgr.rSetting(multiPlace);
         setmgr.rSetting(onlyPlaceWithCrystal);
         setmgr.rSetting(placeObsidianIfNoValidSpots);
+        setmgr.rSetting(placeUnderBlock);
+        setmgr.rSetting(holePlace);
+        setmgr.rSetting(armorBreaker);
+        setmgr.rSetting(armorPercent);
 
         setmgr.rSetting(_break);
         setmgr.rSetting(packetBreak);
@@ -211,6 +226,9 @@ public class AutoCrystal extends Module{
         setmgr.rSetting(swapCrystal);
         setmgr.rSetting(swapObby);
         setmgr.rSetting(switchBack);
+
+        setmgr.rSetting(_calculate);
+        setmgr.rSetting(placeCalculate);
 
         setmgr.rSetting(_render);
         setmgr.rSetting(__render);
@@ -502,8 +520,7 @@ public class AutoCrystal extends Module{
         return false;
     }
 
-    private boolean isValidTarget(Entity entity)
-    {
+    public boolean isValidTarget(Entity entity) {
         if (entity == null)
             return false;
 
@@ -533,8 +550,7 @@ public class AutoCrystal extends Module{
         return false;
     }
 
-    private EntityLivingBase getNearTarget(Entity distanceTarget)
-    {
+    private EntityLivingBase getNearTarget(Entity distanceTarget) {
         return mc.world.loadedEntityList.stream()
                 .filter(entity -> isValidTarget(entity))
                 .map(entity -> (EntityLivingBase) entity)
@@ -542,18 +558,15 @@ public class AutoCrystal extends Module{
                 .orElse(null);
     }
 
-    private boolean HandleBreakCrystals(EntityEnderCrystal crystal, @Nullable EventPlayerMotionUpdate event)
-    {
-        if (crystal != null)
-        {
+    private boolean HandleBreakCrystals(EntityEnderCrystal crystal, @Nullable EventPlayerMotionUpdate event) {
+        if (crystal != null) {
             final double pos[] =  EntityUtil.calculateLookAt(
                     crystal.posX + 0.5,
                     crystal.posY - 0.5,
                     crystal.posZ + 0.5,
                     mc.player);
 
-            if (mode.getValString().equalsIgnoreCase("ClientTick"))
-            {
+            if (mode.getValString().equalsIgnoreCase("ClientTick")) {
                 aimBot.rotationSpoof = new RotationSpoof((float)pos[0], (float)pos[1]);
 
                 Random rand = new Random(2);
@@ -798,7 +811,13 @@ public class AutoCrystal extends Module{
                         e_target = getNearTarget(mc.player);
 
                     if (e_target != null && l_Target != e_target && l_Target != null && Notification.instance.target.getValBoolean()) {
-                        ChatUtils.complete(String.format("Found new target %s", l_Target.getName()));
+                        String newTarget = String.format("Found new target %s", l_Target.getName());
+
+                        if(HUD.instance.crystalTarget.getValBoolean()) {
+                            NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", newTarget, 800));
+                        }
+
+                        ChatUtils.complete(newTarget);
                     }
 
                     e_target = l_Target;
@@ -831,29 +850,58 @@ public class AutoCrystal extends Module{
 
                     BlockPos l_TargetPos = null;
 
-                    for (BlockPos l_Pos : BlockInteractionHelper.getSphere(PlayerUtil.GetLocalPlayerPosFloored(), (float) placeRange.getValDouble(), (int)l_Range, false, true, 0)) {
-                        BlockInteractionHelper.ValidResult l_Result = BlockInteractionHelper.valid(l_Pos);
+                    for (
+                            BlockPos pos : BlockInteractionHelper.getSphere(
+                            PlayerUtil.GetLocalPlayerPosFloored(),
+                            (float) placeRange.getValDouble(),
+                            (int)l_Range, false, true, 0
+                    )) {
+                        if(placeCalculate.getValString().equalsIgnoreCase("First")) {
+                            BlockInteractionHelper.ValidResult l_Result = BlockInteractionHelper.valid(pos);
 
-                        if (l_Result != BlockInteractionHelper.ValidResult.Ok)
-                            continue;
+                            if (l_Result != BlockInteractionHelper.ValidResult.Ok)
+                                continue;
 
-                        if (!CrystalUtils.CanPlaceCrystalIfObbyWasAtPos(l_Pos))
-                            continue;
+                            if (!CrystalUtils.CanPlaceCrystalIfObbyWasAtPos(pos))
+                                continue;
 
-                        float l_TempDMG = CrystalUtils.calculateDamage(mc.world, l_Pos.getX() + 0.5, l_Pos.getY() + 1.0, l_Pos.getZ() + 0.5, e_target, 0);
+                            float l_TempDMG = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, e_target, 0);
 
-                        if (l_TempDMG < l_MinDmg)
-                            continue;
+                            if (l_TempDMG < l_MinDmg)
+                                continue;
 
-                        if (l_TempDMG >= l_TargetDMG) {
-                            l_TargetPos = l_Pos;
-                            l_TargetDMG = l_TempDMG;
+                            if (l_TempDMG >= l_TargetDMG) {
+                                l_TargetPos = pos;
+                                l_TargetDMG = l_TempDMG;
+                            }
+
+                            if (l_TargetPos != null) {
+                                BlockInteractionHelper.place(l_TargetPos, (float) placeRange.getValDouble(), true, false); ///< sends a new packet, might be bad for ncp flagging tomany packets..
+
+                                if (Notification.instance.placeObby.getValBoolean()) {
+                                    String placeMsg = String.format("Tried to place obsidian at %s would deal %s dmg", l_TargetPos.toString(), l_TargetDMG);
+
+                                    if (HUD.instance.placeObby.getValBoolean()) {
+                                        NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", placeMsg, 400));
+                                    }
+
+                                    ChatUtils.complete(placeMsg);
+                                }
+                            }
+                        } else if(placeCalculate.getValString().equalsIgnoreCase("Second")) {
+                            if(e_target == null) {
+                                findNewTarget();
+                            } else if(
+                                    mc.world.getBlockState(pos).getBlock() == Blocks.AIR ||
+                                            !CrystalUtils.canPlaceCrystal(pos, placeUnderBlock.getValBoolean(), ((MultiPlace) multiPlace.getValEnum()).equals(MultiPlace.Static) != false ||
+                                                    ((MultiPlace) multiPlace.getValEnum()).equals(MultiPlace.Dynamic) != false &&
+                                                            CrystalUtils.isEntityMoving((EntityLivingBase) mc.player) != false &&
+                                                            CrystalUtils.isEntityMoving((EntityLivingBase) this.e_target) != false,
+                                                    holePlace.getValBoolean())
+                            ) {
+                                return pos;
+                            }
                         }
-                    }
-
-                    if (l_TargetPos != null) {
-                        BlockInteractionHelper.place(l_TargetPos, (float) placeRange.getValDouble(), true, false); ///< sends a new packet, might be bad for ncp flagging tomany packets..
-                        if(Notification.instance.placeObby.getValBoolean())  ChatUtils.warning(String.format("Tried to place obsidian at %s would deal %s dmg", l_TargetPos.toString(), l_TargetDMG));
                     }
                 }
             }
@@ -886,7 +934,7 @@ public class AutoCrystal extends Module{
                 l_MaxSelfDmg /= 2;
         }
 
-        BlockPos l_BestPosition = null;
+        BlockPos bestPosition = null;
         float l_DMG = 0.0f;
 
         /// todo: use this, but we will lose dmg... maybe new option, for LeastDMGToSelf? but seems useless
@@ -915,11 +963,11 @@ public class AutoCrystal extends Module{
             if (l_TempDMG > l_DMG) {
                 l_DMG = l_TempDMG;
                 l_SelfDMG = l_SelfTempDMG;
-                l_BestPosition = l_Pos;
+                bestPosition = l_Pos;
             }
         }
 
-        if (l_BestPosition == null)
+        if (bestPosition == null)
             return BlockPos.ORIGIN;
 
         /*for (Hole l_Hole : Holes.GetHoles())
@@ -938,6 +986,15 @@ public class AutoCrystal extends Module{
             SalHack.INSTANCE.logChat("Filling the hole at " + m_HoleToFill.toString() + " will deal " + l_DMG);
            // return;
         }*/
+
+//        if(e_target != null) {
+//            if(e_target instanceof EntityPlayer) {
+//                if (filterPosition(bestPosition, (EntityPlayer) e_target));
+//            }
+//        } else {
+//            findNewTarget();
+//        }
+
 
         int l_PrevSlot = -1;
 
@@ -966,13 +1023,12 @@ public class AutoCrystal extends Module{
         }
 
         final double l_Pos[] =  EntityUtil.calculateLookAt(
-                l_BestPosition.getX() + 0.5,
-                l_BestPosition.getY() - 0.5,
-                l_BestPosition.getZ() + 0.5,
+                bestPosition.getX() + 0.5,
+                bestPosition.getY() - 0.5,
+                bestPosition.getZ() + 0.5,
                 mc.player);
 
-        if (mode.getValString().equalsIgnoreCase("ClientTick"))
-        {
+        if (mode.getValString().equalsIgnoreCase("ClientTick")) {
             aimBot.rotationSpoof = new RotationSpoof((float)l_Pos[0], (float)l_Pos[1]);
 
             Random rand = new Random(2);
@@ -981,22 +1037,21 @@ public class AutoCrystal extends Module{
             aimBot.rotationSpoof.pitch += (rand.nextFloat() / 100);
         }
 
-        EnumFacing l_Facing = null;
+        EnumFacing facing = null;
 
         if(raytrace.getValBoolean()) {
-            RayTraceResult l_Result = mc.world.rayTraceBlocks(
+            RayTraceResult result = mc.world.rayTraceBlocks(
                     new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ),
-                    new Vec3d(l_BestPosition.getX() + 0.5, l_BestPosition.getY() - 0.5,
-                            l_BestPosition.getZ() + 0.5));
+                    new Vec3d(bestPosition.getX() + 0.5, bestPosition.getY() - 0.5,
+                            bestPosition.getZ() + 0.5));
 
-            if (l_Result == null || l_Result.sideHit == null)
-                l_Facing = EnumFacing.UP;
+            if (result == null || result.sideHit == null)
+                facing = EnumFacing.UP;
             else
-                l_Facing = l_Result.sideHit;
+                facing = result.sideHit;
         }
 
-        if (mode.getValString().equalsIgnoreCase("MotionTick") && p_Event != null) ///< p_Event should not null
-        {
+        if (mode.getValString().equalsIgnoreCase("MotionTick") && p_Event != null) {
             p_Event.cancel();
 
             SpoofRotationsTo((float)l_Pos[0], (float)l_Pos[1]);
@@ -1004,13 +1059,13 @@ public class AutoCrystal extends Module{
 
 
         if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL || mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) {
-            mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(l_BestPosition, l_Facing,
+            mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(bestPosition, facing,
                     mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
         }
         // mc.playerController.processRightClickBlock(mc.player, mc.world, l_BestPosition, EnumFacing.UP, new Vec3d(0, 0, 0), EnumHand.MAIN_HAND);
         // SalHack.INSTANCE.logChat(String.format("%s%s DMG and SelfDMG %s %s %S", ChatFormatting.LIGHT_PURPLE, l_DMG, l_SelfDMG, l_Facing, m_Target.getName()));
 
-        placedCrystal.add(l_BestPosition);
+        placedCrystal.add(bestPosition);
 
         if (l_PrevSlot != -1 && ghostHand.getValBoolean())
         {
@@ -1018,7 +1073,28 @@ public class AutoCrystal extends Module{
             mc.playerController.updateController();
         }
 
-        return l_BestPosition;
+        return bestPosition;
+    }
+
+    public float filterCrystal(EntityEnderCrystal crystal, EntityPlayer target) {
+        if (mc.player.canEntityBeSeen((Entity)crystal) ? mc.player.getDistanceSq((Entity)crystal) > (double)MathUtil.square(destroyRange.getValDouble()) : mc.player.getDistanceSq((Entity)crystal) > (double)MathUtil.square(wallsRange.getValDouble())) {
+            return Float.intBitsToFloat(Float.floatToIntBits(-5.0406475f) ^ 0x7F214CFC);
+        }
+        if (crystal.isDead) {
+            return Float.intBitsToFloat(Float.floatToIntBits(-208.54588f) ^ 0x7CD08BBF);
+        }
+        float targetDamage = DamageUtil.calculateDamage(crystal.posX, crystal.posY, crystal.posZ, (EntityLivingBase)target);
+        float selfDamage = DamageUtil.calculateDamage(crystal.posX, crystal.posY, crystal.posZ, (EntityLivingBase)mc.player);
+        return this.returnDamage((EntityPlayer)target, targetDamage, selfDamage);
+    }
+
+    public float filterPosition(BlockPos position, EntityPlayer target) {
+        if (CrystalUtils.canSeePos((BlockPos)position) ? mc.player.getDistanceSq((BlockPos)position) > (double)MathUtil.square(placeRange.getValDouble()) : mc.player.getDistanceSq((BlockPos)position) > (double)MathUtil.square(wallsRange.getValDouble())) {
+            return Float.intBitsToFloat(Float.floatToIntBits(-7.1987925f) ^ 0x7F665C82);
+        }
+        float targetDamage = DamageUtil.calculateDamage((double)position.getX() + Double.longBitsToDouble(Double.doubleToLongBits(2.926604140248566) ^ 0x7FE769AF6E75A574L), (double)position.getY() + Double.longBitsToDouble(Double.doubleToLongBits(10.872572781808893) ^ 0x7FD5BEC1DC127F75L), (double)position.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(20.94846926721453) ^ 0x7FD4F2CEE1C3F28FL), target);
+        float selfDamage = DamageUtil.calculateDamage((double)position.getX() + Double.longBitsToDouble(Double.doubleToLongBits(3.800241793394989) ^ 0x7FEE66E52B5C30E1L), (double)position.getY() + Double.longBitsToDouble(Double.doubleToLongBits(8.346756871161473) ^ 0x7FD0B18A1DDA9A87L), (double)position.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(16.53449891037378) ^ 0x7FD088D4EBABCD93L), mc.player);
+        return this.returnDamage(target, targetDamage, selfDamage);
     }
 
     private boolean SwitchHandToItemIfNeed(Item p_Item)
@@ -1042,5 +1118,33 @@ public class AutoCrystal extends Module{
         }
 
         return true;
+    }
+
+    public float returnDamage(EntityPlayer target, float targetDamage, float selfDamage) {
+        if (targetDamage < this.getMinimumDamage((EntityLivingBase)target)) {
+            if (targetDamage < target.getHealth() + target.getAbsorptionAmount()) {
+                return Float.intBitsToFloat(Float.floatToIntBits(-5.012834f) ^ 0x7F206923);
+            }
+        }
+        if (selfDamage > maxSelfDMG.getValDouble()) {
+            return Float.intBitsToFloat(Float.floatToIntBits(-17.910734f) ^ 0x7E0F492F);
+        }
+        if (mc.player.getHealth() + mc.player.getAbsorptionAmount() <= selfDamage) {
+            return Float.intBitsToFloat(Float.floatToIntBits(-6.6046715f) ^ 0x7F535978);
+        }
+        return targetDamage;
+    }
+
+    public float getMinimumDamage(EntityLivingBase entity) {
+        if (facePlace.getValBoolean() && entity.getHealth() + entity.getAbsorptionAmount() < facePlaceHP.getValDouble() || armorBreaker.getValBoolean() && DamageUtil.shouldBreakArmor((EntityLivingBase)entity, armorPercent.getValInt())) {
+            return Float.intBitsToFloat(Float.floatToIntBits(15.796245f) ^ 0x7EFCBD6B);
+        }
+        return (float) minDMG.getValDouble();
+    }
+
+    public enum MultiPlace {
+        None,
+        Dynamic,
+        Static
     }
 }

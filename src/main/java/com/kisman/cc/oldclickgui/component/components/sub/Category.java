@@ -20,15 +20,15 @@ public class Category extends Component {
     public int x;
     public int y;
 
-    private ArrayList<SubComponent> components;
+    public ArrayList<SubComponent> components;
 
-    private Button button;
+    public Button button;
     private Setting set;
 
-    private int offset;
-    private int opY;
+    public int offset;
+    public int opY;
 
-    private boolean open;
+    public boolean open;
 
     public Category(Button button, Setting set, int offset) {
         this.components = new ArrayList<>();
@@ -67,6 +67,8 @@ public class Category extends Component {
                 comp.renderComponent();
             }
         }
+
+        Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
     }
 
     public void updateComponent(int mouseX, int mouseY) {

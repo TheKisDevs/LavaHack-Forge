@@ -20,7 +20,7 @@ import java.util.function.*;
 import java.awt.Color;
 
 public class ColorPickerButton extends Component{
-  private Button button;
+  public Button button;
   private Setting set;
   private ColorUtil colorUtil = new ColorUtil();
   ColorPicker colorPicker = new ColorPicker();
@@ -29,11 +29,9 @@ public class ColorPickerButton extends Component{
 
   public boolean open = false;
 
-  private int x;
-  private int y;
-  private int x1;
-  private int y1;
-  private int offset;
+  public int x;
+  public int y;
+  public int offset;
 
   private int r, g, b;
 
@@ -42,8 +40,6 @@ public class ColorPickerButton extends Component{
       this.set = set;
       this.x = button.parent.getX();
       this.y = button.parent.getY();
-      this.x1 = button.parent.getX() + button.parent.getWidth();
-      this.y1 = button.parent.getY() + button.offset;
       this.offset = offset;
       colorPicker.setColor(set.getColorHSB());
   }
@@ -65,6 +61,8 @@ public class ColorPickerButton extends Component{
         Minecraft.getMinecraft().displayGuiScreen(colorPicker);
         this.open = false;
       }
+
+      Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
   }
 
   @Override
@@ -142,11 +140,10 @@ public class ColorPickerButton extends Component{
         set.setA(ColorModule.instance.synsColor.getA());
         set.setColor(ColorModule.instance.synsColor.getColorHSB());
     }
+
+    set.setSyns(colorPicker.syns);
     set.setRainbow(colorPicker.isRainbowState());
     set.setColorPicker(colorPicker);
-
-    //colorUtil.getColorPickerRainBow(colorPicker);
-    Kisman.instance.colorUtil.getColorPickerRainBow(colorPicker);
   }
 
   @Override

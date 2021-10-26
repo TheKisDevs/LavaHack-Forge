@@ -46,9 +46,9 @@ public abstract class MixinEntity {
     @Shadow
     public World world;
 
-    @Shadow
-    @Override
-    public abstract boolean equals(final Object p0);
+//    @Shadow
+//    @Override
+//    public abstract boolean equals(final Object p0);
 
 /*    @Shadow
     public abstract boolean isSprinting();

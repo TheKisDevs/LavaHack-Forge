@@ -8,23 +8,20 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.client.CPacketPlayerDigging.Action;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 
-public final class BlockUtils
-{
-	
+public final class BlockUtils {
+	private static Minecraft mc = Minecraft.getMinecraft();
+
 	public static IBlockState getState(BlockPos pos)
 	{
 		return Wrapper.INSTANCE.world().getBlockState(pos);
@@ -56,14 +53,41 @@ public final class BlockUtils
     public static boolean isBlockMaterial(BlockPos blockPos, Material material) {
     	return BlockUtils.getState(blockPos).getMaterial() == material;
     }
+
+	public static void placeBlock(BlockPos position, EnumHand hand, boolean packet) {
+		if (!BlockUtils.mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) {
+			return;
+		}
+		if (BlockUtils.getPlaceableSide(position) == null) {
+			return;
+		}
+		BlockUtils.clickBlock(position, BlockUtils.getPlaceableSide(position), (EnumHand)hand, (boolean)packet);
+		BlockUtils.mc.player.connection.sendPacket(new CPacketAnimation((EnumHand)hand));
+	}
+
+	public static void clickBlock(BlockPos position, EnumFacing side, EnumHand hand, boolean packet) {
+		if (packet != false) {
+			BlockUtils.mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(position.offset((EnumFacing)side), side.getOpposite(), (EnumHand)hand, Float.intBitsToFloat(Float.floatToIntBits(17.735476f) ^ 0x7E8DE241), Float.intBitsToFloat(Float.floatToIntBits(26.882437f) ^ 0x7ED70F3B), Float.intBitsToFloat(Float.floatToIntBits(3.0780227f) ^ 0x7F44FE53)));
+		} else {
+			BlockUtils.mc.playerController.processRightClickBlock(BlockUtils.mc.player, BlockUtils.mc.world, position.offset((EnumFacing)side), side.getOpposite(), new Vec3d((Vec3i)position), (EnumHand)hand);
+		}
+	}
+
+	public static EnumFacing getPlaceableSide(BlockPos pos) {
+		for (EnumFacing side : EnumFacing.values()) {
+			IBlockState blockState;
+			BlockPos neighbour = pos.offset(side);
+			if (!BlockUtils.mc.world.getBlockState(neighbour).getBlock().canCollideCheck(BlockUtils.mc.world.getBlockState(neighbour), false) || (blockState = BlockUtils.mc.world.getBlockState(neighbour)).getMaterial().isReplaceable()) continue;
+			return side;
+		}
+		return null;
+	}
 	
-	public static boolean placeBlockLegit(BlockPos pos)
-	{
+	public static boolean placeBlockLegit(BlockPos pos) {
 		Vec3d eyesPos = new Vec3d(Wrapper.INSTANCE.player().posX,
 				Wrapper.INSTANCE.player().posY + Wrapper.INSTANCE.player().getEyeHeight(), Wrapper.INSTANCE.player().posZ);
 		
-		for(EnumFacing side : EnumFacing.values())
-		{
+		for(EnumFacing side : EnumFacing.values()) {
 			BlockPos neighbor = pos.offset(side);
 			EnumFacing side2 = side.getOpposite();
 			
@@ -100,13 +124,11 @@ public final class BlockUtils
 		return true;
 	}
 	
-	public static boolean placeBlockSimple(BlockPos pos)
-	{
+	public static boolean placeBlockSimple(BlockPos pos) {
 		Vec3d eyesPos = new Vec3d(Wrapper.INSTANCE.player().posX,
 				Wrapper.INSTANCE.player().posY + Wrapper.INSTANCE.player().getEyeHeight(), Wrapper.INSTANCE.player().posZ);
 		
-		for(EnumFacing side : EnumFacing.values())
-		{
+		for(EnumFacing side : EnumFacing.values()) {
 			BlockPos neighbor = pos.offset(side);
 			EnumFacing side2 = side.getOpposite();
 			
@@ -339,6 +361,13 @@ public final class BlockUtils
             }
 		return blocks;
 	}
-	
+
+	public static boolean isIntercepted(BlockPos blockPos) {
+		for (Entity entity : mc.world.loadedEntityList) {
+			if (entity instanceof EntityItem || entity instanceof EntityEnderCrystal || !new AxisAlignedBB(blockPos).intersects(entity.getEntityBoundingBox())) continue;
+			return true;
+		}
+		return false;
+	}
 }
 

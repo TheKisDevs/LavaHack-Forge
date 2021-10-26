@@ -16,31 +16,36 @@ public class Checkbox extends Component {
 
 	private boolean hovered;
 	private Setting op;
-	private Button parent;
+	public Button button;
 	private ColorUtil colorUtil = new ColorUtil();
-	private int offset;
-	private int x;
-	private int y;
+	public int offset;
+	public int x, y;
+	private int x1;
+	private int y1;
 	
 	public Checkbox(Setting option, Button button, int offset) {
 		this.op = option;
-		this.parent = button;
-		this.x = button.parent.getX() + button.parent.getWidth();
-		this.y = button.parent.getY() + button.offset;
+		this.button = button;
+		this.x = button.parent.getX();
+		this.y = button.parent.getY();
+		this.x1 = button.parent.getX() + button.parent.getWidth();
+		this.y1 = button.parent.getY() + button.offset;
 		this.offset = offset;
 	}
 
 	@Override
 	public void renderComponent() {
-		Gui.drawRect(parent.parent.getX() + 2, parent.parent.getY() + offset, parent.parent.getX() + (parent.parent.getWidth() * 1) - 3, parent.parent.getY() + offset + 12, this.hovered ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
+		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + (button.parent.getWidth() * 1) - 3, button.parent.getY() + offset + 12, this.hovered ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
 		//Gui.drawRect(parent.parent.getX(), parent.parent.getY() + offset, parent.parent.getX() + 2, parent.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(this.op.getName(), (parent.parent.getX() + 10 + 4) * 2 + 5, (parent.parent.getY() + offset + 2) * 2 + 4, -new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(this.op.getName(), (button.parent.getX() + 10 + 4) * 2 + 5, (button.parent.getY() + offset + 2) * 2 + 4, -new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		GL11.glPopMatrix();
-		Gui.drawRect(parent.parent.getX() + 3 + 4, parent.parent.getY() + offset + 3, parent.parent.getX() + 9 + 4, parent.parent.getY() + offset + 9, new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB());
+		Gui.drawRect(button.parent.getX() + 3 + 4, button.parent.getY() + offset + 3, button.parent.getX() + 9 + 4, button.parent.getY() + offset + 9, new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB());
 		if(this.op.getValBoolean())
-			Gui.drawRect(parent.parent.getX() + 4 + 4, parent.parent.getY() + offset + 4, parent.parent.getX() + 8 + 4, parent.parent.getY() + offset + 8, 0xFF666666);
+			Gui.drawRect(button.parent.getX() + 4 + 4, button.parent.getY() + offset + 4, button.parent.getX() + 8 + 4, button.parent.getY() + offset + 8, 0xFF666666);
+
+		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 	}
 	
 	@Override
@@ -51,19 +56,19 @@ public class Checkbox extends Component {
 	@Override
 	public void updateComponent(int mouseX, int mouseY) {
 		this.hovered = isMouseOnButton(mouseX, mouseY);
-		this.y = parent.parent.getY() + offset;
-		this.x = parent.parent.getX();
+		this.y1 = button.parent.getY() + offset;
+		this.x1 = button.parent.getX();
 	}
 	
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
-		if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.parent.open) {
+		if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.button.open) {
 			this.op.setValBoolean(!op.getValBoolean());
 		}
 	}
 	
 	public boolean isMouseOnButton(int x, int y) {
-		if(x > this.x && x < this.x + 88 && y > this.y && y < this.y + 12) {
+		if(x > this.x1 && x < this.x1 + 88 && y > this.y1 && y < this.y1 + 12) {
 			return true;
 		}
 		return false;

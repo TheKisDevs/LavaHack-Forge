@@ -8,6 +8,7 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.util.Colour;
+import net.minecraft.entity.Entity;
 import org.lwjgl.input.Keyboard;
 
 import javax.management.OperationsException;
@@ -22,6 +23,8 @@ import javax.management.OperationsException;
 public class Setting {
 	private ColorPicker colorPicker;
 	private Colour colour;
+
+	private Entity entity;
 
 	private int index = 0;
 	private int color;
@@ -200,6 +203,14 @@ public class Setting {
 		this.y2 = y2;
 	}
 
+	public Setting(String name, Module parent, String title, Entity entity) {
+		this.name = name;
+		this.parent = parent;
+		this.title = title;
+		this.entity = entity;
+		this.mode = "Preview";
+	}
+
 	public Enum getNextModeEnum() {
 		if(optionEnum != null) {
 			Enum enumVal = optionEnum;
@@ -209,6 +220,14 @@ public class Setting {
 		} else {
 			return null;
 		}
+	}
+
+	public Entity getEntity() {
+		return entity;
+	}
+
+	public int getValInt() {
+		return (int) this.dval;
 	}
 
 	public boolean isOnlyOneWord() {
@@ -467,6 +486,8 @@ public class Setting {
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
+
+	public boolean isPreview() { return mode.equalsIgnoreCase("Preview") ? true : false; }
 
 	public boolean isBind() { return mode.equalsIgnoreCase("Bind") ? true : false; }
 

@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.render.ViemModel;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,15 +20,17 @@ public abstract class MixinItemRenderer {
 
         if (Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
             GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
-            GlStateManager.rotate((float) (getSet("RotateRightX").getValDouble()), 1, 0, 0);
-            GlStateManager.rotate((float) (getSet("RotateRightY").getValDouble()), 0, 1, 0);
-            GlStateManager.rotate((float) (getSet("RotateRightZ").getValDouble()), 0, 0, 1);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateRigthX.getValBoolean() ? (float) (getSet("RotateRightX").getValDouble()) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 1, 0, 0);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 0, 1, 0);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 0, 0, 1);
+            GlStateManager.scale(ViemModel.instance.scaleRightX.getValDouble(), ViemModel.instance.scaleRightY.getValDouble(), ViemModel.instance.scaleRightZ.getValDouble());
         }
         if (Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.LEFT) {
             GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
-            GlStateManager.rotate((float) (getSet("RotateLeftX").getValDouble()), 1, 0, 0);
-            GlStateManager.rotate((float) (getSet("RotateLeftY").getValDouble()), 0, 1, 0);
-            GlStateManager.rotate((float) (getSet("RotateLeftZ").getValDouble()), 0, 0, 1);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 1, 0, 0);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 0, 1, 0);
+            GlStateManager.rotate(!ViemModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f, 0, 0, 1);
+            GlStateManager.scale(ViemModel.instance.scaleLeftX.getValDouble(), ViemModel.instance.scaleLeftY.getValDouble(), ViemModel.instance.scaleLeftZ.getValDouble());
         }
         if (!Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
             GlStateManager.translate(-0.2785682F, 0.18344387F, 0.15731531F);

@@ -1,6 +1,8 @@
 package com.kisman.cc.util;
 
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import java.awt.*;
 
 public class Colour {
@@ -21,6 +23,13 @@ public class Colour {
         this.g = g;
         this.b = b;
         this.a = 255;
+    }
+
+    public Colour(Colour color, int a) {
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.a = a;
     }
 
     public Color getColor() {
@@ -45,5 +54,13 @@ public class Colour {
 
     public float getA() {
         return a / 255;
+    }
+
+    public int getAlpha() {
+        return a;
+    }
+
+    public void glColor() {
+        GlStateManager.color(r / 255, g / 255, b / 255, a / 255);
     }
 }

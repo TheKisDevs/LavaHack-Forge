@@ -13,12 +13,15 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
-    "MixinGuiMainMenu",
+    "MixinGuiIngame",
     "MixinGuiMultiplayer",
     "MixinItemRenderer",
+    "MixinLayerBipedArmor",
+    "MixinMovementInputFromOptions",
     "MixinNetworkManager",
     "MixinPenderPlayer",
     "MixinPlayerControllerMP",
+    "MixinGuiIngame",
     "MixinRendererLivingEntity",
     "MixinRenderGlobal"
   ]

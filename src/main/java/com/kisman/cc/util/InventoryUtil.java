@@ -2,6 +2,7 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.mixin.mixins.accessor.IPlayerControllerMP;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockObsidian;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -13,6 +14,26 @@ import java.util.List;
 
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static void switchToSlot(int slot, boolean silent) {
+        if (silent != false) {
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
+        } else {
+            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
+            mc.player.inventory.currentItem = slot;
+        }
+    }
+
+    public static int findBlock(Block block, int min, int max) {
+        for (int i = min; i <= max; ++i) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            if (!(stack.getItem() instanceof ItemBlock)) continue;
+            ItemBlock item = (ItemBlock)stack.getItem();
+            if (item.getBlock() != block) continue;
+            return i;
+        }
+        return -1;
+    }
 
     public static void switchToSlot(int slot, Switch switchMode) {
         if(mc.player == null && mc.world == null) return;
@@ -30,7 +51,7 @@ public class InventoryUtil {
         }
 
         mc.playerController.updateController();
-        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
+//        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
     }
 
     public static void switchToSlot(Item item, Switch switchMode) {
@@ -38,6 +59,20 @@ public class InventoryUtil {
             switchToSlot(getItemSlot(item, Inventory.HOTBAR, true), switchMode);
 
         ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
+    }
+
+    public static int getBlockInHotbar(boolean onlyObby) {
+        for(int i = 0; i <9; i++) {
+            if(mc.player.inventory.getStackInSlot(i).getItem() instanceof ItemBlock) {
+                if(onlyObby && ((ItemBlock) mc.player.inventory.getStackInSlot(i).getItem()).block instanceof BlockObsidian) {
+                    return i;
+                } else {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
     }
 
     public static int getItemSlot(Item item, Inventory inventory, boolean hotbar) {
@@ -59,6 +94,25 @@ public class InventoryUtil {
         }
 
         return -1;
+    }
+
+    public static int findItemInHotbar(Class<? extends Item> itemToFind) {
+        int slot = -1;
+        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
+
+        for(int i = 0; i < 9; i++) {
+            ItemStack stack = mainInventory.get(i);
+
+            if(stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) {
+                continue;
+            }
+
+            if(itemToFind.isInstance(stack.getItem())) {
+                slot = i;
+            }
+        }
+
+        return slot;
     }
 
     public static int findFirstItemSlot(Class<? extends Item> itemToFind, int lower, int upper) {

@@ -1,7 +1,7 @@
-/*
  package com.kisman.cc.mixin.mixins;
 
  import com.kisman.cc.file.SaveConfig;
+ import net.minecraft.crash.CrashReport;
  import org.spongepowered.asm.mixin.Mixin;
 
  import net.minecraft.client.Minecraft;
@@ -11,9 +11,13 @@
 
  @Mixin(Minecraft.class)
  public class MixinMinecraft {
-     @Override
-     private void shutdown(CallbackInfo callbackInfo) {
+     @Inject(method = "crashed", at = @At("HEAD"))
+     private void crashed(CrashReport crash, CallbackInfo ci) {
+         SaveConfig.init();
+     }
+
+     @Inject(method = "shutdown", at = @At("HEAD"))
+     private void shutdown(CallbackInfo ci) {
          SaveConfig.init();
      }
  }
-*/

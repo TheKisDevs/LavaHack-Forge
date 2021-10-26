@@ -9,8 +9,18 @@ import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NoRender extends Module {
+    public static NoRender instance;
+
+    public Setting armor = new Setting("Armor", this, false);
+    public Setting overlay = new Setting("Overlay", this, false);
+
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
+
+        instance = this;
+
+        setmgr.rSetting(armor);
+        setmgr.rSetting(overlay);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));

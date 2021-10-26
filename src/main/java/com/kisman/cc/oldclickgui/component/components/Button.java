@@ -23,6 +23,9 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.Gui;
 
 public class Button extends Component {
+	public int x;
+	public int y;
+
 	int color;
 	public Module mod;
 	public HudModule hudMod;
@@ -32,7 +35,7 @@ public class Button extends Component {
 	public int offset;
 	public int opY;
 	private boolean isHovered;
-	private ArrayList<Component> subcomponents;
+	public ArrayList<Component> subcomponents;
 	private ArrayList<Component> drawBoxHud;
 	public boolean open;
 	private int height;
@@ -86,6 +89,10 @@ public class Button extends Component {
 				}
 				if(s.isBind()) {
 					subcomponents.add(new Keybind(this, s, opY));
+					opY += 12;
+				}
+				if(s.isPreview()) {
+					subcomponents.add(new PreviewButton(s, this, opY));
 					opY += 12;
 				}
 			}
@@ -225,11 +232,38 @@ public class Button extends Component {
 		if(this.open) {
 			if(!this.subcomponents.isEmpty()) {
 				int compCount = 0;
+//
+//				int height = 0;
+//				int lastHeight = 0;
 
 				for(Component comp : this.subcomponents) {
 					comp.renderComponent();
 
-					//renderline
+//					lastHeight = height;
+
+//					if(comp instanceof PreviewButton) {
+//						if(((PreviewButton) comp).open) {
+//							lastHeight += height + 100;
+//							height += 112;
+//						} else {
+//							lastHeight += height;
+//							height += 12;
+//						}
+//					} else {
+//						lastHeight += height;
+//						height += 12;
+//					}
+
+//					Gui.drawRect(
+//							comp.x + 2,
+//							comp.y + comp.offset,
+//							comp.x + 3,
+//							comp.y + comp.offset + 12,
+//							new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+//					);
+
+//					Gui.drawRect(parent.getX() + 2, parent.getY() + offset + 12 + lastHeight, parent.getX() + 3, parent.getY() + offset + 12 + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
 
 					if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 						Gui.drawRect(
@@ -244,17 +278,7 @@ public class Button extends Component {
 					compCount++;
 				}
 
-/*				if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
-					Gui.drawRect(
-							parent.getX() + parent.getWidth() - 3,
-							parent.getY() + this.offset + 12,
-							parent.getX() + parent.getWidth() - 2,
-							parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12),
-							new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
-					);
-				}*/
-
-				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() :
+//				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() :
 			}
 		}
 		if(hud) {
@@ -319,7 +343,8 @@ public class Button extends Component {
 		}
 		if(isMouseOnButton(mouseX, mouseY) && button == 1) {
 			this.open = !this.open;
-			this.parent.refresh();
+//			this.parent.refresh();
+			parent.refreshPosition();
 		}
 		for(Component comp : this.subcomponents) {
 			comp.mouseClicked(mouseX, mouseY, button);

@@ -15,19 +15,22 @@ import java.awt.*;
 public class Line extends Component {
     private boolean cat;
 
-    private Button button;
+    public Button button;
     private Category parent;
     private Setting line;
     private ColorUtil colorUtil = new ColorUtil();
 
-    private int offset;
+    public int offset;
     private int cOffset;
+    public int x, y;
 
     public Line(Setting line, Button button, int offset) {
         this.button = button;
         this.line = line;
         this.cat = false;
         this.offset = offset;
+        this.x = button.parent.getX();
+        this.y = button.parent.getY();
     }
 
     public Line(Setting line, int offset, int cOffset, Category parent) {
@@ -64,5 +67,8 @@ public class Line extends Component {
             Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(line.getTitle(), (parent.x + 4) * 2, (parent.y + offset) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
             GL11.glPopMatrix();
         }
+
+        Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
     }
 }

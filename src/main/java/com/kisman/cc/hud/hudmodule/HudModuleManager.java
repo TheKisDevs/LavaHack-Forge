@@ -1,6 +1,7 @@
 package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
+import com.kisman.cc.hud.hudmodule.misc.NotificationHud;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
 import com.kisman.cc.hud.hudmodule.render.*;
 
@@ -24,14 +25,20 @@ public class HudModuleManager {
 		modules.add(new ArmorHUD());
 		modules.add(new PvpInfo());
 		modules.add(new TargetInfo());
+
 		//movement
 		modules.add(new Speed());
+
 		//render
         modules.add(new ArrayList());
 		modules.add(new Coord());
 		modules.add(new Fps());
 		modules.add(new Logo());
+		modules.add(new Radar());
 		modules.add(new Welcomer());
+
+		//misc
+		modules.add(new NotificationHud());
 	}
 	
 	public HudModule getModule(String name) {

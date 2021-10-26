@@ -3,10 +3,6 @@ package com.kisman.cc.oldclickgui.component.components.sub;
 import com.kisman.cc.oldclickgui.component.Component;
 
 public class Void extends Component {
-    public Void() {
-
-    }
-
     @Override
     public void renderComponent() {
     }

@@ -9,6 +9,8 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.component.components.sub.ColorPickerSimpleButton;
+import com.kisman.cc.oldclickgui.component.components.sub.PreviewButton;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -136,13 +138,56 @@ public class Frame {
 		}
 	}
 
-	public void setRefresh(int newOff) {
+	public void refreshPosition() {
 		int off = barHeight;
 
 		for(Component comp : components) {
-			comp.setOff(comp.getOff() + newOff);
-			off += comp.getHeight();
-			this.offset = off;
+			Button button = (Button) comp;
+
+			comp.setOff(off);
+			off += 12;
+
+			if(!(comp instanceof Button) || !button.open) {
+				continue;
+			}
+
+			for (Component set : button.subcomponents) {
+				set.setOff(off);
+
+				if(set instanceof ColorPickerSimpleButton) {
+					if(((ColorPickerSimpleButton) set).open) {
+						off += ((ColorPickerSimpleButton) set).PICKER_HEIGHT;
+						continue;
+					}
+
+					off += 12;
+					continue;
+				}
+
+				if(set instanceof com.kisman.cc.oldclickgui.component.components.sub.Category) {
+					com.kisman.cc.oldclickgui.component.components.sub.Category cat1 = (com.kisman.cc.oldclickgui.component.components.sub.Category) set;
+
+					if(cat1.open) {
+						off += cat1.opY;
+						continue;
+					}
+
+					off += 12;
+					continue;
+				}
+
+				if(set instanceof PreviewButton) {
+					if(((PreviewButton) set).open) {
+						off += 100;
+						continue;
+					}
+
+					off += 12;
+					continue;
+				}
+
+				off += 12;
+			}
 		}
 	}
 	

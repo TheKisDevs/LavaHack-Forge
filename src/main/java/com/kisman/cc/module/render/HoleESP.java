@@ -1,35 +1,33 @@
 package com.kisman.cc.module.render;
 
+import com.google.common.collect.Sets;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.RenderUtil;
-import kisman.pasta.salhack.util.Hole;
-import kisman.pasta.salhack.util.Hole.HoleTypes;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.culling.ICamera;
+import com.kisman.cc.util.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-
-import static kisman.pasta.salhack.util.render.ESPUtil.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HoleESP extends Module {
     private Setting radius = new Setting("Radius", this, 8, 0, 32, true);
     private Setting ignoreOwnHole = new Setting("IgnoreOwnHole", this, false);
+    private Setting flatOwn = new Setting("FlatOwn", this, false);
+    private Setting slabHeight = new Setting("SlabHeight", this, 0.5, 0.1, 1.5, false);
+    private Setting width = new Setting("Width", this, 1, 1, 10, true);
+    private Setting type = new Setting("Type", this, "Both", new ArrayList<>(Arrays.asList("Outline", "Fill", "Both")));
+    private Setting mode = new Setting("Mode", this, "Air", new ArrayList<>(Arrays.asList("Air", "Ground", "Flat", "Slab", "Double")));
+    private Setting ufoAlpha = new Setting("UFOAlpha", this, 255, 0, 255, true);
 
-    private Setting render = new Setting("RenderMode", this, "FlatOutline", new ArrayList<>(Arrays.asList("None", "FlatOutline", "Flat", "Outline", "Full")));
+//    private Setting render = new Setting("RenderMode", this, "FlatOutline", new ArrayList<>(Arrays.asList("None", "FlatOutline", "Flat", "Outline", "Full")));
 
     private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
 
@@ -43,14 +41,22 @@ public class HoleESP extends Module {
     private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new float[] {0, 1, 0, 1}, false);
 
 
-    private List<Hole> holes = new ArrayList<>();
+    private Setting custom = new Setting("Custom", this, "CustomHoles");
+    private Setting customMode = new Setting("CusomMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Double", "Custom")));
+
+    private ConcurrentHashMap<AxisAlignedBB, Colour> holes;
 
     public HoleESP() {
         super("HoleESP", "HoleESP", Category.RENDER);
 
         setmgr.rSetting(radius);
         setmgr.rSetting(ignoreOwnHole);
-        setmgr.rSetting(render);
+        setmgr.rSetting(flatOwn);
+        setmgr.rSetting(slabHeight);
+        setmgr.rSetting(width);
+        setmgr.rSetting(type);
+        setmgr.rSetting(mode);
+        setmgr.rSetting(ufoAlpha);
 
         setmgr.rSetting(obby);
         setmgr.rSetting(obbyHoles);
@@ -59,103 +65,186 @@ public class HoleESP extends Module {
         setmgr.rSetting(bedrock);
         setmgr.rSetting(bedrockHoles);
         setmgr.rSetting(bedrockColor);
-    }
 
-    public void onEnable() {
-        holes.clear();
-    }
-
-    public void onDisable() {
-        holes.clear();
+        setmgr.rSetting(custom);
+        setmgr.rSetting(customMode);
     }
 
     public void update() {
-        holes.clear();
+        if (mc.player == null || mc.world == null) {
+            return;
+        }
 
-        if(mc.player == null && mc.world == null) return;
+        if (holes == null) {
+            holes = new ConcurrentHashMap<>();
+        } else {
+            holes.clear();
+        }
 
-        final Vec3i playerPos = new Vec3i(mc.player.posX, mc.player.posY, mc.player.posZ);
+        int range = (int) Math.ceil(radius.getValDouble());
 
-        for(int x = playerPos.getX() - (int) radius.getValDouble(); x < playerPos.getX() + (int) radius.getValDouble(); x++) {
-            for(int z = playerPos.getZ() - (int) radius.getValDouble(); z < playerPos.getZ() + (int) radius.getValDouble(); z++) {
-                for(int y = playerPos.getY() - (int) radius.getValDouble(); x < playerPos.getY() + (int) radius.getValDouble(); y++) {
-                    if(!render.getValString().equalsIgnoreCase("None")) {
-                        final BlockPos blockPos = new BlockPos(x, y, z);
+        HashSet<BlockPos> possibleHoles = Sets.newHashSet();
+        List<BlockPos> blockPosList = EntityUtil.getSphere(PlayerUtil.getPlayerPos(), range, range, false, true, 0);
 
-                        if(ignoreOwnHole.getValBoolean() && mc.player.getDistanceSq(blockPos) <= 1) {
-                            continue;
-                        }
+        for (BlockPos pos : blockPosList) {
 
-                        final IBlockState blockState = mc.world.getBlockState(blockPos);
+            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) {
+                continue;
+            }
 
-                        HoleTypes type = isBlockValid(blockState, blockPos);
+            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR)) {
+                continue;
+            }
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) {
+                continue;
+            }
 
-                        if(type != HoleTypes.None) {
-                            final IBlockState downBlockState = mc.world.getBlockState(blockPos.down());
-
-                            if(downBlockState == Blocks.AIR) {
-                                final BlockPos downPos = blockPos.down();
-
-                                type = isBlockValid(downBlockState, blockPos);
-
-                                if(type != HoleTypes.None) {
-                                    holes.add(new Hole(downPos.getX(), downPos.getY(), downPos.getZ(), downPos, type, true));
-                                }
-                            } else {
-                                holes.add(new Hole(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos, type));
-                            }
-                        }
-                    }
-                }
+            if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) {
+                possibleHoles.add(pos);
             }
         }
+
+        possibleHoles.forEach(pos -> {
+            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
+            HoleUtil.HoleType holeType = holeInfo.getType();
+            if (holeType != HoleUtil.HoleType.NONE) {
+
+                HoleUtil.BlockSafety holeSafety = holeInfo.getSafety();
+                AxisAlignedBB centreBlocks = holeInfo.getCentre();
+
+                if (centreBlocks == null)
+                    return;
+
+                Colour colour;
+
+                if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) {
+                    colour = new Colour(bedrockColor.getR(), bedrockColor.getG(), bedrockColor.getB(), 255);
+                } else {
+                    colour = new Colour(obbyColor.getR(), obbyColor.getG(), obbyColor.getB(), 255);
+                }
+                if (holeType == HoleUtil.HoleType.CUSTOM) {
+                    colour = new Colour(255, 255, 255, 255);
+                }
+
+                String mode = customMode.getValString();
+                if (mode.equalsIgnoreCase("Custom") && (holeType == HoleUtil.HoleType.CUSTOM || holeType == HoleUtil.HoleType.DOUBLE)) {
+                    holes.put(centreBlocks, colour);
+                } else if (mode.equalsIgnoreCase("Double") && holeType == HoleUtil.HoleType.DOUBLE) {
+                    holes.put(centreBlocks, colour);
+                } else if (holeType == HoleUtil.HoleType.SINGLE) {
+                    holes.put(centreBlocks, colour);
+                }
+            }
+        });
     }
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        if(!render.getValString().equalsIgnoreCase("None")) {
-            new ArrayList<Hole>(holes).forEach(hole -> {
-/*                final AxisAlignedBB bb = new AxisAlignedBB(
-                        hole.getX() - mc.renderManager.viewerPosX,
-                        hole.getY() - mc.renderManager.viewerPosY,
-                        hole.getZ() - mc.renderManager.viewerPosZ,
-                        hole.getX() + 1 - mc.renderManager.viewerPosX,
-                        hole.getY() + (hole.isTall() ? 2 : 1) - mc.renderManager.viewerPosY,
-                        hole.getZ() + 1 - mc.renderManager.viewerPosZ
-                );*/
+        if (mc.player == null || mc.world == null || holes == null || holes.isEmpty()) {
+            return;
+        }
 
-                GlStateManager.pushMatrix();
-                GlStateManager.enableBlend();
-                GlStateManager.disableDepth();
-                GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
-                GlStateManager.disableTexture2D();
-                GlStateManager.depthMask(false);
-                GL11.glEnable(GL11.GL_LINE_SMOOTH);
-                GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-                GL11.glLineWidth(1.5f);
+        holes.forEach(this::renderHoles);
+    }
 
-                switch (hole.getHoleType()) {
-                    case Bedrock:
-                        RenderUtil.drawBlockESP(hole.getBlockPos(), bedrockColor.getR() / 255, bedrockColor.getG() / 255, bedrockColor.getB() / 255);
+    private void renderHoles(AxisAlignedBB hole, Colour color) {
+        switch (type.getValString()) {
+            case "Outline": {
+                renderOutline(hole, color);
+                break;
+            }
+            case "Fill": {
+                renderFill(hole, color);
+                break;
+            }
+            case "Both": {
+                renderOutline(hole, color);
+                renderFill(hole, color);
+                break;
+            }
+        }
+    }
 
-//                        Render(render.getValString(), bb, new Colour(bedrockColor.getR(), bedrockColor.getG(), bedrockColor.getB(), bedrockColor.getA()));
-                        break;
-                    case Obsidian:
-                        RenderUtil.drawBlockESP(hole.getBlockPos(), obbyColor.getR() / 255, obbyColor.getG() / 255, obbyColor.getB() / 255);
+    private void renderFill(AxisAlignedBB hole, Colour color) {
+        Colour fillColor = new Colour(color, 50);
+        int ufoAlpha = (this.ufoAlpha.getValInt() * 50) / 255;
 
-//                        Render(render.getValString(), bb, new Colour(obbyColor.getR(), obbyColor.getG(), obbyColor.getB(), obbyColor.getA()));
-                        break;
-                    default:
-                        break;
+        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
+
+        switch (mode.getValString()) {
+            case "Air": {
+                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
                 }
+                break;
+            }
+            case "Ground": {
+                RenderUtil.drawBox(hole.offset(0, -1, 0), true, 1, new Colour(fillColor, ufoAlpha), fillColor.getAlpha(), GeometryMasks.Quad.ALL);
+                break;
+            }
+            case "Flat": {
+                RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
+                break;
+            }
+            case "Slab": {
+                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBox(hole, false, slabHeight.getValDouble(), fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
+                }
+                break;
+            }
+            case "Double": {
+                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBox(hole.setMaxY(hole.maxY + 1), true, 2, fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
+                }
+                break;
+            }
+        }
+    }
 
-                GL11.glDisable(GL11.GL_LINE_SMOOTH);
-                GlStateManager.depthMask(true);
-                GlStateManager.enableDepth();
-                GlStateManager.enableTexture2D();
-                GlStateManager.disableBlend();
-                GlStateManager.popMatrix();
-            });
+    private void renderOutline(AxisAlignedBB hole, Colour color) {
+        Colour outlineColor = new Colour(color, 255);
+
+        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
+
+        switch (mode.getValString()) {
+            case "Air": {
+                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBoundingBox(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt());
+                }
+                break;
+            }
+            case "Ground": {
+                RenderUtil.drawBoundingBox(hole.offset(0, -1, 0), width.getValInt(), new Colour(outlineColor, ufoAlpha.getValInt()), outlineColor.getAlpha());
+                break;
+            }
+            case "Flat": {
+                RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                break;
+            }
+            case "Slab": {
+                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBoundingBox(hole.setMaxY(hole.minY + slabHeight.getValDouble()), width.getValInt(), outlineColor, ufoAlpha.getValInt());
+                }
+                break;
+            }
+            case "Double": {
+                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
+                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                } else {
+                    RenderUtil.drawBoundingBox(hole.setMaxY(hole.maxY + 1), width.getValInt(), outlineColor, ufoAlpha.getValInt() / 255);
+                }
+                break;
+            }
         }
     }
 }

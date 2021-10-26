@@ -24,8 +24,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
-public class CrystalUtils
-{
+public class CrystalUtils {
+    private static Minecraft mc = Minecraft.getMinecraft();
+
+    public static boolean canSeePos(BlockPos pos) {
+        return CrystalUtils.mc.world.rayTraceBlocks(new Vec3d(CrystalUtils.mc.player.posX, CrystalUtils.mc.player.posY + (double)CrystalUtils.mc.player.getEyeHeight(), CrystalUtils.mc.player.posZ), new Vec3d((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), false, true, false) == null;
+    }
+
     public static boolean CanPlaceCrystalIfObbyWasAtPos(final BlockPos pos)
     {
         final Minecraft mc = Minecraft.getMinecraft();
@@ -42,6 +47,11 @@ public class CrystalUtils
         }
 
         return false;
+    }
+
+
+    public static boolean isEntityMoving(EntityLivingBase entityLivingBase) {
+        return entityLivingBase.motionX > Double.longBitsToDouble(Double.doubleToLongBits(0.5327718501168097) ^ 0x7FE10C778D0F6544L) || entityLivingBase.motionY > Double.longBitsToDouble(Double.doubleToLongBits(0.07461435496686485) ^ 0x7FB319ED266512E7L) || entityLivingBase.motionZ > Double.longBitsToDouble(Double.doubleToLongBits(0.9006325807477794) ^ 0x7FECD1FB6B00C2E7L);
     }
 
     public static boolean canPlaceCrystal(final BlockPos pos)
@@ -67,6 +77,29 @@ public class CrystalUtils
         return false;
     }
 
+    public static boolean canPlaceCrystal(BlockPos blockPos, boolean placeUnderBlock, boolean multiPlace, boolean holePlace) {
+        if (CrystalUtils.mc.world.getBlockState(blockPos).getBlock() != Blocks.BEDROCK && CrystalUtils.mc.world.getBlockState(blockPos).getBlock() != Blocks.OBSIDIAN) {
+            return false;
+        }
+        if (CrystalUtils.mc.world.getBlockState(blockPos.add(0, 1, 0)).getBlock() != Blocks.AIR || placeUnderBlock == false && CrystalUtils.mc.world.getBlockState(blockPos.add(0, 2, 0)).getBlock() != Blocks.AIR) {
+            return false;
+        }
+        if (multiPlace != false) {
+            return CrystalUtils.mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0))).isEmpty() && placeUnderBlock == false && CrystalUtils.mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0))).isEmpty();
+        }
+        for (Entity entity : CrystalUtils.mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 1, 0)))) {
+            if (entity instanceof EntityEnderCrystal) continue;
+            return false;
+        }
+        if (placeUnderBlock == false) {
+            for (Entity entity : CrystalUtils.mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(blockPos.add(0, 2, 0)))) {
+                if (entity instanceof EntityEnderCrystal || holePlace != false && entity instanceof EntityPlayer) continue;
+                return false;
+            }
+        }
+        return true;
+    }
+
     /// Returns a BlockPos object of player's position floored.
     public static BlockPos GetPlayerPosFloored(final EntityPlayer p_Player)
     {
@@ -80,6 +113,28 @@ public class CrystalUtils
                 BlockInteractionHelper.getSphere(GetPlayerPosFloored(p_Player), p_Range, (int) p_Range, false, true, 0)
                         .stream().filter(CrystalUtils::canPlaceCrystal).collect(Collectors.toList()));
         return positions;
+    }
+
+    public static List<BlockPos> getSphere(float range, boolean sphere, boolean hollow) {
+        ArrayList<BlockPos> blocks = new ArrayList<>();
+        int x = CrystalUtils.mc.player.getPosition().getX() - (int)range;
+        while ((float)x <= (float)CrystalUtils.mc.player.getPosition().getX() + range) {
+            int z = CrystalUtils.mc.player.getPosition().getZ() - (int)range;
+            while ((float)z <= (float)CrystalUtils.mc.player.getPosition().getZ() + range) {
+                int y;
+                int n = y = sphere != false ? CrystalUtils.mc.player.getPosition().getY() - (int)range : CrystalUtils.mc.player.getPosition().getY();
+                while ((float)y < (float)CrystalUtils.mc.player.getPosition().getY() + range) {
+                    double distance = (CrystalUtils.mc.player.getPosition().getX() - x) * (CrystalUtils.mc.player.getPosition().getX() - x) + (CrystalUtils.mc.player.getPosition().getZ() - z) * (CrystalUtils.mc.player.getPosition().getZ() - z) + (sphere != false ? (CrystalUtils.mc.player.getPosition().getY() - y) * (CrystalUtils.mc.player.getPosition().getY() - y) : 0);
+                    if (distance < (double)(range * range) && (hollow == false || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
+                        blocks.add(new BlockPos(x, y, z));
+                    }
+                    ++y;
+                }
+                ++z;
+            }
+            ++x;
+        }
+        return blocks;
     }
 
     public static float calculateDamage(final World p_World, double posX, double posY, double posZ, Entity entity,

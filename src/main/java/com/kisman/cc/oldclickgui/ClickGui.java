@@ -20,7 +20,7 @@ import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
-	public ParticleSystem particle;
+//	public ParticleSystem particle;
 
 	public static boolean line = false;
 	public static boolean rainbowLine = false;
@@ -71,7 +71,6 @@ public class ClickGui extends GuiScreen {
 	public static String descStr = "";
 
 	public static ArrayList<Frame> frames;
-	//public static int color = -1;
 
 	public ClickGui() {
 		this.frames = new ArrayList<Frame>();
@@ -82,8 +81,6 @@ public class ClickGui extends GuiScreen {
 			frames.add(frame);
 			frameX += frame.getWidth() + 1;
 		}
-
-		particle = new ParticleSystem(100, true, 150);
 	}
 
 	@Override
@@ -92,9 +89,7 @@ public class ClickGui extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-//		particle.render();
 		scrollWheelCheck();
-		this.drawDefaultBackground();
 		for(Frame frame : frames) {
 			frame.renderFrame(this.fontRenderer);
 			frame.updatePosition(mouseX, mouseY);

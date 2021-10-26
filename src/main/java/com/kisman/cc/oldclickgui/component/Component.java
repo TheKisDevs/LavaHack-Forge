@@ -3,10 +3,15 @@ package com.kisman.cc.oldclickgui.component;
 import com.kisman.cc.event.events.clickguiEvents.keyTyped.*;
 import com.kisman.cc.event.events.clickguiEvents.mouseClicked.*;
 import com.kisman.cc.event.events.clickguiEvents.mouseReleased.*;
+import com.kisman.cc.oldclickgui.component.components.Button;
 
 import java.util.ArrayList;
 
 public class Component {
+	public int x;
+	public int y;
+	public int offset;
+
 	public void renderComponent() {}
 
 	public void renderComponentPost() {}

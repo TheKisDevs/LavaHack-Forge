@@ -38,10 +38,12 @@ public class ModuleManager {
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystal());
 		modules.add(new AutoCrystalBypass());
+		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
 		modules.add(new BowSpam());
 		modules.add(new CevBreaker());
+		modules.add(new CrystalBasePlace());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
 		modules.add(new Rubberband());
@@ -57,7 +59,9 @@ public class ModuleManager {
 		modules.add(new HUD());
 		modules.add(new ExampleModule());
 		modules.add(new ParticleGui());
+		modules.add(new Test());
 		//chat
+		modules.add(new AntiSpamBypass());
 		modules.add(new AutoEZ());
 		modules.add(new ChatSuffix());
 		modules.add(new Notification());
@@ -73,6 +77,7 @@ public class ModuleManager {
 		modules.add(new HoleESP());
 		modules.add(new KismanESP());
 		modules.add(new NameTags());
+		modules.add(new NoPitchLimit());
 		modules.add(new NoRender());
 		modules.add(new Particle());
 		modules.add(new PenisESP());
@@ -80,6 +85,7 @@ public class ModuleManager {
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new Trails());
 		modules.add(new ViemModel());
 		//movement
 		modules.add(new Anchor());
@@ -93,6 +99,7 @@ public class ModuleManager {
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());
 		modules.add(new SafeWalk());
+		modules.add(new Scaffold());
 		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new Sprint());
@@ -117,6 +124,7 @@ public class ModuleManager {
 		modules.add(new PacketFly());
 //		modules.add(new PacketMine());
 		modules.add(new SilentClose());
+		modules.add(new Timer());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc
@@ -125,7 +133,9 @@ public class ModuleManager {
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
+		modules.add(new PigPOV());
 		modules.add(new TeamRusherLag());
+		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
 	}

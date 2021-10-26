@@ -27,7 +27,6 @@ public class HudGui extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		this.drawDefaultBackground();
 		for(Frame frame : frames) {
 			frame.renderFrame(this.fontRenderer);
 			frame.updatePosition(mouseX, mouseY);

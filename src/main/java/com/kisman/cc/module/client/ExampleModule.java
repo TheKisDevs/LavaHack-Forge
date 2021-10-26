@@ -17,6 +17,8 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.util.text.ITextComponent;*/
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -28,6 +30,8 @@ import java.awt.event.MouseEvent;
 
 public class ExampleModule extends Module {
     private Setting exampleBind = new Setting("ExampleBind", this, Keyboard.KEY_NONE);
+
+    private Setting exampleEntityPreview = new Setting("ExampleEntityPreview", this, "Example", new EntityEnderCrystal(mc.world));
 
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);

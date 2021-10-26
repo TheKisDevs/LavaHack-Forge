@@ -5,15 +5,18 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.*;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
+@IFMLLoadingPlugin.Name(value="kisman.cc+")
+@IFMLLoadingPlugin.MCVersion(value="1.12.2")
 public class KismanMixinLoader implements IFMLLoadingPlugin {
 
     public KismanMixinLoader(){
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.Kisman.json");
+        MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
 
     @Override

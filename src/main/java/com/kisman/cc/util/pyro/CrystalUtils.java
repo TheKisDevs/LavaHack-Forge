@@ -30,7 +30,7 @@ import net.minecraft.util.math.BlockPos;
 public class CrystalUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
 
-    public static boolean CanPlaceCrystalIfObbyWasAtPos(final BlockPos pos) {
+    public static boolean canPlaceCrystalIfObbyWasAtPos(final BlockPos pos) {
         final Block floor = mc.world.getBlockState(pos.add(0, 1, 0)).getBlock();
         final Block ceil = mc.world.getBlockState(pos.add(0, 2, 0)).getBlock();
         return floor == Blocks.AIR && ceil == Blocks.AIR && mc.world.getEntitiesWithinAABBExcludingEntity((Entity)null, new AxisAlignedBB(pos.add(0, 1, 0))).isEmpty();
@@ -50,14 +50,14 @@ public class CrystalUtils {
         return false;
     }
     
-    public static BlockPos GetPlayerPosFloored(final EntityPlayer p_Player) {
+    public static BlockPos getPlayerPosFloored(final EntityPlayer p_Player) {
         return new BlockPos(Math.floor(p_Player.posX), Math.floor(p_Player.posY), Math.floor(p_Player.posZ));
     }
     
     public static List<BlockPos> findCrystalBlocks(final EntityPlayer p_Player, final float p_Range) {
         final NonNullList<BlockPos> positions = NonNullList.create();
 //        positions.addAll((Collection) BlockInteractionHelper.getSphere(GetPlayerPosFloored(p_Player), p_Range, (int)p_Range, false, true, 0).stream().filter((Predicate<? super Object>)CrystalUtils::canPlaceCrystal).collect((Collector<? super Object, ?, List<? super Object>>)Collectors.toList()));
-        positions.addAll((Collection) BlockInteractionHelper.getSphere(GetPlayerPosFloored(p_Player), p_Range, (int)p_Range, false, true, 0).stream().filter((Predicate<? super Object>)CrystalUtils::canPlaceCrystal).collect((Collector<? super BlockPos, ? extends Object, ? extends Object>) Collectors.toList()));
+        positions.addAll((Collection) BlockInteractionHelper.getSphere(getPlayerPosFloored(p_Player), p_Range, (int)p_Range, false, true, 0).stream().filter((Predicate<? super Object>)CrystalUtils::canPlaceCrystal).collect((Collector<? super BlockPos, ? extends Object, ? extends Object>) Collectors.toList()));
         return (List<BlockPos>)positions;
     }
 

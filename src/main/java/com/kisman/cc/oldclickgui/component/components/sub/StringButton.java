@@ -9,6 +9,7 @@ import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
@@ -19,9 +20,10 @@ public class StringButton extends Component {
     private Minecraft mc = Minecraft.getMinecraft();
     private FontRenderer fr = mc.fontRenderer;
 
-    private Setting set;
-    private Button button;
-    private int offset;
+    public Setting set;
+    public Button button;
+    public int offset;
+    public int x, y;
 
     private String currentString = "";
     private String dString;
@@ -32,6 +34,8 @@ public class StringButton extends Component {
         this.set = set;
         this.button = button;
         this.offset = offset;
+        this.x = button.parent.getX();
+        this.y = button.parent.getY();
         this.dString = set.getdString();
     }
 
@@ -47,6 +51,8 @@ public class StringButton extends Component {
         } else if(!this.active){
             fr.drawStringWithShadow(this.currentString.isEmpty() ? this.set.getdString() : this.currentString, button.parent.getX() + 4, button.parent.getY() + offset + 1 + ((12 - fr.FONT_HEIGHT) / 2), new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
         }
+
+        Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
     }
 
     public void updateComponent(int mouseX, int mouseY) {
