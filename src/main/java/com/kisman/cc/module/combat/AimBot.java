@@ -1,5 +1,6 @@
 package com.kisman.cc.module.combat;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.module.Category;
@@ -32,15 +33,15 @@ public class AimBot extends Module {
     }
 
     public void onEnable() {
-
+        Kisman.EVENT_BUS.subscribe(listener);
     }
 
     public void onDisable() {
-
+        Kisman.EVENT_BUS.unsubscribe(listener);
     }
 
     @EventHandler
-    private final Listener<EventPlayerMotionUpdate> motionUpdateListener = new Listener<>(event -> {
+    private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {
         if(event.getEra() != Event.Era.PRE) return;
 
         if(rotationSpoof == null) return;
@@ -96,38 +97,27 @@ public class AimBot extends Module {
             boolean movedXYZ = posXDifference * posXDifference + posYDifference * posYDifference + posZDifference * posZDifference > 9.0E-4D || mc.player.positionUpdateTicks >= 20;
             boolean movedRotation = yawDifference != 0.0D || rotationDifference != 0.0D;
 
-            if (mc.player.isRiding())
-            {
+            if (mc.player.isRiding()) {
                 mc.player.connection.sendPacket(new CPacketPlayer.PositionRotation(mc.player.motionX, -999.0D, mc.player.motionZ, yaw, pitch, mc.player.onGround));
                 movedXYZ = false;
-            }
-            else if (movedXYZ && movedRotation)
-            {
+            } else if (movedXYZ && movedRotation) {
                 mc.player.connection.sendPacket(new CPacketPlayer.PositionRotation(mc.player.posX, axisalignedbb.minY, mc.player.posZ, yaw, pitch, mc.player.onGround));
-            }
-            else if (movedXYZ)
-            {
+            } else if (movedXYZ) {
                 mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, axisalignedbb.minY, mc.player.posZ, mc.player.onGround));
-            }
-            else if (movedRotation)
-            {
+            } else if (movedRotation) {
                 mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, pitch, mc.player.onGround));
-            }
-            else if (mc.player.prevOnGround != mc.player.onGround)
-            {
+            } else if (mc.player.prevOnGround != mc.player.onGround) {
                 mc.player.connection.sendPacket(new CPacketPlayer(mc.player.onGround));
             }
 
-            if (movedXYZ)
-            {
+            if (movedXYZ) {
                 mc.player.lastReportedPosX = mc.player.posX;
                 mc.player.lastReportedPosY = axisalignedbb.minY;
                 mc.player.lastReportedPosZ = mc.player.posZ;
                 mc.player.positionUpdateTicks = 0;
             }
 
-            if (movedRotation)
-            {
+            if (movedRotation) {
                 mc.player.lastReportedYaw = yaw;
                 mc.player.lastReportedPitch = pitch;
             }

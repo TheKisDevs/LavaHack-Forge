@@ -95,6 +95,10 @@ public class Button extends Component {
 					subcomponents.add(new PreviewButton(s, this, opY));
 					opY += 12;
 				}
+				if(s.isItems()) {
+					subcomponents.add(new ItemsButton(this, s, opY));
+					opY += 12;
+				}
 			}
 		}
 		this.subcomponents.add(new Keybind(this, opY));

@@ -9,6 +9,8 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.util.Colour;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
 import javax.management.OperationsException;
@@ -57,6 +59,7 @@ public class Setting {
 	private double max;
 
 	private float[] colorHSB;
+	private ItemStack[] items;
 
 	private int r, g, b, a;
 
@@ -211,6 +214,14 @@ public class Setting {
 		this.mode = "Preview";
 	}
 
+	public Setting(String name, Module parent, String title, ItemStack[] items) {
+		this.name = name;
+		this.parent = parent;
+		this.title = title;
+		this.items = items;
+		this.mode = "Items";
+	}
+
 	public Enum getNextModeEnum() {
 		if(optionEnum != null) {
 			Enum enumVal = optionEnum;
@@ -220,6 +231,14 @@ public class Setting {
 		} else {
 			return null;
 		}
+	}
+
+	public ItemStack[] getItems() {
+		return items;
+	}
+
+	public void setItems(ItemStack[] items) {
+		this.items = items;
 	}
 
 	public Entity getEntity() {
@@ -486,6 +505,8 @@ public class Setting {
 	public void setColorPicker(ColorPicker colorPicker) {
 		this.colorPicker = colorPicker;
 	}
+
+	public boolean isItems() { return mode.equalsIgnoreCase("Items"); }
 
 	public boolean isPreview() { return mode.equalsIgnoreCase("Preview") ? true : false; }
 

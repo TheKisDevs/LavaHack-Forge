@@ -24,6 +24,16 @@ public class InventoryUtil {
         }
     }
 
+    public static int findItem(Item item, int min, int max) {
+        for(int i = min; i <= max; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            if (stack.getItem() != item) continue;
+            return i;
+        }
+
+        return -1;
+    }
+
     public static int findBlock(Block block, int min, int max) {
         for (int i = min; i <= max; ++i) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);

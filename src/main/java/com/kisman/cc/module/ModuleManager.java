@@ -36,14 +36,13 @@ public class ModuleManager {
 		modules.add(new AimBot());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
-		modules.add(new AutoCrystal());
 		modules.add(new AutoCrystalBypass());
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
 		modules.add(new BowSpam());
 		modules.add(new CevBreaker());
-		modules.add(new CrystalBasePlace());
+		modules.add(new Criticals());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
 		modules.add(new Rubberband());
@@ -69,6 +68,7 @@ public class ModuleManager {
 		modules.add(new TraceTeleport());
 		//render
 		modules.add(new BlockOutline());
+		modules.add(new Breadcrumbs());
 		modules.add(new CustomFov());
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
@@ -81,13 +81,16 @@ public class ModuleManager {
 		modules.add(new NoRender());
 		modules.add(new Particle());
 		modules.add(new PenisESP());
+		modules.add(new RangeVisualisator());
 		modules.add(new SkyColor());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new Trails());
 		modules.add(new ViemModel());
+		modules.add(new XRay());
 		//movement
+		modules.add(new AirJump());
 		modules.add(new Anchor());
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
@@ -124,6 +127,7 @@ public class ModuleManager {
 		modules.add(new PacketFly());
 //		modules.add(new PacketMine());
 		modules.add(new SilentClose());
+//		modules.add(new StrongholdFinder());
 		modules.add(new Timer());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());

@@ -17,10 +17,10 @@ public class Spider extends Module{
 	
 	public void update() {
 		if(mc.world != null && mc.player != null) {
-			if(!Wrapper.INSTANCE.player().isOnLadder() 
-        		&& Wrapper.INSTANCE.player().collidedHorizontally 
-        		&& Wrapper.INSTANCE.player().motionY < 0.2) {
-        		Wrapper.INSTANCE.player().motionY = 0.2;
+			if(!mc.player.isOnLadder()
+        		&& mc.player.collidedHorizontally
+        		&& mc.player.motionY < 0.2) {
+				mc.player.motionY = 0.2;
         	}
 		}
 	}

@@ -7,4 +7,9 @@ public class Vec2i {
         this.x = x;
         this.y = y;
     }
+
+    public Vec2i() {
+        this.x = 0;
+        this.y = 0;
+    }
 }

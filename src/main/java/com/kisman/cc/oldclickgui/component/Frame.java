@@ -9,11 +9,11 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.component.components.sub.ItemsButton;
 import com.kisman.cc.oldclickgui.component.components.sub.ColorPickerSimpleButton;
 import com.kisman.cc.oldclickgui.component.components.sub.PreviewButton;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
-import com.kisman.cc.util.customfont.CustomFontUtil;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -179,6 +179,16 @@ public class Frame {
 				if(set instanceof PreviewButton) {
 					if(((PreviewButton) set).open) {
 						off += 100;
+						continue;
+					}
+
+					off += 12;
+					continue;
+				}
+
+				if(set instanceof ItemsButton) {
+					if(((ItemsButton) set).open) {
+						off += ((ItemsButton) set).blocksOffset;
 						continue;
 					}
 

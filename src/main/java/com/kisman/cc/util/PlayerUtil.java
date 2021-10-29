@@ -1,6 +1,6 @@
 package com.kisman.cc.util;
 
-import com.kisman.cc.module.combat.AutoCrystal;
+import com.kisman.cc.module.combat.AutoCrystalBypass;
 import com.kisman.cc.module.combat.Surround;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
@@ -73,7 +73,7 @@ public class PlayerUtil {
     public static List<EntityPlayer> getPlayerTargets(double withinDistance) {
         List<EntityPlayer> targets = new ArrayList<>();
 
-        targets.addAll(getPlayersInRadius(withinDistance).stream().filter(player -> AutoCrystal.instance.isValidTarget(player)).collect(Collectors.toList()));
+        targets.addAll(getPlayersInRadius(withinDistance).stream().filter(player -> AutoCrystalBypass.instance.isValidTarget(player)).collect(Collectors.toList()));
         targets.sort(Comparators.entityDistance);
 
         return targets;

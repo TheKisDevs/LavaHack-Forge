@@ -49,9 +49,9 @@ public class Anchor extends Module {
         else return false;
     }
 
-    private Vec3d Center = Vec3d.ZERO;
+    private Vec3d center = Vec3d.ZERO;
 
-    public Vec3d GetCenter(double posX, double posY, double posZ) {
+    public Vec3d getCenter(double posX, double posY, double posZ) {
         double x = Math.floor(posX) + 0.5D;
         double y = Math.floor(posY);
         double z = Math.floor(posZ) + 0.5D ;
@@ -60,7 +60,7 @@ public class Anchor extends Module {
     }
 
     public void update() {
-        if (mc.world == null) {
+        if (mc.world == null && mc.player == null) {
             return;
         }
         if (mc.player.posY < 0) {
@@ -80,16 +80,16 @@ public class Anchor extends Module {
                     mc.player.motionX = 0.0;
                     mc.player.motionZ = 0.0;
                 } else {
-                    Center = GetCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
-                    double XDiff = Math.abs(Center.x - mc.player.posX);
-                    double ZDiff = Math.abs(Center.z - mc.player.posZ);
+                    center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
+                    double XDiff = Math.abs(center.x - mc.player.posX);
+                    double ZDiff = Math.abs(center.z - mc.player.posZ);
 
                     if (XDiff <= 0.1 && ZDiff <= 0.1) {
-                        Center = Vec3d.ZERO;
+                        center = Vec3d.ZERO;
                     }
                     else {
-                        double MotionX = Center.x-mc.player.posX;
-                        double MotionZ = Center.z-mc.player.posZ;
+                        double MotionX = center.x-mc.player.posX;
+                        double MotionZ = center.z-mc.player.posZ;
 
                         mc.player.motionX = MotionX/2;
                         mc.player.motionZ = MotionZ/2;

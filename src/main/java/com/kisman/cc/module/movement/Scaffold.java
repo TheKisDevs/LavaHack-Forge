@@ -230,13 +230,11 @@ public class Scaffold extends Module {
         event.cancel();
     });
 
-    private boolean isOffsetBBEmpty(double x, double y, double z)
-    {
+    private boolean isOffsetBBEmpty(double x, double y, double z) {
         return mc.world.getCollisionBoxes(mc.player, mc.player.getEntityBoundingBox().offset(x, y, z)).isEmpty();
     }
 
-    private boolean isValidPlaceBlockState(BlockPos pos)
-    {
+    private boolean isValidPlaceBlockState(BlockPos pos) {
         BlockInteractionHelper.ValidResult result = BlockInteractionHelper.valid(pos);
 
         if (result == BlockInteractionHelper.ValidResult.AlreadyBlockThere)

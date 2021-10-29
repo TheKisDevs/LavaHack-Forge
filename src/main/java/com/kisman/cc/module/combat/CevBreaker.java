@@ -209,7 +209,7 @@ public class CevBreaker extends Module {
             ChatUtils.warning("Materials missing:" + materialsNeeded);
 
         if (stoppedCa) {
-            AutoCrystal.instance.setToggled(false);
+            AutoCrystalBypass.instance.setToggled(false);
             stoppedCa = false;
         }
 
@@ -223,7 +223,7 @@ public class CevBreaker extends Module {
             oldSlot = -1;
         }
 
-        AutoCrystal.instance.setToggled(false);
+        AutoCrystalBypass.instance.setToggled(false);
         noMaterials = isPossible = isActive = forceBrk = false;
     }
 
@@ -474,8 +474,8 @@ public class CevBreaker extends Module {
 
         cur_item = -1;
 
-        if (AutoCrystal.instance.isToggled()) {
-            AutoCrystal.instance.setToggled(false);
+        if (AutoCrystalBypass.instance.isToggled()) {
+            AutoCrystalBypass.instance.setToggled(false);
             stoppedCa = true;
         }
 

@@ -2,7 +2,7 @@ package com.kisman.cc.hud.hudmodule.combat;
 
 import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
-import com.kisman.cc.module.combat.AutoCrystal;
+import com.kisman.cc.module.combat.AutoCrystalBypass;
 import com.kisman.cc.module.combat.AutoFirework;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
@@ -33,8 +33,8 @@ public class TargetInfo extends HudModule {
     public void onRender(RenderGameOverlayEvent.Text event) {
         EntityLivingBase target = null;
 
-        if(AutoCrystal.instance.isToggled()) {
-            target = AutoCrystal.instance.e_target;
+        if(AutoCrystalBypass.instance.isToggled()) {
+            target = AutoCrystalBypass.instance.target;
         } else if(AutoFirework.instance.isToggled()) {
             target = AutoFirework.instance.target;
         }

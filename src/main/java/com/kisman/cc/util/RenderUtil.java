@@ -42,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.util.glu.Cylinder;
+import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
 public class RenderUtil {
@@ -1360,5 +1361,58 @@ public class RenderUtil {
         }
         if (!depth) return;
         GL11.glEnable((int)2896);
+    }
+
+    public static void drawSphere(double red, double green, double blue, double alpha, double x, double y, double z,
+                                  float size, int slices, int stacks, float lWidth) {
+        Sphere sphere = new Sphere();
+
+        enableDefaults();
+        GL11.glColor4d(red, green, blue, alpha);
+        GL11.glTranslated(x, y, z);
+        GL11.glLineWidth(lWidth);
+        sphere.setDrawStyle(GLU.GLU_SILHOUETTE);
+        sphere.draw(size, slices, stacks);
+        disableDefaults();
+    }
+
+    public static void enableDefaults() {
+        mc.entityRenderer.disableLightmap();
+        GL11.glEnable(3042 /* GL_BLEND */);
+        GL11.glDisable(3553 /* GL_TEXTURE_2D */);
+        GL11.glDisable(2896 /* GL_LIGHTING */);
+        // GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+        GL11.glDepthMask(false);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848 /* GL_LINE_SMOOTH */);
+        GL11.glPushMatrix();
+    }
+
+    public static void disableDefaults() {
+        GL11.glPopMatrix();
+        GL11.glDisable(2848 /* GL_LINE_SMOOTH */);
+        GL11.glDepthMask(true);
+        // GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+        GL11.glEnable(3553 /* GL_TEXTURE_2D */);
+        GL11.glEnable(2896 /* GL_LIGHTING */);
+        GL11.glDisable(3042 /* GL_BLEND */);
+        mc.entityRenderer.enableLightmap();
+    }
+
+    public static Vec3d getRenderPos(double x, double y, double z) {
+
+        x = x - mc.getRenderManager().renderPosX;
+        y = y - mc.getRenderManager().renderPosY;
+        z = z - mc.getRenderManager().renderPosZ;
+
+        return new Vec3d(x, y, z);
+    }
+
+    public static void putVertex3d(double x, double y, double z) {
+        GL11.glVertex3d(x, y, z);
+    }
+
+    public static void putVertex3d(Vec3d vec) {
+        GL11.glVertex3d(vec.x, vec.y, vec.z);
     }
 }

@@ -3,6 +3,7 @@ package com.kisman.cc.module.movement;
 import java.util.*;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventPlayerUpdate;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.*;
@@ -11,17 +12,24 @@ import com.kisman.cc.util.EntityUtil;
 import com.kisman.cc.util.PlayerUtil;
 import i.gishreloaded.gishcode.utils.Utils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 
 public class Speed extends Module {
     private float yPortSpeed;
 
-    private Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort")));
+    private Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort", "Sti")));
 
     private Setting yPortLine = new Setting("YPortLine", this, "YPort");
     private Setting yWater = new Setting("Water", this, false);
     private Setting yLava = new Setting("Lava", this, false);
+
+    private Setting stiLine = new Setting("StiLine", this, "Sti");
+    private Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true);
+
+    private float ovverideSpeed = 1;
 
     public Speed() {
         super("Speed", "SPID", Category.MOVEMENT);
@@ -34,10 +42,21 @@ public class Speed extends Module {
         setmgr.rSetting(yPortLine);
         setmgr.rSetting(yWater);
         setmgr.rSetting(yLava);
+
+        setmgr.rSetting(stiLine);
+        setmgr.rSetting(stiSpeed);
+    }
+
+    public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(listener);
     }
 
     public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
+
         EntityUtil.resetTimer();
+
+        mc.timer.tickLength = 50;
     }
 
     public void update() {
@@ -83,5 +102,21 @@ public class Speed extends Module {
             mc.player.motionY = -1;
             EntityUtil.resetTimer();
         }
+    }
+
+    @EventHandler
+    private final Listener<EventPlayerUpdate> listener = new Listener<>(event -> {
+        if(speedMode.getValString().equalsIgnoreCase("Sti")) {
+            if(ovverideSpeed != 1 && ovverideSpeed > 1) {
+                mc.timer.tickLength = 50 / ovverideSpeed;
+                return;
+            }
+
+            mc.timer.tickLength = 50 / getSpeed();
+        }
+    });
+
+    private float getSpeed() {
+        return Math.max((float) stiSpeed.getValDouble(), 0.1f);
     }
 }

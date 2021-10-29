@@ -9,6 +9,7 @@
     "accessor.IPlayerControllerMP",
     "MixinAbstractClientPlayer",
     "MixinEntity",
+    "MixinEntityEnderCrystal",
     "MixinEntityLivingBase",
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
