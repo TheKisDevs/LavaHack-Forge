@@ -3,6 +3,9 @@ package com.kisman.cc.hud.hudmodule;
 import com.kisman.cc.hud.hudmodule.combat.*;
 import com.kisman.cc.hud.hudmodule.misc.NotificationHud;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
+import com.kisman.cc.hud.hudmodule.player.Ping;
+import com.kisman.cc.hud.hudmodule.player.ServerIp;
+import com.kisman.cc.hud.hudmodule.player.Tps;
 import com.kisman.cc.hud.hudmodule.render.*;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -36,6 +39,11 @@ public class HudModuleManager {
 		modules.add(new Logo());
 		modules.add(new Radar());
 		modules.add(new Welcomer());
+
+		//player
+		modules.add(new Ping());
+		modules.add(new ServerIp());
+		modules.add(new Tps());
 
 		//misc
 		modules.add(new NotificationHud());

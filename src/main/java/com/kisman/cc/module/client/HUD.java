@@ -11,6 +11,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.LogoMode;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,6 +43,11 @@ public class HUD extends Module {
 	public Setting radarY = new Setting("RadarY", this, 3 + (CustomFontUtil.getFontHeight() * 2), 0, mc.displayHeight, true);
 
 	private Setting notifLine = new Setting("NotifLine", this, "Notification");
+	public Setting addType = new Setting("AddType", this, false);
+	public Setting inOutTime = new Setting("InOutTime", this, 200, 50, 500, true);
+	public Setting lifetime = new Setting("LifeTime", this, 500, 500, 5000, true);
+	public Setting height = new Setting("Height", this, 50, 0, new ScaledResolution(mc).getScaledHeight(), true);
+	public Setting max = new Setting("MaxCount", this, 7, 1, 20, true);
 	public Setting notifModule = new Setting("Module", this, true);
 	public Setting crystalTarget = new Setting("CrystalTarget", this, true);
 	public Setting placeObby = new Setting("PlaceObby", this, false);
@@ -74,6 +80,11 @@ public class HUD extends Module {
 		setmgr.rSetting(radarY);
 
 		setmgr.rSetting(notifLine);
+		setmgr.rSetting(addType);
+		setmgr.rSetting(inOutTime);
+		setmgr.rSetting(lifetime);
+		setmgr.rSetting(max);
+		setmgr.rSetting(height);
 		setmgr.rSetting(notifModule);
 		setmgr.rSetting(crystalTarget);
 		setmgr.rSetting(placeObby);

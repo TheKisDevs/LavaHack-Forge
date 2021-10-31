@@ -1,11 +1,9 @@
 package com.kisman.cc.module.misc;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.oldclickgui.notification.Notification;
-import com.kisman.cc.oldclickgui.notification.NotificationManager;
-import com.kisman.cc.oldclickgui.notification.NotificationType;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +35,7 @@ public class VisualRange extends Module {
                         String msg = name + " entered visual range!";
 
                         if(HUD.instance.visualRange.getValBoolean()) {
-                            NotificationManager.show(new Notification(NotificationType.WARNING, "VisualRange", msg, 10));
+                            Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());
                         }
 
                         ChatUtils.warning(msg);
@@ -48,8 +46,7 @@ public class VisualRange extends Module {
                         String msg = name + " left visual range!";
 
                         if(HUD.instance.visualRange.getValBoolean()) {
-                            NotificationManager.show(new Notification(NotificationType.INFO, "VisualRange", msg, 600));
-                        }
+                            Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());                        }
 
                         ChatUtils.message(msg);
                     }

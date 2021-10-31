@@ -40,6 +40,7 @@ public class ModuleManager {
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
+		modules.add(new AutoTrap());
 		modules.add(new BowSpam());
 		modules.add(new CevBreaker());
 		modules.add(new Criticals());
@@ -95,6 +96,7 @@ public class ModuleManager {
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new Fly());
+		modules.add(new HoleTP());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new NoRotate());
@@ -114,19 +116,23 @@ public class ModuleManager {
 		modules.add(new FastPlace());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
+		modules.add(new Swing());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
 //		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new CactusLeave());
+		modules.add(new Disabler());
 		modules.add(new Ghost());
 		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new NoMiningTrace());
+		modules.add(new NoSwing());
 		modules.add(new PacketFly());
-//		modules.add(new PacketMine());
+		modules.add(new PacketMine());
 		modules.add(new SilentClose());
+		modules.add(new SoundCoordLogger());
 //		modules.add(new StrongholdFinder());
 		modules.add(new Timer());
 		modules.add(new WaterLeave());

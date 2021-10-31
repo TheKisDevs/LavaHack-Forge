@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 public class Charms extends Module {
     public Setting targetRender = new Setting("TargetRender", this, true);
+    public Setting render = new Setting("Redner", this, false);
 
     public static Charms instance;
 
@@ -19,8 +20,7 @@ public class Charms extends Module {
         instance = this;
 
         Kisman.instance.settingsManager.rSetting(new Setting("Texture", this, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("Render", this, false));
-
+        setmgr.rSetting(render);
         setmgr.rSetting(targetRender);
     }
 

@@ -25,20 +25,20 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
 
     @Inject(method = {"doRender"}, at = @At("HEAD"))
     public void doRenderPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo info) {
-        if(Charms.instance.isToggled()) {
+        if(Charms.instance.isToggled() && Charms.instance.render.getValBoolean()) {
             glEnable(32823);
-            glPolygonOffset(1f, -1100000);
+            glPolygonOffset(1, -1100000);
 
             if(Charms.instance.targetRender.getValBoolean() && entity instanceof EntityPlayer) {
                 if(AutoCrystalBypass.instance.target == entity)
-                glColor4f(1, 0.03f, 0.9f, 0.5f);
+                glColor4f(1, 0.03f, 0.9f, 1);
             }
         }
     }
 
     @Inject(method = {"doRender"}, at = @At("RETURN"))
     public void doRenderPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo info) {
-        if(Charms.instance.isToggled()) {
+        if(Charms.instance.isToggled() && Charms.instance.render.getValBoolean()) {
             glPolygonOffset(1, 1000000);
             glDisable(32823);
         }

@@ -53,6 +53,8 @@ public class Setting {
 	private boolean hud = false;
 	private boolean opening;
 	private boolean onlyOneWord;
+	private boolean onlyNumbers;
+	private boolean minus;
 	
 	private double dval;
 	private double min;
@@ -97,6 +99,8 @@ public class Setting {
 		this.dString = dString;
 		this.opening = opening;
 		this.onlyOneWord = false;
+		this.minus = true;
+		this.onlyNumbers = false;
 		this.mode = "String";
 	}
 
@@ -107,6 +111,8 @@ public class Setting {
 		this.dString = dString;
 		this.opening = opening;
 		this.onlyOneWord = onlyOneWord;
+		this.minus = true;
+		this.onlyNumbers = false;
 		this.mode = "String";
 	}
 
@@ -231,6 +237,23 @@ public class Setting {
 		} else {
 			return null;
 		}
+	}
+
+	public boolean isOnlyNumbers() {
+		return onlyNumbers;
+	}
+
+	public Setting setOnlyNumbers(boolean onlyNumbers) {
+		this.onlyNumbers = onlyNumbers;
+		return this;
+	}
+
+	public boolean isMinus() {
+		return minus;
+	}
+
+	public void setMinus(boolean minus) {
+		this.minus = minus;
 	}
 
 	public ItemStack[] getItems() {

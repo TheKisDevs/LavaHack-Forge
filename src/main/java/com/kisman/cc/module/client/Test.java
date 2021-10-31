@@ -18,10 +18,13 @@ public class Test extends Module {
             new ItemStack(Blocks.DIAMOND_ORE)
     };
 
+    private Setting testUpdateStringButton = new Setting("TestStringButton", this, "46354", "46354", true).setOnlyNumbers(true);
+
     public Test() {
         super("Test", "", Category.CLIENT);
         setmgr.rSetting(new Setting("TestItemsButton", this, "TestItemsButton", xrayBlocks));
         setmgr.rSetting(new Setting("ExampleEntityPreview", this, "Example", new EntityEnderCrystal(mc.world)));
+        setmgr.rSetting(testUpdateStringButton);
     }
 
     public void test() {

@@ -27,6 +27,7 @@ public class StringButton extends Component {
 
     private String currentString = "";
     private String dString;
+    private String regex = "-*[1-9][0-9]*";
 
     private boolean active = false;
 
@@ -61,9 +62,11 @@ public class StringButton extends Component {
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0 && set.isOpening()) {
-            /*if(this.currentString.equalsIgnoreCase("") && this.active) this.currentString = this.dString;*/
-
             this.active = !this.active;
+
+            if(!active) {
+                enterString();
+            }
         }
     }
 
@@ -79,19 +82,15 @@ public class StringButton extends Component {
 
         if(Keyboard.KEY_RETURN == key && this.active) {
             this.enterString();
-
-            /*if(!this.currentString.equalsIgnoreCase("")) this.set.setValString(this.currentString);*/
         } else if(key == 14 && this.active) {
-            if(!this.currentString.isEmpty() && this.currentString != null) {
-                this.currentString = this.currentString.substring(0, this.currentString.length() - 1);
+            if(currentString != null){
+                if (!this.currentString.isEmpty()) {
+                    this.currentString = this.currentString.substring(0, this.currentString.length() - 1);
+                }
+            } else {
+                active = false;
             }
-/*        } else if(key == 47 && (Keyboard.isKeyDown(157) || Keyboard.isKeyDown(29))) {
-            try {
-                this.setString(this.removeLastChar(this.currentString));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-        } else if(ChatAllowedCharacters.isAllowedCharacter(typedChar) && this.active) {
+        } else if(ChatAllowedCharacters.isAllowedCharacter(typedChar) && this.active && !set.isOnlyNumbers()) {
             this.setString(this.currentString + typedChar);
 
             StringEvent event2 = new StringEvent(set, "" + typedChar, Event.Era.POST, active);

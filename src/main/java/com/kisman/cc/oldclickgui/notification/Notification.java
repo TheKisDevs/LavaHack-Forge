@@ -1,159 +1,64 @@
 package com.kisman.cc.oldclickgui.notification;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.kisman.cc.Kisman;
+import com.kisman.cc.util.AnimationUtils;
+import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.mojang.realmsclient.gui.ChatFormatting;
+import i.gishreloaded.gishcode.utils.TimerUtils;
 
 import java.awt.Color;
 
-import org.lwjgl.opengl.GL11;
-
 public class Notification {
-    private Minecraft mc = Minecraft.getMinecraft();
+    public String text;
+    public long disableTime;
+    public float width;
+    public TimerUtils timer = new TimerUtils();
+    public AnimationUtils animationUtils;
+    public AnimationUtils animationUtils2;
+    public AnimationUtils reverse;
+    public AnimationUtils reverse2;
+    public boolean didThing = false;
+    public boolean isReversing = false;
+    public boolean didFirstReverse = false;
 
-    private NotificationType type;
-    private String title;
-    private String messsage;
-    private long start;
-
-    private long fadedIn;
-    private long fadeOut;
-    private long end;
-
-
-    public Notification(NotificationType type, String title, String messsage, int length) {
-        this.type = type;
-        this.title = title;
-        this.messsage = messsage;
-
-        fadedIn = 200 * length;
-        fadeOut = fadedIn + 500 * length;
-        end = fadeOut + fadedIn;
+    public Notification(String text, long disableTime, long inOutTime) {
+        this.text = text;
+        this.disableTime = disableTime;
+        this.width = CustomFontUtil.getStringWidth(text);
+        this.animationUtils = new AnimationUtils(inOutTime, Float.intBitsToFloat(Float.floatToIntBits(1.1522732E38f) ^ 0x7EAD5FF3), this.width + Float.intBitsToFloat(Float.floatToIntBits(0.7864751f) ^ 0x7F49566F));
+        this.animationUtils2 = new AnimationUtils(inOutTime, Float.intBitsToFloat(Float.floatToIntBits(1.2526955E38f) ^ 0x7EBC7C13), this.width + Float.intBitsToFloat(Float.floatToIntBits(1.8077307f) ^ 0x7F6763B8));
+        this.reverse = new AnimationUtils(inOutTime, Float.intBitsToFloat(Float.floatToIntBits(2.4275405E37f) ^ 0x7D921A2F), this.width + Float.intBitsToFloat(Float.floatToIntBits(0.07119077f) ^ 0x7D91CC77));
+        this.reverse2 = new AnimationUtils(inOutTime, Float.intBitsToFloat(Float.floatToIntBits(1.9618134E38f) ^ 0x7F139727), this.width + Float.intBitsToFloat(Float.floatToIntBits(1.1008757f) ^ 0x7F0CE97F));
+        this.timer.reset();
+        this.animationUtils.reset();
+        this.animationUtils2.reset();
+        this.reverse.reset();
+        this.reverse2.reset();
     }
 
-    public void show() {
-        start = System.currentTimeMillis();
-    }
-
-    public boolean isShown() {
-        return getTime() <= end;
-    }
-
-    private long getTime() {
-        return System.currentTimeMillis() - start;
-    }
-
-    public void render() {
-        double offset = 0;
-        int width = 120;
-        int height = 30;
-        long time = getTime();
-
-        if (time < fadedIn) {
-            offset = Math.tanh(time / (double) (fadedIn) * 3.0) * width;
-        } else if (time > fadeOut) {
-            offset = (Math.tanh(3.0 - (time - fadeOut) / (double) (end - fadeOut) * 3.0) * width);
-        } else {
-            offset = width;
+    /*
+     * WARNING - void declaration
+     */
+    public void onDraw(int y) {
+        if (this.timer.hasReached(this.disableTime)) {
+            Kisman.instance.notificationProcessor.getNotifications().remove(this);
         }
-
-        Color color = new Color(0, 0, 0, 220);
-        Color color1 = new Color(0, 0, 0, 0);
-
-        if (type == NotificationType.INFO) {
-            color1 = new Color(255, 255, 255, 255);
-        } else if (type == NotificationType.WARNING) {
-            color1 = new Color(204, 193, 0);
-        } else if(type == NotificationType.ERROR){
-            color1 = new Color(204, 0, 18);
-            int i = Math.max(0, Math.min(255, (int) (Math.sin(time / 100.0) * 255.0 / 2 + 127.5)));
-            color = new Color(i, 0, 0, 220);
-        } else if(type == NotificationType.COMPLETE) {
-            color1 = new Color(0, 255, 0, 255);
+        Render2DUtil.drawRect(
+                -(this.width + Float.intBitsToFloat(Float.floatToIntBits(0.3717855f) ^ 0x7E3E5AAB)) + this.animationUtils2.getValue() - (
+                        this.isReversing && this.didFirstReverse ?
+                                this.reverse2.getValue() :
+                                Float.intBitsToFloat(Float.floatToIntBits(3.1289036E38f) ^ 0x7F6B647E)),
+                (float)y,
+                this.width + Float.intBitsToFloat(Float.floatToIntBits(0.20066918f) ^ 0x7ECD7C39),
+                Float.intBitsToFloat(Float.floatToIntBits(0.7693848f) ^ 0x7EE4F667), new Color(70, 70, 70, 255).getRGB());
+        if (this.animationUtils2.isDone()) {
+            Render2DUtil.drawRect(
+                    -(this.width + Float.intBitsToFloat(Float.floatToIntBits(0.64607567f) ^ 0x7F256537)) + this.animationUtils.getValue() - (this.isReversing ? this.reverse.getValue() : Float.intBitsToFloat(Float.floatToIntBits(1.4951425E38f) ^ 0x7EE0F6CB)), (float)y, this.width + Float.intBitsToFloat(Float.floatToIntBits(0.17125504f) ^ 0x7E2F5D7B), Float.intBitsToFloat(Float.floatToIntBits(0.448751f) ^ 0x7F45C2B1), new Color(28, 28, 28).getRGB());
+            CustomFontUtil.drawString(ChatFormatting.stripFormatting(this.text),
+                    -(this.width + Float.intBitsToFloat(Float.floatToIntBits(0.694125f) ^ 0x7F31B22D)) + this.animationUtils.getValue() - (this.isReversing ? this.reverse.getValue() : Float.intBitsToFloat(Float.floatToIntBits(1.5466472E37f) ^ 0x7D3A2BBF)) + Float.intBitsToFloat(Float.floatToIntBits(0.2626216f) ^ 0x7E867657),
+                    (float)(y + 10) - CustomFontUtil.getFontHeight() / Float.intBitsToFloat(Float.floatToIntBits(0.5751044f) ^ 0x7F133A0B) - 10, -1);
         }
-
-        ScaledResolution sr = new ScaledResolution(mc);
-        FontRenderer fontRenderer = mc.fontRenderer;
-
-//        drawRect(0, 0, 100, 100, -1);
-
-        drawRect(sr.getScaledWidth() - offset, sr.getScaledHeight() - 5 - height, sr.getScaledWidth(), sr.getScaledHeight() - 5, color.getRGB());
-        drawRect(sr.getScaledWidth() - offset, mc.displayHeight - 5 - height, sr.getScaledWidth() - offset + 4, sr.getScaledHeight() - 5, color1.getRGB());
-
-        fontRenderer.drawString(title, (int) (sr.getScaledWidth() - offset + 8), sr.getScaledHeight() - 2 - height, -1);
-        fontRenderer.drawString(messsage, (int) (sr.getScaledWidth() - offset + 8), sr.getScaledHeight() - 15, -1);
     }
-
-    public static void drawRect(double left, double top, double right, double bottom, int color) {
-        if (left < right) {
-            double i = left;
-            left = right;
-            right = i;
-        }
-
-        if (top < bottom) {
-            double j = top;
-            top = bottom;
-            bottom = j;
-        }
-
-        float f3 = (float) (color >> 24 & 255) / 255.0F;
-        float f = (float) (color >> 16 & 255) / 255.0F;
-        float f1 = (float) (color >> 8 & 255) / 255.0F;
-        float f2 = (float) (color & 255) / 255.0F;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.color(f, f1, f2, f3);
-        buffer.begin(7, DefaultVertexFormats.POSITION);
-        buffer.pos(left, bottom, 0.0D).endVertex();
-        buffer.pos(right, bottom, 0.0D).endVertex();
-        buffer.pos(right, top, 0.0D).endVertex();
-        buffer.pos(left, top, 0.0D).endVertex();
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-    }
-
-    public static void drawRect(int mode, double left, double top, double right, double bottom, int color) {
-        if (left < right) {
-            double i = left;
-            left = right;
-            right = i;
-        }
-
-        if (top < bottom) {
-            double j = top;
-            top = bottom;
-            bottom = j;
-        }
-
-        float f3 = (float) (color >> 24 & 255) / 255.0F;
-        float f = (float) (color >> 16 & 255) / 255.0F;
-        float f1 = (float) (color >> 8 & 255) / 255.0F;
-        float f2 = (float) (color & 255) / 255.0F;
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.color(f, f1, f2, f3);
-        buffer.begin(mode, DefaultVertexFormats.POSITION);
-        buffer.pos(left, bottom, 0.0D).endVertex();
-        buffer.pos(right, bottom, 0.0D).endVertex();
-        buffer.pos(right, top, 0.0D).endVertex();
-        buffer.pos(left, top, 0.0D).endVertex();
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-    }
-
-
 }
+

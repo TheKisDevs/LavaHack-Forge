@@ -15,10 +15,10 @@ public class CustomFov extends Module {
 
     public void update() {
         int fov = (int) Kisman.instance.settingsManager.getSettingByName(this, "FOV").getValDouble();
-        Minecraft.getMinecraft().gameSettings.fovSetting = fov;
+        mc.gameSettings.fovSetting = fov;
     }
 
     public void onDisable() {
-        Minecraft.getMinecraft().gameSettings.fovSetting = 110;
+        mc.gameSettings.fovSetting = 110;
     }
 }

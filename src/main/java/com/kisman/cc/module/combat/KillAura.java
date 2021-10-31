@@ -9,6 +9,8 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.EnumHand;
 
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ public class KillAura extends Module {
 
     private double distance;
 
+    private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Swond", "Axe", "Both", "None")));
+
 //    private String targetMode;
 
     public KillAura() {
@@ -33,6 +37,7 @@ public class KillAura extends Module {
         instance = this;
 
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
+        setmgr.rSetting(weapon);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Targets", this, "Targets"));
 
@@ -48,8 +53,6 @@ public class KillAura extends Module {
     }
 
     public void onEnable() {
-//        this.targetMode = Kisman.instance.settingsManager.getSettingByName(this, "TargetMode").getValString();
-
         this.player = Kisman.instance.settingsManager.getSettingByName(this,"Player").getValBoolean();
         this.monster = Kisman.instance.settingsManager.getSettingByName(this,"Monster").getValBoolean();
         this.passive = Kisman.instance.settingsManager.getSettingByName(this,"Passive").getValBoolean();
@@ -64,8 +67,6 @@ public class KillAura extends Module {
 
         Entity targetSingle;
 
-//        this.targetMode = Kisman.instance.settingsManager.getSettingByName(this, "TargetMode").getValString();
-
         this.player = Kisman.instance.settingsManager.getSettingByName(this,"Player").getValBoolean();
         this.monster = Kisman.instance.settingsManager.getSettingByName(this,"Monster").getValBoolean();
         this.passive = Kisman.instance.settingsManager.getSettingByName(this,"Passive").getValBoolean();
@@ -75,13 +76,15 @@ public class KillAura extends Module {
         this.distance = Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
 
         for (int i = 0; i < mc.world.loadedEntityList.size(); i++) {
-            if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && this.passive))) {
-                if (mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
-                    mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
-                    mc.player.swingArm(EnumHand.MAIN_HAND);
-                    mc.player.resetCooldown();
-                    if (this.hitsound) {
-                        mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 1, 1);
+            if((((weapon.getValString().equalsIgnoreCase("Sword") || weapon.getValString().equalsIgnoreCase("All")) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword) || ((weapon.getValString().equalsIgnoreCase("Axe") || weapon.getValString().equalsIgnoreCase("All")) && mc.player.getHeldItemMainhand().getItem() instanceof ItemAxe)) || weapon.getValString().equalsIgnoreCase("None")) {
+                if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && this.passive))) {
+                    if (mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
+                        mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
+                        mc.player.swingArm(EnumHand.MAIN_HAND);
+                        mc.player.resetCooldown();
+                        if (this.hitsound) {
+                            mc.player.playSound(SoundEvents.BLOCK_STONE_BREAK, 1, 1);
+                        }
                     }
                 }
             }

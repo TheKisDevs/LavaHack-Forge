@@ -1,29 +1,20 @@
 package com.kisman.cc.util;
 
-import com.kisman.cc.Kisman;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.*;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.util.math.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author 086
  * @author Crystallinqq/Auto
+ * @author _kisman_
  */
 
 public class EntityUtil {
@@ -34,8 +25,31 @@ public class EntityUtil {
         return entity.getHealth();
     }
 
-    public static boolean isPassive(Entity e)
-    {
+    public static boolean isOnLiquid() {
+        final double y = EntityUtil.mc.player.posY - 0.03;
+        for (int x = MathHelper.floor(EntityUtil.mc.player.posX); x < MathHelper.ceil(EntityUtil.mc.player.posX); ++x) {
+            for (int z = MathHelper.floor(EntityUtil.mc.player.posZ); z < MathHelper.ceil(EntityUtil.mc.player.posZ); ++z) {
+                final BlockPos pos = new BlockPos(x, MathHelper.floor(y), z);
+                if (EntityUtil.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static BlockPos getRoundedBlockPos(final Entity entity) {
+        return new BlockPos(MathUtil.roundVec(entity.getPositionVector(), 0));
+    }
+
+    public static boolean stopSneaking(final boolean isSneaking) {
+        if (isSneaking && mc.player != null) {
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+        }
+        return false;
+    }
+
+    public static boolean isPassive(Entity e) {
         if (e instanceof EntityWolf && ((EntityWolf) e).isAngry())
             return false;
         if (e instanceof EntityAnimal || e instanceof EntityAgeable || e instanceof EntityTameable
@@ -46,26 +60,20 @@ public class EntityUtil {
         return false;
     }
 
-    public static boolean isMobAggressive(Entity entity)
-    {
-        if (entity instanceof EntityPigZombie)
-        {
+    public static boolean isMobAggressive(Entity entity) {
+        if (entity instanceof EntityPigZombie) {
             // arms raised = aggressive, angry = either game or we have set the anger
             // cooldown
-            if (((EntityPigZombie) entity).isArmsRaised() || ((EntityPigZombie) entity).isAngry())
-            {
+            if (((EntityPigZombie) entity).isArmsRaised() || ((EntityPigZombie) entity).isAngry()) {
                 return true;
             }
-        }
-        else if (entity instanceof EntityWolf)
-        {
+        } else if (entity instanceof EntityWolf) {
             return ((EntityWolf) entity).isAngry()
                     && !Minecraft.getMinecraft().player.equals(((EntityWolf) entity).getOwner());
-        }
-        else if (entity instanceof EntityEnderman)
-        {
+        } else if (entity instanceof EntityEnderman) {
             return ((EntityEnderman) entity).isScreaming();
         }
+
         return isHostileMob(entity);
     }
 
@@ -73,16 +81,14 @@ public class EntityUtil {
      * If the mob by default wont attack the player, but will if the player attacks
      * it
      */
-    public static boolean isNeutralMob(Entity entity)
-    {
+    public static boolean isNeutralMob(Entity entity) {
         return entity instanceof EntityPigZombie || entity instanceof EntityWolf || entity instanceof EntityEnderman;
     }
 
     /**
      * If the mob is friendly (not aggressive)
      */
-    public static boolean isFriendlyMob(Entity entity)
-    {
+    public static boolean isFriendlyMob(Entity entity) {
         return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity))
                 || (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager
                 || entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
@@ -91,8 +97,7 @@ public class EntityUtil {
     /**
      * If the mob is hostile
      */
-    public static boolean isHostileMob(Entity entity)
-    {
+    public static boolean isHostileMob(Entity entity) {
         return (entity.isCreatureType(EnumCreatureType.MONSTER, false) && !EntityUtil.isNeutralMob(entity));
     }
 
@@ -133,15 +138,6 @@ public class EntityUtil {
         }
         return false;
     }
-
-/*    public static void setTimer(float speed) {
-        mc.frameTimer
-        Minecraft.getMinecraft().timer.tickLength = 50.0f / speed;
-    }
-
-    public static void resetTimer() {
-        Minecraft.getMinecraft().timer.tickLength = 50;
-    }*/
 
     public static Vec3d getInterpolatedAmount(Entity entity, double ticks) {
         return getInterpolatedAmount(entity, ticks, ticks, ticks);
@@ -262,6 +258,6 @@ public class EntityUtil {
         double d0 = p_X - x;
         double d1 = p_Y - y;
         double d2 = p_Z - z;
-        return (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        return MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
     }
 }

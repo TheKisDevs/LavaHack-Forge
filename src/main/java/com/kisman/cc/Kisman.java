@@ -5,26 +5,21 @@ import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.hud.hudgui.HudGui;
-import com.kisman.cc.hud.hudmodule.HudModule;
-import com.kisman.cc.hud.hudmodule.HudModuleManager;
-import com.kisman.cc.newclickgui.NewGui;
-import com.kisman.cc.oldclickgui.BlockGui;
-import com.kisman.cc.oldclickgui.ClickGui;
-import com.kisman.cc.oldclickgui.ColorPicker;
+import com.kisman.cc.hud.hudmodule.*;
+import com.kisman.cc.newclickgui.*;
+import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
-import com.kisman.cc.oldclickgui.notification.NotificationManager;
+import com.kisman.cc.oldclickgui.notification.NotificationProcessor;
 import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
-import com.kisman.cc.util.ColorUtil;
-import com.kisman.cc.util.RotationUtils;
+import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import kisman.pasta.salhack.util.customfont.FontManager;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -62,7 +57,8 @@ public class Kisman {
     public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ParticleSystem particleSystem;
-    public NotificationManager notificationManager;
+    public NotificationProcessor notificationProcessor;
+    public ServerManager serverManager;
     
     public void init() {
         Display.setTitle(NAME + " | " + VERSION);
@@ -85,7 +81,8 @@ public class Kisman {
         rotationUtils = new RotationUtils();
         eventProcessor = new EventProcessor();
         particleSystem = new ParticleSystem(100, true, 150);
-        notificationManager = new NotificationManager();
+        notificationProcessor = new NotificationProcessor();
+        serverManager = new ServerManager();
 
         //load configs
         LoadConfig.init();

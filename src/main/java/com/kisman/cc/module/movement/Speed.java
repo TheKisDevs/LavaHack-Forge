@@ -18,9 +18,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 
 public class Speed extends Module {
+    public static Speed instance;
+
     private float yPortSpeed;
 
-    private Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort", "Sti")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "YPort", "Sti")));
 
     private Setting yPortLine = new Setting("YPortLine", this, "YPort");
     private Setting yWater = new Setting("Water", this, false);
@@ -33,13 +35,13 @@ public class Speed extends Module {
 
     public Speed() {
         super("Speed", "SPID", Category.MOVEMENT);
-        super.setDisplayInfo("[" + speedMode.getValString() + TextFormatting.GRAY + "]");
+
+        instance = this;
 
         setmgr.rSetting(speedMode);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false));
-
         setmgr.rSetting(yPortLine);
+        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false));
         setmgr.rSetting(yWater);
         setmgr.rSetting(yLava);
 
@@ -61,6 +63,8 @@ public class Speed extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
+
+        super.setDisplayInfo("[" + speedMode.getValString() + TextFormatting.GRAY + "]");
 
         boolean boost = Math.abs(Wrapper.INSTANCE.player().rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
 

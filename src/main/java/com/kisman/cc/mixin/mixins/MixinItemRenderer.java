@@ -33,15 +33,21 @@ public abstract class MixinItemRenderer {
         int rotateOffZ = 0;
 
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
+        boolean isSwingMain = isSwing && hand == EnumHandSide.RIGHT && SwingAnimation.instance.main.getValBoolean();
+        boolean isSwingOff = isSwing && hand == EnumHandSide.LEFT && SwingAnimation.instance.off.getValBoolean();
 
         if(isSwing) {
-            rotateMainX = 72;
-            rotateMainY = 180;
-            rotateMainZ = 240;
+            if(hand == EnumHandSide.RIGHT && SwingAnimation.instance.main.getValBoolean()) {
+                rotateMainX = 72;
+                rotateMainY = 180;
+                rotateMainZ = 240;
+            }
 
-            rotateOffX = 0;
-            rotateOffY = 300;
-            rotateOffZ = 77;
+            if(hand == EnumHandSide.LEFT && SwingAnimation.instance.off.getValBoolean()) {
+                rotateOffX = 0;
+                rotateOffY = 300;
+                rotateOffZ = 77;
+            }
         } else if(mc.player.swingProgress == 0) {
             rotateMainX = 0;
             rotateMainY = 0;
@@ -54,29 +60,17 @@ public abstract class MixinItemRenderer {
 
         if (Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
             GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
-            GlStateManager.rotate(isSwing ? (float) rotateMainX : (!ViemModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (getSet("RotateRightX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-            GlStateManager.rotate(isSwing ? (float) rotateMainY : (!ViemModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-            GlStateManager.rotate(isSwing ? (float) rotateMainZ : (!ViemModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+            GlStateManager.rotate(isSwingMain ? (float) rotateMainX : (!ViemModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (getSet("RotateRightX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+            GlStateManager.rotate(isSwingMain ? (float) rotateMainY : (!ViemModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+            GlStateManager.rotate(isSwingMain ? (float) rotateMainZ : (!ViemModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
             GlStateManager.scale(ViemModel.instance.scaleRightX.getValDouble(), ViemModel.instance.scaleRightY.getValDouble(), ViemModel.instance.scaleRightZ.getValDouble());
         }
         if (Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.LEFT) {
             GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
-            GlStateManager.rotate(isSwing ? (float) rotateOffX : (!ViemModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-            GlStateManager.rotate(isSwing ? (float) rotateOffY : (!ViemModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-            GlStateManager.rotate(isSwing ? (float) rotateOffZ : (!ViemModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+            GlStateManager.rotate(isSwingOff ? (float) rotateOffX : (!ViemModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+            GlStateManager.rotate(isSwingOff ? (float) rotateOffY : (!ViemModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+            GlStateManager.rotate(isSwingOff ? (float) rotateOffZ : (!ViemModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
             GlStateManager.scale(ViemModel.instance.scaleLeftX.getValDouble(), ViemModel.instance.scaleLeftY.getValDouble(), ViemModel.instance.scaleLeftZ.getValDouble());
-        }
-        if (!Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.RIGHT) {
-            GlStateManager.translate(-0.2785682F, 0.18344387F, 0.15731531F);
-            GlStateManager.rotate(-13.935F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(35.3F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-9.785F, 0.0F, 0.0F, 1.0F);
-        }
-        if (!Kisman.instance.moduleManager.getModule("ViemModel").isToggled() && hand == EnumHandSide.LEFT) {
-            GlStateManager.translate(-0.2785682F, 0.18344387F, 0.15731531F);
-            GlStateManager.rotate(-13.935F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(35.3F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-9.785F, 0.0F, 0.0F, 1.0F);
         }
     }
 

@@ -82,8 +82,7 @@ public class RotationUtils {
         return;
     });
 
-    public static
-    double yawDist ( BlockPos pos ) {
+    public static double yawDist ( BlockPos pos ) {
         if ( pos != null ) {
             Vec3d difference = new Vec3d ( pos ).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
             double d = Math.abs ( (double) mc.player.rotationYaw - ( Math.toDegrees ( Math.atan2 ( difference.z , difference.x ) ) - 90.0 ) ) % 360.0;
@@ -92,8 +91,7 @@ public class RotationUtils {
         return 0.0;
     }
 
-    public static
-    double yawDist ( Entity e ) {
+    public static double yawDist(Entity e) {
         if ( e != null ) {
             Vec3d difference = e.getPositionVector ( ).add (new Vec3d( 0.0f , e.getEyeHeight ( ) / 2.0f , 0.0f )).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
             double d = Math.abs ( (double) mc.player.rotationYaw - ( Math.toDegrees ( Math.atan2 ( difference.z , difference.x ) ) - 90.0 ) ) % 360.0;
@@ -102,22 +100,19 @@ public class RotationUtils {
         return 0.0;
     }
 
-    public static boolean isInFov ( BlockPos pos ) {
+    public static boolean isInFov(BlockPos pos) {
         return pos != null && ( mc.player.getDistanceSq ( pos ) < 4.0 || yawDist ( pos ) < (double) (getHalvedfov ( ) + 2.0f ) );
     }
 
-    public static
-    boolean isInFov ( Entity entity ) {
+    public static boolean isInFov(Entity entity) {
         return entity != null && ( mc.player.getDistanceSq ( entity ) < 4.0 || yawDist ( entity ) < (double) (getHalvedfov ( ) + 2.0f ) );
     }
 
-    public static
-    float getFov ( ) {
+    public static float getFov() {
         return mc.gameSettings.fovSetting;
     }
 
-    public static
-    float getHalvedfov ( ) {
+    public static float getHalvedfov() {
         return getFov ( ) / 2.0f;
     }
 
@@ -161,6 +156,17 @@ public class RotationUtils {
     public static Vec2f getRotationTo(Vec3d posTo) {
         EntityPlayerSP player = mc.player;
         return player != null ? getRotationTo(player.getPositionEyes(1.0f), posTo) : Vec2f.ZERO;
+    }
+
+    public static void lookAtVec3d(final Vec3d vec3d) {
+        final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d(vec3d.x, vec3d.y, vec3d.z));
+        setPlayerRotations(angle[0], angle[1]);
+    }
+
+    public static void setPlayerRotations(final float yaw, final float pitch) {
+        mc.player.rotationYaw = yaw;
+        mc.player.rotationYawHead = yaw;
+        mc.player.rotationPitch = pitch;
     }
 
     /**

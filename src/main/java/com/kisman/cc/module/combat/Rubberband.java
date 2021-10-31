@@ -25,6 +25,8 @@ public class Rubberband extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         this.mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
 
         float ym = (float) Kisman.instance.settingsManager.getSettingByName(this, "Motion").getValDouble();
@@ -35,7 +37,7 @@ public class Rubberband extends Module {
                 break;
             }
             case "Packet": {
-                mc.player.connection.sendPacket((Packet) new CPacketPlayer.Position(mc.player.posX, mc.player.posY + ym, mc.player.posZ, true));
+                mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + ym, mc.player.posZ, true));
             }
             case "Teleport": {
                 mc.player.setPositionAndUpdate(mc.player.posX, mc.player.posY + ym, mc.player.posZ);

@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class SwingAnimation extends Module {
     public static SwingAnimation instance;
 
-
     public Setting mode = new Setting("Mode", this, "Simple", new ArrayList<>(Arrays.asList("Simple", "Strong")));
 
 
@@ -25,7 +24,9 @@ public class SwingAnimation extends Module {
 
     private Setting strongLine = new Setting("StrongLine", this, "Strong");
 
-    private Setting rotate = new Setting("Rotate", this, false);
+    private Setting rotate = new Setting("Rotate", this, false);//Soon...
+    public Setting main = new Setting("MainHand", this, true);
+    public Setting off = new Setting("OffHand", this, false);
 
     private ArrayList<String> swingMode = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
@@ -42,8 +43,11 @@ public class SwingAnimation extends Module {
         setmgr.rSetting(mode);
 
         setmgr.rSetting(simpleLine);
-
         Kisman.instance.settingsManager.rSetting(new Setting("SwingMode", this, "1", swingMode));
+
+        setmgr.rSetting(strongLine);
+        setmgr.rSetting(main);
+        setmgr.rSetting(off);
     }
 
     public void update() {

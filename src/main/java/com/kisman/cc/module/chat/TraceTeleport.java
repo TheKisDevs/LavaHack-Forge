@@ -5,9 +5,6 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.oldclickgui.notification.Notification;
-import com.kisman.cc.oldclickgui.notification.NotificationManager;
-import com.kisman.cc.oldclickgui.notification.NotificationType;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -42,7 +39,7 @@ public class TraceTeleport extends Module {
                 String warn = String.format("Entity [%s] teleported to [%.2f, %.2f, %.2f], %.2f blocks away", name, packet.getX(), packet.getY(), packet.getZ(), distance);
 
                 if(HUD.instance.traceTeleport.getValBoolean()) {
-                    NotificationManager.show(new Notification(NotificationType.WARNING, "TraceTeleport", warn, 800));
+                    Kisman.instance.notificationProcessor.addNotification(warn + " [TraceTeleport]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());
                 }
 
                 ChatUtils.warning(warn);

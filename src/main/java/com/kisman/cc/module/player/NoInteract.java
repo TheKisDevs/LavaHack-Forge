@@ -37,6 +37,8 @@ public class NoInteract extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> sendListener = new Listener<>(event -> {
+        if(mc.player == null && mc.world == null) return;
+
         if(event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock){
             final Block block = mc.world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock();
             if((block == Blocks.CRAFTING_TABLE && craft.getValBoolean()) ||

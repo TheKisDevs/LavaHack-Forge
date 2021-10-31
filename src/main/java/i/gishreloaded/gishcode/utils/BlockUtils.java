@@ -27,8 +27,7 @@ public final class BlockUtils {
 		return Wrapper.INSTANCE.world().getBlockState(pos);
 	}
 	
-	public static Block getBlock(BlockPos pos)
-	{
+	public static Block getBlock(BlockPos pos) {
 		return getState(pos).getBlock();
 	}
 	

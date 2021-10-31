@@ -1,10 +1,12 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.events.EventPlayerUpdateMoveState;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
 import me.zero.alpine.listener.EventHandler;
@@ -12,14 +14,10 @@ import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemShield;
-import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.RandomUtils;
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
@@ -27,14 +25,26 @@ public class NoSlow extends Module {
 
     private Setting invMove = new Setting("InvMove", this, true);
     private Setting items = new Setting("Items", this, true);
-    private Setting nCPStrict = new Setting("NCPStrict", this, true);
+    private Setting ncpStrict = new Setting("NCPStrict", this, true);
+
+
+    private Setting invLine = new Setting("InvLine", this, "InvMode");
+
+    private Setting ignoreChat = new Setting("IgnoreChat", this, true);
+    private Setting ignoreConsole = new Setting("IgnoreConsole", this, true);
+    private Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false);
 
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
 
         setmgr.rSetting(invMove);
         setmgr.rSetting(items);
-        setmgr.rSetting(nCPStrict);
+        setmgr.rSetting(ncpStrict);
+
+        setmgr.rSetting(invLine);
+        setmgr.rSetting(ignoreChat);
+        setmgr.rSetting(ignoreConsole);
+        setmgr.rSetting(ignoreClickGui);
     }
 
     public void onEnable() {
@@ -66,7 +76,15 @@ public class NoSlow extends Module {
     @EventHandler
     private final Listener<EventPlayerUpdateMoveState> listener = new Listener<>(event -> {
         if (invMove.getValBoolean() && mc.currentScreen != null) {
-            if(mc.currentScreen instanceof GuiChat) {
+            if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) {
+                return;
+            }
+
+            if(mc.currentScreen instanceof GuiConsole && ignoreConsole.getValBoolean()) {
+                return;
+            }
+
+            if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) {
                 return;
             }
 
@@ -122,7 +140,7 @@ public class NoSlow extends Module {
     @EventHandler
     private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {
         if(event.getPacket() instanceof CPacketPlayer) {
-            if(nCPStrict.getValBoolean()) {
+            if(ncpStrict.getValBoolean()) {
                 if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) {
                     mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));
                 }

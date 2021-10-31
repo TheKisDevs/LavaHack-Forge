@@ -7,11 +7,8 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.chat.Notification;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.oldclickgui.notification.NotificationManager;
-import com.kisman.cc.oldclickgui.notification.NotificationType;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -130,7 +127,7 @@ public class AutoCrystalBypass extends Module {
     private int placeTicks;
     private int breakTicks;
 
-    private ArrayList<BlockPos> placedCrystal = new ArrayList<>();
+    public ArrayList<BlockPos> placedCrystal = new ArrayList<>();
 
     public EntityPlayer target = null;
 
@@ -359,7 +356,7 @@ public class AutoCrystalBypass extends Module {
                         String newTarget = String.format("Found new target %s", l_Target.getName());
 
                         if(HUD.instance.crystalTarget.getValBoolean()) {
-                            NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", newTarget, 800));
+//                            NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", newTarget, 800));
                         }
 
                         ChatUtils.complete(newTarget);
@@ -427,7 +424,7 @@ public class AutoCrystalBypass extends Module {
                                     String placeMsg = String.format("Tried to place obsidian at %s would deal %s dmg", l_TargetPos.toString(), l_TargetDMG);
 
                                     if (HUD.instance.placeObby.getValBoolean()) {
-                                        NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", placeMsg, 400));
+//                                        NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", placeMsg, 400));
                                     }
 
                                     ChatUtils.complete(placeMsg);
@@ -658,7 +655,7 @@ public class AutoCrystalBypass extends Module {
         target = (EntityPlayer) getNearTarget(mc.player);
     }
 
-    private EntityLivingBase getNearTarget(EntityPlayer distanceTarget) {
+    public EntityLivingBase getNearTarget(EntityPlayer distanceTarget) {
         return mc.world.loadedEntityList.stream()
                 .filter(entity -> isValidTarget(entity))
                 .map(entity -> (EntityLivingBase) entity)

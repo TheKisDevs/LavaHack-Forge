@@ -26,6 +26,7 @@ public class CommandManager {
 	{
 		commands.add(new Bind());
 		commands.add(new Flip());
+		commands.add(new Help());
 		commands.add(new LoadConfigCommand());
         commands.add(new Slider());
         commands.add(new OpenDir());
@@ -33,6 +34,7 @@ public class CommandManager {
         commands.add(new SaveConfigCommand());
 		commands.add(new SetKey());
         commands.add(new Toggle());
+		commands.add(new Tp());
 	}
 
 	public void runCommands(String s)
