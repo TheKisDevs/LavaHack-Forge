@@ -1,6 +1,8 @@
 # lava_hack
 Full stack Minecraft cheat for playing at anarchy servers
 
+<img src="https://tokei.rs/b1/github/lambda-client/lambda?category=code" alt="Lines of Code"/>
+
 ###### **Dev team:**
 `_kisman_` 
 - discord - `_kisman_#7777`
