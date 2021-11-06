@@ -41,6 +41,11 @@ archivesBaseName = 'kisman.cc'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 minecraft {
     version = "1.12.2-14.23.5.2768"
     runDir = "run"
