@@ -1,23 +1,18 @@
 package com.kisman.cc.module.combat;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraft.util.NonNullList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,49 +45,37 @@ public class OffHand extends Module {
         setmgr.rSetting(hotbarFirst);
     }
 
-    private void SwitchOffHandIfNeed(String mode)
-    {
-        Item l_Item = GetItemFromModeVal(mode);
+    private void switchOffHandIfNeed(String mode) {
+        Item item = getItemFromModeVal(mode);
 
-        if (mc.player.getHeldItemOffhand().getItem() != l_Item)
-        {
-            int l_Slot = hotbarFirst.getValBoolean() ? PlayerUtil.GetRecursiveItemSlot(l_Item) : PlayerUtil.GetItemSlot(l_Item);
+        if (mc.player.getHeldItemOffhand().getItem() != item) {
+            int slot = hotbarFirst.getValBoolean() ? PlayerUtil.GetRecursiveItemSlot(item) : PlayerUtil.GetItemSlot(item);
 
-            Item l_Fallback = GetItemFromModeVal(fallBackMode.getValString());
+            Item fallback = getItemFromModeVal(fallBackMode.getValString());
 
-            String l_Display = GetItemNameFromModeVal(mode);
+            String display = getItemNameFromModeVal(mode);
 
-            if (l_Slot == -1 && l_Item != l_Fallback && mc.player.getHeldItemOffhand().getItem() != l_Fallback)
-            {
-                l_Slot = PlayerUtil.GetRecursiveItemSlot(l_Fallback);
-                l_Display = GetItemNameFromModeVal(fallBackMode.getValString());
+            if (slot == -1 && item != fallback && mc.player.getHeldItemOffhand().getItem() != fallback) {
+                slot = PlayerUtil.GetRecursiveItemSlot(fallback);
+                display = getItemNameFromModeVal(fallBackMode.getValString());
 
-                /// still -1...
-                if (l_Slot == -1 && l_Fallback != Items.TOTEM_OF_UNDYING)
-                {
-                    l_Fallback = Items.TOTEM_OF_UNDYING;
+                if (slot == -1 && fallback != Items.TOTEM_OF_UNDYING) {
+                    fallback = Items.TOTEM_OF_UNDYING;
 
-                    if (l_Item != l_Fallback && mc.player.getHeldItemOffhand().getItem() != l_Fallback)
-                    {
-                        l_Slot = PlayerUtil.GetRecursiveItemSlot(l_Fallback);
-                        l_Display = "Emergency Totem";
+                    if (item != fallback && mc.player.getHeldItemOffhand().getItem() != fallback) {
+                        slot = PlayerUtil.GetRecursiveItemSlot(fallback);
+                        display = "Emergency Totem";
                     }
                 }
             }
 
-            if (l_Slot != -1)
-            {
-                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, l_Slot, 0,
-                        ClickType.PICKUP, mc.player);
-                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 45, 0, ClickType.PICKUP,
-                        mc.player);
-
-                /// @todo: this might cause desyncs, we need a callback for windowclicks for transaction complete packet.
-                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, l_Slot, 0,
-                        ClickType.PICKUP, mc.player);
+            if (slot != -1) {
+                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 45, 0, ClickType.PICKUP, mc.player);
+                mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.updateController();
 
-                ChatUtils.complete(ChatFormatting.YELLOW + "[AutoTotem] " + ChatFormatting.LIGHT_PURPLE + "Offhand now has a " + l_Display);
+                ChatUtils.complete(ChatFormatting.YELLOW + "[AutoTotem] " + ChatFormatting.LIGHT_PURPLE + "Offhand now has a " + display);
             }
         }
     }
@@ -101,35 +84,38 @@ public class OffHand extends Module {
         if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory)))
             return;
 
-        if (!mc.player.getHeldItemMainhand().isEmpty())
-        {
-            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !mc.player.isPotionActive(MobEffects.STRENGTH))
-            {
-                SwitchOffHandIfNeed("Strength");
+        if (!mc.player.getHeldItemMainhand().isEmpty()) {
+            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !mc.player.isPotionActive(MobEffects.STRENGTH)) {
+                switchOffHandIfNeed("Strength");
                 return;
             }
 
-            /// Sword override
-            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean())
-            {
-                SwitchOffHandIfNeed("Gapple");
+            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
+                switchOffHandIfNeed("Gapple");
                 return;
             }
         }
 
-        /// First check health, most important as we don't want to die for no reason.
-        if (health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallBackDistance.getValDouble() && !mc.player.isElytraFlying()) || noNearbyPlayers())
-        {
-            SwitchOffHandIfNeed("Totem");
+        if (health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallBackDistance.getValDouble() && !mc.player.isElytraFlying()) || noNearbyPlayers()) {
+            switchOffHandIfNeed("Totem");
             return;
         }
-
-        /// If we meet the required health
-
-        SwitchOffHandIfNeed(mode.getValString());
+        switchOffHandIfNeed(mode.getValString());
     }
 
-    public Item GetItemFromModeVal(String mode) {
+    private boolean isValidTarget(Entity entity) {
+        if (entity == mc.player) {
+            return false;
+        }
+
+        if (mc.player.getDistance(entity) > 15) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Item getItemFromModeVal(String mode) {
         switch (mode) {
             case "Crystal":
                 return Items.END_CRYSTAL;
@@ -150,7 +136,7 @@ public class OffHand extends Module {
         return Items.TOTEM_OF_UNDYING;
     }
 
-    private String GetItemNameFromModeVal(String mode) {
+    private String getItemNameFromModeVal(String mode) {
         switch (mode) {
             case "Crystal":
                 return "End Crystal";
@@ -176,15 +162,5 @@ public class OffHand extends Module {
             return true;
         }
         return false;
-    }
-
-    private boolean isValidTarget(Entity p_Entity) {
-        if (p_Entity == mc.player) {
-            return false;
-        }
-        if (mc.player.getDistance(p_Entity) > 15) {
-            return false;
-        }
-        return true;
     }
 }

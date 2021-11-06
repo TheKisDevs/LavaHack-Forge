@@ -6,6 +6,7 @@ import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.oldclickgui.ClickGui;
@@ -63,6 +64,16 @@ public class ColorPickerButton extends Component{
       }
 
       Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+      if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+          Gui.drawRect(
+                  button.parent.getX() + 88 - 3,
+                  button.parent.getY() + offset,
+                  button.parent.getX() + button.parent.getWidth() - 2,
+                  button.parent.getY() + offset + 12,
+                  new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+          );
+      }
   }
 
   @Override

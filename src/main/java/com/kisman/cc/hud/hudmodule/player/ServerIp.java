@@ -17,7 +17,7 @@ public class ServerIp extends HudModule {
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
         ScaledResolution sr = new ScaledResolution(mc);
-        String str = TextFormatting.WHITE + "TPS: " + TextFormatting.GRAY + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase());
+        String str = TextFormatting.WHITE + "Server: " + TextFormatting.GRAY + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase());
         CustomFontUtil.drawStringWithShadow(str, sr.getScaledWidth() - 1 - CustomFontUtil.getStringWidth(str), sr.getScaledHeight() - 5 - (CustomFontUtil.getFontHeight() * 3), -1);
     }
 }

@@ -92,6 +92,11 @@ public class TimerUtils {
 		this.lastMS = getCurrentMS();
 		this.nanoTime = System.nanoTime();
 	}
+
+	public void resetTimeSkipTo(long ms) {
+		this.lastMS = getCurrentMS() + ms;
+		this.nanoTime = System.nanoTime();
+	}
 	
     public boolean delay(float milliSec){
 		return (float)(getTime() - this.prevMS) >= milliSec;

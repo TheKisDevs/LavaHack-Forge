@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.EventSpawnEntity;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.module.combat.AntiTrap;
 import com.kisman.cc.module.combat.AutoCrystalBypass;
 import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
@@ -119,7 +120,7 @@ public class Tracker extends Module {
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
         if (mc.player != null && mc.world != null && event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock) {
             final CPacketPlayerTryUseItemOnBlock packet = (CPacketPlayerTryUseItemOnBlock)event.getPacket();
-            if (Tracker.mc.player.getHeldItem(packet.hand).getItem() == Items.END_CRYSTAL && !AntiTrap.placedPos.contains(packet.position) && !AutoCrystalBypass.instance.placedCrystal.contains(packet.position)) {
+            if (Tracker.mc.player.getHeldItem(packet.hand).getItem() == Items.END_CRYSTAL && !AntiTrap.instance.placedPos.contains(packet.position) && !AutoCrystalBypass.instance.placedCrystal.contains(packet.position)) {
                 this.manuallyPlaced.add(packet.position);
             }
         }
@@ -150,13 +151,13 @@ public class Tracker extends Module {
 
     @EventHandler
     private final Listener<EventSpawnEntity> listener4 = new Listener<>(event -> {
-        if (event.entity instanceof EntityExpBottle && Objects.equals(Tracker.mc.world.getClosestPlayerToEntity(entity, 3.0), this.trackedPlayer)) {
+        if (event.entity instanceof EntityExpBottle && Objects.equals(Tracker.mc.world.getClosestPlayerToEntity(event.entity, 3.0), this.trackedPlayer)) {
             ++this.usedExp;
         }
 
         if (event.entity instanceof EntityEnderCrystal) {
-            if (AntiTrap.placedPos.contains(event.entity.getPosition().down())) {
-                AntiTrap.placedPos.remove(event.entity.getPosition().down());
+            if (AntiTrap.instance.placedPos.contains(event.entity.getPosition().down())) {
+                AntiTrap.instance.placedPos.remove(event.entity.getPosition().down());
             } else if (this.manuallyPlaced.contains(event.entity.getPosition().down())) {
                 this.manuallyPlaced.remove(event.entity.getPosition().down());
             } else if (!AutoCrystalBypass.instance.placedCrystal.contains(event.entity.getPosition().down())) {

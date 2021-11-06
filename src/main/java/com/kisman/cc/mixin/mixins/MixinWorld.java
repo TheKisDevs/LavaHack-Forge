@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(World.class)
 public class MixinWorld {
     @Inject(method = "onEntityAdded", at = @At("HEAD"))
-    private void onEntityAdded(Entity entityIn, CallbackInfo ci) {
+    public void onEntityAdded(Entity entityIn, CallbackInfo ci) {
         Kisman.EVENT_BUS.post(new EventSpawnEntity(entityIn));
     }
 }

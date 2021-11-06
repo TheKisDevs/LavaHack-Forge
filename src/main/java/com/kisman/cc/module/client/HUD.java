@@ -42,20 +42,11 @@ public class HUD extends Module {
 	public Setting radarDist = new Setting("MaxDistance", this, 50, 10, 50, true);
 	public Setting radarY = new Setting("RadarY", this, 3 + (CustomFontUtil.getFontHeight() * 2), 0, mc.displayHeight, true);
 
-	private Setting notifLine = new Setting("NotifLine", this, "Notification");
-	public Setting addType = new Setting("AddType", this, false);
-	public Setting inOutTime = new Setting("InOutTime", this, 200, 50, 500, true);
-	public Setting lifetime = new Setting("LifeTime", this, 500, 500, 5000, true);
-	public Setting height = new Setting("Height", this, 50, 0, new ScaledResolution(mc).getScaledHeight(), true);
-	public Setting max = new Setting("MaxCount", this, 7, 1, 20, true);
-	public Setting notifModule = new Setting("Module", this, true);
-	public Setting crystalTarget = new Setting("CrystalTarget", this, true);
-	public Setting placeObby = new Setting("PlaceObby", this, false);
-	public Setting traceTeleport = new Setting("TraceTeleport", this, true);
-	public Setting visualRange = new Setting("VisualRange", this, true);
+	private Setting speedLine = new Setting("SpeedLine", this, "Speed");
+	public Setting speedMode = new Setting("SpeedMode", this, "km/h", new ArrayList<>(Arrays.asList("b/s", "km/h")));
 
 	public HUD() {
-		super("HUD", "hud editor", Category.CLIENT);
+		super("HudEditor", "hud editor", Category.CLIENT);
 
 		instance = this;
 
@@ -79,20 +70,8 @@ public class HUD extends Module {
 		setmgr.rSetting(radarDist);
 		setmgr.rSetting(radarY);
 
-		setmgr.rSetting(notifLine);
-		setmgr.rSetting(addType);
-		setmgr.rSetting(inOutTime);
-		setmgr.rSetting(lifetime);
-		setmgr.rSetting(max);
-		setmgr.rSetting(height);
-		setmgr.rSetting(notifModule);
-		setmgr.rSetting(crystalTarget);
-		setmgr.rSetting(placeObby);
-		setmgr.rSetting(traceTeleport);
-		setmgr.rSetting(visualRange);
-
-		Kisman.instance.settingsManager.rSetting(new Setting("LogoLine", this, "Logo"));
-		Kisman.instance.settingsManager.rSetting(new Setting("LogoMode", this, "Simple", new ArrayList<>(Arrays.asList("Simple", "Best","SimpeBird", "Bird", "Kisman", "Nevis"))));
+		setmgr.rSetting(speedLine);
+		setmgr.rSetting(speedMode);
 	}
 
 	public void onEnable() {

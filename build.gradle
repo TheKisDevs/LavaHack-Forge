@@ -35,7 +35,7 @@ apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = 'b0.1.5-plus'
+version = 'b0.1.6-plus'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 

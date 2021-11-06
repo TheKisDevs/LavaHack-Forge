@@ -4,11 +4,19 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.RenderUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
@@ -16,13 +24,15 @@ import java.awt.*;
 
 public class PreviewButton extends Component {
     public Setting set;
-    public static EntityEnderCrystal entityEnderCrystal;
+    public EntityEnderCrystal entityEnderCrystal;
+    public EntityPlayer entityPlayer;
     public boolean open = false;
 
     public int offset;
     public Button button;
     private boolean hover;
     public int x, y;
+    private int mouseX, mouseY;
 
     private Minecraft mc = Minecraft.getMinecraft();
 
@@ -41,10 +51,25 @@ public class PreviewButton extends Component {
         Gui.drawRect(button.parent.getX() + 3, (button.parent.getY() + offset + mc.fontRenderer.FONT_HEIGHT - 5) + 5, (button.parent.getX() + 7 + button.parent.getWidth() - 7) - 3,(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 
         if (open) {
+            Gui.drawRect(button.parent.getX() + 5, button.parent.getY() + offset + 12, button.parent.getX() + 88 - 5, button.parent.getY() + offset + 112, new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
+            Gui.drawRect(button.parent.getX() + 5, button.parent.getY() + offset + 12, button.parent.getX() + 6, button.parent.getY() + offset + 112, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+            if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+                Gui.drawRect(
+                        button.parent.getX() + 88 - 6,
+                        button.parent.getY() + offset + 12,
+                        button.parent.getX() + 88 - 5,
+                        button.parent.getY() + offset + 112,
+                        new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+                );
+            }
+
             if (entity instanceof EntityEnderCrystal) {
                 System.out.println("4454657658768");
                 EntityEnderCrystal ent;
-                entityEnderCrystal = ent = new EntityEnderCrystal((World) mc.world, Double.longBitsToDouble(Double.doubleToLongBits(9.310613315809524E306) ^ 0x7FAA847B55B02A7FL), Double.longBitsToDouble(Double.doubleToLongBits(1.7125394916952668E308) ^ 0x7FEE7BF580E967CDL), Double.longBitsToDouble(Double.doubleToLongBits(1.351057559302745E308) ^ 0x7FE80CB4154FF45AL));
+                entityEnderCrystal = ent = new EntityEnderCrystal(
+                        mc.world, Double.longBitsToDouble(Double.doubleToLongBits(9.310613315809524E306) ^ 0x7FAA847B55B02A7FL),
+                        Double.longBitsToDouble(Double.doubleToLongBits(1.7125394916952668E308) ^ 0x7FEE7BF580E967CDL), Double.longBitsToDouble(Double.doubleToLongBits(1.351057559302745E308) ^ 0x7FE80CB4154FF45AL));
                 ent.setShowBottom(false);
                 ent.rotationYaw = Float.intBitsToFloat(Float.floatToIntBits(1.1630837E38f) ^ 0x7EAF005B);
                 ent.rotationPitch = Float.intBitsToFloat(Float.floatToIntBits(2.1111544E38f) ^ 0x7F1ED35B);
@@ -53,9 +78,11 @@ public class PreviewButton extends Component {
                 ent.prevRotationPitch = Float.intBitsToFloat(Float.floatToIntBits(2.4984888E38f) ^ 0x7F3BF725);
                 if (ent != null) {
                     System.out.println("9999999");
-                    GL11.glScalef((float)Float.intBitsToFloat(Float.floatToIntBits(6.72125f) ^ 0x7F57147B), (float)Float.intBitsToFloat(Float.floatToIntBits(8.222657f) ^ 0x7E839001), (float)Float.intBitsToFloat(Float.floatToIntBits(7.82415f) ^ 0x7F7A5F70));
-                    RenderUtil.drawEntityOnScreen(ent, button.x + 88 / 2, button.y + 90, 40, Float.intBitsToFloat(Float.floatToIntBits(4.219836E36f) ^ 0x7C4B2D7F), Float.intBitsToFloat(Float.floatToIntBits(8.549953E37f) ^ 0x7E80A539));
+                    GL11.glScalef(Float.intBitsToFloat(Float.floatToIntBits(6.72125f) ^ 0x7F57147B), (float)Float.intBitsToFloat(Float.floatToIntBits(8.222657f) ^ 0x7E839001), (float)Float.intBitsToFloat(Float.floatToIntBits(7.82415f) ^ 0x7F7A5F70));
+                    drawEntityOnScreen(button.parent.getX() + 44, button.parent.getY() + offset + 102, 40, 0, 0, ent);
                 }
+            } else {
+                drawEntityOnScreen(button.parent.getX() + 44, button.parent.getY() + offset + 98, 40, 0, 0, (Entity) mc.player);
             }
         }
 
@@ -65,6 +92,16 @@ public class PreviewButton extends Component {
         GL11.glPopMatrix();
 
         Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+        if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+            Gui.drawRect(
+                    button.parent.getX() + 88 - 3,
+                    button.parent.getY() + offset,
+                    button.parent.getX() + button.parent.getWidth() - 2,
+                    button.parent.getY() + offset + 12,
+                    new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+            );
+        }
     }
 
     public void updateComponent(int mouseX, int mouseY) {
@@ -73,6 +110,9 @@ public class PreviewButton extends Component {
         } else {
             hover = false;
         }
+
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
@@ -91,5 +131,84 @@ public class PreviewButton extends Component {
         if(x > button.parent.getX() && x < button.parent.getX() + 88 && y > button.parent.getY() + offset && y < button.parent.getY() + offset + 12) return true;
 
         return false;
+    }
+
+    public void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, Entity ent) {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.translate((float)posX, (float)posY, 50.0F);
+        GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+//        float f = ent.getrenderyaw;
+        float f1 = ent.rotationYaw;
+        float f2 = ent.rotationPitch;
+//        float f3 = ent.prevRotationYawHead;
+//        float f4 = ent.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        ent.setRenderYawOffset((float)Math.atan((double)(mouseX / 40.0F)) * 20.0F);
+        ent.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+        ent.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        ent.setRotationYawHead(ent.rotationYaw);
+        ent.prevRotationYaw = ent.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(180.0F);
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.setRenderShadow(true);
+//        ent.renderYawOffset = f;
+        ent.rotationYaw = f1;
+        ent.rotationPitch = f2;
+//        ent.prevRotationYaw = f3;
+//        ent.prevRotationPitch = f4;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    public void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent) {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float)posX, (float)posY, 50.0F);
+        GlStateManager.scale((float)(-scale), (float)scale, (float)scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float f = ent.renderYawOffset;
+        float f1 = ent.rotationYaw;
+        float f2 = ent.rotationPitch;
+        float f3 = ent.prevRotationYawHead;
+        float f4 = ent.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        ent.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 20.0F;
+        ent.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+        ent.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        ent.rotationYawHead = ent.rotationYaw;
+        ent.prevRotationYawHead = ent.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(180.0F);
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.setRenderShadow(true);
+        ent.renderYawOffset = f;
+        ent.rotationYaw = f1;
+        ent.rotationPitch = f2;
+        ent.prevRotationYawHead = f3;
+        ent.rotationYawHead = f4;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 }

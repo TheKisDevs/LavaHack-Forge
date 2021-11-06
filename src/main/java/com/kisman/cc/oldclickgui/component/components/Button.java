@@ -39,10 +39,6 @@ public class Button extends Component {
 	private ArrayList<Component> drawBoxHud;
 	public boolean open;
 	private int height;
-	private int num1 = new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB();
-	private int num2 = new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB();
-	private int num3 = new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB();
-	private int num4 = new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB();
 
 	public Button(Module mod, Frame parent, int offset) {
 		this.hud = false;
@@ -110,8 +106,8 @@ public class Button extends Component {
 		this.hudMod = mod;
 		this.parent = parent;
 		this.offset = offset;
-		this.subcomponents = new ArrayList<Component>();
-		this.drawBoxHud = new ArrayList<Component>();
+		this.subcomponents = new ArrayList<>();
+		this.drawBoxHud = new ArrayList<>();
 		this.open = false;
 		height = 12;
 		int opY = offset + 12;
@@ -173,8 +169,8 @@ public class Button extends Component {
 				this.parent.getX() + this.parent.getWidth(),
 			this.parent.getY() + 12 + this.offset,
 			this.hud ?  
-			this.isHovered ? (this.hudMod.isToggled() ? num1 : num2) : (this.hudMod.isToggled() ? num3 : num4) : 
-			this.isHovered ? (this.mod.isToggled() ? num1 : num2) : (this.mod.isToggled() ? num3 : num4)
+			this.isHovered ? (this.hudMod.isToggled() ? new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB() : new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB()) : (this.hudMod.isToggled() ? new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB() : new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB()) :
+			this.isHovered ? (this.mod.isToggled() ? new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB() : new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB()) : (this.mod.isToggled() ? new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB() : new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB())
 		);
 		if(ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 			Gui.drawRect(
@@ -235,41 +231,11 @@ public class Button extends Component {
 
 		if(this.open) {
 			if(!this.subcomponents.isEmpty()) {
-				int compCount = 0;
-//
-//				int height = 0;
-//				int lastHeight = 0;
+//				int compCount = 0;
 
 				for(Component comp : this.subcomponents) {
 					comp.renderComponent();
-
-//					lastHeight = height;
-
-//					if(comp instanceof PreviewButton) {
-//						if(((PreviewButton) comp).open) {
-//							lastHeight += height + 100;
-//							height += 112;
-//						} else {
-//							lastHeight += height;
-//							height += 12;
-//						}
-//					} else {
-//						lastHeight += height;
-//						height += 12;
-//					}
-
-//					Gui.drawRect(
-//							comp.x + 2,
-//							comp.y + comp.offset,
-//							comp.x + 3,
-//							comp.y + comp.offset + 12,
-//							new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
-//					);
-
-//					Gui.drawRect(parent.getX() + 2, parent.getY() + offset + 12 + lastHeight, parent.getX() + 3, parent.getY() + offset + 12 + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
-
-
-					if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+					/*if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 						Gui.drawRect(
 								parent.getX() + parent.getWidth() - 3,
 								parent.getY() + offset + 12 + (12 * compCount),
@@ -279,12 +245,11 @@ public class Button extends Component {
 						);
 					}
 
-					compCount++;
+					compCount++;*/
 				}
-
-//				Gui.drawRect(parent.getX() + 2, parent.getY() + this.offset + 12, parent.getX() + 3, parent.getY() + this.offset + ((this.subcomponents.size() + 1) * 12), new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()); // ClickGui.isRainbowLine() ? new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB() :
 			}
 		}
+
 		if(hud) {
 			if(hudMod.isToggled()) {
 				if(!drawBoxHud.isEmpty()) {

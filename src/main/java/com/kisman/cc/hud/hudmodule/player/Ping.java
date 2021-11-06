@@ -17,7 +17,7 @@ public class Ping extends HudModule {
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
         ScaledResolution sr = new ScaledResolution(mc);
-        String str = TextFormatting.WHITE + "Ping: " + TextFormatting.GRAY + (mc.isSingleplayer() ? 0 : mc.getCurrentServerData().pingToServer);
+        String str = TextFormatting.WHITE + "Ping: " + TextFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing());
         CustomFontUtil.drawStringWithShadow(str, sr.getScaledWidth() - 1 - CustomFontUtil.getStringWidth(str), sr.getScaledHeight() - 1 - CustomFontUtil.getFontHeight(), -1);
     }
 }

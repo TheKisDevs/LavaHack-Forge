@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.LineMode;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -46,6 +47,16 @@ public class Checkbox extends Component {
 			Gui.drawRect(button.parent.getX() + 4 + 4, button.parent.getY() + offset + 4, button.parent.getX() + 8 + 4, button.parent.getY() + offset + 8, 0xFF666666);
 
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+		if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+			Gui.drawRect(
+					button.parent.getX() + 88 - 3,
+					button.parent.getY() + offset,
+					button.parent.getX() + button.parent.getWidth() - 2,
+					button.parent.getY() + offset + 12,
+					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+			);
+		}
 	}
 	
 	@Override

@@ -10,7 +10,7 @@ import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
-import com.kisman.cc.oldclickgui.notification.NotificationProcessor;
+import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
@@ -49,6 +49,7 @@ public class Kisman {
     public ColorUtil colorUtil;
     public HudGui hudGui;
     public NewGui newGui;
+    public Gui gui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
     public FontManager fontManager;
@@ -57,7 +58,6 @@ public class Kisman {
     public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ParticleSystem particleSystem;
-    public NotificationProcessor notificationProcessor;
     public ServerManager serverManager;
     
     public void init() {
@@ -73,6 +73,7 @@ public class Kisman {
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
         newGui = new NewGui();
+        gui = new Gui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 45), false, true);
         fontManager = new FontManager();
@@ -81,7 +82,6 @@ public class Kisman {
         rotationUtils = new RotationUtils();
         eventProcessor = new EventProcessor();
         particleSystem = new ParticleSystem(100, true, 150);
-        notificationProcessor = new NotificationProcessor();
         serverManager = new ServerManager();
 
         //load configs

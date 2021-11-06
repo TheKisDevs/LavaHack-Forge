@@ -4,6 +4,5 @@ public enum HudCategory {
     COMBAT,
     MOVEMENT,
     RENDER,
-    PLAYER,
-    MISC
+    PLAYER
 }

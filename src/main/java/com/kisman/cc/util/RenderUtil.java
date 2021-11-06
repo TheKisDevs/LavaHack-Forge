@@ -62,7 +62,7 @@ public class RenderUtil {
 	}
 	
 	public static void drawStringWithRect(String string, int x, int y, int colorString, int colorRect, int colorRect2) {
-        RenderUtil.drawBorderedRect(x - 2, y - 2, x + Minecraft.getMinecraft().fontRenderer.getStringWidth(string) + 2, y + 10, 1, colorRect, colorRect2);
+        drawBorderedRect(x - 2, y - 2, x + Minecraft.getMinecraft().fontRenderer.getStringWidth(string) + 2, y + 10, 1, colorRect, colorRect2);
         Minecraft.getMinecraft().fontRenderer.drawString(string, x, y, colorString);
     }
 

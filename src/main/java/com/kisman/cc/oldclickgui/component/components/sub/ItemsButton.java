@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.oldclickgui.component.components.sub.itemsButton.IButton;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.LineMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
@@ -47,14 +48,15 @@ public class ItemsButton extends Component {
     }
 
     public void renderComponent() {
-        buttons.stream().forEach(iButton -> {
-            iButton.render();
-        });
-
         Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + (button.parent.getWidth() * 1) - 3, button.parent.getY() + offset + 12, hover ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
         Gui.drawRect(button.parent.getX() + 3, (button.parent.getY() + offset + mc.fontRenderer.FONT_HEIGHT - 5) + 5, (button.parent.getX() + 7 + button.parent.getWidth() - 7) - 3,(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 
         //render items
+        if(open) {
+            buttons.stream().forEach(iButton -> {
+                iButton.render();
+            });
+        }
 
         GL11.glPushMatrix();
         GL11.glScalef(0.5f,0.5f, 0.5f);
@@ -62,6 +64,16 @@ public class ItemsButton extends Component {
         GL11.glPopMatrix();
 
         Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+        if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+            Gui.drawRect(
+                    button.parent.getX() + 88 - 3,
+                    button.parent.getY() + offset,
+                    button.parent.getX() + button.parent.getWidth() - 2,
+                    button.parent.getY() + offset + 12,
+                    new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+            );
+        }
     }
 
     public void updateComponent(int mouseX, int mouseY) {

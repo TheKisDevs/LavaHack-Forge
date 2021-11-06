@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.LineMode;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,16 @@ public class VisibleButton extends Component { // Remove this class if you don't
 		GL11.glPopMatrix();
 
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+
+		if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+			Gui.drawRect(
+					button.parent.getX() + 88 - 3,
+					button.parent.getY() + offset,
+					button.parent.getX() + button.parent.getWidth() - 2,
+					button.parent.getY() + offset + 12,
+					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+			);
+		}
 	}
 	
 	@Override

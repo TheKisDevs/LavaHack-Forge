@@ -34,9 +34,9 @@ public class VisualRange extends Module {
                     if (!this.names.contains(name)) {
                         String msg = name + " entered visual range!";
 
-                        if(HUD.instance.visualRange.getValBoolean()) {
+                        /*if(HUD.instance.visualRange.getValBoolean()) {
                             Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());
-                        }
+                        }*/
 
                         ChatUtils.warning(msg);
                     }
@@ -45,9 +45,9 @@ public class VisualRange extends Module {
                     if (!this.newnames.contains(name)) {
                         String msg = name + " left visual range!";
 
-                        if(HUD.instance.visualRange.getValBoolean()) {
+                        /*if(HUD.instance.visualRange.getValBoolean()) {
                             Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());                        }
-
+*/
                         ChatUtils.message(msg);
                     }
                 }

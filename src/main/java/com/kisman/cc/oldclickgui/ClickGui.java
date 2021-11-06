@@ -73,7 +73,7 @@ public class ClickGui extends GuiScreen {
 	public static ArrayList<Frame> frames;
 
 	public ClickGui() {
-		this.frames = new ArrayList<Frame>();
+		frames = new ArrayList<>();
 		int frameX = 5;
 		for(Category category : Category.values()) {
 			Frame frame = new Frame(category);

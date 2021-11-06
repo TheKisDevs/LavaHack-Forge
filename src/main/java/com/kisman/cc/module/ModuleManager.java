@@ -34,6 +34,7 @@ public class ModuleManager {
 	public void init() {
 		//combat
 		modules.add(new AimBot());
+		modules.add(new AntiTrap());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystalBypass());
@@ -41,6 +42,7 @@ public class ModuleManager {
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
 		modules.add(new AutoTrap());
+		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
 		modules.add(new CevBreaker());
 		modules.add(new Criticals());
@@ -54,9 +56,11 @@ public class ModuleManager {
 		modules.add(new ClickGUI());
 		modules.add(new ColorModule());
 		modules.add(new Console());
+		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
 		modules.add(new HUD());
+		modules.add(new NewGui());
 		modules.add(new ExampleModule());
 		modules.add(new ParticleGui());
 		modules.add(new Test());
@@ -73,6 +77,7 @@ public class ModuleManager {
 		modules.add(new CustomFov());
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
+		modules.add(new CrystalModifier());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
 		modules.add(new HoleESP());
@@ -82,25 +87,28 @@ public class ModuleManager {
 		modules.add(new NoRender());
 		modules.add(new Particle());
 		modules.add(new PenisESP());
+		modules.add(new PlayerModifier());
 		modules.add(new RangeVisualisator());
 		modules.add(new SkyColor());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new Trails());
-		modules.add(new ViemModel());
+		modules.add(new ViewModel());
 		modules.add(new XRay());
 		//movement
 		modules.add(new AirJump());
 		modules.add(new Anchor());
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
+		modules.add(new ElytraFly());
 		modules.add(new Fly());
 		modules.add(new HoleTP());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
+		modules.add(new NoWeb());
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());
 		modules.add(new SafeWalk());
@@ -134,6 +142,7 @@ public class ModuleManager {
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 //		modules.add(new StrongholdFinder());
+		modules.add(new TickShift());
 		modules.add(new Timer());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
@@ -145,6 +154,7 @@ public class ModuleManager {
 		modules.add(new NameProtect());
 		modules.add(new PigPOV());
 		modules.add(new TeamRusherLag());
+		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());

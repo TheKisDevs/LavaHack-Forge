@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -70,5 +71,14 @@ public class Line extends Component {
 
         Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 
+        if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+            Gui.drawRect(
+                    button.parent.getX() + 88 - 3,
+                    button.parent.getY() + offset,
+                    button.parent.getX() + button.parent.getWidth() - 2,
+                    button.parent.getY() + offset + 12,
+                    new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
+            );
+        }
     }
 }

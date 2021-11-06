@@ -13,11 +13,13 @@ import net.minecraft.network.play.client.CPacketUseEntity;
 
 public class Criticals extends Module {
     private Setting mode = new Setting("Mode", this, Modes.Packet);
+    private Setting onlyKillaura = new Setting("OnlyKillAura", this, false);
 
     public Criticals() {
         super("Criticals", "", Category.COMBAT);
 
         setmgr.rSetting(mode);
+        setmgr.rSetting(onlyKillaura);
     }
 
     public void onEnable() {
@@ -31,7 +33,9 @@ public class Criticals extends Module {
     @EventHandler
     private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {
         if(event.getPacket() instanceof CPacketUseEntity && ((CPacketUseEntity) event.getPacket()).getAction() != CPacketUseEntity.Action.ATTACK && !(((CPacketUseEntity) event.getPacket()).getEntityFromWorld(mc.world) instanceof EntityEnderCrystal)) {
-            doCriticals(mode.getValString());
+            if((onlyKillaura.getValBoolean() && KillAura.instance.isToggled()) || !onlyKillaura.getValBoolean()) {
+                doCriticals(mode.getValString());
+            }
         }
     });
 
@@ -61,7 +65,7 @@ public class Criticals extends Module {
         }
     }
 
-    public static enum Modes {
+    public enum Modes {
         Packet,
         Jump,
         MiniJump,

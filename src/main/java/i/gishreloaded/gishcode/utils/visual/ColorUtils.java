@@ -28,4 +28,15 @@ public class ColorUtils {
     public static int getColor(int r, int g, int b) {
         return 255 << 24 | r << 16 | g << 8 | b;
     }
+
+    public static int astolfoColors(int yOffset, int yTotal) {
+        float hue;
+        float speed = 2900.0f;
+        for (hue = (float) (System.currentTimeMillis() % (long) ((int)speed)) + (float) ((yTotal - yOffset) * 9); hue > speed; hue -= speed) {
+        }
+        if ((double) (hue /= speed) > 0.5) {
+            hue = 0.5f - (hue - 0.5f);
+        }
+        return Color.HSBtoRGB(hue += 0.5f, 0.5f, 1.0f);
+    }
 }

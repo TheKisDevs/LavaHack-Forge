@@ -292,7 +292,7 @@ public class AutoCrystalBypass extends Module {
 
     private BlockPos placeCrystal(EventPlayerMotionUpdate event) {
         if (onlyPlaceWithCrystal.getValBoolean()) {
-            if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL)
+            if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && !switchMode.getValEnum().equals(SwitchModes.Silent))
                 return BlockPos.ORIGIN;
         }
 
@@ -354,10 +354,6 @@ public class AutoCrystalBypass extends Module {
 
                     if (target != null && l_Target != target && l_Target != null && Notification.instance.target.getValBoolean()) {
                         String newTarget = String.format("Found new target %s", l_Target.getName());
-
-                        if(HUD.instance.crystalTarget.getValBoolean()) {
-//                            NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", newTarget, 800));
-                        }
 
                         ChatUtils.complete(newTarget);
                     }
@@ -423,10 +419,6 @@ public class AutoCrystalBypass extends Module {
                                 if (Notification.instance.placeObby.getValBoolean()) {
                                     String placeMsg = String.format("Tried to place obsidian at %s would deal %s dmg", l_TargetPos.toString(), l_TargetDMG);
 
-                                    if (HUD.instance.placeObby.getValBoolean()) {
-//                                        NotificationManager.show(new com.kisman.cc.oldclickgui.notification.Notification(NotificationType.COMPLETE, "AutoCrystal", placeMsg, 400));
-                                    }
-
                                     ChatUtils.complete(placeMsg);
                                 }
                             }
@@ -457,9 +449,9 @@ public class AutoCrystalBypass extends Module {
 
         if (autoMultiPlace.getValBoolean()) {
             if (target.getHealth() + target.getAbsorptionAmount() <= multiPlaceHP.getValDouble())
-                multiPlace.setValBoolean(true);
+                multiPlace.setValEnum(MultiPlaceModes.Dynamic);
             else
-                multiPlace.setValBoolean(false);
+                multiPlace.setValEnum(MultiPlaceModes.None);
         }
 
         float l_MinDmg = (float) minDMG.getValDouble();
@@ -772,24 +764,24 @@ public class AutoCrystalBypass extends Module {
         }
     }
 
-    public static enum Renders {
+    public enum Renders {
         None,
         Normal
     }
 
-    public static enum MultiPlaceModes {
+    public enum MultiPlaceModes {
         None,
         Dynamic,
         Static
     }
 
-    public static enum Hands {
+    public enum Hands {
         None,
         Mainhand,
         Offhand
     }
 
-    public static enum SwitchModes {
+    public enum SwitchModes {
         None,
         Normal,
         Silent

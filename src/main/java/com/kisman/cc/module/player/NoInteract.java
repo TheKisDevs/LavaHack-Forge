@@ -17,6 +17,7 @@ public class NoInteract extends Module {
     private Setting chest = new Setting("Chest", this, true);
     private Setting furnace = new Setting("Furnace", this, true);
     private Setting armorStand = new Setting("ArmorStand", this, true);
+    private Setting anvil = new Setting("Anvil", this, true);
 
     public NoInteract() {
         super("NoInteract", "NoInteract", Category.PLAYER);
@@ -25,6 +26,7 @@ public class NoInteract extends Module {
         setmgr.rSetting(chest);
         setmgr.rSetting(furnace);
         setmgr.rSetting(armorStand);
+        setmgr.rSetting(anvil);
     }
 
     public void onEnable() {
@@ -40,10 +42,14 @@ public class NoInteract extends Module {
         if(mc.player == null && mc.world == null) return;
 
         if(event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock){
+            if(mc.world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock() == null) return;
+
             final Block block = mc.world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock();
+
             if((block == Blocks.CRAFTING_TABLE && craft.getValBoolean()) ||
                     (block == Blocks.FURNACE && furnace.getValBoolean()) ||
                     (block == Blocks.CHEST && chest.getValBoolean()) ||
+                    (block == Blocks.ANVIL && anvil.getValBoolean()) ||
                     (mc.objectMouseOver.entityHit != null && mc.objectMouseOver.entityHit instanceof EntityArmorStand && armorStand.getValBoolean())){
                 event.cancel();
             }

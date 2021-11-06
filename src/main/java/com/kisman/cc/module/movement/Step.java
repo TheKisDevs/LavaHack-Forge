@@ -7,8 +7,13 @@ import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
 
 public class Step extends Module {
+    public static Step instance;
+
     public Step() {
         super("Step", "setting your step", Category.MOVEMENT);
+
+        instance = this;
+
         Kisman.instance.settingsManager.rSetting(new Setting("Heigth", this, 0.5f, 0.5f, 2.5f, false));
     }
 

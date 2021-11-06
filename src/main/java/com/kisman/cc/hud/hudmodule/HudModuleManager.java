@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
-import com.kisman.cc.hud.hudmodule.misc.NotificationHud;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
 import com.kisman.cc.hud.hudmodule.player.Ping;
 import com.kisman.cc.hud.hudmodule.player.ServerIp;
@@ -44,9 +43,6 @@ public class HudModuleManager {
 		modules.add(new Ping());
 		modules.add(new ServerIp());
 		modules.add(new Tps());
-
-		//misc
-		modules.add(new NotificationHud());
 	}
 	
 	public HudModule getModule(String name) {

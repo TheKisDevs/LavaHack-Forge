@@ -34,6 +34,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import static org.lwjgl.opengl.GL11.*;
 
 public class EntityESP extends Module{
+    private Setting range = new Setting("Range", this, 50, 0, 100, true);
+
     //modes
     private Setting playerMode = new Setting("Players", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "2D", "Glow")));
 
@@ -57,6 +59,8 @@ public class EntityESP extends Module{
         super("EntityESP", "esp 1", Category.RENDER);
 
         //TODO: optimisate settings
+
+        setmgr.rSetting(range);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 100, 10, 260, true));
 
@@ -103,163 +107,102 @@ public class EntityESP extends Module{
     });
 
     @SubscribeEvent
-	public void onRenderWorldLast(RenderWorldLastEvent event) {
-        float distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();;
+    public void onRenderWorld(RenderWorldLastEvent e) {
+        for(EntityPlayer p : mc.world.playerEntities) {
+            if(p == mc.player) continue;
 
-        String monstersMode = Kisman.instance.settingsManager.getSettingByName(this, "Monsters").getValString();
-        String itemMode = Kisman.instance.settingsManager.getSettingByName(this, "Items").getValString();
-        String crystalMode = Kisman.instance.settingsManager.getSettingByName(this, "Entity").getValString();
+            glPushMatrix();
 
-        mc.world.loadedEntityList.stream()
-        .filter(e -> e != mc.player)
-        .forEach(e -> {
-            if (mc.player.getDistance(e) > distance) {
-                return;
-            } else {
-                if((!playerMode.getValString().equalsIgnoreCase("None")) && e instanceof EntityPlayer) {
-                    if(playerMode.getValString().equalsIgnoreCase("Box1")) {
-                        if(e.isGlowing())
-                            e.setGlowing(false);
-                        RenderUtil.drawESP(e, playerColor.getR() / 255, playerColor.getG() / 255, playerColor.getB() / 255, playerColor.getA() / 255, event.getPartialTicks());
-                    } else if(playerMode.getValString().equalsIgnoreCase("Glow")) {
-                        e.setGlowing(true);
-                    } else if(playerMode.getValString().equalsIgnoreCase("Box2")) {
-                        RenderUtil.drawColorBox(e.getEntityBoundingBox(), playerColor.getR() / 255, playerColor.getG() / 255, playerColor.getB() / 255, playerColor.getA() / 255);
-                    } else if(playerMode.getValString().equalsIgnoreCase("2D")) {
-                        draw2D(event, e);
+            double x = p.lastTickPosX + (p.posX - p.lastTickPosX) * e.getPartialTicks() - mc.getRenderManager().viewerPosX;
+            double y = p.lastTickPosY + (p.posY - p.lastTickPosY) * e.getPartialTicks() - mc.getRenderManager().viewerPosY+1;
+            double z = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * e.getPartialTicks() - mc.getRenderManager().viewerPosZ;
+
+            glTranslated(x, y, z);
+
+            glRotated(-mc.getRenderManager().playerViewY, 0, 1, 0);
+            glRotated(mc.getRenderManager().playerViewX, 1, 0, 0);
+
+            glDisable(GL_DEPTH_TEST);
+
+            glEnable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_LINE_SMOOTH);
+
+            glLineWidth(2);
+
+            glBegin(GL_LINE_LOOP);
+            glColor4d(1, 1, 1, 1);
+            glVertex2d(0.4, 1);
+            glVertex2d(0.4, -1);
+            glVertex2d(-0.4, -1);
+            glVertex2d(-0.4, 1);
+
+            glEnd();
+
+            glEnable(GL_DEPTH_TEST);
+
+            glEnable(GL_TEXTURE_2D);
+            glDisable(GL_BLEND);
+            glDisable(GL_LINE_SMOOTH);
+
+            glPopMatrix();
+        }
+        /*for (EntityPlayer player : mc.world.playerEntities) {
+            if (!player.isEntityEqual(mc.player)){
+                switch(playerMode.getValString()) {
+                    case "Glow": {
+                        player.glowing = true;
                     }
-                } else {
-                    if(e.isGlowing()) {
-                        e.setGlowing(false);
+                    case "Box1": {
+                        player.glowing = false;
+                        RenderUtil.drawESP(player, playerColor.getR() / 255, playerColor.getG() / 255, playerColor.getB() / 255, playerColor.getA() / 255, event.getPartialTicks());
                     }
-                }
-                if(!monstersMode.equalsIgnoreCase("None")) {
-                    if(e instanceof EntityCreature || e instanceof EntitySlime || e instanceof EntitySquid) {
-                        if(monstersMode.equalsIgnoreCase("Box1")) {
-                            if(e.isGlowing())
-                                e.setGlowing(false);
-                            RenderUtil.drawESP(e, monstersColor.getR(), monstersColor.getG(), monstersColor.getB(), monstersColor.getA(), event.getPartialTicks());
-                        } else if(monstersMode.equalsIgnoreCase("Glow")) {
-                            e.setGlowing(true);
-                        } else if(monstersMode.equalsIgnoreCase("Box2")) {
-                            RenderUtil.drawColorBox(e.getCollisionBox(e), monstersColor.getR(), monstersColor.getG(), monstersColor.getB(), monstersColor.getA());
-                            System.out.println("2");
-                        }
-                    }
-                } else if(monstersMode.equalsIgnoreCase("None"))
-                    e.setGlowing(false);
-                if((!itemMode.equalsIgnoreCase("None")) && e instanceof EntityItem) {
-                    if(itemMode.equalsIgnoreCase("Box1")) {
-                        if(e.isGlowing()) {
-                            e.setGlowing(false);
-                        }
-                        RenderUtil.drawESP(e, itemsColor.getR(), itemsColor.getG(), itemsColor.getB(), itemsColor.getA(), event.getPartialTicks());
-                    }
-                    else if(itemMode.equalsIgnoreCase("Box2")) {
-                        if(e.isGlowing()) {
-                            e.setGlowing(false);
-                        }
-                        //RenderUtil.drawBoundingBox(e.getCollisionBoundingBox());
-                        RenderUtil.drawColorBox(e.getEntityBoundingBox(), 255, 0, 0, 255);
-                        //RenderUtil.drawOutlineBoundingBox(e.getEntityBoundingBox());
-                    }
-                    else if(itemMode.equalsIgnoreCase("Glow")) {
-                        e.setGlowing(true);
-                    }
-                }
-                if((!crystalMode.equalsIgnoreCase("None")) && (e instanceof EntityXPOrb || e instanceof EntityExpBottle || e instanceof EntityEnderCrystal)) {
-                    if(crystalMode.equalsIgnoreCase("Box1")) {
-                        if(e.isGlowing()) {
-                            e.setGlowing(false);
-                        }
-                        RenderUtil.drawESP(e, entityColor.getR(), entityColor.getG(), entityColor.getB(), entityColor.getA(), event.getPartialTicks());
-                    } else if(crystalMode.equalsIgnoreCase("Box2")) {
-                        if(e.isGlowing()) {
-                            e.setGlowing(false);
-                        }
-                        RenderUtil.drawBoundingBox(e.getEntityBoundingBox());
-                        //RenderUtil.drawColorBox(e.getEntityBoundingBox(), crystalR, crystalG, crystalB, crystalA);
+                    case "2D": {
+                        player.glowing = false;
+                        draw2D(event, player);
                     }
                 }
             }
-        });
+        }*/
     }
 
-    private void draw2D(RenderWorldLastEvent event, Entity e) {
-        final double x = (e.lastTickPosX + (e.posX - e.lastTickPosX) * event.getPartialTicks()) - mc.getRenderManager().renderPosX;
-        final double y = (e.lastTickPosY + (e.posY - e.lastTickPosY) * event.getPartialTicks()) - mc.getRenderManager().renderPosY;
-        final double z = (e.lastTickPosZ + (e.posZ - e.lastTickPosZ) * event.getPartialTicks()) - mc.getRenderManager().renderPosZ;
+    private void draw2D(RenderWorldLastEvent e, EntityPlayer p) {
         glPushMatrix();
-        glLineWidth(1.3f);
+
+        double x = p.lastTickPosX + (p.posX - p.lastTickPosX) * e.getPartialTicks() - mc.getRenderManager().viewerPosX;
+        double y = p.lastTickPosY + (p.posY - p.lastTickPosY) * e.getPartialTicks() - mc.getRenderManager().viewerPosY+1;
+        double z = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * e.getPartialTicks() - mc.getRenderManager().viewerPosZ;
+
         glTranslated(x, y, z);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
+
         glRotated(-mc.getRenderManager().playerViewY, 0, 1, 0);
-        //glRotated(mc.getRenderManager().playerViewX, 1, 0, 0);
-        if(box.getValBoolean()) {
-            glColor4d(0.8, 0.8, 0.8, 255);
-            glBegin(GL_LINE_STRIP);
-            glVertex3d(0.55, -0.2, 0);
-            glVertex3d(0.55, e.height + 0.2, 0);
-            glVertex3d(e.width - 1.15, e.height + 0.2, 0);
-            glVertex3d(e.width - 1.15, -0.2, 0);
-            glVertex3d(0.55, -0.2, 0);
-            glEnd();
-        }
+        glRotated(mc.getRenderManager().playerViewX, 1, 0, 0);
 
-        if(health.getValBoolean()) {
+        glDisable(GL_DEPTH_TEST);
 
-            Color health = Color.GREEN.darker();
-            if(((EntityPlayer)e).getHealth() >= 16){
-                health = Color.GREEN.darker();
-            } else if(((EntityPlayer)e).getHealth() >= 8 && ((EntityPlayer)e).getHealth() <= 16){
-                health = Color.YELLOW;
-            } else if(((EntityPlayer)e).getHealth() > 0 && ((EntityPlayer)e).getHealth() <= 8){
-                health = Color.RED;
-            }
-            glBegin(GL_LINE_STRIP);
-            glColor4d(1, 1, 1, 1);
-            glVertex3d(0.6, -0.2, 0);
-            glVertex3d(0.6, e.height + 0.2, 0);
-            glEnd();
-            glBegin(GL_LINE_STRIP);
-            glColor4d(health.getRed() / 255f, health.getGreen() / 255f, health.getBlue() / 255f, health.getAlpha() / 255f);
-            glVertex3d(0.6, -0.2, 0);
-            glVertex3d(0.6, (((EntityLivingBase) e).getHealth() / ((EntityLivingBase) e).getMaxHealth()) * (e.height + 0.2), 0);
-            glVertex3d(0.6, -0.2, 0);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
 
+        glLineWidth(2);
 
-            glEnd();
-        } if(hunger.getValBoolean()) {
-            glBegin(GL_LINE_STRIP);
-            glVertex3d(e.width - 1.20, e.height + 0.2, 0);
-            glVertex3d(e.width - 1.20, -0.2, 0);
-            glColor4d(Color.ORANGE.getRed(), Color.ORANGE.getGreen(), Color.ORANGE.getBlue(), 255);
-            glVertex3d(e.width - 1.20, e.height + 0.2, 0);
-            glVertex3d(e.width - 1.20, -0.2, 0);
-            glColor4d(255, 255, 255, 255);
-            glEnd();
-        }
-        final float size = 0.013f;
-        glScaled(-size, -size, -size);
-        if(tag.getValBoolean()){
-            glEnable(GL_TEXTURE_2D);
-            CustomFontUtil.drawStringWithShadow(e.getName(), 1 - (CustomFontUtil.getStringWidth(e.getName()) / 2), -170, -1);
-            glDisable(GL_TEXTURE_2D);
-        }if(healthValue.getValBoolean() && health.getValBoolean()){
-            glEnable(GL_TEXTURE_2D);
-            CustomFontUtil.drawStringWithShadow(String.valueOf((int)((((EntityPlayer)e).getHealth() / ((EntityPlayer)e).getMaxHealth()) * 100)), -50 - CustomFontUtil.getStringWidth(String.valueOf((int)((((EntityPlayer)e).getHealth() / ((EntityPlayer)e).getMaxHealth()) * 100))), (int)((((EntityLivingBase) e).getHealth() / ((EntityLivingBase) e).getMaxHealth()) * (e.height + 0.2)), -1);
-            glDisable(GL_TEXTURE_2D);
-        }if(currentItem.getValBoolean()){
-            if(!(((EntityPlayer)e).getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemBlock) && !(((EntityPlayer)e).getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemAir)){
-                glEnable(GL_TEXTURE_2D);
-                CustomFontUtil.drawStringWithShadow(((EntityPlayer)e).getHeldItem(EnumHand.MAIN_HAND).getDisplayName(),
-                        1 - (CustomFontUtil.getStringWidth(((EntityPlayer)e).getHeldItem(EnumHand.MAIN_HAND).getDisplayName()) / 2), 20, -1);
-                glDisable(GL_TEXTURE_2D);
-            }
-        }
+        glBegin(GL_LINE_LOOP);
+        glColor4d(1, 1, 1, 1);
+        glVertex2d(0.4, 1);
+        glVertex2d(0.4, -1);
+        glVertex2d(-0.4, -1);
+        glVertex2d(-0.4, 1);
+
+        glEnd();
+
         glEnable(GL_DEPTH_TEST);
+
         glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+
         glPopMatrix();
     }
 }
