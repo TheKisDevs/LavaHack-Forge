@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.RenderEnderCrystal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,13 +54,16 @@ public abstract class MixinRenderEnderCrystal {
         mc.gameSettings.fancyGraphics = false;
 
         if(CrystalModifier.instance.isToggled()) {
+            float var14 = (float)entity.innerRotation + partialTicks;
+
             GL11.glPushMatrix();
 
-            //render
-
             //scale
-            GL11.glScaled(CrystalModifier.instance.scaleX.getValDouble(), CrystalModifier.instance.scaleY.getValDouble(), CrystalModifier.instance.scaleZ.getValDouble());
-
+            if(entity.equals(CrystalModifier.instance.preview.getEntity())) {
+                GL11.glScalef(1, 1, 1);
+            } else {
+                GL11.glScaled(CrystalModifier.instance.scaleX.getValDouble(), CrystalModifier.instance.scaleY.getValDouble(), CrystalModifier.instance.scaleZ.getValDouble());
+            }
             //rotate
             //(float) (System.currentTimeMillis() % 22600L) / 5.0f)
             GL11.glRotated(CrystalModifier.instance.rotateX.getValDouble(), 1, 0, 0);
@@ -67,7 +71,21 @@ public abstract class MixinRenderEnderCrystal {
             GL11.glRotated(CrystalModifier.instance.rotateZ.getValDouble(), 0, 0, 1);
 
             //translate
-            GL11.glTranslated(CrystalModifier.instance.translateX.getValDouble(), CrystalModifier.instance.translateY.getValDouble(), CrystalModifier.instance.translateZ.getValDouble());
+            GL11.glTranslated(x + CrystalModifier.instance.translateX.getValDouble(), y + CrystalModifier.instance.translateY.getValDouble(), z + CrystalModifier.instance.translateZ.getValDouble());
+
+            float var15 = MathHelper.sin(var14 * 0.2f) / 2 + 0.5f;
+            var15 += var15 * var15;
+
+            float spinSpeed = (float) CrystalModifier.instance.speed.getValDouble();
+            float bounceSpeed = (float) CrystalModifier.instance.bounce.getValDouble();
+
+            if(CrystalModifier.instance.texture.getValBoolean()) {
+                if(entity.shouldShowBottom()) {
+                    modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                } else {
+                    modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                }
+            }
 
             //polygon
             GL11.glPushAttrib(1048575);
@@ -92,6 +110,14 @@ public abstract class MixinRenderEnderCrystal {
             //custom color
             if(CrystalModifier.instance.customColor.getValBoolean()) {
                 GL11.glColor4f(CrystalModifier.instance.crystalColor.getR() / 255, CrystalModifier.instance.crystalColor.getG() / 255, CrystalModifier.instance.crystalColor.getB() / 255, 1);
+            } else {
+                GL11.glColor3f(1, 1, 1);
+            }
+
+            if(entity.shouldShowBottom()) {
+                modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+            } else {
+                modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
             }
 
             //ench texture
@@ -105,6 +131,7 @@ public abstract class MixinRenderEnderCrystal {
                 GL11.glColor4f(CrystalModifier.instance.enchColor.getR() / 255, CrystalModifier.instance.enchColor.getG() / 255, CrystalModifier.instance.enchColor.getB() / 255, CrystalModifier.instance.enchColor.getA() / 255);
                 GL11.glColor4f(1, 1, 1, 1);
             }
+
             GL11.glEnable(3042);
             GL11.glEnable(2896);
             GL11.glEnable(3553);
@@ -126,9 +153,23 @@ public abstract class MixinRenderEnderCrystal {
                     GL11.glDisable(2929);
                     GL11.glDepthMask(false);
                     GL11.glEnable(10754);
-                    GL11.glColor4f(CrystalModifier.instance.crystalColor.getR() / 255, CrystalModifier.instance.crystalColor.getG() / 255, CrystalModifier.instance.crystalColor.getB() / 255, (float)1.0f);
+                    GL11.glColor4f(CrystalModifier.instance.color.getR() / 255, CrystalModifier.instance.color.getG() / 255, CrystalModifier.instance.color.getB() / 255, 1.0f);
+
+                    if(entity.shouldShowBottom()) {
+                        modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    } else {
+                        modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    }
+
                     GL11.glEnable(2929);
                     GL11.glDepthMask(true);
+
+                    if(entity.shouldShowBottom()) {
+                        modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    } else {
+                        modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    }
+
                     GL11.glEnable(3042);
                     GL11.glEnable(2896);
                     GL11.glEnable(3553);
@@ -137,10 +178,31 @@ public abstract class MixinRenderEnderCrystal {
                 } else {
                     OutlineUtils.setColor(CrystalModifier.instance.color);
                     OutlineUtils.renderOne((float) CrystalModifier.instance.lineWidth.getValDouble());
+
+                    if(entity.shouldShowBottom()) {
+                        modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    } else {
+                        modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    }
+
                     OutlineUtils.renderTwo();
+
+                    if(entity.shouldShowBottom()) {
+                        modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    } else {
+                        modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    }
+
                     OutlineUtils.renderThree();
                     OutlineUtils.renderFour();
                     OutlineUtils.setColor(CrystalModifier.instance.color);
+
+                    if(entity.shouldShowBottom()) {
+                        modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    } else {
+                        modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
+                    }
+
                     OutlineUtils.renderFive();
                     OutlineUtils.setColor(Color.WHITE);
                 }

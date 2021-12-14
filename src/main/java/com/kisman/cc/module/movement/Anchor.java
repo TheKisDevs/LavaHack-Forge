@@ -12,46 +12,37 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 
 public class Anchor extends Module {
-    private final ArrayList<BlockPos> holes;
     private int holeblocks;
-    public static boolean AnchorING;
 
     public Anchor() {
-        super("Anchor", "Anchor", Category.MOVEMENT);
-
-        this.holes = new ArrayList<BlockPos>();
+        super("Anchor", "help with holes", Category.MOVEMENT);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Pull", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("Pitch", this, 60, 0, 90, false));
     }
 
-    public boolean isBlockHole(BlockPos blockpos) {
+    private boolean isBlockHole(BlockPos blockpos) {
         holeblocks = 0;
         if (mc.world.getBlockState(blockpos.add(0, 3, 0)).getBlock() == Blocks.AIR) ++holeblocks;
-
         if (mc.world.getBlockState(blockpos.add(0, 2, 0)).getBlock() == Blocks.AIR) ++holeblocks;
-
         if (mc.world.getBlockState(blockpos.add(0, 1, 0)).getBlock() == Blocks.AIR) ++holeblocks;
-
         if (mc.world.getBlockState(blockpos.add(0, 0, 0)).getBlock() == Blocks.AIR) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
 
-        if (mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.BEDROCK) ++holeblocks;
-
-        if (mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.OBSIDIAN ||mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.BEDROCK) ++holeblocks;
-
-        if (mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.OBSIDIAN ||mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.BEDROCK) ++holeblocks;
-
-        if (mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.OBSIDIAN ||mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK) ++holeblocks;
-
-        if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN ||mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK) ++holeblocks;
-
-        if (holeblocks >= 9) return true;
-        else return false;
+        if (holeblocks >= 9) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private Vec3d center = Vec3d.ZERO;
 
-    public Vec3d getCenter(double posX, double posY, double posZ) {
+    private Vec3d getCenter(double posX, double posY, double posZ) {
         double x = Math.floor(posX) + 0.5D;
         double y = Math.floor(posY);
         double z = Math.floor(posZ) + 0.5D ;
@@ -74,33 +65,32 @@ public class Anchor extends Module {
         if (mc.player.rotationPitch >= pitch) {
             if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) ||
                     isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
-                AnchorING = true;
-
                 if (!pull) {
                     mc.player.motionX = 0.0;
                     mc.player.motionZ = 0.0;
+                    mc.player.movementInput.moveForward = 0;
+                    mc.player.movementInput.moveStrafe = 0;
                 } else {
                     center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
-                    double XDiff = Math.abs(center.x - mc.player.posX);
-                    double ZDiff = Math.abs(center.z - mc.player.posZ);
 
-                    if (XDiff <= 0.1 && ZDiff <= 0.1) {
+                    double xDiff = Math.abs(center.x - mc.player.posX);
+                    double zDiff = Math.abs(center.z - mc.player.posZ);
+
+                    if (xDiff <= 0.1 && zDiff <= 0.1) {
                         center = Vec3d.ZERO;
-                    }
-                    else {
-                        double MotionX = center.x-mc.player.posX;
-                        double MotionZ = center.z-mc.player.posZ;
+                    } else {
+                        double motionX = center.x - mc.player.posX;
+                        double motionZ = center.z - mc.player.posZ;
 
-                        mc.player.motionX = MotionX/2;
-                        mc.player.motionZ = MotionZ/2;
+                        mc.player.motionX = motionX / 2;
+                        mc.player.motionZ = motionZ / 2;
                     }
                 }
-            } else AnchorING = false;
+            }
         }
     }
 
     public void onDisable() {
-        AnchorING = false;
         holeblocks = 0;
     }
 }

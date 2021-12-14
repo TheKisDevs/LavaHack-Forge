@@ -1,9 +1,6 @@
 package com.kisman.cc.module.movement;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.settings.Setting;
+import com.kisman.cc.module.*;
 
 public class Sprint extends Module {
 	public static Sprint instance;
@@ -12,8 +9,6 @@ public class Sprint extends Module {
 		super("Sprint", "i like sprinting", Category.MOVEMENT);
 
 		instance = this;
-
-		Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
 	}
 
 	public void update() {

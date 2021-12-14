@@ -6,6 +6,8 @@ import java.awt.*;
 
 import javax.annotation.Nullable;
 
+import com.kisman.cc.util.ColorUtil;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -33,9 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiConsole extends GuiScreen implements ITabCompleter
-{
-    private static final Logger LOGGER = LogManager.getLogger();
+public class GuiConsole extends GuiScreen implements ITabCompleter {
     private String historyBuffer = "";
     /**
      * keeps position of which chat message you will select when you press up, (does not increase for duplicated
@@ -51,8 +51,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
 
     public GuiConsole() { this.init(); }
 
-    public GuiConsole(String defaultText)
-    {
+    public GuiConsole(String defaultText) {
         this.defaultInputFieldText = defaultText;
         this.init();
     }
@@ -68,8 +67,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui()
-    {
+    public void initGui() {
         Keyboard.enableRepeatEvents(true);
         this.sentHistoryCursor = this.mc.ingameGUI.getChatGUI().getSentMessages().size();
         this.inputField = new net.minecraft.client.gui.GuiTextField(0, this.fontRenderer, 4, this.height - 12, this.width - 4, 12);
@@ -84,8 +82,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Called when the screen is unloaded. Used to disable keyboard repeat events
      */
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
         this.mc.ingameGUI.getChatGUI().resetScroll();
     }
@@ -93,8 +90,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Called from the main game loop to update the screen.
      */
-    public void updateScreen()
-    {
+    public void updateScreen() {
         this.inputField.updateCursorCounter();
         this.inputField.setTextColor(new Color(255, 0, 0, 255).getRGB());
     }
@@ -103,52 +99,33 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
         this.tabCompleter.resetRequested();
 
-        if (keyCode == 15)
-        {
+        if (keyCode == 15) {
             this.tabCompleter.complete();
-        }
-        else
-        {
+        } else {
             this.tabCompleter.resetDidComplete();
         }
 
-        if (keyCode == 1)
-        {
+        if (keyCode == 1) {
             this.mc.displayGuiScreen((GuiScreen)null);
-        }
-        else if (keyCode != 28 && keyCode != 156)
-        {
-            if (keyCode == 200)
-            {
+        } else if (keyCode != 28 && keyCode != 156) {
+            if (keyCode == 200) {
                 this.getSentHistory(-1);
-            }
-            else if (keyCode == 208)
-            {
+            } else if (keyCode == 208) {
                 this.getSentHistory(1);
-            }
-            else if (keyCode == 201)
-            {
+            } else if (keyCode == 201) {
                 this.mc.ingameGUI.getChatGUI().scroll(this.mc.ingameGUI.getChatGUI().getLineCount() - 1);
-            }
-            else if (keyCode == 209)
-            {
+            } else if (keyCode == 209) {
                 this.mc.ingameGUI.getChatGUI().scroll(-this.mc.ingameGUI.getChatGUI().getLineCount() + 1);
-            }
-            else
-            {
+            } else {
                 this.inputField.textboxKeyTyped(typedChar, keyCode);
             }
-        }
-        else
-        {
+        } else {
             String s = this.inputField.getText().trim();
 
-            if (!s.isEmpty())
-            {
+            if (!s.isEmpty()) {
             	//CommandManager.getInstance().runCommands("." + s);
                 Kisman.instance.commandManager.runCommands("." + s);
             	if(s.startsWith("login")) {
@@ -167,25 +144,20 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Handles mouse input.
      */
-    public void handleMouseInput() throws IOException
-    {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         int i = Mouse.getEventDWheel();
 
-        if (i != 0)
-        {
-            if (i > 1)
-            {
+        if (i != 0) {
+            if (i > 1) {
                 i = 1;
             }
 
-            if (i < -1)
-            {
+            if (i < -1) {
                 i = -1;
             }
 
-            if (!isShiftKeyDown())
-            {
+            if (!isShiftKeyDown()) {
                 i *= 7;
             }
 
@@ -196,14 +168,11 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
      */
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
-        if (mouseButton == 0)
-        {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if (mouseButton == 0) {
             ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 
-            if (itextcomponent != null && this.handleComponentClick(itextcomponent))
-            {
+            if (itextcomponent != null && this.handleComponentClick(itextcomponent)) {
                 return;
             }
         }
@@ -215,14 +184,10 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Sets the text of the chat
      */
-    protected void setText(String newChatText, boolean shouldOverwrite)
-    {
-        if (shouldOverwrite)
-        {
+    protected void setText(String newChatText, boolean shouldOverwrite) {
+        if (shouldOverwrite) {
             this.inputField.setText(newChatText);
-        }
-        else
-        {
+        } else {
             this.inputField.writeText(newChatText);
         }
     }
@@ -231,23 +196,17 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
      * input is relative and is applied directly to the sentHistoryCursor so -1 is the previous message, 1 is the next
      * message from the current cursor position
      */
-    public void getSentHistory(int msgPos)
-    {
+    public void getSentHistory(int msgPos) {
         int i = this.sentHistoryCursor + msgPos;
         int j = this.mc.ingameGUI.getChatGUI().getSentMessages().size();
         i = MathHelper.clamp(i, 0, j);
 
-        if (i != this.sentHistoryCursor)
-        {
-            if (i == j)
-            {
+        if (i != this.sentHistoryCursor) {
+            if (i == j) {
                 this.sentHistoryCursor = j;
                 this.inputField.setText(this.historyBuffer);
-            }
-            else
-            {
-                if (this.sentHistoryCursor == j)
-                {
+            } else {
+                if (this.sentHistoryCursor == j) {
                     this.historyBuffer = this.inputField.getText();
                 }
 
@@ -260,16 +219,15 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Draws the screen and all the components in it.
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
-        int color = ColorUtils.color(255, 255, 255, 155);
-    	//int color = ClickGui.isLight ? ColorUtils.color(255, 255, 255, 155) : Integer.MIN_VALUE;
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        int color = ColorUtil.injectAlpha(ColorUtils.astolfoColors(100, 100), 140).getRGB();
+
         drawRect(2, this.height - 14, this.width - 2, this.height - 2, color);
         this.inputField.drawTextBox();
         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+        itextcomponent.getStyle().setColor(TextFormatting.BLUE);
 
-        if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null)
-        {
+        if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
             this.handleComponentHover(itextcomponent, mouseX, mouseY);
         }
 
@@ -279,22 +237,19 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
     /**
      * Returns true if this GUI should pause the game when it is displayed in single-player
      */
-    public boolean doesGuiPauseGame()
-    {
+    public boolean doesGuiPauseGame() {
         return false;
     }
 
     /**
      * Sets the list of tab completions, as long as they were previously requested.
      */
-    public void setCompletions(String... newCompletions)
-    {
+    public void setCompletions(String... newCompletions) {
         this.tabCompleter.setCompletions(newCompletions);
     }
 
     @SideOnly(Side.CLIENT)
-    public static class ChatTabCompleter extends TabCompleter
-        {
+    public static class ChatTabCompleter extends TabCompleter {
             /** The instance of the Minecraft client */
             private final Minecraft client = Minecraft.getMinecraft();
 
@@ -307,18 +262,14 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
              * Called when tab key pressed. If it's the first time we tried to complete this string, we ask the server
              * for completions. When the server responds, this method gets called again (via setCompletions).
              */
-            public void complete()
-            {
+            public void complete() {
                 super.complete();
 
-                if (this.completions.size() > 1)
-                {
+                if (this.completions.size() > 1) {
                     StringBuilder stringbuilder = new StringBuilder();
 
-                    for (String s : this.completions)
-                    {
-                        if (stringbuilder.length() > 0)
-                        {
+                    for (String s : this.completions) {
+                        if (stringbuilder.length() > 0) {
                             stringbuilder.append(", ");
                         }
 
@@ -330,12 +281,10 @@ public class GuiConsole extends GuiScreen implements ITabCompleter
             }
 
             @Nullable
-            public BlockPos getTargetBlockPos()
-            {
+            public BlockPos getTargetBlockPos() {
                 BlockPos blockpos = null;
 
-                if (this.client.objectMouseOver != null && this.client.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
-                {
+                if (this.client.objectMouseOver != null && this.client.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
                     blockpos = this.client.objectMouseOver.getBlockPos();
                 }
 

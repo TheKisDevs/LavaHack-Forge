@@ -1,10 +1,8 @@
 package i.gishreloaded.gishcode.utils;
 
 public class TimerUtils {
-	
 	private long lastMS = 0L;
 	private long prevMS = 0L;
-
 	private long nanoTime = -1L;
 	
 	public boolean isDelay(long delay) {
@@ -22,8 +20,7 @@ public class TimerUtils {
 				}
 				return true;
 			}
-		}
-		else {
+		} else {
 			if (getTime() >= time) {
 				if (reset) {
 					reset();
@@ -42,7 +39,6 @@ public class TimerUtils {
     public void setLastMS(long lastMS) {
 		this.lastMS = lastMS;
 	}
-	
     public void setLastMS() {
 		this.lastMS = System.currentTimeMillis();
 	}
@@ -53,37 +49,24 @@ public class TimerUtils {
 
 	// All setters
 	public void setTicks(long ticks) { nanoTime = System.nanoTime() - convertTicksToNano(ticks); }
-
 	public void setNano(long time) { nanoTime = System.nanoTime() - time; }
-
 	public void setMicro(long time) { nanoTime = System.nanoTime() - convertMicroToNano(time); }
-
 	public void setMillis(long time) { nanoTime = System.nanoTime() - convertMillisToNano(time); }
-
 	public void setSec(long time) { nanoTime = System.nanoTime() - convertSecToNano(time); }
 
 	// All getters
 	public long getTicks() { return convertNanoToTicks(nanoTime); }
-
 	public long getNano() { return nanoTime; }
-
 	public long getMicro() { return convertNanoToMicro(nanoTime); }
-
 	public long getMillis() { return convertNanoToMillis(nanoTime); }
-
 	public long getSec() { return convertNanoToSec(nanoTime); }
 
 	// All passed
 	public boolean passedTicks(long ticks) { return passedNano(convertTicksToNano(ticks)); }
-
 	public boolean passedNano(long time) { return System.nanoTime() - nanoTime >= time; }
-
 	public boolean passedMicro(long time) { return passedNano(convertMicroToNano(time)); }
-
 	public boolean passedMillis(long time) { return passedNano(convertMillisToNano(time)); }
-
 	public boolean passedSec(long time) { return passedNano(convertSecToNano(time)); }
-	
     public boolean hasReached(float f){
 		return (float) (getCurrentMS() - this.lastMS) >= f; 
 	}

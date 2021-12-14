@@ -27,18 +27,18 @@ public class ChatUtils {
 	}
 	
 	public static void message(Object message) {
-		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.NAME + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 
 	public static void complete(Object message) {
-		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GREEN + Kisman.NAME + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GREEN + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void warning(Object message) {
-		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GOLD + Kisman.NAME + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GOLD + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void error(Object message) {
-		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.RED + Kisman.NAME + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.RED + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 }

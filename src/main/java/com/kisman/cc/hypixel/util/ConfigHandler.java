@@ -10,6 +10,7 @@ public class ConfigHandler {
 
 	public static Configuration config;
 	private static String file = "config/nec.cfg";
+	public static int threads = 1;
 
 	public static void init() {
 		config = new Configuration(new File(file));

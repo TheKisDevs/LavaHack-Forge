@@ -1,31 +1,26 @@
 package com.kisman.cc.oldclickgui;
 
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.clickguiEvents.drawScreen.render.GuiRenderPostEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
 import com.kisman.cc.module.client.ClickGUI;
-import com.kisman.cc.oldclickgui.component.Component;
-import com.kisman.cc.oldclickgui.component.Frame;
+import com.kisman.cc.module.client.Config;
+import com.kisman.cc.oldclickgui.component.*;
 import com.kisman.cc.module.Category;
-import com.kisman.cc.particle.ParticleSystem;
-import com.kisman.cc.util.HoveredMode;
-import com.kisman.cc.util.LineMode;
-import com.kisman.cc.util.TextMode;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
+import com.kisman.cc.util.*;
+import net.minecraft.client.gui.*;
+import net.minecraftforge.fml.relauncher.*;
 import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
-//	public ParticleSystem particle;
-
 	public static boolean line = false;
 	public static boolean rainbowLine = false;
 	public static boolean rainbowBackground = false;
-	public static boolean renderDesc = false;
 
 	public static LineMode lineMode = LineMode.LEFT;
 	public static LineMode setLineMode = LineMode.SETTINGDEFAULT;
@@ -68,8 +63,6 @@ public class ClickGui extends GuiScreen {
 	public static int BActiveText = 255;
 	public static int AActiveText = 255;
 
-	public static String descStr = "";
-
 	public static ArrayList<Frame> frames;
 
 	public ClickGui() {
@@ -97,14 +90,18 @@ public class ClickGui extends GuiScreen {
 				comp.updateComponent(mouseX, mouseY);
 			}
 		}
-		if(renderDesc) {
-			Gui.drawRect(mouseX, mouseY, mouseX + 2 + fontRenderer.getStringWidth(descStr), mouseY + 2 + fontRenderer.FONT_HEIGHT, new Color(RNoHoveredModule, GNoHoveredModule, BNoHoveredModule, ANoHoveredModule).getRGB());
-			fontRenderer.drawStringWithShadow(descStr, (float) (mouseX + 1), (float) (mouseY + 1), new Color(RText, GText, BText, AText).getRGB());
-		}
+
+		GuiRenderPostEvent event = new GuiRenderPostEvent(mouseX, mouseY, partialTicks);
+		Kisman.EVENT_BUS.post(event);
 	}
 
 	@Override
     protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
+		MouseClickedPreEvent event = new MouseClickedPreEvent(mouseX, mouseY, mouseButton);
+		Kisman.EVENT_BUS.post(event);
+
+		if(event.isCancelled()) return;
+
 		for(Frame frame : frames) {
 			if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 0) {
 				frame.setDrag(true);
@@ -135,6 +132,7 @@ public class ClickGui extends GuiScreen {
 				}
 			}
 		}
+
 		if (keyCode == 1) {
             this.mc.displayGuiScreen(null);
         }
@@ -143,6 +141,11 @@ public class ClickGui extends GuiScreen {
 
 	@Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
+		MouseReleasedPreEvent event = new MouseReleasedPreEvent(mouseX, mouseY, state);
+		Kisman.EVENT_BUS.post(event);
+
+		if(event.isCancelled()) return;
+
 		for(Frame frame : frames) {
 			frame.setDrag(false);
 		}
@@ -161,12 +164,11 @@ public class ClickGui extends GuiScreen {
 		int dWheel = Mouse.getDWheel();
 		if(dWheel < 0){
 			for(Frame frame : frames) {
-				frame.setY(frame.getY() - (int) ClickGUI.instance.scrollSpeed.getValDouble());
+				frame.setY(frame.getY() - (int) Config.instance.scrollSpeed.getValDouble());
 			}
-		}
-		else if(dWheel > 0){
+		} else if(dWheel > 0){
 			for(Frame frame : frames){
-				frame.setY(frame.getY() + (int) ClickGUI.instance.scrollSpeed.getValDouble());
+				frame.setY(frame.getY() + (int) Config.instance.scrollSpeed.getValDouble());
 			}
 		}
 	}
@@ -214,22 +216,6 @@ public class ClickGui extends GuiScreen {
 
 	public static void setAABackground(int AABackground) {
 		ClickGui.AABackground = AABackground;
-	}
-
-	public static boolean isRenderDesc() {
-		return renderDesc;
-	}
-
-	public static void setRenderDesc(boolean renderDesc) {
-		ClickGui.renderDesc = renderDesc;
-	}
-
-	public static String getDescStr() {
-		return descStr;
-	}
-
-	public static void setDescStr(String descStr) {
-		ClickGui.descStr = descStr;
 	}
 
 	public static boolean isRainbowBackground() {

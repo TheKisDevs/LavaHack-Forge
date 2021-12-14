@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
 public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
+    @Shadow protected abstract void doWaterSplashEffect();
+
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
     private void onTravel(float strafe, float vertical, float forward, CallbackInfo ci) {
         EventPlayerTravel event = new EventPlayerTravel(strafe, vertical, forward);

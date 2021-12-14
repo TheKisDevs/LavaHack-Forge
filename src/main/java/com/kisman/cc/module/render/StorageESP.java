@@ -6,6 +6,7 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.util.RenderUtil;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.tileentity.TileEntityChest;
@@ -19,6 +20,8 @@ import net.minecraft.tileentity.TileEntityShulkerBox;
 public class StorageESP extends Module{
     private Setting distance = new Setting("Distance", this, 100, 10, 100, true);
 
+    private Setting renderMode = new Setting("RenderMode", this, RenderMode.Both);
+
     boolean chest = true;
     boolean eChest = true;
     boolean shulkerBox = true;
@@ -31,6 +34,7 @@ public class StorageESP extends Module{
         super("StorageESP", "sosat", Category.RENDER);
 
         setmgr.rSetting(distance);
+//        setmgr.rSetting(renderMode);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Chest", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("EChest", this, true));
@@ -79,5 +83,23 @@ public class StorageESP extends Module{
                 }
             }
         );
+    }
+
+    /*private void render(BlockPos pos, float red, float green, float blue) {
+        switch ((RenderMode) renderMode.getValEnum()) {
+            case Both: {
+                RenderUtil.drawBlockESP(pos, red, green, blue);
+                break;
+            }
+            case Fill: {
+                RenderUtil.drawBoundingBox(pos, );
+            }
+        }
+    }*/
+
+    public enum RenderMode {
+        Fill,
+        Outline,
+        Both
     }
 }

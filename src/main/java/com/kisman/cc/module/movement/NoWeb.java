@@ -32,13 +32,13 @@ public class NoWeb extends Module {
             } else if (onGround.getValBoolean()) {
                 mc.player.onGround = false;
             }
+
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode) || Keyboard.isKeyDown(mc.gameSettings.keyBindBack.keyCode) || Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)
                     || Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)) {
                 mc.player.isInWeb = false;
                 mc.player.motionX *= motionX.getValDouble();
                 mc.player.motionZ *= motionX.getValDouble();
             }
-
         }
     }
 }

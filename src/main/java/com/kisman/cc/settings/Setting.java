@@ -67,6 +67,8 @@ public class Setting {
 
 	private int x1, y1, x2, y2;
 
+	private float red, green, blue, alpha;
+
 	private boolean onlyint = false;
 
 	public Setting(String name, Module parent, int key) {
@@ -165,6 +167,16 @@ public class Setting {
 		this.mode = "CheckHud";
 		this.hud = true;
 	}
+
+	public Setting(String name, Module parent, float red, float green, float blue, float alpha) {
+		this.name = name;
+		this.parent = parent;
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+		this.alpha = alpha;
+		this.mode = "ExampleColor";
+	}
 	
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
@@ -233,6 +245,55 @@ public class Setting {
 			Enum enumVal = optionEnum;
 			String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
 			index = index + 1 > values.length - 1 ? 0 : index + 1;
+			return Enum.valueOf(enumVal.getClass(), values[index]);
+		} else {
+			return null;
+		}
+	}
+
+	public void updateColor(float red, float green, float blue, float alpha) {
+		this.red = red;
+		this.green = green;
+		this.alpha = alpha;
+	}
+
+	public float getRed() {
+		return red;
+	}
+
+	public void setRed(float red) {
+		this.red = red;
+	}
+
+	public float getGreen() {
+		return green;
+	}
+
+	public void setGreen(float green) {
+		this.green = green;
+	}
+
+	public float getBlue() {
+		return blue;
+	}
+
+	public void setBlue(float blue) {
+		this.blue = blue;
+	}
+
+	public float getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
+	}
+
+	public Enum getDoModeEnum() {
+		if(optionEnum != null) {
+			Enum enumVal = optionEnum;
+			String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+			index = index-- < 0 ? values.length : index;
 			return Enum.valueOf(enumVal.getClass(), values[index]);
 		} else {
 			return null;
@@ -431,9 +492,17 @@ public class Setting {
 	
 	public double getValDouble(){
 		if(this.onlyint){
-			this.dval = (int)dval;
+			this.dval = (int) dval;
 		}
 		return this.dval;
+	}
+
+	public float getValFloat() {
+		if(onlyint) {
+			dval = (int) dval;
+		}
+
+		return (float) dval;
 	}
 
 	public void setValDouble(double in){
@@ -586,6 +655,8 @@ public class Setting {
 	public boolean isDrawHud() {
 		return this.mode.equalsIgnoreCase("DrawHud") ? true : false;
 	}
+
+	public boolean isExampleColor() { return mode.equalsIgnoreCase("ExampleColor"); }
 
 	public boolean onlyInt(){
 		return this.onlyint;

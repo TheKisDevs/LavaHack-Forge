@@ -21,8 +21,6 @@ import net.minecraft.util.math.BlockPos;
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
-    //TODO: update noslow
-
     private Setting invMove = new Setting("InvMove", this, true);
     private Setting items = new Setting("Items", this, true);
     private Setting ncpStrict = new Setting("NCPStrict", this, true);
@@ -60,9 +58,7 @@ public class NoSlow extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) {
-            return;
-        }
+        if(mc.player == null && mc.world == null) return;
 
         if (mc.player.isHandActive()) {
             if (mc.player.getHeldItem(mc.player.getActiveHand()).getItem() instanceof ItemShield) {
@@ -76,17 +72,9 @@ public class NoSlow extends Module {
     @EventHandler
     private final Listener<EventPlayerUpdateMoveState> listener = new Listener<>(event -> {
         if (invMove.getValBoolean() && mc.currentScreen != null) {
-            if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) {
-                return;
-            }
-
-            if(mc.currentScreen instanceof GuiConsole && ignoreConsole.getValBoolean()) {
-                return;
-            }
-
-            if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) {
-                return;
-            }
+            if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) return;
+            if(mc.currentScreen instanceof GuiConsole && ignoreConsole.getValBoolean()) return;
+            if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) return;
 
             mc.player.movementInput.moveStrafe = 0.0F;
             mc.player.movementInput.moveForward = 0.0F;

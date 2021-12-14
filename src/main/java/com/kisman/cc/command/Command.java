@@ -3,7 +3,7 @@ package com.kisman.cc.command;
 import net.minecraft.client.Minecraft;
 
 public abstract class Command {
-	public static Minecraft mc = Minecraft.getMinecraft();
+	protected static Minecraft mc = Minecraft.getMinecraft();
 	
 	private String command;
 	private String execute;
@@ -21,19 +21,15 @@ public abstract class Command {
 	public String getCommand() {
 		return command;
 	}
-	
 	public int getKey() {
 		return key;
 	}
-	
 	public void setKey(int key) {
 		this.key = key;
 	}
-	
 	public String getExecute() {
 		return execute;
 	}
-	
 	public void setExecute(String execute) {
 		this.execute = execute;
 	}

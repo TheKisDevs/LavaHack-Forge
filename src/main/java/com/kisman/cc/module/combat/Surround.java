@@ -1,7 +1,6 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.DestroyBlockEvent;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.mixin.mixins.accessor.ICPacketPlayer;
@@ -55,14 +54,18 @@ public class Surround extends Module {
     private Setting renderSafeColor = new Setting("SafeColor", this, "SafeColor", new float[] {0.08f, 1, 0, 1}, false);
     private Setting renderUnSafeColor = new Setting("UnSafeColor", this, "UnSafeColor", new float[] {120 / 355, 1, 1, 1}, false);
 
-    int previousSlot = -1;
-    int surroundPlaced = 0;
-    BlockPos previousPosition = BlockPos.ORIGIN;
-    BlockPos surroundPosition = BlockPos.ORIGIN;
-    Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
+    public static Surround instance;
+
+    private int oldSlot = -1;
+    private int surroundPlaced = 0;
+    private BlockPos oldPos = BlockPos.ORIGIN;
+    private BlockPos surroundPosition = BlockPos.ORIGIN;
+    private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
 
     public Surround() {
         super("Surround", "Surround", Category.COMBAT);
+
+        instance = this;
 
         setmgr.rSetting(surroundVec);
         setmgr.rSetting(completion);
@@ -89,31 +92,34 @@ public class Surround extends Module {
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
 
-        previousPosition = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
+        oldPos = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
 
         switch ((Center) center.getValEnum()) {
-            case TELEPORT:
+            case TELEPORT: {
                 double xPosition = mc.player.getPositionVector().x;
                 double zPosition = mc.player.getPositionVector().z;
 
-                if (Math.abs((previousPosition.getX() + 0.5) - mc.player.getPositionVector().x) >= 0.2) {
-                    int xDirection = (previousPosition.getX() + 0.5) - mc.player.getPositionVector().x > 0 ? 1 : -1;
+                if (Math.abs((oldPos.getX() + 0.5) - mc.player.getPositionVector().x) >= 0.2) {
+                    int xDirection = (oldPos.getX() + 0.5) - mc.player.getPositionVector().x > 0 ? 1 : -1;
                     xPosition += 0.3 * xDirection;
                 }
 
-                if (Math.abs((previousPosition.getZ() + 0.5) - mc.player.getPositionVector().z) >= 0.2) {
-                    int zDirection = (previousPosition.getZ() + 0.5) - mc.player.getPositionVector().z > 0 ? 1 : -1;
+                if (Math.abs((oldPos.getZ() + 0.5) - mc.player.getPositionVector().z) >= 0.2) {
+                    int zDirection = (oldPos.getZ() + 0.5) - mc.player.getPositionVector().z > 0 ? 1 : -1;
                     zPosition += 0.3 * zDirection;
                 }
 
                 TeleportUtil.teleportPlayer(xPosition, mc.player.posY, zPosition);
                 break;
-            case MOTION:
+            }
+            case MOTION: {
                 mc.player.motionX = ((Math.floor(mc.player.posX) + 0.5) - mc.player.posX) / 2;
                 mc.player.motionZ = ((Math.floor(mc.player.posZ) + 0.5) - mc.player.posZ) / 2;
                 break;
-            case NONE:
+            }
+            case NONE: {
                 break;
+            }
         }
     }
 
@@ -127,22 +133,25 @@ public class Surround extends Module {
         surroundPlaced = 0;
 
         switch ((Completion) completion.getValEnum()) {
-            case AIR:
-                if (!previousPosition.equals(new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)))) || mc.player.posY > previousPosition.getY()) {
+            case AIR: {
+                if (!oldPos.equals(new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)))) || mc.player.posY > oldPos.getY()) {
                     super.setToggled(false);
                     return;
                 }
 
                 break;
-            case SURROUNDED:
+            }
+            case SURROUNDED: {
                 if (isInHole(mc.player)) {
                     super.setToggled(false);
                     return;
                 }
 
                 break;
-            case PERSISTENT:
+            }
+            case PERSISTENT: {
                 break;
+            }
         }
 
         handleSurround();
@@ -182,17 +191,6 @@ public class Surround extends Module {
         }
     }
 
-    @SubscribeEvent
-    public void onTotemPop(TotemPopEvent event) {
-        if (!isInHole(mc.player) && event.getPopEntity().equals(mc.player) && chainPop.getValBoolean()) {
-            InventoryUtil.switchToSlot(Item.getItemFromBlock(Blocks.OBSIDIAN), (Switch) autoSwitch.getValEnum());
-
-            placeSurround();
-
-            InventoryUtil.switchToSlot(previousSlot, Switch.NORMAL);
-        }
-    }
-
     @EventHandler
     private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {
         if (event.getPacket() instanceof CPacketPlayer && !Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) {
@@ -201,22 +199,15 @@ public class Surround extends Module {
         }
     });
 
-/*    @EventHandler
-    private final Listener<DestroyBlockEvent> listener1 = new Listener<>(event -> {
-        if (HoleUtil.isPartOfHole(event.getBlockPos().down()) && reactive.getValBoolean()) {
-            BlockUtil.placeBlock(event.getBlockPos().down(), packet.getValBoolean(), confirm.getValBoolean());
-        }
-    });*/
-
     public void handleSurround() {
-        previousSlot = mc.player.inventory.currentItem;
+        oldSlot = mc.player.inventory.currentItem;
 
         if (!isInHole(mc.player)) {
             InventoryUtil.switchToSlot(Item.getItemFromBlock(Blocks.OBSIDIAN), (Switch) autoSwitch.getValEnum());
 
             placeSurround();
 
-            InventoryUtil.switchToSlot(previousSlot, Switch.NORMAL);
+            InventoryUtil.switchToSlot(oldSlot, Switch.NORMAL);
         }
     }
 
@@ -327,84 +318,6 @@ public class Surround extends Module {
 
     public static boolean isInHole(Entity entity) {
         return isObsidianHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ)) || isBedRockHole(new BlockPos(entity.posX, Math.round(entity.posY), entity.posZ));
-    }
-
-    public static HoleUtil.HoleInfo isHole(BlockPos centreBlock, boolean onlyOneWide, boolean ignoreDown) {
-        HoleUtil.HoleInfo output = new HoleUtil.HoleInfo();
-        HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> unsafeSides = HoleUtil.getUnsafeSides(centreBlock);
-
-        if (unsafeSides.containsKey(HoleUtil.BlockOffset.DOWN)) {
-            if (unsafeSides.remove(HoleUtil.BlockOffset.DOWN, HoleUtil.BlockSafety.BREAKABLE)) {
-                if (!ignoreDown) {
-                    output.setSafety(HoleUtil.BlockSafety.BREAKABLE);
-                    return output;
-                }
-            }
-        }
-
-        int size = unsafeSides.size();
-
-        unsafeSides.entrySet().removeIf(entry -> entry.getValue() == HoleUtil.BlockSafety.RESISTANT);
-
-        // size has changed so must have weak side
-        if (unsafeSides.size() != size) {
-            output.setSafety(HoleUtil.BlockSafety.RESISTANT);
-        }
-
-        size = unsafeSides.size();
-
-        // is it a perfect hole
-        if (size == 0) {
-            output.setType(HoleUtil.HoleType.SINGLE);
-            output.setCentre(new AxisAlignedBB(centreBlock));
-            return output;
-        }
-        // have one open side
-        else if (size == 1 && !onlyOneWide) {
-            return isDoubleHole(output, centreBlock, unsafeSides.keySet().stream().findFirst().get());
-        } else {
-            output.setSafety(HoleUtil.BlockSafety.BREAKABLE);
-            return output;
-        }
-    }
-
-    private static HoleUtil.HoleInfo isDoubleHole(HoleUtil.HoleInfo info, BlockPos centreBlock, HoleUtil.BlockOffset weakSide) {
-        BlockPos unsafePos = weakSide.offset(centreBlock);
-
-        HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> unsafeSides = HoleUtil.getUnsafeSides(unsafePos);
-
-        int size = unsafeSides.size();
-
-        unsafeSides.entrySet().removeIf(entry -> entry.getValue() == HoleUtil.BlockSafety.RESISTANT);
-
-        // size has changed so must have weak side
-        if (unsafeSides.size() != size) {
-            info.setSafety(HoleUtil.BlockSafety.RESISTANT);
-        }
-
-        if (unsafeSides.containsKey(HoleUtil.BlockOffset.DOWN)) {
-            info.setType(HoleUtil.HoleType.CUSTOM);
-            unsafeSides.remove(HoleUtil.BlockOffset.DOWN);
-        }
-
-        // is it a safe hole
-        if (unsafeSides.size() > 1) {
-            info.setType(HoleUtil.HoleType.NONE);
-            return info;
-        }
-
-        // it is
-        double minX = Math.min(centreBlock.getX(), unsafePos.getX());
-        double maxX = Math.max(centreBlock.getX(), unsafePos.getX()) + 1;
-        double minZ = Math.min(centreBlock.getZ(), unsafePos.getZ());
-        double maxZ = Math.max(centreBlock.getZ(), unsafePos.getZ()) + 1;
-
-        info.setCentre(new AxisAlignedBB(minX, centreBlock.getY(), minZ, maxX, centreBlock.getY() + 1, maxZ));
-
-        if (info.getType() != HoleUtil.HoleType.CUSTOM) {
-            info.setType(HoleUtil.HoleType.DOUBLE);
-        }
-        return info;
     }
 
     public static HashMap<HoleUtil.BlockOffset, HoleUtil.BlockSafety> getUnsafeSides(BlockPos pos) {

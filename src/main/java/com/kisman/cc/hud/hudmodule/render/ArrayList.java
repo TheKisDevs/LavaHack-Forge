@@ -9,6 +9,8 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.manager.Managers;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -20,18 +22,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.awt.Color.*;
 
 public class ArrayList extends HudModule{
-    Minecraft mc = Minecraft.getMinecraft();
-    FontRenderer fr = mc.fontRenderer;
-
-    public float[] color;
-
-    Render2DUtil render2DUtil = new Render2DUtil();
-    ColorUtil colorUtil = new ColorUtil();
-
     public ArrayList() {
         super("ArrayList", "arrList", HudCategory.RENDER);
     }
@@ -57,13 +52,36 @@ public class ArrayList extends HudModule{
         mods.sort(comparator);
 
         int count = 0;
+        int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA()).getRGB();
         float heigth = CustomFontUtil.getFontHeight() + 2;
+        float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), null);
 
         for(Module mod : mods) {
             if(mod != null && mod.isToggled() && mod.visible) {
                 String name = mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo());
 
-                CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA()).getRGB());
+                switch ((HUD.Gradient) HUD.instance.arrGragient.getValEnum()) {
+                    case None: {
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), color);
+                        break;
+                    }
+                    case Simple: {
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], Managers.instance.pulseManager.getDifference(count * 2) / 255f).getRGB());
+                        break;
+                    }
+                    case Sideway: {
+                        int update = (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name));
+
+                        for(int i = 0; i < name.length(); ++i) {
+                            String str = name.charAt(i) + "";
+
+                            CustomFontUtil.drawStringWithShadow(str, update, HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.rainbow(i * HUD.instance.arrGradientDiff.getValInt(), hsb[1], Managers.instance.pulseManager.getDifference(count * 2) / 255f).getRGB());
+
+                            update += CustomFontUtil.getStringWidth(str);
+                        }
+                        break;
+                    }
+                }
 
                 count++;
             }

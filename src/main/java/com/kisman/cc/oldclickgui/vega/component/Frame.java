@@ -57,9 +57,9 @@ public class Frame {
         Gui.drawRect(this.x - 1, this.y - 3, this.x + this.width + 1, this.y + this.height + 1, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x, this.y - 4, this.x + this.width, this.y + this.height, (ColorUtils.getColor(34, 34, 40)));
 
-        CustomFontUtil.drawCenteredStringWithShadow(cat.name(), x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), -1);
+        CustomFontUtil.drawCenteredStringWithShadow(cat.name(), x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), open ? ColorUtils.astolfoColors(100, 100) : -1);
 
-        if(open) {
+        if(open && !buttons.isEmpty()) {
             for (Button button : buttons) {
                 button.renderComponent();
             }
@@ -77,5 +77,21 @@ public class Frame {
         if(x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height) return true;
 
         return false;
+    }
+
+    public void refresh() {
+        int off = height;
+
+        for(Button b : buttons) {
+            b.offset = off;
+            off += height;
+
+            if(!b.open) continue;
+
+            for(Component comp : b.comp) {
+                comp.newOff(off);
+                off += height;
+            }
+        }
     }
 }

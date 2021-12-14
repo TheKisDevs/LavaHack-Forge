@@ -1,6 +1,5 @@
 package com.kisman.cc.util.customfont;
 
-
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 

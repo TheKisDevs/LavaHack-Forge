@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
 import com.kisman.cc.module.render.Charms;
+import com.kisman.cc.module.render.Reverse;
 import com.kisman.cc.module.render.Spin;
 import com.kisman.cc.util.GLUtil;
 import net.minecraft.client.Minecraft;
@@ -50,6 +51,14 @@ public class MixinPenderPlayer {
             GlStateManager.scale(f, f, f);
 
             GlStateManager.rotate(hue, 1, 0, hue);
+        }
+
+        if(Reverse.instance.isToggled() && !Spin.instance.isToggled()) {
+            Minecraft mc = Minecraft.getMinecraft();
+            double height = mc.player.boundingBox.maxY - mc.player.boundingBox.minY;
+
+            GlStateManager.rotate(180, 1, 0, 0);
+            GlStateManager.translate(mc.player.posX, mc.player.posY + height, mc.player.posZ);
         }
     }
 }

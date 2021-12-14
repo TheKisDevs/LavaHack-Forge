@@ -1,10 +1,8 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import net.minecraft.client.Minecraft;
 
 public class Step extends Module {
     public static Step instance;
@@ -18,11 +16,13 @@ public class Step extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         float height = (float) Kisman.instance.settingsManager.getSettingByName(this, "Heigth").getValDouble();
-        if(mc.player != null && mc.world != null) Minecraft.getMinecraft().player.stepHeight = height;
+        mc.player.stepHeight = height;
     }
 
     public void onDisable() {
-        if(mc.player != null && mc.world != null) Minecraft.getMinecraft().player.stepHeight = 0.5f;
+        if(mc.player != null && mc.world != null) mc.player.stepHeight = 0.5f;
     }
 }

@@ -20,6 +20,7 @@ public class LoadConfig {
     private static final String moduleName = "Modules/";
     private static final String mainName = "Main/";
     private static final String miscName = "Misc/";
+    private static final String sandboxName = "SandBox/";
 
     public static void init() {
         try {
@@ -43,6 +44,9 @@ public class LoadConfig {
         }
         if (!Files.exists(Paths.get(fileName + miscName))) {
             Files.createDirectories(Paths.get(fileName + miscName));
+        }
+        if(!Files.exists(Paths.get(fileName + sandboxName))) {
+            Files.createDirectories(Paths.get(fileName + sandboxName));
         }
     }
 

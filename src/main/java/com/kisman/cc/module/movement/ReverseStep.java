@@ -12,14 +12,10 @@ public class ReverseStep extends Module {
     }
 
     public void update() {
-        double height = Kisman.instance.settingsManager.getSettingByName(this, "Height").getValDouble();
-
         if (mc.world == null || mc.player == null || mc.player.isInWater() || mc.player.isInLava() || mc.player.isOnLadder()
-                || mc.gameSettings.keyBindJump.isKeyDown()) {
-            return;
-        }
+                || mc.gameSettings.keyBindJump.isKeyDown()) return;
 
-        //if (ModuleManager.isModuleEnabled(Speed.class)) return;
+        double height = Kisman.instance.settingsManager.getSettingByName(this, "Height").getValDouble();
 
         if (mc.player != null && mc.player.onGround && !mc.player.isInWater() && !mc.player.isOnLadder()) {
             for (double y = 0.0; y < height + 0.5; y += 0.01) {

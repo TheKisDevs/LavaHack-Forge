@@ -1,5 +1,6 @@
 package com.kisman.cc.module.combat;
 
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -8,6 +9,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.ClickType;
@@ -27,6 +29,7 @@ public class OffHand extends Module {
     private Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
     private Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
     private Setting offhandGapOnSword = new Setting("OffhandGapOnSword", this, true);
+//    private Setting swordItem = new Setting("SwordItem",)
     private Setting hotbarFirst = new Setting("HotbarFirst", this, false);
 
 
@@ -75,20 +78,20 @@ public class OffHand extends Module {
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.updateController();
 
-                ChatUtils.complete(ChatFormatting.YELLOW + "[AutoTotem] " + ChatFormatting.LIGHT_PURPLE + "Offhand now has a " + display);
+                ChatUtils.complete(ChatFormatting.LIGHT_PURPLE + "Offhand now has a " + display);
             }
         }
     }
 
     public void update() {
-        if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory)))
-            return;
+        if(mc.player == null && mc.world == null) return;
+        if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
 
         if (!mc.player.getHeldItemMainhand().isEmpty()) {
-            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !mc.player.isPotionActive(MobEffects.STRENGTH)) {
+            /*if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !mc.player.isPotionActive(MobEffects.STRENGTH)) {
                 switchOffHandIfNeed("Strength");
                 return;
-            }
+            }*/
 
             if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
                 switchOffHandIfNeed("Gapple");
@@ -103,14 +106,10 @@ public class OffHand extends Module {
         switchOffHandIfNeed(mode.getValString());
     }
 
-    private boolean isValidTarget(Entity entity) {
-        if (entity == mc.player) {
-            return false;
-        }
-
-        if (mc.player.getDistance(entity) > 15) {
-            return false;
-        }
+    private boolean isValidTarget(EntityPlayer player) {
+        if (player == mc.player) return false;
+        if (mc.player.getDistance(player) > 15) return false;
+        if (FriendManager.instance.isFriend(player)) return false;
 
         return true;
     }
@@ -162,5 +161,12 @@ public class OffHand extends Module {
             return true;
         }
         return false;
+    }
+
+    public enum SwordItem {
+        Totem,
+        Gapple,
+        Strength,
+        Smart
     }
 }

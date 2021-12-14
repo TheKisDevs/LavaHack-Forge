@@ -32,7 +32,7 @@ public class Frame {
     private Color b2 = new Color(0.16f, 0.15f, 0.15f, 1);
 
     public Frame(int x, int y, int heigth, int width, FontRenderer fr) {
-        this.title = Kisman.NAME + " | " + Kisman.VERSION;
+        this.title = Kisman.getName() + " | " + Kisman.getVersion();
 
         this.x = x;
         this.y = y;

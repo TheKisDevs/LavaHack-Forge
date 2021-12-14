@@ -48,7 +48,6 @@ public final class GLUtils {
      * @return The scale factor used by the play's screen gui scale
      */
     public static int getScaleFactor() {
-
         int scaleFactor = 1;
         boolean isUnicode = Minecraft.getMinecraft().isUnicode();
         int guiScale = Minecraft.getMinecraft().gameSettings.guiScale;
@@ -66,14 +65,12 @@ public final class GLUtils {
         }
 
         return scaleFactor;
-
     }
 
     /**
      * @return Mouse X cord.
      */
     public static int getMouseX() {
-
         return (Mouse.getX() * getScreenWidth() / Minecraft.getMinecraft().displayWidth);
     }
 
@@ -81,7 +78,6 @@ public final class GLUtils {
      * @return Mouse Y cord.
      */
     public static int getMouseY() {
-
         return (getScreenHeight() - Mouse.getY() * getScreenHeight() / Minecraft.getMinecraft().displayWidth - 1);
     }
 
@@ -89,7 +85,6 @@ public final class GLUtils {
      * @return Screen width with gui scale.
      */
     public static int getScreenWidth() {
-
         return Minecraft.getMinecraft().displayWidth / getScaleFactor();
     }
 
@@ -97,7 +92,6 @@ public final class GLUtils {
      * @return Screen height with gui scale.
      */
     public static int getScreenHeight() {
-
         return Minecraft.getMinecraft().displayHeight / getScaleFactor();
     }
 
@@ -113,12 +107,10 @@ public final class GLUtils {
      * @return
      */
     public static boolean isHovered(int x, int y, int width, int height, int mouseX, int mouseY) {
-
         return (mouseX >= x) && (mouseX <= x + width) && (mouseY >= y) && (mouseY < y + height);
     }
 
     public static int genVBO() {
-
         int id = GL15.glGenBuffers();
         vbos.add(id);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
@@ -126,7 +118,6 @@ public final class GLUtils {
     }
 
     public static int getTexture() {
-
         int textureID = glGenTextures();
         textures.add(textureID);
         return textureID;
@@ -139,7 +130,6 @@ public final class GLUtils {
      *               GL_CLAMP_TO_EDGE - samples edge color <br> GL_REPEAT - repeats the texture <br>
      */
     public static int applyTexture(int texId, File file, int filter, int wrap) throws IOException {
-
         applyTexture(texId, ImageIO.read(file), filter, wrap);
         return texId;
     }
@@ -151,7 +141,6 @@ public final class GLUtils {
      *               GL_CLAMP_TO_EDGE - samples edge color <br> GL_REPEAT - repeats the texture <br>
      */
     public static int applyTexture(int texId, BufferedImage image, int filter, int wrap) {
-
         int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
 
@@ -179,7 +168,6 @@ public final class GLUtils {
      *               GL_CLAMP_TO_EDGE - samples edge color <br> GL_REPEAT - repeats the texture <br>
      */
     public static int applyTexture(int texId, int width, int height, ByteBuffer pixels, int filter, int wrap) {
-
         glBindTexture(GL_TEXTURE_2D, texId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
@@ -195,7 +183,6 @@ public final class GLUtils {
      * Cleans ups the arrays on close
      */
     public static void cleanup() {
-
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -206,7 +193,6 @@ public final class GLUtils {
         for (int texture : textures) {
             glDeleteTextures(texture);
         }
-
     }
 
     /**
@@ -215,13 +201,11 @@ public final class GLUtils {
 
 
     public static void drawBorderRect(float x, float y, float x1, float y1, float borderSize) {
-
         drawBorder(borderSize, x, y, x1, y1);
         drawRect(x, y, x1, y1);
     }
 
     public static void drawBorder(float size, float x, float y, float x1, float y1) {
-
         glLineWidth(size);
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
@@ -237,7 +221,6 @@ public final class GLUtils {
     }
 
     public static void drawRect(float x, float y, float w, float h) {
-
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -253,7 +236,6 @@ public final class GLUtils {
 
 
     public static void drawGradientRect(int x, int y, int w, int h, int startColor, int endColor) {
-
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float f1 = (float) (startColor >> 16 & 255) / 255.0F;
         float f2 = (float) (startColor >> 8 & 255) / 255.0F;
@@ -282,7 +264,6 @@ public final class GLUtils {
     }
 
     public static void enableGL2D() {
-
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -294,7 +275,6 @@ public final class GLUtils {
     }
 
     public static void disableGL2D() {
-
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
@@ -308,34 +288,28 @@ public final class GLUtils {
      */
 
     public static void glColor(float red, float green, float blue, float alpha) {
-
         GlStateManager.color(red, green, blue, alpha);
     }
 
     public static void glColor(Color color) {
-
         GlStateManager.color((float) color.getRed() / 255F, (float) color.getGreen() / 255F, (float) color.getBlue() / 255F, (float) color.getAlpha() / 255F);
     }
 
     public static void glColor(int color) {
-
         GlStateManager.color((float) (color >> 16 & 255) / 255F, (float) (color >> 8 & 255) / 255F, (float) (color & 255) / 255F, (float) (color >> 24 & 255) / 255F);
     }
 
     public static Color getHSBColor(float hue, float sturation, float luminance) {
-
         return Color.getHSBColor(hue, sturation, luminance);
     }
 
     public static Color getRandomColor(int saturationRandom, float luminance) {
-
         final float hue = random.nextFloat();
         final float saturation = (random.nextInt(saturationRandom) + (float) saturationRandom) / (float) saturationRandom + (float) saturationRandom;
         return getHSBColor(hue, saturation, luminance);
     }
 
     public static Color getRandomColor() {
-
         return getRandomColor(1000, 0.6f);
     }
 }

@@ -1,9 +1,11 @@
 package com.kisman.cc.hud.hudmodule.render;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.settings.*;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import org.lwjgl.opengl.GL11;
 
 import com.kisman.cc.hud.hudmodule.HudCategory;
@@ -113,60 +115,51 @@ public class Coord extends HudModule {
         // y4 = y3 + fr.FONT_HEIGHT + 1;
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
+            int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
             CustomFontUtil.drawStringWithShadow(
                 TextFormatting.WHITE + 
                 "X: " + 
                 TextFormatting.GRAY + 
                 "(" +
-                TextFormatting.WHITE +
                 posX +
                 TextFormatting.GRAY +
-                ")[" + 
-                TextFormatting.WHITE +
+                ")[" +
                 nPosX +
                 TextFormatting.GRAY +
                 "]" +
-                TextFormatting.WHITE + 
                 " Y: " + 
                 TextFormatting.GRAY + 
                 "(" +
-                TextFormatting.WHITE +
                 posY +
                 TextFormatting.GRAY +
-                ")[" + 
-                TextFormatting.WHITE +
+                ")[" +
                 nPosY +
                 TextFormatting.GRAY +
                 "]" +
-                TextFormatting.WHITE + 
                 " Z: " + 
                 TextFormatting.GRAY + 
                 "(" +
-                TextFormatting.WHITE +
                 posZ +
                 TextFormatting.GRAY +
-                ")[" + 
-                TextFormatting.WHITE +
+                ")[" +
                 nPosZ +
                 TextFormatting.GRAY +
                 "]",
                 1, 
                 sr.getScaledHeight() - fr.FONT_HEIGHT - 1, 
-                -1
+                color
             );
 
             fr.drawStringWithShadow(
-                TextFormatting.WHITE + 
                 "Yaw: " +
                 TextFormatting.GRAY +
-                (int) mc.player.cameraYaw + 
-                TextFormatting.WHITE +
+                (int) mc.player.rotationYaw +
                 " Pitch:" +
                 TextFormatting.GRAY +
-                (int) mc.player.cameraPitch, 
+                (int) mc.player.rotationPitch,
                 1,
                 sr.getScaledHeight() - (fr.FONT_HEIGHT * 2) - 2,
-                -1  
+                color
             );
         }
     }

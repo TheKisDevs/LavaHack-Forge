@@ -22,10 +22,11 @@ public class CommandManager {
 		addCommands();
 	}
 
-	public void addCommands()
-	{
+	public void addCommands() {
 		commands.add(new Bind());
+		commands.add(new ColfCmd());
 		commands.add(new Flip());
+		commands.add(new FriendCommand());
 		commands.add(new Help());
 		commands.add(new LoadConfigCommand());
         commands.add(new Slider());
@@ -37,18 +38,15 @@ public class CommandManager {
 		commands.add(new Tp());
 	}
 
-	public void runCommands(String s)
-	{
+	public void runCommands(String s) {
 		String readString = s.trim().substring(Character.toString(cmdPrefix).length()).trim();
 		boolean commandResolved = false;
 		boolean hasArgs = readString.trim().contains(" ");
 		String commandName = hasArgs ? readString.split(" ")[0] : readString.trim();
 		String[] args = hasArgs ? readString.substring(commandName.length()).trim().split(" ") : new String[0];
 
-		for(Command command : commands)
-		{
-			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) 
-			{
+		for(Command command : commands) {
+			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) {
 				command.runCommand(readString, args);
 				commandResolved = true;
 /*				if(!command.getSyntax().equalsIgnoreCase("loadconfig") || !command.getSyntax().equalsIgnoreCase("saveconfig")) {

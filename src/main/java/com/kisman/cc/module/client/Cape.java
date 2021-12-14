@@ -7,13 +7,19 @@ import com.kisman.cc.settings.Setting;
 public class Cape extends Module {
     public static Cape instance;
 
-    public Setting gif = new Setting("Gif", this, false);
+    public Setting mode = new Setting("Cape Mode", this, CapeMode.STATIC);
 
     public Cape() {
         super("Cape", "Custom cape", Category.CLIENT);
 
         instance = this;
 
-        setmgr.rSetting(gif);
+        setmgr.rSetting(mode);
+    }
+
+    public enum CapeMode {
+        STATIC,
+        GIF,
+        XULUplus
     }
 }

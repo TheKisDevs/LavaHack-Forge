@@ -12,6 +12,8 @@ public class Zoom extends Module {
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         setSpeed(9.9);
         if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + 0.0000001, mc.player.posZ)).getBlock() == Block.getBlockById(9)) {
             mc.player.fallDistance = 0.0f;
@@ -19,8 +21,6 @@ public class Zoom extends Module {
             mc.player.motionY = 0.06f;
             mc.player.jumpMovementFactor = 0.01f;
             mc.player.motionZ = 0.0;
-
-
         }
     }
 

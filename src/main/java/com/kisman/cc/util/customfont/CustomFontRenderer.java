@@ -7,17 +7,13 @@ import org.lwjgl.opengl.GL11;
 
 public class CustomFontRenderer extends CustomFont {
     protected CustomFont.CharData[] boldChars = new CustomFont.CharData[256];
-
     protected CustomFont.CharData[] italicChars = new CustomFont.CharData[256];
-
     protected CustomFont.CharData[] boldItalicChars = new CustomFont.CharData[256];
 
     private final int[] colorCode = new int[32];
 
     protected DynamicTexture texBold;
-
     protected DynamicTexture texItalic;
-
     protected DynamicTexture texItalicBold;
 
     public CustomFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
@@ -43,12 +39,12 @@ public class CustomFontRenderer extends CustomFont {
         drawString(text, x - getStringWidth(text) / 2.0F, y, color);
     }
 
-    public void drawString(String text, double x, double y, int c, boolean shadow) {
+    public float drawString(String text, double x, double y, int c, boolean shadow) {
         int color = c;
         x--;
         y -= 2.0D;
         if (text == null)
-            return;
+            return 0;
         if (color == 553648127)
             color = 16777215;
         if ((color & 0xFC000000) == 0)
@@ -137,6 +133,7 @@ public class CustomFontRenderer extends CustomFont {
     }
     GL11.glHint(3155, 4352);
     GL11.glPopMatrix();
+    return (float) x / 2f;
 }
 
     public int getStringWidth(String text) {

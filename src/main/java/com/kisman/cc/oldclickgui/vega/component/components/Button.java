@@ -4,6 +4,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
+import com.kisman.cc.oldclickgui.vega.component.components.sub.ModeButton;
+import com.kisman.cc.oldclickgui.vega.component.components.sub.Slider;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
@@ -31,6 +34,26 @@ public class Button {
         this.width = width;
         this.height = height;
         this.offset = offset;
+
+        this.comp = new ArrayList<>();
+
+        int opY = offset + 12;
+
+        if(mod != null) {
+            if(Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
+                for(Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
+                    if(set.isCombo()) {
+                        comp.add(new ModeButton(this, mod, opY));
+                        opY += height;
+                    }
+
+                    if(set.isSlider()) {
+                        comp.add(new Slider(this, set, opY));
+                        opY += height;
+                    }
+                }
+            }
+        }
     }
 
     public void renderComponent() {
@@ -41,8 +64,7 @@ public class Button {
         Gui.drawRect(this.x - 1, this.y + 1 + offset, this.x + this.width + 1, this.y + this.height + 1 + offset, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x - 1, this.y + offset, this.x + this.width + 1, this.y + this.height + offset, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x, this.y + offset, this.x + this.width, this.y + this.height + offset, (ColorUtils.getColor(34, 34, 40)));
-        float yDist = 4;
-        int yTotal = 0;
+
         GL11.glPushMatrix();
         Gui.drawRect(this.x + 3, this.y + offset, this.x + this.animation, this.y + this.height + offset,(ColorUtils.getColor(60, 60, 70)));
         Render2DUtil.drawRect(this.x + 2, this.y + 0.5 + offset, this.x + this.animation, this.y + this.height + offset,(ColorUtils.getColor(33, 33, 42)));
@@ -60,11 +82,17 @@ public class Button {
             }
         }
 
-        CustomFontUtil.drawStringWithShadow(mod.getName(), x + 6, y + ((height - CustomFontUtil.getFontHeight()) / 2) + offset, -1);
+        CustomFontUtil.drawStringWithShadow(mod.getName(), x + 6, y + ((height - CustomFontUtil.getFontHeight()) / 2) + offset, mod.isToggled() ? ColorUtils.astolfoColors(100, 100) : -1);
 
         if(Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
             if (Kisman.instance.settingsManager.getSettingsByMod(mod).size() > 2) {
-                CustomFontUtil.drawStringWithShadow(open ? "<" : "=", x + width - 8, y + ((height - CustomFontUtil.getFontHeight()) / 2) + offset, -1);
+                CustomFontUtil.drawStringWithShadow(open ? "<" : "=", x + width - 8, y + ((height - CustomFontUtil.getFontHeight()) / 2) + offset, open ? ColorUtils.astolfoColors(100, 100) : -1);
+            }
+        }
+
+        if(open && !comp.isEmpty()) {
+            for(Component comp : comp) {
+                comp.renderComponent();
             }
         }
     }
@@ -81,15 +109,30 @@ public class Button {
 
         if(isMouseOnButton(mouseX, mouseY) && button == 1) {
             open = !open;
+            parent.refresh();
+        }
+
+        if(!comp.isEmpty()) {
+            for(Component comp : comp) {
+                comp.mouseClicked(mouseX, mouseY, button);
+            }
         }
     }
 
     public void mouseReleased(int mouseX, int mouseY, int button) {
-
+        if(!comp.isEmpty()) {
+            for(Component comp : comp) {
+                comp.mouseReleased(mouseX, mouseY, button);
+            }
+        }
     }
 
     public void keyTyped(char typedChar, int key) {
-
+        if(!comp.isEmpty()) {
+            for(Component comp : comp) {
+                comp.keyTyped(typedChar, key);
+            }
+        }
     }
 
     public void newOff(int newOff) {

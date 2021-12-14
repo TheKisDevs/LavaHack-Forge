@@ -30,6 +30,12 @@ public class SettingsManager {
 	public void rSetting(Setting in){
 		this.settings.add(in);
 	}
+
+	public void rSettings(Setting... in) {
+		for(Setting set : in) {
+			settings.add(set);
+		}
+	}
 	
 	public ArrayList<Setting> getSettings(){
 		return this.settings;

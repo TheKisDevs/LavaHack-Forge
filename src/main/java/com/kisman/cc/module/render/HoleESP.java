@@ -71,9 +71,7 @@ public class HoleESP extends Module {
     }
 
     public void update() {
-        if (mc.player == null || mc.world == null) {
-            return;
-        }
+        if (mc.player == null || mc.world == null) return;
 
         if (holes == null) {
             holes = new ConcurrentHashMap<>();
@@ -87,11 +85,9 @@ public class HoleESP extends Module {
         List<BlockPos> blockPosList = EntityUtil.getSphere(PlayerUtil.getPlayerPos(), range, range, false, true, 0);
 
         for (BlockPos pos : blockPosList) {
-
             if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) {
                 continue;
             }
-
             if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR)) {
                 continue;
             }
@@ -108,12 +104,10 @@ public class HoleESP extends Module {
             HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
             HoleUtil.HoleType holeType = holeInfo.getType();
             if (holeType != HoleUtil.HoleType.NONE) {
-
                 HoleUtil.BlockSafety holeSafety = holeInfo.getSafety();
-                AxisAlignedBB centreBlocks = holeInfo.getCentre();
+                AxisAlignedBB centerBlock = holeInfo.getCentre();
 
-                if (centreBlocks == null)
-                    return;
+                if (centerBlock == null) return;
 
                 Colour colour;
 
@@ -128,11 +122,11 @@ public class HoleESP extends Module {
 
                 String mode = customMode.getValString();
                 if (mode.equalsIgnoreCase("Custom") && (holeType == HoleUtil.HoleType.CUSTOM || holeType == HoleUtil.HoleType.DOUBLE)) {
-                    holes.put(centreBlocks, colour);
+                    holes.put(centerBlock, colour);
                 } else if (mode.equalsIgnoreCase("Double") && holeType == HoleUtil.HoleType.DOUBLE) {
-                    holes.put(centreBlocks, colour);
+                    holes.put(centerBlock, colour);
                 } else if (holeType == HoleUtil.HoleType.SINGLE) {
-                    holes.put(centreBlocks, colour);
+                    holes.put(centerBlock, colour);
                 }
             }
         });

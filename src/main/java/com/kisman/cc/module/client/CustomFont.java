@@ -1,14 +1,14 @@
 package com.kisman.cc.module.client;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class CustomFont extends Module {
-    public Setting mode = new Setting("Mode", this, "Default", new ArrayList<>(Arrays.asList("Default", "SalHack")));
+    public Setting mode = new Setting("Mode", this, "Default", new ArrayList<>(Arrays.asList("Verdana", "Comfortaa")));
+    public Setting bold = new Setting("Bold", this, false);
+    public Setting italic = new Setting("Italic", this, false);
 
     public static boolean turnOn = false;
 
@@ -19,15 +19,10 @@ public class CustomFont extends Module {
         instance = this;
 
         setmgr.rSetting(mode);
+        setmgr.rSetting(bold);
+        setmgr.rSetting(italic);
     }
 
-    public void update() {
-        if(mode.getValString().equalsIgnoreCase("Default")) {
-            turnOn = true;
-        }
-    }
-
-    public void onDisable(){
-        turnOn = false;
-    }
+    public void update() {turnOn = true;}
+    public void onDisable(){turnOn = false;}
 }

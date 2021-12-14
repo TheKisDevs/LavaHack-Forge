@@ -52,26 +52,20 @@ public class Scaffold extends Module {
 
     @EventHandler
     private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {
-        if (event.isCancelled())
-            return;
+        if (event.isCancelled()) return;
+        if (event.getEra() != Event.Era.PRE) return;
+        if (!timer.passedMillis((long) (delay.getValDouble() * 1000))) return;
 
-        if (event.getEra() != Event.Era.PRE)
-            return;
-
-        if (!timer.passedMillis((long) (delay.getValDouble() * 1000)))
-            return;
-
-        // verify we have a block in our hand
         ItemStack stack = mc.player.getHeldItemMainhand();
 
-        int prevSlot = -1;
+        int oldSlot = -1;
 
         if (!verifyStack(stack)) {
             for (int i = 0; i < 9; ++i) {
                 stack = mc.player.inventory.getStackInSlot(i);
 
                 if (verifyStack(stack)) {
-                    prevSlot = mc.player.inventory.currentItem;
+                    oldSlot = mc.player.inventory.currentItem;
                     mc.player.inventory.currentItem = i;
                     mc.playerController.updateController();
                     break;
@@ -79,8 +73,7 @@ public class Scaffold extends Module {
             }
         }
 
-        if (!verifyStack(stack))
-            return;
+        if (!verifyStack(stack)) return;
 
         timer.reset();
 
@@ -90,9 +83,9 @@ public class Scaffold extends Module {
 
         boolean placeAtFeet = isValidPlaceBlockState(feetBlock);
 
-        // verify we are on tower mode, feet block is valid to be placed at, and
         if (mode.getValEnum() == Modes.Tower && placeAtFeet && mc.player.movementInput.jump && towerTimer.passedMillis(250) && !mc.player.isElytraFlying()) {
-            // todo: this can be moved to only do it on an SPacketPlayerPosLook?
+            if(event.getX() >= 255) return;
+
             if (towerPauseTimer.passedMillis(1500)) {
                 towerPauseTimer.reset();
                 mc.player.motionY = -0.28f;
@@ -103,12 +96,10 @@ public class Scaffold extends Module {
             }
         }
 
-        if (placeAtFeet)
-            toPlaceAt = feetBlock;
+        if (placeAtFeet) toPlaceAt = feetBlock;
         else {// find a supporting position for feet block
             BlockInteractionHelper.ValidResult result = BlockInteractionHelper.valid(feetBlock);
 
-            // find a supporting block
             if (result != BlockInteractionHelper.ValidResult.Ok && result != BlockInteractionHelper.ValidResult.AlreadyBlockThere) {
                 BlockPos[] array = { feetBlock.north(), feetBlock.south(), feetBlock.east(), feetBlock.west() };
 
@@ -126,9 +117,7 @@ public class Scaffold extends Module {
                     }
                 }
 
-                // if we found a position, that's our selection
-                if (toSelect != null)
-                    toPlaceAt = toSelect;
+                if (toSelect != null) toPlaceAt = toSelect;
             }
 
         }
@@ -159,12 +148,10 @@ public class Scaffold extends Module {
             if (BlockInteractionHelper.place(toPlaceAt, 5.0f, false, false, true) == BlockInteractionHelper.PlaceResult.Placed) {
                 // swinging is already in the place function.
             }
-        } else
-            towerPauseTimer.reset();
+        } else towerPauseTimer.reset();
 
-        // set back our previous slot
-        if (prevSlot != -1) {
-            mc.player.inventory.currentItem = prevSlot;
+        if (oldSlot != -1) {
+            mc.player.inventory.currentItem = oldSlot;
             mc.playerController.updateController();
         }
     });
@@ -237,8 +224,7 @@ public class Scaffold extends Module {
     private boolean isValidPlaceBlockState(BlockPos pos) {
         BlockInteractionHelper.ValidResult result = BlockInteractionHelper.valid(pos);
 
-        if (result == BlockInteractionHelper.ValidResult.AlreadyBlockThere)
-            return mc.world.getBlockState(pos).getMaterial().isReplaceable();
+        if (result == BlockInteractionHelper.ValidResult.AlreadyBlockThere) return mc.world.getBlockState(pos).getMaterial().isReplaceable();
 
         return result == BlockInteractionHelper.ValidResult.Ok;
     }

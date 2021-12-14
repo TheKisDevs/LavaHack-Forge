@@ -15,23 +15,19 @@ import net.minecraft.client.gui.Gui;
 import java.awt.*;
 
 public class ModeButton extends Component {
-
 	private boolean hovered;
 	public Button button;
 	private Setting set;
-	private ColorUtil colorUtil = new ColorUtil();
 	public int offset;
 	public int x, y;
 	private int x1;
 	private int y1;
-	private Module mod;
 
 	private int modeIndex;
 
-	public ModeButton(Setting set, Button button, Module mod, int offset) {
+	public ModeButton(Setting set, Button button, int offset) {
 		this.set = set;
 		this.button = button;
-		this.mod = mod;
 		this.x = button.parent.getX();
 		this.y = button.parent.getY();
 		this.x1 = button.parent.getX() + button.parent.getWidth();

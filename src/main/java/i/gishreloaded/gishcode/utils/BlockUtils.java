@@ -24,7 +24,7 @@ public final class BlockUtils {
 
 	public static IBlockState getState(BlockPos pos)
 	{
-		return Wrapper.INSTANCE.world().getBlockState(pos);
+		return mc.world.getBlockState(pos);
 	}
 	
 	public static Block getBlock(BlockPos pos) {
@@ -155,8 +155,7 @@ public final class BlockUtils {
 	
 	// TODO: RotationUtils class for all the faceSomething() methods
 	
-	public static void faceVectorPacket(Vec3d vec)
-	{
+	public static void faceVectorPacket(Vec3d vec) {
 		double diffX = vec.x - Wrapper.INSTANCE.player().posX;
 		double diffY = vec.y - (Wrapper.INSTANCE.player().posY + Wrapper.INSTANCE.player().getEyeHeight());
 		double diffZ = vec.z - Wrapper.INSTANCE.player().posZ;
@@ -174,8 +173,7 @@ public final class BlockUtils {
 				Wrapper.INSTANCE.player().onGround));
 	}
 	
-	public static void faceBlockClient(BlockPos blockPos)
-	{
+	public static void faceBlockClient(BlockPos blockPos) {
 		double diffX = blockPos.getX() + 0.5 - Wrapper.INSTANCE.player().posX;
 		double diffY =      //0.5
 			blockPos.getY() + 0.0 - (Wrapper.INSTANCE.player().posY + Wrapper.INSTANCE.player().getEyeHeight());
@@ -190,8 +188,7 @@ public final class BlockUtils {
 			+ MathHelper.wrapDegrees(pitch -Wrapper.INSTANCE.player().rotationPitch);
 	}
 	
-	public static void faceBlockPacket(BlockPos blockPos)
-	{
+	public static void faceBlockPacket(BlockPos blockPos) {
 		double diffX = blockPos.getX() + 0.5 - Wrapper.INSTANCE.player().posX;
 		double diffY =      //0.5
 			blockPos.getY() + 0.0 - (Wrapper.INSTANCE.player().posY + Wrapper.INSTANCE.player().getEyeHeight());
@@ -208,8 +205,7 @@ public final class BlockUtils {
 				Wrapper.INSTANCE.player().onGround));
 	}
 	
-	public static void faceBlockClientHorizontally(BlockPos blockPos)
-	{
+	public static void faceBlockClientHorizontally(BlockPos blockPos) {
 		double diffX = blockPos.getX() + 0.5 - Wrapper.INSTANCE.player().posX;
 		double diffZ = blockPos.getZ() + 0.5 - Wrapper.INSTANCE.player().posZ;
 		float yaw =
@@ -218,8 +214,7 @@ public final class BlockUtils {
 			+ MathHelper.wrapDegrees(yaw - Wrapper.INSTANCE.player().rotationYaw);
 	}
 	
-	public static float getPlayerBlockDistance(BlockPos blockPos)
-	{
+	public static float getPlayerBlockDistance(BlockPos blockPos) {
 		return getPlayerBlockDistance(blockPos.getX(), blockPos.getY(),
 			blockPos.getZ());
 	}

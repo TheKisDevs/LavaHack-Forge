@@ -1,12 +1,9 @@
 package com.kisman.cc.util;
 
 import com.kisman.cc.mixin.mixins.accessor.IPlayerControllerMP;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockObsidian;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 
 import java.util.ArrayList;
@@ -16,7 +13,7 @@ public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void switchToSlot(int slot, boolean silent) {
-        if (silent != false) {
+        if (!silent) {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
         } else {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
@@ -96,8 +93,9 @@ public class InventoryUtil {
                 break;
             case INVENTORY:
                 for (int i = hotbar ? 9 : 0; i < 45; i++) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() == item)
+                    if (mc.player.inventory.getStackInSlot(i).getItem() == item) {
                         return i;
+                    }
                 }
 
                 break;

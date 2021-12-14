@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 public class SaveConfig {
     public static final String fileName = "kisman.cc/";
     private static final String moduleName = "Modules/";
-    private static final String  hudmoduleName = "Modules/Hud/";
+    private static final String hudmoduleName = "Modules/Hud/";
     private static final String mainName = "Main/";
     private static final String miscName = "Misc/";
 

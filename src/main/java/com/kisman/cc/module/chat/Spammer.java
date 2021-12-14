@@ -12,36 +12,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Spammer extends Module{
-    ArrayList<String> spam;
+public class Spammer extends Module {
+    private Setting customMsg = new Setting("CustomMessage", this, false);
+    private Setting customMessage = new Setting("CustomMessage", this, "_kisman_ on top!", "_kisman_ on top!", true);
+    private ArrayList<String> spam;
 
-    String[] msg = new String[] {
-        "xlllGhostlllx on top!",
+    private String[] msg = new String[] {
+        "L3g3ndry on top!",
         "_kisman_ on top!",
-        "mudonna gay",
-        "NO team ezz",
-        "_kisman_ the best kisman.cc user!",
-        "magisteroff lox",
-        "NO team lox",
-        "Softik on top!",
-        "mudonna ez log!",
-        "Azazel ez run!",
         "kisman.cc on top!",
         "DenYoyo on top!",
-        "kisman.cc the best crystal pvp client!",
         "Buy RusherHack with code \"Robertoss\"!",
-        "Softik the best duper!",
-        "xelab4ik on top!",
-        "_kisman_ the best konas user!",
-        "Robertoss on top!",
-        "doxxxxxxxx the best packet fly user!",
-        "NO team ezzzzz",
-        "No team = Gay++ team!!!"
+        "kisman.cc owned me((",
+        "Robertoss on top!"
     };
 
-    public TimerUtils timer;
-
-    int count = 0;
+    private TimerUtils timer;
 
     public Spammer() {
         super("Spammer", "chat spammer", Category.CHAT);
@@ -50,20 +36,30 @@ public class Spammer extends Module{
 
         Kisman.instance.settingsManager.rSetting(new Setting("GlobalMode", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Delay", this, 5000, 1000, 10000, true));
+        setmgr.rSetting(customMsg);
+        setmgr.rSetting(customMessage);
 
         this.spam = new ArrayList<>(Arrays.asList(msg));
     }
 
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         boolean globalMode = Kisman.instance.settingsManager.getSettingByName(this, "GlobalMode").getValBoolean();
         long delay = (int) Kisman.instance.settingsManager.getSettingByName(this, "Delay").getValDouble();
 
-        if (timer.delay(delay)) {
-            Random r = new Random();
-            int index = r.nextInt(spam.size());
-            String message = spam.get(index);
-            mc.player.sendChatMessage(globalMode ? "!" + message : message);
-            timer.setLastMS();
+        if (timer.passedMillis(delay)) {
+            if(customMsg.getValBoolean()) {
+                String message = customMessage.getValString();
+                mc.player.sendChatMessage(globalMode ? "!" + message : message);
+            } else {
+                Random r = new Random();
+                int index = r.nextInt(spam.size());
+                String message = spam.get(index);
+                mc.player.sendChatMessage(globalMode ? "!" + message : message);
+            }
+
+            timer.reset();
         }
     }
 }

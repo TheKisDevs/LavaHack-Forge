@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.util.NonNullList;
@@ -26,9 +25,9 @@ public class AutoTotem extends Module {
         int totemSlot = 0;
 
         NonNullList<ItemStack> inv;
-        ItemStack offhand = Wrapper.INSTANCE.player().getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+        ItemStack offhand = mc.player.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
         int inventoryIndex;
-        inv = Wrapper.INSTANCE.inventory().mainInventory;
+        inv = mc.player.inventory.mainInventory;
 
         int health = (int) Kisman.instance.settingsManager.getSettingByName(this, "Health").getValDouble();
 
@@ -40,7 +39,7 @@ public class AutoTotem extends Module {
             }
         }
 
-        if((int) mc.player.getHealth() < health) {
+        if(mc.player.getHealth() + mc.player.getAbsorptionAmount() < health) {
             if(offhand == null || offhand.getItem() == Items.TOTEM_OF_UNDYING) {
                 return;
             }

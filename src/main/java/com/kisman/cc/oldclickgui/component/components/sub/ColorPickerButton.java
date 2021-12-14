@@ -78,6 +78,7 @@ public class ColorPickerButton extends Component{
 
   @Override
   public void updateComponent(int mouseX, int mouseY) {
+      colorPicker.syns = set.isSyns();
     set.setColor(alpha(new Color(Color.HSBtoRGB(colorPicker.getColor(0), colorPicker.getColor(1), colorPicker.getColor(2))), colorPicker.getColor(3)));
     if(!colorPicker.syns) {
         set.setR(
@@ -151,7 +152,7 @@ public class ColorPickerButton extends Component{
         set.setA(ColorModule.instance.synsColor.getA());
         set.setColor(ColorModule.instance.synsColor.getColorHSB());
     }
-
+    set.setColour(new Colour(set.getR(), set.getG(), set.getB(), set.getA()));
     set.setSyns(colorPicker.syns);
     set.setRainbow(colorPicker.isRainbowState());
     set.setColorPicker(colorPicker);

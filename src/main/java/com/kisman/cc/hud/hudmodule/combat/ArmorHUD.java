@@ -4,6 +4,7 @@ import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -27,15 +28,13 @@ public class ArmorHUD extends HudModule {
     public void onRender(RenderGameOverlayEvent.Text event) {
         if(mc.player == null && mc.world == null) return;
 
-        ScaledResolution resolution = new ScaledResolution(Wrapper.INSTANCE.mc());
+        ScaledResolution resolution = event.getResolution();
         RenderItem itemRender = mc.getRenderItem();
-
         int i = resolution.getScaledWidth() / 2;
         int iteration = 0;
         int y = resolution.getScaledHeight() - 55 - (mc.player.isInWater() ? 10 : 0);
 
         for (ItemStack is : mc.player.inventory.armorInventory) {
-
             iteration++;
             if (is.isEmpty()) continue;
             int x = i - 90 + (9 - iteration) * armourSpacing + armourCompress;
@@ -49,43 +48,41 @@ public class ArmorHUD extends HudModule {
             GlStateManager.enableTexture2D();
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
-
             String s = is.getCount() > 1 ? is.getCount() + "" : "";
-            CustomFontUtil.drawStringWithShadow(s, x + 19 - 2 - Wrapper.INSTANCE.fontRenderer().getStringWidth(s), y + 9, 0xffffff);
+            int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
+            CustomFontUtil.drawStringWithShadow(s, x + 19 - 2 - CustomFontUtil.getStringWidth(s), y + 9, color);
 
             if (HUD.instance.armDmg.getValBoolean()) {
                 float green = ((float) is.getMaxDamage() - (float) is.getItemDamage()) / (float) is.getMaxDamage();
                 float red = 1 - green;
                 int dmg = 100 - (int) (red * 100);
-                CustomFontUtil.drawStringWithShadow(dmg + "", x + 8 - CustomFontUtil.getStringWidth(dmg + "") / 2, y - 11, 0xFFFFFF);
+                CustomFontUtil.drawStringWithShadow(dmg + "", x + 8 - CustomFontUtil.getStringWidth(dmg + "") / 2, y - 11, color);
             }
 
             if (HUD.instance.armExtra.getValBoolean()) {
-                for (ItemStack itemStack : Wrapper.INSTANCE.inventory().offHandInventory) {
-                    Item helfInOffHand = Wrapper.INSTANCE.player().getHeldItemOffhand().getItem();
-                    offHandHeldItemCount = getItemsOffHand(helfInOffHand);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.disableAlpha();
-                    GlStateManager.clear(256);
-                    GlStateManager.enableBlend();
-                    GlStateManager.pushAttrib();
-                    RenderHelper.enableGUIStandardItemLighting();
-                    GlStateManager.disableDepth();
+                final ItemStack itemStack = mc.player.getHeldItemOffhand();
+                Item helfInOffHand = Wrapper.INSTANCE.player().getHeldItemOffhand().getItem();
+                offHandHeldItemCount = getItemsOffHand(helfInOffHand);
+                GlStateManager.pushMatrix();
+                GlStateManager.disableAlpha();
+                GlStateManager.clear(256);
+                GlStateManager.enableBlend();
+                GlStateManager.pushAttrib();
+                RenderHelper.enableGUIStandardItemLighting();
+                GlStateManager.disableDepth();
 
-                    mc.getRenderItem().renderItemAndEffectIntoGUI(itemStack, 572, y);
-                    itemRender.renderItemOverlayIntoGUI(Wrapper.INSTANCE.fontRenderer(), itemStack, 572, y, String.valueOf(offHandHeldItemCount));
-                    GlStateManager.enableDepth();
-                    RenderHelper.disableStandardItemLighting();
-                    GlStateManager.popAttrib();
-                    GlStateManager.disableBlend();
+                mc.getRenderItem().renderItemAndEffectIntoGUI(itemStack, 572, y);
+                itemRender.renderItemOverlayIntoGUI(Wrapper.INSTANCE.fontRenderer(), itemStack, 572, y, String.valueOf(offHandHeldItemCount));
+                GlStateManager.enableDepth();
+                RenderHelper.disableStandardItemLighting();
+                GlStateManager.popAttrib();
+                GlStateManager.disableBlend();
 
-                    GlStateManager.disableDepth();
-                    GlStateManager.disableLighting();
-                    GlStateManager.enableDepth();
-                    GlStateManager.enableAlpha();
-                    GlStateManager.popMatrix();
-
-                }
+                GlStateManager.disableDepth();
+                GlStateManager.disableLighting();
+                GlStateManager.enableDepth();
+                GlStateManager.enableAlpha();
+                GlStateManager.popMatrix();
             }
 
             if (HUD.instance.armExtra.getValBoolean()) {
@@ -114,9 +111,7 @@ public class ArmorHUD extends HudModule {
                 GlStateManager.enableDepth();
                 GlStateManager.enableAlpha();
                 GlStateManager.popMatrix();
-
             }
-
             GlStateManager.enableDepth();
             GlStateManager.disableLighting();
 

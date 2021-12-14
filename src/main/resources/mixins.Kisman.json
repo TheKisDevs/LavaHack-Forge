@@ -14,9 +14,15 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinFontRenderer",
+    "MixinGuiContainer",
     "MixinGuiIngame",
+    "MixinGuiMainMenu",
     "MixinGuiMultiplayer",
+    "MixinGuiNewChat",
+    "MixinItemRenderer",
     "MixinLayerBipedArmor",
+    "MixinMinecraft",
     "MixinModelEnderCrystal",
     "MixinMovementInputFromOptions",
     "MixinNetworkManager",
@@ -25,6 +31,8 @@
     "MixinRenderEnderCrystal",
     "MixinRendererLivingEntity",
     "MixinRenderGlobal",
+    "MixinRenderItem",
+    "MixinTimer",
     "MixinWorld"
   ]
 }

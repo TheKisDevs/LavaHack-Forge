@@ -36,7 +36,9 @@ public class ModuleManager {
 		modules.add(new AimBot());
 		modules.add(new AntiTrap());
 		modules.add(new AutoArmor());
+		modules.add(new AutoBowExploit());
 		modules.add(new AutoClicker());
+		modules.add(new AutoCrystal());
 		modules.add(new AutoCrystalBypass());
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
@@ -44,32 +46,44 @@ public class ModuleManager {
 		modules.add(new AutoTrap());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
+		modules.add(new Burrow());
+		modules.add(new BurrowBypass());
 		modules.add(new CevBreaker());
 		modules.add(new Criticals());
+		modules.add(new CrystalFiller());
+		modules.add(new HoleFiller());
 		modules.add(new KillAura());
 		modules.add(new OffHand());
-		modules.add(new Rubberband());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
 		modules.add(new Cape());
 		modules.add(new ClickGUI());
+		modules.add(new ClientFont());
 		modules.add(new ColorModule());
+		modules.add(new Config());
 		modules.add(new Console());
 		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
+		modules.add(new Dumper());
 		modules.add(new HUD());
 		modules.add(new NewGui());
+		modules.add(new NotEnoughCoinsModule());
 		modules.add(new ExampleModule());
 		modules.add(new ParticleGui());
+		modules.add(new SandBox());
 		modules.add(new Test());
 		//chat
 		modules.add(new AntiSpamBypass());
 		modules.add(new AutoEZ());
+		modules.add(new AutoGlobal());
+		modules.add(new ChatAnimation());
 		modules.add(new ChatSuffix());
 		modules.add(new Notification());
 		modules.add(new Spammer());
+		modules.add(new TimeStamps());
+		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
 		modules.add(new BlockOutline());
@@ -77,10 +91,13 @@ public class ModuleManager {
 		modules.add(new CustomFov());
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
+		modules.add(new CityESP());
 		modules.add(new CrystalModifier());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
+//		modules.add(new HandCharms());
 		modules.add(new HoleESP());
+		modules.add(new ItemCharms());
 		modules.add(new KismanESP());
 		modules.add(new NameTags());
 		modules.add(new NoPitchLimit());
@@ -88,12 +105,18 @@ public class ModuleManager {
 		modules.add(new Particle());
 		modules.add(new PenisESP());
 		modules.add(new PlayerModifier());
+		modules.add(new PopCharms());
+		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
+		modules.add(new Reverse());
 		modules.add(new SkyColor());
+		modules.add(new SpawnsESP());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new Tracers());
 		modules.add(new Trails());
+		modules.add(new Trajectories());
 		modules.add(new ViewModel());
 		modules.add(new XRay());
 		//movement
@@ -102,12 +125,16 @@ public class ModuleManager {
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
 		modules.add(new ElytraFly());
+		modules.add(new FastSwim());
 		modules.add(new Fly());
 		modules.add(new HoleTP());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
+		modules.add(new NoJumpDelay());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
+		modules.add(new NoSlowBypass());
+		modules.add(new NoSlowSneak());
 		modules.add(new NoWeb());
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());
@@ -128,6 +155,7 @@ public class ModuleManager {
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
+		modules.add(new AntiLogger());
 //		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new CactusLeave());
@@ -139,6 +167,7 @@ public class ModuleManager {
 		modules.add(new NoSwing());
 		modules.add(new PacketFly());
 		modules.add(new PacketMine());
+		modules.add(new Rubberband());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 //		modules.add(new StrongholdFinder());
@@ -150,6 +179,7 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BurrowCounter());
 		modules.add(new FakePlayer());
+		modules.add(new ItemScroller());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new PigPOV());

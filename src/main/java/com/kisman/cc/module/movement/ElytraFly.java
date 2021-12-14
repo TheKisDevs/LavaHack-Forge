@@ -26,11 +26,6 @@ public class ElytraFly extends Module {
     private Setting downSpeed = new Setting("DownSpeed", this, 1.82, 0, 10, false);
     private Setting glideSpeed = new Setting("GlideSpeed", this, 1, 0, 10, false);
 
-    private Setting accelerateLine = new Setting("AccelerateLine", this, "Accelerate");
-    private Setting accelerate = new Setting("Accelerate", this, true);
-    private Setting accelerateTimer = new Setting("AccelerationTimer", this, 1000, 0, 10000, true);
-    private Setting rotationPitch = new Setting("RotationPitch", this, 0, -90, 90, true);
-
     private Setting cancelLine = new Setting("CancelLine", this, "Cancel");
     private Setting cancelInWater = new Setting("CancelInWater", this, true);
     private Setting cancelAtHeight = new Setting("CancelAtHeight", this, 5, 0, 10, true);
@@ -57,10 +52,6 @@ public class ElytraFly extends Module {
         setmgr.rSetting(upSpeed);
         setmgr.rSetting(downSpeed);
         setmgr.rSetting(glideSpeed);
-
-        setmgr.rSetting(accelerateLine);
-        setmgr.rSetting(accelerate);
-        setmgr.rSetting(accelerateTimer);
 
         setmgr.rSetting(cancelLine);
         setmgr.rSetting(cancelInWater);
@@ -172,36 +163,6 @@ public class ElytraFly extends Module {
         mc.player.limbSwing = 0;
     }
 
-    public void accelerate() {
-        if (accelerationTimer.passedMillis(accelerateTimer.getValInt())) {
-            accelerationResetTimer.reset();
-            accelerationTimer.reset();
-            sendMessage = false;
-        }
-
-        float speed = (float) this.speed.getValDouble();
-
-        final double[] dir = MathUtil.directionSpeed(speed);
-
-        mc.player.motionY = -(glideSpeed.getValDouble() / 10000f);
-
-        if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0) {
-            mc.player.motionX = dir[0];
-            mc.player.motionZ = dir[1];
-        } else {
-            mc.player.motionX = 0;
-            mc.player.motionZ = 0;
-        }
-
-        if (mc.player.movementInput.sneak)
-            mc.player.motionY = -downSpeed.getValDouble();
-
-        mc.player.prevLimbSwingAmount = 0;
-        mc.player.limbSwingAmount = 0;
-        mc.player.limbSwing = 0;
-    }
-
-
     private void handleControlMode(EventPlayerTravel event) {
         final double[] dir = MathUtil.directionSpeed(speed.getValDouble());
 
@@ -209,8 +170,8 @@ public class ElytraFly extends Module {
             mc.player.motionX = dir[0];
             mc.player.motionZ = dir[1];
 
-            mc.player.motionX -= (mc.player.motionX*(Math.abs(mc.player.rotationPitch)+90)/90) - mc.player.motionX;
-            mc.player.motionZ -= (mc.player.motionZ*(Math.abs(mc.player.rotationPitch)+90)/90) - mc.player.motionZ;
+            mc.player.motionX -= (mc.player.motionX * (Math.abs(mc.player.rotationPitch) + 90) / 90) - mc.player.motionX;
+            mc.player.motionZ -= (mc.player.motionZ * (Math.abs(mc.player.rotationPitch) + 90) / 90) - mc.player.motionZ;
         } else {
             mc.player.motionX = 0;
             mc.player.motionZ = 0;
@@ -218,10 +179,10 @@ public class ElytraFly extends Module {
 
         mc.player.motionY = (-MathUtil.degToRad(mc.player.rotationPitch)) * mc.player.movementInput.moveForward;
 
-
         mc.player.prevLimbSwingAmount = 0;
         mc.player.limbSwingAmount = 0;
         mc.player.limbSwing = 0;
+
         event.cancel();
     }
 

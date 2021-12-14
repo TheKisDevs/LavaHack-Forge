@@ -1,7 +1,12 @@
 package com.kisman.cc.oldclickgui.vega;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.clickguiEvents.drawScreen.render.GuiRenderPostEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
+import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.ClickGUI;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import net.minecraft.client.gui.GuiScreen;
@@ -39,6 +44,9 @@ public class Gui extends GuiScreen {
                 b.updateComponent(mouseX, mouseY);
             }
         }
+
+        GuiRenderPostEvent event = new GuiRenderPostEvent(mouseX, mouseY, partialTicks, GuiRenderPostEvent.Gui.NewGui);
+        Kisman.EVENT_BUS.post(event);
     }
 
     @Override
@@ -58,6 +66,11 @@ public class Gui extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        MouseClickedPreEvent event = new MouseClickedPreEvent(mouseX, mouseY, mouseButton, GuiRenderPostEvent.Gui.NewGui);
+        Kisman.EVENT_BUS.post(event);
+
+        if(event.isCancelled()) return;
+
         for(Frame frame : frames) {
             if(frame.isMouseOnButton(mouseX, mouseY) && mouseButton == 0) {
                 frame.dragging = true;
@@ -81,6 +94,12 @@ public class Gui extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
+        MouseReleasedPreEvent event = new MouseReleasedPreEvent(mouseX, mouseY, state, GuiRenderPostEvent.Gui.NewGui);
+        Kisman.EVENT_BUS.post(event);
+
+        if(event.isCancelled()) return;
+
+
         for(Frame frame : frames) {
             frame.dragging = false;
         }
@@ -103,12 +122,12 @@ public class Gui extends GuiScreen {
         int dWheel = Mouse.getDWheel();
         if(dWheel < 0){
             for(Frame frame : frames) {
-                frame.y = frame.y - (int) ClickGUI.instance.scrollSpeed.getValDouble();
+                frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
             }
         }
         else if(dWheel > 0){
             for(Frame frame : frames){
-                frame.y = frame.y + (int) ClickGUI.instance.scrollSpeed.getValDouble();
+                frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
             }
         }
     }

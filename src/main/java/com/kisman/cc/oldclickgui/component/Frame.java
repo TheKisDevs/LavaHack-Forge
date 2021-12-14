@@ -5,19 +5,17 @@ import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.*;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.components.Button;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.oldclickgui.component.components.sub.ItemsButton;
-import com.kisman.cc.oldclickgui.component.components.sub.ColorPickerSimpleButton;
-import com.kisman.cc.oldclickgui.component.components.sub.PreviewButton;
-import com.kisman.cc.util.ColorUtil;
-import com.kisman.cc.util.LineMode;
+import com.kisman.cc.oldclickgui.component.components.sub.*;
+import com.kisman.cc.util.*;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.*;
 
 public class Frame {
 	public ArrayList<Component> components;
@@ -36,7 +34,7 @@ public class Frame {
 	public int offset;
 	
 	public Frame(Category cat) {
-		this.components = new ArrayList<Component>();
+		this.components = new ArrayList<>();
 		this.category = cat;
 		this.width = 88;
 		this.x = 5;
@@ -56,7 +54,7 @@ public class Frame {
 	}
 
 	public Frame(HudCategory cat) {
-		this.components = new ArrayList<Component>();
+		this.components = new ArrayList<>();
 		this.hudCategory = cat;
 		this.width = 88;
 		this.x = 5;
@@ -100,7 +98,14 @@ public class Frame {
 	}
 	
 	public void renderFrame(FontRenderer fontRenderer) {
+		if(Config.instance.guiGlow.getValBoolean() && ClickGui.isLine()) {
+			int offset = Config.instance.glowOffset.getValInt();
+
+			Render2DUtil.drawGlow(x - offset, y - offset, x + width + offset, y + barHeight + offset, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+		}
+
 		Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.barHeight, ClickGui.isRainbowBackground() ? colorUtil.getColor() : new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB());
+
 		if(ClickGui.isLine()) {
 			if(ClickGui.getLineMode() == LineMode.LEFT) {
 				Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
@@ -116,8 +121,23 @@ public class Frame {
 		}
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
+/*
+		if(Config.instance.guiGlow.getValBoolean()) {
+			int offset = Config.instance.glowOffset.getValInt();
+
+//			Render2DUtil.drawGlow((this.x + 2) * 2 + 5 - offset, (this.y + 2.5f) * 2 + 5 - offset, (this.x + 2) * 2 + 5 + CustomFontUtil.getStringWidth(hud ? hudCategory.name() : category.name()) + offset, (this.y + 2.5f) * 2 + 5 + offset, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+
+			if(open) {
+				Render2DUtil.drawGlow((this.x + this.width - 10) * 2 + 5 - offset, (this.y + 2.5f) * 2 + 5 - offset, (this.x + this.width - 10) * 2 + 5 + CustomFontUtil.getStringWidth(hud ? hudCategory.name() : category.name()) + offset, (this.y + 2.5f) * 2 + 5 + offset, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+			}
+		}*/
+
 		fontRenderer.drawStringWithShadow(this.hud ? this.hudCategory.name() : this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		fontRenderer.drawStringWithShadow(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+
+		if(open && !components.isEmpty()) {
+
+		}
 
 		GL11.glPopMatrix();
 		if(this.open) {
@@ -178,7 +198,7 @@ public class Frame {
 
 				if(set instanceof PreviewButton) {
 					if(((PreviewButton) set).open) {
-						off += 100;
+						off += 112;
 						continue;
 					}
 

@@ -2,6 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.Cape;
+import com.kisman.cc.module.render.Charms;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -29,17 +30,29 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationSkin()Lnet/minecraft/util/ResourceLocation;", at = @At("HEAD"), cancellable = true)
     private void getLocationSkin(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        if(Kisman.instance.moduleManager.getModule("Charms").isToggled() && Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule("Charms"), "Texture").getValBoolean())
+        if(Kisman.instance.moduleManager.getModule("Charms").isToggled() && Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule("Charms"), "Texture").getValBoolean() && Charms.instance.textureMode.getValString().equalsIgnoreCase("Texture"))
             callbackInfoReturnable.setReturnValue(new ResourceLocation("kismancc:charms/charms1.png"));
     }
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
         if(Cape.instance.isToggled() && playerInfo == mc.player.getPlayerInfo()) {
-            if(!Cape.instance.gif.getValBoolean()) {
-                cir.setReturnValue(new ResourceLocation("kismancc:cape/cape1.png"));
-            } else {
-                cir.setReturnValue(getCape());
+            switch((Cape.CapeMode) Cape.instance.mode.getValEnum()) {
+                case STATIC: {
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/cape1.png"));
+                    break;
+                }
+                case GIF: {
+                    cir.setReturnValue(getCape());
+                    break;
+                }
+                case XULUplus: {
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/xuluplus/xulupluscape.png"));
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
     }
@@ -49,7 +62,7 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
         final ResourceLocation cape = new ResourceLocation("kismancc:cape/rainbow/" + str1 + count + str2);
 
-        if(timer.passedMillis(100)) {
+        if(timer.passedMillis(85)) {
             count++;
             timer.reset();
         }

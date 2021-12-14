@@ -4,7 +4,6 @@ import com.kisman.cc.command.Command;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Help extends Command {
-    private String msg = "";
     public Help() {
         super("help");
     }
@@ -14,6 +13,8 @@ public class Help extends Command {
         ChatUtils.message("bind <key> <module>");
         ChatUtils.message("bind list");
         ChatUtils.message("flip - this command only for Hypixel Skyblock");
+        ChatUtils.message("friend <add/remove> <player's name>");
+        ChatUtils.message("friend list");
         ChatUtils.message("help");
         ChatUtils.message("loadconfig");
         ChatUtils.message("opendir");

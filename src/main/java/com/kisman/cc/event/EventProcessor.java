@@ -6,10 +6,12 @@ import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.hypixel.util.ConfigHandler;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.SPacketEntityStatus;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -23,6 +25,9 @@ import java.util.*;
 
 public class EventProcessor {
     private Minecraft mc = Minecraft.getMinecraft();
+
+    //NEC vars
+    public boolean hasRan = false;
 
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -63,10 +68,14 @@ public class EventProcessor {
         }
     }
 
+
+
+    //NEC events
     @SubscribeEvent
     public void onEntityJoinWorld(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         if(ConfigHandler.hasKey(Configuration.CATEGORY_GENERAL, "Flip")){
             Timer timer = new Timer();
+            hasRan = true;
             timer.schedule(
                     new TimerTask() {
                         @Override
@@ -76,7 +85,24 @@ public class EventProcessor {
                     },
                     2000
             );
+        } else {
+            ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,
+                    "Flip",
+                    "true"
+            );
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void chat(ClientChatReceivedEvent event) {
+        if (!event.getMessage().getUnformattedText().startsWith("Your new API key is "))
+            return;
+        String key = event.getMessage().getUnformattedText().split("key is ")[1];
+        ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL, "APIKey", key);
+        ChatUtils.complete(
+                TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
+                        TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + key
+        );
     }
 
     @EventHandler

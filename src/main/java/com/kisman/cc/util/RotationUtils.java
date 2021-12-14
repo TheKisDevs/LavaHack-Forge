@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -25,7 +26,6 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class RotationUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
-
 
     private Random random;
     private int keepLength;
@@ -37,6 +37,7 @@ public class RotationUtils {
     private double z;
     final Packet<?>[] packet = new Packet<?>[1];
     final CPacketPlayer[] packetPlayer = new CPacketPlayer[1];
+
     @SubscribeEvent
     public void update(TickEvent.ClientTickEvent event) {
         if (this.targetRotation != null) {
@@ -82,9 +83,9 @@ public class RotationUtils {
         return;
     });
 
-    public static double yawDist ( BlockPos pos ) {
+    public static double yawDist(BlockPos pos) {
         if ( pos != null ) {
-            Vec3d difference = new Vec3d ( pos ).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
+            Vec3d difference = new Vec3d(pos).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
             double d = Math.abs ( (double) mc.player.rotationYaw - ( Math.toDegrees ( Math.atan2 ( difference.z , difference.x ) ) - 90.0 ) ) % 360.0;
             return d > 180.0 ? 360.0 - d : d;
         }
@@ -495,5 +496,25 @@ public class RotationUtils {
     public void reset() {
         this.keepLength = 0;
         this.targetRotation = null;
+    }
+
+    public static float[] getMatrixRotations(Entity e, boolean oldPositionUse) {
+        double diffY;
+        double diffX = (oldPositionUse ? e.prevPosX : e.posX) - (oldPositionUse ? mc.player.prevPosX : mc.player.posX);
+        double diffZ = (oldPositionUse ? e.prevPosZ : e.posZ) - (oldPositionUse ? mc.player.prevPosZ : mc.player.posZ);
+        if (e instanceof EntityLivingBase) {
+            EntityLivingBase entitylivingbase = (EntityLivingBase)e;
+            float randomed = RandomUtils.nextFloat((float)(entitylivingbase.posY + (double)(entitylivingbase.getEyeHeight() / 1.5f)), (float)(entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (double)(entitylivingbase.getEyeHeight() / 3.0f)));
+            diffY = (double)randomed - (mc.player.posY + (double) mc.player.getEyeHeight());
+        } else {
+            diffY = (double)RandomUtils.nextFloat((float)e.getEntityBoundingBox().minY, (float)e.getEntityBoundingBox().maxY) - (mc.player.posY + (double) mc.player.getEyeHeight());
+        }
+        double dist = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
+        float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0) + RandomUtils.nextFloat(-2.0f, 2.0f);
+        float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0 / Math.PI)) + RandomUtils.nextFloat(-2.0f, 2.0f);
+        yaw = mc.player.rotationYaw + GCDUtil.getFixedRotation(MathHelper.wrapDegrees(yaw - mc.player.rotationYaw));
+        pitch = mc.player.rotationPitch + GCDUtil.getFixedRotation(MathHelper.wrapDegrees(pitch - mc.player.rotationPitch));
+        pitch = MathHelper.clamp(pitch, -90.0f, 90.0f);
+        return new float[]{yaw, pitch};
     }
 }

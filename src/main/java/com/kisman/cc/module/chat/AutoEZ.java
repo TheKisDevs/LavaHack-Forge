@@ -5,7 +5,6 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 
 import com.kisman.cc.settings.Setting;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 

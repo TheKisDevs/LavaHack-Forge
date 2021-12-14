@@ -35,7 +35,7 @@ apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = 'b0.1.6-plus'
+version = 'b0.1.6.1-plus'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 
@@ -77,6 +77,11 @@ repositories {
     jcenter()
 }
 
+configurations {
+    shade
+    compile.extendsFrom(shade)
+}
+
 dependencies {
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
@@ -93,6 +98,7 @@ dependencies {
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
+    shade 'com.neovisionaries:nv-websocket-client:2.14'
 }
 
 processResources {

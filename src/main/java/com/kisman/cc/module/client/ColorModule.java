@@ -7,6 +7,7 @@ import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
 import java.util.ArrayList;
 
@@ -67,6 +68,8 @@ public class ColorModule extends Module {
         int GBackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getG();
         int BBackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getB();
         int ABackground = Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").getA();
+        Kisman.instance.settingsManager.getSettingByName(this, "BackgroundColor").setSyns(true);
+        Kisman.instance.settingsManager.getSettingByName(this, "LineColor").setSyns(true);
         int RText = Kisman.instance.settingsManager.getSettingByName(this, "TextColor").getR();
         int GText = Kisman.instance.settingsManager.getSettingByName(this, "TextColor").getG();
         int BText = Kisman.instance.settingsManager.getSettingByName(this, "TextColor").getB();
@@ -101,30 +104,59 @@ public class ColorModule extends Module {
             ClickGui.setSetLineMode(LineMode.SETTINGONLYSET);
         }
 
-        ClickGui.setRLine(RLine);
-        ClickGui.setGLine(GLine);
-        ClickGui.setBLine(BLine);
-        ClickGui.setALine(ALine);
+        if(!Config.instance.guiAstolfo.getValBoolean()) {
+            ClickGui.setRLine(RLine);
+            ClickGui.setGLine(GLine);
+            ClickGui.setBLine(BLine);
+            ClickGui.setALine(ALine);
 
-        ClickGui.setRBackground(RBackground);
-        ClickGui.setGBackground(GBackground);
-        ClickGui.setBBackground(BBackground);
-        ClickGui.setABackground(ABackground);
+            ClickGui.setRActiveText(RAText);
+            ClickGui.setGActiveText(GAText);
+            ClickGui.setBActiveText(BAText);
+            ClickGui.setAActiveText(AAText);
+
+            ClickGui.setRBackground(RBackground);
+            ClickGui.setGBackground(GBackground);
+            ClickGui.setBBackground(BBackground);
+            ClickGui.setABackground(ABackground);
+
+            ClickGui.setRHoveredModule(RHovered);
+            ClickGui.setGHoveredModule(GHovered);
+            ClickGui.setBHoveredModule(BHovered);
+            ClickGui.setAHoveredModule(AHovered);
+            ClickGui.setRNoHoveredModule(RNoHovered);
+            ClickGui.setGNoHoveredModule(GNoHovered);
+            ClickGui.setBNoHoveredModule(BNoHovered);
+            ClickGui.setANoHoveredModule(ANoHovered);
+        } else {
+            ClickGui.setRLine(ColorUtils.getRed(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setGLine(ColorUtils.getGreen(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setBLine(ColorUtils.getBlue(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setALine(ColorUtils.getAlpha(ColorUtils.astolfoColors(100, 100)));
+
+            ClickGui.setRActiveText(ColorUtils.getRed(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setGActiveText(ColorUtils.getGreen(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setBActiveText(ColorUtils.getBlue(ColorUtils.astolfoColors(100, 100)));
+            ClickGui.setAActiveText(ColorUtils.getAlpha(ColorUtils.astolfoColors(100, 100)));
+
+            ClickGui.setRBackground(255);
+            ClickGui.setGBackground(255);
+            ClickGui.setBBackground(255);
+            ClickGui.setABackground(150);
+
+            ClickGui.setRHoveredModule(255);
+            ClickGui.setGHoveredModule(255);
+            ClickGui.setBHoveredModule(255);
+            ClickGui.setAHoveredModule(200);
+            ClickGui.setRNoHoveredModule(255);
+            ClickGui.setGNoHoveredModule(255);
+            ClickGui.setBNoHoveredModule(255);
+            ClickGui.setANoHoveredModule(150);
+        }
+
         ClickGui.setRText(RText);
         ClickGui.setGText(GText);
         ClickGui.setBText(BText);
         ClickGui.setAText(AText);
-        ClickGui.setRActiveText(RAText);
-        ClickGui.setGActiveText(GAText);
-        ClickGui.setBActiveText(BAText);
-        ClickGui.setAActiveText(AAText);
-        ClickGui.setRHoveredModule(RHovered);
-        ClickGui.setGHoveredModule(GHovered);
-        ClickGui.setBHoveredModule(BHovered);
-        ClickGui.setAHoveredModule(AHovered);
-        ClickGui.setRNoHoveredModule(RNoHovered);
-        ClickGui.setGNoHoveredModule(GNoHovered);
-        ClickGui.setBNoHoveredModule(BNoHovered);
-        ClickGui.setANoHoveredModule(ANoHovered);
     }
 }

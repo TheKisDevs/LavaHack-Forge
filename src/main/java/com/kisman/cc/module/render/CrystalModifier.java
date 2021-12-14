@@ -11,7 +11,7 @@ public class CrystalModifier extends Module {
     public Setting mode = new Setting("Mode", this, Modes.Fill);
 
 
-    private Setting preview = new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world));
+    public Setting preview = new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world));
 
 
     private Setting scaleLine = new Setting("ScaleLine", this, "Scale");
@@ -38,6 +38,7 @@ public class CrystalModifier extends Module {
     public Setting insideCube = new Setting("InsideCube", this, true);
     public Setting outsideCube = new Setting("OutsideCube", this, true);
     public Setting outsideCube2 = new Setting("OutsideCube2", this, true);
+    public Setting texture = new Setting("Texture", this, false);
     public Setting customColor = new Setting("CustomColor", this, false);
     public Setting crystalColor = new Setting("CrystalColor", this, "Color", new float[] {0, 0, 1, 1});
 
@@ -53,6 +54,11 @@ public class CrystalModifier extends Module {
 
     public Setting enchanted = new Setting("Enchanted", this, false);
     public Setting enchColor = new Setting("EnchColor", this, "Color", new float[] {0, 1, 0, 1});
+
+    private Setting speedLine = new Setting("SpeedLine", this, "Speed");
+
+    public Setting speed = new Setting("CrystalSpeed", this, 3, 0.1, 50, false);
+    public Setting bounce = new Setting("CrystalBounce", this, 0.2f, 0, 10, false);
 
     public CrystalModifier() {
         super("CrystalCharms", "r", Category.RENDER);
@@ -82,6 +88,7 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(insideCube);
         setmgr.rSetting(outsideCube);
         setmgr.rSetting(outsideCube2);
+        setmgr.rSetting(texture);
         setmgr.rSetting(customColor);
         setmgr.rSetting(crystalColor);
 
@@ -93,6 +100,10 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(enchantedLine);
         setmgr.rSetting(enchanted);
         setmgr.rSetting(enchColor);
+
+        setmgr.rSetting(speedLine);
+        setmgr.rSetting(speed);
+        setmgr.rSetting(bounce);
     }
 
     public enum OutlineModes {

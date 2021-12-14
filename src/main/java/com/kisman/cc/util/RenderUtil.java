@@ -46,8 +46,8 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
 public class RenderUtil {
-
     private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Frustum frustrum = new Frustum();
 	
 	private static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 	public static int splashTickPos = 0;
@@ -98,6 +98,10 @@ public class RenderUtil {
         //GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
+
+    public static void drawTracer(Entity entity, Colour color, float ticks) {
+        drawTracer(entity, color.getR(), color.getG(), color.getB(), color.getA(), ticks);
+    }
 	
 	public static void drawTracer(Entity entity, float red, float green, float blue, float alpha, float ticks) {
         double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
@@ -371,8 +375,8 @@ public class RenderUtil {
         glPopMatrix();
     }
 
-	public static void drawBlockESP(BlockPos pos, float red, float green, float blue) {
-		glPushMatrix();
+    public static void drawBlockESP(BlockPos pos, float red, float green, float blue) {
+        glPushMatrix();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
@@ -401,7 +405,7 @@ public class RenderUtil {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
         glPopMatrix();
-	}
+    }
 
     public static void drawBoundingBox(BlockPos bp, double height, float width, Colour color) {
         drawBoundingBox(getBoundingBox(bp, 1, height, 1), width, color, color.getAlpha());
@@ -411,29 +415,35 @@ public class RenderUtil {
         drawBoundingBox(bb, width, color, color.getAlpha());
     }
 
+    public static void drawBoundingBox(AxisAlignedBB bb, float width, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(width);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+
+        glTranslated(bb.minX, bb.minY, bb.minZ);
+        glTranslated(bb.maxX, bb.maxY, bb.maxZ);
+
+        glColor4f(red, green, blue, 0.7F);
+        drawOutlinedBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
     public static void drawBoundingBox(AxisAlignedBB bb, double width, Colour color, int alpha) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        GlStateManager.glLineWidth((float) width);
-        color.glColor();
-        bufferbuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-        colorVertex(bb.minX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.minX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.maxX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.maxX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.minX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.minX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
-        colorVertex(bb.minX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
-        colorVertex(bb.minX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.maxX, bb.minY, bb.maxZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.maxX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
-        colorVertex(bb.minX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
-        colorVertex(bb.maxX, bb.maxY, bb.maxZ, color, alpha, bufferbuilder);
-        colorVertex(bb.maxX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
-        colorVertex(bb.maxX, bb.minY, bb.minZ, color, color.getAlpha(), bufferbuilder);
-        colorVertex(bb.maxX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
-        colorVertex(bb.minX, bb.maxY, bb.minZ, color, alpha, bufferbuilder);
-        tessellator.draw();
+        drawBoundingBox(bb, width, color.r, color.g, color.b, alpha);
     }
 
     public static void drawBoundingBoxWithSides(BlockPos blockPos, int width, Colour color, int sides) {
@@ -457,8 +467,7 @@ public class RenderUtil {
         tessellator.draw();
     }
 	
-	public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox)
-	{
+	public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
@@ -628,12 +637,10 @@ public class RenderUtil {
 			ts.draw();// Ends Z.
 		}
 	public static void drawSolidBox() {
-
         drawSolidBox(DEFAULT_AABB);
     }
 
     public static void drawSolidBox(AxisAlignedBB bb) {
-
         glBegin(GL_QUADS);
         {
             glVertex3d(bb.minX, bb.minY, bb.minZ);
@@ -670,12 +677,10 @@ public class RenderUtil {
     }
 
     public static void drawOutlinedBox() {
-
         drawOutlinedBox(DEFAULT_AABB);
     }
 
     public static void drawOutlinedBox(AxisAlignedBB bb) {
-
         glBegin(GL_LINES);
         {
             glVertex3d(bb.minX, bb.minY, bb.minZ);
@@ -718,7 +723,6 @@ public class RenderUtil {
     }
 	
 	public static void drawBoundingBox(AxisAlignedBB aa) {
-
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexBuffer = tessellator.getBuffer();
         vertexBuffer.begin(3, DefaultVertexFormats.POSITION);
@@ -1279,7 +1283,7 @@ public class RenderUtil {
         }
     }
 
-    private static AxisAlignedBB getBoundingBox(BlockPos bp, double width, double height, double depth) {
+    public static AxisAlignedBB getBoundingBox(BlockPos bp, double width, double height, double depth) {
         double x = bp.getX();
         double y = bp.getY();
         double z = bp.getZ();
@@ -1414,5 +1418,28 @@ public class RenderUtil {
 
     public static void putVertex3d(Vec3d vec) {
         GL11.glVertex3d(vec.x, vec.y, vec.z);
+    }
+
+    public static double interpolate(double current, double old, double scale) {
+        return old + (current - old) * scale;
+    }
+
+    public static boolean isInViewFrustrum(Entity entity) {
+        return RenderUtil.isInViewFrustrum(entity.getEntityBoundingBox()) || entity.ignoreFrustumCheck;
+    }
+
+    private static boolean isInViewFrustrum(AxisAlignedBB bb) {
+        Entity current = mc.getRenderViewEntity();
+        frustrum.setPosition(current.posX, current.posY, current.posZ);
+        return frustrum.isBoundingBoxInFrustum(bb);
+    }
+
+    public static void setupColor(int color) {
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+
+        GL11.glColor4f(f, f1, f2, f3);
     }
 }

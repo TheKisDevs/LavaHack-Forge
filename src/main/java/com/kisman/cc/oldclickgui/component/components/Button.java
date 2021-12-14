@@ -7,6 +7,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.clickguiEvents.keyTyped.KeyTypedPreEvent;
 import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
 import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.component.Component;
 import com.kisman.cc.oldclickgui.component.Frame;
@@ -17,6 +18,7 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.ColorUtil;
 import com.kisman.cc.util.LineMode;
+import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
@@ -52,7 +54,7 @@ public class Button extends Component {
 		if(Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
 			for(Setting s : Kisman.instance.settingsManager.getSettingsByMod(mod)){
 				if(s.isCombo()){
-					this.subcomponents.add(new ModeButton(s, this, mod, opY));
+					this.subcomponents.add(new ModeButton(s, this, opY));
 					opY += 12;
 				}
 				if(s.isSlider()){
@@ -79,10 +81,10 @@ public class Button extends Component {
 					this.subcomponents.add(new StringButton(s, this, opY));
 					opY += 12;
 				}
-				if(s.isCategory()) {
+				/*if(s.isCategory()) {
 					this.subcomponents.add(new Category(this, s, opY));
 					opY += 12;
-				}
+				}*/
 				if(s.isBind()) {
 					subcomponents.add(new Keybind(this, s, opY));
 					opY += 12;
@@ -93,6 +95,10 @@ public class Button extends Component {
 				}
 				if(s.isItems()) {
 					subcomponents.add(new ItemsButton(this, s, opY));
+					opY += 12;
+				}
+				if(s.isExampleColor()) {
+					subcomponents.add(new ExampleColorButton(s, this, opY));
 					opY += 12;
 				}
 			}
@@ -172,14 +178,18 @@ public class Button extends Component {
 			this.isHovered ? (this.hudMod.isToggled() ? new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB() : new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB()) : (this.hudMod.isToggled() ? new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB() : new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB()) :
 			this.isHovered ? (this.mod.isToggled() ? new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB() : new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB()) : (this.mod.isToggled() ? new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB() : new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB())
 		);
+
+
+
 		if(ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
-			Gui.drawRect(
-					this.parent.getX(),
-					this.parent.getY() + this.offset,
-					this.parent.getX() + 1,
-					this.parent.getY() + this.offset + 12,
-					new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
-			);
+			if(Config.instance.guiGlow.getValBoolean()) {
+				int offset = Config.instance.glowOffset.getValInt();
+
+				Render2DUtil.drawGlow(this.parent.getX() - offset, this.parent.getY() + this.offset - offset, this.parent.getX() + 1 + offset, this.parent.getY() + this.offset + 12 + offset, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+				Render2DUtil.drawGlow(this.parent.getX() + parent.getWidth() - 1 - offset, this.parent.getY() + this.offset - offset, this.parent.getX() + parent.getWidth() + offset, parent.getY() + this.offset + 12 + offset, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+			}
+
+			Gui.drawRect(this.parent.getX(), this.parent.getY() + this.offset, this.parent.getX() + 1, this.parent.getY() + this.offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 			Gui.drawRect(
 					this.parent.getX() + parent.getWidth() - 1,
 					this.parent.getY() + offset,
@@ -203,6 +213,19 @@ public class Button extends Component {
 
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
+
+		if(Config.instance.guiGlow.getValBoolean()) {
+			int offset = Config.instance.glowOffset.getValInt();
+
+			if(hud ? hudMod.isToggled() : mod.isToggled()) {
+				Render2DUtil.drawGlow((parent.getX() + 2) * 2 - offset, (parent.getY() + this.offset + 2) * 2 + 4 - offset, (parent.getX() + 2) * 2 + CustomFontUtil.getStringWidth(this.hud ? this.hudMod.getName() : this.mod.getName()) + offset, (parent.getY() + this.offset + 2) * 2 + 4 + offset, new Color(ClickGui.getAActiveText(), ClickGui.getGActiveText(), ClickGui.getBActiveText(), ClickGui.getAActiveText()).getRGB());
+			}
+
+			if(open) {
+				Render2DUtil.drawGlow((parent.getX() + parent.getWidth() - 10) * 2 - offset, (parent.getY() + this.offset + 2) * 2 + 4 - offset, (parent.getX() + parent.getWidth() - 10) * 2 + CustomFontUtil.getStringWidth(open ? "-" : "+") + offset, (parent.getY() + this.offset + 2) * 2 + 4 + offset, new Color(ClickGui.getAActiveText(), ClickGui.getGActiveText(), ClickGui.getBActiveText(), ClickGui.getAActiveText()).getRGB());
+			}
+		}
+
 		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(
 			this.hud ? this.hudMod.getName() : this.mod.getName(), 
 			(parent.getX() + 2) * 2, 
@@ -216,7 +239,7 @@ public class Button extends Component {
 			new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB()
 		);
 		if(this.subcomponents.size() > 2)
-			CustomFontUtil.drawString(this.open ? "-" : "+", (parent.getX() + parent.getWidth() - 10) * 2, (parent.getY() + offset + 2) * 2 + 4, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+			CustomFontUtil.drawString(this.open ? "-" : "+", (parent.getX() + parent.getWidth() - 10) * 2, (parent.getY() + offset + 2) * 2 + 4, !open ? new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB() : new Color(ClickGui.getAActiveText(), ClickGui.getGActiveText(), ClickGui.getBActiveText(), ClickGui.getAActiveText()).getRGB());
 
 		GL11.glPopMatrix();
 		if(this.open && (parent.components.indexOf(this) == parent.components.size()) && ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
@@ -229,24 +252,9 @@ public class Button extends Component {
 			);
 		}
 
-		if(this.open) {
-			if(!this.subcomponents.isEmpty()) {
-//				int compCount = 0;
-
-				for(Component comp : this.subcomponents) {
-					comp.renderComponent();
-					/*if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
-						Gui.drawRect(
-								parent.getX() + parent.getWidth() - 3,
-								parent.getY() + offset + 12 + (12 * compCount),
-								parent.getX() + parent.getWidth() - 2,
-								parent.getY() + offset + 24 + (12 * compCount),
-								new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB()
-						);
-					}
-
-					compCount++;*/
-				}
+		if(this.open && !this.subcomponents.isEmpty()) {
+			for(Component comp : this.subcomponents) {
+				comp.renderComponent();
 			}
 		}
 
@@ -259,7 +267,6 @@ public class Button extends Component {
 				}
 			}
 		}
-
 	}
 	
 	@Override
@@ -284,25 +291,10 @@ public class Button extends Component {
 				comp.updateComponent(mouseX, mouseY);
 			}
 		}
-		if(this.isHovered) {
-			ClickGui.setRenderDesc(true);
-			ClickGui.setDescStr(this.hud ? hudMod.getDescription() : mod.getDescription());
-		} else {
-			ClickGui.setRenderDesc(false);
-		}
 	}
 	
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
-		MouseClickedPreEvent event = new MouseClickedPreEvent();
-		for(Component comp : this.subcomponents) {
-			comp.mouseClickedPre(mouseX, mouseY, button, event);
-		}
-
-		if(event.isCancelled()) {
-			return;
-		}
-
 		if(isMouseOnButton(mouseX, mouseY) && button == 0) {
 			if(this.hud) {
 				this.hudMod.toggle();
@@ -322,15 +314,6 @@ public class Button extends Component {
 	
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-		MouseReleasedPreEvent event = new MouseReleasedPreEvent();
-		for(Component comp : this.subcomponents) {
-			comp.mouseReleasedPre(mouseX, mouseY, mouseButton, event);
-		}
-
-		if(event.isCancelled()) {
-			return;
-		}
-
 		for(Component comp : this.subcomponents) {
 			comp.mouseReleased(mouseX, mouseY, mouseButton);
 		}
@@ -338,15 +321,6 @@ public class Button extends Component {
 	
 	@Override
 	public void keyTyped(char typedChar, int key) {
-		KeyTypedPreEvent event = new KeyTypedPreEvent();
-		for(Component comp : this.subcomponents) {
-			comp.keyTypedPre(typedChar, key, event);
-		}
-
-		if(event.isCancelled()) {
-			return;
-		}
-
 		for(Component comp : this.subcomponents) {
 			comp.keyTyped(typedChar, key);
 		}

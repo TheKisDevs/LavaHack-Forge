@@ -26,7 +26,8 @@ public class HudModuleManager {
 		//combat
 		modules.add(new ArmorHUD());
 		modules.add(new PvpInfo());
-		modules.add(new TargetInfo());
+		modules.add(new PvpResources());
+		modules.add(new TargetHUD());
 
 		//movement
 		modules.add(new Speed());

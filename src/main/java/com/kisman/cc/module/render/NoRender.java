@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class NoRender extends Module {
     public static NoRender instance;
 
+    public Setting fog = new Setting("Fog", this, false);
     public Setting hurtCam = new Setting("HurtCam", this, false);
     public Setting armor = new Setting("Armor", this, false);
     public Setting overlay = new Setting("Overlay", this, false);
@@ -21,6 +22,7 @@ public class NoRender extends Module {
 
         instance = this;
 
+        setmgr.rSetting(fog);
         setmgr.rSetting(hurtCam);
         setmgr.rSetting(armor);
         setmgr.rSetting(overlay);

@@ -2,6 +2,7 @@ package com.kisman.cc.module;
 
 import com.kisman.cc.Kisman;
 
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,11 +21,22 @@ public class Module {
 	public boolean visible = true;
 	
 	public Module(String name, String description, Category category) {
-		//super();
 		this.name = name;
 		this.description = description;
 		this.displayInfo = "";
 		this.key = 0;
+		this.category = category;
+		this.toggled = false;
+		this.priority = 1;
+
+		setmgr = Kisman.instance.settingsManager;
+	}
+
+	public Module(String name, String description, Category category, int key) {
+		this.name = name;
+		this.description = description;
+		this.displayInfo = "";
+		this.key = key;
 		this.category = category;
 		this.toggled = false;
 		this.priority = 1;
@@ -109,4 +121,10 @@ public class Module {
 	public void key() {}
 	public void key(int key) {}
 	public void key(char typedChar, int key) {}
+
+	public Setting register(Setting set) {
+		setmgr.rSetting(set);
+
+		return set;
+	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.settings.Setting;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.util.text.TextFormatting;
 
 public class ColorUtil {
@@ -31,6 +32,31 @@ public class ColorUtil {
         int color = Color.HSBtoRGB(hue, saturation, briqhtness);
         this.color = color;
         return color;
+    }
+
+    public static Color injectAlpha(final Color color, final int alpha) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
+
+    public static Color injectAlpha(int color, int alpha) {
+        return new Color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), alpha);
+    }
+
+    public static Color getGradientOffset(Color one, Color two, double offset, final int alpha) {
+
+        if(offset > 1){
+            double left = offset % 1;
+            int off = (int) offset;
+            offset = off % 2 == 0 ? left : 1 - left;
+        }
+
+        double inverse_percent = 1 - offset;
+
+        int redPart = (int) (one.getRed() * inverse_percent + two.getRed() * offset);
+        int greenPart = (int) (one.getGreen() * inverse_percent + two.getGreen() * offset);
+        int bluePart = (int) (one.getBlue() * inverse_percent + two.getBlue() * offset);
+
+        return new Color(redPart, greenPart, bluePart, alpha);
     }
 
     public void  getColorPickerRainBow(ColorPicker colorPicker) {

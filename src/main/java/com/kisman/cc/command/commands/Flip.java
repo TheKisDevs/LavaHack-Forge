@@ -1,25 +1,37 @@
 package com.kisman.cc.command.commands;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 import com.kisman.cc.hypixel.util.ApiHandler;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.hypixel.util.Utils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.config.Configuration;
 
+import java.lang.ref.Reference;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Flip extends Command {
     public static LinkedHashMap<String, Double> initialDataset = new LinkedHashMap<>();
     public static LinkedHashMap<String, Double> secondDataset = new LinkedHashMap<>();
     public static LinkedHashMap<String, Double> namedDataset = new LinkedHashMap<>();
+    public static LinkedHashMap<String, Double> avgDataset = new LinkedHashMap<>();
+    public static LinkedHashMap<String, Integer> demandDataset = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, Long> updatedDataset = new LinkedHashMap<>();
+    public static ArrayList<String> ignoredUUIDs = new ArrayList<>();
     public static double purse;
     public static ArrayList<String> commands = new ArrayList<>();
-
+    public static ArrayList<String> rawNames = new ArrayList<>();
+    public static ArrayList<Double> percentageProfit = new ArrayList<>();
+    public static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(ConfigHandler.threads);
     private static int auctionPages = 0;
+
     private static int cycle = 0;
     private static Timer timer = new Timer();
 
@@ -34,14 +46,12 @@ public class Flip extends Command {
                         "Flip",
                         "false"
                 );
-
             } else if(ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "Flip").equals("false")) {
                 ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,
                         "Flip",
                         "true"
                 );
             }
-
         } else {
             ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,
                     "Flip",
@@ -82,6 +92,12 @@ public class Flip extends Command {
                                 cycle = 0;
                             }
 
+                            try {
+                                ApiHandler.updatePurseCoins(ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "ApiKey"), mc.player.getName());
+                            } catch (Exception e) {
+                                ChatUtils.error(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + "Could not load purse.");
+                            }
+
                             String name = sender.getName();
                             String id = ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "APIKey");
                             try {
@@ -108,6 +124,7 @@ public class Flip extends Command {
 	                  		)
 	                  	);*/
                                 int count = 0;
+                                int demand = demandDataset.getOrDefault(rawNames.get(count), 0);
 
                                 for (Map.Entry<String, Double> entry : namedDataset.entrySet()) {
                                     long profit = Math.abs(entry.getValue().longValue());
@@ -120,19 +137,23 @@ public class Flip extends Command {
                                                                     TextFormatting.GOLD :
                                                                     TextFormatting.YELLOW) +
                                                     "+$" +
-                                                    Utils.formatValue(profit)
+                                                    Utils.formatValue(profit) + " " + TextFormatting.GOLD + "PP:" + " "
+                                                    + TextFormatting.GREEN + percentageProfit.get(count).intValue() + "%" + " "
+                                                    + TextFormatting.GOLD
+                                                    + (demand == 0 ? "Sales:" + " " + TextFormatting.GREEN + demand + "/day" : "")
                                     );
-
                                     count++;
                                 }
                             }
                             namedDataset.clear();
+                            commands.clear();
+                            rawNames.clear();
+                            percentageProfit.clear();
                             cycle++;
                         }
                     },
                     40,
                     40);
-
             timer.schedule(
                     new TimerTask() {
                         @Override
@@ -151,7 +172,6 @@ public class Flip extends Command {
                     },
                     60000,
                     60000);
-
         } else {
             ChatUtils.message(
                     TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
@@ -159,7 +179,7 @@ public class Flip extends Command {
             );
             timer.cancel();
             timer.purge();
-            timer = new Timer();
+            timer = new Timer(); // ладно
         }
     }
 }

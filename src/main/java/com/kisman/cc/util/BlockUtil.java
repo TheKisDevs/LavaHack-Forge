@@ -8,16 +8,16 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.*;
 import net.minecraft.world.IBlockAccess;
 
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class BlockUtil {
 
@@ -31,6 +31,8 @@ public class BlockUtil {
     public static Vec3d[] OffsetList = new Vec3d[] { new Vec3d(1.0, 1.0, 0.0), new Vec3d(-1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, 1.0), new Vec3d(0.0, 1.0, -1.0), new Vec3d(0.0, 2.0, 0.0) };
     public static Vec3d[] antiStepOffsetList = new Vec3d[] { new Vec3d(-1.0, 2.0, 0.0), new Vec3d(1.0, 2.0, 0.0), new Vec3d(0.0, 2.0, 1.0), new Vec3d(0.0, 2.0, -1.0) };
     public static Vec3d[] antiScaffoldOffsetList = new Vec3d[] { new Vec3d(0.0, 3.0, 0.0) };
+
+    private static boolean unshift = false;
 
     public static IBlockState getState(BlockPos pos) {
         return mc.world.getBlockState(pos);
@@ -54,7 +56,7 @@ public class BlockUtil {
     }
 
     public static int isPositionPlaceable(final BlockPos pos, final boolean rayTrace, final boolean entityCheck) {
-        final Block block = BlockUtil.mc.world.getBlockState(pos).getBlock();
+        final Block block = mc.world.getBlockState(pos).getBlock();
         if (!(block instanceof BlockAir) && !(block instanceof BlockLiquid) && !(block instanceof BlockTallGrass) && !(block instanceof BlockFire) && !(block instanceof BlockDeadBush) && !(block instanceof BlockSnow)) {
             return 0;
         }
@@ -64,7 +66,7 @@ public class BlockUtil {
         }
 
         if (entityCheck) {
-            for (final Entity entity : BlockUtil.mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos))) {
+            for (final Entity entity : mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos))) {
                 if (!(entity instanceof EntityItem)) {
                     if (entity instanceof EntityXPOrb) {
                         continue;
@@ -110,8 +112,7 @@ public class BlockUtil {
         Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, OffsetList));
         if (antiStep) {
             Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiStepOffsetList));
-        }
-        else {
+        } else {
             final List<Vec3d> vec3ds = getUnsafeBlocksFromVec3d(vec3d, 2, false);
             if (vec3ds.size() == 4) {
                 for (final Vec3d vector : vec3ds) {
@@ -187,13 +188,13 @@ public class BlockUtil {
             float f = (float)(vec.x - pos.getX());
             float f2 = (float)(vec.y - pos.getY());
             float f3 = (float)(vec.z - pos.getZ());
-            BlockUtil.mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f2, f3));
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f2, f3));
         }
         else {
-            BlockUtil.mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, pos, direction, vec, hand);
+            mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, pos, direction, vec, hand);
         }
-        BlockUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
-        BlockUtil.mc.rightClickDelayTimer = 4;
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.rightClickDelayTimer = 4;
     }
 
     public static double getNearestBlockBelow() {
@@ -277,6 +278,26 @@ public class BlockUtil {
         shulkerList = Arrays.asList(Blocks.WHITE_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.SILVER_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX);
     }
 
+    public static boolean placeBlock(final BlockPos pos) {
+        final Block block = BlockUtil.mc.world.getBlockState(pos).getBlock();
+        final EnumFacing direction = calcSide(pos);
+        if (direction == null) {
+            return false;
+        }
+        final boolean activated = block.onBlockActivated(BlockUtil.mc.world, pos, BlockUtil.mc.world.getBlockState(pos), BlockUtil.mc.player, EnumHand.MAIN_HAND, direction, 0.0f, 0.0f, 0.0f);
+        if (activated) {
+            BlockUtil.mc.player.connection.sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+        }
+        BlockUtil.mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos.offset(direction), direction.getOpposite(), EnumHand.MAIN_HAND, 0.5f, 0.5f, 0.5f));
+        BlockUtil.mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+        if (activated || BlockUtil.unshift) {
+            BlockUtil.mc.player.connection.sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+            BlockUtil.unshift = false;
+        }
+        BlockUtil.mc.playerController.updateController();
+        return true;
+    }
+
     public static boolean placeBlockSmartRotate(final BlockPos pos, final EnumHand hand, final boolean rotate, final boolean packet, final boolean isSneaking) {
         boolean sneaking = false;
         final EnumFacing side = getFirstFacing(pos);
@@ -286,17 +307,17 @@ public class BlockUtil {
         final BlockPos neighbour = pos.offset(side);
         final EnumFacing opposite = side.getOpposite();
         final Vec3d hitVec = new Vec3d(neighbour).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
-        final Block neighbourBlock = BlockUtil.mc.world.getBlockState(neighbour).getBlock();
-        if (!BlockUtil.mc.player.isSneaking() && (BlockUtil.blackList.contains(neighbourBlock) || BlockUtil.shulkerList.contains(neighbourBlock))) {
-            BlockUtil.mc.player.connection.sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+        final Block neighbourBlock = mc.world.getBlockState(neighbour).getBlock();
+        if (!mc.player.isSneaking() && (blackList.contains(neighbourBlock) || shulkerList.contains(neighbourBlock))) {
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
             sneaking = true;
         }
         if (rotate) {
             RotationUtils.lookAtVec3d(hitVec);
         }
         rightClickBlock(neighbour, hitVec, hand, opposite, packet);
-        BlockUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
-        BlockUtil.mc.rightClickDelayTimer = 4;
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.rightClickDelayTimer = 4;
         return sneaking || isSneaking;
     }
 
@@ -308,6 +329,22 @@ public class BlockUtil {
         }
         return null;
     }
+
+    public static EnumFacing calcSide(final BlockPos pos) {
+        for (final EnumFacing side : EnumFacing.values()) {
+            final IBlockState offsetState = BlockUtil.mc.world.getBlockState(pos.offset(side));
+            final boolean activated = offsetState.getBlock().onBlockActivated(BlockUtil.mc.world, pos, offsetState, BlockUtil.mc.player, EnumHand.MAIN_HAND, side, 0.0f, 0.0f, 0.0f);
+            if (activated) {
+                BlockUtil.mc.getConnection().sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
+                BlockUtil.unshift = true;
+            }
+            if (offsetState.getBlock().canCollideCheck(offsetState, false) && !offsetState.getMaterial().isReplaceable()) {
+                return side;
+            }
+        }
+        return null;
+    }
+
 
     public static List<EnumFacing> getPossibleSides(final BlockPos pos) {
         final ArrayList<EnumFacing> facings = new ArrayList<EnumFacing>();

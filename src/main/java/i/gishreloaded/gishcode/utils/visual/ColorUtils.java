@@ -1,9 +1,10 @@
 package i.gishreloaded.gishcode.utils.visual;
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import java.awt.Color;
 
 public class ColorUtils {
-
 	public static Color rainbow() {
 		long offset = 999999999999L;
 		float fade = 1.0f;
@@ -38,5 +39,46 @@ public class ColorUtils {
             hue = 0.5f - (hue - 0.5f);
         }
         return Color.HSBtoRGB(hue += 0.5f, 0.5f, 1.0f);
+    }
+
+    public static int getRed(int color) {
+        return new Color(color).getRed();
+    }
+
+    public static int getGreen(int color) {
+        return new Color(color).getGreen();
+    }
+
+    public static int getBlue(int color) {
+        return new Color(color).getBlue();
+    }
+
+    public static int getAlpha(int color) {
+        return new Color(color).getAlpha();
+    }
+
+    public static int rainbow(int delay, long index) {
+        double rainbowState = Math.ceil(System.currentTimeMillis() + index + (long)delay) / 15.0;
+        return Color.getHSBColor((float)((rainbowState %= 360.0) / 360.0), 0.4f, 1.0f).getRGB();
+    }
+
+    public static Color rainbow(final int delay, final float s, final float b) {
+        return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);
+    }
+
+    public static int getColor(int brightness) {
+        return ColorUtils.getColor(brightness, brightness, brightness, 255);
+    }
+
+    public static int getColor(int brightness, int alpha) {
+        return ColorUtils.getColor(brightness, brightness, brightness, alpha);
+    }
+
+    public static void glColor(final int hex, final int alpha) {
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
+
+        GlStateManager.color(red, green, blue, alpha / 255F);
     }
 }

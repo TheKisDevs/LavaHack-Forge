@@ -20,13 +20,13 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class TargetInfo extends HudModule {
+public class TargetHUD extends HudModule {
     private float healthWidth = 20;
     private static final CustomFontRenderer fontRenderer = new CustomFontRenderer(new Font("Arial", Font.BOLD, 15), true, true);
     private static final CustomFontRenderer fontRenderer1 = new CustomFontRenderer(new Font("Arial", Font.PLAIN, 11), true, true);
 
-    public TargetInfo() {
-        super("TargetInfo", "TargetInfo", HudCategory.COMBAT);
+    public TargetHUD() {
+        super("TargetHUD", "TargetInfo", HudCategory.COMBAT);
     }
 
     @SubscribeEvent

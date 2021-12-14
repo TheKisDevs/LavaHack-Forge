@@ -4,16 +4,13 @@ import java.util.*;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerUpdate;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.*;
 
-import com.kisman.cc.util.EntityUtil;
-import com.kisman.cc.util.PlayerUtil;
+import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.Utils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 
@@ -66,11 +63,11 @@ public class Speed extends Module {
 
         super.setDisplayInfo("[" + speedMode.getValString() + TextFormatting.GRAY + "]");
 
-        boolean boost = Math.abs(Wrapper.INSTANCE.player().rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
+        boolean boost = Math.abs(mc.player.rotationYawHead - Wrapper.INSTANCE.player().rotationYaw) < 90;
 
         this.yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
 
-        if(Wrapper.INSTANCE.player().moveForward > 0 && Wrapper.INSTANCE.player().hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
+        if(mc.player.moveForward > 0 && mc.player.hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
             if(mc.player.onGround) {
                 mc.player.motionY = 0.405;
                 float f = Utils.getDirection();
@@ -78,22 +75,22 @@ public class Speed extends Module {
                 mc.player.motionX -= (double) (MathHelper.sin(f) * 0.2F);
                 mc.player.motionZ += (double) (MathHelper.cos(f) * 0.2F);
             } else {
-                double currentSpeed = Math.sqrt(Wrapper.INSTANCE.player().motionX * Wrapper.INSTANCE.player().motionX + Wrapper.INSTANCE.player().motionZ * Wrapper.INSTANCE.player().motionZ);
+                double currentSpeed = Math.sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ);
                 double speed = boost ? 1.0064 : 1.001;
   
                 double direction = Utils.getDirection();
-  
-                Wrapper.INSTANCE.player().motionX = -Math.sin(direction) * speed * currentSpeed;
-                Wrapper.INSTANCE.player().motionZ = Math.cos(direction) * speed * currentSpeed;
+
+                mc.player.motionX = -Math.sin(direction) * speed * currentSpeed;
+                mc.player.motionZ = Math.cos(direction) * speed * currentSpeed;
             }
         }
 
         if(speedMode.getValString().equalsIgnoreCase("YPort")) {
-            handleYPortSpeed();
+            doYPortSpeed();
         }
     }
 
-    private void handleYPortSpeed() {
+    private void doYPortSpeed() {
         if(!PlayerUtil.isMoving(mc.player) || (mc.player.isInWater() && !yWater.getValBoolean()) && (mc.player.isInLava() && !yLava.getValBoolean()) || mc.player.collidedHorizontally) {
             return;
         }

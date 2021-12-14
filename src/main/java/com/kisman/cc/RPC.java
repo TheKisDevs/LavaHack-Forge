@@ -18,7 +18,7 @@ public class RPC {
         discordRichPresence.startTimestamp = System.currentTimeMillis() / 1000L;
 
         discordRichPresence.largeImageKey = "logo";
-        discordRichPresence.largeImageText = "join with discord: https://discord.gg/NNn7WXfkNB";
+        discordRichPresence.largeImageText = "join in discord: https://discord.gg/NNn7WXfkNB";
 
         discordRichPresence.smallImageKey = "small";
         discordRichPresence.smallImageText = Kisman.NAME;

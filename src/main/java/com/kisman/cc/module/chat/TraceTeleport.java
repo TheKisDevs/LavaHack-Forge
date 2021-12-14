@@ -2,17 +2,15 @@ package com.kisman.cc.module.chat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.server.SPacketEntityTeleport;
 
 public class TraceTeleport extends Module {
     public TraceTeleport() {
-        super("TraceTeleport", "", Category.COMBAT);
+        super("TraceTeleport", "", Category.CHAT);
     }
 
     public void onEnable() {
@@ -36,10 +34,6 @@ public class TraceTeleport extends Module {
                 double distance = Math.sqrt(Math.pow(mc.player.posX - packet.getX(), 2d) + Math.pow(mc.player.posZ - packet.getZ(), 2d));
 
                 String warn = String.format("Entity [%s] teleported to [%.2f, %.2f, %.2f], %.2f blocks away", name, packet.getX(), packet.getY(), packet.getZ(), distance);
-
-                /*if(HUD.instance.traceTeleport.getValBoolean()) {
-                    Kisman.instance.notificationProcessor.addNotification(warn + " [TraceTeleport]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());
-                }*/
 
                 ChatUtils.warning(warn);
 
