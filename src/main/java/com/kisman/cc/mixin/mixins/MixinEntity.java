@@ -57,7 +57,7 @@ public abstract class MixinEntity {
     public abstract boolean isRiding();*/
 
     @Shadow
-    public void move(final MoverType type, final double x, final double y, final double z) {}
+    public abstract void move(final MoverType type, final double x, final double y, final double z);
 
     @Shadow
     public abstract AxisAlignedBB getEntityBoundingBox();
