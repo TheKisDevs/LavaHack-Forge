@@ -18,7 +18,7 @@ public class ItemCharms extends Module {
     public Setting blue = new Setting("Blue", this, 1, 0, 1, false);
     public Setting alpha = new Setting("Alpha", this, 1, 0, 1, false);
 
-    public Setting exampleColor = new Setting("ExampleColor", this, red.getValFloat(), green.getValFloat(), blue.getValFloat(), alpha.getValFloat());
+//    public Setting exampleColor = new Setting("ExampleColor", this, red.getValFloat(), green.getValFloat(), blue.getValFloat(), alpha.getValFloat());
 
     public Setting glintModify = new Setting("GlintModify", this, false);
 
@@ -29,7 +29,7 @@ public class ItemCharms extends Module {
 
         instance = this;
 
-        setmgr.rSetting(exampleColor);
+//        setmgr.rSetting(exampleColor);
 
         setmgr.rSetting(red);
         setmgr.rSetting(green);
@@ -44,7 +44,7 @@ public class ItemCharms extends Module {
     }
 
     public void update() {
-        exampleColor.updateColor(red.getValFloat(), green.getValFloat(), blue.getValFloat(), alpha.getValFloat());
+//        exampleColor.updateColor(red.getValFloat(), green.getValFloat(), blue.getValFloat(), alpha.getValFloat());
     }
 
 //    @SubscribeEvent
