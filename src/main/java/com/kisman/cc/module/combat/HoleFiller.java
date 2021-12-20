@@ -1,22 +1,16 @@
 package com.kisman.cc.module.combat;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.module.combat.holefiller.Hole;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.BlockUtil;
-import com.kisman.cc.util.CrystalUtils;
-import com.kisman.cc.util.InventoryUtil;
-import com.kisman.cc.util.WorldUtil;
-import i.gishreloaded.gishcode.utils.TimerUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityEnderCrystal;
+import com.kisman.cc.util.*;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,15 +19,14 @@ public class HoleFiller extends Module {
     private Setting range = new Setting("Range", this, 4.8, 1, 6, false);
     private Setting placeMode = new Setting("PlaceMode", this, PlaceMode.Always);
     private Setting delay = new Setting("Delay", this, 2, 0, 20, true);
-    private Setting targetMode = new Setting("UpdateMode", this, TargetMode.Update);
     private Setting targetHoleRange = new Setting("TargetHoleRange", this, 4.8, 1, 6, false);
     private Setting switchMode = new Setting("SwitchMode", this, SwitchMode.Silent);
     private Setting smartWeb = new Setting("SmartWeb", this, false);
+    private Setting render = new Setting("Render", this, true);
 
     public static HoleFiller instance;
 
     private ArrayList<Hole> holes = new ArrayList<>();
-    private int delayTick = 0;
 
     public EntityPlayer target;
     public Hole targetHole;
@@ -46,7 +39,6 @@ public class HoleFiller extends Module {
         setmgr.rSetting(range);
         setmgr.rSetting(placeMode);
         setmgr.rSetting(delay);
-        setmgr.rSetting(targetMode);
         setmgr.rSetting(targetHoleRange);
         setmgr.rSetting(switchMode);
         setmgr.rSetting(smartWeb);
@@ -55,14 +47,12 @@ public class HoleFiller extends Module {
     public void onEnable() {
         target = null;
         targetHole = null;
-        delayTick = 0;
         holes.clear();
     }
 
     public void onDisable() {
         target = null;
         targetHole = null;
-        delayTick = 0;
         holes.clear();
     }
 
@@ -135,6 +125,13 @@ public class HoleFiller extends Module {
 
 //                timer.reset();
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(render.getValBoolean() && targetHole != null) {
+            RenderUtil.drawBlockESP(targetHole.pos, 1, 0, 0);
         }
     }
 
@@ -221,11 +218,6 @@ public class HoleFiller extends Module {
     public enum PlaceMode {
         Always,
         Smart
-    }
-
-    public enum TargetMode {
-        Update,
-        Motion
     }
 
     public enum SwitchMode {
