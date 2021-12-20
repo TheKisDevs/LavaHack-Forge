@@ -1,5 +1,6 @@
 package com.kisman.cc.module.movement;
 
+import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.MovementUtil;
@@ -38,6 +39,7 @@ public class NoSlowSneak extends Module {
             }
         } else {
             mc.player.jumpMovementFactor = 0.02f;
+            ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.02f);
         }
     }
 }

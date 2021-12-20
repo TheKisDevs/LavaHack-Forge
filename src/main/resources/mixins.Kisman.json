@@ -5,6 +5,7 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "accessor.AccessorCPacketUseEntity",
+    "accessor.AccessorEntityPlayer",
     "accessor.AccessorPlayerControllerMP",
     "accessor.ISession",
     "accessor.ICPacketPlayer",
