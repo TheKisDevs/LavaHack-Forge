@@ -1,14 +1,14 @@
-/**
-package cf.vaccat.catclient.module.combat;
+/*
+package com.kisman.cc.module.combat;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import cf.vaccat.catclient.module.Category;
-import cf.vaccat.catclient.module.Module;
 import com.google.common.collect.Ordering;
 
+import com.kisman.cc.module.Category;
+import com.kisman.cc.module.Module;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class AntiBot extends Module {
 
-	public static List<EntityPlayer> bots = new ArrayList<EntityPlayer>();
+	public List<EntityPlayer> bots = new ArrayList<>();
 	
 	public AntiBot() {
 		super("AntiBot", "Prevents you from targetting bots", Category.COMBAT);
@@ -39,7 +39,7 @@ public class AntiBot extends Module {
 	
 	private List<EntityPlayer> getTabPlayerList() {
 		final List<EntityPlayer> list;
-		(list = new ArrayList<EntityPlayer>()).clear();
+		(list = new ArrayList<>()).clear();
 		Ordering<NetworkPlayerInfo> field_175252_a = field_175252_a();
 		if (field_175252_a == null) {
 			return list;
@@ -65,5 +65,4 @@ public class AntiBot extends Module {
 			return null;
 		}
 	}
-}
-**/
+}*/

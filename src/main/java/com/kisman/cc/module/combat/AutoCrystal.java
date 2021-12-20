@@ -9,8 +9,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +17,7 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +34,9 @@ public class AutoCrystal extends Module {
     private final Setting breakMode = new Setting("BreakMode", this, "Always", new ArrayList<>(Arrays.asList("Always", "Smart")));
     private final Setting logicMode = new Setting("LogicMode", this, "PlaceBreak", new ArrayList<>(Arrays.asList("PlaceBreak", "BreakPlace")));
     private final Setting syns = new Setting("Syns", this, true);
+    private final Setting rotate = new Setting("Rotate", this, false);
+    private final Setting rotations = new Setting("Spoofs", this, 1, 1, 20, true);
+    private final Setting raytrace = new Setting("Raytrace", this, false);
     private final Setting debug = new Setting("Debug", this, false);
 
 
@@ -46,14 +48,6 @@ public class AutoCrystal extends Module {
     private final Setting wallRange = new Setting("WallRange", this, 3.5, 0, 5, false);
 
 
-    private final Setting delayLine = register(new Setting("DelayLine", this, "Delay"));
-
-    private final Setting delayMode = new Setting("DelayMode", this, DelayModes.First);
-    private final Setting placeDelay = new Setting("PlaceDelay", this, 1, 0, 20, true);
-    private final Setting breakDelay = new Setting("BreakDelay", this, 1, 0, 20, true);
-    private final Setting multiplierDelay = new Setting("MultipluerDelay", this, 3, 1, 20, true);
-
-
     private final Setting damageLine = new Setting("DanageLine", this, "Damage");
 
     private final Setting minDMG = new Setting("MinDMG", this, 4, 0, 20, true);
@@ -63,17 +57,20 @@ public class AutoCrystal extends Module {
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
 
     private final Setting place = new Setting("Place", this, true);
+    private final Setting placeDelay = new Setting("PlaceDelay", this, 1, 0, 20, true);
     private final Setting placeHand = new Setting("PlaceHand", this, Hands.Mainhand);
     private final Setting secondCheck = new Setting("SecondCheck", this, true);
     private final Setting placeObsidianIfNoValidSpots = new Setting("PlaceObsidianIfNoValidSpots", this, false);
-    private final Setting rotate = new Setting("Rotate", this, false);
+    private final Setting placeRotate = new Setting("PlaceRotate", this, false);
 
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
 
     private final Setting _break = new Setting("Break", this, true);
+    private final Setting breakDelay = new Setting("BreakDelay", this, 1, 0, 20, true);
     private final Setting breakHand = new Setting("BreakHand", this, Hands.Mainhand);
     private final Setting antiWeakness = new Setting("AntiWeakness", this, false);
+    private final Setting breakRotate = new Setting("BreakRotate", this, false);
 
 
     private final Setting switchLine = new Setting("SwitchLine", this, "Switch");
@@ -123,6 +120,10 @@ public class AutoCrystal extends Module {
     private int placeTicks;
     private int breakTicks;
 
+    private int rotationPacketsSpoofs = 0;
+    private boolean rotating = false;
+    private float yaw = 0f, pitch = 0f;
+
     public AutoCrystal() {
         super("AutoCrystal", "super.gay();", Category.COMBAT);
 
@@ -134,6 +135,9 @@ public class AutoCrystal extends Module {
         setmgr.rSetting(breakMode);
         setmgr.rSetting(logicMode);
         setmgr.rSetting(syns);
+        setmgr.rSetting(rotate);
+        setmgr.rSetting(rotations);
+        setmgr.rSetting(raytrace);
         setmgr.rSetting(debug);
 
         setmgr.rSetting(rangeLine);
@@ -141,12 +145,6 @@ public class AutoCrystal extends Module {
         setmgr.rSetting(breakRange);
         setmgr.rSetting(targetRange);
         setmgr.rSetting(wallRange);
-
-        //register(delayLine)
-        setmgr.rSetting(delayMode);
-        setmgr.rSetting(placeDelay);
-        setmgr.rSetting(breakDelay);
-        setmgr.rSetting(multiplierDelay);
 
         setmgr.rSetting(damageLine);
         setmgr.rSetting(minDMG);
@@ -163,15 +161,18 @@ public class AutoCrystal extends Module {
 
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
+        setmgr.rSetting(placeDelay);
         setmgr.rSetting(placeHand);
         setmgr.rSetting(secondCheck);
         setmgr.rSetting(placeObsidianIfNoValidSpots);
-        setmgr.rSetting(rotate);
+        setmgr.rSetting(placeRotate);
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(_break);
+        setmgr.rSetting(breakDelay);
         setmgr.rSetting(breakHand);
         setmgr.rSetting(antiWeakness);
+        setmgr.rSetting(breakRotate);
 
         setmgr.rSetting(pauseLine);
         setmgr.rSetting(pauseWhileEating);
@@ -246,6 +247,23 @@ public class AutoCrystal extends Module {
     }
 
     @EventHandler
+    private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
+        if(rotate.getValBoolean() && rotating && event.getPacket() instanceof CPacketPlayer) {
+            final CPacketPlayer packet = (CPacketPlayer) event.getPacket();
+
+            packet.yaw = yaw;
+            packet.pitch = pitch;
+
+            ++rotationPacketsSpoofs;
+
+            if(rotationPacketsSpoofs >= rotations.getValInt()) {
+                rotating = false;
+                rotationPacketsSpoofs = 0;
+            }
+        }
+    });
+
+    @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketSoundEffect && syns.getValBoolean()) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
@@ -263,22 +281,7 @@ public class AutoCrystal extends Module {
     });
 
     private void doAutoCrystal() {
-        switch ((DelayModes) delayMode.getValEnum()) {
-            case First: {
-                doAutoCrystalLogic();
-                break;
-            }
-            case Second: {
-                int delay = multiplierDelay.getValInt();
-                if(delay <= 0) {
-                    doAutoCrystalLogic();
-                } else {
-                    for(int i = 0; i <= delay; i++) {
-                        doAutoCrystalLogic();
-                    }
-                }
-            }
-        }
+        doAutoCrystalLogic();
     }
 
     private void doAutoCrystalLogic() {
@@ -376,12 +379,14 @@ public class AutoCrystal extends Module {
                 hand = mc.player.getActiveHand();
             }
 
-            if (rotate.getValBoolean()) {
-                //rotate
-            }
+            rotateToPos(placePos, true);
 
             final EnumFacing facing = EnumFacing.UP;
             boolean offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;
+
+            if(raytrace.getValBoolean()) {
+                //facing
+            }
 
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
             mc.playerController.updateController();
@@ -440,8 +445,11 @@ public class AutoCrystal extends Module {
             }
         }
 
-        EnumHand hand = breakHand.getValEnum().equals(Hands.Mainhand) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
-        mc.player.connection.sendPacket(new CPacketUseEntity(crystal, hand));
+        if(breakHand.getValEnum().equals(Hands.None)) {
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        } else {
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal, breakHand.getValEnum().equals(Hands.Mainhand) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+        }
 
         if(breakSwing.getValBoolean()) {
             swingItem(true);
@@ -454,14 +462,48 @@ public class AutoCrystal extends Module {
         breakTicks = 0;
     }
 
-    private boolean isValidItemsInHand() {
-        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) {
-            return true;
-        } else if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) {
-            return true;
+    private void rotateToPos(BlockPos pos, boolean place) {
+        boolean isOnRotate = placeRotate.getValBoolean() && breakRotate.getValBoolean();
+
+        if(rotate.getValBoolean()) {
+            if(placeRotate.getValBoolean() && place) {
+                block0: {
+                    final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
+                    if (isOnRotate) {
+                        RotationUtils.setPlayerRotations(angle[0], angle[1]);
+                        break block0;
+                    }
+                    yaw = angle[0];
+                    pitch = angle[1];
+                    rotating = true;
+                }
+            }
+
+            if(breakRotate.getValBoolean() && !place) {
+                block0: {
+                    final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
+                    if (isOnRotate) {
+                        RotationUtils.setPlayerRotations(angle[0], angle[1]);
+                        break block0;
+                    }
+                    yaw = angle[0];
+                    pitch = angle[1];
+                    rotating = true;
+                }
+            }
         } else {
-            return !switchMode.getValEnum().equals(SwitchModes.None);
+            rotating = false;
         }
+
+        if(!isOnRotate) {
+            rotating = false;
+        }
+    }
+
+    private boolean isValidItemsInHand() {
+        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) {return true;
+        } else if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL) {return true;
+        } else {return !switchMode.getValEnum().equals(SwitchModes.None);}
     }
 
     public void findNewTarget() {
@@ -491,20 +533,13 @@ public class AutoCrystal extends Module {
     }
 
     private boolean isValidCrystal(Entity entity) {
-        if(!(entity instanceof EntityEnderCrystal)) {
-            return false;
-        }
-
-        if (entity.getDistance(mc.player) > (!mc.player.canEntityBeSeen(entity) ? wallRange.getValDouble() : breakRange.getValDouble()))
-            return false;
+        if(!(entity instanceof EntityEnderCrystal)) return false;
+        if (entity.getDistance(mc.player) > (!mc.player.canEntityBeSeen(entity) ? wallRange.getValDouble() : breakRange.getValDouble())) return false;
 
         switch (breakMode.getValString()) {
-            case "Always":
-                return true;
+            case "Always": return true;
             case "Smart":
-                if (target == null) {
-                    return false;
-                }
+                if (target == null) return false;
 
                 float targetDMG = CrystalUtils.calculateDamage(mc.world, entity.posX + 0.5, entity.posY + 1.0, entity.posZ + 0.5, target, 0);
                 float selfDMG = CrystalUtils.calculateDamage(mc.world, entity.posX + 0.5, entity.posY + 1.0, entity.posZ + 0.5, mc.player, 0);
@@ -517,8 +552,7 @@ public class AutoCrystal extends Module {
                 if (targetDMG > minDMG && selfDMG < maxSelfDMG.getValDouble()) return true;
 
                 break;
-            default:
-                break;
+            default: break;
         }
 
         return false;

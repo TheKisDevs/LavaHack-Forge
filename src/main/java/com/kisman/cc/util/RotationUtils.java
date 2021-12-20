@@ -164,6 +164,10 @@ public class RotationUtils {
         setPlayerRotations(angle[0], angle[1]);
     }
 
+    public static void setPlayerRotations(com.kisman.cc.util.Rotation rotation) {
+        setPlayerRotations(rotation.getYaw(), rotation.getPitch());
+    }
+
     public static void setPlayerRotations(final float yaw, final float pitch) {
         mc.player.rotationYaw = yaw;
         mc.player.rotationYawHead = yaw;

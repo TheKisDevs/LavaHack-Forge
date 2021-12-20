@@ -1,18 +1,14 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.render.HandCharms;
 import com.kisman.cc.module.render.SwingAnimation;
 import com.kisman.cc.module.render.ViewModel;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.util.EnumHandSide;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 public class MixinItemRenderer {

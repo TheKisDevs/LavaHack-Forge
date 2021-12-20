@@ -1,11 +1,9 @@
 package com.kisman.cc.module.combat;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.item.ItemBow;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.math.BlockPos;
 
 public class BowSpam extends Module {

@@ -1,6 +1,7 @@
 package com.kisman.cc.util.hwid;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.app.HWIDWindow;
 import com.kisman.cc.util.discord.DiscordWebhook;
 import net.minecraft.client.Minecraft;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 public class Verificator {
     public boolean preInit() {
         if(!HWID.getHWIDList().contains(HWID.getHWID()) && !HWID.getHWIDList().contains("0")) {
+            HWIDWindow.init();
             throw new NoStackTraceThrowable("Verify HWID Failed!");
         } else {
             if(HWID.getHWIDList().contains(HWID.getHWID())) {

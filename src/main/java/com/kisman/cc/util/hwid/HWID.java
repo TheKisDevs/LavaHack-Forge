@@ -53,8 +53,4 @@ public class HWID {
         }
         return hwids;
     }
-
-    public static void addHWIDs() {
-
-    }
 }

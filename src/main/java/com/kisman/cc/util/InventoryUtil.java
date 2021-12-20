@@ -3,6 +3,7 @@ package com.kisman.cc.util;
 import com.kisman.cc.mixin.mixins.accessor.IPlayerControllerMP;
 import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 
@@ -21,11 +22,42 @@ public class InventoryUtil {
         }
     }
 
+    public static boolean isArmorLow(final EntityPlayer player, final int durability) {
+        for (int i = 0; i < 4; ++i) {
+            if (getDamageInPercent(player.inventory.armorInventory.get(i)) < durability) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static float getDamageInPercent(final ItemStack stack) {
+        final float green = (stack.getMaxDamage() - ( float ) stack.getItemDamage()) / stack.getMaxDamage();
+        final float red = 1.0f - green;
+        return ( float ) (100 - ( int ) (red * 100.0f));
+    }
+
     public static int findItem(Item item, int min, int max) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
             if (stack.getItem() != item) continue;
             return i;
+        }
+
+        return -1;
+    }
+
+    public static int findAntiWeaknessTool() {
+        return findAntiWeaknessTool(0, 9);
+    }
+
+    public static int findAntiWeaknessTool(int min, int max) {
+        for(int i = min; i <= max; ++i) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+
+            if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemPickaxe) {
+                return i;
+            }
         }
 
         return -1;

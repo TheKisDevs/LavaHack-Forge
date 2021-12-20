@@ -15,6 +15,12 @@ public class Rotation {
         this.rotate = rotate;
     }
 
+    public Rotation(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.rotate = Rotate.NONE;
+    }
+
     public void updateModelRotations() {
         if (mc.player != null && mc.world != null) {
             switch (rotate) {
@@ -46,6 +52,14 @@ public class Rotation {
 
     public float getPitch() {
         return pitch;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
     }
 
     public Rotate getRotation() {

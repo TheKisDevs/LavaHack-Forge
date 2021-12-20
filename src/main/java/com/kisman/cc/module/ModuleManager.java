@@ -22,8 +22,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ModuleManager {
 	public ArrayList<Module> modules;
-
-	private Minecraft mc = Minecraft.getMinecraft();
 	
 	public ModuleManager() {
 		modules = new ArrayList<>();
@@ -34,12 +32,13 @@ public class ModuleManager {
 	public void init() {
 		//combat
 		modules.add(new AimBot());
+		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
 		modules.add(new AutoArmor());
 		modules.add(new AutoBowExploit());
 		modules.add(new AutoClicker());
 		modules.add(new AutoCrystal());
-		modules.add(new AutoCrystalBypass());
+		modules.add(new AutoCrystalRewrite());
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
 		modules.add(new AutoTotem());
@@ -86,6 +85,7 @@ public class ModuleManager {
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
+		modules.add(new Ambience());
 		modules.add(new BlockOutline());
 		modules.add(new Breadcrumbs());
 		modules.add(new CustomFov());
@@ -163,6 +163,7 @@ public class ModuleManager {
 		modules.add(new Ghost());
 		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
+		modules.add(new MultiTask());
 		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());
 		modules.add(new PacketFly());

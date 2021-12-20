@@ -9,11 +9,8 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.util.Colour;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
-
-import javax.management.OperationsException;
 
 /**
  *  Made by HeroCode
@@ -55,6 +52,7 @@ public class Setting {
 	private boolean onlyOneWord;
 	private boolean onlyNumbers;
 	private boolean minus;
+	private boolean enumCombo = false;
 	
 	private double dval;
 	private double min;
@@ -150,6 +148,7 @@ public class Setting {
 		this.svalEnum = options;
 		this.options = null;
 		this.optionEnum = options;
+		this.enumCombo = true;
 		this.mode = "Combo";
 	}
 	
@@ -256,6 +255,8 @@ public class Setting {
 		this.green = green;
 		this.alpha = alpha;
 	}
+
+	public boolean isEnumCombo() {return enumCombo;}
 
 	public float getRed() {
 		return red;
@@ -503,6 +504,14 @@ public class Setting {
 		}
 
 		return (float) dval;
+	}
+
+	public long getValLong() {
+		if(onlyint) {
+			dval = (int) dval;
+		}
+
+		return (long) dval;
 	}
 
 	public void setValDouble(double in){

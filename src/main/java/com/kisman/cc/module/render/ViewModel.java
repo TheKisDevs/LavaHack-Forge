@@ -4,7 +4,10 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * @author _kisman_(Value)
@@ -33,6 +36,24 @@ public class ViewModel extends Module {
     public Setting autoRotateLeftX = new Setting("AutoRotateLeftX", this, false);
     public Setting autoRotateLeftY = new Setting("AutoRotateLeftY", this, false);
     public Setting autoRotateLeftZ = new Setting("AutoRotateLeftZ", this, false);
+
+    //hand pos modifier
+    private Setting handLine = new Setting("HandLine", this, "Hand");
+    public Setting hands = new Setting("Hands", this, false);
+    public Setting handX = new Setting("HandX", this, 0, -2, 2, false);
+    public Setting handY = new Setting("HandY", this, 0, -2, 2, false);
+    public Setting handZ = new Setting("HandZ", this, 0, -2, 2, false);
+    public Setting handRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
+    public Setting handRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
+    public Setting handRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
+    public Setting handScaleX = new Setting("HandX", this, 0, -2, 2, false);
+    public Setting handScaleY = new Setting("HandY", this, 0, -2, 2, false);
+    public Setting handScaleZ = new Setting("HandZ", this, 0, -2, 2, false);
+
+    //custom items alpha
+    private Setting itemLine = new Setting("ItenLine", this, "Item");
+    public Setting alpha = new Setting("Alpha", this, 255, 0, 255, true);
+
 
     public ViewModel() {
         super("ViewModel", "modeL vieM", Category.RENDER);
@@ -66,12 +87,38 @@ public class ViewModel extends Module {
         setmgr.rSetting(scaleLeftX);
         setmgr.rSetting(scaleLeftY);
         setmgr.rSetting(scaleLeftZ);
+
+        setmgr.rSetting(handLine);
+        setmgr.rSetting(hands);
+        setmgr.rSetting(handX);
+        setmgr.rSetting(handY);
+        setmgr.rSetting(handZ);
+        setmgr.rSetting(handRotateX);
+        setmgr.rSetting(handRotateY);
+        setmgr.rSetting(handRotateZ);
+        setmgr.rSetting(handScaleX);
+        setmgr.rSetting(handScaleY);
+        setmgr.rSetting(handScaleZ);
+
+        setmgr.rSetting(itemLine);
+        setmgr.rSetting(alpha);
     }
 
     @SubscribeEvent
     public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {
         if(itemFOV.getValBoolean()) {
             event.setFOV((float) fov.getValDouble());
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderArms(RenderSpecificHandEvent event) {
+        if(hands.getValBoolean()) {
+            glTranslated(handX.getValDouble(), handY.getValDouble(), handZ.getValDouble());
+            glRotated(handRotateX.getValDouble(), 1, 0, 0);
+            glRotated(handRotateY.getValDouble(), 0, 1, 0);
+            glRotated(handRotateZ.getValDouble(), 0, 0, 1);
+            glScaled(handScaleX.getValDouble(), handScaleY.getValDouble(), handScaleZ.getValDouble());
         }
     }
 }

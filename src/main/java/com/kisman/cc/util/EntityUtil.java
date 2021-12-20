@@ -1,5 +1,6 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.friend.FriendManager;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -30,6 +31,10 @@ public class EntityUtil {
 
     public static float getHealth(EntityPlayer entity) {
         return entity.getHealth();
+    }
+
+    public static boolean canSee(BlockPos blockPos) {
+        return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 1.5, blockPos.getZ() + 0.5), false, true, false) == null;
     }
 
     public static boolean isOnLiquid() {
@@ -63,6 +68,25 @@ public class EntityUtil {
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
         }
         return false;
+    }
+
+    public static EntityPlayer getTarget(final float range) {
+        EntityPlayer currentTarget = null;
+        for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
+            final EntityPlayer player = mc.world.playerEntities.get(i);
+            if (!isntValid(player, range)) {
+                if (currentTarget == null) {
+                    currentTarget = player;
+                } else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) {
+                    currentTarget = player;
+                }
+            }
+        }
+        return currentTarget;
+    }
+
+    public static boolean isntValid(final EntityPlayer entity, final double range) {
+        return mc.player.getDistance(entity) > range || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity);
     }
 
     public static boolean isPassive(Entity e) {

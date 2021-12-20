@@ -122,6 +122,9 @@ public class LoadConfig {
                             setting.setValBoolean(dataObject.getAsBoolean());
                         }
                         if (setting.isCombo()) {
+                            if(setting.isEnumCombo()) {
+
+                            }
                             setting.setValString(dataObject.getAsString());
                         }
                         if (setting.isSlider()) {

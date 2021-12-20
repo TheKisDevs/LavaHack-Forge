@@ -1,6 +1,5 @@
 package com.kisman.cc.util.hwid;
 
-
 public class NoStackTraceThrowable extends RuntimeException {
 
     public NoStackTraceThrowable(final String msg) {
@@ -8,13 +7,6 @@ public class NoStackTraceThrowable extends RuntimeException {
         this.setStackTrace(new StackTraceElement[0]);
     }
 
-    @Override
-    public String toString() {
-        return "NoHWIDException!";
-    }
-
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return this;
-    }
+    @Override public String toString() {return "HWID issue!";}
+    @Override public synchronized Throwable fillInStackTrace() {return this;}
 }

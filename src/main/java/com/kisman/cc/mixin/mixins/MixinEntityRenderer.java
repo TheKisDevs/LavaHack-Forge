@@ -21,15 +21,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
-    /*@Shadow
+    @Shadow
     @Final
-    private int[] lightmapColors;*/
+    private int[] lightmapColors;
 
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo ci) {
@@ -67,31 +68,32 @@ public class MixinEntityRenderer {
         }
     }
 
-    /*@Inject(method = "updateLightmap", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE))
+    @Inject( method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ) )
     private void updateTextureHook(float partialTicks, CallbackInfo ci) {
-        if (AMBIENCE.isEnabled()) {
-            for (int i = 0; i < lightmapColors.length; i++) {
-                Color ambientColor = Ambience.instance.getColor();
+        Ambience ambience = Ambience.instance;
+        if (ambience.isToggled()) {
+            for (int i = 0; i < this.lightmapColors.length; ++i) {
+                Color ambientColor = ambience.getColor();
                 int alpha = ambientColor.getAlpha();
-                float modifier = alpha / 255.0f;
-                int color = lightmapColors[i];
-                int[] bgr = MathUtil.toRGBAArray(color);
-                *//*int red = (bgr[2] + ambientColor.getRed()) / 2; // half-half mix of both colors
-                int green = (bgr[1] + ambientColor.getGreen()) / 2;
-                int blue = (bgr[0] + ambientColor.getBlue()) / 2;*//*
-                Vec3d values = new Vec3d(bgr[2] / 255.0f, bgr[1] / 255.0f, bgr[0] / 255.0f);
-                Vec3d newValues = new Vec3d(ambientColor.getRed() / 255.0f, ambientColor.getGreen() / 255.0f, ambientColor.getBlue() / 255.0f);
-                Vec3d finalValues = MathUtil.mix(values, newValues, modifier);
-
-                *//*int red = (int) (((bgr[2] * (1 - modifier)) + (ambientColor.getRed() * modifier)) / 2.0f); // half-half mix of both colors
-                int green = (int) (((bgr[1] * (1 - modifier)) + (ambientColor.getGreen() * modifier)) / 2.0f);
-                int blue = (int) (((bgr[0] * (1 - modifier)) + (ambientColor.getBlue() * modifier)) / 2.0f);*//*
-                // lightmapColors[i] = MathUtil.toRGB(red, green, blue);
-                int red = (int) (finalValues.x * 255);
-                int green = (int) (finalValues.y * 255);
-                int blue = (int) (finalValues.z * 255);
-                lightmapColors[i] = -16777216 | red << 16 | green << 8 | blue;
+                float modifier = ( float ) alpha / 255.0f;
+                int color = this.lightmapColors[ i ];
+                int[] bgr = toRGBAArray(color);
+                Vector3f values = new Vector3f(( float ) bgr[ 2 ] / 255.0f, ( float ) bgr[ 1 ] / 255.0f, ( float ) bgr[ 0 ] / 255.0f);
+                Vector3f newValues = new Vector3f(( float ) ambientColor.getRed() / 255.0f, ( float ) ambientColor.getGreen() / 255.0f, ( float ) ambientColor.getBlue() / 255.0f);
+                Vector3f finalValues = mix(values, newValues, modifier);
+                int red = ( int ) (finalValues.x * 255.0f);
+                int green = ( int ) (finalValues.y * 255.0f);
+                int blue = ( int ) (finalValues.z * 255.0f);
+                this.lightmapColors[ i ] = 0xFF000000 | red << 16 | green << 8 | blue;
             }
         }
-    }*/
+    }
+
+    private int[] toRGBAArray(int colorBuffer) {
+        return new int[] { colorBuffer >> 16 & 0xFF, colorBuffer >> 8 & 0xFF, colorBuffer & 0xFF };
+    }
+
+    private Vector3f mix(Vector3f first, Vector3f second, float factor) {
+        return new Vector3f(first.x * (1.0f - factor) + second.x * factor, first.y * (1.0f - factor) + second.y * factor, first.z * (1.0f - factor) + first.z * factor);
+    }
 }
