@@ -22,6 +22,24 @@ public class InventoryUtil {
         }
     }
 
+    public static int findWeaponSlot(int min, int max, boolean shieldBreak) {
+        for(int i = min; i <= max; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+
+            if(shieldBreak) {
+                if(stack.getItem() instanceof ItemAxe) {
+                    return i;
+                }
+            } else {
+                if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
     public static boolean isArmorLow(final EntityPlayer player, final int durability) {
         for (int i = 0; i < 4; ++i) {
             if (getDamageInPercent(player.inventory.armorInventory.get(i)) < durability) {

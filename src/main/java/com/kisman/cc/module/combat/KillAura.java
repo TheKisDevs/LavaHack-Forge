@@ -35,13 +35,13 @@ public class KillAura extends Module {
 
     private float distance;
 
-    public Entity target;
+    public EntityPlayer target;
+
+    private Setting mode = new Setting("Mode", this, "Sword", Arrays.asList("Single", "Multi"));
 
     private Setting hitLine = new Setting("HitLine", this, "Hit");
     private Setting shieldBreaker = new Setting("ShieldBreaker", this, true);
-    private Setting onlyCritHit = new Setting("OnlyCritHit", this, false);
-    private Setting onlyCritHitSound = new Setting("OnlyCritHitSound", this, true);
-    private Setting critFix = new Setting("CritFix", this, false);
+    private Setting packetAttack = new Setting("PacketAttack", this, false);
 
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
 
@@ -62,12 +62,12 @@ public class KillAura extends Module {
 
         instance = this;
 
+        setmgr.rSetting(mode);
+
         setmgr.rSetting(hitLine);
         setmgr.rSetting(shieldBreaker);
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
-        setmgr.rSetting(onlyCritHit);
-        setmgr.rSetting(onlyCritHitSound);
-        setmgr.rSetting(critFix);
+        setmgr.rSetting(packetAttack);
 
         setmgr.rSetting(new Setting("WeaponLine", this, "Weapon"));
         setmgr.rSetting(weapon);
@@ -94,24 +94,9 @@ public class KillAura extends Module {
         setmgr.rSetting(packetSwitch);
     }
 
-    public void onEnable() {
-        this.player = Kisman.instance.settingsManager.getSettingByName(this,"Player").getValBoolean();
-        this.monster = Kisman.instance.settingsManager.getSettingByName(this,"Monster").getValBoolean();
-        this.passive = Kisman.instance.settingsManager.getSettingByName(this,"Passive").getValBoolean();
-
-        this.hitsound = Kisman.instance.settingsManager.getSettingByName(this,"HitSound").getValBoolean();
-
-        this.distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
-    }
-
     public void update() {
         if(mc.player == null && mc.world == null) return;
-
         if(mc.player.isDead) return;
-
-        if(critFix.getValBoolean()) {
-
-        }
 
         this.player = Kisman.instance.settingsManager.getSettingByName(this,"Player").getValBoolean();
         this.monster = Kisman.instance.settingsManager.getSettingByName(this,"Monster").getValBoolean();
@@ -119,25 +104,34 @@ public class KillAura extends Module {
 
         this.hitsound = Kisman.instance.settingsManager.getSettingByName(this,"HitSound").getValBoolean();
 
-        this.distance = (float) Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValDouble();
+        this.distance = Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValFloat();
 
-        if(calcMode.getValString().equalsIgnoreCase("Multi")) {
+        if(mode.getValString().equalsIgnoreCase("Multi")) {
             for (int i = 0; i < mc.world.loadedEntityList.size(); i++) {
-                if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && this.player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && this.monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && this.passive))) {
+                if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && passive))) {
                     Entity entity = mc.world.loadedEntityList.get(i);
                     if (Config.instance.friends.getValBoolean() && entity instanceof EntityPlayer && Kisman.instance.friendManager.isFriend((EntityPlayer) entity)) {
                         continue;
                     }
 
                     if (mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
-                        final int oldSlot = mc.player.inventory.currentItem;
+                        boolean isShiendActive = false;
+
+                        if(entity instanceof EntityPlayer && shieldBreaker.getValBoolean()) {
+                            EntityPlayer entity1 = (EntityPlayer) entity;
+
+                            if(entity1.getHeldItemMainhand().getItem() instanceof ItemShield || entity1.getHeldItemOffhand().getItem() instanceof ItemShield) {
+                                if(entity1.isHandActive()) isShiendActive = true;
+                            }
+                        }
+                        int oldSlot = mc.player.inventory.currentItem;
+                        int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShiendActive);
 
                         boolean isHit = false;
-                        boolean isCrit = onlyCritHit.getValBoolean() && (mc.player.getCooledAttackStrength(1) == 1 || mc.player.getCooledAttackStrength(1) == 0.8);
-                        if(!switchMode.getValString().equalsIgnoreCase("None") && (!onlyCritHit.getValBoolean() || isCrit)) {
-                            int weaponSlot = getBestItemSlot(mc.world.loadedEntityList.get(i));
+                        if(!switchMode.getValString().equalsIgnoreCase("None")) {
 
                             switch (switchMode.getValString()) {
+                                case "None": break;
                                 case "Normal": {
                                     if(packetSwitch.getValBoolean()) {
                                         mc.player.connection.sendPacket(new CPacketHeldItemChange(weaponSlot));
@@ -152,69 +146,88 @@ public class KillAura extends Module {
                                     break;
                                 }
                             }
-                        }
-
-                        if(onlyCritHit.getValBoolean()) {
-                            if(mc.player.getCooledAttackStrength(1) == 1 || mc.player.getCooledAttackStrength(1) == 0.8) {
-                                mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
-                                mc.player.swingArm(EnumHand.MAIN_HAND);
-                                mc.player.resetCooldown();
-                                isHit = true;
-                            }
                         } else {
-                            mc.playerController.attackEntity(mc.player, mc.world.loadedEntityList.get(i));
-                            mc.player.swingArm(EnumHand.MAIN_HAND);
-                            mc.player.resetCooldown();
-                            isHit = true;
+                            if(mc.player.inventory.currentItem != weaponSlot) return;
                         }
 
-                        if (this.hitsound && isHit) {
+                        attack(entity);
+                        isHit = true;
+
+                        if (hitsound && isHit) {
                             mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
                         }
 
-                        if(switchMode.getValString().equalsIgnoreCase("Silent")) {
+                        if(switchMode.getValString().equalsIgnoreCase("Silent") && oldSlot != -1) {
                             InventoryUtil.switchToSlot(oldSlot, true);
                         }
                     }
                 }
             }
-        } else if(calcMode.getValString().equalsIgnoreCase("Single")) {
-            target = getTarget();
+        } else if(mode.getValString().equalsIgnoreCase("Single")) {
+           target = EntityUtil.getTarget(distance);
 
-            if(target != null) {
-                float[] rots = RotationUtils.getMatrixRotations(target, true);
+           if(target == null) {
+               return;
+           }
 
-                mc.player.rotationYaw = rots[0];
-                mc.player.rotationPitch = rots[1];
+           if(mc.player.getDistance(target) <= 4.15 && target.ticksExisted % 20 == 0) {
+               boolean isShiendActive = false;
 
-                mc.timer.renderPartialTicks = 0.05f;
+               if(shieldBreaker.getValBoolean()) {
+                   if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) {
+                       if (target.isHandActive()) isShiendActive = true;
+                   }
+               }
 
-                mc.player.renderYawOffset = rots[0];
-                mc.player.rotationYawHead = rots[0];
+               int oldSlot = mc.player.inventory.currentItem;
+               int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShiendActive);
 
-                boolean isCrit = onlyCritHit.getValBoolean() && (mc.player.getCooledAttackStrength(1) == 1 || mc.player.getCooledAttackStrength(1) == 0.8);
+               boolean isHit = false;
+               if(!switchMode.getValString().equalsIgnoreCase("None")) {
 
-                if(isCrit) {
-                    if(mc.player.getCooledAttackStrength(1) == 1) {
-                        if(mc.player.fallDistance > fallDistance.getValDouble()) return;
+                   switch (switchMode.getValString()) {
+                       case "None": break;
+                       case "Normal": {
+                           if(packetSwitch.getValBoolean()) {
+                               mc.player.connection.sendPacket(new CPacketHeldItemChange(weaponSlot));
+                           } else {
+                               mc.player.inventory.currentItem = weaponSlot;
+                           }
 
-                        mc.player.connection.sendPacket(new CPacketUseEntity(target));
-                        mc.player.swingArm(EnumHand.MAIN_HAND);
-                        mc.player.resetCooldown();
-                    } else if(mc.player.getCooledAttackStrength(1) == 0.8) {
-                        if(mc.player.fallDistance > fallDistance.getValDouble()) return;
+                           break;
+                       }
+                       case "Silent": {
+                           InventoryUtil.switchToSlot(weaponSlot, true);
+                           break;
+                       }
+                   }
+               } else {
+                   if(mc.player.inventory.currentItem != weaponSlot) return;
+               }
 
-                        mc.player.connection.sendPacket(new CPacketUseEntity(target));
-                        mc.player.swingArm(EnumHand.MAIN_HAND);
-                        mc.player.resetCooldown();
-                    }
-                } else {
-                    mc.player.connection.sendPacket(new CPacketUseEntity(target));
-                    mc.player.swingArm(EnumHand.MAIN_HAND);
-                    mc.player.resetCooldown();
-                }
-            }
+               attack(target);
+               isHit = true;
+
+               if (this.hitsound && isHit) {
+                   mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
+               }
+
+               if(switchMode.getValString().equalsIgnoreCase("Silent") && oldSlot != -1) {
+                   InventoryUtil.switchToSlot(oldSlot, true);
+               }
+           }
         }
+    }
+
+    private void attack(Entity entity) {
+        if(packetAttack.getValBoolean()) {
+            mc.playerController.attackEntity(mc.player, target);
+        } else {
+            mc.player.connection.sendPacket(new CPacketUseEntity(target));
+        }
+
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.player.resetCooldown();
     }
 
     @SubscribeEvent
