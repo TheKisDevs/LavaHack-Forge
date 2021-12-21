@@ -156,6 +156,7 @@ public class ModuleManager {
 		modules.add(new Velocity());
 		//exploit
 		modules.add(new AntiLogger());
+		modules.add(new AutoKick());
 //		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new CactusLeave());

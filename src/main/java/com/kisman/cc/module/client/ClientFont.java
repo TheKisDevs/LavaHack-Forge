@@ -3,6 +3,7 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.module.*;
 
 public class ClientFont extends Module {
+    //TODO: update this
     public static ClientFont instance;
 
     public ClientFont() {

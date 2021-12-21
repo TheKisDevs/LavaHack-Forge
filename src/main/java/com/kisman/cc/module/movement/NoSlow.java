@@ -13,6 +13,7 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemShield;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
@@ -24,6 +25,7 @@ public class NoSlow extends Module {
     private Setting invMove = new Setting("InvMove", this, true);
     private Setting items = new Setting("Items", this, true);
     private Setting ncpStrict = new Setting("NCPStrict", this, true);
+    private Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
 
 
     private Setting invLine = new Setting("InvLine", this, "InvMode");
@@ -60,11 +62,19 @@ public class NoSlow extends Module {
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        if (mc.player.isHandActive()) {
+        if (mc.player.isHandActive() && items.getValBoolean()) {
             if (mc.player.getHeldItem(mc.player.getActiveHand()).getItem() instanceof ItemShield) {
                 if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0 && mc.player.getItemInUseMaxCount() >= 8) {
                     mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.getHorizontalFacing()));
                 }
+            }
+        }
+
+        if(slimeBlocks.getValBoolean()) {
+            if(mc.player.getRidingEntity() != null) {
+                Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.8f);
+            } else {
+                Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
             }
         }
     }
