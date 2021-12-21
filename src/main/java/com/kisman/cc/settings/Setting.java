@@ -3,6 +3,7 @@ package com.kisman.cc.settings;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
@@ -137,6 +138,16 @@ public class Setting {
 		this.sval = sval;
 		this.svalEnum = null;
 		this.options = options;
+		this.optionEnum = null;
+		this.mode = "Combo";
+	}
+
+	public Setting(String name, Module parent, String sval, List<String> options){
+		this.name = name;
+		this.parent = parent;
+		this.sval = sval;
+		this.svalEnum = null;
+		this.options = new ArrayList<>(options);
 		this.optionEnum = null;
 		this.mode = "Combo";
 	}
