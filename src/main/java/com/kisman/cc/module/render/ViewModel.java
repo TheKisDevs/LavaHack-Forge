@@ -3,6 +3,7 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,15 +41,24 @@ public class ViewModel extends Module {
     //hand pos modifier
     private Setting handLine = new Setting("HandLine", this, "Hand");
     public Setting hands = new Setting("Hands", this, false);
-    public Setting handX = new Setting("HandX", this, 0, -2, 2, false);
-    public Setting handY = new Setting("HandY", this, 0, -2, 2, false);
-    public Setting handZ = new Setting("HandZ", this, 0, -2, 2, false);
-    public Setting handRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
-    public Setting handRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
-    public Setting handRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
-    public Setting handScaleX = new Setting("HandX", this, 0, -2, 2, false);
-    public Setting handScaleY = new Setting("HandY", this, 0, -2, 2, false);
-    public Setting handScaleZ = new Setting("HandZ", this, 0, -2, 2, false);
+    public Setting handRightX = new Setting("HandX", this, 0, -4, 4, false);
+    public Setting handRightY = new Setting("HandY", this, 0, -4, 4, false);
+    public Setting handRightZ = new Setting("HandZ", this, 0, -4, 4, false);
+    public Setting handRightRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
+    public Setting handRightRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
+    public Setting handRightRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
+    public Setting handRightScaleX = new Setting("HandScaleX", this, 0, -2, 2, false);
+    public Setting handRightScaleY = new Setting("HandScaleY", this, 0, -2, 2, false);
+    public Setting handRightScaleZ = new Setting("HandScaleZ", this, 0, -2, 2, false);
+    public Setting handLeftX = new Setting("HandX", this, 0, -4, 4, false);
+    public Setting handLeftY = new Setting("HandY", this, 0, -4, 4, false);
+    public Setting handLeftZ = new Setting("HandZ", this, 0, -4, 4, false);
+    public Setting handLeftRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
+    public Setting handLeftRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
+    public Setting handLeftRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
+    public Setting handLeftScaleX = new Setting("HandScaleX", this, 0, -2, 2, false);
+    public Setting handLeftScaleY = new Setting("HandScaleY", this, 0, -2, 2, false);
+    public Setting handLeftScaleZ = new Setting("HandScaleZ", this, 0, -2, 2, false);
 
     //custom items alpha
     private Setting itemLine = new Setting("ItenLine", this, "Item");
@@ -90,15 +100,24 @@ public class ViewModel extends Module {
 
         setmgr.rSetting(handLine);
         setmgr.rSetting(hands);
-        setmgr.rSetting(handX);
-        setmgr.rSetting(handY);
-        setmgr.rSetting(handZ);
-        setmgr.rSetting(handRotateX);
-        setmgr.rSetting(handRotateY);
-        setmgr.rSetting(handRotateZ);
-        setmgr.rSetting(handScaleX);
-        setmgr.rSetting(handScaleY);
-        setmgr.rSetting(handScaleZ);
+        setmgr.rSetting(handRightX);
+        setmgr.rSetting(handRightY);
+        setmgr.rSetting(handRightZ);
+        setmgr.rSetting(handRightRotateX);
+        setmgr.rSetting(handRightRotateY);
+        setmgr.rSetting(handRightRotateZ);
+        setmgr.rSetting(handRightScaleX);
+        setmgr.rSetting(handRightScaleY);
+        setmgr.rSetting(handRightScaleZ);
+        setmgr.rSetting(handLeftX);
+        setmgr.rSetting(handLeftY);
+        setmgr.rSetting(handLeftZ);
+        setmgr.rSetting(handLeftRotateX);
+        setmgr.rSetting(handLeftRotateY);
+        setmgr.rSetting(handLeftRotateZ);
+        setmgr.rSetting(handLeftScaleX);
+        setmgr.rSetting(handLeftScaleY);
+        setmgr.rSetting(handLeftScaleZ);
 
         setmgr.rSetting(itemLine);
         setmgr.rSetting(alpha);
@@ -114,11 +133,24 @@ public class ViewModel extends Module {
     @SubscribeEvent
     public void onRenderArms(RenderSpecificHandEvent event) {
         if(hands.getValBoolean()) {
-            glTranslated(handX.getValDouble(), handY.getValDouble(), handZ.getValDouble());
-            glRotated(handRotateX.getValDouble(), 1, 0, 0);
-            glRotated(handRotateY.getValDouble(), 0, 1, 0);
-            glRotated(handRotateZ.getValDouble(), 0, 0, 1);
-            glScaled(handScaleX.getValDouble(), handScaleY.getValDouble(), handScaleZ.getValDouble());
+            switch (event.getHand()) {
+                case MAIN_HAND: {
+                    glTranslated(handRightX.getValDouble(), handRightY.getValDouble(), handRightZ.getValDouble());
+                    glRotated(handRightRotateX.getValDouble(), 1, 0, 0);
+                    glRotated(handRightRotateY.getValDouble(), 0, 1, 0);
+                    glRotated(handRightRotateZ.getValDouble(), 0, 0, 1);
+                    glScaled(handRightScaleX.getValDouble(), handRightScaleY.getValDouble(), handRightScaleZ.getValDouble());
+                    break;
+                }
+                case OFF_HAND: {
+                    glTranslated(handLeftX.getValDouble(), handLeftY.getValDouble(), handLeftZ.getValDouble());
+                    glRotated(handLeftRotateX.getValDouble(), 1, 0, 0);
+                    glRotated(handLeftRotateY.getValDouble(), 0, 1, 0);
+                    glRotated(handLeftRotateZ.getValDouble(), 0, 0, 1);
+                    glScaled(handLeftScaleX.getValDouble(), handLeftScaleY.getValDouble(), handLeftScaleZ.getValDouble());
+                    break;
+                }
+            }
         }
     }
 }

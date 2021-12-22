@@ -3,6 +3,7 @@ package com.kisman.cc.oldclickgui.vega.component;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
@@ -57,7 +58,9 @@ public class Frame {
         Gui.drawRect(this.x - 1, this.y - 3, this.x + this.width + 1, this.y + this.height + 1, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x, this.y - 4, this.x + this.width, this.y + this.height, (ColorUtils.getColor(34, 34, 40)));
 
-        CustomFontUtil.drawCenteredStringWithShadow(cat.name(), x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), open ? ColorUtils.astolfoColors(100, 100) : -1);
+        String str = cat.name() + (Config.instance.guiRenderSIze.getValBoolean() && !buttons.isEmpty() ? " [" + buttons.size() + "]" : "");
+
+        CustomFontUtil.drawCenteredStringWithShadow(str, x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), open ? ColorUtils.astolfoColors(100, 100) : -1);
 
         if(open && !buttons.isEmpty()) {
             for (Button button : buttons) {

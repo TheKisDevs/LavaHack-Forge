@@ -88,11 +88,12 @@ public class ModuleManager {
 		modules.add(new Ambience());
 		modules.add(new BlockOutline());
 		modules.add(new Breadcrumbs());
-		modules.add(new CustomFov());
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
 		modules.add(new CityESP());
 		modules.add(new CrystalModifier());
+		modules.add(new CustomFog());
+		modules.add(new CustomFov());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
 //		modules.add(new HandCharms());

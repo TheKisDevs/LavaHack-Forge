@@ -641,10 +641,12 @@ public class AutoCrystal extends Module {
         First("Cooldown"),
         Second("Multiplier");
 
-        public String name;
+        private final String name;
 
         DelayModes(String name) {
-            name = name;
+            this.name = name;
         }
+
+        public String getName() { return name; }
     }
 }

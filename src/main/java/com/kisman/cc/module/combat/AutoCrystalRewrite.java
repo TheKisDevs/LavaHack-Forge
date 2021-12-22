@@ -4,14 +4,15 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.mixin.mixins.accessor.*;
 import com.kisman.cc.module.*;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.Rotation;
 import com.kisman.cc.util.manager.RotationManager;
 import i.gishreloaded.gishcode.utils.TimerUtils;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
@@ -183,22 +184,24 @@ public class AutoCrystalRewrite extends Module {
 
         if(needPause()) return;
 
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+        findNewTarget();
+//        target = EntityUtil.getTarget(targetRange.getValFloat());
+
         if (target == null) {
             current = null;
             return;
         }
 
-        doAutoCrystal();
+        doPlace();
+        doBreak();
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(render.getValBoolean()) {
             if (current == null) return;
-            if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL)  return;
 
-            RenderUtil.drawBlockESP(current, ColorUtils.getRed(ColorUtils.astolfoColors(100, 100)) / 255f, ColorUtils.getGreen(ColorUtils.astolfoColors(100, 100)) / 255f, ColorUtils.getBlue(ColorUtils.astolfoColors(100, 100)) / 255f);
+            RenderUtil.drawBlockESP(current, 1, 0, 0);
         }
     }
 
@@ -295,13 +298,10 @@ public class AutoCrystalRewrite extends Module {
         return false;
     }
 
-    public void doAutoCrystal() {
-        doPlace();
-        doBreak();
-    }
-
     private void doPlace() {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValInt())) return;
+
+        if(mc.player == null && mc.world == null) return;
 
         EnumHand hand = null;
         double max = 0.5;
@@ -512,6 +512,32 @@ public class AutoCrystalRewrite extends Module {
         boolean canSee = EntityUtil.canSee(pos);
         if (!canSee && (rayTrace.getValEnum() == RayTrace.Full || rayTrace.getValEnum() == RayTrace.Place)) return false;
         return mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= (canSee ? placeRange.getValDouble() : wallPlaceRange.getValDouble());
+    }
+
+    private void findNewTarget() {
+        target = (EntityPlayer) getNearTarget(mc.player);
+    }
+
+    private EntityLivingBase getNearTarget(EntityPlayer distanceTarget) {
+        return mc.world.loadedEntityList.stream()
+                .filter(this::isValidTarget)
+                .map(entity -> (EntityLivingBase) entity)
+                .min(Comparator.comparing(distanceTarget::getDistance))
+                .orElse(null);
+    }
+
+    private boolean isValidTarget(Entity entity) {
+        if (entity == null) return false;
+        if (!(entity instanceof EntityPlayer)) return false;
+        if (Config.instance.friends.getValBoolean() && Kisman.instance.friendManager.isFriend((EntityPlayer) entity)) return false;
+        if (entity.isDead || ((EntityPlayer)entity).getHealth() <= 0.0f) return false;
+        if (entity.getDistance(mc.player) > 20.0f) return false;
+        if (entity instanceof EntityPlayer) {
+            if (entity == mc.player) return false;
+
+            return true;
+        }
+        return false;
     }
 
     private double getDistance(double x, double y, double z, double x1, double y1, double z1) {

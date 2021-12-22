@@ -2,6 +2,7 @@ package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
+import com.kisman.cc.hud.hudmodule.player.HandProgress;
 import com.kisman.cc.hud.hudmodule.player.Ping;
 import com.kisman.cc.hud.hudmodule.player.ServerIp;
 import com.kisman.cc.hud.hudmodule.player.Tps;
@@ -41,6 +42,7 @@ public class HudModuleManager {
 		modules.add(new Welcomer());
 
 		//player
+		modules.add(new HandProgress());
 		modules.add(new Ping());
 		modules.add(new ServerIp());
 		modules.add(new Tps());

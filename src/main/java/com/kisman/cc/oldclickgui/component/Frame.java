@@ -13,6 +13,7 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.component.components.sub.*;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.*;
@@ -132,7 +133,12 @@ public class Frame {
 			}
 		}*/
 
-		fontRenderer.drawStringWithShadow(this.hud ? this.hudCategory.name() : this.category.name(), (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		String str = this.hud ? this.hudCategory.name() : this.category.name();
+		if(Config.instance.guiRenderSIze.getValBoolean()) {
+			str += " [" + components.size() + "]";
+		}
+
+		fontRenderer.drawStringWithShadow(TextFormatting.BOLD +  str, (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		fontRenderer.drawStringWithShadow(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 
 		if(open && !components.isEmpty()) {

@@ -7,7 +7,6 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 
 import java.util.ArrayList;
@@ -48,8 +47,6 @@ public class Fly extends Module {
     }
 
     public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(receiveListener);
-
         if(mc.player == null && mc.world == null) return;
 
         if(mode.getValString().equalsIgnoreCase("Vanilla")) {
@@ -63,15 +60,10 @@ public class Fly extends Module {
 
         this.flySpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "FlySpeed").getValDouble();
 
-        if(!mc.player.capabilities.isFlying && mode.getValString().equalsIgnoreCase("Vanilla")) {
-            mc.player.capabilities.isFlying = true;
-        }
-
         if(mode.getValString().equalsIgnoreCase("Vanilla")) {
+            mc.player.capabilities.isFlying = true;
             mc.player.capabilities.setFlySpeed(flySpeed);
-        }
-
-        if(!mode.getValString().equalsIgnoreCase("Vanulla")) {
+        } else {
             mc.player.capabilities.isFlying = false;
             mc.player.capabilities.setFlySpeed(0.1f);
         }
@@ -92,23 +84,10 @@ public class Fly extends Module {
 
     public void onDisable() {
         //TODO: fix fly start
-
-        Kisman.EVENT_BUS.unsubscribe(receiveListener);
-
         if(mc.player == null && mc.world == null) return;
 
-        if(mc.player.capabilities.isFlying) {
-            mc.player.capabilities.isFlying = false;
-            mc.player.capabilities.setFlySpeed(0.1f);
-        }
-
+        mc.player.capabilities.isFlying = false;
+        mc.player.capabilities.setFlySpeed(0.1f);
         mc.timer.elapsedTicks = 1;
     }
-
-    @EventHandler
-    private final Listener<PacketEvent.Receive> receiveListener = new Listener<>(event -> {
-        if(event.getPacket() instanceof SPacketPlayerPosLook && mode.getValString().equalsIgnoreCase("Mineland")) {
-            event.cancel();
-        }
-    });
 }

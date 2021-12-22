@@ -57,7 +57,7 @@ public class CrystalModifier extends Module {
 
     private Setting speedLine = new Setting("SpeedLine", this, "Speed");
 
-    public Setting speed = new Setting("CrystalSpeed", this, 3, 0.1, 50, false);
+    public Setting speed = new Setting("CrystalSpeed", this, 3, 0, 50, false);
     public Setting bounce = new Setting("CrystalBounce", this, 0.2f, 0, 10, false);
 
     public CrystalModifier() {

@@ -14,6 +14,7 @@ public class Config extends Module {
     public Setting guiGlow = new Setting("GuiGlow", this, false);
     public Setting glowOffset = new Setting("GlowOffset", this, 6, 0, 20, true);
     public Setting guiAstolfo = new Setting("GuiAstolfo", this, false);
+    public Setting guiRenderSIze = new Setting("GuiRenderSize", this, false);
     public Setting pulseMin = new Setting("PulseMin", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("PulseMax", this, 110, 0, 255, true);
     public Setting pulseSpeed = new Setting("PulseSpeed", this, 1.5, 0.1, 10, false);
@@ -31,6 +32,7 @@ public class Config extends Module {
         setmgr.rSetting(guiGlow);
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(guiAstolfo);
+        setmgr.rSetting(guiRenderSIze);
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
         setmgr.rSetting(pulseSpeed);

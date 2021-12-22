@@ -9,7 +9,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import scala.Char;
 
 import java.awt.*;
 
@@ -31,7 +29,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
     protected ModelBase entityModel;
 
     protected MixinRendererLivingEntity() {
-        super((RenderManager) null);
+        super(null);
     }
 
     @Inject(method = {"doRender"}, at = @At("HEAD"))
@@ -45,10 +43,10 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
                 glColor4f(1, 0.03f, 0.9f, 1);
             } else if(Charms.instance.customColor.getValBoolean()) {
                 float[] color = new float[] {
-                        Charms.instance.color.getR() / 255,
-                        Charms.instance.color.getG() / 255,
-                        Charms.instance.color.getB() / 255,
-                        Charms.instance.color.getA() / 255
+                        Charms.instance.color.getR() / 255f,
+                        Charms.instance.color.getG() / 255f,
+                        Charms.instance.color.getB() / 255f,
+                        Charms.instance.color.getA() / 255f
                 };
                 glColor4f(color[0], color[1], color[2], color[3]);
             }

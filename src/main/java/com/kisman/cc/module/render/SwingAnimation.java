@@ -21,6 +21,7 @@ public class SwingAnimation extends Module {
     private Setting simpleLine = new Setting("SimpleLine", this, "Simple");
 
     private Setting strongLine = new Setting("StrongLine", this, "Strong");
+    public Setting ignoreEating = new Setting("IgnoreEating", this, true);
 
     public Setting strongMode = new Setting("StrongMode", this, StrongMode.StaticRotate);
 
@@ -43,6 +44,7 @@ public class SwingAnimation extends Module {
 
         setmgr.rSetting(strongLine);
         setmgr.rSetting(strongMode);
+        setmgr.rSetting(ignoreEating);
         setmgr.rSetting(main);
         setmgr.rSetting(off);
     }

@@ -21,6 +21,7 @@ import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.Gui;
 
@@ -179,8 +180,6 @@ public class Button extends Component {
 			this.isHovered ? (this.mod.isToggled() ? new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).darker().getRGB() : new Color(ClickGui.getRHoveredModule(),ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB()) : (this.mod.isToggled() ? new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).darker().getRGB() : new Color(ClickGui.getRNoHoveredModule(),ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB())
 		);
 
-
-
 		if(ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 			if(Config.instance.guiGlow.getValBoolean()) {
 				int offset = Config.instance.glowOffset.getValInt();
@@ -209,8 +208,6 @@ public class Button extends Component {
 			}
 		}
 
-
-
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
 
@@ -227,7 +224,8 @@ public class Button extends Component {
 		}
 
 		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(
-			this.hud ? this.hudMod.getName() : this.mod.getName(), 
+			(this.hud ? this.hudMod.isToggled() ? TextFormatting.BOLD : "" : this.mod.isToggled() ? TextFormatting.BOLD : "") +
+			(this.hud ? this.hudMod.getName() : this.mod.getName()),
 			(parent.getX() + 2) * 2, 
 			(parent.getY() + offset + 2) * 2 + 4, 
 			this.hud ? 

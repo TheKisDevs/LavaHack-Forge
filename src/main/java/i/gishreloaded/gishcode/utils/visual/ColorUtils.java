@@ -66,6 +66,11 @@ public class ColorUtils {
         return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);
     }
 
+    public static Color rainbowRGB(int delay, float s, float b) {
+        Color color = new Color(getRed((Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b))), getGreen(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)), getBlue(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)));
+        return color;
+    }
+
     public static int getColor(int brightness) {
         return ColorUtils.getColor(brightness, brightness, brightness, 255);
     }

@@ -11,11 +11,18 @@ public class HudModule {
 	private HudCategory category;
 	private boolean toggled;
 	public boolean visible = true;
-	
+
 	public HudModule(String name, String description, HudCategory category) {
-		//super();
 		this.name = name;
 		this.description = description;
+		this.key = 0;
+		this.category = category;
+		this.toggled = false;
+	}
+
+	public HudModule(String name, HudCategory category) {
+		this.name = name;
+		this.description = "";
 		this.key = 0;
 		this.category = category;
 		this.toggled = false;

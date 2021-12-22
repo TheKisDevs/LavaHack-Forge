@@ -144,14 +144,14 @@ public class ColorModule extends Module {
             ClickGui.setBBackground(255);
             ClickGui.setABackground(150);
 
-            ClickGui.setRHoveredModule(255);
-            ClickGui.setGHoveredModule(255);
-            ClickGui.setBHoveredModule(255);
-            ClickGui.setAHoveredModule(200);
-            ClickGui.setRNoHoveredModule(255);
-            ClickGui.setGNoHoveredModule(255);
-            ClickGui.setBNoHoveredModule(255);
-            ClickGui.setANoHoveredModule(150);
+            ClickGui.setRHoveredModule(54);
+            ClickGui.setGHoveredModule(54);
+            ClickGui.setBHoveredModule(54);
+            ClickGui.setAHoveredModule(90);
+            ClickGui.setRNoHoveredModule(54);
+            ClickGui.setGNoHoveredModule(54);
+            ClickGui.setBNoHoveredModule(54);
+            ClickGui.setANoHoveredModule(43);
         }
 
         ClickGui.setRText(RText);

@@ -225,7 +225,6 @@ public class GuiConsole extends GuiScreen implements ITabCompleter {
         drawRect(2, this.height - 14, this.width - 2, this.height - 2, color);
         this.inputField.drawTextBox();
         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
-        itextcomponent.getStyle().setColor(TextFormatting.BLUE);
 
         if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
             this.handleComponentHover(itextcomponent, mouseX, mouseY);
