@@ -32,41 +32,50 @@ public class NoRender extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Lava", this, false));
     }
 
+    public void onDisable() {
+        mc.player.noClip = false;
+    }
+
     public void update() {
+        if(mc.player == null && mc.world == null) return;
+
         boolean potion = Kisman.instance.settingsManager.getSettingByName(this, "Potion").getValBoolean();
         boolean weather = Kisman.instance.settingsManager.getSettingByName(this, "Weather").getValBoolean();
-        if(mc.player != null && mc.world != null) {
-            if(potion) {
-                if(mc.player.isPotionActive(Potion.getPotionById(25))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(25));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(2))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(2));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(4))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(4));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(9))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(9));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(15))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(15));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(17))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(17));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(18))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(18));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(27))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(27));
-                }
-                if(mc.player.isPotionActive(Potion.getPotionById(20))) {
-                    mc.player.removeActivePotionEffect(Potion.getPotionById(20));
-                }
+
+        if(potion) {
+            if(mc.player.isPotionActive(Potion.getPotionById(25))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(25));
             }
-            if(weather)
-                mc.world.setRainStrength(0.0f);
+            if(mc.player.isPotionActive(Potion.getPotionById(2))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(2));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(4))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(4));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(9))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(9));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(15))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(15));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(17))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(17));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(18))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(18));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(27))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(27));
+            }
+            if(mc.player.isPotionActive(Potion.getPotionById(20))) {
+                mc.player.removeActivePotionEffect(Potion.getPotionById(20));
+            }
+        }
+
+        if(weather) mc.world.setRainStrength(0.0f);
+
+        if(overlay.getValBoolean()) {
+            mc.player.noClip = true;
         }
     }
 
