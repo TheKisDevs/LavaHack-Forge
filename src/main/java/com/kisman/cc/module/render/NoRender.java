@@ -32,10 +32,6 @@ public class NoRender extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Lava", this, false));
     }
 
-    public void onDisable() {
-        mc.player.noClip = false;
-    }
-
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
@@ -73,10 +69,6 @@ public class NoRender extends Module {
         }
 
         if(weather) mc.world.setRainStrength(0.0f);
-
-        if(overlay.getValBoolean()) {
-            mc.player.noClip = true;
-        }
     }
 
     @SubscribeEvent
