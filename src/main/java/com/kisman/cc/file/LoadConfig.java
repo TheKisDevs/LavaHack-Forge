@@ -1,8 +1,6 @@
 package com.kisman.cc.file;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -16,15 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class LoadConfig {
-    private static final String fileName = "kisman.cc/";
-    private static final String moduleName = "Modules/";
-    private static final String mainName = "Main/";
-    private static final String miscName = "Misc/";
-    private static final String sandboxName = "SandBox/";
-
     public static void init() {
         try {
-            saveConfig();
+            Kisman.initDirs();
             loadModules();
             loadEnabledModules();
         } catch (IOException e) {
@@ -32,38 +24,20 @@ public class LoadConfig {
         }
     }
 
-    private static void saveConfig() throws IOException {
-        if (!Files.exists(Paths.get(fileName))) {
-            Files.createDirectories(Paths.get(fileName));
-        }
-        if (!Files.exists(Paths.get(fileName + moduleName))) {
-            Files.createDirectories(Paths.get(fileName + moduleName));
-        }
-        if (!Files.exists(Paths.get(fileName + mainName))) {
-            Files.createDirectories(Paths.get(fileName + mainName));
-        }
-        if (!Files.exists(Paths.get(fileName + miscName))) {
-            Files.createDirectories(Paths.get(fileName + miscName));
-        }
-        if(!Files.exists(Paths.get(fileName + sandboxName))) {
-            Files.createDirectories(Paths.get(fileName + sandboxName));
-        }
-    }
-
     private static void registerFiles(String location, String name) throws IOException {
-        if (Files.exists(Paths.get(fileName + location + name + ".json"))) {
-            File file = new File(fileName + location + name + ".json");
+        if (Files.exists(Paths.get(Kisman.fileName + location + name + ".json"))) {
+            File file = new File(Kisman.fileName + location + name + ".json");
 
             file.delete();
 
         } else {
-            Files.createFile(Paths.get(fileName + location + name + ".json"));
+            Files.createFile(Paths.get(Kisman.fileName + location + name + ".json"));
         }
 
     }
 
     private static void loadModules() throws IOException {
-        String moduleLocation = fileName + moduleName;
+        String moduleLocation =Kisman. fileName + Kisman.moduleName;
 
         for (Module module : Kisman.instance.moduleManager.modules) {
             boolean settings;
@@ -160,7 +134,7 @@ public class LoadConfig {
     }
 
     private static void loadEnabledModules() throws IOException{
-        String enabledLocation = fileName + mainName;
+        String enabledLocation = Kisman.fileName + Kisman.mainName;
 
         if (!Files.exists(Paths.get(enabledLocation + "Toggle" + ".json"))) {
             return;
@@ -191,7 +165,7 @@ public class LoadConfig {
     }
 
     private static void loadModuleKeybinds() throws IOException {
-        String keyLocation = fileName + mainName;
+        String keyLocation = Kisman.fileName + Kisman.mainName;
 
         if(!Files.exists(Paths.get(keyLocation + "Key" + ".json"))) {
             return;

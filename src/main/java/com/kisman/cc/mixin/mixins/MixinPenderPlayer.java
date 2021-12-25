@@ -58,7 +58,6 @@ public class MixinPenderPlayer {
             double height = mc.player.boundingBox.maxY - mc.player.boundingBox.minY;
 
             GlStateManager.rotate(180, 1, 0, 0);
-            GlStateManager.translate(mc.player.posX, mc.player.posY + height, mc.player.posZ);
         }
     }
 }

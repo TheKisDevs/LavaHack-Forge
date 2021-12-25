@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(value = GuiNewChat.class, priority = 9999)
+@Mixin(value = GuiNewChat.class, priority = 10000)
 public abstract class MixinGuiNewChat {
     @Shadow
     private boolean isScrolled;

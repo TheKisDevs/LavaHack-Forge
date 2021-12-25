@@ -184,8 +184,8 @@ public class AutoCrystalRewrite extends Module {
 
         if(needPause()) return;
 
-        findNewTarget();
-//        target = EntityUtil.getTarget(targetRange.getValFloat());
+//        findNewTarget();
+        target = EntityUtil.getTarget(targetRange.getValFloat());
 
         if (target == null) {
             current = null;
@@ -196,7 +196,7 @@ public class AutoCrystalRewrite extends Module {
         doBreak();
     }
 
-    @SubscribeEvent
+//    @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(render.getValBoolean()) {
             if (current == null) return;

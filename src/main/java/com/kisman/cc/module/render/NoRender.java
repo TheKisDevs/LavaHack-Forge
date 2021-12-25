@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

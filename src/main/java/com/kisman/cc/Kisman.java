@@ -40,6 +40,9 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Kisman {
     public static final String NAME = "kisman.cc+";
@@ -47,6 +50,12 @@ public class Kisman {
     public static final String VERSION = "b0.1.6.1";
     public static final String HWIDS_LIST = "https://pastebin.com/raw/yM7s0G4u";
     public static final String HWID_LOGS = "https://" + MainWindow.d1 + "/" + MainWindow.d2 + "/905166844967673928/LgJFUe6o45hBx7e1xE5OxqwD7M5DdzIsg3s9-dd6d5jDJ6k7KaUf1Vettd5mf9LQz8aW";
+    public static final String fileName = "kisman.cc/";
+    public static final String moduleName = "Modules/";
+    public static final String mainName = "Main/";
+    public static final String miscName = "Misc/";
+    public static final String sandboxName = "SandBox/";
+    public static final String pluginName = "Plugins/";
     public static float TICK_TIMER = 1;
 
     public static Kisman instance;
@@ -54,6 +63,8 @@ public class Kisman {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
 
     public boolean init = false;
+
+    private Minecraft mc = Minecraft.getMinecraft();
 
     public ModuleManager moduleManager;
     public FriendManager friendManager;
@@ -134,7 +145,7 @@ public class Kisman {
     
     @SubscribeEvent
     public void key(KeyInputEvent e) {
-    	if (Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null) {
+    	if (mc.world == null || mc.player == null) {
             return;
         }
 
@@ -147,7 +158,7 @@ public class Kisman {
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode && keyCode > 0) {
                     		m.toggle();
-                            if(this.moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
+                            if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
 //                            SaveConfig.init();
                     	}
 
@@ -187,5 +198,32 @@ public class Kisman {
 
     public static String getVersion() {
         return VERSION;
+    }
+
+    public static void initDirs() throws IOException {
+        if (!Files.exists(Paths.get(fileName))) {
+            Files.createDirectories(Paths.get(fileName));
+            LOGGER.info("Root dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + moduleName))) {
+            Files.createDirectories(Paths.get(fileName + moduleName));
+            LOGGER.info("Module dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + mainName))) {
+            Files.createDirectories(Paths.get(fileName + mainName));
+            LOGGER.info("Main dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + miscName))) {
+            Files.createDirectories(Paths.get(fileName + miscName));
+            LOGGER.info("Misc dir created");
+        }
+        if(!Files.exists(Paths.get(fileName + sandboxName))) {
+            Files.createDirectories(Paths.get(fileName + sandboxName));
+            LOGGER.info("Sandboxes dir created");
+        }
+        if(!Files.exists(Paths.get(fileName + pluginName))) {
+            Files.createDirectories(Paths.get(fileName + pluginName));
+            LOGGER.info("Plugins dir created");
+        }
     }
 }

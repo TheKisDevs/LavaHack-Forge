@@ -6,15 +6,23 @@ import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.EventEntityRender;
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
 import com.kisman.cc.module.render.Ambience;
+import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.module.render.NoRender;
 import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,6 +33,8 @@ import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
@@ -95,5 +105,56 @@ public class MixinEntityRenderer {
 
     private Vector3f mix(Vector3f first, Vector3f second, float factor) {
         return new Vector3f(first.x * (1.0f - factor) + second.x * factor, first.y * (1.0f - factor) + second.y * factor, first.z * (1.0f - factor) + first.z * factor);
+    }
+
+    /**
+     * @author _kisman_
+     */
+    @Overwrite
+    public static void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
+        if(NameTags.instance.isToggled()) {
+            glEnable(32823);
+            glPolygonOffset(1, -1100000);
+        }
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
+        GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(-0.025F, -0.025F, 0.025F);
+        GlStateManager.disableLighting();
+        GlStateManager.depthMask(false);
+        if (!isSneaking) {
+            GlStateManager.disableDepth();
+        }
+
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        int i = CustomFontUtil.getStringWidth(str) / 2;
+        GlStateManager.disableTexture2D();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos( (-i - 1),  (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        bufferbuilder.pos( (-i - 1),  (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        bufferbuilder.pos( (i + 1),  (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        bufferbuilder.pos( (i + 1),  (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        if (!isSneaking) {
+            CustomFontUtil.drawString(str, -CustomFontUtil.getStringWidth(str) / 2, verticalShift, 553648127);
+            GlStateManager.enableDepth();
+        }
+
+        GlStateManager.depthMask(true);
+        CustomFontUtil.drawString(str, -CustomFontUtil.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
+        GlStateManager.enableLighting();
+        GlStateManager.disableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+        if(NameTags.instance.isToggled()) {
+            glPolygonOffset(1, 1000000);
+            glDisable(32823);
+        }
     }
 }

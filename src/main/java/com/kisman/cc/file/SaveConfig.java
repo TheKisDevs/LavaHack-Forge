@@ -15,15 +15,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SaveConfig {
-    public static final String fileName = "kisman.cc/";
-    private static final String moduleName = "Modules/";
-    private static final String hudmoduleName = "Modules/Hud/";
-    private static final String mainName = "Main/";
-    private static final String miscName = "Misc/";
-
     public static void init() {
         try {
-            saveConfig();
+            Kisman.initDirs();
             saveModules();
             saveEnabledModules();
         } catch (IOException e) {
@@ -31,29 +25,15 @@ public class SaveConfig {
         }
         Kisman.LOGGER.info("Saved Config!");
     }
-    private static void saveConfig() throws IOException {
-        if (!Files.exists(Paths.get(fileName))) {
-            Files.createDirectories(Paths.get(fileName));
-        }
-        if (!Files.exists(Paths.get(fileName + moduleName))) {
-            Files.createDirectories(Paths.get(fileName + moduleName));
-        }
-        if (!Files.exists(Paths.get(fileName + mainName))) {
-            Files.createDirectories(Paths.get(fileName + mainName));
-        }
-        if (!Files.exists(Paths.get(fileName + miscName))) {
-            Files.createDirectories(Paths.get(fileName + miscName));
-        }
-    }
 
     private static void registerFiles(String location, String name) throws IOException {
-        if (Files.exists(Paths.get(fileName + location + name + ".json"))) {
-            File file = new File(fileName + location + name + ".json");
+        if (Files.exists(Paths.get(Kisman.fileName + location + name + ".json"))) {
+            File file = new File(Kisman.fileName + location + name + ".json");
 
             file.delete();
 
         } else {
-            Files.createFile(Paths.get(fileName + location + name + ".json"));
+            Files.createFile(Paths.get(Kisman.fileName + location + name + ".json"));
         }
 
     }
@@ -81,10 +61,10 @@ public class SaveConfig {
     }
 
     private static void saveModuleDirect(Module module, boolean settings) throws IOException {
-        registerFiles(moduleName, module.getName());
+        registerFiles(Kisman.moduleName, module.getName());
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(fileName + moduleName + module.getName() + ".json"), StandardCharsets.UTF_8);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.moduleName + module.getName() + ".json"), StandardCharsets.UTF_8);
         JsonObject moduleObject = new JsonObject();
         JsonObject settingObject = new JsonObject();
         moduleObject.add("Module", new JsonPrimitive(module.getName()));
@@ -126,10 +106,10 @@ public class SaveConfig {
     }
 
     private static void saveEnabledModules() throws IOException{
-        registerFiles(mainName, "Toggle");
+        registerFiles(Kisman.mainName, "Toggle");
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(fileName + mainName + "Toggle" + ".json"), StandardCharsets.UTF_8);
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.mainName + "Toggle" + ".json"), StandardCharsets.UTF_8);
         JsonObject moduleObject = new JsonObject();
         JsonObject enabledObject = new JsonObject();
 
@@ -138,24 +118,6 @@ public class SaveConfig {
         }
 
         moduleObject.add("Modules", enabledObject);
-        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
-        fileOutputStreamWriter.write(jsonString);
-        fileOutputStreamWriter.close();
-    }
-
-    private static void saveModuleKeybinds() throws IOException {
-        registerFiles(mainName, "Key");
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(fileName + mainName + "Key" + ".json"), StandardCharsets.UTF_8);
-        JsonObject moduleObject = new JsonObject();
-        JsonObject keyObject = new JsonObject();
-
-        for(Module mod : Kisman.instance.moduleManager.modules) {
-            keyObject.add(mod.getName(), new JsonPrimitive(Keyboard.getKeyName(mod.getKey())));
-        }
-
-        moduleObject.add("Modules", keyObject);
         String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
         fileOutputStreamWriter.write(jsonString);
         fileOutputStreamWriter.close();
