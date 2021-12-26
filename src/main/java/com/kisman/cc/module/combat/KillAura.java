@@ -221,9 +221,9 @@ public class KillAura extends Module {
 
     private void attack(Entity entity) {
         if(packetAttack.getValBoolean()) {
-            mc.playerController.attackEntity(mc.player, target);
+            mc.player.connection.sendPacket(new CPacketUseEntity(entity));
         } else {
-            mc.player.connection.sendPacket(new CPacketUseEntity(target));
+            mc.playerController.attackEntity(mc.player, entity);
         }
 
         mc.player.swingArm(EnumHand.MAIN_HAND);
