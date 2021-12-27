@@ -16,6 +16,7 @@ import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.ModuleManager;
+import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
 import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.particle.ParticleSystem;
@@ -64,13 +65,14 @@ public class Kisman {
 
     public boolean init = false;
 
-    private Minecraft mc = Minecraft.getMinecraft();
+    private Minecraft mc;
 
     public ModuleManager moduleManager;
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ClickGui clickGui;
+    public ClickGuiNew clickGuiNew;
     public BlockGui blockGui;
     public GuiConsole guiConsole;
     public ColorPicker colorPicker;
@@ -103,6 +105,8 @@ public class Kisman {
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
 
+        mc = Minecraft.getMinecraft();
+
         managers = new Managers();
         managers.init();
 
@@ -111,6 +115,7 @@ public class Kisman {
     	moduleManager = new ModuleManager();
         hudModuleManager = new HudModuleManager();
     	clickGui = new ClickGui();
+        clickGuiNew = new ClickGuiNew();
     	blockGui = new BlockGui();
         guiConsole = new GuiConsole();
         colorPicker = new ColorPicker();
@@ -118,8 +123,8 @@ public class Kisman {
     	hudGui = new HudGui();
         newGui = new NewGui();
         gui = new Gui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), false, false);
-        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 45), false, true);
+        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
+        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);
         fontManager = new FontManager();
         commandManager = new CommandManager();
         discord = new RPC();
@@ -181,14 +186,14 @@ public class Kisman {
 
     public static String getName() {
         if(instance.init) {
-            switch ((Config.NameMode) Config.instance.nameMode.getValEnum()) {
-                case kismancc: {
+            switch (Config.instance.nameMode.getValString()) {
+                case "kismancc": {
                     return NAME;
                 }
-                case lavahack: {
+                case "lavahack": {
                     return "LavaHack";
                 }
-                case custom: {
+                case "custom": {
                     return Config.instance.customName.getValString();
                 }
             }
