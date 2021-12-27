@@ -36,7 +36,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@Mixin(EntityRenderer.class)
+@Mixin(value = EntityRenderer.class, priority = 10000)
 public class MixinEntityRenderer {
     @Shadow
     @Final

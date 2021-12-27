@@ -226,22 +226,18 @@ public class AutoCrystal extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(render.getValBoolean() && lastPlaceCrystal != null && lastPlaceCrystal.pos != null) {
-            switch ((Renders) renderMode.getValEnum()) {
-                case Both: {
-                    RenderUtil.drawBlockESP(lastPlaceCrystal.pos, color.getR() / 255, color.getG() / 255, color.getB() / 255);
+            switch (renderMode.getValString()) {
+                case "Both": {
+                    RenderUtil.drawBlockESP(lastPlaceCrystal.pos, color.getR() / 255f, color.getG() / 255f, color.getB() / 255f);
                     break;
                 }
-                case Fill: {
+                case "Fill": {
                     RenderUtil.drawBox(lastPlaceCrystal.pos, 1, new Colour(color.getR(), color.getG(), color.getB(), color.getA()), GeometryMasks.Quad.ALL);
                 }
-                case Outline: {
-                    RenderUtil.drawBlockOutlineESP(lastPlaceCrystal.pos, color.getR() / 255, color.getG() / 255, color.getB() / 255);
+                case "Outline": {
+                    RenderUtil.drawBlockOutlineESP(lastPlaceCrystal.pos, color.getR() / 255f, color.getG() / 255f, color.getB() / 255f);
                     break;
                 }
-            }
-
-            if(renderDamage.getValBoolean()) {
-
             }
         }
     }

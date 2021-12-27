@@ -40,20 +40,22 @@ public class Slider extends Component {
 		this.y1 = button.parent.getY() + button.offset;
 		this.offset = offset;
 	}
-	
+
 	@Override
 	public void renderComponent() {
+		if(!set.isVisible()) return;
+
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + button.parent.getWidth() - 3, button.parent.getY() + offset + 12, this.hovered ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
-		final int drag = (int)(this.set.getValDouble() / this.set.getMax() * this.button.parent.getWidth());
+		final int drag = (int) (this.set.getValDouble() / this.set.getMax() * this.button.parent.getWidth());
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + (int) renderWidth, button.parent.getY() + offset + 12, hovered ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : ClickGui.isRainbowBackground() ? colorUtil.getColor() : new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB());
 		GL11.glPushMatrix();
-		GL11.glScalef(0.5f,0.5f, 0.5f);
-		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(this.set.getName() + ": " + this.set.getValDouble() , (button.parent.getX()* 2 + 15), (button.parent.getY() + offset + 2) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
+		GL11.glScalef(0.5f, 0.5f, 0.5f);
+		Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(this.set.getName() + ": " + this.set.getValDouble(), (button.parent.getX() * 2 + 15), (button.parent.getY() + offset + 2) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		GL11.glPopMatrix();
 
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + 3, button.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 
-		if(ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
+		if (ClickGui.getSetLineMode() == LineMode.SETTINGONLYSET || ClickGui.getSetLineMode() == LineMode.SETTINGALL) {
 			Gui.drawRect(
 					button.parent.getX() + 88 - 3,
 					button.parent.getY() + offset,
@@ -71,6 +73,8 @@ public class Slider extends Component {
 	
 	@Override
 	public void updateComponent(int mouseX, int mouseY) {
+		if(!set.isVisible()) return;
+
 		this.hovered = isMouseOnButtonD(mouseX, mouseY) || isMouseOnButtonI(mouseX, mouseY);
 		this.y = button.parent.getY() + offset;
 		this.x = button.parent.getX();
@@ -104,6 +108,8 @@ public class Slider extends Component {
 	
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
+		if(!set.isVisible()) return;
+
 		if(isMouseOnButtonD(mouseX, mouseY) && button == 0 && this.button.open) {
 			dragging = true;
 		}
@@ -114,6 +120,8 @@ public class Slider extends Component {
 	
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+		if(!set.isVisible()) return;
+
 		dragging = false;
 	}
 	

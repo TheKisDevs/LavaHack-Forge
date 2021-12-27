@@ -13,8 +13,9 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 
-public class Render2DUtil{// extends GuiScreen
-    static Minecraft mc = Minecraft.getMinecraft();
+public class Render2DUtil extends GuiScreen {
+    public static Render2DUtil instance = new Render2DUtil();
+    private static Minecraft mc = Minecraft.getMinecraft();
 
     public static void drawLine(int x, int y, int length, DrawLineMode drawLineMode, int color) {
         if(drawLineMode == DrawLineMode.VERTICAL) {
@@ -149,5 +150,66 @@ public class Render2DUtil{// extends GuiScreen
         GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
+    }
+
+    public static void drawHueSlider(int x, int y, int w, int h, float hue) {
+        int step = 0;
+
+        if(h > w) {
+            drawRect(x, y, x + w, y + h, 0xFFFF0000);
+            y+= 4;
+
+            for(int index = 0; index < 6; index++) {
+                int prevStep = Color.HSBtoRGB(step / 6f, 1f, 1f);
+                int nexStep = Color.HSBtoRGB((step + 1) / 6f, 1f, 1f);
+                instance.drawGradientRect(x, y + step * (h / 6), x + w, y + (step + 1) * (h / 6), prevStep, nexStep);
+                step++;
+            }
+
+            final int sliderMinY = (int) (y + (h * hue)) - 4;
+
+            drawRect(x, sliderMinY - 1, x + w, sliderMinY + 1, -1);
+        } else {
+            for(int index = 0; index <6; index++) {
+                int prevStep = Color.HSBtoRGB(step / 6f, 1f, 1f);
+                int nextStep = Color.HSBtoRGB((step + 1) / 6f, 1f, 1f);
+                gradient((int) (x + step * (w / 6f)), y, x + (step + 1) * (w / 6), y + h, prevStep, nextStep, true);
+            }
+
+            final int sliderMinX = (int) (x + (w * hue));
+            drawRect(sliderMinX -1, y, sliderMinX + 1, y + h, -1);
+        }
+    }
+
+    public static void gradient(int minX, int minY, int maxX, int maxY, int startColor, int endColor, boolean left) {
+        if(left) {
+            final float startA = (startColor >> 24 & 0xFF) / 255.0f;
+            final float startR = (startColor >> 16 & 0xFF) / 255.0f;
+            final float startG= (startColor >> 8 & 0xFF) / 255.0f;
+            final float startB = (startColor & 0xFF) / 255.0f;
+
+            final float endA = (endColor >> 24 & 0xFF) / 255.0f;
+            final float endR = (endColor >> 16 & 0xFF) / 255.0f;
+            final float endG = (endColor >> 8 & 0xFF) / 255.0f;
+            final float endB = (endColor & 0xFF) / 255.0f;
+
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glShadeModel(GL11.GL_SMOOTH);
+            GL11.glBegin(GL11.GL_POLYGON);
+            {
+                GL11.glColor4f(startR, startG, startB, startA);
+                GL11.glVertex2f(minX, minY);
+                GL11.glVertex2f(minX, maxY);
+                GL11.glColor4f(endR, endG, endB, endA);
+                GL11.glVertex2f(maxX, maxY);
+                GL11.glVertex2f(maxX, minY);
+            }
+            GL11.glEnd();
+            GL11.glShadeModel(GL11.GL_FLAT);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glDisable(GL11.GL_BLEND);
+        } else instance.drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
 }

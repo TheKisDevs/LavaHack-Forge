@@ -7,10 +7,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.List;
 
 public class MathUtil {
     public static double degToRad(double deg) {
@@ -19,6 +22,18 @@ public class MathUtil {
 
     public static Vec3d direction(float yaw) {
         return new Vec3d(Math.cos(degToRad(yaw + 90f)), 0, Math.sin(degToRad(yaw + 90f)));
+    }
+
+    /**
+     * @author DarkStorm
+     */
+    public static Point calculateMouseLocation() {
+        Minecraft mc = Minecraft.getMinecraft();
+        int scale = mc.gameSettings.guiScale;
+        if (scale == 0) scale = 1000;
+        int scaleFactor = 0;
+        while (scaleFactor < scale && mc.displayWidth / (scaleFactor + 1) >= 320 && mc.displayHeight / (scaleFactor + 1) >= 240) scaleFactor++;
+        return new Point(Mouse.getX() / scaleFactor, mc.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1);
     }
 
     public static Vec3d interpolateEntity(Entity entity, float time) {

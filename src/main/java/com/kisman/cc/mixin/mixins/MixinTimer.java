@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Timer.class)
+@Mixin(value = Timer.class, priority = 10000)
 public class MixinTimer {
     @Shadow
     public float elapsedPartialTicks;

@@ -1,28 +1,16 @@
 package com.kisman.cc.hud.hudmodule.render;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.settings.*;
-
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import org.lwjgl.opengl.GL11;
-
-import com.kisman.cc.hud.hudmodule.HudCategory;
-import com.kisman.cc.hud.hudmodule.HudModule;
-
+import com.kisman.cc.hud.hudmodule.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Coord extends HudModule {
     Minecraft mc = Minecraft.getMinecraft();
-    ScaledResolution sr = new ScaledResolution(mc);
-    FontRenderer fr = mc.fontRenderer;
 
     int posX;
     int nPosX;
@@ -33,34 +21,11 @@ public class Coord extends HudModule {
     int posZ;
     int nPosZ;
 
-    int x1 = 1, x2 = CustomFontUtil.getStringWidth("X: " + "(" + posX + ")[" +
-    nPosX +
-    "]" +
-    " Y: " + 
-    "(" +
-    posY +
-    ")[" + 
-    nPosY +
-    "]" +
-    " Z: " + 
-    "(" +
-    posZ +
-    ")[" + 
-    nPosZ +
-    "]"
-    ) + x1 + 1, x3, x4;
-    int y1 = sr.getScaledHeight() - fr.FONT_HEIGHT - 1, y2 = sr.getScaledHeight() - 1, y3, y4;
-
-    int x = 1;
-    int y = sr.getScaledHeight() - 20;
-
     public Coord() {
         super("Coords", "coord", HudCategory.RENDER);
-        Kisman.instance.settingsManager.rSetting(new Setting("Coords", this, x1, y1, x2, y2));
     }
 
     public void update() {
-        FontRenderer fr = mc.fontRenderer;
         Minecraft mc = Minecraft.getMinecraft();
 
         if(mc.player != null && mc.world != null) {
@@ -82,85 +47,16 @@ public class Coord extends HudModule {
                 nPosZ = (int) (mc.player.posZ * 8);
             }
         }
-
-        // x1 = 0;
-        // y1 = mc.gameSettings.overrideHeight - 2 - fr.FONT_HEIGHT;
-        // x2 = fr.getStringWidth("X: " + "(" + posX + ")[" + 
-        // nPosX +
-        // "]" +
-        // " Y: " + 
-        // "(" +
-        // posY +
-        // ")[" + 
-        // nPosY +
-        // "]" +
-        // " Z: " + 
-        // "(" +
-        // posZ +
-        // ")[" + 
-        // nPosZ +
-        // "]"
-        // ) + x1 + 1;
-        // y2 = mc.gameSettings.overrideHeight;
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent event) {
         ScaledResolution sr = new ScaledResolution(mc);
-        FontRenderer fr = mc.fontRenderer;
-
-        // x3 = 1;
-        // y3 = sr.getScaledHeight() - (fr.FONT_HEIGHT * 2) - 2;
-        // x4 = x3 + fr.getStringWidth("Yaw: " + (int) mc.player.cameraYaw + " Pitch:" + (int) mc.player.cameraPitch);
-        // y4 = y3 + fr.FONT_HEIGHT + 1;
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
-            CustomFontUtil.drawStringWithShadow(
-                TextFormatting.WHITE + 
-                "X: " + 
-                TextFormatting.GRAY + 
-                "(" +
-                posX +
-                TextFormatting.GRAY +
-                ")[" +
-                nPosX +
-                TextFormatting.GRAY +
-                "]" +
-                " Y: " + 
-                TextFormatting.GRAY + 
-                "(" +
-                posY +
-                TextFormatting.GRAY +
-                ")[" +
-                nPosY +
-                TextFormatting.GRAY +
-                "]" +
-                " Z: " + 
-                TextFormatting.GRAY + 
-                "(" +
-                posZ +
-                TextFormatting.GRAY +
-                ")[" +
-                nPosZ +
-                TextFormatting.GRAY +
-                "]",
-                1, 
-                sr.getScaledHeight() - fr.FONT_HEIGHT - 1, 
-                color
-            );
-
-            fr.drawStringWithShadow(
-                "Yaw: " +
-                TextFormatting.GRAY +
-                (int) mc.player.rotationYaw +
-                " Pitch:" +
-                TextFormatting.GRAY +
-                (int) mc.player.rotationPitch,
-                1,
-                sr.getScaledHeight() - (fr.FONT_HEIGHT * 2) - 2,
-                color
-            );
+            CustomFontUtil.drawStringWithShadow("X: " + "(" + posX + ")[" + nPosX + "]" + " Y: " + "(" + posY + ")[" + nPosY + "]" + " Z: " + "(" + posZ + ")[" + nPosZ + "]", 1, sr.getScaledHeight() - CustomFontUtil.getFontHeight()  - 1, color);
+            CustomFontUtil.drawStringWithShadow("Yaw: " + (int) mc.player.rotationYaw + " Pitch:" + (int) mc.player.rotationPitch, 1, sr.getScaledHeight() - (CustomFontUtil.getFontHeight() * 2) - 2, color);
         }
     }
 }

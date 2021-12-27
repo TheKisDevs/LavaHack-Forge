@@ -19,10 +19,15 @@ public class Radar extends HudModule {
 
     private int x = 0, y = HUD.instance.radarY.getValInt();
 
-    private String[] directions = new String[] {"X+", "Z+", "X-", "Z-"};
+    private final String[] directions = new String[] {"X+", "Z+", "X-", "Z-"};
 
     public Radar() {
         super("Radar", "Radar", HudCategory.RENDER);
+    }
+
+    public void update() {
+        maxRange = HUD.instance.radarDist.getValInt();
+        y = HUD.instance.radarY.getValInt();
     }
 
     @SubscribeEvent

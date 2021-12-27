@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.*;
 
 import java.awt.*;
 
-@Mixin(RenderItem.class)
+@Mixin(value = RenderItem.class, priority = 10000)
 public class MixinRenderItem {
     @Shadow
     private void renderModel(IBakedModel model, int color, ItemStack stack) {}

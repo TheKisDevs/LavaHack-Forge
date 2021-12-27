@@ -7,7 +7,7 @@ import net.minecraft.inventory.Slot;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.*;
 
-@Mixin(GuiContainer.class)
+@Mixin(value = GuiContainer.class, priority = 10000)
 public class MixinGuiContainer extends GuiScreen {
     @Shadow
     private Slot hoveredSlot;

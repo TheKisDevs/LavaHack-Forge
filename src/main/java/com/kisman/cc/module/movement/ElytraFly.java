@@ -113,11 +113,11 @@ public class ElytraFly extends Module {
             return;
         }
 
-        switch ((Mode) mode.getValEnum()) {
-            case Normal:
+        switch (mode.getValString()) {
+            case "Normal":
                 handleImmediateModeElytra(event);
                 break;
-            case Control:
+            case "Control":
                 handleControlMode(event);
                 break;
             default:

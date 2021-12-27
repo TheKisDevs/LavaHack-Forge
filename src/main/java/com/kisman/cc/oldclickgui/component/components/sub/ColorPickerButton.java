@@ -51,6 +51,8 @@ public class ColorPickerButton extends Component{
 
   @Override
   public void renderComponent() {
+      if(!set.isVisible()) return;
+
       Gui.drawRect(button.parent.getX() + 3, button.parent.getY() + offset, button.parent.getX() + (button.parent.getWidth() * 1) - 3, button.parent.getY() + offset + 12, alpha(new Color(Color.HSBtoRGB(colorPicker.getColor(0), colorPicker.getColor(1), colorPicker.getColor(2))), colorPicker.getColor(3)));
       //Gui.drawRect(button.parent.getX() + 3, (button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 5) + 5, button.parent.getX() + 7 + button.parent.getWidth() - 7,(button.parent.getY() + offset + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT - 4) + 5, ClickGui.isRainbowLine() ? colorUtil.getColor() : new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
       GL11.glPushMatrix();
@@ -78,6 +80,8 @@ public class ColorPickerButton extends Component{
 
   @Override
   public void updateComponent(int mouseX, int mouseY) {
+      if(!set.isVisible()) return;
+
       colorPicker.syns = set.isSyns();
     set.setColor(alpha(new Color(Color.HSBtoRGB(colorPicker.getColor(0), colorPicker.getColor(1), colorPicker.getColor(2))), colorPicker.getColor(3)));
     if(!colorPicker.syns) {
@@ -160,7 +164,9 @@ public class ColorPickerButton extends Component{
 
   @Override
   public void mouseClicked(int mouseX, int mouseY, int button) {
-    if(isMouseOnButton(mouseX, mouseY) && button == 1) {
+      if(!set.isVisible()) return;
+
+      if(isMouseOnButton(mouseX, mouseY) && button == 1) {
       this.open = true;
     }
   }

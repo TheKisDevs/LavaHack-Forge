@@ -46,6 +46,8 @@ public class StringButton extends Component {
     }
 
     public void renderComponent() {
+        if(!set.isVisible()) return;
+
         GuiScreen.drawRect(this.button.parent.getX(), this.button.parent.getY() + offset, this.button.parent.getX() + 88, this.button.parent.getY() + 12 + offset, this.active ? new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
 
         if(this.active) {
@@ -67,11 +69,9 @@ public class StringButton extends Component {
         }
     }
 
-    public void updateComponent(int mouseX, int mouseY) {
-
-    }
-
     public void mouseClicked(int mouseX, int mouseY, int button) {
+        if(!set.isVisible()) return;
+
         if(isMouseOnButton(mouseX, mouseY) && button == 0 && set.isOpening()) {
             this.active = !this.active;
 
@@ -82,6 +82,8 @@ public class StringButton extends Component {
     }
 
     public void keyTyped(char typedChar, int key) {
+        if(!set.isVisible()) return;
+
         StringEvent event1 = new StringEvent(set, "" + typedChar, Event.Era.PRE, active);
         Kisman.EVENT_BUS.post(event1);
 

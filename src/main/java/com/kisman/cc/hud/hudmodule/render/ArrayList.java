@@ -60,16 +60,16 @@ public class ArrayList extends HudModule{
             if(mod != null && mod.isToggled() && mod.visible) {
                 String name = mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo());
 
-                switch ((HUD.Gradient) HUD.instance.arrGragient.getValEnum()) {
-                    case None: {
+                switch (HUD.instance.arrGragient.getValString()) {
+                    case "None": {
                         CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), color);
                         break;
                     }
-                    case Simple: {
+                    case "Simple": {
                         CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], Managers.instance.pulseManager.getDifference(count * 2) / 255f).getRGB());
                         break;
                     }
-                    case Sideway: {
+                    case "Sideway": {
                         int update = (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name));
 
                         for(int i = 0; i < name.length(); ++i) {

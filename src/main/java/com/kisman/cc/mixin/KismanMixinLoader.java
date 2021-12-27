@@ -4,13 +4,14 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.kisman.cc.Kisman;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.*;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
-@IFMLLoadingPlugin.Name(value="kisman.cc+")
-@IFMLLoadingPlugin.MCVersion(value="1.12.2")
+@IFMLLoadingPlugin.Name(Kisman.NAME)
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 public class KismanMixinLoader implements IFMLLoadingPlugin {
 
     public KismanMixinLoader(){

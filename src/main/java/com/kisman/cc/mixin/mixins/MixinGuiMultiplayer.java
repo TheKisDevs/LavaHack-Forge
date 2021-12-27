@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("unused")
-@Mixin(GuiMultiplayer.class)
+@Mixin(value = GuiMultiplayer.class, priority = 10000)
 public class MixinGuiMultiplayer extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     public void initGui(CallbackInfo ci) {

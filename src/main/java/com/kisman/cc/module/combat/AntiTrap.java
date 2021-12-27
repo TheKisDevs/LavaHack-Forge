@@ -20,14 +20,14 @@ import java.util.*;
 public class AntiTrap extends Module {
     public static AntiTrap instance;
 
-    private Setting mode = new Setting("Mode", this, "MotionTick", new ArrayList<>(Arrays.asList("MotionTick", "ClientTick")));
-    private Setting delay = new Setting("Delay", this, 400, 0, 1000, true);
-    private Setting switchMode = new Setting("SwitchMode", this, SwitchModes.None);
-    private Setting rotate = new Setting("Rotate", this, Rotate.NONE);
-    private Setting sortY = new Setting("SortY", this, true);
-    private Setting onlyInHole = new Setting("OnlyInHole", this, true);
+    private final Setting mode = new Setting("Mode", this, "MotionTick", new ArrayList<>(Arrays.asList("MotionTick", "ClientTick")));
+    private final Setting delay = new Setting("Delay", this, 400, 0, 1000, true);
+    private final Setting switchMode = new Setting("SwitchMode", this, SwitchModes.None);
+    private final Setting rotate = new Setting("Rotate", this, Rotate.NONE);
+    private final Setting sortY = new Setting("SortY", this, true);
+    private final Setting onlyInHole = new Setting("OnlyInHole", this, true);
 
-    private TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = new TimerUtils();
 
     public Set<BlockPos> placedPos = new HashSet<>();
     private final Vec3d[] surroundTargets = new Vec3d[] { new Vec3d(1.0, 0.0, 0.0), new Vec3d(0.0, 0.0, 1.0), new Vec3d(-1.0, 0.0, 0.0), new Vec3d(0.0, 0.0, -1.0), new Vec3d(1.0, 0.0, -1.0), new Vec3d(1.0, 0.0, 1.0), new Vec3d(-1.0, 0.0, -1.0), new Vec3d(-1.0, 0.0, 1.0), new Vec3d(1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, 1.0), new Vec3d(-1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, -1.0), new Vec3d(1.0, 1.0, -1.0), new Vec3d(1.0, 1.0, 1.0), new Vec3d(-1.0, 1.0, -1.0), new Vec3d(-1.0, 1.0, 1.0) };
@@ -90,8 +90,7 @@ public class AntiTrap extends Module {
             super.setToggled(false);
             return;
         }
-        final boolean offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;
-        this.offhand = offhand;
+        this.offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;
         if (!this.offhand && InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9) == -1) {
             super.onDisable();
             return;
@@ -101,7 +100,6 @@ public class AntiTrap extends Module {
         Collections.addAll(targets, BlockUtil.convertVec3ds(mc.player.getPositionVector(), this.surroundTargets));
         final EntityPlayer closestPlayer = (EntityPlayer) getNearTarget(mc.player);
         if (closestPlayer != null) {
-            final EntityPlayer entityPlayer;
             targets.sort((vec3d, vec3d2) -> Double.compare(mc.player.getDistanceSq(vec3d2.x, vec3d2.y, vec3d2.z), mc.player.getDistanceSq(vec3d.x, vec3d.y, vec3d.z)));
             if (sortY.getValBoolean()) {
                 targets.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
@@ -127,12 +125,12 @@ public class AntiTrap extends Module {
         final RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5));
         final EnumFacing facing = (result == null || result.sideHit == null) ? EnumFacing.UP : result.sideHit;
         final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
-        switch ((Rotate) this.rotate.getValEnum()) {
-            case NORMAL: {
+        switch (this.rotate.getValString()) {
+            case "NORMAL": {
                 RotationUtils.setPlayerRotations(angle[0], angle[1]);
                 break;
             }
-            case PACKET: {
+            case "PACKET": {
                 mc.player.connection.sendPacket(new CPacketPlayer.Rotation(angle[0], (float) MathHelper.normalizeAngle((int)angle[1], 360), AntiTrap.mc.player.onGround));
                 break;
             }
@@ -146,14 +144,14 @@ public class AntiTrap extends Module {
     private boolean switchItem() {
         if (offhand) return true;
 
-        InventoryUtil.switchToSlot(InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), this.switchMode.getValEnum().equals(SwitchModes.Silent));
+        InventoryUtil.switchToSlot(InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), this.switchMode.getValString().equals("Silent"));
         switchedItem = true;
         return true;
     }
 
     private EntityLivingBase getNearTarget(Entity distanceTarget) {
         return mc.world.loadedEntityList.stream()
-                .filter(entity -> isValidTarget(entity))
+                .filter(this::isValidTarget)
                 .map(entity -> (EntityLivingBase) entity)
                 .min(Comparator.comparing(entity -> distanceTarget.getDistance(entity)))
                 .orElse(null);
@@ -165,9 +163,7 @@ public class AntiTrap extends Module {
         if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f) return false;
         if (entity.getDistance(mc.player) > 6) return false;
         if (entity instanceof EntityPlayer) {
-            if (entity == mc.player) return false;
-
-            return true;
+            return entity != mc.player;
         }
         return false;
     }

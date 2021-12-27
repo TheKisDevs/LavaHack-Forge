@@ -65,7 +65,7 @@ public class HoleFiller extends Module {
             super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getDisplayName() + TextFormatting.GRAY + "]");
         }
 
-        if(target == null && placeMode.getValEnum().equals(PlaceMode.Smart)) {
+        if(target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) {
             findNewTarget();
         } else {//if(timer.passedMillis(delay.getValInt())){
             findHoles(mc.player, (float) range.getValDouble());
@@ -76,14 +76,14 @@ public class HoleFiller extends Module {
                 final int webSlot = InventoryUtil.findBlock(Blocks.WEB, 0, 9);
                 final int oldSlot = mc.player.inventory.currentItem;
 
-                switch ((SwitchMode) switchMode.getValEnum()) {
-                    case None: {
+                switch (switchMode.getValString()) {
+                    case "None": {
                         if (obbySlot == -1) {
                             return;
                         }
                         break;
                     }
-                    case Normal: {
+                    case "Normal": {
                         if(obbySlot != -1) {
                             InventoryUtil.switchToSlot(obbySlot, false);
                         } else {
@@ -92,7 +92,7 @@ public class HoleFiller extends Module {
 
                         break;
                     }
-                    case Silent: {
+                    case "Silent": {
                         if(obbySlot != -1) {
                             InventoryUtil.switchToSlot(obbySlot, true);
                         } else {
@@ -106,12 +106,12 @@ public class HoleFiller extends Module {
                 BlockUtil.placeBlock(targetHole.pos);
 
                 if(mc.world.getBlockState(targetHole.pos).getBlock() != Blocks.OBSIDIAN || mc.world.getBlockState(targetHole.pos).getBlock() != Blocks.WEB) {
-                    switch ((SwitchMode) switchMode.getValEnum()) {
-                        case Normal: {
+                    switch (switchMode.getValString()) {
+                        case "Normal": {
                             InventoryUtil.switchToSlot(webSlot, false);
                             break;
                         }
-                        case Silent: {
+                        case "Silent": {
                             InventoryUtil.switchToSlot(webSlot, true);
                         }
                     }
@@ -119,7 +119,7 @@ public class HoleFiller extends Module {
                     BlockUtil.placeBlock(targetHole.pos);
                 }
 
-                if(switchMode.getValEnum().equals(SwitchMode.Silent) && oldSlot != -1) {
+                if(switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) {
                     InventoryUtil.switchToSlot(oldSlot, true);
                 }
 
@@ -173,7 +173,7 @@ public class HoleFiller extends Module {
     private boolean isValidHole(Hole hole) {
         if(mc.player.getDistanceSq(hole.pos) > range.getValDouble()) return false;
 
-        if(placeMode.getValEnum().equals(PlaceMode.Smart)) {
+        if(placeMode.getValString().equals(PlaceMode.Smart.name())) {
             if(WorldUtil.getDistance(target, hole.pos) > targetHoleRange.getValDouble()) {
                 return false;
             }

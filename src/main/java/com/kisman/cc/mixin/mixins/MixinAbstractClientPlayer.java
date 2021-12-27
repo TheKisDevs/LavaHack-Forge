@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractClientPlayer.class)
+@Mixin(value = AbstractClientPlayer.class, priority = 10000)
 public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
     Minecraft mc = Minecraft.getMinecraft();
     String str1 = "cape-";
@@ -37,16 +37,16 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
         if(Cape.instance.isToggled() && playerInfo == mc.player.getPlayerInfo()) {
-            switch((Cape.CapeMode) Cape.instance.mode.getValEnum()) {
-                case STATIC: {
+            switch( Cape.instance.mode.getValString()) {
+                case "Static": {
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/cape1.png"));
                     break;
                 }
-                case GIF: {
+                case "Gif": {
                     cir.setReturnValue(getCape());
                     break;
                 }
-                case XULUplus: {
+                case "xulu+": {
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/xuluplus/xulupluscape.png"));
                     break;
                 }

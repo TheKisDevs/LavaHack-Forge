@@ -4,10 +4,12 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
+import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.util.Colour;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -21,6 +23,7 @@ import org.lwjgl.input.Keyboard;
  *  @author HeroCode
  */
 public class Setting {
+	private Supplier<Boolean> visibleSuppliner = () -> true;
 	private ColorPicker colorPicker;
 	private Colour colour;
 
@@ -29,6 +32,7 @@ public class Setting {
 	private int index = 0;
 	private int color;
 	private int key = Keyboard.KEY_NONE;
+	private int selected = -1;
 	
 	private String name;
 	private Module parent;
@@ -54,6 +58,7 @@ public class Setting {
 	private boolean onlyNumbers;
 	private boolean minus;
 	private boolean enumCombo = false;
+	private boolean visible = true;
 	
 	private double dval;
 	private double min;
@@ -69,6 +74,8 @@ public class Setting {
 	private float red, green, blue, alpha;
 
 	private boolean onlyint = false;
+
+	private Slider.NumberType numberType = Slider.NumberType.DECIMAL;
 
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
@@ -187,7 +194,18 @@ public class Setting {
 		this.alpha = alpha;
 		this.mode = "ExampleColor";
 	}
-	
+
+	public Setting(String name, Module parent, double dval, double min, double max, Slider.NumberType numberType){
+		this.name = name;
+		this.parent = parent;
+		this.dval = dval;
+		this.min = min;
+		this.max = max;
+		this.onlyint = numberType.equals(Slider.NumberType.INTEGER);
+		this.mode = "Slider";
+		this.numberType = numberType;
+	}
+
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
 		this.parent = parent;
@@ -196,9 +214,10 @@ public class Setting {
 		this.max = max;
 		this.onlyint = onlyint;
 		this.mode = "Slider";
+		this.numberType = onlyint ? Slider.NumberType.INTEGER : Slider.NumberType.DECIMAL;
 	}
 
-	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {//, int dColor
+	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
@@ -248,6 +267,73 @@ public class Setting {
 		this.title = title;
 		this.items = items;
 		this.mode = "Items";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(isCombo()) {
+			return sval.equals(obj);
+		}
+		return false;
+	}
+
+	public boolean isVisible() {
+		return visibleSuppliner.get();
+	}
+
+	public Setting setVisible(Supplier<Boolean> suppliner) {
+		visibleSuppliner = suppliner;
+
+		return this;
+	}
+
+	public void setVisible(boolean visible) {
+		visibleSuppliner = () -> visible;
+	}
+
+	public String[] getStringValues() {
+		if(!enumCombo) {
+			return options.toArray(new String[options.size()]);
+		} else {
+			return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+		}
+	}
+
+	public String getStringFromIndex(int index) {
+		if(index != -1) {
+			return getStringValues()[index];
+		} else {
+			return "";
+		}
+	}
+
+	public int getSelectedIndex() {
+		String[] modes = getStringValues();
+		int object = -1;
+
+		for(int i = 0; i < modes.length; i++) {
+			String mode = modes[i];
+
+			if(mode.equalsIgnoreCase(sval)) object = i;
+		}
+
+		return object;
+	}
+
+	public boolean isOnlyint() {
+		return onlyint;
+	}
+
+	public void setOnlyint(boolean onlyint) {
+		this.onlyint = onlyint;
+	}
+
+	public Slider.NumberType getNumberType() {
+		return numberType;
+	}
+
+	public void setNumberType(Slider.NumberType numberType) {
+		this.numberType = numberType;
 	}
 
 	public Enum getNextModeEnum() {

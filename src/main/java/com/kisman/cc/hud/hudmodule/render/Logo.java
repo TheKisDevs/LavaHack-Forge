@@ -3,6 +3,7 @@ package com.kisman.cc.hud.hudmodule.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.module.client.CustomFont;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.LogoMode;
 import com.kisman.cc.util.Render2DUtil;
@@ -37,7 +38,7 @@ public class Logo extends HudModule {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        if(HUD.instance.logoMode.getValEnum().equals(HUD.LogoMode.Simple)) {
+        if(HUD.instance.logoMode.getValString().equals("Simple")) {
             if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
                 int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
 
@@ -49,8 +50,8 @@ public class Logo extends HudModule {
                 CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
                 setHeight(1 + CustomFontUtil.getFontHeight() + 2);
             }
-        } else if(HUD.instance.logoMode.getValEnum().equals(HUD.LogoMode.CSGO)) {
-            String text =(TextFormatting.BOLD +  name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " mc" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+        } else if(HUD.instance.logoMode.getValString().equals("CSGO")) {
+            String text =((CustomFont.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   +  name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " mc" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int x = 9;
             int y = 9;
             int width = 4 + CustomFontUtil.getStringWidth(text);

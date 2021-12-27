@@ -2,6 +2,7 @@ package com.kisman.cc.file;
 
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
+import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
@@ -20,6 +21,8 @@ public class SaveConfig {
             Kisman.initDirs();
             saveModules();
             saveEnabledModules();
+            saveVisibledModules();
+            saveEnabledHudModules();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,10 +31,7 @@ public class SaveConfig {
 
     private static void registerFiles(String location, String name) throws IOException {
         if (Files.exists(Paths.get(Kisman.fileName + location + name + ".json"))) {
-            File file = new File(Kisman.fileName + location + name + ".json");
-
-            file.delete();
-
+            new File(Kisman.fileName + location + name + ".json").delete();
         } else {
             Files.createFile(Paths.get(Kisman.fileName + location + name + ".json"));
         }
@@ -41,19 +41,7 @@ public class SaveConfig {
     private static void saveModules() throws IOException {
         for (Module module : Kisman.instance.moduleManager.getModuleList()) {
             try {
-                boolean setting;
-
-                if(Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
-                    if (Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
-                        setting = false;
-                    } else {
-                        setting = true;
-                    }
-                } else {
-                    setting = false;
-                }
-
-                saveModuleDirect(module, setting);
+                saveModuleDirect(module, Kisman.instance.settingsManager.getSettingsByMod(module) != null && !Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -82,14 +70,14 @@ public class SaveConfig {
                         if (setting.isSlider()) {
                             settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
                         }
-                        if(setting.isColorPicker()) {
+                        /*if(setting.isColorPicker()) {
                             settingObject.add(setting.getName() + "H", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "S", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "B", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "A", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
                             settingObject.add(setting.getName() + "RainBow", new JsonPrimitive(setting.isRainbow()));
                             settingObject.add(setting.getName() + "Syns", new JsonPrimitive(setting.isSyns()));
-                        }
+                        }*/
                     }
                 }
             }
@@ -113,9 +101,39 @@ public class SaveConfig {
         JsonObject moduleObject = new JsonObject();
         JsonObject enabledObject = new JsonObject();
 
-        for(Module mod : Kisman.instance.moduleManager.modules) {
-            enabledObject.add(mod.getName(), new JsonPrimitive(mod.isToggled()));
-        }
+        for(Module mod : Kisman.instance.moduleManager.modules) enabledObject.add(mod.getName(), new JsonPrimitive(mod.isToggled()));
+
+        moduleObject.add("Modules", enabledObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveVisibledModules() throws IOException {
+        registerFiles(Kisman.mainName, "Visible");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.mainName + "Visible" + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject enabledObject = new JsonObject();
+
+        for(Module mod : Kisman.instance.moduleManager.modules) enabledObject.add(mod.getName(), new JsonPrimitive(mod.visible));
+
+        moduleObject.add("Modules", enabledObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveEnabledHudModules() throws IOException {
+        registerFiles(Kisman.mainName, "HudToggle");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.mainName + "HudToggle" + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject enabledObject = new JsonObject();
+
+        for(HudModule mod : Kisman.instance.hudModuleManager.modules) enabledObject.add(mod.getName(), new JsonPrimitive(mod.isToggled()));
 
         moduleObject.add("Modules", enabledObject);
         String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));

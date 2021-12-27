@@ -94,8 +94,8 @@ public class Surround extends Module {
 
         oldPos = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
 
-        switch ((Center) center.getValEnum()) {
-            case TELEPORT: {
+        switch ( center.getValString()) {
+            case "TELEPORT": {
                 double xPosition = mc.player.getPositionVector().x;
                 double zPosition = mc.player.getPositionVector().z;
 
@@ -112,12 +112,9 @@ public class Surround extends Module {
                 TeleportUtil.teleportPlayer(xPosition, mc.player.posY, zPosition);
                 break;
             }
-            case MOTION: {
+            case "MOTION": {
                 mc.player.motionX = ((Math.floor(mc.player.posX) + 0.5) - mc.player.posX) / 2;
                 mc.player.motionZ = ((Math.floor(mc.player.posZ) + 0.5) - mc.player.posZ) / 2;
-                break;
-            }
-            case NONE: {
                 break;
             }
         }
@@ -132,8 +129,8 @@ public class Surround extends Module {
 
         surroundPlaced = 0;
 
-        switch ((Completion) completion.getValEnum()) {
-            case AIR: {
+        switch (completion.getValString()) {
+            case "AIR": {
                 if (!oldPos.equals(new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)))) || mc.player.posY > oldPos.getY()) {
                     super.setToggled(false);
                     return;
@@ -141,7 +138,7 @@ public class Surround extends Module {
 
                 break;
             }
-            case SURROUNDED: {
+            case "SURROUNDED": {
                 if (isInHole(mc.player)) {
                     super.setToggled(false);
                     return;
@@ -149,7 +146,7 @@ public class Surround extends Module {
 
                 break;
             }
-            case PERSISTENT: {
+            case "PERSISTENT": {
                 break;
             }
         }
@@ -157,10 +154,21 @@ public class Surround extends Module {
         handleSurround();
     }
 
+    private SurroundVectors getEnumByName(String name) {
+        switch (name) {
+            case "BASE": return SurroundVectors.BASE;
+            case "STANDART": return SurroundVectors.STANDARD;
+            case "PROTECT": return SurroundVectors.PROTECT;
+            case "PROTECTplus": return SurroundVectors.PROTECTplus;
+        }
+
+        return SurroundVectors.BASE;
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if (render.getValBoolean()) {
-            for (Vec3d surroundVectors : ((SurroundVectors) surroundVec.getValEnum()).vectors) {
+            for (Vec3d surroundVectors : getEnumByName(surroundVec.getValString()).vectors) {
                 CosmosRenderUtil.drawBox(
                         new RenderBuilder().position(
                                 new BlockPos(
@@ -213,7 +221,7 @@ public class Surround extends Module {
 
 
     public void placeSurround() {
-        for (Vec3d surroundVectors : ((SurroundVectors) surroundVec.getValEnum()).vectors) {
+        for (Vec3d surroundVectors : getEnumByName(surroundVec.getValString()).vectors) {
             if (Objects.equals(BlockUtil.getBlockResistance(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)))), BlockUtil.BlockResistance.BLANK) && surroundPlaced <= blocksPerTick.getValDouble()) {
                 surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
@@ -221,7 +229,7 @@ public class Surround extends Module {
                     return;
 
                 if (surroundPosition != BlockPos.ORIGIN) {
-                    if (!rotate.getValEnum().equals(Rotate.NONE)) {
+                    if (!rotate.getValString().equals(Rotate.NONE.name())) {
                         float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);
                         surroundRotation = new Rotation((float) (surroundAngles[0] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (float) (surroundAngles[1] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)),(Rotate) rotate.getValEnum());
 

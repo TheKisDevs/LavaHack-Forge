@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
-@Mixin(RenderEnderCrystal.class)
+@Mixin(value = RenderEnderCrystal.class, priority = 10000)
 public abstract class MixinRenderEnderCrystal {
     @Shadow
     public ModelBase modelEnderCrystal;

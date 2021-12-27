@@ -83,7 +83,7 @@ public class Scaffold extends Module {
 
         boolean placeAtFeet = isValidPlaceBlockState(feetBlock);
 
-        if (mode.getValEnum() == Modes.Tower && placeAtFeet && mc.player.movementInput.jump && towerTimer.passedMillis(250) && !mc.player.isElytraFlying()) {
+        if (mode.getValString().equals(Modes.Tower.name()) && placeAtFeet && mc.player.movementInput.jump && towerTimer.passedMillis(250) && !mc.player.isElytraFlying()) {
             if(event.getX() >= 255) return;
 
             if (towerPauseTimer.passedMillis(1500)) {

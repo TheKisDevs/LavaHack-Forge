@@ -7,6 +7,7 @@ import com.kisman.cc.Kisman;
 // import com.kisman.cc.hud.hudmodule.Logo;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.LogoMode;
 
@@ -29,7 +30,7 @@ public class HUD extends Module {
 	public Setting arrY = new Setting("ArrayListY", this, 150, 0, mc.displayHeight, true);
 	public Setting arrColor = new Setting("ArrayListColor", this, "Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
 	public Setting arrGragient = new Setting("ArrayGradient", this, Gradient.None);
-	public Setting arrGradientDiff = new Setting("ArrayGradientDiff", this, 200, 0, 1000, true);
+	public Setting arrGradientDiff = new Setting("ArrayGradientDiff", this, 200, 0, 1000, Slider.NumberType.TIME);
 	public Setting arrOffsets = new Setting("Offsets", this, 1, 0, 10, true);
 
 	private Setting welLine = new Setting("WelLine", this, "Welcomer");
@@ -54,7 +55,7 @@ public class HUD extends Module {
 	public Setting logoMode = new Setting("LogoMode", this, LogoMode.Simple);
 	public Setting logoGlow = new Setting("Glow", this, false);
 	public Setting glowOffset = new Setting("GlowOffset", this, 6, 0, 20, true);
-	public Setting logoBold = new Setting("Bold", this, false);
+	public Setting logoBold = new Setting("Name Bold", this, false);
 
 	public HUD() {
 		super("HudEditor", "hud editor", Category.CLIENT);
@@ -69,6 +70,7 @@ public class HUD extends Module {
 		setmgr.rSetting(arrColor);
 		setmgr.rSetting(arrGragient);
 		setmgr.rSetting(arrGradientDiff);
+		setmgr.rSetting(arrOffsets);
 
 		setmgr.rSetting(welLine);
 		setmgr.rSetting(welColor);

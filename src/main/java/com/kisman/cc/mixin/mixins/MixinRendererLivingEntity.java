@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
-@Mixin(RenderLivingBase.class)
+@Mixin(value = RenderLivingBase.class, priority = 10000)
 public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
     @Shadow protected ModelBase mainModel;
     protected ModelBase entityModel;
@@ -96,10 +96,10 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
                         if(AutoCrystalBypass.instance.target == p_renderModel_1_) {
                             glColor4f(1, 0.03f, 0.9f, 1);
                         } else {
-                            GL11.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA() / 255);
+                            GL11.glColor4f(color.getR() / 255f, color.getG() / 255f, color.getB() / 255f, color.getA() / 255f);
                         }
                     } else {
-                        GL11.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA() / 255);
+                        GL11.glColor4f(color.getR() / 255f, color.getG() / 255f, color.getB() / 255f, color.getA() / 255f);
                     }
                 }
 

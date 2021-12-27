@@ -15,18 +15,15 @@ import static org.lwjgl.opengl.GL11.*;
 public class SwingAnimation extends Module {
     public static SwingAnimation instance;
 
-    public Setting mode = new Setting("Mode", this, "Simple", new ArrayList<>(Arrays.asList("Simple", "Strong")));
+    public Setting mode = new Setting("Mode", this, "Strong", new ArrayList<>(Arrays.asList("Hand", "Strong")));
 
 
-    private Setting simpleLine = new Setting("SimpleLine", this, "Simple");
+    private Setting simpleLine = new Setting("SimpleLine", this, "Hand");
 
     private Setting strongLine = new Setting("StrongLine", this, "Strong");
     public Setting ignoreEating = new Setting("IgnoreEating", this, true);
 
-    public Setting strongMode = new Setting("StrongMode", this, StrongMode.StaticRotate);
-
-    public Setting main = new Setting("MainHand", this, true);
-    public Setting off = new Setting("OffHand", this, false);
+    public Setting strongMode = new Setting("StrongMode", this, StrongMode.Blockhit1);
 
     private ArrayList<String> swingMode = new ArrayList<>(Arrays.asList("1", "2", "3"));
 
@@ -45,8 +42,6 @@ public class SwingAnimation extends Module {
         setmgr.rSetting(strongLine);
         setmgr.rSetting(strongMode);
         setmgr.rSetting(ignoreEating);
-        setmgr.rSetting(main);
-        setmgr.rSetting(off);
     }
 
     public void update() {
@@ -55,7 +50,7 @@ public class SwingAnimation extends Module {
 
     @SubscribeEvent
     public void onRenderArms(final RenderSpecificHandEvent event) {
-        if(mode.getValString().equalsIgnoreCase("Simple")) {
+        if(mode.getValString().equalsIgnoreCase("Hand")) {
             if (event.getSwingProgress() > 0) {
                 final float angle = (1f - event.getSwingProgress()) * 360f;
 
@@ -75,7 +70,7 @@ public class SwingAnimation extends Module {
     }
 
     public enum StrongMode {
-        StaticRotate,
-        AnimationRotate
+        Blockhit1,
+        Blockhit2
     }
 }

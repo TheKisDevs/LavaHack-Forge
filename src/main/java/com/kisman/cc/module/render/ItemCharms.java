@@ -1,22 +1,32 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
+import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.shaders.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class ItemCharms extends Module {
     public static ItemCharms instance;
 
-    public static final GlShader ITEM_SHADER = new GlShader("item");
+    public Setting glowESP = new Setting("GlowESP", this, "None", Arrays.asList("None", "Color", "Astral", "RainbowCube", "Gradient", "Aqua", "Circle", "Smoke"));
 
-    public Setting red = new Setting("Red", this, 1, 0, 1, false);
-    public Setting green = new Setting("Green", this, 1, 0, 1, false);
-    public Setting blue = new Setting("Blue", this, 1, 0, 1, false);
-    public Setting alpha = new Setting("Alpha", this, 1, 0, 1, false);
+    public Setting red = new Setting("ColorESPRed", this, 1, 0, 1, false);
+    public Setting green = new Setting("ColorESPGreen", this, 1, 0, 1, false);
+    public Setting blue = new Setting("ColorESPBlue", this, 1, 0, 1, false);
+    public Setting alpha = new Setting("ColorESPAlpha", this, 1, 0, 1, false);
+
+    public Setting radiusESP = new Setting("RadiusESP", this, 1, 0, 5, Slider.NumberType.DECIMAL);
+    public Setting qualityESP = new Setting("QualityESP", this, 1, 0, 20, Slider.NumberType.DECIMAL);
+    public Setting gradientAlpha = new Setting("GradientAlpha", this, false);
+    public Setting alphaOutline = new Setting("AlphaOutline", this, 255, 0, 255, Slider.NumberType.INTEGER).setVisible(() -> !gradientAlpha.getValBoolean());
+    public Setting piOutline = new Setting("PIOutline", this, 3.141592653, 0, 10, Slider.NumberType.DECIMAL).setVisible(() -> glowESP.getValString().equalsIgnoreCase("Circle"));
+    public Setting radOutline = new Setting("RADOutline", this, 0.75f, 0, 5, Slider.NumberType.DECIMAL).setVisible(() -> glowESP.getValString().equalsIgnoreCase("Circle"));
+
 
 //    public Setting exampleColor = new Setting("ExampleColor", this, red.getValFloat(), green.getValFloat(), blue.getValFloat(), alpha.getValFloat());
 
@@ -28,8 +38,6 @@ public class ItemCharms extends Module {
         super("ItemCharms", "", Category.RENDER);
 
         instance = this;
-
-//        setmgr.rSetting(exampleColor);
 
         setmgr.rSetting(red);
         setmgr.rSetting(green);

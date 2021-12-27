@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(World.class)
+@Mixin(value = World.class, priority = 10000)
 public class MixinWorld {
     @Inject(method = "onEntityAdded", at = @At("HEAD"))
     public void onEntityAdded(Entity entityIn, CallbackInfo ci) {

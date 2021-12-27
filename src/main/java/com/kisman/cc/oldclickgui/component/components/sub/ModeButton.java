@@ -43,6 +43,7 @@ public class ModeButton extends Component {
 
 	@Override
 	public void renderComponent() {
+		if(!set.isVisible()) return;
 		Gui.drawRect(button.parent.getX() + 2, button.parent.getY() + offset, button.parent.getX() + (button.parent.getWidth() * 1) - 3, button.parent.getY() + offset + 12, this.hovered ? new Color(ClickGui.getRHoveredModule(), ClickGui.getGHoveredModule(), ClickGui.getBHoveredModule(), ClickGui.getAHoveredModule()).getRGB() : new Color(ClickGui.getRNoHoveredModule(), ClickGui.getGNoHoveredModule(), ClickGui.getBNoHoveredModule(), ClickGui.getANoHoveredModule()).getRGB());
 		//Gui.drawRect(parent.parent.getX(), parent.parent.getY() + offset, parent.parent.getX() + 2, parent.parent.getY() + offset + 12, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 		GL11.glPushMatrix();
@@ -65,6 +66,7 @@ public class ModeButton extends Component {
 
 	@Override
 	public void updateComponent(int mouseX, int mouseY) {
+		if(!set.isVisible()) return;
 		this.hovered = isMouseOnButton(mouseX, mouseY);
 		this.y1 = button.parent.getY() + offset;
 		this.x1 = button.parent.getX();
@@ -72,6 +74,8 @@ public class ModeButton extends Component {
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
+		if(!set.isVisible()) return;
+
 		try {
 			if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.button.open) {
 				if(set.getOptions() != null) {

@@ -86,6 +86,7 @@ public class ModuleManager {
 		modules.add(new TraceTeleport());
 		//render
 		modules.add(new Ambience());
+		modules.add(new Animation());
 		modules.add(new BlockOutline());
 		modules.add(new Breadcrumbs());
 		modules.add(new Charms());

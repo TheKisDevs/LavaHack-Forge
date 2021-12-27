@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiIngame.class)
+@Mixin(value = GuiIngame.class, priority = 10000)
 public class MixinGuiIngame {
     @Inject(method = "renderGameOverlay", at = @At("HEAD"), cancellable = true)
     private void renderGameOverlay(float p_renderGameOverlay_1_, CallbackInfo ci) {

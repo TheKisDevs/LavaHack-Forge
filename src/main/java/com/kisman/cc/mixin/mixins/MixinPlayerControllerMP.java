@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(PlayerControllerMP.class)
+@Mixin(value = PlayerControllerMP.class, priority = 10000)
 public class MixinPlayerControllerMP {
     @Inject(method = "onPlayerDestroyBlock", at = @At("RETURN"))
     public void playerDestroyBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {

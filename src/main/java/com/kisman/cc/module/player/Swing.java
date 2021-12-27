@@ -18,11 +18,11 @@ public class Swing extends Module {
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        if(mode.getValEnum().equals(Hand.MAINHAND)) {
+        if(mode.getValString().equals(Hand.MAINHAND.name())) {
             mc.player.swingingHand = EnumHand.MAIN_HAND;
-        } else if(mode.getValEnum().equals(Hand.OFFHAND)) {
+        } else if(mode.getValString().equals(Hand.OFFHAND.name())) {
             mc.player.swingingHand = EnumHand.OFF_HAND;
-        } else if(mode.getValEnum().equals(Hand.PACKETSWING) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && mc.entityRenderer.itemRenderer.prevEquippedProgressMainHand >= 0.9) {
+        } else if(mode.getValString().equals(Hand.PACKETSWING.name()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && mc.entityRenderer.itemRenderer.prevEquippedProgressMainHand >= 0.9) {
             mc.entityRenderer.itemRenderer.equippedProgressMainHand = 1f;
             mc.entityRenderer.itemRenderer.itemStackMainHand = mc.player.getHeldItemMainhand();
         }

@@ -88,7 +88,7 @@ public class CrystalFiller extends Module {
     }
 
     private void doCrystalFiller() {
-        if (target == null && placeMode.getValEnum().equals(PlaceMode.Smart)) {
+        if (target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) {
             findNewTarget();
         } else if(delayTicks++ > delay.getValInt()){
             findHoles(mc.player, (float) range.getValDouble());
@@ -98,20 +98,20 @@ public class CrystalFiller extends Module {
                 final int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
                 final int oldSlot = mc.player.inventory.currentItem;
 
-                switch ((SwitchMode) switchMode.getValEnum()) {
-                    case None: {
+                switch (switchMode.getValString()) {
+                    case "None": {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
                             return;
                         }
                         break;
                     }
-                    case Normal: {
+                    case "Normal": {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) {
                             InventoryUtil.switchToSlot(crystalSlot, false);
                         }
                         break;
                     }
-                    case Silent: {
+                    case "Silent": {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) {
                             InventoryUtil.switchToSlot(crystalSlot, true);
                         }
@@ -134,7 +134,7 @@ public class CrystalFiller extends Module {
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(targetHole.getDownHoleBlock(), facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
                 mc.playerController.updateController();
 
-                if (switchMode.getValEnum().equals(SwitchMode.Silent) && oldSlot != -1) {
+                if (switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) {
                     InventoryUtil.switchToSlot(oldSlot, true);
                 }
 
@@ -181,7 +181,7 @@ public class CrystalFiller extends Module {
     private boolean isValidHole(Hole hole) {
         if(WorldUtil.getDistance(mc.player, hole.pos) > range.getValDouble()) return false;
 
-        if(placeMode.getValEnum().equals(PlaceMode.Smart) && target != null) {
+        if(placeMode.getValString().equals(PlaceMode.Smart.name()) && target != null) {
             if(WorldUtil.getDistance(target, hole.pos) > targetHoleRange.getValDouble()) {
                 return false;
             }
