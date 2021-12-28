@@ -1,7 +1,7 @@
 {
   "Module": "AutoCrystalRewrite",
   "Settings": {
-    "PlaceRange": 5.18,
+    "PlaceRange": 0.0,
     "BreakRange": 0.0,
     "WallPlaceRange": 0.0,
     "WallBreakRange": 0.0,

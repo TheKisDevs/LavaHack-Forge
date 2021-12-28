@@ -6,7 +6,7 @@
     "SwitchMode": "None",
     "Rotate": "NONE",
     "SortY": true,
-    "OnlyInHole": false,
+    "OnlyInHole": true,
     "key": "NONE"
   }
 }

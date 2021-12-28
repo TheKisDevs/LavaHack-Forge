@@ -8,8 +8,8 @@
     "GlideSpeed": 1.0,
     "CancelInWater": true,
     "CancelAtHeight": 5.0,
-    "InstantFly": true,
-    "EquipElytra": false,
+    "InstantFly": false,
+    "EquipElytra": true,
     "PitchSpoof": false,
     "key": "NONE"
   }

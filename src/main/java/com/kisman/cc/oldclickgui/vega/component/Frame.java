@@ -93,9 +93,11 @@ public class Frame {
             {
                 for(Component comp : b.comp) {
                     comp.newOff(off);
+
                     comp.renderComponent();
                     off += height;
                 }
+                off+=3;
             }
         }
     }

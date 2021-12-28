@@ -1,7 +1,7 @@
 {
   "Module": "Notification",
   "Settings": {
-    "Target": true,
+    "Target": false,
     "Obby": true,
     "key": "NONE"
   }

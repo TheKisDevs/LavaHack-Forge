@@ -3,7 +3,7 @@
   "Settings": {
     "Rotate": false,
     "Offset": -7.0,
-    "Sneak": false,
+    "Sneak": true,
     "key": "NONE"
   }
 }

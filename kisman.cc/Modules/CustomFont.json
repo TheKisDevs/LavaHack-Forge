@@ -1,9 +1,9 @@
 {
   "Module": "CustomFont",
   "Settings": {
-    "Mode": "Comfortaa",
-    "Bold": false,
-    "Italic": false,
-    "key": "NONE"
+    "Mode": "Comfortaa Light",
+    "Bold": true,
+    "Italic": true,
+    "key": "K"
   }
 }
