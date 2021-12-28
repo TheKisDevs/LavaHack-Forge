@@ -4,20 +4,22 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.oldclickgui.vega.component.components.sub.patterns.DefaultButton;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.Gui;
 
 public class ModeButton extends Component {
     public Button b;
-    public Module m;
+    public Setting set;
     public int offset;
-
+    public boolean drag = false;
     private int x, y;
     private int width, height;
 
-    public ModeButton(Button b, Module m, int offset) {
+    public ModeButton(Button b, Setting set, int offset) {
         this.b = b;
-        this.m = m;
+        this.set = set;
         this.offset = offset;
 
         this.x = b.parent.x;
@@ -36,7 +38,7 @@ public class ModeButton extends Component {
         Gui.drawRect(this.x - 1, this.y + offset, this.x + this.width + 1, this.y + this.height + offset, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x, this.y + offset, this.x + this.width, this.y + this.height + offset, (ColorUtils.getColor(34, 34, 40)));
 
-
+        CustomFontUtil.drawCenteredStringWithShadow(set.getName() + ": " + set.getValBoolean(), x + (width / 2), y + 3 + offset + ((height - CustomFontUtil.getFontHeight()) / 2), drag  ? ColorUtils.astolfoColors(100, 100) : -1);
     }
 
     public void updateComponent(int mouseX, int mouseY) {
@@ -46,19 +48,26 @@ public class ModeButton extends Component {
         this.height = b.parent.height;
     }
 
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-
-    }
-
-    public void mouseReleased(int mouseX, int mouseY, int button) {
-
-    }
-
     public void newOff(int newOff) {
 
     }
 
+    public void mouseClicked(int mouseX, int mouseY, int button) {
+        if(button == 0) {
+            if(isMouseOnButton(mouseX, mouseY)) {
+                set.setValBoolean(!set.getValBoolean());
+            }
+        }
+    }
+
+    public void mouseReleased(int mouseX, int mouseY, int button) {
+        drag = false;
+    }
+
+
     private boolean isMouseOnButton(int x, int y) {
-        return true;
+        if(x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset) return true;
+
+        return false;
     }
 }

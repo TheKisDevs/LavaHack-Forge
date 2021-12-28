@@ -1,0 +1,8 @@
+{
+  "Module": "CSGOGui",
+  "Settings": {
+    "Gui": "New",
+    "CustomFontSize": true,
+    "key": "NONE"
+  }
+}

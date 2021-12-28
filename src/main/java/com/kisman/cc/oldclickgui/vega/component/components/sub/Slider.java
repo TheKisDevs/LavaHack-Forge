@@ -3,10 +3,14 @@ package com.kisman.cc.oldclickgui.vega.component.components.sub;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.Gui;
+import org.lwjgl.Sys;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -33,22 +37,24 @@ public class Slider extends Component {
     }
 
     public void renderComponent() {
-        Gui.drawRect(this.x -3, this.y + 3, (int)((double)this.x + (double)this.width + 3), this.y + this.height + 3, (ColorUtils.getColor(40, 40, 50)));
-        Gui.drawRect(this.x - 2, this.y + 4, (int)((double)this.x + (double)this.width + 2), this.y + this.height + 1, (ColorUtils.getColor(60, 60, 70)));
-        Gui.drawRect(this.x - 1, this.y + 5, (int)((double)this.x + (double)this.width + 1), this.y + this.height, (ColorUtils.getColor(34, 34, 40)));
-        Gui.drawRect(this.x - 1, this.y + 5, (int)((double)this.x + this.renderWidth + 1), this.y + this.height, (ColorUtils.getColor(24, 24, 30)));
-        Gui.drawRect(this.x, this.y + 6, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 1, (ColorUtils.getColor(65, 65, 80)));
-        Gui.drawRect(this.x, this.y + 7, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 2, (ColorUtils.getColor(80, 80, 95)));
-        Gui.drawRect(this.x, this.y + 8, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 3, (ColorUtils.getColor(95, 95, 115)));
 
-        CustomFontUtil.drawCenteredStringWithShadow(s.getName() + ": " + s.getValDouble(), x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), drag ? ColorUtils.astolfoColors(100, 100) : -1);
+        Gui.drawRect(this.x -3, this.y + 3 + offset, (int)((double)this.x + (double)this.width + 3), this.y + this.height + 3 + offset, (ColorUtils.getColor(40, 40, 50)));
+        Gui.drawRect(this.x - 2, this.y + 4 + offset, (int)((double)this.x + (double)this.width + 2), this.y + this.height + 1 + offset, (ColorUtils.getColor(60, 60, 70)));
+        Gui.drawRect(this.x - 1, this.y + 5 + offset, (int)((double)this.x + (double)this.width + 1), this.y + this.height + offset, (ColorUtils.getColor(34, 34, 40)));
+        Gui.drawRect(this.x - 1, this.y + 5 + offset, (int)((double)this.x + this.renderWidth + 1), this.y + this.height + offset, (ColorUtils.getColor(24, 24, 30)));
+        Gui.drawRect(this.x, this.y + 6 + offset, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 1 + offset, (ColorUtils.getColor(65, 65, 80)));
+        Gui.drawRect(this.x, this.y + 7 + offset, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 2 + offset, (ColorUtils.getColor(80, 80, 95)));
+        Gui.drawRect(this.x, this.y + 8 + offset, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 3 + offset, (ColorUtils.getColor(95, 95, 115)));
+
+        //Render2DUtil.drawRectangle(new Rectangle(this.x, this.y + offset, width,this.height), new Color(40, 40, 50));
+
+
+        CustomFontUtil.drawCenteredStringWithShadow(s.getName() + ": " + s.getValDouble(), x + (width / 2), y + 3 + offset + ((height - CustomFontUtil.getFontHeight()) / 2), drag ? ColorUtils.astolfoColors(100, 100) : -1);
     }
 
     public void updateComponent(int mouseX, int mouseY) {
         this.x = b.parent.x;
-        this.y = b.parent.y + offset;
-        this.width = b.parent.width;
-        this.height = b.parent.height;
+        this.y = b.parent.y;
 
         hover = isMouseOnButton(mouseX, mouseY);
 
@@ -57,9 +63,9 @@ public class Slider extends Component {
         double min = s.getMin();
         double max = s.getMax();
 
-        renderWidth = (88) * (s.getValDouble() - min) / (max - min);
-
+        renderWidth = 88 * (s.getValDouble() - min) / (max - min);
         if (drag) {
+            System.out.println(diff);
             if (diff == 0) {
                 s.setValDouble(s.getMin());
             }

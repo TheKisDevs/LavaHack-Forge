@@ -1,0 +1,21 @@
+{
+  "Module": "KillAura",
+  "Settings": {
+    "Mode": "Sword",
+    "ShieldBreaker": true,
+    "HitSound": false,
+    "PacketAttack": false,
+    "Weapon": "Sword",
+    "Player": true,
+    "Monster": true,
+    "Passive": true,
+    "Invisible": false,
+    "Distance": 4.25,
+    "FallDistance": 0.1,
+    "TargetESP": true,
+    "Calc": "Multi",
+    "SwitchMode": "None",
+    "PacketSwitch": true,
+    "key": "NONE"
+  }
+}

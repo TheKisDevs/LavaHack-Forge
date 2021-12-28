@@ -1,0 +1,12 @@
+{
+  "Module": "NoInteract",
+  "Settings": {
+    "EnderChest": true,
+    "CraftingTable": true,
+    "Chest": true,
+    "Furnace": true,
+    "ArmorStand": true,
+    "Anvil": true,
+    "key": "NONE"
+  }
+}

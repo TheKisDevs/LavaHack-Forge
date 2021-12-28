@@ -1,0 +1,11 @@
+{
+  "Module": "ItemCharms",
+  "Settings": {
+    "ColorESPRed": 1.0,
+    "ColorESPGreen": 1.0,
+    "ColorESPBlue": 1.0,
+    "ColorESPAlpha": 1.0,
+    "GlintModify": false,
+    "key": "NONE"
+  }
+}

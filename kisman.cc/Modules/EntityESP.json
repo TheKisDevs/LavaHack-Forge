@@ -1,0 +1,19 @@
+{
+  "Module": "EntityESP",
+  "Settings": {
+    "Range": 50.0,
+    "Distance": 100.0,
+    "Players": "None",
+    "PlayerShader": false,
+    "GlowPlayer": false,
+    "Quality": 1.0,
+    "Radius": 2.0,
+    "Box": true,
+    "Tags": false,
+    "Health": true,
+    "Monsters": "None",
+    "Items": "None",
+    "Entity": "None",
+    "key": "NONE"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "Module": "NoMiningTrace",
+  "Settings": {
+    "PickaxeOnly": true,
+    "key": "NONE"
+  }
+}

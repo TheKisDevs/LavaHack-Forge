@@ -7,6 +7,7 @@ import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreE
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.Config;
+import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import net.minecraft.client.gui.GuiScreen;
@@ -42,7 +43,12 @@ public class Gui extends GuiScreen {
             frame.updateComponent(mouseX, mouseY);
             for(Button b : frame.buttons) {
                 b.updateComponent(mouseX, mouseY);
+                for(Component comp : b.comp)
+                {
+                    comp.updateComponent(mouseX, mouseY);
+                }
             }
+
         }
 
         GuiRenderPostEvent event = new GuiRenderPostEvent(mouseX, mouseY, partialTicks, GuiRenderPostEvent.Gui.NewGui);
@@ -76,6 +82,7 @@ public class Gui extends GuiScreen {
                 frame.dragging = true;
                 frame.dragX = mouseX - frame.x;
                 frame.dragY = mouseY - frame.y;
+                frame.refresh();
             }
 
             if(frame.isMouseOnButton(mouseX, mouseY) && mouseButton == 1) {

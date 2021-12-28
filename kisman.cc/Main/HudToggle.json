@@ -1,0 +1,19 @@
+{
+  "Modules": {
+    "ArmorHUD": false,
+    "PvpInfo": false,
+    "PvpResources": false,
+    "TargetHUD": false,
+    "Speed": false,
+    "ArrayList": false,
+    "Coords": false,
+    "Fps": false,
+    "Logo": false,
+    "Radar": false,
+    "Welcomer": false,
+    "HandProgress": false,
+    "Ping": false,
+    "ServerIP": false,
+    "Tps": false
+  }
+}

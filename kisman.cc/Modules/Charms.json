@@ -1,0 +1,13 @@
+{
+  "Module": "Charms",
+  "Settings": {
+    "TextureMode": "Texture",
+    "PolygonOffset": true,
+    "PolygonMode": "RenderModel",
+    "Texture": false,
+    "Redner": false,
+    "TargetRender": true,
+    "CustomColor": false,
+    "key": "NONE"
+  }
+}

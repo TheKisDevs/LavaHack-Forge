@@ -1,0 +1,20 @@
+{
+  "Module": "NameTags",
+  "Settings": {
+    "Range": 0.0,
+    "Scale": 0.8,
+    "Background": true,
+    "BGLight": 15.0,
+    "BGAlpha": 0.0,
+    "OutLine": true,
+    "TextR": 200.0,
+    "TextG": 200.0,
+    "TextB": 200.0,
+    "TextA": 255.0,
+    "ColorMode": "Astolfo",
+    "Saturation": 1.0,
+    "Bringhtness": 1.0,
+    "Delay": 100.0,
+    "key": "NONE"
+  }
+}
