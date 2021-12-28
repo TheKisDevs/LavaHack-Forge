@@ -3,7 +3,7 @@
   "Settings": {
     "Line": false,
     "LineMode": "LeftLine",
-    "SetLineMode": "Default",
+    "SetLineMode": "All",
     "key": "NONE"
   }
 }

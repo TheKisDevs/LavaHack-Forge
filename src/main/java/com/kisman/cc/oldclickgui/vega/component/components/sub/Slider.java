@@ -37,7 +37,7 @@ public class Slider extends Component {
     }
 
     public void renderComponent() {
-
+        int height = this.height-1;
         Gui.drawRect(this.x -3, this.y + 3 + offset, (int)((double)this.x + (double)this.width + 3), this.y + this.height + 3 + offset, (ColorUtils.getColor(40, 40, 50)));
         Gui.drawRect(this.x - 2, this.y + 4 + offset, (int)((double)this.x + (double)this.width + 2), this.y + this.height + 1 + offset, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x - 1, this.y + 5 + offset, (int)((double)this.x + (double)this.width + 1), this.y + this.height + offset, (ColorUtils.getColor(34, 34, 40)));

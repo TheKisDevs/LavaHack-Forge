@@ -29,7 +29,7 @@ public class ModeButton extends Component {
     }
 
     public void renderComponent() {
-        int height = this.height - 1;
+        int height = this.height-1;
         Gui.drawRect(this.x - 3, this.y + 3 + offset, this.x + this.width + 3, this.y + this.height + 3 + offset, (ColorUtils.getColor(33, 33, 42)));
         Gui.drawRect(this.x - 3, this.y + offset, this.x + this.width + 3, this.y + this.height + offset, (ColorUtils.getColor(33, 33, 42)));
         Gui.drawRect(this.x - 2, this.y + 2 + offset, this.x + this.width + 2, this.y + this.height + 2 + offset, (ColorUtils.getColor(45, 45, 55)));
@@ -49,7 +49,7 @@ public class ModeButton extends Component {
     }
 
     public void newOff(int newOff) {
-
+        this.offset = newOff;
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {

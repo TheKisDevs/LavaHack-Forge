@@ -1,12 +1,12 @@
 {
   "Module": "NoSlow",
   "Settings": {
-    "InvMove": false,
+    "InvMove": true,
     "Items": true,
     "NCPStrict": true,
-    "IgnoreChat": true,
+    "IgnoreChat": false,
     "IgnoreConsole": true,
-    "IgnoreClickGui": true,
+    "IgnoreClickGui": false,
     "key": "NONE"
   }
 }

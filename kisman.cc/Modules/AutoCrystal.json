@@ -2,7 +2,7 @@
   "Module": "AutoCrystal",
   "Settings": {
     "Mode": "ClientTick",
-    "PlaceMode": "Priority",
+    "PlaceMode": "MostDamage",
     "BreakMode": "Always",
     "LogicMode": "PlaceBreak",
     "Syns": true,
