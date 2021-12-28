@@ -1,0 +1,12 @@
+{
+  "Module": "HoleFiller",
+  "Settings": {
+    "Range": 4.8,
+    "PlaceMode": "Always",
+    "Delay": 2.0,
+    "TargetHoleRange": 4.8,
+    "SwitchMode": "Silent",
+    "SmartWeb": false,
+    "key": "NONE"
+  }
+}

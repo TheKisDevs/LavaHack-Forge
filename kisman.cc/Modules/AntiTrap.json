@@ -1,0 +1,12 @@
+{
+  "Module": "AntiTrap",
+  "Settings": {
+    "Mode": "MotionTick",
+    "Delay": 400.0,
+    "SwitchMode": "None",
+    "Rotate": "NONE",
+    "SortY": true,
+    "OnlyInHole": false,
+    "key": "NONE"
+  }
+}

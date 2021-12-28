@@ -1,0 +1,7 @@
+{
+  "Module": "CustomFov",
+  "Settings": {
+    "Fov": 30.0,
+    "key": "NONE"
+  }
+}

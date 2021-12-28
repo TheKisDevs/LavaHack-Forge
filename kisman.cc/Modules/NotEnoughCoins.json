@@ -1,0 +1,11 @@
+{
+  "Module": "NotEnoughCoins",
+  "Settings": {
+    "MinProfit": 50000.0,
+    "Demand": 3.0,
+    "MinProfitPercent": 0.0,
+    "AlertSound": true,
+    "OnlyHypixelWorking": true,
+    "key": "NONE"
+  }
+}

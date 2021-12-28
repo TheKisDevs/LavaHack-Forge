@@ -1,0 +1,11 @@
+{
+  "Module": "AntiBow",
+  "Settings": {
+    "Packet": false,
+    "Range": 40.0,
+    "CheckUse": false,
+    "MaxUse": 10.0,
+    "BowInHandCheck": true,
+    "key": "NONE"
+  }
+}

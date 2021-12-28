@@ -1,0 +1,13 @@
+{
+  "Module": "CustomFog",
+  "Settings": {
+    "Red": 1.0,
+    "Green": 0.0,
+    "Blue": 0.0,
+    "Rainbow": true,
+    "Saturation": 1.0,
+    "Bringhtness": 1.0,
+    "Delay": 100.0,
+    "key": "NONE"
+  }
+}

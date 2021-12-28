@@ -1,0 +1,8 @@
+{
+  "Module": "PacketFly",
+  "Settings": {
+    "AntiKick": false,
+    "Mode": "Up",
+    "key": "NONE"
+  }
+}

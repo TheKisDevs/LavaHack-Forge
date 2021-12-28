@@ -1,0 +1,14 @@
+{
+  "Module": "StorageESP",
+  "Settings": {
+    "Distance": 100.0,
+    "Chest": true,
+    "EChest": true,
+    "ShulkerBox": true,
+    "Dispenser": true,
+    "Furnace": true,
+    "Hopper": true,
+    "Dropper": true,
+    "key": "NONE"
+  }
+}

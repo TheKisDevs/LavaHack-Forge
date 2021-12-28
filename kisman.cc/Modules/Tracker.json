@@ -1,0 +1,8 @@
+{
+  "Module": "Tracker",
+  "Settings": {
+    "AutoEnable": false,
+    "AutoDisable": true,
+    "key": "NONE"
+  }
+}

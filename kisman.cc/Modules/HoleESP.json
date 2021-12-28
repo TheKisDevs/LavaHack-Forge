@@ -1,0 +1,17 @@
+{
+  "Module": "HoleESP",
+  "Settings": {
+    "Radius": 8.0,
+    "IgnoreOwnHole": false,
+    "FlatOwn": false,
+    "SlabHeight": 0.5,
+    "Width": 1.0,
+    "Type": "Both",
+    "Mode": "Air",
+    "UFOAlpha": 255.0,
+    "ObsidianHoles": true,
+    "BedrockHoles": true,
+    "CusomMode": "Single",
+    "key": "NONE"
+  }
+}

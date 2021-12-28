@@ -1,0 +1,24 @@
+{
+  "Module": "AutoFirework",
+  "Settings": {
+    "Delay": 1.0,
+    "PlaceDelay": 1000.0,
+    "PlaceMode": "Normal",
+    "Rotate": true,
+    "BlocksPerTick": 8.0,
+    "AntiScaffold": false,
+    "AntiStep": false,
+    "SurroundPlacing": true,
+    "Range": 4.0,
+    "RayTrace": false,
+    "SwitchMode": "NORMAL",
+    "SwitchReturnObby": true,
+    "SwitchReturnFirework": true,
+    "MinHealthPause": false,
+    "RequiredHealth": 11.0,
+    "PauseWhileEating": false,
+    "PauseIfHittingBlock": false,
+    "FireworkHand": "Default",
+    "key": "GRAVE"
+  }
+}

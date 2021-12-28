@@ -1,0 +1,14 @@
+{
+  "Module": "XRay",
+  "Settings": {
+    "Range": 50.0,
+    "Coal": false,
+    "Iron": false,
+    "Gold": false,
+    "Redstone": false,
+    "Lapis": false,
+    "Diamond": false,
+    "Emerald": false,
+    "key": "NONE"
+  }
+}

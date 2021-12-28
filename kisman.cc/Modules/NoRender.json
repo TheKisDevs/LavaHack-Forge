@@ -1,0 +1,14 @@
+{
+  "Module": "NoRender",
+  "Settings": {
+    "Fog": false,
+    "HurtCam": false,
+    "Armor": false,
+    "Overlay": false,
+    "Potion": false,
+    "Weather": false,
+    "Block": false,
+    "Lava": false,
+    "key": "NONE"
+  }
+}

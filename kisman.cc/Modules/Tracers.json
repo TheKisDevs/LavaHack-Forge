@@ -1,0 +1,10 @@
+{
+  "Module": "Tracers",
+  "Settings": {
+    "Players": false,
+    "PlayersAstolfo": false,
+    "Friends": false,
+    "FriendsAstolfo": true,
+    "key": "NONE"
+  }
+}

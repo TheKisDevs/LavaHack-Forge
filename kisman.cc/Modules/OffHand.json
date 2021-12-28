@@ -1,0 +1,13 @@
+{
+  "Module": "OffHand",
+  "Settings": {
+    "Health": 11.0,
+    "Mode": "Totem",
+    "FallBackMode": "Crystal",
+    "FallBackDistance": 15.0,
+    "TotemOnElytra": true,
+    "OffhandGapOnSword": true,
+    "HotbarFirst": false,
+    "key": "NONE"
+  }
+}

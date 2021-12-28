@@ -1,0 +1,8 @@
+{
+  "Module": "TickShift",
+  "Settings": {
+    "Ticks": 18.0,
+    "Timer": 1.8,
+    "key": "NONE"
+  }
+}

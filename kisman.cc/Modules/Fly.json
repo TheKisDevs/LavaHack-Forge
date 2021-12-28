@@ -1,0 +1,13 @@
+{
+  "Module": "Fly",
+  "Settings": {
+    "Mode": "Vanilla",
+    "FlySpeed": 0.10000000149011612,
+    "Glider": true,
+    "AutoUp": true,
+    "AutoDown": true,
+    "Speed": 2.91,
+    "Glide": 0.03,
+    "key": "NONE"
+  }
+}

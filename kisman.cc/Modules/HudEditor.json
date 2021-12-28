@@ -1,0 +1,23 @@
+{
+  "Module": "HudEditor",
+  "Settings": {
+    "AstolfoColor": false,
+    "ArrayListMode": "RIGHT",
+    "ArrayListY": 150.0,
+    "ArrayGradient": "None",
+    "ArrayGradientDiff": 200.0,
+    "Offsets": 1.0,
+    "PvpInfoY": 200.0,
+    "OffHandRender": false,
+    "ExtraInfo": false,
+    "Damage": false,
+    "MaxDistance": 50.0,
+    "RadarY": 21.0,
+    "SpeedMode": "km/h",
+    "LogoMode": "Simple",
+    "Glow": false,
+    "GlowOffset": 6.0,
+    "Name Bold": false,
+    "key": "GRAVE"
+  }
+}
