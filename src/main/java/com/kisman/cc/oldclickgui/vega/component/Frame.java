@@ -67,9 +67,7 @@ public class Frame {
 
         if(open && !buttons.isEmpty()) {
             for (Button button : buttons) {
-                if (button.y + button.offset < Minecraft.getMinecraft().tempDisplayHeight && button.y + button.offset>0) {
                     button.renderComponent();
-                }
             }
         }
     }
