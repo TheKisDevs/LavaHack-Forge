@@ -21,6 +21,11 @@ build
 eclipse
 run
 kisman.cc
+logs
+saves
+config
+screenshots
+crash-reports
 
 # Files from Forge MDK
 forge*changelog.txt
