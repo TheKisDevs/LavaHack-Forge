@@ -39,7 +39,7 @@
     "NotEnoughCoins": false,
     "ExampleModule": false,
     "Particle": false,
-    "SandBoxTest": true,
+    "SandBoxTest": false,
     "Test": false,
     "AntiSpamBypass": false,
     "AutoEZ": false,
