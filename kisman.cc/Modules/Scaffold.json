@@ -1,0 +1,9 @@
+{
+  "Module": "Scaffold",
+  "Settings": {
+    "Mode": "Tower",
+    "StopMotion": true,
+    "Delay": 0.16,
+    "key": "NONE"
+  }
+}

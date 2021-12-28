@@ -2,10 +2,13 @@ package com.kisman.cc.oldclickgui.vega.component.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.oldclickgui.component.components.sub.Keybind;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
+import com.kisman.cc.oldclickgui.vega.component.components.sub.KeyBind;
 import com.kisman.cc.oldclickgui.vega.component.components.sub.ModeButton;
 import com.kisman.cc.oldclickgui.vega.component.components.sub.Slider;
+import com.kisman.cc.oldclickgui.vega.component.components.sub.StringButton;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -40,15 +43,24 @@ public class Button {
         int opY = offset + 12;
 
         if(mod != null) {
+
+            comp.add(new KeyBind(this, opY));
+            opY += 12;
+
             if(Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
                 for(Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
-                    if(set.isCombo()) {
-                        comp.add(new ModeButton(this, mod, opY));
+                    if(set.isCheck()) {
+                        comp.add(new ModeButton(this, set, opY));
                         opY += height;
                     }
 
                     if(set.isSlider()) {
                         comp.add(new Slider(this, set, opY));
+                        opY += height;
+                    }
+
+                    if(set.isCombo()) {
+                        comp.add(new StringButton(this, set, opY));
                         opY += height;
                     }
                 }
@@ -100,6 +112,11 @@ public class Button {
     public void updateComponent(int mouseX, int mouseY) {
         this.x = parent.x;
         this.y = parent.y;
+        for(Component comp : comp)
+        {
+            comp.updateComponent(mouseX, mouseY);
+            parent.refresh();
+        }
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {

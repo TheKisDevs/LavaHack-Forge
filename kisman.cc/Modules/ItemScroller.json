@@ -1,0 +1,7 @@
+{
+  "Module": "ItemScroller",
+  "Settings": {
+    "ScrollSpeed": 20.0,
+    "key": "NONE"
+  }
+}

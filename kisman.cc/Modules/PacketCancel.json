@@ -1,0 +1,11 @@
+{
+  "Module": "PacketCancel",
+  "Settings": {
+    "CPacketInput": false,
+    "CPacketPlayer": false,
+    "CPacketEntityAction": false,
+    "CPacketUseEntity": false,
+    "CPacketVehicleMove": false,
+    "key": "NONE"
+  }
+}

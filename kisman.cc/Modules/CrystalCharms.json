@@ -1,0 +1,26 @@
+{
+  "Module": "CrystalCharms",
+  "Settings": {
+    "Mode": "Fill",
+    "ScaleX": 0.0,
+    "ScaleY": 0.0,
+    "ScaleZ": 0.0,
+    "TranslateX": 0.0,
+    "TranslateY": 0.0,
+    "TranslateZ": 0.0,
+    "RotateX": 0.0,
+    "RotateY": 0.0,
+    "RotateZ": 0.0,
+    "InsideCube": true,
+    "OutsideCube": true,
+    "OutsideCube2": true,
+    "Texture": false,
+    "CustomColor": false,
+    "OutlineMode": "Wire",
+    "LineWidht": 3.0,
+    "Enchanted": false,
+    "CrystalSpeed": 3.0,
+    "CrystalBounce": 0.20000000298023224,
+    "key": "NONE"
+  }
+}

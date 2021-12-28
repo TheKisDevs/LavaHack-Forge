@@ -1,0 +1,9 @@
+{
+  "Module": "Color",
+  "Settings": {
+    "Line": false,
+    "LineMode": "LeftLine",
+    "SetLineMode": "Default",
+    "key": "NONE"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "Module": "Surround",
+  "Settings": {
+    "SurroundVec": "BASE",
+    "Completion": "AIR",
+    "Center": "TELEPORT",
+    "Switch": "NORMAL",
+    "Hand": "MAINHAND",
+    "BlocksPerTick": 4.0,
+    "RayTrace": false,
+    "Packet": false,
+    "Confirm": false,
+    "Reactive": true,
+    "ChainPop": false,
+    "Rotate": "NONE",
+    "RotateCenter": false,
+    "RotateRandom": false,
+    "Render": true,
+    "RenderMode": "FILL",
+    "key": "NONE"
+  }
+}

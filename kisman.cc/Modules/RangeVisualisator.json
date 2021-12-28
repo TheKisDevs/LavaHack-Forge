@@ -1,0 +1,11 @@
+{
+  "Module": "RangeVisualisator",
+  "Settings": {
+    "Mode": "Sphere",
+    "Radius": 4.5,
+    "LineWidth": 1.5,
+    "Own": "None",
+    "RayTrace": true,
+    "key": "NONE"
+  }
+}

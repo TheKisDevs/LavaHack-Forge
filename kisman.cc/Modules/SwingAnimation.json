@@ -1,0 +1,10 @@
+{
+  "Module": "SwingAnimation",
+  "Settings": {
+    "Mode": "Strong",
+    "SwingMode": "1",
+    "StrongMode": "Blockhit1",
+    "IgnoreEating": true,
+    "key": "NONE"
+  }
+}

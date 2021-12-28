@@ -1,0 +1,7 @@
+{
+  "Module": "TeamRusherLag",
+  "Settings": {
+    "Lag Time (in ms)": 3000.0,
+    "key": "NONE"
+  }
+}

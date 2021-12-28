@@ -1,0 +1,12 @@
+{
+  "Module": "PlayerModifier",
+  "Settings": {
+    "RotateX": 0.0,
+    "RotateY": 0.0,
+    "RotateZ": 0.0,
+    "AutoRotateX": false,
+    "AutoRotateY": false,
+    "AutoRotateZ": false,
+    "key": "NONE"
+  }
+}

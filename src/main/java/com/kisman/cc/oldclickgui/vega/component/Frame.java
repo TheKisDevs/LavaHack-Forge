@@ -89,11 +89,13 @@ public class Frame {
             b.offset = off;
             off += height;
 
-            if(!b.open) continue;
-
-            for(Component comp : b.comp) {
-                comp.newOff(off);
-                off += height;
+            if(b.open)
+            {
+                for(Component comp : b.comp) {
+                    comp.newOff(off);
+                    comp.renderComponent();
+                    off += height;
+                }
             }
         }
     }

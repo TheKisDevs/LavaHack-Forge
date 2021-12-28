@@ -1,0 +1,14 @@
+{
+  "Module": "FastPlace",
+  "Settings": {
+    "All": false,
+    "Obby": false,
+    "EnderChest": false,
+    "Crystal": true,
+    "Exp": true,
+    "Minecart": false,
+    "FeetExp": false,
+    "PacketCrystal": false,
+    "key": "NONE"
+  }
+}

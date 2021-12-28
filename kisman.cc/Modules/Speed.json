@@ -1,0 +1,11 @@
+{
+  "Module": "Speed",
+  "Settings": {
+    "SpeedMode": "YPort",
+    "YPortSpeed": 0.05999999865889549,
+    "Water": false,
+    "Lava": false,
+    "StiSpeed": 4.0,
+    "key": "GRAVE"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "Module": "CityESP",
+  "Settings": {
+    "Range": 50.0,
+    "Bebrock": false,
+    "Obby": true,
+    "OnlyIfCanPlaceCrystal": true,
+    "IgnoreOwn": false,
+    "key": "NONE"
+  }
+}

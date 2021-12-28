@@ -1,0 +1,17 @@
+{
+  "Module": "Config",
+  "Settings": {
+    "Friends": true,
+    "Name Mode": "kismancc",
+    "ScrollSpeed": 15.0,
+    "GuiGlow": true,
+    "GlowOffset": 6.0,
+    "GuiAstolfo": false,
+    "GuiRenderSize": false,
+    "PulseMin": 255.0,
+    "PulseMax": 110.0,
+    "PulseSpeed": 1.5,
+    "Use Consolas in CSGui": false,
+    "key": "NONE"
+  }
+}
