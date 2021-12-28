@@ -2,7 +2,7 @@
   "Module": "CustomFont",
   "Settings": {
     "Mode": "Comfortaa Light",
-    "Bold": true,
+    "Bold": false,
     "Italic": true,
     "key": "K"
   }

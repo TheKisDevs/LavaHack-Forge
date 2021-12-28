@@ -40,9 +40,12 @@ public class Gui extends GuiScreen {
         scrollWheelCheck();
         for(Frame frame : frames) {
             frame.renderComponent();
-            frame.updateComponent(mouseX, mouseY);
+            //frame.updateComponent(mouseX, mouseY);
             for(Button b : frame.buttons) {
-                b.updateComponent(mouseX, mouseY);
+                //b.renderComponent();
+                //b.updateComponent(mouseX, mouseY);
+                b.x = b.parent.x;
+                b.y = b.parent.y;
                 for(Component comp : b.comp)
                 {
                     comp.updateComponent(mouseX, mouseY);

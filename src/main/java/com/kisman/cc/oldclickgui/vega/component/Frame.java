@@ -5,8 +5,10 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
+import com.kisman.cc.util.Timer;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 import java.util.ArrayList;
@@ -21,13 +23,14 @@ public class Frame {
     public int dragX = 0, dragY = 0;
     public boolean dragging = false;
     public boolean open = true;
-
+    public Timer renderTimer;
     public Frame(Category cat, int x, int y) {
         buttons = new ArrayList<>();
         this.x = x;
         this.y = y;
         this.cat = cat;
-
+        this.renderTimer = new Timer();
+        this.renderTimer.reset();
         int offset = height;
 
         for(Module mod : Kisman.instance.moduleManager.modules) {
@@ -64,7 +67,7 @@ public class Frame {
 
         if(open && !buttons.isEmpty()) {
             for (Button button : buttons) {
-                button.renderComponent();
+                    button.renderComponent();
             }
         }
     }
