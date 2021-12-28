@@ -184,13 +184,12 @@ public class AutoCrystalRewrite extends Module {
 
         if(needPause()) return;
 
-//        findNewTarget();
         target = EntityUtil.getTarget(targetRange.getValFloat());
 
         if (target == null) {
             current = null;
             return;
-        }
+        } else super.setDisplayInfo("[" + target.getName() + "]");
 
         doPlace();
         doBreak();

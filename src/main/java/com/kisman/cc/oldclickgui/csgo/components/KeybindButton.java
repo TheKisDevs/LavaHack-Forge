@@ -1,6 +1,8 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.IRenderer;
+import com.kisman.cc.oldclickgui.csgo.Window;
 import org.lwjgl.input.Keyboard;
 
 import java.util.function.Function;
@@ -36,6 +38,12 @@ public class KeybindButton extends Button {
     }
 
     @Override
+    public void render() {
+        super.render();
+        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Config.instance.guiAstolfo.getValBoolean() && listening ? renderer.astolfoColorToObj() :  Window.FOREGROUND);
+    }
+
+    @Override
     public void setOnClickListener(ActionEventListener listener) {
         if (getOnClickListener() != null) {
             ActionEventListener old = getOnClickListener();
@@ -44,10 +52,7 @@ public class KeybindButton extends Button {
                 listener.onActionEvent();
                 old.onActionEvent();
             });
-        } else {
-            super.setOnClickListener(listener);
-        }
-
+        } else super.setOnClickListener(listener);
     }
 
     @Override
@@ -58,10 +63,7 @@ public class KeybindButton extends Button {
             if (Keyboard.getEventKey() != 256 && Keyboard.getEventCharacter() != 0) {
                 int newValue = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 
-
-                if (listener != null)
-                    if (listener.onValueChange(newValue))
-                        this.value = newValue;
+                if (listener != null) if (listener.onValueChange(newValue)) this.value = newValue;
             }
 
             updateState();
@@ -76,11 +78,8 @@ public class KeybindButton extends Button {
     }
 
     private void updateState() {
-        if (listening) {
-            setTitle("Press a button...");
-        } else {
-            setTitle(keyNameResolver.apply(value));
-        }
+        if (listening) setTitle("Press a button...");
+        else setTitle(keyNameResolver.apply(value));
     }
 
     public int getValue() {

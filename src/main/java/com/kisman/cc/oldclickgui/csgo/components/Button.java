@@ -1,14 +1,13 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
-import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
-import com.kisman.cc.oldclickgui.csgo.IRenderer;
-import com.kisman.cc.oldclickgui.csgo.Window;
+import com.kisman.cc.module.client.Config;
+import com.kisman.cc.oldclickgui.csgo.*;
 
 public class Button extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;
     private static final int PREFERRED_HEIGHT = 22;
 
-    private String title;
+    public String title;
     private int preferredWidth;
     private int preferredHeight;
     private boolean hovered;
@@ -30,7 +29,7 @@ public class Button extends AbstractComponent {
     @Override
     public void render() {
         renderer.drawRect(x, y, getWidth(), getHeight(), hovered ? Window.SECONDARY_FOREGROUND : Window.TERTIARY_FOREGROUND);
-        renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, hovered ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+        renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
         //y + renderer.getStringHeight(title) / 4
         renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);

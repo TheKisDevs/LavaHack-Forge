@@ -1,5 +1,7 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.Module;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
 
 public class Spoiler extends AbstractComponent {
@@ -11,6 +13,7 @@ public class Spoiler extends AbstractComponent {
     private ActionEventListener listener;
     private Pane contentPane;
     private boolean opened = false;
+    private Module mod = null;
 
     public Spoiler(IRenderer renderer, String title, int preferredWidth, int preferredHeight, Pane contentPane) {
         super(renderer);
@@ -22,8 +25,10 @@ public class Spoiler extends AbstractComponent {
         setTitle(title);
     }
 
-    public Spoiler(IRenderer renderer, String title, int preferredWidth, Pane contentPane) {
+    public Spoiler(IRenderer renderer, String title, int preferredWidth, Pane contentPane) {this(renderer, title, preferredWidth, PREFERRED_HEIGHT, contentPane);}
+    public Spoiler(IRenderer renderer, String title, int preferredWidth, Pane contentPane, Module mod) {
         this(renderer, title, preferredWidth, PREFERRED_HEIGHT, contentPane);
+        this.mod = mod;
     }
 
     @Override
@@ -32,7 +37,7 @@ public class Spoiler extends AbstractComponent {
 
         renderer.drawOutline(x, y, getWidth(), preferredHeight, 1.0f, Window.SECONDARY_FOREGROUND);
 
-        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + preferredHeight / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);
+        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + preferredHeight / 2 - renderer.getStringHeight(title) / 2, title, Config.instance.guiAstolfo.getValBoolean() && isToggled() ? renderer.astolfoColorToObj() : Window.FOREGROUND);
 
         if (opened) {
             updateBounds();
@@ -75,9 +80,8 @@ public class Spoiler extends AbstractComponent {
         return opened && contentPane.mousePressed(button, x, y, offscreen);
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public boolean isToggled() {return mod != null ? mod.isToggled() : false;}
+    public String getTitle() {return title;}
 
     public void setTitle(String title) {
         this.title = title;

@@ -3,15 +3,13 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import net.minecraft.util.EnumHand;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * @author _kisman_(Value)
+ * @author _kisman_(Value & HandModel & Item Alpha)
  * @author NekoPvP(Item FOV)
  */
 
@@ -41,27 +39,27 @@ public class ViewModel extends Module {
     //hand pos modifier
     private Setting handLine = new Setting("HandLine", this, "Hand");
     public Setting hands = new Setting("Hands", this, false);
-    public Setting handRightX = new Setting("HandX", this, 0, -4, 4, false);
-    public Setting handRightY = new Setting("HandY", this, 0, -4, 4, false);
-    public Setting handRightZ = new Setting("HandZ", this, 0, -4, 4, false);
-    public Setting handRightRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
-    public Setting handRightRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
-    public Setting handRightRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
-    public Setting handRightScaleX = new Setting("HandScaleX", this, 0, -2, 2, false);
-    public Setting handRightScaleY = new Setting("HandScaleY", this, 0, -2, 2, false);
-    public Setting handRightScaleZ = new Setting("HandScaleZ", this, 0, -2, 2, false);
-    public Setting handLeftX = new Setting("HandX", this, 0, -4, 4, false);
-    public Setting handLeftY = new Setting("HandY", this, 0, -4, 4, false);
-    public Setting handLeftZ = new Setting("HandZ", this, 0, -4, 4, false);
-    public Setting handLeftRotateX = new Setting("HandRotateX", this, 0, 0, 360, false);
-    public Setting handLeftRotateY = new Setting("HandRotateY", this, 0, 0, 360, false);
-    public Setting handLeftRotateZ = new Setting("HandRotateZ", this, 0, 0, 360, false);
-    public Setting handLeftScaleX = new Setting("HandScaleX", this, 0, -2, 2, false);
-    public Setting handLeftScaleY = new Setting("HandScaleY", this, 0, -2, 2, false);
-    public Setting handLeftScaleZ = new Setting("HandScaleZ", this, 0, -2, 2, false);
+    public Setting handRightX = new Setting("HandRightX", this, 0, -4, 4, false);
+    public Setting handRightY = new Setting("HandRightY", this, 0, -4, 4, false);
+    public Setting handRightZ = new Setting("HandRightZ", this, 0, -4, 4, false);
+    public Setting handRightRotateX = new Setting("HandRotateRightX", this, 0, 0, 360, false);
+    public Setting handRightRotateY = new Setting("HandRotateRightY", this, 0, 0, 360, false);
+    public Setting handRightRotateZ = new Setting("HandRotateRightZ", this, 0, 0, 360, false);
+    public Setting handRightScaleX = new Setting("HandScaleRightX", this, 0, -2, 2, false);
+    public Setting handRightScaleY = new Setting("HandScaleRightY", this, 0, -2, 2, false);
+    public Setting handRightScaleZ = new Setting("HandScaleRightZ", this, 0, -2, 2, false);
+    public Setting handLeftX = new Setting("HandLeftX", this, 0, -4, 4, false);
+    public Setting handLeftY = new Setting("HandLeftY", this, 0, -4, 4, false);
+    public Setting handLeftZ = new Setting("HandLeftZ", this, 0, -4, 4, false);
+    public Setting handLeftRotateX = new Setting("HandRotateLeftX", this, 0, 0, 360, false);
+    public Setting handLeftRotateY = new Setting("HandRotateLeftY", this, 0, 0, 360, false);
+    public Setting handLeftRotateZ = new Setting("HandRotateLeftZ", this, 0, 0, 360, false);
+    public Setting handLeftScaleX = new Setting("HandScaleLeftX", this, 0, -2, 2, false);
+    public Setting handLeftScaleY = new Setting("HandScaleLeftY", this, 0, -2, 2, false);
+    public Setting handLeftScaleZ = new Setting("HandScaleLeftZ", this, 0, -2, 2, false);
 
     //custom items alpha
-    private Setting itemLine = new Setting("ItenLine", this, "Item");
+    private Setting itemLine = new Setting("ItemLine", this, "Item");
     public Setting alpha = new Setting("Alpha", this, 255, 0, 255, true);
 
 
@@ -123,15 +121,8 @@ public class ViewModel extends Module {
         setmgr.rSetting(alpha);
     }
 
-    @SubscribeEvent
-    public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {
-        if(itemFOV.getValBoolean()) {
-            event.setFOV((float) fov.getValDouble());
-        }
-    }
-
-    @SubscribeEvent
-    public void onRenderArms(RenderSpecificHandEvent event) {
+    @SubscribeEvent public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {if (itemFOV.getValBoolean()) event.setFOV((float) fov.getValDouble());}
+    @SubscribeEvent public void onRenderArms(RenderSpecificHandEvent event) {
         if(hands.getValBoolean()) {
             switch (event.getHand()) {
                 case MAIN_HAND: {

@@ -4,13 +4,6 @@
   "package": "com.kisman.cc.mixin.mixins",
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
-    "accessor.AccessorCPacketUseEntity",
-    "accessor.AccessorEntityPlayer",
-    "accessor.AccessorPlayerControllerMP",
-    "accessor.ISession",
-    "accessor.ICPacketPlayer",
-    "accessor.IEntityPlayerSP",
-    "accessor.IPlayerControllerMP",
     "MixinAbstractClientPlayer",
     "MixinEntity",
     "MixinEntityEnderCrystal",
@@ -29,12 +22,19 @@
     "MixinModelEnderCrystal",
     "MixinMovementInputFromOptions",
     "MixinNetworkManager",
-    "MixinPenderPlayer",
     "MixinRenderEnderCrystal",
     "MixinRendererLivingEntity",
     "MixinRenderGlobal",
     "MixinRenderItem",
+    "MixinRenderPlayer",
     "MixinTimer",
-    "MixinWorld"
+    "MixinWorld",
+    "accessor.AccessorCPacketUseEntity",
+    "accessor.AccessorEntityPlayer",
+    "accessor.AccessorPlayerControllerMP",
+    "accessor.ICPacketPlayer",
+    "accessor.IEntityPlayerSP",
+    "accessor.IPlayerControllerMP",
+    "accessor.ISession"
   ]
 }
