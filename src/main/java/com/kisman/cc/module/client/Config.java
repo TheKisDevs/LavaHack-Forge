@@ -18,7 +18,6 @@ public class Config extends Module {
     public Setting pulseMin = new Setting("PulseMin", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("PulseMax", this, 110, 0, 255, true);
     public Setting pulseSpeed = new Setting("PulseSpeed", this, 1.5, 0.1, 10, false);
-    public Setting useConsolasFontInCSGui = new Setting("Use Consolas in CSGui", this, false);
 
 
     public Config() {
@@ -37,7 +36,6 @@ public class Config extends Module {
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
         setmgr.rSetting(pulseSpeed);
-        setmgr.rSetting(useConsolasFontInCSGui);
     }
 
     public enum NameMode {

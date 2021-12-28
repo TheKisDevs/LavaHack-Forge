@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.components.Pane;
 
 import java.awt.*;
@@ -42,7 +43,7 @@ public class Window {
         renderer.drawRect(x, y, width, height, BACKGROUND);
         renderer.drawRect(x, y, width, headerHeight, SECONDARY_FOREGROUND);
 
-        renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, FOREGROUND);
+        renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : FOREGROUND);
 
         if (contentPane != null) {
             if (contentPane.isSizeChanged()) {

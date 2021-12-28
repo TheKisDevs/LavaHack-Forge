@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
 import com.kisman.cc.oldclickgui.csgo.IRenderer;
@@ -33,12 +34,12 @@ public class CheckBox extends AbstractComponent {
         renderer.drawRect(x, y, preferredHeight, preferredHeight, hovered ? Window.SECONDARY_FOREGROUND : Window.TERTIARY_FOREGROUND);
 
         if (selected) {
-            Color color = hovered ? Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND;
+            Color color = hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND;
 
-            renderer.drawRect(x + 2, y + 3, preferredHeight - 5, preferredHeight - 5, new Color(color.getRed(), color.getGreen(), color.getBlue()));
+            renderer.drawRect(x, y, preferredHeight, preferredHeight,color);
         }
 
-        renderer.drawOutline(x, y, preferredHeight, preferredHeight, 1.0f, hovered ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+        renderer.drawOutline(x, y, preferredHeight, preferredHeight, 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
         //y + renderer.getStringHeight(title) / 4
         renderer.drawString(x + preferredHeight + preferredHeight / 4, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);

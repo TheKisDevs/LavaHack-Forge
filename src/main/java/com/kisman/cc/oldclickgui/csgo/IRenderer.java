@@ -13,4 +13,6 @@ public interface IRenderer {
     void initMask();
     void useMask();
     void disableMask();
+    int astolfoColor();
+    Color astolfoColorToObj();
 }

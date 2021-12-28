@@ -40,7 +40,6 @@ public class HUD extends Module {
 	public Setting pvpY = new Setting("PvpInfoY", this, 200, 0, mc.displayHeight, true);
 
 	private Setting armLine = new Setting("ArmLine", this, "Armor");
-	public Setting armOffRender = new Setting("OffHandRender", this, false);
 	public Setting armExtra = new Setting("ExtraInfo", this, false);
 	public Setting armDmg = new Setting("Damage", this, false);
 
@@ -79,7 +78,6 @@ public class HUD extends Module {
 		setmgr.rSetting(pvpY);
 
 		setmgr.rSetting(armLine);
-		setmgr.rSetting(armOffRender);
 		setmgr.rSetting(armExtra);
 		setmgr.rSetting(armDmg);
 

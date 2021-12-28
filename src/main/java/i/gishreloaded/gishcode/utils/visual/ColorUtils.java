@@ -14,12 +14,6 @@ public class ColorUtils {
         return new Color((float) c.getRed() / 255.0f, (float) c.getGreen() / 255.0f, (float) c.getBlue() / 255.0f, (float) c.getAlpha() / 255.0f);
     }
 
-	public static int color(int r, int g, int b, int a) {return new Color(r, g, b, a).getRGB();}
-	public static int color(float r, float g, float b, float a) {return new Color(r, g, b, a).getRGB();}
-	public static int getColor(int a, int r, int g, int b) {return a << 24 | r << 16 | g << 8 | b;}
-    public static int getColor(int r, int g, int b) {return 255 << 24 | r << 16 | g << 8 | b;}
-    public static int getColor(Color color) {return color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24;}
-
     public static int astolfoColors(int yOffset, int yTotal) {
         float hue;
         float speed = 2900.0f;
@@ -38,21 +32,10 @@ public class ColorUtils {
 
     public static Color astolfoColorsToColorObj(int yOffset, int yTotal) { return astolfoColorsToColorObj(yOffset, yTotal, 255); }
 
-    public static int getRed(int color) {return new Color(color).getRed();}
-    public static int getGreen(int color) {return new Color(color).getGreen();}
-    public static int getBlue(int color) {return new Color(color).getBlue();}
-    public static int getAlpha(int color) {return new Color(color).getAlpha();}
-
     public static int rainbow(int delay, long index) {
         double rainbowState = Math.ceil(System.currentTimeMillis() + index + (long)delay) / 15.0;
         return Color.getHSBColor((float) ((rainbowState %= 360f) / 360f), 0.4f, 1.0f).getRGB();
     }
-
-    public static Color rainbow(final int delay, final float s, final float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);}
-    public static Color rainbowRGB(int delay, float s, float b) {return new Color(getRed((Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b))), getGreen(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)), getBlue(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)));}
-    public static int getColor(int brightness) {return ColorUtils.getColor(brightness, brightness, brightness, 255);}
-    public static int getColor(int brightness, int alpha) {return ColorUtils.getColor(brightness, brightness, brightness, alpha);}
-
     public static void glColor(final int hex, final int alpha) {
         final float red = (hex >> 16 & 0xFF) / 255F;
         final float green = (hex >> 8 & 0xFF) / 255F;
@@ -61,5 +44,20 @@ public class ColorUtils {
         GlStateManager.color(red, green, blue, alpha / 255F);
     }
 
+    public static int color(int r, int g, int b, int a) {return new Color(r, g, b, a).getRGB();}
+    public static int color(float r, float g, float b, float a) {return new Color(r, g, b, a).getRGB();}
+    public static int getColor(int a, int r, int g, int b) {return a << 24 | r << 16 | g << 8 | b;}
+    public static int getColor(int r, int g, int b) {return 255 << 24 | r << 16 | g << 8 | b;}
+    public static int getColor(Color color) {return color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24;}
+    public static Color rainbow(final int delay, final float s, final float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);}
+    public static int getRed(int color) {return new Color(color).getRed();}
+    public static int getGreen(int color) {return new Color(color).getGreen();}
+    public static int getBlue(int color) {return new Color(color).getBlue();}
+    public static int getAlpha(int color) {return new Color(color).getAlpha();}
+    public static Color rainbowRGB(int delay, float s, float b) {return new Color(getRed((Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b))), getGreen(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)), getBlue(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)));}
+    public static int getColor(int brightness) {return ColorUtils.getColor(brightness, brightness, brightness, 255);}
+    public static int getColor(int brightness, int alpha) {return ColorUtils.getColor(brightness, brightness, brightness, alpha);}
+    public static Color injectAlpha(final Color color, final int alpha) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);}
+    public static Color injectAlpha(int color, int alpha) {return new Color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), alpha);}
     public static void glColor(Color color) {GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);}
 }

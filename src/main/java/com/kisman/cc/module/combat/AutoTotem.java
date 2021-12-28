@@ -18,9 +18,7 @@ public class AutoTotem extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) {
-            return;
-        }
+        if(mc.player == null && mc.world == null) return;
 
         int totemSlot = 0;
 

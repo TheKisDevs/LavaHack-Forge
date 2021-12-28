@@ -48,4 +48,8 @@ public class FriendManager {
     public boolean isFriend(EntityPlayer player) {
         return friendsName.contains(player.getName());
     }
+
+    public boolean isFriend(String name) {
+        return friendsName.contains(name);
+    }
 }

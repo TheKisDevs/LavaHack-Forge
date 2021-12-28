@@ -1,12 +1,10 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.module.render.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.*;
-import net.minecraft.scoreboard.*;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -15,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 
 @Mixin(RenderPlayer.class)
-public class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
-    public MixinRenderPlayer(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
+public class MixinRenderPlayer {//extends RenderLivingBase<AbstractClientPlayer> {
+/*    public MixinRenderPlayer(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
         super(renderManagerIn, modelBaseIn, shadowSizeIn);
-    }
+    }*/
 /*    @Inject(method = "renderEntityName", at = @At("HEAD"), cancellable = true)
     public void onRenderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo ci) {
         EventRenderEntityName event = new EventRenderEntityName(entityIn, x, y, z, name, distanceSq);
@@ -32,7 +30,7 @@ public class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
     /**
      * @author _kisman_
      */
-    @Overwrite
+/*    @Overwrite
     protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq) {
         if (distanceSq < 100.0D) {
             Scoreboard scoreboard = entityIn.getWorldScoreboard();
@@ -45,16 +43,10 @@ public class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
         }
 
         super.renderEntityName(entityIn, x, y, z, name, distanceSq);
-    }
+    }*/
+    @Shadow public ResourceLocation getEntityTexture(AbstractClientPlayer abstractClientPlayer) {return null;}
 
-    @Nullable
-    @Override
-    protected ResourceLocation getEntityTexture(AbstractClientPlayer abstractClientPlayer) {
-        return null;
-    }
-
-
-    @Inject(method = "preRenderCallback", at = @At("HEAD"))
+    @Inject(method = "preRenderCallback*", at = @At("HEAD"))
     public void renderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime, CallbackInfo ci) {
         if(Spin.instance.isToggled()) {
             float f = 0.9357f;
@@ -63,6 +55,6 @@ public class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
             GlStateManager.scale(f, f, f);
 
             GlStateManager.rotate(hue, 1, 0, hue);
-        } else if(Reverse.instance.isToggled()) GlStateManager.rotate(180, 1, 0, 0);
+        } else if(Reverse.instance.isToggled() && !Spin.instance.isToggled()) GlStateManager.rotate(180, 1, 0, 0);
     }
 }

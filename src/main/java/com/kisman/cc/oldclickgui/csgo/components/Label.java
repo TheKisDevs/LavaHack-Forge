@@ -1,8 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
-import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
-import com.kisman.cc.oldclickgui.csgo.IRenderer;
-import com.kisman.cc.oldclickgui.csgo.Window;
+import com.kisman.cc.oldclickgui.csgo.*;
 
 public class Label extends AbstractComponent {
     private String text;
@@ -14,7 +12,7 @@ public class Label extends AbstractComponent {
 
     @Override
     public void render() {
-        renderer.drawString(x, y, text, Window.FOREGROUND);
+        renderer.drawString(x, y + 11 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
     }
 
     public String getText() {

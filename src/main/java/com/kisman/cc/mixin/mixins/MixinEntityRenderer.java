@@ -142,12 +142,12 @@ public class MixinEntityRenderer {
         tessellator.draw();
         GlStateManager.enableTexture2D();
         if (!isSneaking) {
-            CustomFontUtil.drawString(str, -CustomFontUtil.getStringWidth(str) / 2, verticalShift, 553648127);
+            fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, -1);
             GlStateManager.enableDepth();
         }
 
         GlStateManager.depthMask(true);
-        CustomFontUtil.drawString(str, -CustomFontUtil.getStringWidth(str) / 2, verticalShift, isSneaking ? 553648127 : -1);
+        fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, -1);
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

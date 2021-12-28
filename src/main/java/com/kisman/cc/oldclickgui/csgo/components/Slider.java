@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
 import i.gishreloaded.gishcode.utils.Utils;
 
@@ -56,7 +57,7 @@ public class Slider extends AbstractComponent {
         String text = numberType.getFormatter().apply(value);
 
         //y + renderer.getStringHeight(title) / 4
-        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
+        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() : Window.FOREGROUND);
     }
 
     @Override
@@ -74,13 +75,8 @@ public class Slider extends AbstractComponent {
 
             boolean change = true;
 
-            if (oldValue != newValue && listener != null) {
-                change = listener.onValueChange(newValue);
-            }
-
-            if (change) {
-                value = newValue;
-            }
+            if (oldValue != newValue && listener != null) change = listener.onValueChange(newValue);
+            if (change) value = newValue;
         }
 
     }

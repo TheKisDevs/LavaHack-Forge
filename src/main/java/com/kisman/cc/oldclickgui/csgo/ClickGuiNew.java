@@ -53,7 +53,7 @@ public class ClickGuiNew extends GuiScreen {
 
                 {
                     settingPane.addComponent(new Label(renderer, "Toggle"));
-                    CheckBox cb = new CheckBox(renderer, "Enabled");
+                    CheckBox cb = new CheckBox(renderer, "Toggled");
                     settingPane.addComponent(cb);
 
                     onRenderListeners.add(() -> cb.setSelected(module.isToggled()));
@@ -166,7 +166,7 @@ public class ClickGuiNew extends GuiScreen {
                     }
                 }
 
-                Spoiler spoiler = new Spoiler(renderer, module.getName(), width, settingPane);
+                Spoiler spoiler = new Spoiler(renderer, module.getName(), width, settingPane, module);
 
                 paneList.add(settingPane);
                 spoilers.add(spoiler);

@@ -43,7 +43,6 @@ public class ColorUtil {
     }
 
     public static Color getGradientOffset(Color one, Color two, double offset, final int alpha) {
-
         if(offset > 1){
             double left = offset % 1;
             int off = (int) offset;

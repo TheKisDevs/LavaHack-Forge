@@ -22,20 +22,19 @@ import java.util.Arrays;
 public class OffHand extends Module {
     public static OffHand instance;
 
-    private Setting health = new Setting("Health", this, 11, 0, 20, true);
+    private final Setting health = new Setting("Health", this, 11, 0, 20, true);
 
-    private Setting mode = new Setting("Mode", this, "Totem", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
-    private Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
-    private Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
-    private Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
-    private Setting offhandGapOnSword = new Setting("OffhandGapOnSword", this, true);
+    private final Setting mode = new Setting("Mode", this, "Totem", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
+    private final Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
+    private final Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
+    private final Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
+    private final Setting offhandGapOnSword = new Setting("OffhandGapOnSword", this, true);
 //    private Setting swordItem = new Setting("SwordItem",)
-    private Setting hotbarFirst = new Setting("HotbarFirst", this, false);
+    private final Setting hotbarFirst = new Setting("HotbarFirst", this, false);
 
 
     public OffHand() {
         super("OffHand", "gg", Category.COMBAT);
-        super.setDisplayInfo("[" + mode.getValString() + "]");
 
         instance = this;
 
@@ -46,6 +45,26 @@ public class OffHand extends Module {
         setmgr.rSetting(totemOnElytra);
         setmgr.rSetting(offhandGapOnSword);
         setmgr.rSetting(hotbarFirst);
+    }
+
+    public void update() {
+        if(mc.player == null && mc.world == null) return;
+        if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
+
+        super.setDisplayInfo("[" + mode.getValString() + "]");
+
+        if (!mc.player.getHeldItemMainhand().isEmpty()) {
+            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
+                switchOffHandIfNeed("Gap");
+                return;
+            }
+        }
+
+        if (health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallBackDistance.getValDouble() && !mc.player.isElytraFlying()) || noNearbyPlayers()) {
+            switchOffHandIfNeed("Totem");
+            return;
+        }
+        switchOffHandIfNeed(mode.getValString());
     }
 
     private void switchOffHandIfNeed(String mode) {
@@ -83,53 +102,21 @@ public class OffHand extends Module {
         }
     }
 
-    public void update() {
-        if(mc.player == null && mc.world == null) return;
-        if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
-
-        if (!mc.player.getHeldItemMainhand().isEmpty()) {
-            /*if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !mc.player.isPotionActive(MobEffects.STRENGTH)) {
-                switchOffHandIfNeed("Strength");
-                return;
-            }*/
-
-            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
-                switchOffHandIfNeed("Gapple");
-                return;
-            }
-        }
-
-        if (health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallBackDistance.getValDouble() && !mc.player.isElytraFlying()) || noNearbyPlayers()) {
-            switchOffHandIfNeed("Totem");
-            return;
-        }
-        switchOffHandIfNeed(mode.getValString());
-    }
-
     private boolean isValidTarget(EntityPlayer player) {
         if (player == mc.player) return false;
         if (mc.player.getDistance(player) > 15) return false;
-        if (FriendManager.instance.isFriend(player)) return false;
-
-        return true;
+        return !FriendManager.instance.isFriend(player);
     }
 
     public Item getItemFromModeVal(String mode) {
         switch (mode) {
-            case "Crystal":
-                return Items.END_CRYSTAL;
-            case "Gap":
-                return Items.GOLDEN_APPLE;
-            case "Pearl":
-                return Items.ENDER_PEARL;
-            case "Chorus":
-                return Items.CHORUS_FRUIT;
-            case "Strength":
-                return Items.POTIONITEM;
-            case "Shield":
-                return Items.SHIELD;
-            default:
-                break;
+            case "Crystal": return Items.END_CRYSTAL;
+            case "Gap": return Items.GOLDEN_APPLE;
+            case "Pearl": return Items.ENDER_PEARL;
+            case "Chorus": return Items.CHORUS_FRUIT;
+            case "Strength": return Items.POTIONITEM;
+            case "Shield": return Items.SHIELD;
+            default: break;
         }
 
         return Items.TOTEM_OF_UNDYING;
@@ -137,36 +124,17 @@ public class OffHand extends Module {
 
     private String getItemNameFromModeVal(String mode) {
         switch (mode) {
-            case "Crystal":
-                return "End Crystal";
-            case "Gap":
-                return "Gap";
-            case "Pearl":
-                return "Pearl";
-            case "Chorus":
-                return "Chorus";
-            case "Strength":
-                return "Strength";
-            case "Shield":
-                return "Shield";
-            default:
-                break;
+            case "Crystal": return "End Crystal";
+            case "Gap": return "Gap";
+            case "Pearl": return "Pearl";
+            case "Chorus": return "Chorus";
+            case "Strength": return "Strength";
+            case "Shield": return "Shield";
+            default: break;
         }
 
         return "Totem";
     }
 
-    private boolean noNearbyPlayers() {
-        if (mode.getValString().equalsIgnoreCase("Crystal") && mc.world.playerEntities.stream().noneMatch(e -> e != mc.player && isValidTarget(e))) {
-            return true;
-        }
-        return false;
-    }
-
-    public enum SwordItem {
-        Totem,
-        Gapple,
-        Strength,
-        Smart
-    }
+    private boolean noNearbyPlayers() {return mode.getValString().equalsIgnoreCase("Crystal") && mc.world.playerEntities.stream().noneMatch(e -> e != mc.player && isValidTarget(e));}
 }
