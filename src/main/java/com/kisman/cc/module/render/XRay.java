@@ -22,7 +22,7 @@ public class XRay extends Module {
             Blocks.EMERALD_ORE
     };
 
-    private Colour[] blocksColor = new Colour[] {
+    private final Colour[] blocksColor = new Colour[] {
             new Colour(0f, 0f, 0f),
             new Colour(0.99f, 0.52f, 0.01f),
             new Colour(0.99f, 0.75f, 0.01f),
@@ -61,38 +61,19 @@ public class XRay extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         for(BlockPos pos : BlockInteractionHelper.getSphere(PlayerUtil.GetLocalPlayerPosFloored(), (float) range.getValDouble(), range.getValInt(), false, true, 0)) {
-            for(int i = 0; i < xrayBlocks.length; i++) {
-                renderBlock(pos, i);
-            }
+            for(int i = 0; i < xrayBlocks.length; i++) renderBlock(pos, i);
         }
     }
 
     private void renderBlock(BlockPos pos, int i) {
-        if(i == 0 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[0] && coal.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[0]);
-            return;
-        } else if(i == 1 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[1] && iron.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[1]);
-            return;
-        } else if(i == 2 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[2] && gold.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[2]);
-            return;
-        } else if(i == 3 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[3] && redstone.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[3]);
-            return;
-        } else if(i == 4 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[4] && lapis.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[4]);
-            return;
-        } else if(i == 5 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[5] && diamond.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[5]);
-            return;
-        } else if(i == 6 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[6] && emerald.getValBoolean()) {
-            drawBlockESP(pos, blocksColor[6]);
-            return;
-        }
+        if(i == 0 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[0] && coal.getValBoolean()) drawBlockESP(pos, blocksColor[0]);
+        else if(i == 1 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[1] && iron.getValBoolean()) drawBlockESP(pos, blocksColor[1]);
+        else if(i == 2 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[2] && gold.getValBoolean()) drawBlockESP(pos, blocksColor[2]);
+        else if(i == 3 && (mc.world.getBlockState(pos).getBlock() == xrayBlocks[3] || mc.world.getBlockState(pos).getBlock() == Blocks.LIT_REDSTONE_ORE) && redstone.getValBoolean()) drawBlockESP(pos, blocksColor[3]);
+        else if(i == 4 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[4] && lapis.getValBoolean()) drawBlockESP(pos, blocksColor[4]);
+        else if(i == 5 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[5] && diamond.getValBoolean()) drawBlockESP(pos, blocksColor[5]);
+        else if(i == 6 && mc.world.getBlockState(pos).getBlock() == xrayBlocks[6] && emerald.getValBoolean()) drawBlockESP(pos, blocksColor[6]);
     }
 
-    private void drawBlockESP(BlockPos pos, Colour color) {
-        RenderUtil.drawBlockESP(pos, color.r1, color.g1, color.b1);
-    }
+    private void drawBlockESP(BlockPos pos, Colour color) {RenderUtil.drawBlockESP(pos, color.r1, color.g1, color.b1);}
 }
