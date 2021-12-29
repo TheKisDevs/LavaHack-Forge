@@ -2,10 +2,7 @@ package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
-import com.kisman.cc.hud.hudmodule.player.HandProgress;
-import com.kisman.cc.hud.hudmodule.player.Ping;
-import com.kisman.cc.hud.hudmodule.player.ServerIp;
-import com.kisman.cc.hud.hudmodule.player.Tps;
+import com.kisman.cc.hud.hudmodule.player.*;
 import com.kisman.cc.hud.hudmodule.render.*;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -42,7 +39,7 @@ public class HudModuleManager {
 		modules.add(new Welcomer());
 
 		//player
-		modules.add(new HandProgress());
+		modules.add(new Indicators());
 		modules.add(new Ping());
 		modules.add(new ServerIp());
 		modules.add(new Tps());

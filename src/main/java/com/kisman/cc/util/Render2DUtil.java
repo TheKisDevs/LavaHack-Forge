@@ -15,7 +15,7 @@ import java.awt.*;
 
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void drawLine(int x, int y, int length, DrawLineMode drawLineMode, int color) {
         if(drawLineMode == DrawLineMode.VERTICAL) {
@@ -211,5 +211,9 @@ public class Render2DUtil extends GuiScreen {
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glDisable(GL11.GL_BLEND);
         } else instance.drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
+    }
+
+    public static void drawGradient(int left, int top, int right, int bottom, int startColor, int endColor) {
+        instance.drawGradientRect(left, top, right, bottom, startColor, endColor);
     }
 }
