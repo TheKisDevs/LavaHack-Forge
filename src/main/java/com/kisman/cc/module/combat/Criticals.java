@@ -32,16 +32,12 @@ public class Criticals extends Module {
         if(event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.action.equals(CPacketUseEntity.Action.ATTACK) && mc.player.onGround && !mc.player.isInLava() && !mc.player.isInWater() && !mc.player.isInWeb) {
-                if(onlyKillaura.getValBoolean()) {
-                    if(!KillAura.instance.isToggled()) return;
-                }
+                if(onlyKillaura.getValBoolean()) if(!KillAura.instance.isToggled()) return;
 
                 Entity entity = packet.getEntityFromWorld(mc.world);
 
                 if(entity instanceof EntityLivingBase) {
-                    double x = mc.player.posX,
-                            y = mc.player.posY,
-                            z = mc.player.posZ;
+                    double x = mc.player.posX, y = mc.player.posY, z = mc.player.posZ;
 
                     if(strict.getValBoolean()) {
                         mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y + 0.07, z, false));

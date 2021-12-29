@@ -36,6 +36,12 @@ public class ColorUtils {
         double rainbowState = Math.ceil(System.currentTimeMillis() + index + (long)delay) / 15.0;
         return Color.getHSBColor((float) ((rainbowState %= 360f) / 360f), 0.4f, 1.0f).getRGB();
     }
+
+    public static int rainbowLT(int delay, long index) {
+        double rainbowState = Math.ceil(System.currentTimeMillis() + index + (long)delay) / 3;
+        return Color.getHSBColor((float) ((rainbowState %= 248.0) / 248.0), 0.5f, 0.6f).getRGB();
+    }
+
     public static void glColor(final int hex, final int alpha) {
         final float red = (hex >> 16 & 0xFF) / 255F;
         final float green = (hex >> 8 & 0xFF) / 255F;
