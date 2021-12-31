@@ -13,6 +13,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
+import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.*;
@@ -38,6 +39,7 @@ public class AutoCrystal extends Module {
     private final Setting rotations = new Setting("Spoofs", this, 1, 1, 20, true);
     private final Setting raytrace = new Setting("Raytrace", this, false);
     private final Setting debug = new Setting("Debug", this, false);
+    private final Setting breakCalc = new Setting("Break Calc", this, true);
 
 
     private final Setting rangeLine = new Setting("RangeLine", this, "Range");
@@ -139,6 +141,7 @@ public class AutoCrystal extends Module {
         setmgr.rSetting(rotations);
         setmgr.rSetting(raytrace);
         setmgr.rSetting(debug);
+        setmgr.rSetting(breakCalc);
 
         setmgr.rSetting(rangeLine);
         setmgr.rSetting(placeRange);
@@ -408,24 +411,38 @@ public class AutoCrystal extends Module {
     }
 
     private void breakCrystal() {
-        if(breakTicks++ <= breakDelay.getValInt()) {
-            return;
-        }
+        if(breakTicks++ <= breakDelay.getValInt()) return;
 
-        EntityEnderCrystal crystal = mc.world.loadedEntityList.stream()
-                .filter(entity -> isValidCrystal(entity))
-                .map(entity -> (EntityEnderCrystal) entity)
-                .min(Comparator.comparing(entityEnderCrystal -> mc.player.getDistance(entityEnderCrystal)))
-                .orElse(null);
+        EntityEnderCrystal crystal = null;
+        double max = -1337;
 
-        if(crystal == null) {
-            return;
-        }
+       /* for(Entity entity : mc.world.loadedEntityList) {
+            if(entity instanceof  EntityEnderCrystal && isCrystalValid((EntityEnderCrystal) entity)) {
+                EntityEnderCrystal crystal1 = (EntityEnderCrystal) entity;
+                if(breakCalc.getValBoolean()) {
+                    double dmg = CrystalUtils.calculateDamage(mc.world, crystal1.posX, crystal1.posY, crystal1.posZ, crystal1, terrainIgnore.getValBoolean());
+
+                    if(dmg > max) {
+                        max = dmg;
+                        crystal = crystal1;
+                    }
+                } else {
+                    double dist = -mc.player.getDistance(crystal1);
+
+                    if(dist > max) {
+                        max = dist;
+                        crystal = crystal1;
+                    }
+                }
+            }
+        }*/
+
+        if(crystal == null) return;
 
         final int swordSlot = InventoryUtil.findItem(Items.DIAMOND_SWORD, 0, 9);
         final int oldSlot = mc.player.inventory.currentItem;
 
-        if(antiWeakness.getValBoolean() && mc.player.isPotionActive(MobEffects.WEAKNESS) && swordSlot != -1 && !(mc.player.getHeldItemMainhand().getItem() == Items.DIAMOND_SWORD)) {
+        if(antiWeakness.getValBoolean() && mc.player.isPotionActive(MobEffects.WEAKNESS) && swordSlot != -1 && !(mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) {
             switch((SwitchModes) weaknessSwitchMode.getValEnum()) {
                 case Normal: {
                     InventoryUtil.switchToSlot(swordSlot, false);
@@ -441,19 +458,14 @@ public class AutoCrystal extends Module {
             }
         }
 
-        if(breakHand.getValEnum().equals(Hands.None)) {
-            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        if(packetSwing.getValBoolean()) {
+            mc.player.connection.sendPacket(new CPacketAnimation(breakHand.getValString().equals(Hands.Mainhand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         } else {
-            mc.player.connection.sendPacket(new CPacketUseEntity(crystal, breakHand.getValEnum().equals(Hands.Mainhand) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+            mc.player.swingArm(breakHand.getValString().equals(AutoCrystalRewrite.SwingMode.Mainhand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
         }
 
-        if(breakSwing.getValBoolean()) {
-            swingItem(true);
-        }
-
-        if(oldSlot != -1 && weaknessSwitchMode.getValEnum().equals(SwitchModes.Silent)) {
-            InventoryUtil.switchToSlot(oldSlot, true);
-        }
+        if(oldSlot != -1 && weaknessSwitchMode.getValEnum().equals(SwitchModes.Silent)) InventoryUtil.switchToSlot(oldSlot, true);
 
         breakTicks = 0;
     }
@@ -633,16 +645,18 @@ public class AutoCrystal extends Module {
         Silent
     }
 
-    public enum DelayModes {
-        First("Cooldown"),
-        Second("Multiplier");
+/*    private boolean isCrystalValid(EntityEnderCrystal e) {
+        boolean canSee = mc.player.canEntityBeSeen(e);
+        if (!canSee && (rayTrace.getValString().equals(AutoCrystalRewrite.RayTrace.Full.name()) || rayTrace.getValString().equals(AutoCrystalRewrite.RayTrace.Hit.name()))) return false;
 
-        private final String name;
-
-        DelayModes(String name) {
-            this.name = name;
+        if (breakMode.getValString().equals(AutoCrystalRewrite.BreakMode.Own.name())) {
+            for (BlockPos blockPos : placedCrystals) {
+                if (e.getDistance(blockPos.getX(), blockPos.getY(), blockPos.getZ()) <= 3) continue;
+                return false;
+            }
+        } else if (breakMode.getValString().equals(AutoCrystalRewrite.BreakMode.Smart.name()) && EntityUtil.getHealth(mc.player) - CrystalUtils.calculateDamage(mc.world, e.posX, e.posY, e.posZ, mc.player, terrainIgnore.getValBoolean()) < 0) {
+            return false;
         }
-
-        public String getName() { return name; }
-    }
+        return mc.player.getDistance(e) <= (canSee ? breakRange.getValDouble() : wallBreakRange.getValDouble());
+    }*/
 }

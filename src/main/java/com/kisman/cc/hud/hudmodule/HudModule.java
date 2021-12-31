@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
 public class HudModule {
-    protected static Minecraft mc = Minecraft.getMinecraft();
+	protected static Minecraft mc = Minecraft.getMinecraft();
 
 	private String name, description;
 	private int key;
@@ -34,7 +34,7 @@ public class HudModule {
 		if (this.toggled) this.onEnable();
 		else this.onDisable();
 	}
-	
+
 	public void toggle() {
 		this.toggled = !this.toggled;
 		if (this.toggled) this.onEnable();
