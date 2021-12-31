@@ -2,10 +2,7 @@ package com.kisman.cc.hud.hudmodule;
 
 import com.kisman.cc.hud.hudmodule.combat.*;
 import com.kisman.cc.hud.hudmodule.movement.Speed;
-import com.kisman.cc.hud.hudmodule.player.HandProgress;
-import com.kisman.cc.hud.hudmodule.player.Ping;
-import com.kisman.cc.hud.hudmodule.player.ServerIp;
-import com.kisman.cc.hud.hudmodule.player.Tps;
+import com.kisman.cc.hud.hudmodule.player.*;
 import com.kisman.cc.hud.hudmodule.render.*;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -42,53 +39,24 @@ public class HudModuleManager {
 		modules.add(new Welcomer());
 
 		//player
-		modules.add(new HandProgress());
+		modules.add(new Indicators());
 		modules.add(new Ping());
 		modules.add(new ServerIp());
 		modules.add(new Tps());
 	}
 	
 	public HudModule getModule(String name) {
-		for (HudModule m : this.modules) {
-			if (m.getName().equalsIgnoreCase(name)) {
-				return m;
-			}
-		}
+		for (HudModule m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
 		return null;
 	}
-	
-	public java.util.ArrayList<HudModule> getModuleList() {
-		return modules;
-	}
-	
+
 	public java.util.ArrayList<HudModule> getModulesInCategory(HudCategory c) {
 		java.util.ArrayList<HudModule> mods = new java.util.ArrayList<HudModule>();
-		for (HudModule m : this.modules) {
-			if (m.getCategory() == c) {
-				mods.add(m);
-			}
-		}
+		for (HudModule m : this.modules) if (m.getCategory() == c) mods.add(m);
 		return mods;
 	}
 
-	@SubscribeEvent
-	public void onKey(InputEvent.KeyInputEvent event) {}
-
-	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
-		for(HudModule m : modules) {
-			if(m.isToggled()) {
-				m.update();
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent event) {
-		for(HudModule m : modules) {
-			if(m.isToggled()) {
-				m.render();
-			}
-		}
-	}
+	@SubscribeEvent public void onKey(InputEvent.KeyInputEvent event) {}
+	@SubscribeEvent public void onTick(TickEvent.ClientTickEvent event) {for(HudModule m : modules) if(m.isToggled()) m.update();}
+	@SubscribeEvent public void onRender(RenderGameOverlayEvent event) {for(HudModule m : modules) if(m.isToggled()) m.render();}
 }

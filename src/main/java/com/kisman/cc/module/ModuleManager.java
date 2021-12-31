@@ -119,6 +119,7 @@ public class ModuleManager {
 		modules.add(new Tracers());
 		modules.add(new Trails());
 		modules.add(new Trajectories());
+		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
 		modules.add(new XRay());
 		//movement
@@ -161,6 +162,7 @@ public class ModuleManager {
 		modules.add(new AutoKick());
 //		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
+		modules.add(new BowExploitRewrite());
 		modules.add(new CactusLeave());
 		modules.add(new Disabler());
 		modules.add(new Ghost());

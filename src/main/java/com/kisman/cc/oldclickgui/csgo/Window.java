@@ -46,9 +46,7 @@ public class Window {
         renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : FOREGROUND);
 
         if (contentPane != null) {
-            if (contentPane.isSizeChanged()) {
-                contentPane.setSizeChanged(false);
-            }
+            if (contentPane.isSizeChanged()) contentPane.setSizeChanged(false);
 
             contentPane.setX(x);
             contentPane.setY(y + headerHeight);

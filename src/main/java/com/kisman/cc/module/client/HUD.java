@@ -56,6 +56,9 @@ public class HUD extends Module {
 	public Setting glowOffset = new Setting("GlowOffset", this, 6, 0, 20, true);
 	public Setting logoBold = new Setting("Name Bold", this, false);
 
+	public Setting indicLine = new Setting("IndicLine", this, "Indicators");
+	public Setting indicY = new Setting("IndicatorsY", this, 20, 0, mc.displayHeight, true);
+
 	public HUD() {
 		super("HudEditor", "hud editor", Category.CLIENT);
 
@@ -93,6 +96,9 @@ public class HUD extends Module {
 		setmgr.rSetting(logoGlow);
 		setmgr.rSetting(glowOffset);
 		setmgr.rSetting(logoBold);
+
+		setmgr.rSetting(indicLine);
+		setmgr.rSetting(indicY);
 	}
 
 	public void onEnable() {

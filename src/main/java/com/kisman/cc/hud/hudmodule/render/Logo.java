@@ -51,8 +51,8 @@ public class Logo extends HudModule {
                 setHeight(1 + CustomFontUtil.getFontHeight() + 2);
             }
         } else if(HUD.instance.logoMode.getValString().equals("CSGO")) {
-            String text =((CustomFont.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   +  name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " mc" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
-            int x = 9;
+            String text = ((CustomFont.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   +  name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " mc" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            int x = 3;
             int y = 9;
             int width = 4 + CustomFontUtil.getStringWidth(text);
             int height = 4 + CustomFontUtil.getFontHeight();

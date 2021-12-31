@@ -1,8 +1,6 @@
 package com.kisman.cc;
 
-import club.minnced.discord.rpc.DiscordEventHandlers;
-import club.minnced.discord.rpc.DiscordRPC;
-import club.minnced.discord.rpc.DiscordRichPresence;
+import club.minnced.discord.rpc.*;
 
 public class RPC {
     private static final DiscordRichPresence discordRichPresence = new DiscordRichPresence();
@@ -30,6 +28,10 @@ public class RPC {
         discordRichPresence.partyMax = 10;
         discordRichPresence.joinSecret = "join";
         discordRPC.Discord_UpdatePresence(discordRichPresence);
+    }
+
+    public static void updateRPC() {
+        discordRichPresence.details = Kisman.getName() + " | " + Kisman.getVersion();
     }
 
     public static void stopRPC() {

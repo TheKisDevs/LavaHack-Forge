@@ -66,6 +66,7 @@ public class ExampleModule extends Module {
 
 
     public void onEnable() {
+        mc.displayGuiScreen(Kisman.instance.guiSvipix);
 //        Kisman.EVENT_BUS.subscribe(playerMotionUpdateListener);
 
 //        mc.player

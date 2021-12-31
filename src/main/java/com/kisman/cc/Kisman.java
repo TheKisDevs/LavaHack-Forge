@@ -9,13 +9,10 @@ import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
-import com.kisman.cc.hypixel.skyblock.colf.MainColf;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.ModuleManager;
+import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
 import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.oldclickgui.vega.Gui;
@@ -27,10 +24,8 @@ import com.kisman.cc.util.hwid.Verificator;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import kisman.pasta.salhack.util.customfont.FontManager;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -42,8 +37,7 @@ import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 public class Kisman {
     public static final String NAME = "kisman.cc+";
@@ -82,7 +76,6 @@ public class Kisman {
     public Gui gui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
-    public FontManager fontManager;
     public CommandManager commandManager;
     public RPC discord;
     public RotationUtils rotationUtils;
@@ -125,7 +118,6 @@ public class Kisman {
         gui = new Gui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);
-        fontManager = new FontManager();
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
@@ -137,13 +129,9 @@ public class Kisman {
 
         d1 = new Verificator();
         d2 = new MainDumper();
-//        d3 = new MainColf();
 
         //load configs
         LoadConfig.init();
-
-        //salhack font manager load
-//        fontManager.load();
 
         init = true;
     }
