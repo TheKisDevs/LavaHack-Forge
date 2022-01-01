@@ -14,9 +14,8 @@ public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void switchToSlot(int slot, boolean silent) {
-        if (!silent) {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-        } else {
+        if (!silent) mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
+        else {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
             mc.player.inventory.currentItem = slot;
         }
@@ -26,26 +25,16 @@ public class InventoryUtil {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
 
-            if(shieldBreak) {
-                if(stack.getItem() instanceof ItemAxe) {
-                    return i;
-                }
-            } else {
-                if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe) {
-                    return i;
-                }
-            }
+            if(shieldBreak) if(stack.getItem() instanceof ItemAxe) return i;
+            else if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemAxe) return i;
         }
 
         return -1;
     }
 
     public static boolean isArmorLow(final EntityPlayer player, final int durability) {
-        for (int i = 0; i < 4; ++i) {
-            if (getDamageInPercent(player.inventory.armorInventory.get(i)) < durability) {
-                return true;
-            }
-        }
+        for (int i = 0; i < 4; ++i) if (getDamageInPercent(player.inventory.armorInventory.get(i)) < durability) return true;
+
         return false;
     }
 
@@ -73,9 +62,7 @@ public class InventoryUtil {
         for(int i = min; i <= max; ++i) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
 
-            if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemPickaxe) {
-                return i;
-            }
+            if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemPickaxe) return i;
         }
 
         return -1;
@@ -135,19 +122,10 @@ public class InventoryUtil {
     public static int getItemSlot(Item item, Inventory inventory, boolean hotbar) {
         switch (inventory) {
             case HOTBAR:
-                for (int i = 0; i < 9; i++) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() == item)
-                        return i;
-                }
-
+                for (int i = 0; i < 9; i++) if (mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
                 break;
             case INVENTORY:
-                for (int i = hotbar ? 9 : 0; i < 45; i++) {
-                    if (mc.player.inventory.getStackInSlot(i).getItem() == item) {
-                        return i;
-                    }
-                }
-
+                for (int i = hotbar ? 9 : 0; i < 45; i++) if (mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
                 break;
         }
 
@@ -161,13 +139,8 @@ public class InventoryUtil {
         for(int i = 0; i < 9; i++) {
             ItemStack stack = mainInventory.get(i);
 
-            if(stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) {
-                continue;
-            }
-
-            if(itemToFind.isInstance(stack.getItem())) {
-                slot = i;
-            }
+            if(stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) continue;
+            if(itemToFind.isInstance(stack.getItem())) slot = i;
         }
 
         return slot;
@@ -180,10 +153,7 @@ public class InventoryUtil {
         for (int i = lower; i <= upper; i++) {
             ItemStack stack = mainInventory.get(i);
 
-            if (stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) {
-                continue;
-            }
-
+            if (stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) continue;
             if (itemToFind.isInstance(stack.getItem())) {
                 slot = i;
                 break;
@@ -199,10 +169,7 @@ public class InventoryUtil {
         for (int i = lower; i <= upper; i++) {
             ItemStack stack = mainInventory.get(i);
 
-            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
-                continue;
-            }
-
+            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) continue;
             if (blockToFind.isInstance(((ItemBlock) stack.getItem()).getBlock())) {
                 slot = i;
                 break;
@@ -218,10 +185,7 @@ public class InventoryUtil {
         for (int i = 0; i < 36; i++) {
             ItemStack stack = mainInventory.get(i);
 
-            if (stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) {
-                continue;
-            }
-
+            if (stack == ItemStack.EMPTY || !(itemToFind.isInstance(stack.getItem()))) continue;
             slots.add(i);
         }
         return slots;
@@ -252,6 +216,19 @@ public class InventoryUtil {
         result = isInstanceOf(stack, clazz);
 
         return result;
+    }
+
+    //rerhack
+    public static boolean isArmorUnderPercent(EntityPlayer player, float percent) {
+        for (int i = 3; i >= 0; --i) {
+            final ItemStack stack = player.inventory.armorInventory.get(i);
+            if (getDamageInPercent(stack) < percent) return true;
+        }
+        return false;
+    }
+
+    public static int getRoundedDamage(ItemStack stack) {
+        return (int)getDamageInPercent(stack);
     }
 
     //zero two

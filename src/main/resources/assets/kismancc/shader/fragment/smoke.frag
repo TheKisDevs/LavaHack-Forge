@@ -5,15 +5,11 @@ precision mediump float;
 uniform vec2 resolution;
 uniform float time;
 uniform sampler2D texture;
-uniform vec4 first;
-uniform vec3 second;
-uniform vec3 third;
-uniform int oct;
 
 float random (in vec2 _st) {
     return fract(sin(dot(_st.xy,
-    vec2(12.9898,78.233)))*
-    43758.5453123);
+                         vec2(12.9898,78.233)))*
+        43758.5453123);
 }
 
 // Based on Morgan McGuire @morgan3d
@@ -31,10 +27,11 @@ float noise (in vec2 _st) {
     vec2 u = f * f * (3.0 - 2.0 * f);
 
     return mix(a, b, u.x) +
-    (c - a)* u.y * (1.0 - u.x) +
-    (d - b) * u.x * u.y;
+            (c - a)* u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
 }
 
+#define NUM_OCTAVES 5
 
 float fbm ( in vec2 _st) {
     float v = 0.0;
@@ -42,8 +39,8 @@ float fbm ( in vec2 _st) {
     vec2 shift = vec2(100.0);
     // Rotate to reduce axial bias
     mat2 rot = mat2(cos(0.5), sin(0.5),
-    -sin(0.5), cos(0.50));
-    for (int i = 0; i < oct; ++i) {
+                    -sin(0.5), cos(0.50));
+    for (int i = 0; i < NUM_OCTAVES; ++i) {
         v += a * noise(_st);
         _st = rot * _st * 2.0 + shift;
         a *= 0.5;
@@ -53,9 +50,6 @@ float fbm ( in vec2 _st) {
 
 void main() {
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
-if(centerCol.a == 0.0) {
-    gl_FragColor = vec4(centerCol.rgb, 0);
-} else {
     vec2 st = gl_FragCoord.xy/resolution.xy*3.;
     // st += st * abs(sin(u_time*0.1)*3.0);
     vec3 color = vec3(0.0);
@@ -71,16 +65,16 @@ if(centerCol.a == 0.0) {
     float f = fbm(st+r);
 
     color = mix(vec3(0.101961,0.619608,0.666667),
-    vec3(first[0],first[1],first[2]),
-    clamp((f*f)*4.0,0.0,1.0));
+                vec3(0.666667,0.666667,0.498039),
+                clamp((f*f)*4.0,0.0,1.0));
 
     color = mix(color,
-    vec3(second[0],second[1],second[2]),
-    clamp(length(q),0.0,1.0));
+                vec3(0,0,0.164706),
+                clamp(length(q),0.0,1.0));
 
     color = mix(color,
-    vec3(third[0],third[1],third[2]),
-    clamp(length(r.x),0.0,1.0));
+                vec3(0.666667,1,1),
+                clamp(length(r.x),0.0,1.0));
 
-    gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,first[3]);}
+    gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,centerCol.a);
 }

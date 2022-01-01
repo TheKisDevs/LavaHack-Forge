@@ -1,8 +1,7 @@
 package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
 public class SelfDamage extends Module {
@@ -28,7 +27,6 @@ public class SelfDamage extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
-
         if(jumpCount < jump.getValDouble()) {
             mc.timer.tickLength = (float) timer.getValDouble();
             mc.player.onGround = false;
@@ -38,9 +36,7 @@ public class SelfDamage extends Module {
             if(jumpCount < jump.getValDouble()) {
                 mc.player.jump();
                 jumpCount++;
-            }
-
-
+            } else mc.timer.tickLength = 1;
         }
     }
 }

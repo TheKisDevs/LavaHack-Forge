@@ -26,9 +26,9 @@ public class MixinGuiContainer extends GuiScreen {
         int dWheel = Mouse.getDWheel();
 
         if(dWheel < 0){
-            return -ItemScroller.instance.scrollSpeed.getValInt();
+            return -20;
         } else if(dWheel > 0){
-            return +ItemScroller.instance.scrollSpeed.getValInt();
+            return 20;
         }
 
         return 0;

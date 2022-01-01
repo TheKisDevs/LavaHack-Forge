@@ -151,7 +151,7 @@ public class AutoFirework extends Module {
         if(target != null) {
             BlockPos playerPos = target.getPosition();
 
-            //plase trap
+            //place trap
 
             smartRotate = false;
             doTrap();

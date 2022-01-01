@@ -146,7 +146,7 @@ public class Kisman {
             if (Keyboard.isCreated()) {
                 if (Keyboard.getEventKeyState()) {
                     int keyCode = Keyboard.getEventKey();
-                    if (keyCode <= 0)
+                    if (keyCode <= 1)
                     	return;
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode && keyCode > 0) {

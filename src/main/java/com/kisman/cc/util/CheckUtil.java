@@ -14,7 +14,6 @@ public class CheckUtil {
         x = mc.player.posX;
         y = mc.player.posY;
         z = mc.player.posZ;
-
     }
 
 

@@ -7,7 +7,6 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class AntiKnokBack extends Module {
-
 	public AntiKnokBack() {
 		super("AntiKnokBack", "i hate being knocked back", Category.PLAYER);
 		Kisman.instance.settingsManager.rSetting(new Setting("Horizontal", this, 90, 0, 100, true));
@@ -21,12 +20,10 @@ public class AntiKnokBack extends Module {
 		float horizontal = (float) Kisman.instance.settingsManager.getSettingByName(this, "Horizontal").getValDouble();
 		float vertical = (float) Kisman.instance.settingsManager.getSettingByName(this, "Vertical").getValDouble();
 
-		try {
-			if (mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
-				mc.player.motionX *= horizontal / 100;
-				mc.player.motionY *= vertical / 100;
-				mc.player.motionZ *= horizontal / 100;
-			}
-		} catch (Exception exception) {}
+		if (mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
+			mc.player.motionX *= horizontal / 100;
+			mc.player.motionY *= vertical / 100;
+			mc.player.motionZ *= horizontal / 100;
+		}
 	}
 }

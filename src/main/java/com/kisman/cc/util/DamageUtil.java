@@ -17,8 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Explosion;
 
-public
-class DamageUtil {
+public class DamageUtil {
     private static Minecraft mc = Minecraft.getMinecraft();
 
     public static boolean shouldBreakArmor(EntityLivingBase entity, int targetPercent) {
@@ -33,16 +32,10 @@ class DamageUtil {
         return false;
     }
 
-    public static
-    boolean isArmorLow ( EntityPlayer player , int durability ) {
+    public static boolean isArmorLow(EntityPlayer player , int durability ) {
         for (ItemStack piece : player.inventory.armorInventory) {
-            if ( piece == null ) {
-                return true;
-            } else {
-                if ( getItemDamage ( piece ) < durability ) {
-                    return true;
-                }
-            }
+            if ( piece == null ) return true;
+            else if ( getItemDamage ( piece ) < durability ) return true;
         }
         return false;
     }
@@ -56,13 +49,11 @@ class DamageUtil {
         return true;
     }
 
-    public static
-    int getItemDamage ( ItemStack stack ) {
+    public static int getItemDamage ( ItemStack stack ) {
         return stack.getMaxDamage ( ) - stack.getItemDamage ( );
     }
 
-    public static
-    float getDamageInPercent ( ItemStack stack ) {
+    public static float getDamageInPercent ( ItemStack stack ) {
         return ( getItemDamage ( stack ) / (float) stack.getMaxDamage ( ) ) * 100;
     }
 
@@ -71,44 +62,33 @@ class DamageUtil {
         return (int) getDamageInPercent ( stack );
     }
 
-    public static
-    boolean hasDurability ( ItemStack stack ) {
+    public static boolean hasDurability ( ItemStack stack ) {
         Item item = stack.getItem ( );
         return item instanceof ItemArmor || item instanceof ItemSword || item instanceof ItemTool || item instanceof ItemShield;
     }
 
-    public static
-    boolean canBreakWeakness ( EntityPlayer player ) {
+    public static boolean canBreakWeakness ( EntityPlayer player ) {
         int strengthAmp = 0;
         PotionEffect effect = mc.player.getActivePotionEffect ( MobEffects.STRENGTH );
-        if ( effect != null ) {
-            strengthAmp = effect.getAmplifier ( );
-        }
+        if ( effect != null ) strengthAmp = effect.getAmplifier ( );
 
         return ! mc.player.isPotionActive ( MobEffects.WEAKNESS ) || strengthAmp >= 1 || mc.player.getHeldItemMainhand ( ).getItem ( ) instanceof ItemSword || mc.player.getHeldItemMainhand ( ).getItem ( ) instanceof ItemPickaxe || mc.player.getHeldItemMainhand ( ).getItem ( ) instanceof ItemAxe || mc.player.getHeldItemMainhand ( ).getItem ( ) instanceof ItemSpade;
     }
 
-    public static
-    float calculateDamage ( double posX , double posY , double posZ , Entity entity ) {
+    public static float calculateDamage ( double posX , double posY , double posZ , Entity entity ) {
         float doubleExplosionSize = 12.0F;
         double distancedsize = entity.getDistance ( posX , posY , posZ ) / (double) doubleExplosionSize;
         Vec3d vec3d = new Vec3d ( posX , posY , posZ );
         double blockDensity = 0;
-        try {
-            blockDensity = entity.world.getBlockDensity ( vec3d , entity.getEntityBoundingBox ( ) );
-        } catch ( Exception ignored ) {
-        }
+        try {blockDensity = entity.world.getBlockDensity ( vec3d , entity.getEntityBoundingBox ( ) );} catch ( Exception ignored ) {}
         double v = ( 1.0D - distancedsize ) * blockDensity;
         float damage = (float) ( (int) ( ( v * v + v ) / 2.0D * 7.0D * (double) doubleExplosionSize + 1.0D ) );
         double finald = 1;
-        if ( entity instanceof EntityLivingBase ) {
-            finald = getBlastReduction ( (EntityLivingBase) entity , getDamageMultiplied ( damage ) , new Explosion ( mc.world , null , posX , posY , posZ , 6F , false , true ) );
-        }
+        if ( entity instanceof EntityLivingBase ) finald = getBlastReduction ( (EntityLivingBase) entity , getDamageMultiplied ( damage ) , new Explosion ( mc.world , null , posX , posY , posZ , 6F , false , true ) );
         return (float) finald;
     }
 
-    public static
-    float getBlastReduction ( EntityLivingBase entity , float damageI , Explosion explosion ) {
+    public static float getBlastReduction ( EntityLivingBase entity , float damageI , Explosion explosion ) {
         float damage = damageI;
         if ( entity instanceof EntityPlayer ) {
             EntityPlayer ep = (EntityPlayer) entity;
@@ -116,10 +96,7 @@ class DamageUtil {
             damage = CombatRules.getDamageAfterAbsorb ( damage , (float) ep.getTotalArmorValue ( ) , (float) ep.getEntityAttribute ( SharedMonsterAttributes.ARMOR_TOUGHNESS ).getAttributeValue ( ) );
 
             int k = 0;
-            try {
-                k = EnchantmentHelper.getEnchantmentModifierDamage ( ep.getArmorInventoryList ( ) , ds );
-            } catch ( Exception ignored ) {
-            }
+            try {k = EnchantmentHelper.getEnchantmentModifierDamage ( ep.getArmorInventoryList ( ) , ds );} catch ( Exception ignored ) {}
             float f = MathHelper.clamp ( k , 0.0F , 20.0F );
             damage = damage * ( 1.0F - f / 25.0F );
 
@@ -134,35 +111,29 @@ class DamageUtil {
         return damage;
     }
 
-    public static
-    float getDamageMultiplied ( float damage ) {
+    public static float getDamageMultiplied ( float damage ) {
         int diff = mc.world.getDifficulty().getDifficultyId();
         return damage * ( diff == 0 ? 0 : ( diff == 2 ? 1 : ( diff == 1 ? 0.5f : 1.5f ) ) );
     }
 
-    public static
-    float calculateDamage ( Entity crystal , Entity entity ) {
+    public static float calculateDamage ( Entity crystal , Entity entity ) {
         return calculateDamage ( crystal.posX , crystal.posY , crystal.posZ , entity );
     }
 
-    public static
-    float calculateDamageAlt ( final Entity crystal , final Entity entity ) {
+    public static float calculateDamageAlt ( final Entity crystal , final Entity entity ) {
         final BlockPos cPos = new BlockPos ( crystal.posX , crystal.posY , crystal.posZ );
         return calculateDamage ( cPos.getX ( ) , cPos.getY ( ) , cPos.getZ ( ) , entity );
     }
 
-    public static
-    float calculateDamage ( BlockPos pos , Entity entity ) {
+    public static float calculateDamage ( BlockPos pos , Entity entity ) {
         return calculateDamage ( pos.getX ( ) + .5 , pos.getY ( ) + 1 , pos.getZ ( ) + .5 , entity );
     }
 
-    public static
-    boolean canTakeDamage ( boolean suicide ) {
+    public static boolean canTakeDamage ( boolean suicide ) {
         return ! mc.player.capabilities.isCreativeMode && ! suicide;
     }
 
-    public static
-    int getCooldownByWeapon ( EntityPlayer player ) {
+    public static int getCooldownByWeapon ( EntityPlayer player ) {
         Item item = player.getHeldItemMainhand ( ).getItem ( );
         if ( item instanceof ItemSword ) {
             return 600;

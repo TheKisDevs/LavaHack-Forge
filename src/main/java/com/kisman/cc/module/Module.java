@@ -17,8 +17,8 @@ public class Module {
 	private boolean toggled;
 	public boolean visible = true;
 
-	public Module(String name, Category category) {this(name, "", category, 1);}
-	public Module(String name, String description, Category category) {this(name, description, category, 1);}
+	public Module(String name, Category category) {this(name, "", category, 0);}
+	public Module(String name, String description, Category category) {this(name, description, category, 0);}
 
 	public Module(String name, String description, Category category, int key) {
 		this.name = name;

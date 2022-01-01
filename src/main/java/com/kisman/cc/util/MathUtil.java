@@ -36,6 +36,10 @@ public class MathUtil {
         return new Point(Mouse.getX() / scaleFactor, mc.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1);
     }
 
+    public static Vec3d getInterpolatedRenderPos(final Entity entity, final float ticks) {
+        return interpolateEntity(entity, ticks).subtract(Minecraft.getMinecraft().getRenderManager().viewerPosX, Minecraft.getMinecraft().getRenderManager().viewerPosY, Minecraft.getMinecraft().getRenderManager().viewerPosZ);
+    }
+
     public static Vec3d interpolateEntity(Entity entity, float time) {
         return new Vec3d(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * time,
                 entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * time,

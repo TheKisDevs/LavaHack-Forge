@@ -8,9 +8,8 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
-import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.init.*;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -32,8 +31,6 @@ public class AntiTrap extends Module {
     public Set<BlockPos> placedPos = new HashSet<>();
     private final Vec3d[] surroundTargets = new Vec3d[] { new Vec3d(1.0, 0.0, 0.0), new Vec3d(0.0, 0.0, 1.0), new Vec3d(-1.0, 0.0, 0.0), new Vec3d(0.0, 0.0, -1.0), new Vec3d(1.0, 0.0, -1.0), new Vec3d(1.0, 0.0, 1.0), new Vec3d(-1.0, 0.0, -1.0), new Vec3d(-1.0, 0.0, 1.0), new Vec3d(1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, 1.0), new Vec3d(-1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, -1.0), new Vec3d(1.0, 1.0, -1.0), new Vec3d(1.0, 1.0, 1.0), new Vec3d(-1.0, 1.0, -1.0), new Vec3d(-1.0, 1.0, 1.0) };
 
-    private int oldSlot = -1;
-    private boolean switchedItem;
     private boolean offhand = false;
 
     public AntiTrap() {
@@ -52,12 +49,7 @@ public class AntiTrap extends Module {
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
 
-        if(mc.player == null && mc.world == null) {
-            super.setToggled(false);
-            return;
-        }
-
-        oldSlot = mc.player.inventory.currentItem;
+        if(mc.player == null && mc.world == null) super.setToggled(false);
     }
 
     public void onDisable() {
@@ -70,46 +62,30 @@ public class AntiTrap extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
-
-        if(mode.getValString().equalsIgnoreCase("ClientTick")) {
-            doAntiTrap();
-        }
+        if(mode.getValString().equalsIgnoreCase("ClientTick")) doAntiTrap();
     }
 
-    @EventHandler
-    private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {
-        if(event.getEra() == Event.Era.PRE && mode.getValString().equalsIgnoreCase("MotionTick")) {
-            doAntiTrap();
-        }
-    });
+    @EventHandler private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {if(event.getEra() == Event.Era.PRE && mode.getValString().equalsIgnoreCase("MotionTick")) doAntiTrap();});
 
     private void doAntiTrap() {
-        if(timer.passedMillis(delay.getValInt())) {
-            timer.reset();
-        } else {
-            super.setToggled(false);
-            return;
-        }
+        if(timer.passedMillis(delay.getValInt())) timer.reset();
+        else return;
+
+        if(onlyInHole.getValBoolean() && !isBlockHole(mc.player.getPosition())) return;
+
         this.offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;
-        if (!this.offhand && InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9) == -1) {
-            super.onDisable();
-            return;
-        }
-        this.oldSlot = mc.player.inventory.currentItem;
+        if (!this.offhand && InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9) == -1) return;
         final ArrayList<Vec3d> targets = new ArrayList<>();
         Collections.addAll(targets, BlockUtil.convertVec3ds(mc.player.getPositionVector(), this.surroundTargets));
-        final EntityPlayer closestPlayer = (EntityPlayer) getNearTarget(mc.player);
+        final EntityPlayer closestPlayer = EntityUtil.getTarget(5);
         if (closestPlayer != null) {
             targets.sort((vec3d, vec3d2) -> Double.compare(mc.player.getDistanceSq(vec3d2.x, vec3d2.y, vec3d2.z), mc.player.getDistanceSq(vec3d.x, vec3d.y, vec3d.z)));
-            if (sortY.getValBoolean()) {
-                targets.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
-            }
+            if (sortY.getValBoolean()) targets.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
         }
         for (final Vec3d vec3d3 : targets) {
             final BlockPos pos = new BlockPos(vec3d3);
-            if (!CrystalUtils.canPlaceCrystal(pos)) {
-                continue;
-            }
+            if (!CrystalUtils.canPlaceCrystal(pos)) continue;
+
             placeCrystal(pos);
             super.onDisable();
             break;
@@ -118,10 +94,8 @@ public class AntiTrap extends Module {
 
     private void placeCrystal(final BlockPos pos) {
         final boolean mainhand = (mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL);
-        if (!mainhand && !this.offhand && !this.switchItem()) {
-            super.onDisable();
-            return;
-        }
+        if (!mainhand && !this.offhand && !this.switchItem()) return;
+
         final RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5));
         final EnumFacing facing = (result == null || result.sideHit == null) ? EnumFacing.UP : result.sideHit;
         final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
@@ -145,27 +119,22 @@ public class AntiTrap extends Module {
         if (offhand) return true;
 
         InventoryUtil.switchToSlot(InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), this.switchMode.getValString().equals("Silent"));
-        switchedItem = true;
         return true;
     }
 
-    private EntityLivingBase getNearTarget(Entity distanceTarget) {
-        return mc.world.loadedEntityList.stream()
-                .filter(this::isValidTarget)
-                .map(entity -> (EntityLivingBase) entity)
-                .min(Comparator.comparing(entity -> distanceTarget.getDistance(entity)))
-                .orElse(null);
-    }
+    private boolean isBlockHole(BlockPos blockpos) {
+        int holeblocks = 0;
+        if (mc.world.getBlockState(blockpos.add(0, 3, 0)).getBlock() == Blocks.AIR) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 2, 0)).getBlock() == Blocks.AIR) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 1, 0)).getBlock() == Blocks.AIR) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 0, 0)).getBlock() == Blocks.AIR) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, -1, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(1, 0, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(-1, 0, 0)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
+        if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
 
-    public boolean isValidTarget(Entity entity) {
-        if (entity == null) return false;
-        if (!(entity instanceof EntityLivingBase)) return false;
-        if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f) return false;
-        if (entity.getDistance(mc.player) > 6) return false;
-        if (entity instanceof EntityPlayer) {
-            return entity != mc.player;
-        }
-        return false;
+        return holeblocks >= 9;
     }
 
     public enum Rotate {

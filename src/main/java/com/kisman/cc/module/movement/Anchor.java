@@ -1,19 +1,13 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
-import java.util.ArrayList;
+import net.minecraft.util.math.*;
 
 public class Anchor extends Module {
-    private int holeblocks;
-
     public Anchor() {
         super("Anchor", "help with holes", Category.MOVEMENT);
 
@@ -22,7 +16,7 @@ public class Anchor extends Module {
     }
 
     private boolean isBlockHole(BlockPos blockpos) {
-        holeblocks = 0;
+        int holeblocks = 0;
         if (mc.world.getBlockState(blockpos.add(0, 3, 0)).getBlock() == Blocks.AIR) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 2, 0)).getBlock() == Blocks.AIR) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 1, 0)).getBlock() == Blocks.AIR) ++holeblocks;
@@ -33,11 +27,7 @@ public class Anchor extends Module {
         if (mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
 
-        if (holeblocks >= 9) {
-            return true;
-        } else {
-            return false;
-        }
+        return holeblocks >= 9;
     }
 
     private Vec3d center = Vec3d.ZERO;
@@ -51,20 +41,14 @@ public class Anchor extends Module {
     }
 
     public void update() {
-        if (mc.world == null && mc.player == null) {
-            return;
-        }
-        if (mc.player.posY < 0) {
-            return;
-        }
+        if (mc.world == null && mc.player == null) return;
+        if (mc.player.posY < 0) return;
 
         double pitch = Kisman.instance.settingsManager.getSettingByName(this, "Pitch").getValDouble();
-
         boolean pull = Kisman.instance.settingsManager.getSettingByName(this, "Pull").getValBoolean();
 
         if (mc.player.rotationPitch >= pitch) {
-            if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) ||
-                    isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
+            if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) || isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
                 if (!pull) {
                     mc.player.motionX = 0.0;
                     mc.player.motionZ = 0.0;
@@ -76,9 +60,8 @@ public class Anchor extends Module {
                     double xDiff = Math.abs(center.x - mc.player.posX);
                     double zDiff = Math.abs(center.z - mc.player.posZ);
 
-                    if (xDiff <= 0.1 && zDiff <= 0.1) {
-                        center = Vec3d.ZERO;
-                    } else {
+                    if (xDiff <= 0.1 && zDiff <= 0.1) center = Vec3d.ZERO;
+                    else {
                         double motionX = center.x - mc.player.posX;
                         double motionZ = center.z - mc.player.posZ;
 
@@ -88,9 +71,5 @@ public class Anchor extends Module {
                 }
             }
         }
-    }
-
-    public void onDisable() {
-        holeblocks = 0;
     }
 }

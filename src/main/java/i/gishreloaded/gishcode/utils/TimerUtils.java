@@ -99,19 +99,15 @@ public class TimerUtils {
 	public long convertSecToMillis(long time) { return time * 1000L; }
 	public long convertSecToMicro(long time) { return convertMillisToMicro(convertSecToMillis(time)); }
 	public long convertSecToNano(long time) { return convertMicroToNano(convertMillisToMicro(convertSecToMillis(time))); }
-
 	public long convertMillisToMicro(long time) { return time * 1000L; }
 	public long convertMillisToNano(long time) { return convertMicroToNano(convertMillisToMicro(time)); }
-
 	public long convertMicroToNano(long time) { return time * 1000L; }
 
 	// All Conversions To Larger
 	public long convertNanoToMicro(long time) { return time / 1000L; }
 	public long convertNanoToMillis(long time) { return convertMicroToMillis(convertNanoToMicro(time)); }
 	public long convertNanoToSec(long time) { return convertMillisToSec(convertMicroToMillis(convertNanoToMicro(time))); }
-
 	public long convertMicroToMillis(long time) { return time / 1000L; }
 	public long convertMicroToSec(long time) { return convertMillisToSec(convertMicroToMillis(time)); }
-
 	public long convertMillisToSec(long time) { return time / 1000L; }
 }

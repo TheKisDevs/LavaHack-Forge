@@ -4,9 +4,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.combat.holefiller.Hole;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.CrystalUtils;
-import com.kisman.cc.util.InventoryUtil;
-import com.kisman.cc.util.WorldUtil;
+import com.kisman.cc.util.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -20,26 +18,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 
 public class CrystalFiller extends Module {
-    private Setting range = new Setting("Range", this, 4.8, 1, 6, false);
-    private Setting placeMode = new Setting("PlaceMode", this, PlaceMode.Always);
-    private Setting delay = new Setting("Delay", this, 2, 0, 20, true);
-    private Setting targetHoleRange = new Setting("TargetHoleRange", this, 4.8, 1, 6, false);
-    private Setting switchMode = new Setting("SwitchMode", this, SwitchMode.Silent);
-    private Setting crystalDMGCheck = new Setting("CrystalDMGCheck", this, false);
-    private Setting minDMG = new Setting("MinDMG", this, 5, 0, 36, true);
-    private Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 15, 0, 36, true);
-    private Setting raytrace = new Setting("RayTrace", this, true);
+    private final Setting range = new Setting("Range", this, 4.8, 1, 6, false);
+    private final Setting placeMode = new Setting("PlaceMode", this, PlaceMode.Always);
+    private final Setting delay = new Setting("Delay", this, 2, 0, 20, true);
+    private final Setting targetHoleRange = new Setting("TargetHoleRange", this, 4.8, 1, 6, false);
+    private final Setting switchMode = new Setting("SwitchMode", this, SwitchMode.Silent);
+    private final Setting crystalDMGCheck = new Setting("CrystalDMGCheck", this, false);
+    private final Setting minDMG = new Setting("MinDMG", this, 5, 0, 36, true);
+    private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 15, 0, 36, true);
+    private final Setting render = new Setting("Render", this, true);
 
-    private ArrayList<Hole> holes = new ArrayList<>();
-    private ArrayList<Hole> blackHoleList = new ArrayList<>();
-    private ArrayList<EntityEnderCrystal> crystals = new ArrayList<>();
+    private final ArrayList<Hole> holes = new ArrayList<>();
+    private final ArrayList<Hole> blackHoleList = new ArrayList<>();
+    private final ArrayList<EntityEnderCrystal> crystals = new ArrayList<>();
     private int delayTicks = 0;
 
+    private BlockPos renderPos = null;
     public EntityPlayer target;
     public Hole targetHole;
 
@@ -54,7 +55,7 @@ public class CrystalFiller extends Module {
         setmgr.rSetting(crystalDMGCheck);
         setmgr.rSetting(minDMG);
         setmgr.rSetting(maxSelfDMG);
-        setmgr.rSetting(raytrace);
+        setmgr.rSetting(render);
     }
 
     public void onEnable() {
@@ -77,20 +78,21 @@ public class CrystalFiller extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
+        if(target == null) super.setDisplayInfo("");
+        else super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getDisplayName() + TextFormatting.GRAY + "]");
 
-        if(target == null) {
-            super.setDisplayInfo("");
-        } else {
-            super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getDisplayName() + TextFormatting.GRAY + "]");
-        }
-
+        renderPos = null;
         doCrystalFiller();
     }
 
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(render.getValBoolean() && renderPos != null) RenderUtil.drawBlockESP(renderPos, 0.9f, 0, 0);
+    }
+
     private void doCrystalFiller() {
-        if (target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) {
-            findNewTarget();
-        } else if(delayTicks++ > delay.getValInt()){
+        if (target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) target = EntityUtil.getTarget(range.getValFloat());
+        else if(delayTicks++ > delay.getValInt()){
             findHoles(mc.player, (float) range.getValDouble());
             findTargetHole();
 
@@ -100,43 +102,33 @@ public class CrystalFiller extends Module {
 
                 switch (switchMode.getValString()) {
                     case "None": {
-                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
-                            return;
-                        }
+                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
                         break;
                     }
                     case "Normal": {
-                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) {
-                            InventoryUtil.switchToSlot(crystalSlot, false);
-                        }
+                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) InventoryUtil.switchToSlot(crystalSlot, false);
                         break;
                     }
                     case "Silent": {
-                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) {
-                            InventoryUtil.switchToSlot(crystalSlot, true);
-                        }
+                        if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) InventoryUtil.switchToSlot(crystalSlot, true);
                         break;
                     }
                 }
 
-                if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
-                    return;
-                }
+                if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
 
                 RayTraceResult result = null;
 
-                if(range.getValBoolean()) {
-                    result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double) targetHole.pos.getX() + Double.longBitsToDouble(Double.doubleToLongBits(2.0585482766064893) ^ 9214496676598388901L), (double) targetHole.getDownHoleBlock().getY() - Double.longBitsToDouble(Double.doubleToLongBits(18.64274749914699) ^ 9210605105263438863L), (double) this.targetHole.pos.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(3.2686479786919134) ^ 9217221578882085433L)));
-                }
+                if(range.getValBoolean()) result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double) targetHole.pos.getX() + Double.longBitsToDouble(Double.doubleToLongBits(2.0585482766064893) ^ 9214496676598388901L), (double) targetHole.getDownHoleBlock().getY() - Double.longBitsToDouble(Double.doubleToLongBits(18.64274749914699) ^ 9210605105263438863L), (double) this.targetHole.pos.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(3.2686479786919134) ^ 9217221578882085433L)));
 
                 final EnumFacing facing = (result == null || result.sideHit == null) ? EnumFacing.UP : result.sideHit;
                 final boolean offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;
                 mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(targetHole.getDownHoleBlock(), facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
                 mc.playerController.updateController();
 
-                if (switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) {
-                    InventoryUtil.switchToSlot(oldSlot, true);
-                }
+                renderPos = targetHole.getDownHoleBlock();
+
+                if (switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
 
                 delayTicks = 0;
             }
@@ -149,62 +141,31 @@ public class CrystalFiller extends Module {
 
     private Hole getNearHole() {
         return holes.stream()
-                .filter(hole -> isValidHole(hole))
+                .filter(this::isValidHole)
                 .min(Comparator.comparing(hole -> mc.player.getDistanceSq(hole.pos)))
                 .orElse(null);
     }
 
     private void findHoles(EntityPlayer player, float range) {
         holes.clear();
-
-        for(BlockPos pos : CrystalUtils.getSphere(player, range, true, false)) {
-            if(mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) {
-                if(isBlockHole(pos)) {
-                    holes.add(new Hole(pos, (float) mc.player.getDistanceSq(pos), (float) player.getDistanceSq(pos)));
-                }
-            }
-        }
-    }
-
-    private void findNewTarget() {
-        target = getNearTarget(mc.player);
-    }
-
-    private EntityPlayer getNearTarget(EntityPlayer distanceTarget) {
-        return (EntityPlayer) mc.world.loadedEntityList.stream()
-                .filter(entity -> isValidTarget(entity))
-                .map(entity -> (EntityLivingBase) entity)
-                .min(Comparator.comparing(entity -> distanceTarget.getDistance(entity)))
-                .orElse(null);
+        for(BlockPos pos : CrystalUtils.getSphere(player, range, true, false)) if(mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) if(isBlockHole(pos)) holes.add(new Hole(pos, (float) mc.player.getDistanceSq(pos), (float) player.getDistanceSq(pos)));
     }
 
     private boolean isValidHole(Hole hole) {
         if(WorldUtil.getDistance(mc.player, hole.pos) > range.getValDouble()) return false;
-
         if(placeMode.getValString().equals(PlaceMode.Smart.name()) && target != null) {
-            if(WorldUtil.getDistance(target, hole.pos) > targetHoleRange.getValDouble()) {
-                return false;
-            }
-
+            if(WorldUtil.getDistance(target, hole.pos) > targetHoleRange.getValDouble()) return false;
             if(crystalDMGCheck.getValBoolean()) {
                 final float tempDMG = CrystalUtils.calculateDamage(mc.world, hole.pos, target);
                 final float tempSelfDMG = CrystalUtils.calculateDamage(mc.world, hole.pos, mc.player);
 
-                if (tempDMG < minDMG.getValDouble()) {
-                    return false;
-                }
-
-                if (tempSelfDMG > maxSelfDMG.getValDouble()) {
-                    return false;
-                }
+                if (tempDMG < minDMG.getValDouble() || tempSelfDMG > maxSelfDMG.getValDouble()) return false;
             }
         }
 
-        if(!mc.world.getBlockState(hole.pos.up(1)).getBlock().equals(Blocks.AIR) || !mc.world.getBlockState(hole.pos.up(2)).getBlock().equals(Blocks.AIR) || !mc.world.getBlockState(hole.pos.up(3)).getBlock().equals(Blocks.AIR)) return false;
+        return mc.world.getBlockState(hole.pos.up(1)).getBlock().equals(Blocks.AIR) && mc.world.getBlockState(hole.pos.up(2)).getBlock().equals(Blocks.AIR) && mc.world.getBlockState(hole.pos.up(3)).getBlock().equals(Blocks.AIR);
         //TODO: update hole validation!!!
         //TODO: added a crystal check!!!
-
-        return true;
     }
 
     private boolean isBlockHole(BlockPos blockpos) {
@@ -220,20 +181,7 @@ public class CrystalFiller extends Module {
         if (mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, 1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
 
-        if (holeblocks >= 9) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isValidTarget(Entity entity) {
-        if(!(entity instanceof EntityPlayer)) return false;
-        if(entity == mc.player) return false;
-        if(((EntityPlayer) entity).getHealth() < 0) return false;
-        if(entity.getDistance(mc.player) > range.getValDouble()) return false;
-
-        return true;
+        return holeblocks >= 9;
     }
 
     public enum PlaceMode {
