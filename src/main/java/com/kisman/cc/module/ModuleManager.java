@@ -96,6 +96,7 @@ public class ModuleManager {
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
 //		modules.add(new EntityESP());
+		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
 //		modules.add(new HandCharms());
 		modules.add(new HoleESP());

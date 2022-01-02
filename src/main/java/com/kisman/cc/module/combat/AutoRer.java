@@ -37,40 +37,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoRer extends Module {
-    private Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
-    private Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
-    private Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
-    private Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
-    private Setting terrain = new Setting("Terrain", this, false);
-    private Setting switch_ = new Setting("Switch", this, SwitchMode.None);
-    private Setting fastCalc = new Setting("Fast Calc", this, true);
-    private Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
-    private Setting instant = new Setting("Instant", this, true);
-    private Setting inhibit = new Setting("Inhibit", this, true);
-    private Setting syns = new Setting("Syns", this, true);
+    private final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
+    private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
+    private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
+    private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
+    private final Setting terrain = new Setting("Terrain", this, false);
+    private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
+    private final Setting fastCalc = new Setting("Fast Calc", this, true);
+    private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
+    private final Setting instant = new Setting("Instant", this, true);
+    private final Setting inhibit = new Setting("Inhibit", this, true);
+    private final Setting syns = new Setting("Syns", this, true);
 
-    private Setting placeLine = new Setting("PlaceLine", this, "Place");
-    private Setting place = new Setting("Place", this, true);
-    private Setting secondCheck = new Setting("Second Check", this, false);
-    private Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
+    private final Setting placeLine = new Setting("PlaceLine", this, "Place");
+    private final Setting place = new Setting("Place", this, true);
+    private final Setting secondCheck = new Setting("Second Check", this, false);
+    private final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
 
-    private Setting breakLine = new Setting("BreakLine", this, "Break");
-    private Setting break_ = new Setting("Break", this, true);
+    private final Setting breakLine = new Setting("BreakLine", this, "Break");
+    private final Setting break_ = new Setting("Break", this, true);
 
-    private Setting delayLine = new Setting("DelayLine", this, "Delay");
-    private Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
-    private Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
+    private final Setting delayLine = new Setting("DelayLine", this, "Delay");
+    private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
+    private final Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
+    private final Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
+    private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
 
-    private Setting dmgLine = new Setting("DMGLine", this, "Damage");
-    private Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
-    private Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
-    private Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
+    private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
+    private final Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
+    private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
+    private final Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
 
-    private Setting renderLine = new Setting("RenderLine", this, "Render");
+    private final Setting renderLine = new Setting("RenderLine", this, "Render");
 
-    private Setting miscLine = new Setting("MiscLine", this, "Misc");
+    private final Setting miscLine = new Setting("MiscLine", this, "Misc");
 
     private final List<BlockPos> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
@@ -132,7 +132,7 @@ public class AutoRer extends Module {
         this.breakTimer.reset();
         this.placeTimer.reset();
         this.renderTimer.reset();
-        this.currentTarget = null;
+        currentTarget = null;
         this.renderPos = null;
         this.offhand = false;
         this.rotating = false;
@@ -149,7 +149,7 @@ public class AutoRer extends Module {
         this.breakTimer.reset();
         this.placeTimer.reset();
         this.renderTimer.reset();
-        this.currentTarget = null;
+        currentTarget = null;
         this.renderPos = null;
         this.offhand = false;
         this.rotating = false;
@@ -169,7 +169,10 @@ public class AutoRer extends Module {
 
         if(currentTarget == null) return;
         else super.setDisplayInfo("[" + currentTarget.getName() + "]");
-        if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) calculatePlace();
+        if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
+            calculatePlace();
+            calcTimer.reset();
+        }
 
         doPlace();
         if(event.phase.equals(TickEvent.Phase.START)) doBreak();
@@ -321,7 +324,7 @@ public class AutoRer extends Module {
 
         if(crystal == null) return;
 
-        lastHitEntity = (EntityEnderCrystal) crystal;
+        lastHitEntity = crystal;
         mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         swing();
         breakTimer.reset();

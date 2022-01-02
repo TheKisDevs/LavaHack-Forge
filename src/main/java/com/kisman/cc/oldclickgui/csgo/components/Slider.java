@@ -2,6 +2,7 @@ package com.kisman.cc.oldclickgui.csgo.components;
 
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
+import com.kisman.cc.util.Render2DUtil;
 import i.gishreloaded.gishcode.utils.Utils;
 
 import java.util.Locale;
@@ -52,7 +53,11 @@ public class Slider extends AbstractComponent {
 
         double sliderPos = (value - minValue) / (maxValue - minValue) * (getWidth() - sliderWidth);
 
-        renderer.drawRect(x + sliderPos, y + 2, sliderWidth, getHeight() - 3, (hovered || changing) ? Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
+        renderer.drawRect(x + sliderPos, y + 2, sliderWidth, getHeight() - 3, (hovered || changing) ? Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() :  Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
+
+        if(Config.instance.guiGlow.getValBoolean()) {
+            Render2DUtil.drawRoundedRect(x + sliderPos, y + 2, x + sliderPos + sliderWidth, y + 2 + getHeight() - 3, (hovered || changing) ? Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() :  Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
+        }
 
         String text = numberType.getFormatter().apply(value);
 
@@ -78,7 +83,6 @@ public class Slider extends AbstractComponent {
             if (oldValue != newValue && listener != null) change = listener.onValueChange(newValue);
             if (change) value = newValue;
         }
-
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {

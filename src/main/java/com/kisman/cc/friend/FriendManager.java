@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class FriendManager {
     public static FriendManager instance;
 
-    private ArrayList<String> friendsName;
+    private final ArrayList<String> friendsName;
 
     public FriendManager() {
         friendsName = new ArrayList<>();
@@ -15,41 +15,21 @@ public class FriendManager {
         instance = this;
     }
 
-    public ArrayList<String> getFriends() {
-        return friendsName;
-    }
-
-    public void addFriend(String name) {
-        if(!friendsName.contains(name)) {
-            friendsName.add(name);
-        }
-    }
-
-    public void removeFriend(String name) {
-        if(!friendsName.isEmpty()) {
-            if (friendsName.contains(name)) {
-                friendsName.remove(name);
-            }
-        }
-    }
-
     public String getFriendsNames() {
-        String str = "";
+        StringBuilder str = new StringBuilder();
 
         for(String friend : friendsName) {
             if(friend.isEmpty()) continue;
 
-            str += friend + ", ";
+            str.append(friend).append("\n");
         }
 
-        return str;
+        return str.toString();
     }
 
-    public boolean isFriend(EntityPlayer player) {
-        return friendsName.contains(player.getName());
-    }
-
-    public boolean isFriend(String name) {
-        return friendsName.contains(name);
-    }
+    public ArrayList<String> getFriends() {return friendsName;}
+    public void addFriend(String name) {if(!friendsName.contains(name)) friendsName.add(name);}
+    public void removeFriend(String name) {if(!friendsName.isEmpty() && friendsName.contains(name)) friendsName.remove(name);}
+    public boolean isFriend(EntityPlayer player) {return friendsName.contains(player.getName());}
+    public boolean isFriend(String name) {return friendsName.contains(name);}
 }

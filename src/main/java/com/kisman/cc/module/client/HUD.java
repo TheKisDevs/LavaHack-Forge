@@ -9,27 +9,22 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.LogoMode;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
 import java.util.*;
 
 public class HUD extends Module {
 	public static HUD instance;
 
 	public Setting astolfoColor = new Setting("AstolfoColor", this, false);
+	public Setting glow = new Setting("Glow", this, false);
 
 	private Setting arrLine = new Setting("ArrLine", this, "ArrayList");
 	public Setting arrMode = new Setting("ArrayListMode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT")));
 	public Setting arrY = new Setting("ArrayListY", this, 150, 0, mc.displayHeight, true);
 	public Setting arrColor = new Setting("ArrayListColor", this, "Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
-	public Setting arrGragient = new Setting("ArrayGradient", this, Gradient.None);
+	public Setting arrGradient = new Setting("ArrayGradient", this, Gradient.None);
 	public Setting arrGradientDiff = new Setting("ArrayGradientDiff", this, 200, 0, 1000, Slider.NumberType.TIME);
 	public Setting arrOffsets = new Setting("Offsets", this, 1, 0, 10, true);
 
@@ -65,12 +60,13 @@ public class HUD extends Module {
 		instance = this;
 
 		setmgr.rSetting(astolfoColor);
+		setmgr.rSetting(glow);
 
 		setmgr.rSetting(arrLine);
 		setmgr.rSetting(arrMode);
 		setmgr.rSetting(arrY);
 		setmgr.rSetting(arrColor);
-		setmgr.rSetting(arrGragient);
+		setmgr.rSetting(arrGradient);
 		setmgr.rSetting(arrGradientDiff);
 		setmgr.rSetting(arrOffsets);
 

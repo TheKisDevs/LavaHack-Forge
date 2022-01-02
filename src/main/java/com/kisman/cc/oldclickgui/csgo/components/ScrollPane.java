@@ -5,6 +5,7 @@ import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import com.kisman.cc.oldclickgui.csgo.IRenderer;
 import com.kisman.cc.oldclickgui.csgo.layout.ILayoutManager;
+import com.kisman.cc.util.Render2DUtil;
 
 import java.awt.*;
 
@@ -50,6 +51,10 @@ public class ScrollPane extends Pane {
             int sliderWidth = 3;
 
             renderer.drawRect(x + getWidth() - sliderWidth, y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY), sliderWidth, sliderHeight, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE);
+
+            if(Config.instance.guiGlow.getValBoolean()) {
+                Render2DUtil.drawRoundedRect(x + getWidth() - sliderWidth, y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY), x + getWidth(),y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY) + sliderHeight, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE);
+            }
         }
     }
 

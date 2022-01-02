@@ -23,6 +23,7 @@ import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.hwid.Verificator;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
+import com.kisman.cc.util.glow.ShaderShell;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
@@ -132,6 +133,7 @@ public class Kisman {
 
         //load configs
         LoadConfig.init();
+        ShaderShell.init();
 
         init = true;
     }

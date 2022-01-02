@@ -64,11 +64,6 @@ public abstract class MixinRenderEnderCrystal {
             } else {
                 GL11.glScaled(CrystalModifier.instance.scaleX.getValDouble(), CrystalModifier.instance.scaleY.getValDouble(), CrystalModifier.instance.scaleZ.getValDouble());
             }
-            //rotate
-            //(float) (System.currentTimeMillis() % 22600L) / 5.0f)
-            GL11.glRotated(CrystalModifier.instance.rotateX.getValDouble(), 1, 0, 0);
-            GL11.glRotated(CrystalModifier.instance.rotateY.getValDouble(), 0, 1, 0);
-            GL11.glRotated(CrystalModifier.instance.rotateZ.getValDouble(), 0, 0, 1);
 
             //translate
             GL11.glTranslated(x + CrystalModifier.instance.translateX.getValDouble(), y + CrystalModifier.instance.translateY.getValDouble(), z + CrystalModifier.instance.translateZ.getValDouble());
@@ -109,7 +104,7 @@ public abstract class MixinRenderEnderCrystal {
 
             //custom color
             if(CrystalModifier.instance.customColor.getValBoolean()) {
-                GL11.glColor4f(CrystalModifier.instance.crystalColor.getR() / 255, CrystalModifier.instance.crystalColor.getG() / 255, CrystalModifier.instance.crystalColor.getB() / 255, 1);
+                GL11.glColor4f(CrystalModifier.instance.crystalColor.getR() / 255f, CrystalModifier.instance.crystalColor.getG() / 255f, CrystalModifier.instance.crystalColor.getB() / 255f, 1);
             } else {
                 GL11.glColor3f(1, 1, 1);
             }
@@ -128,7 +123,7 @@ public abstract class MixinRenderEnderCrystal {
                 GL11.glTexCoord3d((double)1.0, (double)1.0, (double)1.0);
                 GL11.glEnable((int)3553);
                 GL11.glBlendFunc((int)768, (int)771);
-                GL11.glColor4f(CrystalModifier.instance.enchColor.getR() / 255, CrystalModifier.instance.enchColor.getG() / 255, CrystalModifier.instance.enchColor.getB() / 255, CrystalModifier.instance.enchColor.getA() / 255);
+                GL11.glColor4f(CrystalModifier.instance.enchColor.getR() / 255f, CrystalModifier.instance.enchColor.getG() / 255f, CrystalModifier.instance.enchColor.getB() / 255f, CrystalModifier.instance.enchColor.getA() / 255f);
                 GL11.glColor4f(1, 1, 1, 1);
             }
 
