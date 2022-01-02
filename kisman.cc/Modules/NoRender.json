@@ -5,7 +5,7 @@
     "HurtCam": false,
     "Armor": false,
     "Overlay": false,
-    "Potion": false,
+    "Potion": true,
     "Weather": false,
     "Block": false,
     "Lava": false,

@@ -1,7 +1,7 @@
 {
   "Module": "RangeVisualisator",
   "Settings": {
-    "Mode": "Sphere",
+    "Mode": "Circle",
     "Radius": 4.5,
     "LineWidth": 1.5,
     "Own": "None",

@@ -10,6 +10,7 @@
     "Spoofs": 1.0,
     "Raytrace": false,
     "Debug": false,
+    "Break Calc": true,
     "PlaceRange": 4.199999809265137,
     "BreakRange": 4.199999809265137,
     "TargetRange": 15.0,

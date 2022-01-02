@@ -3,13 +3,13 @@
   "Settings": {
     "SelfPop": false,
     "Angle": false,
-    "AngleSpeed": 150.0,
+    "AngleSpeed": 164.0,
     "FadeSpeed": 200.0,
     "Width": 3.0,
     "ColorR": 1.0,
     "ColorG": 1.0,
-    "ColorB": 1.0,
-    "ColorA": 1.0,
+    "ColorB": 0.49,
+    "ColorA": 0.5,
     "key": "NONE"
   }
 }
