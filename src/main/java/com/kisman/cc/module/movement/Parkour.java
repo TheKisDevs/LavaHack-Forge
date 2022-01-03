@@ -1,7 +1,6 @@
 package com.kisman.cc.module.movement;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 
 public class Parkour extends Module {
     public Parkour() {

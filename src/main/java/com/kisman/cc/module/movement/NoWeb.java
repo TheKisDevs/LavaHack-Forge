@@ -29,9 +29,7 @@ public class NoWeb extends Module {
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode())) {
                 mc.player.isInWeb = true;
                 mc.player.motionY *= motionY.getValDouble();
-            } else if (onGround.getValBoolean()) {
-                mc.player.onGround = false;
-            }
+            } else if (onGround.getValBoolean()) mc.player.onGround = false;
 
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.keyCode) || Keyboard.isKeyDown(mc.gameSettings.keyBindBack.keyCode) || Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)
                     || Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)) {

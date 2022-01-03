@@ -13,37 +13,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Fly extends Module {
-
     private Setting mode = new Setting("Mode", this, "Vanilla", new ArrayList<>(Arrays.asList("Vanilla", "Matrix")));
-
-
-    private Setting vanillaLine = new Setting("VanullaLine", this, "Vanilla");
-
-
-    private Setting motionLine = new Setting("MotionLine", this, "Motion");
-
-    private Setting glider = new Setting("Glider", this, true);
-    private Setting autoUp = new Setting("AutoUp", this, true);
-    private Setting autoDown = new Setting("AutoDown", this, true);
-    private Setting motionSpeed = new Setting("Speed", this, 5, 1, 8, false);
-    private Setting glide = new Setting("Glide", this, 0.03, 0.01, 0.1, false);
+    private Setting vanillaLine = new Setting("VanillaLine", this, "Vanilla");
 
     private float flySpeed;
 
     public Fly() {
         super("Fly", "Your flying", Category.MOVEMENT);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Vanilla", new ArrayList<>(Arrays.asList("Vanilla", "Motion", "Matrix"))));
-
+        setmgr.rSetting(mode);
         setmgr.rSetting(vanillaLine);
         Kisman.instance.settingsManager.rSetting(new Setting("FlySpeed", this, 0.1f, 0.1f, 100.0f, false));
-
-        setmgr.rSetting(motionLine);
-        setmgr.rSetting(glider);
-        setmgr.rSetting(autoUp);
-        setmgr.rSetting(autoDown);
-        setmgr.rSetting(motionSpeed);
-        setmgr.rSetting(glide);
     }
 
     public void onEnable() {
@@ -83,7 +63,6 @@ public class Fly extends Module {
     }
 
     public void onDisable() {
-        //TODO: fix fly start
         if(mc.player == null && mc.world == null) return;
 
         mc.player.capabilities.isFlying = false;

@@ -2,18 +2,14 @@ package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerTravel;
-import com.kisman.cc.module.Category;
+import com.kisman.cc.module.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.InventoryUtil;
-import com.kisman.cc.util.MathUtil;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.*;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.play.client.CPacketEntityAction;
 
@@ -35,11 +31,7 @@ public class ElytraFly extends Module {
     private Setting equipElytra = new Setting("EquipElytra", this, true);
     private Setting pitchSpoof = new Setting("PitchSpoof", this, false);
 
-    private TimerUtils packetTimer = new TimerUtils();
-    private TimerUtils accelerationTimer = new TimerUtils();
-    private TimerUtils accelerationResetTimer = new TimerUtils();
     private TimerUtils instantFlyTimer = new TimerUtils();
-    private boolean sendMessage = false;
     private int elytraSlot = -1;
 
     public ElytraFly() {
@@ -71,9 +63,7 @@ public class ElytraFly extends Module {
         if(mc.player == null && mc.world == null) return;
 
         if(equipElytra.getValBoolean()) {
-            if(mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) {
-                elytraSlot = InventoryUtil.findItem(Items.ELYTRA, 0, 36);
-            }
+            if(mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) elytraSlot = InventoryUtil.findItem(Items.ELYTRA, 0, 36);
 
             if(elytraSlot != -1) {
                 boolean armorOnChest = mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.AIR;
@@ -81,9 +71,7 @@ public class ElytraFly extends Module {
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 6, 0, ClickType.PICKUP, mc.player);
 
-                if(armorOnChest) {
-                    mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
-                }
+                if(armorOnChest) mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
             }
         }
     }
@@ -94,16 +82,12 @@ public class ElytraFly extends Module {
 
     @EventHandler
     private final Listener<EventPlayerTravel> listener = new Listener<>(event -> {
-        if (mc.player == null)
-            return;
-
-        if (mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA)
-            return;
+        if (mc.player == null) return;
+        if (mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) return;
 
         if (!mc.player.isElytraFlying()) {
             if (!mc.player.onGround && instantFly.getValBoolean()) {
-                if (!instantFlyTimer.passedMillis(1000))
-                    return;
+                if (!instantFlyTimer.passedMillis(1000)) return;
 
                 instantFlyTimer.reset();
 
@@ -120,8 +104,6 @@ public class ElytraFly extends Module {
             case "Control":
                 handleControlMode(event);
                 break;
-            default:
-                break;
         }
     });
 
@@ -129,9 +111,8 @@ public class ElytraFly extends Module {
         if (mc.player.movementInput.jump) {
             double motionSq = Math.sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ);
 
-            if (motionSq > 1.0) {
-                return;
-            } else {
+            if (motionSq > 1.0) return;
+            else {
                 double[] dir = MathUtil.directionSpeedNoForward(speed.getValDouble());
 
                 mc.player.motionX = dir[0];

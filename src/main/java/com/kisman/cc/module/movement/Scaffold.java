@@ -2,24 +2,16 @@ package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
-import com.kisman.cc.event.events.EventPlayerMotionUpdate;
-import com.kisman.cc.event.events.EventPlayerMove;
-import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.event.events.*;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.BlockInteractionHelper;
-import com.kisman.cc.util.PlayerUtil;
+import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import me.zero.alpine.listener.*;
+import net.minecraft.item.*;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 
 public class Scaffold extends Module {
     private Setting mode = new Setting("Mode", this, Modes.Tower);
@@ -156,17 +148,11 @@ public class Scaffold extends Module {
         }
     });
 
-    @EventHandler
-    private final Listener<PacketEvent.Receive> listener1 = new Listener<>(event -> {
-        if(event.getPacket() instanceof SPacketPlayerPosLook) {
-            towerTimer.reset();
-        }
-    });
+    @EventHandler private final Listener<PacketEvent.Receive> listener1 = new Listener<>(event -> {if(event.getPacket() instanceof SPacketPlayerPosLook) towerTimer.reset();});
 
     @EventHandler
     private final Listener<EventPlayerMove> listener2 = new Listener<>(event -> {
-        if (!stopMotion.getValBoolean())
-            return;
+        if (!stopMotion.getValBoolean()) return;
 
         double x = event.x;
         double y = event.y;
@@ -175,39 +161,22 @@ public class Scaffold extends Module {
         if (mc.player.onGround && !mc.player.noClip) {
             double increment;
             for (increment = 0.05D; x != 0.0D && isOffsetBBEmpty(x, -1.0f, 0.0D);) {
-                if (x < increment && x >= -increment) {
-                    x = 0.0D;
-                } else if (x > 0.0D) {
-                    x -= increment;
-                } else {
-                    x += increment;
-                }
+                if (x < increment && x >= -increment) x = 0.0D;
+                else if (x > 0.0D) x -= increment;
+                else x += increment;
             }
             for (; z != 0.0D && isOffsetBBEmpty(0.0D, -1.0f, z);) {
-                if (z < increment && z >= -increment) {
-                    z = 0.0D;
-                } else if (z > 0.0D) {
-                    z -= increment;
-                } else {
-                    z += increment;
-                }
+                if (z < increment && z >= -increment) z = 0.0D;
+                else if (z > 0.0D) z -= increment;
+                else z += increment;
             }
             for (; x != 0.0D && z != 0.0D && isOffsetBBEmpty(x, -1.0f, z);) {
-                if (x < increment && x >= -increment) {
-                    x = 0.0D;
-                } else if (x > 0.0D) {
-                    x -= increment;
-                } else {
-                    x += increment;
-                }
-
-                if (z < increment && z >= -increment) {
-                    z = 0.0D;
-                } else if (z > 0.0D) {
-                    z -= increment;
-                } else {
-                    z += increment;
-                }
+                if (x < increment && x >= -increment) x = 0.0D;
+                else if (x > 0.0D) x -= increment;
+                else x += increment;
+                if (z < increment && z >= -increment) z = 0.0D;
+                else if (z > 0.0D) z -= increment;
+                else z += increment;
             }
         }
 
@@ -222,17 +191,13 @@ public class Scaffold extends Module {
     }
 
     private boolean isValidPlaceBlockState(BlockPos pos) {
-        BlockInteractionHelper.ValidResult result = BlockInteractionHelper.valid(pos);
-
+        BlockInteractionHelper.ValidResult result;
+        try {result = BlockInteractionHelper.valid(pos);} catch (NullPointerException e) {return false;}
         if (result == BlockInteractionHelper.ValidResult.AlreadyBlockThere) return mc.world.getBlockState(pos).getMaterial().isReplaceable();
-
         return result == BlockInteractionHelper.ValidResult.Ok;
     }
 
-    private boolean verifyStack(ItemStack stack)
-    {
-        return !stack.isEmpty() && stack.getItem() instanceof ItemBlock;
-    }
+    private boolean verifyStack(ItemStack stack) {return !stack.isEmpty() && stack.getItem() instanceof ItemBlock;}
 
     public enum Modes {
         Tower,

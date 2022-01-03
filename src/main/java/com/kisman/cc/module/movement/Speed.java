@@ -72,8 +72,8 @@ public class Speed extends Module {
                 mc.player.motionY = 0.405;
                 float f = Utils.getDirection();
 
-                mc.player.motionX -= (double) (MathHelper.sin(f) * 0.2F);
-                mc.player.motionZ += (double) (MathHelper.cos(f) * 0.2F);
+                mc.player.motionX -= (MathHelper.sin(f) * 0.2F);
+                mc.player.motionZ += (MathHelper.cos(f) * 0.2F);
             } else {
                 double currentSpeed = Math.sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ);
                 double speed = boost ? 1.0064 : 1.001;

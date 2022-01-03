@@ -1,11 +1,9 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -40,9 +38,7 @@ public class Jesus extends Module {
                 mc.player.motionZ *= speed;
                 mc.player.onGround = false;
 
-                if(mc.player.isInWater() || mc.player.isInLava()) {
-                    mc.player.onGround = false;
-                }
+                if(mc.player.isInWater() || mc.player.isInLava()) mc.player.onGround = false;
             }
         } else if(mode.getValString().equalsIgnoreCase("Solid")) {
             float speed = (float) Kisman.instance.settingsManager.getSettingByName(this, "SpeedSolid").getValDouble();

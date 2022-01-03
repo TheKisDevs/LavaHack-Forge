@@ -10,9 +10,7 @@ public class FastSwim extends Module {
     }
 
     public void onDisable() {
-        if(isSprint && mc.player.isSprinting()) {
-            mc.player.setSprinting(false);
-        }
+        if(mc.player != null && isSprint && mc.player.isSprinting()) mc.player.setSprinting(false);
     }
 
     public void update() {
@@ -21,9 +19,7 @@ public class FastSwim extends Module {
         if((mc.player.isInLava() || mc.player.isInWater()) && PlayerUtil.isMoving(mc.player)) {
             mc.player.setSprinting(true);
             isSprint = true;
-            if(mc.gameSettings.keyBindJump.isKeyDown()) {
-                mc.player.motionY = 0.098;
-            }
+            if(mc.gameSettings.keyBindJump.isKeyDown()) mc.player.motionY = 0.098;
         }
     }
 }
