@@ -22,7 +22,7 @@ import java.awt.*;
 import java.util.Objects;
 
 public class ShaderCharms extends Module {
-    private Setting mode = new Setting("Mode", this, ShaderModes.AQUA);
+    private Setting mode = new Setting("Mode", this, ShaderModes.SMOKE);
     private Setting crystals = new Setting("Crystals", this, true);
     private Setting players = new Setting("Players", this, false);
     private Setting friends = new Setting("Friends", this, true);
@@ -72,12 +72,13 @@ public class ShaderCharms extends Module {
         {
             FramebufferShader framebufferShader = null;
             boolean itemglow = false;
-            switch (mode.getValString()) {
-                case "AQUA": framebufferShader = AquaShader.AQUA_SHADER;break;
-                case "RED": framebufferShader = RedShader.RED_SHADER;break;
-                case "SMOKE": framebufferShader = SmokeShader.SMOKE_SHADER;break;
-                case "FLOW": framebufferShader = FlowShader.FLOW_SHADER;break;
-                case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
+            switch(mode.getValString()) {
+              case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
+              case "RED": framebufferShader = RedShader.RED_SHADER; break;
+              case "SMOKE": framebufferShader = SmokeShader.SMOKE_SHADER; break;
+              case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
+              case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
+              case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
             }
 
             if (framebufferShader == null) return;
@@ -152,6 +153,6 @@ public class ShaderCharms extends Module {
     }
 
     public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW
+        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE
     }
 }

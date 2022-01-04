@@ -1,4 +1,7 @@
 {
   "Module": "DiscordRPC",
-  "Settings": {}
+  "Settings": {
+    "Show Enabled Modules": true,
+    "key": "NONE"
+  }
 }

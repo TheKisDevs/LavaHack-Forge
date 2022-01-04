@@ -1,4 +1,9 @@
 {
   "Module": "Breadcrumbs",
-  "Settings": {}
+  "Settings": {
+    "Line Width": 1.0,
+    "Remove Ticks": 10.0,
+    "Alpha": 100.0,
+    "key": "NONE"
+  }
 }

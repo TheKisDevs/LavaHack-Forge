@@ -9,7 +9,7 @@
     "CrystalDMGCheck": false,
     "MinDMG": 5.0,
     "MaxSelfDMG": 15.0,
-    "RayTrace": true,
+    "Render": true,
     "key": "NONE"
   }
 }

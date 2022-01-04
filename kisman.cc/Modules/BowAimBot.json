@@ -1,4 +1,7 @@
 {
   "Module": "BowAimBot",
-  "Settings": {}
+  "Settings": {
+    "Max Distance": 20.0,
+    "key": "NONE"
+  }
 }

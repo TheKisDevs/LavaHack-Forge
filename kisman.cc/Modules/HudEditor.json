@@ -8,7 +8,6 @@
     "ArrayGradientDiff": 200.0,
     "Offsets": 9.0,
     "PvpInfoY": 158.0,
-    "OffHandRender": false,
     "ExtraInfo": true,
     "Damage": false,
     "MaxDistance": 36.0,
@@ -18,6 +17,7 @@
     "Glow": false,
     "GlowOffset": 6.0,
     "Name Bold": false,
+    "IndicatorsY": 20.0,
     "key": "NONE"
   }
 }

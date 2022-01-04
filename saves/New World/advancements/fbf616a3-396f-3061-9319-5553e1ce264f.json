@@ -1,6 +1,7 @@
 {
   "minecraft:adventure/adventuring_time": {
     "criteria": {
+      "forest": "2022-01-02 22:59:31 +0200",
       "forest_hills": "2021-12-28 23:05:49 +0200"
     },
     "done": false

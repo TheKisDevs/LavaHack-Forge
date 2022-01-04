@@ -11,7 +11,7 @@
     "Logo": false,
     "Radar": false,
     "Welcomer": false,
-    "HandProgress": false,
+    "Indicators": false,
     "Ping": false,
     "ServerIP": false,
     "Tps": false
