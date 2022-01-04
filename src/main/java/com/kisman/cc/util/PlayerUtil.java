@@ -1,33 +1,23 @@
 package com.kisman.cc.util;
 
 import com.kisman.cc.module.combat.AutoCrystalBypass;
-import com.kisman.cc.module.combat.Surround;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.init.*;
+import net.minecraft.item.*;
+import net.minecraft.network.play.client.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PlayerUtil {
-
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void swingArm(Hand hand) {
@@ -93,13 +83,10 @@ public class PlayerUtil {
     public static EntityPlayer findClosestTarget(double rangeMax, EntityPlayer aimTarget) {
         rangeMax *= rangeMax;
         List<EntityPlayer> playerList = mc.world.playerEntities;
-
         EntityPlayer closestTarget = null;
 
         for (EntityPlayer entityPlayer : playerList) {
-
-            if (EntityUtil.basicChecksEntity(entityPlayer))
-                continue;
+            if (EntityUtil.basicChecksEntity(entityPlayer)) continue;
 
             if (aimTarget == null && mc.player.getDistanceSq(entityPlayer) <= rangeMax) {
                 closestTarget = entityPlayer;
@@ -115,12 +102,10 @@ public class PlayerUtil {
     // 0b00101010: replaced getDistance with getDistanceSq as speeds up calculation
     public static EntityPlayer findClosestTarget() {
         List<EntityPlayer> playerList = mc.world.playerEntities;
-
         EntityPlayer closestTarget = null;
 
         for (EntityPlayer entityPlayer : playerList) {
-            if (EntityUtil.basicChecksEntity(entityPlayer))
-                continue;
+            if (EntityUtil.basicChecksEntity(entityPlayer)) continue;
 
             if (closestTarget == null) {
                 closestTarget = entityPlayer;
@@ -189,28 +174,20 @@ public class PlayerUtil {
     }
 
     public static void centerPlayer(Vec3d centeredBlock) {
-
         double xDeviation = Math.abs(centeredBlock.x - mc.player.posX);
         double zDeviation = Math.abs(centeredBlock.z - mc.player.posZ);
 
-        if (xDeviation <= 0.1 && zDeviation <= 0.1) {
-            centeredBlock = Vec3d.ZERO;
-        } else {
+        if (xDeviation <= 0.1 && zDeviation <= 0.1) centeredBlock = Vec3d.ZERO;
+        else {
             double newX = -2;
             double newZ = -2;
             int xRel = (mc.player.posX < 0 ? -1 : 1);
             int zRel = (mc.player.posZ < 0 ? -1 : 1);
             if (BlockUtil.getBlock(mc.player.posX, mc.player.posY - 1, mc.player.posZ) instanceof BlockAir) {
-                if (Math.abs((mc.player.posX % 1)) * 1E2 <= 30) {
-                    newX = Math.round(mc.player.posX - (0.3 * xRel)) + 0.5 * -xRel;
-                } else if (Math.abs((mc.player.posX % 1)) * 1E2 >= 70) {
-                    newX = Math.round(mc.player.posX + (0.3 * xRel)) - 0.5 * -xRel;
-                }
-                if (Math.abs((mc.player.posZ % 1)) * 1E2 <= 30) {
-                    newZ = Math.round(mc.player.posZ - (0.3 * zRel)) + 0.5 * -zRel;
-                } else if (Math.abs((mc.player.posZ % 1)) * 1E2 >= 70) {
-                    newZ = Math.round(mc.player.posZ + (0.3 * zRel)) - 0.5 * -zRel;
-                }
+                if (Math.abs((mc.player.posX % 1)) * 1E2 <= 30) newX = Math.round(mc.player.posX - (0.3 * xRel)) + 0.5 * -xRel;
+                else if (Math.abs((mc.player.posX % 1)) * 1E2 >= 70) newX = Math.round(mc.player.posX + (0.3 * xRel)) - 0.5 * -xRel;
+                if (Math.abs((mc.player.posZ % 1)) * 1E2 <= 30) newZ = Math.round(mc.player.posZ - (0.3 * zRel)) + 0.5 * -zRel;
+                else if (Math.abs((mc.player.posZ % 1)) * 1E2 >= 70) newZ = Math.round(mc.player.posZ + (0.3 * zRel)) - 0.5 * -zRel;
             }
 
             if (newX == -2)
@@ -290,8 +267,7 @@ public class PlayerUtil {
     }
 
     public static boolean CanSeeBlock(BlockPos p_Pos) {
-        if (mc.player == null)
-            return false;
+        if (mc.player == null) return false;
 
         return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(p_Pos.getX(), p_Pos.getY(), p_Pos.getZ()), false, true, false) == null;
     }
@@ -305,41 +281,29 @@ public class PlayerUtil {
     }
 
     public static int GetItemSlot(Item input) {
-        if (mc.player == null)
-            return 0;
+        if (mc.player == null) return 0;
 
         for (int i = 0; i < mc.player.inventoryContainer.getInventory().size(); ++i) {
-            if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
-                continue;
+            if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8) continue;
 
             ItemStack s = mc.player.inventoryContainer.getInventory().get(i);
 
-            if (s.isEmpty())
-                continue;
-
-            if (s.getItem() == input) {
-                return i;
-            }
+            if (s.isEmpty()) continue;
+            if (s.getItem() == input) return i;
         }
         return -1;
     }
 
     public static int GetRecursiveItemSlot(Item input) {
-        if (mc.player == null)
-            return 0;
+        if (mc.player == null) return 0;
 
         for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i) {
-            if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8)
-                continue;
+            if (i == 5 || i == 6 || i == 7 || i == 8) continue;
 
             ItemStack s = mc.player.inventoryContainer.getInventory().get(i);
 
-            if (s.isEmpty())
-                continue;
-
-            if (s.getItem() == input) {
-                return i;
-            }
+            if (s.isEmpty()) continue;
+            if (s.getItem() == input) return i;
         }
         return -1;
     }
@@ -348,26 +312,16 @@ public class PlayerUtil {
         boolean l_IsSprinting = mc.player.isSprinting();
 
         if (l_IsSprinting != mc.player.serverSprintState) {
-            if (l_IsSprinting) {
-                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
-            }
-            else {
-                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
-            }
-
+            if (l_IsSprinting) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
+            else mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
             mc.player.serverSprintState = l_IsSprinting;
         }
 
         boolean l_IsSneaking = mc.player.isSneaking();
 
         if (l_IsSneaking != mc.player.serverSneakState) {
-            if (l_IsSneaking) {
-                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
-            }
-            else {
-                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-            }
-
+            if (l_IsSneaking) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            else mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
             mc.player.serverSneakState = l_IsSneaking;
         }
 
@@ -379,8 +333,8 @@ public class PlayerUtil {
             double l_PosXDifference = mc.player.posX - mc.player.lastReportedPosX;
             double l_PosYDifference = axisalignedbb.minY - mc.player.lastReportedPosY;
             double l_PosZDifference = mc.player.posZ - mc.player.lastReportedPosZ;
-            double l_YawDifference = (double)(l_Yaw - mc.player.lastReportedYaw);
-            double l_RotationDifference = (double)(l_Pitch - mc.player.lastReportedPitch);
+            double l_YawDifference = l_Yaw - mc.player.lastReportedYaw;
+            double l_RotationDifference = l_Pitch - mc.player.lastReportedPitch;
             ++mc.player.positionUpdateTicks;
             boolean l_MovedXYZ = l_PosXDifference * l_PosXDifference + l_PosYDifference * l_PosYDifference + l_PosZDifference * l_PosZDifference > 9.0E-4D || mc.player.positionUpdateTicks >= 20;
             boolean l_MovedRotation = l_YawDifference != 0.0D || l_RotationDifference != 0.0D;
@@ -415,8 +369,7 @@ public class PlayerUtil {
         }
     }
 
-    public static boolean isPlayerTrapped()
-    {
+    public static boolean isPlayerTrapped() {
         BlockPos playerPos = GetLocalPlayerPosFloored();
 
         final BlockPos[] trapPos = {
@@ -432,19 +385,16 @@ public class PlayerUtil {
                 playerPos.west().up(),
         };
 
-        for (BlockPos pos : trapPos)
-        {
+        for (BlockPos pos : trapPos) {
             IBlockState state = mc.world.getBlockState(pos);
 
-            if (state.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(pos).getBlock() != Blocks.BEDROCK)
-                return false;
+            if (state.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(pos).getBlock() != Blocks.BEDROCK) return false;
         }
 
         return true;
     }
 
-    public static boolean isEntityTrapped(Entity e)
-    {
+    public static boolean isEntityTrapped(Entity e) {
         BlockPos playerPos = entityPosToFloorBlockPos(e);
 
         final BlockPos[] l_TrapPositions = {
@@ -459,12 +409,10 @@ public class PlayerUtil {
                 playerPos.west().up(),
         };
 
-        for (BlockPos l_Pos : l_TrapPositions)
-        {
+        for (BlockPos l_Pos : l_TrapPositions) {
             IBlockState l_State = mc.world.getBlockState(l_Pos);
 
-            if (l_State.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(l_Pos).getBlock() != Blocks.BEDROCK)
-                return false;
+            if (l_State.getBlock() != Blocks.OBSIDIAN && mc.world.getBlockState(l_Pos).getBlock() != Blocks.BEDROCK) return false;
         }
 
         return true;

@@ -97,7 +97,7 @@ public class OffHand extends Module {
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.updateController();
 
-                ChatUtils.complete(ChatFormatting.LIGHT_PURPLE + "Offhand now has a " + display);
+                ChatUtils.complete(ChatFormatting.BLUE + "Offhand now has a " + display);
             }
         }
     }
@@ -116,10 +116,8 @@ public class OffHand extends Module {
             case "Chorus": return Items.CHORUS_FRUIT;
             case "Strength": return Items.POTIONITEM;
             case "Shield": return Items.SHIELD;
-            default: break;
+            default: return Items.TOTEM_OF_UNDYING;
         }
-
-        return Items.TOTEM_OF_UNDYING;
     }
 
     private String getItemNameFromModeVal(String mode) {
@@ -130,10 +128,8 @@ public class OffHand extends Module {
             case "Chorus": return "Chorus";
             case "Strength": return "Strength";
             case "Shield": return "Shield";
-            default: break;
+            default: return "Totem";
         }
-
-        return "Totem";
     }
 
     private boolean noNearbyPlayers() {return mode.getValString().equalsIgnoreCase("Crystal") && mc.world.playerEntities.stream().noneMatch(e -> e != mc.player && isValidTarget(e));}

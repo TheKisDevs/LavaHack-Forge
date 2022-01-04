@@ -13,6 +13,19 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static int findItemInInventory(Item item) {
+        if(mc.player != null) {
+            for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i) {
+                if (i == 5 || i == 6 || i == 7 || i == 8) continue;
+
+                ItemStack s = mc.player.inventoryContainer.getInventory().get(i);
+
+                if (s.isEmpty()) continue;
+                if (s.getItem() == item) return i;
+            }
+        } return -1;
+    }
+
     public static void switchToSlot(int slot, boolean silent) {
         if (!silent) mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
         else {
@@ -80,7 +93,7 @@ public class InventoryUtil {
     }
 
     public static void switchToSlot(int slot, Switch switchMode) {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null) return;
 
         if (slot != -1 && mc.player.inventory.currentItem != slot) {
             switch (switchMode) {
@@ -106,16 +119,7 @@ public class InventoryUtil {
     }
 
     public static int getBlockInHotbar(boolean onlyObby) {
-        for(int i = 0; i <9; i++) {
-            if(mc.player.inventory.getStackInSlot(i).getItem() instanceof ItemBlock) {
-                if(onlyObby && ((ItemBlock) mc.player.inventory.getStackInSlot(i).getItem()).block instanceof BlockObsidian) {
-                    return i;
-                } else {
-                    return i;
-                }
-            }
-        }
-
+        for(int i = 0; i <9; i++) if(mc.player.inventory.getStackInSlot(i).getItem() instanceof ItemBlock) return i;
         return -1;
     }
 

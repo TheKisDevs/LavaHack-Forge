@@ -156,6 +156,7 @@ public class ModuleManager {
 		modules.add(new FastPlace());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
+		modules.add(new Refill());
 		modules.add(new Swing());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
