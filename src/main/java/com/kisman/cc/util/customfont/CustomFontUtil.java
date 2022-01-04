@@ -59,7 +59,7 @@ public class CustomFontUtil {
         }
 
         return fontRenderer.getStringWidth(text);*/
-        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(text) + 3) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text) + 3) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (comfortaa18.getStringWidth(text) + 3) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
+        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (comfortaa18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
 //        return customFont() ? (Kisman.instance.customFontRenderer.getStringWidth(text) + 3) : fontRenderer.getStringWidth(text);
     }
 
@@ -74,7 +74,7 @@ public class CustomFontUtil {
         }
 
         return fontRenderer.getStringWidth(text);*/
-        return customFont() ? getCustomFont().equals("Verdana") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (Kisman.instance.customFontRenderer1.getStringWidth(text) + 3) : (Kisman.instance.customFontRenderer.getStringWidth(text) + 3) : getCustomFont().equals("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (consolas15.getStringWidth(text) + 3) : (consolas18.getStringWidth(text) + 3) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (comfortaa15.getStringWidth(text) + 3) : (comfortaal18.getStringWidth(text) + 3) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
+        return customFont() ? getCustomFont().equals("Verdana") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (Kisman.instance.customFontRenderer1.getStringWidth(text)) : (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (consolas15.getStringWidth(text)) : (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (comfortaa15.getStringWidth(text)) : (comfortaal18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
     }
 
 /*    public static int getStringWidth(String text, boolean gui) {

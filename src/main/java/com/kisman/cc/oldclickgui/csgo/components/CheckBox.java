@@ -4,6 +4,7 @@ import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
 import com.kisman.cc.oldclickgui.csgo.IRenderer;
+import com.kisman.cc.util.Render2DUtil;
 
 import java.awt.*;
 import java.util.function.Supplier;
@@ -40,6 +41,10 @@ public class CheckBox extends AbstractComponent {
         }
 
         renderer.drawOutline(x, y, preferredHeight, preferredHeight, 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+
+        if(Config.instance.guiGlow.getValBoolean()) {
+            Render2DUtil.drawRoundedRect(x, y, x + preferredHeight, y + preferredHeight, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+        }
 
         //y + renderer.getStringHeight(title) / 4
         renderer.drawString(x + preferredHeight + preferredHeight / 4, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);

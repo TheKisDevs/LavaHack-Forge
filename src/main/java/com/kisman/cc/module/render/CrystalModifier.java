@@ -27,12 +27,6 @@ public class CrystalModifier extends Module {
     public Setting translateZ = new Setting("TranslateZ", this, 0, -2, 2, false);
 
 
-    private Setting rotateLine = new Setting("RotateLine", this, "Rotate");
-
-    public Setting rotateX = new Setting("RotateX", this, 0, 0, 360, true);
-    public Setting rotateY = new Setting("RotateY", this, 0, 0, 360, true);
-    public Setting rotateZ = new Setting("RotateZ", this, 0, 0, 360, true);
-
     private Setting crystalSettingLine = new Setting("CrystalSettingLine", this, "CrystalSetting");
 
     public Setting insideCube = new Setting("InsideCube", this, true);
@@ -79,11 +73,6 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(translateY);
         setmgr.rSetting(translateZ);
 
-        setmgr.rSetting(rotateLine);
-        setmgr.rSetting(rotateX);
-        setmgr.rSetting(rotateY);
-        setmgr.rSetting(rotateZ);
-
         setmgr.rSetting(crystalSettingLine);
         setmgr.rSetting(insideCube);
         setmgr.rSetting(outsideCube);
@@ -93,6 +82,7 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(crystalColor);
 
         setmgr.rSetting(outlineLine);
+        setmgr.rSetting(outline);
         setmgr.rSetting(outlineMode);
         setmgr.rSetting(lineWidth);
         setmgr.rSetting(color);

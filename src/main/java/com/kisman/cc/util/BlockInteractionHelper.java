@@ -200,44 +200,31 @@ public class BlockInteractionHelper
         Ok,
     }
 
-    public static ValidResult valid(BlockPos pos)
-    {
+    public static ValidResult valid(BlockPos pos) {
         // There are no entities to block placement,
-        if (!mc.world.checkNoEntityCollision(new AxisAlignedBB(pos)))
-            return ValidResult.NoEntityCollision;
+        if (!mc.world.checkNoEntityCollision(new AxisAlignedBB(pos))) return ValidResult.NoEntityCollision;
 
-        if (mc.world.getBlockState(pos.down()).getBlock() == Blocks.WATER)
-            if (LiquidInteract.instance.isToggled())
-                return ValidResult.Ok;
+        if (mc.world.getBlockState(pos.down()).getBlock() == Blocks.WATER) if (LiquidInteract.instance.isToggled()) return ValidResult.Ok;
 
-        if (!BlockInteractionHelper.checkForNeighbours(pos))
-            return ValidResult.NoNeighbors;
+        if (!BlockInteractionHelper.checkForNeighbours(pos)) return ValidResult.NoNeighbors;
 
         IBlockState l_State = mc.world.getBlockState(pos);
 
-        if (l_State.getBlock() == Blocks.AIR)
-        {
+        if (l_State.getBlock() == Blocks.AIR) {
             final BlockPos[] l_Blocks =
             { pos.north(), pos.south(), pos.east(), pos.west(), pos.up(), pos.down() };
 
-            for (BlockPos l_Pos : l_Blocks)
-            {
+            for (BlockPos l_Pos : l_Blocks) {
                 IBlockState l_State2 = mc.world.getBlockState(l_Pos);
 
-                if (l_State2.getBlock() == Blocks.AIR)
-                    continue;
+                if (l_State2.getBlock() == Blocks.AIR) continue;
 
-                for (final EnumFacing side : EnumFacing.values())
-                {
+                for (final EnumFacing side : EnumFacing.values()) {
                     final BlockPos neighbor = pos.offset(side);
 
                     boolean l_IsWater = mc.world.getBlockState(neighbor).getBlock() == Blocks.WATER;
 
-                    if (mc.world.getBlockState(neighbor).getBlock().canCollideCheck(mc.world.getBlockState(neighbor), false)
-                            || (l_IsWater && LiquidInteract.instance.isToggled()))
-                    {
-                        return ValidResult.Ok;
-                    }
+                    if (mc.world.getBlockState(neighbor).getBlock().canCollideCheck(mc.world.getBlockState(neighbor), false) || (l_IsWater && LiquidInteract.instance.isToggled())) return ValidResult.Ok;
                 }
             }
 

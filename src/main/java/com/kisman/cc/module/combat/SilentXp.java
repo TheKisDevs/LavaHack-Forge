@@ -52,14 +52,12 @@ public class SilentXp extends Module {
         prvSlot = mc.player.inventory.currentItem;
 
         switch (switchMode.getValString()) {
-            case "Packet": {
+            case "Packet":
                 mc.player.connection.sendPacket(new CPacketHeldItemChange(findExpInHotbar()));
                 break;
-            }
-            case "Client": {
+            case "Client":
                 mc.player.inventory.currentItem = findExpInHotbar();
                 break;
-            }
         }
 
         mc.player.rotationPitch = (float) lookPitch.getValDouble();
@@ -68,14 +66,12 @@ public class SilentXp extends Module {
         mc.player.rotationPitch = oldPitch;
 
         switch (switchMode.getValString()) {
-            case "Packet": {
+            case "Packet":
                 mc.player.connection.sendPacket(new CPacketHeldItemChange(prvSlot));
                 break;
-            }
-            case "Client": {
+            case "Client":
                 mc.player.inventory.currentItem = prvSlot;
                 break;
-            }
         }
     }
 }

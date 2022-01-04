@@ -2,31 +2,17 @@ package com.kisman.cc.mixin.mixins;
 
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.Event;
-import com.kisman.cc.event.events.EventEntityRender;
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
-import com.kisman.cc.module.render.Ambience;
-import com.kisman.cc.module.render.NameTags;
-import com.kisman.cc.module.render.NoRender;
-import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.module.render.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.vecmath.Vector3f;
@@ -38,15 +24,11 @@ import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(value = EntityRenderer.class, priority = 10000)
 public class MixinEntityRenderer {
-    @Shadow
-    @Final
-    private int[] lightmapColors;
+    @Shadow @Final public int[] lightmapColors;
 
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo ci) {
-        if(NoRender.instance.isToggled() && NoRender.instance.fog.getValBoolean()) {
-            ci.cancel();
-        }
+        if(NoRender.instance.isToggled() && NoRender.instance.fog.getValBoolean()) ci.cancel();
     }
 
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
@@ -54,28 +36,13 @@ public class MixinEntityRenderer {
         EventRenderGetEntitiesINAABBexcluding event = new EventRenderGetEntitiesINAABBexcluding();
         Kisman.EVENT_BUS.post(event);
 
-        if(event.isCancelled()) {
-            return new ArrayList<>();
-        } else {
-            return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
-        }
+        if(event.isCancelled()) return new ArrayList<>();
+        else return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
     }
-
-    /*@Inject(method = "renderWorldPass", at = @At("HEAD"), cancellable = true)
-    private void renderWorldPass(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
-        EventEntityRender event = new EventEntityRender(partialTicks, Event.Era.PRE);
-        Kisman.EVENT_BUS.post(event);
-
-        if(event.isCancelled()) {
-            ci.cancel();
-        }
-    }*/
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void hurt(float particalTicks, CallbackInfo ci) {
-        if(NoRender.instance.isToggled() && NoRender.instance.hurtCam.getValBoolean()) {
-            ci.cancel();
-        }
+        if(NoRender.instance.isToggled() && NoRender.instance.hurtCam.getValBoolean()) ci.cancel();
     }
 
     @Inject( method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ) )
@@ -124,10 +91,7 @@ public class MixinEntityRenderer {
         GlStateManager.scale(-0.025F, -0.025F, 0.025F);
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
-        if (!isSneaking) {
-            GlStateManager.disableDepth();
-        }
-
+        if (!isSneaking) GlStateManager.disableDepth();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         int i = CustomFontUtil.getStringWidth(str) / 2;

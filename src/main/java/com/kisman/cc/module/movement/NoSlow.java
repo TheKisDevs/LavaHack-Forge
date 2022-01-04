@@ -2,21 +2,17 @@ package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.console.GuiConsole;
-import com.kisman.cc.event.events.EventPlayerUpdateMoveState;
-import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.event.events.*;
+import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemShield;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.input.Keyboard;
@@ -26,7 +22,6 @@ public class NoSlow extends Module {
     private Setting items = new Setting("Items", this, true);
     private Setting ncpStrict = new Setting("NCPStrict", this, true);
     private Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
-
 
     private Setting invLine = new Setting("InvLine", this, "InvMode");
 
@@ -62,20 +57,11 @@ public class NoSlow extends Module {
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        if (mc.player.isHandActive() && items.getValBoolean()) {
-            if (mc.player.getHeldItem(mc.player.getActiveHand()).getItem() instanceof ItemShield) {
-                if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0 && mc.player.getItemInUseMaxCount() >= 8) {
-                    mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.getHorizontalFacing()));
-                }
-            }
-        }
+        if (mc.player.isHandActive() && items.getValBoolean()) if (mc.player.getHeldItem(mc.player.getActiveHand()).getItem() instanceof ItemShield) if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0 && mc.player.getItemInUseMaxCount() >= 8) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.getHorizontalFacing()));
 
         if(slimeBlocks.getValBoolean()) {
-            if(mc.player.getRidingEntity() != null) {
-                Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.8f);
-            } else {
-                Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
-            }
+            if(mc.player.getRidingEntity() != null) Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.8f);
+            else Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
         }
     }
 
@@ -94,33 +80,25 @@ public class NoSlow extends Module {
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode())) {
                 ++mc.player.movementInput.moveForward;
                 mc.player.movementInput.forwardKeyDown = true;
-            } else {
-                mc.player.movementInput.forwardKeyDown = false;
-            }
+            } else mc.player.movementInput.forwardKeyDown = false;
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()));
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode())) {
                 --mc.player.movementInput.moveForward;
                 mc.player.movementInput.backKeyDown = true;
-            } else {
-                mc.player.movementInput.backKeyDown = false;
-            }
+            } else mc.player.movementInput.backKeyDown = false;
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode()));
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode())) {
                 ++mc.player.movementInput.moveStrafe;
                 mc.player.movementInput.leftKeyDown = true;
-            } else {
-                mc.player.movementInput.leftKeyDown = false;
-            }
+            } else mc.player.movementInput.leftKeyDown = false;
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode()));
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode())) {
                 --mc.player.movementInput.moveStrafe;
                 mc.player.movementInput.rightKeyDown = true;
-            } else {
-                mc.player.movementInput.rightKeyDown = false;
-            }
+            } else mc.player.movementInput.rightKeyDown = false;
 
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode()));
             mc.player.movementInput.jump = Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
@@ -135,14 +113,5 @@ public class NoSlow extends Module {
         }
     });
 
-    @EventHandler
-    private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {
-        if(event.getPacket() instanceof CPacketPlayer) {
-            if(ncpStrict.getValBoolean()) {
-                if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) {
-                    mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));
-                }
-            }
-        }
-    });
+    @EventHandler private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {if(event.getPacket() instanceof CPacketPlayer) if(ncpStrict.getValBoolean()) if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));});
 }

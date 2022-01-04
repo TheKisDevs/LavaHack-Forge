@@ -1,16 +1,13 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.util.RenderUtil;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.*;
 
 public class TrajectoriesRewrite extends Module {
     private double motionX, motionZ, motionY;
@@ -51,9 +48,9 @@ public class TrajectoriesRewrite extends Module {
 
                     pow *= 2.0F;
                     pow *= 1.5F;
-                    this.motionX *= (double) pow;
-                    this.motionY *= (double) pow;
-                    this.motionZ *= (double) pow;
+                    this.motionX *= pow;
+                    this.motionY *= pow;
+                    this.motionZ *= pow;
                 } else {
                     this.motionX *= 1.5D;
                     this.motionY *= 1.5D;

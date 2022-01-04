@@ -1,5 +1,7 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.module.client.Config;
+import com.kisman.cc.util.glow.ShaderShell;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -215,5 +217,41 @@ public class Render2DUtil extends GuiScreen {
 
     public static void drawGradient(int left, int top, int right, int bottom, int startColor, int endColor) {
         instance.drawGradientRect(left, top, right, bottom, startColor, endColor);
+    }
+
+    public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color, float radius) {
+        GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        float alpha = ((float) (color >> 24 & 0xFF) / 255F);
+        float red = (float) (color >> 16 & 0xFF) / 255F;
+        float green = (float) (color >> 8 & 0xFF) / 255F;
+        float blue = (float) (color & 0xFF) / 255F;
+        ShaderShell.ROUNDED_RECT.attach();
+        ShaderShell.ROUNDED_RECT.set4F("color", red, green, blue, alpha);
+        ShaderShell.ROUNDED_RECT.set2F("resolution", Minecraft.getMinecraft().displayWidth,
+                Minecraft.getMinecraft().displayHeight);
+        ShaderShell.ROUNDED_RECT.set2F("center", (startX + (endX - startX) / 2) * 2,
+                (startY + (endY - startY) / 2) * 2);
+        ShaderShell.ROUNDED_RECT.set2F("dst", (endX - startX - radius) * 2, (endY - startY - radius) * 2);
+        ShaderShell.ROUNDED_RECT.set1F("radius", radius);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2d(endX, startY);
+        GL11.glVertex2d(startX, startY);
+        GL11.glVertex2d(startX, endY);
+        GL11.glVertex2d(endX, endY);
+        GL11.glEnd();
+        ShaderShell.ROUNDED_RECT.detach();
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glPopMatrix();
+    }
+
+    public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color) {
+        drawRoundedRect(startX, startY, endX, endY, color, Config.instance.glowRadius.getValFloat());
+    }
+
+    public static void drawRoundedRect(double startX, double startY, double endX, double endY, Color color) {
+        drawRoundedRect((float) startX, (float) startY, (float) endX, (float) endY, color.getRGB(), Config.instance.glowRadius.getValFloat());
     }
 }

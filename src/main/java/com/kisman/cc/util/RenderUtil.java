@@ -1393,4 +1393,87 @@ public class RenderUtil {
 
         GL11.glColor4f(f, f1, f2, f3);
     }
+
+    public static void drawGradientFilledBox(final BlockPos pos, final Color startColor, final Color endColor) {
+        final IBlockState iblockstate = mc.world.getBlockState(pos);
+        final Vec3d interp = EntityUtil.getInterpolatedPos(mc.player, mc.getRenderPartialTicks());
+        drawGradientFilledBox(iblockstate.getSelectedBoundingBox(mc.world, pos).grow(0.0020000000949949026).offset(-interp.x, -interp.y, -interp.z), startColor, endColor);
+    }
+
+    public static void glBillboard(final float x, final float y, final float z) {
+        final float scale = 0.02666667f;
+        GlStateManager.translate(x - mc.getRenderManager().renderViewEntity.posX, y - mc.getRenderManager().renderViewEntity.posY, z - mc.getRenderManager().renderViewEntity.posZ);
+        GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(-mc.player.rotationYaw, 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotate(mc.player.rotationPitch, (mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f, 0.0f, 0.0f);
+        GlStateManager.scale(-scale, -scale, scale);
+    }
+
+    public static void glBillboardDistanceScaled(final float x, final float y, final float z, final EntityPlayer player, final float scale) {
+        glBillboard(x, y, z);
+        final int distance = (int)player.getDistance(x, y, z);
+        float scaleDistance = distance / 2.0f / (2.0f + (2.0f - scale));
+        if (scaleDistance < 1.0f) scaleDistance = 1.0f;
+        GlStateManager.scale(scaleDistance, scaleDistance, scaleDistance);
+    }
+
+    public static void drawText(final BlockPos pos, final String text) {
+        if (pos == null || text == null) return;
+        GlStateManager.pushMatrix();
+        glBillboardDistanceScaled(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, mc.player, 1.0f);
+        GlStateManager.disableDepth();
+        GlStateManager.translate(-(CustomFontUtil.getStringWidth(text) / 2.0), 0.0, 0.0);
+        CustomFontUtil.drawStringWithShadow(text, 0.0f, 0.0f, -5592406);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawGradientFilledBox(final AxisAlignedBB bb, final Color startColor, final Color endColor) {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+        final float alpha = endColor.getAlpha() / 255.0f;
+        final float red = endColor.getRed() / 255.0f;
+        final float green = endColor.getGreen() / 255.0f;
+        final float blue = endColor.getBlue() / 255.0f;
+        final float alpha2 = startColor.getAlpha() / 255.0f;
+        final float red2 = startColor.getRed() / 255.0f;
+        final float green2 = startColor.getGreen() / 255.0f;
+        final float blue2 = startColor.getBlue() / 255.0f;
+        final Tessellator tessellator = Tessellator.getInstance();
+        final BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red2, green2, blue2, alpha2).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        tessellator.draw();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
+    }
 }

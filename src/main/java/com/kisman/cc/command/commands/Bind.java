@@ -31,12 +31,10 @@ public class Bind extends Command{
             }
 
             if(args.length == 1 && isList.equalsIgnoreCase("list")) {
+                ChatUtils.message("----------------------------------");
                 ChatUtils.message("Bind List:");
-                for(Module mod : Kisman.instance.moduleManager.modules) {
-                    if(Keyboard.KEY_NONE != mod.getKey()) {
-                        ChatUtils.message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
-                    }
-                }
+                for(Module mod : Kisman.instance.moduleManager.modules) if(Keyboard.KEY_NONE != mod.getKey()) ChatUtils.message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
+                ChatUtils.message("----------------------------------");
                 return;
             }
 
@@ -47,9 +45,7 @@ public class Bind extends Command{
                     SaveConfig.init();
                 }
             }
-        } catch(Exception e) {
-            ChatUtils.error("Usage: " + getSyntax());
-        }
+        } catch(Exception e) {ChatUtils.error("Usage: " + getSyntax());}
     }
 
     @Override

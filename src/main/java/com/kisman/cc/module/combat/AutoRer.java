@@ -10,6 +10,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.EntityUtil;
 import com.kisman.cc.util.InventoryUtil;
+import com.kisman.cc.util.RenderUtil;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -29,48 +30,68 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AutoRer extends Module {
-    private Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
-    private Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
-    private Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
-    private Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
-    private Setting terrain = new Setting("Terrain", this, false);
-    private Setting switch_ = new Setting("Switch", this, SwitchMode.None);
-    private Setting fastCalc = new Setting("Fast Calc", this, true);
-    private Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
-    private Setting instant = new Setting("Instant", this, true);
-    private Setting inhibit = new Setting("Inhibit", this, true);
-    private Setting syns = new Setting("Syns", this, true);
+    private final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
+    private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
+    private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
+    private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
+    private final Setting terrain = new Setting("Terrain", this, false);
+    private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
+    private final Setting fastCalc = new Setting("Fast Calc", this, true);
+    private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
+    private final Setting instant = new Setting("Instant", this, true);
+    private final Setting inhibit = new Setting("Inhibit", this, true);
+    private final Setting syns = new Setting("Syns", this, true);
 
-    private Setting placeLine = new Setting("PlaceLine", this, "Place");
-    private Setting place = new Setting("Place", this, true);
-    private Setting secondCheck = new Setting("Second Check", this, false);
-    private Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
+    private final Setting placeLine = new Setting("PlaceLine", this, "Place");
+    private final Setting place = new Setting("Place", this, true);
+    private final Setting secondCheck = new Setting("Second Check", this, false);
+    private final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
 
-    private Setting breakLine = new Setting("BreakLine", this, "Break");
-    private Setting break_ = new Setting("Break", this, true);
+    private final Setting breakLine = new Setting("BreakLine", this, "Break");
+    private final Setting break_ = new Setting("Break", this, true);
 
-    private Setting delayLine = new Setting("DelayLine", this, "Delay");
-    private Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
-    private Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
+    private final Setting delayLine = new Setting("DelayLine", this, "Delay");
+    private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
+    private final Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
+    private final Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
+    private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
 
-    private Setting dmgLine = new Setting("DMGLine", this, "Damage");
-    private Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
-    private Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
-    private Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
+    private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
+    private final Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
+    private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
+    private final Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
 
-    private Setting renderLine = new Setting("RenderLine", this, "Render");
+    private final Setting renderLine = new Setting("RenderLine", this, "Render");
+    private final Setting render = new Setting("Render", this, Render.Default);
+    private final Setting text = new Setting("Text", this, true);
+    private final Setting infoMode = new Setting("InfoMode", this, InfoMode.Target);
 
-    private Setting miscLine = new Setting("MiscLine", this, "Misc");
+    private final Setting red = new Setting("Red", this, 1, 0, 1, false);
+    private final Setting green = new Setting("Green", this, 0, 0, 1, false);
+    private final Setting blue = new Setting("Blue", this, 0, 0, 1, false);
+    private final Setting alpha = new Setting("Blue", this, 1, 0, 1, false);
+
+    private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced render");
+
+    private final Setting startRed = new Setting("Start Red", this, 0, 0, 1, false);
+    private final Setting startGreen = new Setting("Start Green", this, 0, 0, 1, false);
+    private final Setting startBlue = new Setting("Start Blue", this, 0, 0, 1, false);
+    private final Setting startAlpha = new Setting("Start Alpha", this, 0, 0, 1, false);
+
+    private final Setting endRed = new Setting("End Red", this, 1, 0, 1, false);
+    private final Setting endGreen = new Setting("End Green", this, 0, 0, 1, false);
+    private final Setting endBlue = new Setting("End Blue", this, 0, 0, 1, false);
+    private final Setting endAlpha = new Setting("End Alpha", this, 1, 0, 1, false);
 
     private final List<BlockPos> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
@@ -83,7 +104,6 @@ public class AutoRer extends Module {
     private Entity lastHitEntity = null;
     private double renderDamage;
     public boolean rotating;
-    private boolean offhand;
     private float pitch;
     private float yaw;
     private int rotationPacketsSpoofed;
@@ -123,19 +143,33 @@ public class AutoRer extends Module {
         setmgr.rSetting(lethalMult);
 
         setmgr.rSetting(renderLine);
+        setmgr.rSetting(render);
+        setmgr.rSetting(text);
+        setmgr.rSetting(infoMode);
+        setmgr.rSetting(red);
+        setmgr.rSetting(green);
+        setmgr.rSetting(blue);
+        setmgr.rSetting(alpha);
 
-        setmgr.rSetting(miscLine);
+        setmgr.rSetting(advancedRenderLine);
+        setmgr.rSetting(startRed);
+        setmgr.rSetting(startGreen);
+        setmgr.rSetting(startBlue);
+        setmgr.rSetting(startAlpha);
+        setmgr.rSetting(endRed);
+        setmgr.rSetting(endGreen);
+        setmgr.rSetting(endBlue);
+        setmgr.rSetting(endAlpha);
     }
 
     public void onEnable() {
-        this.placedList.clear();
-        this.breakTimer.reset();
-        this.placeTimer.reset();
-        this.renderTimer.reset();
-        this.currentTarget = null;
-        this.renderPos = null;
-        this.offhand = false;
-        this.rotating = false;
+        placedList.clear();
+        breakTimer.reset();
+        placeTimer.reset();
+        renderTimer.reset();
+        currentTarget = null;
+        renderPos = null;
+        rotating = false;
 
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
@@ -145,18 +179,16 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener1);
 
-        this.placedList.clear();
-        this.breakTimer.reset();
-        this.placeTimer.reset();
-        this.renderTimer.reset();
-        this.currentTarget = null;
-        this.renderPos = null;
-        this.offhand = false;
-        this.rotating = false;
+        placedList.clear();
+        breakTimer.reset();
+        placeTimer.reset();
+        renderTimer.reset();
+        currentTarget = null;
+        renderPos = null;
+        rotating = false;
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onTick(TickEvent.ClientTickEvent event) {
+    public void update() {
         if(mc.player == null && mc.world == null) return;
 
         if(renderTimer.passedMillis(clearDelay.getValLong())) {
@@ -169,10 +201,30 @@ public class AutoRer extends Module {
 
         if(currentTarget == null) return;
         else super.setDisplayInfo("[" + currentTarget.getName() + "]");
-        if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) calculatePlace();
+        if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
+            calculatePlace();
+            calcTimer.reset();
+        }
 
         doPlace();
-        if(event.phase.equals(TickEvent.Phase.START)) doBreak();
+        doBreak();
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        switch (render.getValString()) {
+            case "None": break;
+            case "Default": {
+                RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+                break;
+            }
+            case "Advanced": {
+                RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
+                break;
+            }
+        }
+
+        if(text.getValBoolean()) RenderUtil.drawText(renderPos, ((Math.floor(renderDamage) == renderDamage) ? String.valueOf(Integer.valueOf((int) renderDamage)) : String.format("%.1f", renderDamage)));
     }
 
     @EventHandler
@@ -201,11 +253,7 @@ public class AutoRer extends Module {
 
         if (event.getPacket() instanceof SPacketSoundEffect && inhibit.getValBoolean() && lastHitEntity != null) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
-            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) {
-                    lastHitEntity.setDead();
-                }
-            }
+            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) lastHitEntity.setDead();
         }
     });
 
@@ -268,12 +316,12 @@ public class AutoRer extends Module {
             case "Normal": {
                 if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
                     InventoryUtil.switchToSlot(crystalSlot, false);
-                }break;
+                } break;
             }
             case "Silent": {
                 if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
                     InventoryUtil.switchToSlot(crystalSlot, true);
-                }break;
+                } break;
             }
         }
 
@@ -321,7 +369,7 @@ public class AutoRer extends Module {
 
         if(crystal == null) return;
 
-        lastHitEntity = (EntityEnderCrystal) crystal;
+        lastHitEntity = crystal;
         mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         swing();
         breakTimer.reset();
@@ -335,6 +383,12 @@ public class AutoRer extends Module {
     private void swing() {
         if(swing.getValString().equals(SwingMode.PacketSwing.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         else mc.player.swingArm(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+    }
+
+    public enum Render {
+        None,
+        Default,
+        Advanced
     }
 
     public enum InfoMode {

@@ -13,20 +13,23 @@ public class Module {
 	private String name, description, displayInfo;
 	private int key;
 	private int priority;
-	private Category category;
+	private final Category category;
 	private boolean toggled;
+	private final boolean subscribes;
 	public boolean visible = true;
 
-	public Module(String name, Category category) {this(name, "", category, 0);}
-	public Module(String name, String description, Category category) {this(name, description, category, 0);}
+	public Module(String name, Category category) {this(name, "", category, 0, true);}
+	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
+	public Module(String name, String description, Category category) {this(name, description, category, 0, true);}
 
-	public Module(String name, String description, Category category, int key) {
+	public Module(String name, String description, Category category, int key, boolean subscribes) {
 		this.name = name;
 		this.description = description;
 		this.displayInfo = "";
 		this.key = key;
 		this.category = category;
 		this.toggled = false;
+		this.subscribes = subscribes;
 		this.priority = 1;
 
 		setmgr = Kisman.instance.settingsManager;
@@ -56,8 +59,8 @@ public class Module {
 	public void setPriority(int priority) {this.priority = priority;}
 	public void setKey(int key) {this.key = key;}
 	public boolean isToggled() {return toggled;}
-	public void onEnable() {MinecraftForge.EVENT_BUS.register(this);}
-	public void onDisable() {MinecraftForge.EVENT_BUS.unregister(this);}
+	public void onEnable() {if(subscribes) MinecraftForge.EVENT_BUS.register(this);}
+	public void onDisable() {if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);}
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}
 	public String getDisplayInfo() {return this.displayInfo;}

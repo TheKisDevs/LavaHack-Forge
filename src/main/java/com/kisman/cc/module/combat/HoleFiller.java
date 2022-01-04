@@ -60,9 +60,11 @@ public class HoleFiller extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
+
+        target = EntityUtil.getTarget(range.getValFloat());
         
         if(target == null) super.setDisplayInfo("");
-        else super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getDisplayName() + TextFormatting.GRAY + "]");
+        else super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getName() + TextFormatting.GRAY + "]");
 
         if(target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) target = EntityUtil.getTarget(range.getValFloat());
         else if(timer.passedMillis(delay.getValLong())){
