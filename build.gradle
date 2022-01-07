@@ -98,6 +98,7 @@ dependencies {
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
+    compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 }
 
