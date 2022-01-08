@@ -1,5 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventRenderEntityName;
 import com.kisman.cc.module.combat.AutoCrystalBypass;
 import com.kisman.cc.module.render.Charms;
 import com.kisman.cc.settings.Setting;
@@ -9,6 +11,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -30,6 +33,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
 
     protected MixinRendererLivingEntity() {
         super(null);
+    }
+
+    @Inject(method = "renderName(Lnet/minecraft/entity/Entity;DDD)V", at = @At("HEAD"), cancellable = true)
+    private void doRenderName(Entity par1, double par2, double par3, double par4, CallbackInfo ci) {
+        EventRenderEntityName event = new EventRenderEntityName(par1, par2, par2, par4, "", 0);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = {"doRender"}, at = @At("HEAD"))

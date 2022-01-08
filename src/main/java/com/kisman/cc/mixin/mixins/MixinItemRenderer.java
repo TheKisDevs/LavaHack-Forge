@@ -67,9 +67,7 @@ public class MixinItemRenderer {
                 GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
                 GlStateManager.scale(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
             }
-        } else {
-            this.transformSideFirstPerson(hand, y);
-        }
+        } else this.transformSideFirstPerson(hand, y);
     }
 
     private Setting getSet(String name) {

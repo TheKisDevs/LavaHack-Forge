@@ -85,7 +85,7 @@ public class AutoCrystalRewrite extends Module {
 
     private final Random random = new Random();
     private final Set<BlockPos> placedCrystals = new HashSet<>();
-    private EntityPlayer target;
+    public EntityPlayer target;
     private Entity lastHitEntity;
     private BlockPos current;
     private Rotation rotation;

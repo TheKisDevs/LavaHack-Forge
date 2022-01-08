@@ -35,6 +35,8 @@ public class CrystalFiller extends Module {
     private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 15, 0, 36, true);
     private final Setting render = new Setting("Render", this, true);
 
+    public static CrystalFiller instance;
+
     private final ArrayList<Hole> holes = new ArrayList<>();
     private final ArrayList<Hole> blackHoleList = new ArrayList<>();
     private final ArrayList<EntityEnderCrystal> crystals = new ArrayList<>();
@@ -46,6 +48,8 @@ public class CrystalFiller extends Module {
 
     public CrystalFiller() {
         super("CrystalFiller", "gay's module xd", Category.COMBAT);
+
+        instance = this;
 
         setmgr.rSetting(range);
         setmgr.rSetting(placeMode);

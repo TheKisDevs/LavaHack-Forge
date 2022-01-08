@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AirJump extends Module {
-    private Setting mode = new Setting("Mode", this, "Vanilla", new ArrayList<>(Arrays.asList("Vanilla", "NCP")));
+    private Setting mode = new Setting("Mode", this, "Vanilla", new ArrayList<>(Arrays.asList("Vanilla", "NCP", "Matrix")));
 
     public AirJump() {
         super("AirJump", "Category", Category.MOVEMENT);
@@ -22,6 +22,15 @@ public class AirJump extends Module {
         else if (mode.getValString().equalsIgnoreCase("NCP")) {
             mc.player.onGround = true;
             mc.player.isAirBorne = false;
+        } else if(mode.getValString().equalsIgnoreCase("Matrix") && mc.gameSettings.keyBindJump.pressed) {
+            mc.player.jump();
+            mc.player.motionY -= 0.25f;
+            if(mc.gameSettings.keyBindForward.pressed) {
+                mc.timer.elapsedTicks = (int) 1.05f;
+                mc.player.motionX *= 1.1f;
+                mc.player.motionZ *= 1.1f;
+                mc.player.onGround = false;
+            }
         }
     }
 }

@@ -15,6 +15,8 @@ public class MovementUtil {
         return !MovementUtil.mc.world.getCollisionBoxes(mc.player, bb).isEmpty();
     }
 
+    public static double getSpeed() {return getSpeed(false, 0.2873);}
+
     public static double getSpeed(boolean slowness, double defaultSpeed) {
         if (mc.player.isPotionActive(MobEffects.SPEED)) {
             int amplifier = Objects.requireNonNull(mc.player.getActivePotionEffect(MobEffects.SPEED)).getAmplifier();

@@ -37,14 +37,20 @@ public class EntityUtil {
         return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 1.5, blockPos.getZ() + 0.5), false, true, false) == null;
     }
 
+    public static double getSpeedBPS(final Entity entity) {
+        final double tX = Math.abs(entity.posX - entity.prevPosX);
+        final double tZ = Math.abs(entity.posZ - entity.prevPosZ);
+        double length = Math.sqrt(tX * tX + tZ * tZ);
+        length *= EntityUtil.mc.getRenderPartialTicks();
+        return length * 20.0;
+    }
+
     public static boolean isOnLiquid() {
         final double y = EntityUtil.mc.player.posY - 0.03;
         for (int x = MathHelper.floor(EntityUtil.mc.player.posX); x < MathHelper.ceil(EntityUtil.mc.player.posX); ++x) {
             for (int z = MathHelper.floor(EntityUtil.mc.player.posZ); z < MathHelper.ceil(EntityUtil.mc.player.posZ); ++z) {
                 final BlockPos pos = new BlockPos(x, MathHelper.floor(y), z);
-                if (EntityUtil.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) {
-                    return true;
-                }
+                if (EntityUtil.mc.world.getBlockState(pos).getBlock() instanceof BlockLiquid) return true;
             }
         }
         return false;
@@ -64,9 +70,7 @@ public class EntityUtil {
     }
 
     public static boolean stopSneaking(final boolean isSneaking) {
-        if (isSneaking && mc.player != null) {
-            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-        }
+        if (isSneaking && mc.player != null) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
         return false;
     }
 
@@ -75,11 +79,8 @@ public class EntityUtil {
         for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
             final EntityPlayer player = mc.world.playerEntities.get(i);
             if (!isntValid(player, range)) {
-                if (currentTarget == null) {
-                    currentTarget = player;
-                } else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) {
-                    currentTarget = player;
-                }
+                if (currentTarget == null) currentTarget = player;
+                else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
             }
         }
         return currentTarget;
@@ -90,30 +91,18 @@ public class EntityUtil {
     }
 
     public static boolean isPassive(Entity e) {
-        if (e instanceof EntityWolf && ((EntityWolf) e).isAngry())
-            return false;
-        if (e instanceof EntityAnimal || e instanceof EntityAgeable || e instanceof EntityTameable
-                || e instanceof EntityAmbientCreature || e instanceof EntitySquid)
-            return true;
-        if (e instanceof EntityIronGolem && ((EntityIronGolem) e).getRevengeTarget() == null)
-            return true;
-        return false;
+        if (e instanceof EntityWolf && ((EntityWolf) e).isAngry()) return false;
+        if (e instanceof EntityAgeable || e instanceof EntityAmbientCreature || e instanceof EntitySquid) return true;
+        return e instanceof EntityIronGolem && ((EntityIronGolem) e).getRevengeTarget() == null;
     }
 
     public static boolean isMobAggressive(Entity entity) {
         if (entity instanceof EntityPigZombie) {
             // arms raised = aggressive, angry = either game or we have set the anger
             // cooldown
-            if (((EntityPigZombie) entity).isArmsRaised() || ((EntityPigZombie) entity).isAngry()) {
-                return true;
-            }
-        } else if (entity instanceof EntityWolf) {
-            return ((EntityWolf) entity).isAngry()
-                    && !Minecraft.getMinecraft().player.equals(((EntityWolf) entity).getOwner());
-        } else if (entity instanceof EntityEnderman) {
-            return ((EntityEnderman) entity).isScreaming();
-        }
-
+            if (((EntityPigZombie) entity).isArmsRaised() || ((EntityPigZombie) entity).isAngry()) return true;
+        } else if (entity instanceof EntityWolf) return ((EntityWolf) entity).isAngry() && !Minecraft.getMinecraft().player.equals(((EntityWolf) entity).getOwner());
+        else if (entity instanceof EntityEnderman) return ((EntityEnderman) entity).isScreaming();
         return isHostileMob(entity);
     }
 
@@ -129,9 +118,7 @@ public class EntityUtil {
      * If the mob is friendly (not aggressive)
      */
     public static boolean isFriendlyMob(Entity entity) {
-        return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity))
-                || (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager
-                || entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
+        return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity)) || (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager || entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
     }
 
     /**
@@ -146,20 +133,14 @@ public class EntityUtil {
         if (mc.player != null) {
             final AxisAlignedBB bb = mc.player.getRidingEntity() != null ? mc.player.getRidingEntity().getEntityBoundingBox().contract(0.0d, 0.0d, 0.0d).offset(posX, posY, posZ) : mc.player.getEntityBoundingBox().contract(0.0d, 0.0d, 0.0d).offset(posX, posY, posZ);
             int y = (int) bb.minY;
-            for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX) + 1; x++) {
-                for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ) + 1; z++) {
-                    block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                }
-            }
+            for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX) + 1; x++) for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ) + 1; z++) block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
         }
         return block;
     }
 
     public static boolean isInLiquid() {
         if (mc.player != null) {
-            if (mc.player.fallDistance >= 3.0f) {
-                return false;
-            }
+            if (mc.player.fallDistance >= 3.0f) return false;
             boolean inLiquid = false;
             final AxisAlignedBB bb = mc.player.getRidingEntity() != null ? mc.player.getRidingEntity().getEntityBoundingBox() : mc.player.getEntityBoundingBox();
             int y = (int) bb.minY;
@@ -167,9 +148,7 @@ public class EntityUtil {
                 for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ) + 1; z++) {
                     final Block block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
                     if (!(block instanceof BlockAir)) {
-                        if (!(block instanceof BlockLiquid)) {
-                            return false;
-                        }
+                        if (!(block instanceof BlockLiquid)) return false;
                         inLiquid = true;
                     }
                 }
@@ -188,9 +167,7 @@ public class EntityUtil {
         float damage = damageI;
         damage = CombatRules.getDamageAfterAbsorb(damage, (float)entity.getTotalArmorValue(), (float)entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
         damage *= 1.0f - MathHelper.clamp((float) EnchantmentHelper.getEnchantmentModifierDamage(entity.getArmorInventoryList(), EntityUtil.EXPLOSION_SOURCE), 0.0f, 20.0f) / 25.0f;
-        if (entity.isPotionActive(MobEffects.RESISTANCE)) {
-            return damage - damage / 4.0f;
-        }
+        if (entity.isPotionActive(MobEffects.RESISTANCE)) return damage - damage / 4.0f;
         return damage;
     }
 
@@ -213,9 +190,7 @@ public class EntityUtil {
                     final double d6 = bb.minX + (bb.maxX - bb.minX) * f;
                     final double d7 = bb.minY + (bb.maxY - bb.minY) * f2;
                     final double d8 = bb.minZ + (bb.maxZ - bb.minZ) * f3;
-                    if (rayTraceBlocks(new Vec3d(d6 + d4, d7, d8 + d5), vec, false, false, false) == null) {
-                        ++j2;
-                    }
+                    if (rayTraceBlocks(new Vec3d(d6 + d4, d7, d8 + d5), vec, false, false, false) == null) ++j2;
                     ++k2;
                 }
             }
@@ -224,19 +199,19 @@ public class EntityUtil {
     }
 
     public static RayTraceResult rayTraceBlocks(Vec3d vec31, final Vec3d vec32, final boolean stopOnLiquid, final boolean ignoreBlockWithoutBoundingBox, final boolean returnLastUncollidableBlock) {
-    final int i = MathHelper.floor(vec32.x);
-    final int j = MathHelper.floor(vec32.y);
-    final int k = MathHelper.floor(vec32.z);
-    int l = MathHelper.floor(vec31.x);
-    int i2 = MathHelper.floor(vec31.y);
-    int j2 = MathHelper.floor(vec31.z);
-    BlockPos blockpos = new BlockPos(l, i2, j2);
-    final IBlockState iblockstate = EntityUtil.mc.world.getBlockState(blockpos);
-    final Block block = iblockstate.getBlock();
-        if ((!ignoreBlockWithoutBoundingBox || iblockstate.getCollisionBoundingBox(mc.world, blockpos) != Block.NULL_AABB) && block.canCollideCheck(iblockstate, stopOnLiquid)) {
+        final int i = MathHelper.floor(vec32.x);
+        final int j = MathHelper.floor(vec32.y);
+        final int k = MathHelper.floor(vec32.z);
+        int l = MathHelper.floor(vec31.x);
+        int i2 = MathHelper.floor(vec31.y);
+        int j2 = MathHelper.floor(vec31.z);
+        BlockPos blockpos = new BlockPos(l, i2, j2);
+        final IBlockState iblockstate = EntityUtil.mc.world.getBlockState(blockpos);
+        final Block block = iblockstate.getBlock();
+        if ((!ignoreBlockWithoutBoundingBox || iblockstate.getCollisionBoundingBox(mc.world, blockpos) != Block.NULL_AABB) && block.canCollideCheck(iblockstate, stopOnLiquid))
         return iblockstate.collisionRayTrace(mc.world, blockpos, vec31, vec32);
-    }
-    RayTraceResult raytraceresult2 = null;
+
+        RayTraceResult raytraceresult2 = null;
     int k2 = 200;
         while (k2-- >= 0) {
         if (Double.isNaN(vec31.x) || Double.isNaN(vec31.y) || Double.isNaN(vec31.z)) {

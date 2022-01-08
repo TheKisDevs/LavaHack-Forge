@@ -423,11 +423,9 @@ public class CrystalUtils {
     }
 
     public static boolean canPlaceCrystal(final BlockPos blockPos, final boolean check, final boolean entity) {
-        if (mc.world.getBlockState(blockPos).getBlock() != Blocks.BEDROCK && mc.world.getBlockState(blockPos).getBlock() != Blocks.OBSIDIAN) {
-            return false;
-        }
+        if (mc.world.getBlockState(blockPos).getBlock() != Blocks.BEDROCK && mc.world.getBlockState(blockPos).getBlock() != Blocks.OBSIDIAN) return false;
         final BlockPos boost = blockPos.add(0, 1, 0);
-        return mc.world.getBlockState(boost).getBlock() == Blocks.AIR && mc.world.getBlockState(blockPos.add(0, 2, 0)).getBlock() == Blocks.AIR && (!entity || mc.world.getEntitiesWithinAABB((Class)Entity.class, new AxisAlignedBB((double)boost.getX(), (double)boost.getY(), (double)boost.getZ(), (double)(boost.getX() + 1), (double)(boost.getY() + (check ? 2 : 1)), (double)(boost.getZ() + 1)), e -> !(e instanceof EntityEnderCrystal)).size() == 0);
+        return mc.world.getBlockState(boost).getBlock() == Blocks.AIR && mc.world.getBlockState(blockPos.add(0, 2, 0)).getBlock() == Blocks.AIR && (!entity || mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), (boost.getX() + 1), (boost.getY() + (check ? 2 : 1)), (boost.getZ() + 1)), e -> !(e instanceof EntityEnderCrystal)).size() == 0);
     }
 
     public static float calculateDamage(World world, BlockPos pos, Entity entity) {

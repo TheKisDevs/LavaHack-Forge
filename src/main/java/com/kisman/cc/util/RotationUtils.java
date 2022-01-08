@@ -42,20 +42,11 @@ public class RotationUtils {
     public void update(TickEvent.ClientTickEvent event) {
         if (this.targetRotation != null) {
             --this.keepLength;
-            if (this.keepLength <= 0) {
-                this.reset();
-            }
+            if (this.keepLength <= 0) this.reset();
         }
-        if (this.random.nextGaussian() > 0.8) {
-            this.x = Math.random();
-        }
-        if (this.random.nextGaussian() > 0.8) {
-            this.y = Math.random();
-        }
-        if (this.random.nextGaussian() > 0.8) {
-            this.z = Math.random();
-        }
-        return;
+        if (this.random.nextGaussian() > 0.8) this.x = Math.random();
+        if (this.random.nextGaussian() > 0.8) this.y = Math.random();
+        if (this.random.nextGaussian() > 0.8) this.z = Math.random();
     }
 
     public RotationUtils() {
@@ -76,15 +67,12 @@ public class RotationUtils {
         packet[0] = event.getPacket();
         if (packet[0] instanceof CPacketPlayer) {
             packetPlayer[0] = (CPacketPlayer) packet[0];
-            if (packetPlayer[0].rotating) {
-                this.serverRotation = new Rotation(packetPlayer[0].yaw, packetPlayer[0].pitch);
-            }
+            if (packetPlayer[0].rotating) this.serverRotation = new Rotation(packetPlayer[0].yaw, packetPlayer[0].pitch);
         }
-        return;
     });
 
     public static double yawDist(BlockPos pos) {
-        if ( pos != null ) {
+        if(pos != null) {
             Vec3d difference = new Vec3d(pos).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
             double d = Math.abs ( (double) mc.player.rotationYaw - ( Math.toDegrees ( Math.atan2 ( difference.z , difference.x ) ) - 90.0 ) ) % 360.0;
             return d > 180.0 ? 360.0 - d : d;
@@ -93,7 +81,7 @@ public class RotationUtils {
     }
 
     public static double yawDist(Entity e) {
-        if ( e != null ) {
+        if(e != null) {
             Vec3d difference = e.getPositionVector ( ).add (new Vec3d( 0.0f , e.getEyeHeight ( ) / 2.0f , 0.0f )).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );
             double d = Math.abs ( (double) mc.player.rotationYaw - ( Math.toDegrees ( Math.atan2 ( difference.z , difference.x ) ) - 90.0 ) ) % 360.0;
             return d > 180.0 ? 360.0 - d : d;
@@ -118,13 +106,9 @@ public class RotationUtils {
     }
 
     public static boolean isInFov ( Vec3d vec3d , Vec3d other ) {
-        if ( mc.player.rotationPitch > 30.0f ? other.y > mc.player.posY : mc.player.rotationPitch < - 30.0f && other.y < mc.player.posY ) {
-            return true;
-        }
+        if ( mc.player.rotationPitch > 30.0f ? other.y > mc.player.posY : mc.player.rotationPitch < - 30.0f && other.y < mc.player.posY ) return true;
         float angle = calcAngleNoY ( vec3d , other )[0] - transformYaw ( );
-        if ( angle < - 270.0f ) {
-            return true;
-        }
+        if ( angle < - 270.0f ) return true;
         float fov = (mc.gameSettings.fovSetting) / 2.0f;
         return angle < fov + 10.0f && angle > - fov - 10.0f;
     }
@@ -137,15 +121,11 @@ public class RotationUtils {
 
     public static Vec2f getRotationTo(AxisAlignedBB box) {
         EntityPlayerSP player = mc.player;
-        if (player == null) {
-            return Vec2f.ZERO;
-        }
+        if (player == null) return Vec2f.ZERO;
 
         Vec3d eyePos = player.getPositionEyes(1.0f);
 
-        if (player.getEntityBoundingBox().intersects(box)) {
-            return getRotationTo(eyePos, box.getCenter());
-        }
+        if (player.getEntityBoundingBox().intersects(box)) return getRotationTo(eyePos, box.getCenter());
 
         double x = MathHelper.clamp(eyePos.x, box.minX, box.maxX);
         double y = MathHelper.clamp(eyePos.y, box.minY, box.maxY);
@@ -195,13 +175,8 @@ public class RotationUtils {
     public static double normalizeAngle(double angle) {
         angle %= 360.0;
 
-        if (angle >= 180.0) {
-            angle -= 360.0;
-        }
-
-        if (angle < -180.0) {
-            angle += 360.0;
-        }
+        if (angle >= 180.0) angle -= 360.0;
+        if (angle < -180.0) angle += 360.0;
 
         return angle;
     }
@@ -209,29 +184,18 @@ public class RotationUtils {
     public static float normalizeAngle(float angle) {
         angle %= 360.0f;
 
-        if (angle >= 180.0f) {
-            angle -= 360.0f;
-        }
-
-        if (angle < -180.0f) {
-            angle += 360.0f;
-        }
+        if (angle >= 180.0f) angle -= 360.0f;
+        if (angle < -180.0f) angle += 360.0f;
 
         return angle;
     }
 
     public static float transformYaw ( ) {
         float yaw = mc.player.rotationYaw % 360.0f;
-        if ( mc.player.rotationYaw > 0.0f ) {
-            if ( yaw > 180.0f ) {
-                yaw = - 180.0f + ( yaw - 180.0f );
-            }
-        } else if ( yaw < - 180.0f ) {
-            yaw = 180.0f + ( yaw + 180.0f );
-        }
-        if ( yaw < 0.0f ) {
-            return 180.0f + yaw;
-        }
+        if ( mc.player.rotationYaw > 0.0f ) if ( yaw > 180.0f ) yaw = - 180.0f + ( yaw - 180.0f );
+        else if ( yaw < - 180.0f ) yaw = 180.0f + ( yaw + 180.0f );
+        if ( yaw < 0.0f ) return 180.0f + yaw;
+
         return - 180.0f + yaw;
     }
 
@@ -273,9 +237,7 @@ public class RotationUtils {
     
     public static float getDistanceBetweenAngles(final float f, final float f2) {
         float f3 = Math.abs(f - f2) % 360.0f;
-        if (f3 > 180.0f) {
-            f3 = 360.0f - f3;
-        }
+        if (f3 > 180.0f) f3 = 360.0f - f3;
         return f3;
     }
     
@@ -312,18 +274,10 @@ public class RotationUtils {
     public static
     String getDirection4D ( boolean northRed ) {
         int dirnumber = getDirection4D ( );
-        if ( dirnumber == 0 ) {
-            return "South (+Z)";
-        }
-        if ( dirnumber == 1 ) {
-            return "West (-X)";
-        }
-        if ( dirnumber == 2 ) {
-            return ( northRed ? TextFormatting.RED : "" ) + "North (-Z)";
-        }
-        if ( dirnumber == 3 ) {
-            return "East (+X)";
-        }
+        if ( dirnumber == 0 ) return "South (+Z)";
+        if ( dirnumber == 1 ) return "West (-X)";
+        if ( dirnumber == 2 ) return ( northRed ? TextFormatting.RED : "" ) + "North (-Z)";
+        if ( dirnumber == 3 ) return "East (+X)";
         return "Loading...";
     }
     
@@ -338,25 +292,25 @@ public class RotationUtils {
     }
     
     public static float[] getRotations(final EntityLivingBase entityLivingBase, final String string) {
-        if (string == "Head") {
+        if (string.equals("Head")) {
             final double d = entityLivingBase.posX;
             final double d2 = entityLivingBase.posZ;
             final double d3 = entityLivingBase.posY + entityLivingBase.getEyeHeight() / 2.0f;
             return getRotationFromPosition(d, d2, d3);
         }
-        if (string == "Chest") {
+        if (string.equals("Chest")) {
             final double d = entityLivingBase.posX;
             final double d4 = entityLivingBase.posZ;
             final double d5 = entityLivingBase.posY + entityLivingBase.getEyeHeight() / 2.0f - 0.75;
             return getRotationFromPosition(d, d4, d5);
         }
-        if (string == "Dick") {
+        if (string.equals("Dick")) {
             final double d = entityLivingBase.posX;
             final double d6 = entityLivingBase.posZ;
             final double d7 = entityLivingBase.posY + entityLivingBase.getEyeHeight() / 2.0f - 1.2;
             return getRotationFromPosition(d, d6, d7);
         }
-        if (string == "Legs") {
+        if (string.equals("Legs")) {
             final double d = entityLivingBase.posX;
             final double d8 = entityLivingBase.posZ;
             final double d9 = entityLivingBase.posY + entityLivingBase.getEyeHeight() / 2.0f - 1.5;
@@ -369,19 +323,13 @@ public class RotationUtils {
     }
     
     public static float getNewAngle(float f) {
-        if ((f %= 360.0f) >= 180.0f) {
-            f -= 360.0f;
-        }
-        if (f < -180.0f) {
-            f += 360.0f;
-        }
+        if ((f %= 360.0f) >= 180.0f) f -= 360.0f;
+        if (f < -180.0f) f += 360.0f;
         return f;
     }
 
     public VecRotation faceBlock(final BlockPos blockPos) {
-        if (blockPos == null) {
-            return null;
-        }
+        if (blockPos == null) return null;
         VecRotation vecRotation = null;
         for (double xSearch = 0.1; xSearch < 0.9; xSearch += 0.1) {
             for (double ySearch = 0.1; ySearch < 0.9; ySearch += 0.1) {
@@ -399,9 +347,7 @@ public class RotationUtils {
                     final RayTraceResult obj = RotationUtils.mc.world.rayTraceBlocks(eyesPos, vector, false, false, true);
                     if (obj.typeOfHit == RayTraceResult.Type.BLOCK) {
                         final VecRotation currentVec = new VecRotation(posVec, rotation, obj.sideHit);
-                        if (vecRotation == null || this.getRotationDifference(currentVec.getRotation()) < this.getRotationDifference(vecRotation.getRotation())) {
-                            vecRotation = currentVec;
-                        }
+                        if (vecRotation == null || this.getRotationDifference(currentVec.getRotation()) < this.getRotationDifference(vecRotation.getRotation())) vecRotation = currentVec;
                     }
                 }
             }
@@ -471,14 +417,8 @@ public class RotationUtils {
                     if (throughWalls || this.isVisible(Vec3d2)) {
                         final VecRotation currentVec = new VecRotation(Vec3d2, rotation);
                         if (vecRotation != null) {
-                            if (random) {
-                                if (this.getRotationDifference(currentVec.getRotation(), randomRotation) >= this.getRotationDifference(vecRotation.getRotation(), randomRotation)) {
-                                    continue;
-                                }
-                            }
-                            else if (this.getRotationDifference(currentVec.getRotation()) >= this.getRotationDifference(vecRotation.getRotation())) {
-                                continue;
-                            }
+                            if (random) if (this.getRotationDifference(currentVec.getRotation(), randomRotation) >= this.getRotationDifference(vecRotation.getRotation(), randomRotation)) continue;
+                            else if (this.getRotationDifference(currentVec.getRotation()) >= this.getRotationDifference(vecRotation.getRotation())) continue;
                         }
                         vecRotation = currentVec;
                     }
@@ -487,10 +427,6 @@ public class RotationUtils {
         }
         return vecRotation;
     }
-
-/*    public boolean isFaced(final Entity targetEntity, final double blockReachDistance) {
-        return RaycastUtils.raycastEntity(blockReachDistance, entity -> entity == targetEntity) != null;
-    }*/
 
     public boolean isVisible(final Vec3d Vec3d) {
         final Vec3d eyesPos = new Vec3d(RotationUtils.mc.player.posX, RotationUtils.mc.player.getEntityBoundingBox().minY + RotationUtils.mc.player.getEyeHeight(), RotationUtils.mc.player.posZ);
@@ -510,9 +446,7 @@ public class RotationUtils {
             EntityLivingBase entitylivingbase = (EntityLivingBase)e;
             float randomed = RandomUtils.nextFloat((float)(entitylivingbase.posY + (double)(entitylivingbase.getEyeHeight() / 1.5f)), (float)(entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (double)(entitylivingbase.getEyeHeight() / 3.0f)));
             diffY = (double)randomed - (mc.player.posY + (double) mc.player.getEyeHeight());
-        } else {
-            diffY = (double)RandomUtils.nextFloat((float)e.getEntityBoundingBox().minY, (float)e.getEntityBoundingBox().maxY) - (mc.player.posY + (double) mc.player.getEyeHeight());
-        }
+        } else diffY = (double)RandomUtils.nextFloat((float)e.getEntityBoundingBox().minY, (float)e.getEntityBoundingBox().maxY) - (mc.player.posY + (double) mc.player.getEyeHeight());
         double dist = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
         float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0 / Math.PI - 90.0) + RandomUtils.nextFloat(-2.0f, 2.0f);
         float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0 / Math.PI)) + RandomUtils.nextFloat(-2.0f, 2.0f);
@@ -520,5 +454,107 @@ public class RotationUtils {
         pitch = mc.player.rotationPitch + GCDUtil.getFixedRotation(MathHelper.wrapDegrees(pitch - mc.player.rotationPitch));
         pitch = MathHelper.clamp(pitch, -90.0f, 90.0f);
         return new float[]{yaw, pitch};
+    }
+
+    public static boolean isInFOV(Entity player, Entity entity, double angle) {
+        final double angleDiff = getAngle360(player.rotationYaw, getLookNeeded(player, entity.posX, entity.posY, entity.posZ)[0]);
+        return (angleDiff > 0.0 && angleDiff < (angle *= 0.5)) || (-angle < angleDiff && angleDiff < 0.0);
+    }
+
+    public static float[] getRotations(final Entity e) {
+        final double diffX = e.posX - RotationUtils.mc.player.posX;
+        final double diffZ = e.posZ - RotationUtils.mc.player.posZ;
+        double diffY;
+        if (e instanceof EntityLivingBase) diffY = e.posY + e.getEyeHeight() - (RotationUtils.mc.player.posY + RotationUtils.mc.player.getEyeHeight()) - 0.4;
+        else diffY = (e.getEntityBoundingBox().minY + e.getEntityBoundingBox().maxY) / 2.0 - (RotationUtils.mc.player.posY + RotationUtils.mc.player.getEyeHeight());
+        final double dist = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
+        float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0 / 3.141592653589793 - 90.0) + RandomUtils.nextFloat(-2.0f, 2.0f);
+        float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0 / 3.141592653589793)) + RandomUtils.nextFloat(-2.0f, 2.0f);
+        yaw = RotationUtils.mc.player.rotationYaw + GCDFix.getFixedRotation(MathHelper.wrapDegrees(yaw - RotationUtils.mc.player.rotationYaw));
+        pitch = RotationUtils.mc.player.rotationPitch + GCDFix.getFixedRotation(MathHelper.wrapDegrees(pitch - RotationUtils.mc.player.rotationPitch));
+        pitch = MathHelper.clamp(pitch, -90.0f, 90.0f);
+        return new float[] { yaw, pitch };
+    }
+
+    public static boolean isInFOV(Entity entity, double angle) {
+        return isInFOV(mc.player, entity, angle);
+    }
+
+    public static float[] getLookNeeded(final Entity entity, final double x, final double y, final double z) {
+        final double d = x + 0.5 - entity.posX;
+        final double g = y - entity.posY;
+        final double e = z + 0.5 - entity.posZ;
+        final double h = Math.sqrt(d * d + e * e);
+        return new float[] {(float)(Math.atan2(e, d) * 180.0 / 3.141592653589793) - 90.0f, (float)(-(Math.atan2(g, h) * 180.0 / 3.141592653589793))};
+    }
+
+    private static float getAngle360(final float dir, final float yaw) {
+        final float f = Math.abs(yaw - dir) % 360.0f;
+        return (f > 180.0f) ? (360.0f - f) : f;
+    }
+
+    public static class GCDFix
+    {
+        private float yaw;
+        private float pitch;
+        private final static Minecraft mc = Minecraft.getMinecraft();
+
+        public GCDFix(final float yaw, final float pitch) {
+            this.yaw = yaw;
+            this.pitch = pitch;
+        }
+
+        public static float getFixedRotation(final float rot) {
+            return getDeltaMouse(rot) * getGCDValue();
+        }
+
+        public static float getGCDValue() {
+            return (float)(getGCD() * 0.15);
+        }
+
+        public static float getGCD() {
+            final float f1;
+            return (f1 = (float)(mc.gameSettings.mouseSensitivity * 0.6 + 0.2)) * f1 * f1 * 8.0f;
+        }
+
+        public static float getDeltaMouse(final float delta) {
+            return (float)Math.round(delta / getGCDValue());
+        }
+
+        public final float getYaw() {
+            return this.yaw;
+        }
+
+        public final void setYaw(final float var1) {
+            this.yaw = var1;
+        }
+
+        public final float getPitch() {
+            return this.pitch;
+        }
+
+        public final void setPitch(final float var1) {
+            this.pitch = var1;
+        }
+
+        @Override
+        public String toString() {
+            return "Rotation(yaw=" + this.yaw + ", pitch=" + this.pitch + ")";
+        }
+
+        @Override
+        public int hashCode() {
+            return Float.hashCode(this.yaw) * 31 + Float.hashCode(this.pitch);
+        }
+
+        @Override
+        public boolean equals(final Object var1) {
+            if (this == var1) return true;
+            if (var1 instanceof GCDFix) {
+                final GCDFix var2 = (GCDFix) var1;
+                return Float.compare(this.yaw, var2.yaw) == 0 && Float.compare(this.pitch, var2.pitch) == 0;
+            }
+            return false;
+        }
     }
 }

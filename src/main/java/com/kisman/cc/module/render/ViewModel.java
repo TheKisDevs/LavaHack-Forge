@@ -60,6 +60,7 @@ public class ViewModel extends Module {
 
     //custom items alpha
     private Setting itemLine = new Setting("ItemLine", this, "Item");
+    public Setting useAlpha = new Setting("Use Custom Alpha", this, false);
     public Setting alpha = new Setting("Alpha", this, 255, 0, 255, true);
 
 
@@ -118,6 +119,7 @@ public class ViewModel extends Module {
         setmgr.rSetting(handLeftScaleZ);
 
         setmgr.rSetting(itemLine);
+        setmgr.rSetting(useAlpha);
         setmgr.rSetting(alpha);
     }
 

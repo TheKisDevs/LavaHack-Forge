@@ -29,7 +29,12 @@ public class CustomFontUtil {
     public static CFontRenderer comfortaa15 = new CFontRenderer(getFontTTF("comfortaa-regular", 15), true, true);
 
     public static CFontRenderer consolas18 = new CFontRenderer(getFontTTF("consolas", 18), true, true);
+    public static CFontRenderer consolas16 = new CFontRenderer(getFontTTF("consolas", 16), true, true);
     public static CFontRenderer consolas15 = new CFontRenderer(getFontTTF("consolas", 15), true, true);
+
+    public static CFontRenderer sfui19 = new CFontRenderer(getFontTTF("sf-ui", 19), true, true);
+
+    public static CFontRenderer futura20 = new CFontRenderer(getFontTTF("futura-normal", 20), true, true);
 
     public static CustomFontRenderer verdana18 = Kisman.instance.customFontRenderer;
     public static CustomFontRenderer verdana15 = Kisman.instance.customFontRenderer1;
@@ -115,29 +120,16 @@ public class CustomFontUtil {
         }
     }
 
-    public static void drawString(String text, double x, double y, int color) {
+    public static int drawString(String text, double x, double y, int color) {
         if (customFont()) {
             switch (getCustomFont()) {
-                case "Verdana": {
-                    Kisman.instance.customFontRenderer.drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
-                    break;
-                }
-                case "Comfortaa": {
-                    comfortaa18.drawString(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-                case "Consolas": {
-                    consolas18.drawString(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-                case "Comfortaa Light": {
-                    comfortaal18.drawString(getStringModofiers() + text, x, y, color);
-                    break;
-                }
+                case "Verdana": return (int) Kisman.instance.customFontRenderer.drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
+                case "Comfortaa": return (int) comfortaa18.drawString(getStringModofiers() + text, x, y, color);
+                case "Consolas": return (int) consolas18.drawString(getStringModofiers() + text, x, y, color);
+                case "Comfortaa Light": return (int) comfortaal18.drawString(getStringModofiers() + text, x, y, color);
             }
-        } else {
-            fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
         }
+        return fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
     }
 
     public static void drawStringWithShadow(String text, double x, double y, int color) {

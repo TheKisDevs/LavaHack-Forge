@@ -15,8 +15,8 @@ public class MixinGuiContainer extends GuiScreen {
     /**
      * @author _kisman_
      */
-    @Overwrite
-    protected void renderHoveredToolTip(int p_191948_1_, int p_191948_2_) {
+//    @Overwrite
+/*    protected void renderHoveredToolTip(int p_191948_1_, int p_191948_2_) {
         if(this.mc.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.getHasStack()) {
             this.renderToolTip(this.hoveredSlot.getStack(), p_191948_1_, p_191948_2_ + getScrollWheel());
         }
@@ -32,5 +32,5 @@ public class MixinGuiContainer extends GuiScreen {
         }
 
         return 0;
-    }
+    }*/
 }

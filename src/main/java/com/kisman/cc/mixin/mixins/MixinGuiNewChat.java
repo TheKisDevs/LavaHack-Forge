@@ -1,7 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.chat.ChatAnimation;
-import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.module.chat.*;
 import com.kisman.cc.util.MathUtil;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,7 +14,7 @@ import java.util.List;
 @Mixin(value = GuiNewChat.class, priority = 10000)
 public abstract class MixinGuiNewChat {
     @Shadow
-    private boolean isScrolled;
+    public boolean isScrolled;
     private float percentComplete;
     private int newLines;
     private long prevMillis;
@@ -34,7 +33,6 @@ public abstract class MixinGuiNewChat {
         if (percentComplete < 1.0f) {
             percentComplete += 0.004f * diff;
         }
-
         percentComplete = (float) MathUtil.clamp(percentComplete, 0.0, 1.0);
     }
 
@@ -101,34 +99,5 @@ public abstract class MixinGuiNewChat {
     @ModifyVariable(method = "getChatComponent", at = @At(value = "STORE", ordinal = 0), ordinal = 4)
     private int modifyY(int original) {
         return original + 1;
-    }
-
-    private int draw(FontRenderer fontRenderer, String text, float x, float y, int color) {
-        int width = 0;
-        boolean custom = true;
-        boolean shouldContinue = false;
-        String niggers = "";
-        for (int j = 0; j < text.length(); ++j) {
-            final char currentChar = text.charAt(j);
-            final char nextChar = text.charAt((int)MathUtil.clamp(j + 1, 0.0, text.length() - 1));
-            if ((String.valueOf(currentChar) + nextChar).matches("§[a-zA-Z1-9]")) {
-                custom = false;
-                niggers = "§" + nextChar;
-            }
-            else if ((String.valueOf(currentChar) + nextChar).equals("§$")) {
-                custom = true;
-            }
-            if (shouldContinue) {
-                shouldContinue = false;
-            }
-            else {
-//                fontRenderer.drawStringWithShadow(String.valueOf(currentChar).equals("§") ? "" : (niggers + currentChar), x + width, y, custom ? ColorUtil.injectAlpha((Color)((Global)Main.getModuleManager().get((Class)Global.class)).colorSetting.getValue(), color >> 24 & 0xFF).getRGB() : color);
-                if (String.valueOf(currentChar).equals("§")) {
-                    shouldContinue = true;
-                }
-                width += fontRenderer.getStringWidth(String.valueOf(currentChar));
-            }
-        }
-        return 0;
     }
 }

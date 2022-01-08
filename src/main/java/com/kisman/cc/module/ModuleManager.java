@@ -32,6 +32,7 @@ public class ModuleManager {
 	public void init() {
 		//combat
 		modules.add(new AimBot());
+		modules.add(new AntiBot());
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
 		modules.add(new AutoArmor());
@@ -118,6 +119,7 @@ public class ModuleManager {
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new TargetESP());
 //		modules.add(new Tracers());
 //		modules.add(new Trails());
 		modules.add(new Trajectories());

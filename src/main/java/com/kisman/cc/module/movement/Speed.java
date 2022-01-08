@@ -72,6 +72,8 @@ public class Speed extends Module {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         stage = 4;
+        dist = MovementUtil.getDistance2D();
+        speed = MovementUtil.getSpeed();
     }
 
     public void onDisable() {
@@ -163,11 +165,8 @@ public class Speed extends Module {
     @EventHandler
     private final Listener<PacketEvent.Receive> listener1 = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketPlayerPosLook) {
-            if(mc.player != null) {
-                dist = 0;
-                speed = 0;
-            }
-
+            if(mc.player != null) dist = 0;
+            speed = 0;
             stage = 4;
             EntityUtil.setTimer(1);
         }

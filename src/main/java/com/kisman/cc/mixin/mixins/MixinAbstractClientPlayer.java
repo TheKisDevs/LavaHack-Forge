@@ -21,17 +21,12 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
     String str2 = ".png";
     int count = 0;
     TimerUtils timer = new TimerUtils();
-
-    @Shadow
-    public NetworkPlayerInfo playerInfo;
-
-    @Shadow
-    protected abstract boolean isSpectator();
+    @Shadow public NetworkPlayerInfo playerInfo;
+    @Shadow public abstract boolean isSpectator();
 
     @Inject(method = "getLocationSkin()Lnet/minecraft/util/ResourceLocation;", at = @At("HEAD"), cancellable = true)
     private void getLocationSkin(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        if(Kisman.instance.moduleManager.getModule("Charms").isToggled() && Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule("Charms"), "Texture").getValBoolean() && Charms.instance.textureMode.getValString().equalsIgnoreCase("Texture"))
-            callbackInfoReturnable.setReturnValue(new ResourceLocation("kismancc:charms/charms1.png"));
+        if(Kisman.instance.moduleManager.getModule("Charms").isToggled() && Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule("Charms"), "Texture").getValBoolean() && Charms.instance.textureMode.getValString().equalsIgnoreCase("Texture")) callbackInfoReturnable.setReturnValue(new ResourceLocation("kismancc:charms/charms1.png"));
     }
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
@@ -48,9 +43,6 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
                 }
                 case "xulu+": {
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/xuluplus/xulupluscape.png"));
-                    break;
-                }
-                default: {
                     break;
                 }
             }

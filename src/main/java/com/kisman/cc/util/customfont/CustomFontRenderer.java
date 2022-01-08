@@ -43,14 +43,10 @@ public class CustomFontRenderer extends CustomFont {
         int color = c;
         x--;
         y -= 2.0D;
-        if (text == null)
-            return 0;
-        if (color == 553648127)
-            color = 16777215;
-        if ((color & 0xFC000000) == 0)
-            color |= 0xFF000000;
-        if (shadow)
-            color = (color & 0xFCFCFC) >> 2 | color & 0xFF000000;
+        if (text == null) return 0;
+        if (color == 553648127) color = 16777215;
+        if ((color & 0xFC000000) == 0) color |= 0xFF000000;
+        if (shadow) color = (color & 0xFCFCFC) >> 2 | color & 0xFF000000;
         CustomFont.CharData[] currentData = this.charData;
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         boolean bold = false;
@@ -74,7 +70,7 @@ public class CustomFontRenderer extends CustomFont {
             int colorIndex = 21;
             try {
                 colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i + 1));
-            } catch (Exception exception) {}
+            } catch (Exception ignored) {}
             if (colorIndex < 16) {
                 bold = false;
                 italic = false;
@@ -82,10 +78,8 @@ public class CustomFontRenderer extends CustomFont {
                 strikethrough = false;
                 GlStateManager.bindTexture(this.tex.getGlTextureId());
                 currentData = this.charData;
-                if (colorIndex < 0)
-                    colorIndex = 15;
-                if (shadow)
-                    colorIndex += 16;
+                if (colorIndex < 0) colorIndex = 15;
+                if (shadow) colorIndex += 16;
                 int colorcode = this.colorCode[colorIndex];
                 GlStateManager.color((colorcode >> 16 & 0xFF) / 255.0F, (colorcode >> 8 & 0xFF) / 255.0F, (colorcode & 0xFF) / 255.0F, alpha);
             } else if (colorIndex == 17) {
@@ -97,11 +91,9 @@ public class CustomFontRenderer extends CustomFont {
                     GlStateManager.bindTexture(this.texBold.getGlTextureId());
                     currentData = this.boldChars;
                 }
-            } else if (colorIndex == 18) {
-                strikethrough = true;
-            } else if (colorIndex == 19) {
-                underline = true;
-            } else if (colorIndex == 20) {
+            } else if (colorIndex == 18) strikethrough = true;
+            else if (colorIndex == 19) underline = true;
+            else if (colorIndex == 20) {
                 italic = true;
                 if (bold) {
                     GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
@@ -124,10 +116,8 @@ public class CustomFontRenderer extends CustomFont {
             GL11.glBegin(4);
             drawChar(currentData, character, (float)x, (float)y);
             GL11.glEnd();
-            if (strikethrough)
-                drawLine(x, y + ((currentData[character]).height / 2.0F), x + (currentData[character]).width - 8.0D, y + ((currentData[character]).height / 2.0F));
-            if (underline)
-                drawLine(x, y + (currentData[character]).height - 2.0D, x + (currentData[character]).width - 8.0D, y + (currentData[character]).height - 2.0D);
+            if (strikethrough) drawLine(x, y + ((currentData[character]).height / 2.0F), x + (currentData[character]).width - 8.0D, y + ((currentData[character]).height / 2.0F));
+            if (underline) drawLine(x, y + (currentData[character]).height - 2.0D, x + (currentData[character]).width - 8.0D, y + (currentData[character]).height - 2.0D);
             x += ((currentData[character]).width - 8 + this.charOffset);
         }
     }
@@ -137,44 +127,40 @@ public class CustomFontRenderer extends CustomFont {
 }
 
     public int getStringWidth(String text) {
-        if (text == null)
-            return 0;
+        if (text == null) return 0;
         int width = 0;
         CustomFont.CharData[] currentData = this.charData;
         int size = text.length();
         for (int i = 0; i < size; i++) {
             char character = text.charAt(i);
-            if (character == '\u00A7') {
-            i++;
-        } else if (character < currentData.length) {
-            width += (currentData[character]).width - 8 + this.charOffset;
+            if (character == '\u00A7') i++;
+            else if (character < currentData.length) width += (currentData[character]).width - 8 + this.charOffset;
         }
-    }
-    return width / 2;
-            }
+        return width / 2;
+   }
 
-public void setFont(Font font) {
+    public void setFont(Font font) {
         super.setFont(font);
         setupBoldItalicIDs();
-        }
+    }
 
-public void setAntiAlias(boolean antiAlias) {
+    public void setAntiAlias(boolean antiAlias) {
         super.setAntiAlias(antiAlias);
         setupBoldItalicIDs();
-        }
+    }
 
-public void setFractionalMetrics(boolean fractionalMetrics) {
+    public void setFractionalMetrics(boolean fractionalMetrics) {
         super.setFractionalMetrics(fractionalMetrics);
         setupBoldItalicIDs();
-        }
+    }
 
-private void setupBoldItalicIDs() {
+    private void setupBoldItalicIDs() {
         this.texBold = setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
         this.texItalic = setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
         this.texItalicBold = setupTexture(this.font.deriveFont(3), this.antiAlias, this.fractionalMetrics, this.boldItalicChars);
-        }
+    }
 
-private void drawLine(double x, double y, double x1, double y1) {
+    private void drawLine(double x, double y, double x1, double y1) {
         GL11.glDisable(3553);
         GL11.glLineWidth(1.0F);
         GL11.glBegin(1);
@@ -182,22 +168,21 @@ private void drawLine(double x, double y, double x1, double y1) {
         GL11.glVertex2d(x1, y1);
         GL11.glEnd();
         GL11.glEnable(3553);
-        }
-
-private void setupMinecraftColorcodes() {
-    for (int index = 0; index < 32; index++) {
-        int noClue = (index >> 3 & 0x1) * 85;
-        int red = (index >> 2 & 0x1) * 170 + noClue;
-        int green = (index >> 1 & 0x1) * 170 + noClue;
-        int blue = (index & 0x1) * 170 + noClue;
-        if (index == 6)
-            red += 85;
-        if (index >= 16) {
-            red /= 4;
-            green /= 4;
-            blue /= 4;
-        }
-        this.colorCode[index] = (red & 0xFF) << 16 | (green & 0xFF) << 8 | blue & 0xFF;
     }
-}
+
+    private void setupMinecraftColorcodes() {
+        for (int index = 0; index < 32; index++) {
+            int noClue = (index >> 3 & 0x1) * 85;
+            int red = (index >> 2 & 0x1) * 170 + noClue;
+            int green = (index >> 1 & 0x1) * 170 + noClue;
+            int blue = (index & 0x1) * 170 + noClue;
+            if (index == 6) red += 85;
+            if (index >= 16) {
+                red /= 4;
+                green /= 4;
+                blue /= 4;
+            }
+            this.colorCode[index] = (red & 0xFF) << 16 | (green & 0xFF) << 8 | blue & 0xFF;
+        }
+    }
 }

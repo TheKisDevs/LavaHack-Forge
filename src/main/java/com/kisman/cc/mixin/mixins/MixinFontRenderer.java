@@ -12,20 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinFontRenderer {
     @Inject(method = "drawString", at = @At("HEAD"), cancellable = true)
     private void onDrawString(String text, float x, float y, int color, boolean dropShadow, CallbackInfoReturnable<Integer> cir) {
-        if(CustomFont.instance != null && ClientFont.instance != null && Kisman.instance != null) {
-            if(CustomFont.instance.isToggled() && CustomFont.turnOn && ClientFont.instance.isToggled() && Kisman.instance.customFontRenderer != null) {
-                int i = 0;
+        if(Kisman.instance != null && ClientFont.instance != null) {
+            if(ClientFont.instance.isToggled() && Kisman.instance.init) {
+                int i;
 
-                switch(CustomFont.instance.mode.getValString()) {
-                    case "Verdana": {
-                        i = (int) Kisman.instance.customFontRenderer.drawString(text, x, y, color, dropShadow);
-                        break;
-                    }
-                    case "Comfortaa": {
-                        i = (int) CustomFontUtil.comfortaa18.drawString(text, x, y, color, dropShadow);
-                        break;
-                    }
-                }
+                i = CustomFontUtil.drawString(text, x, y, color);
 
                 cir.setReturnValue(i);
             }

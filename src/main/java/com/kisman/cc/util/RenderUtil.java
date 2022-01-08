@@ -21,12 +21,16 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.CustomFont;
 import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.customfont.norules.CFontRenderer;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
@@ -45,6 +49,8 @@ import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
+import javax.annotation.Nullable;
+
 public class RenderUtil {
     private static Minecraft mc = Minecraft.getMinecraft();
     private static final Frustum frustrum = new Frustum();
@@ -54,6 +60,50 @@ public class RenderUtil {
 	public static boolean isSplash = false;
 
     public static ICamera camera = new Frustum();
+
+    public static void drawSmoothRect(float left, float top, float right, float bottom, int color) {
+        GL11.glEnable(3042);
+        GL11.glEnable(2848);
+        drawRect2(left, top, right, bottom, color);
+        GL11.glScalef(0.5f, 0.5f, 0.5f);
+        drawRect2(left * 2.0f - 1.0f, top * 2.0f, left * 2.0f, bottom * 2.0f - 1.0f, color);
+        drawRect2(left * 2.0f, top * 2.0f - 1.0f, right * 2.0f, top * 2.0f, color);
+        drawRect2(right * 2.0f, top * 2.0f, right * 2.0f + 1.0f, bottom * 2.0f - 1.0f, color);
+        drawRect2(left * 2.0f, bottom * 2.0f - 1.0f, right * 2.0f, bottom * 2.0f, color);
+        GL11.glDisable(3042);
+        GL11.glScalef(2.0f, 2.0f, 2.0f);
+    }
+
+    public static void drawRect2(float left, float top, float right, float bottom, int color) {
+        enableGL2D1();
+        glColor(color);
+        GL11.glBegin(7);
+        GL11.glVertex2f(left, bottom);
+        GL11.glVertex2f(right, bottom);
+        GL11.glVertex2f(right, top);
+        GL11.glVertex2f(left, top);
+        GL11.glEnd();
+        disableGL2D1();
+    }
+
+    public static void glColor(final int hex) {
+        final float alpha = (hex >> 24 & 0xFF) / 255.0f;
+        final float red = (hex >> 16 & 0xFF) / 255.0f;
+        final float green = (hex >> 8 & 0xFF) / 255.0f;
+        final float blue = (hex & 0xFF) / 255.0f;
+        GL11.glColor4f(red, green, blue, alpha);
+    }
+
+    public static void enableGL2D1() {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+    }
+
+    public static void disableGL2D1() {
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
 
     public static void drawESP(double d, double d1, double d2, double r, double b, double g) {
         GL11.glPushMatrix();
@@ -1475,5 +1525,98 @@ public class RenderUtil {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
+    }
+
+    public static void Method1385() {
+        GL11.glDisable(34383);
+        GL11.glDisable(2848);
+        GlStateManager.enableAlpha();
+        GlStateManager.enableCull();
+        GlStateManager.enableLighting();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.glLineWidth(1.0f);
+        GlStateManager.shadeModel(7424);
+        GL11.glHint(3154, 4352);
+        GL11.glPopAttrib();
+    }
+
+    public static void Method1386() {
+        GL11.glPushAttrib(1048575);
+        GL11.glHint(3154, 4354);
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.shadeModel(7425);
+        GlStateManager.depthMask(false);
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableLighting();
+        GlStateManager.disableCull();
+        GlStateManager.enableAlpha();
+        GL11.glEnable(2848);
+        GL11.glEnable(34383);
+    }
+
+    public static void renderItemOverlays(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
+        renderItemOverlayIntoGUI(cfr, stack, xPosition, yPosition, null);
+    }
+
+    public static void renderItemOverlayIntoGUI(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+        if (!stack.isEmpty()) {
+            if (stack.getCount() != 1 || text != null) {
+                String s = text == null ? String.valueOf(stack.getCount()) : text;
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableBlend();
+                cfr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - cfr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+                GlStateManager.enableBlend();
+            }
+            if (stack.getItem().showDurabilityBar(stack)) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableTexture2D();
+                GlStateManager.disableAlpha();
+                GlStateManager.disableBlend();
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder bufferbuilder = tessellator.getBuffer();
+                double health = stack.getItem().getDurabilityForDisplay(stack);
+                int rgbfordisplay = stack.getItem().getRGBDurabilityForDisplay(stack);
+                int i = Math.round(13.0F - (float)health * 13.0F);
+                draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
+                draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, rgbfordisplay >> 16 & 255, rgbfordisplay >> 8 & 255, rgbfordisplay & 255, 255);
+                GlStateManager.enableBlend();
+                GlStateManager.enableAlpha();
+                GlStateManager.enableTexture2D();
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+            }
+
+            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
+            if (f3 > 0.0F) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableTexture2D();
+                Tessellator tessellator1 = Tessellator.getInstance();
+                BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
+                draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
+                GlStateManager.enableTexture2D();
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+            }
+        }
+    }
+
+    public static void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+        renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        renderer.pos((x), (y), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + width), (y + height), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos((x + width), (y), 0.0D).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().draw();
     }
 }

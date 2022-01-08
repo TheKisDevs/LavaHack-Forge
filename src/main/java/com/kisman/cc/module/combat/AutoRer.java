@@ -1,6 +1,7 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.mixin.mixins.accessor.AccessorCPacketUseEntity;
 import com.kisman.cc.module.Category;
@@ -40,22 +41,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoRer extends Module {
-    private final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
+    public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
     private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
     private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
-    private final Setting terrain = new Setting("Terrain", this, false);
+    public final Setting terrain = new Setting("Terrain", this, false);
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
     private final Setting fastCalc = new Setting("Fast Calc", this, true);
     private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
     private final Setting instant = new Setting("Instant", this, true);
     private final Setting inhibit = new Setting("Inhibit", this, true);
     private final Setting syns = new Setting("Syns", this, true);
+    private final Setting ai = new Setting("AI", this, false);
 
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
     private final Setting place = new Setting("Place", this, true);
-    private final Setting secondCheck = new Setting("Second Check", this, false);
-    private final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
+    public final Setting secondCheck = new Setting("Second Check", this, false);
+    public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
@@ -67,9 +69,9 @@ public class AutoRer extends Module {
     private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
 
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
-    private final Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
-    private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
-    private final Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
+    public final Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
+    public final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
+    public final Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -93,6 +95,8 @@ public class AutoRer extends Module {
     private final Setting endBlue = new Setting("End Blue", this, 0, 0, 1, false);
     private final Setting endAlpha = new Setting("End Alpha", this, 1, 0, 1, false);
 
+    public static AutoRer instance;
+
     private final List<BlockPos> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
     private final TimerUtils breakTimer = new TimerUtils();
@@ -111,6 +115,8 @@ public class AutoRer extends Module {
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
 
+        instance = this;
+
         setmgr.rSetting(placeRange);
         setmgr.rSetting(breakRange);
         setmgr.rSetting(breakWallRange);
@@ -122,6 +128,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(instant);
         setmgr.rSetting(inhibit);
         setmgr.rSetting(syns);
+        setmgr.rSetting(ai);
 
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
@@ -337,6 +344,12 @@ public class AutoRer extends Module {
         mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         placeTimer.reset();
         renderPos = placePos;
+
+        if(ai.getValBoolean()) {
+            float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+            float selfDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, mc.player, terrain.getValBoolean());
+            AutoRerAI.collect(placePos, targetDamage, selfDamage);
+        }
 
         if(hand != null) mc.player.setActiveHand(hand);
         if(oldSlot != -1 && switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);

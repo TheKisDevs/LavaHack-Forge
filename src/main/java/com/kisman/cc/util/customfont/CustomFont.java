@@ -13,7 +13,7 @@ public class CustomFont {
     protected Font font;
     protected boolean antiAlias;
     protected boolean fractionalMetrics;
-    protected int fontHeight = -1;
+    public int fontHeight = -1;
     protected int charOffset = 0;
     protected DynamicTexture tex;
 
@@ -26,10 +26,9 @@ public class CustomFont {
 
     protected DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars){
         BufferedImage img = generateFontImage(font, antiAlias, fractionalMetrics, chars);
-        try{
+        try {
             return new DynamicTexture(img);
-        }
-        catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
             return null;
         }
@@ -62,12 +61,10 @@ public class CustomFont {
                 positionY += charHeight;
                 charHeight = 0;
             }
-            if (charData.height > charHeight)
-                charHeight = charData.height;
+            if (charData.height > charHeight) charHeight = charData.height;
             charData.storedX = positionX;
             charData.storedY = positionY;
-            if (charData.height > this.fontHeight)
-                this.fontHeight = charData.height;
+            if (charData.height > this.fontHeight) this.fontHeight = charData.height;
             chars[i] = charData;
             g.drawString(String.valueOf(ch), positionX + 2, positionY + fontMetrics.getAscent());
             positionX += charData.width;
@@ -78,9 +75,7 @@ public class CustomFont {
     public void drawChar(CharData[] chars, char c, float x, float y) throws ArrayIndexOutOfBoundsException {
         try {
             drawQuad(x, y, (chars[c]).width, (chars[c]).height, (chars[c]).storedX, (chars[c]).storedY, (chars[c]).width, (chars[c]).height);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     protected void drawQuad(float x, float y, float width, float height, float srcX, float srcY, float srcWidth, float srcHeight) {
@@ -104,10 +99,7 @@ public class CustomFont {
 
     public int getStringWidth(String text) {
         int width = 0;
-        for (char c : text.toCharArray()) {
-            if (c < this.charData.length)
-                width += (this.charData[c]).width - 8 + this.charOffset;
-        }
+        for (char c : text.toCharArray()) if (c < this.charData.length) width += (this.charData[c]).width - 8 + this.charOffset;
         return width / 2;
     }
 
@@ -140,11 +132,8 @@ public class CustomFont {
 
     protected static class CharData {
         public int width;
-
         public int height;
-
         public int storedX;
-
         public int storedY;
     }
 }

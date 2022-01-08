@@ -15,9 +15,11 @@ public class EventPlayerMotionUpdate extends Event {
     private Consumer<EntityPlayerSP> funcToCall;
     private boolean isForceCancelled;
 
-    public EventPlayerMotionUpdate(Era era, double posX, double posY, double posZ, boolean OnGround) {
+    public EventPlayerMotionUpdate(Era era, float yaw, float pitch, double posX, double posY, double posZ, boolean OnGround) {
         super(era);
         this.funcToCall = null;
+        this.yaw = yaw;
+        this.pitch = pitch;
         this.x = posX;
         this.y = posY;
         this.z = posZ;

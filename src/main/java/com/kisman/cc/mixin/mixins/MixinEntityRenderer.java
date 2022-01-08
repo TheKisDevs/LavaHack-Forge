@@ -77,8 +77,8 @@ public class MixinEntityRenderer {
     /**
      * @author _kisman_
      */
-    @Overwrite
-    public static void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
+//    @Overwrite
+    /*public void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
         if(NameTags.instance.isToggled()) {
             glEnable(32823);
             glPolygonOffset(1, -1100000);
@@ -120,5 +120,5 @@ public class MixinEntityRenderer {
             glPolygonOffset(1, 1000000);
             glDisable(32823);
         }
-    }
+    }*/
 }
