@@ -13,6 +13,15 @@ Full stack Minecraft cheat for playing at anarchy servers
 `lava_frai`
 - discord - `lava_frai#0498`
 
+`BigJMuffin`
+- discord - `! BigJMuffin#6215`
+
+`PunCakeCat`
+- discord - `PunCakeCat#4572` 
+
+`Skarlord99`
+- discord - `Skarlord99#5871`
+
 ###### Setup:
 Windows:
 
