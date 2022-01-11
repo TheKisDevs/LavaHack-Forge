@@ -1,16 +1,17 @@
 package com.kisman.cc.settings;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.google.gson.JsonElement;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.TextUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
@@ -233,6 +234,18 @@ public class Setting {
 		this.mode = "ColorPicker";
 	}
 
+	public Setting(String name, Module parent, String title, Colour colour) {//, int dColor
+		this.name = name;
+		this.parent = parent;
+		this.title = title;
+		this.colour = colour;
+		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
+		this.colorHSB = new float[] {
+				color[0], color[1], color[2], (float) colour.a / 255f
+		};
+		this.mode = "ColorPicker";
+	}
+
 	public Setting(String name, HudModule parent, String title, float[] colorHSB) {//, int dColor
 		this.name = name;
 		this.hudParent = parent;
@@ -271,10 +284,43 @@ public class Setting {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(isCombo()) {
-			return sval.equals(obj);
-		}
+		if(isCombo()) return sval.equals(obj);
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		if(isCombo()) return getValString();
+		if(isCheck()) return String.valueOf(getValBoolean());
+		if(isSlider()) return String.valueOf(onlyint ? getValInt() : getValDouble());
+		if(isString()) return getValString();
+		if(isColorPicker()) return TextUtil.get32BitString(colour.getRGB()) + "-" + syns + "-" + rainbow;
+		return super.toString();
+	}
+
+	public void fromJson(JsonElement element) {
+		String parse = element.getAsString();
+
+		if (parse.contains("-")) {
+			final String[] values = parse.split("-");
+			if (values.length > 6) {
+				int color = 0;
+				try {color = (int) Long.parseLong(values[0], 16);} catch (Exception e) {e.printStackTrace();}
+				colour = new Colour(color);
+
+				boolean syncBuf = false;
+				try {syncBuf = Boolean.parseBoolean(values[1]);} catch (Exception e) {e.printStackTrace();}
+				syns = syncBuf;
+
+				boolean rainbowBuf = false;
+				try {rainbowBuf = Boolean.parseBoolean(values[2]);} catch (Exception e) {e.printStackTrace();}
+				rainbow = rainbowBuf;
+			}
+		} else {
+			int color = 0;
+			try {color = (int) Long.parseLong(parse, 16);} catch (Exception e) {e.printStackTrace();}
+			colour = new Colour(color);
+		}
 	}
 
 	public boolean isVisible() {
@@ -461,6 +507,10 @@ public class Setting {
 
 	public void setColour(Colour colour) {
 		this.colour = colour;
+		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
+		this.colorHSB = new float[] {
+				color[0], color[1], color[2], (float) colour.a / 255f
+		};
 	}
 
 	public Enum getValEnum() {
@@ -510,7 +560,6 @@ public class Setting {
 	public int getY1() {
 		return this.y1;
 	}
-
 	
 	public int getX2() {
 		return this.x2;

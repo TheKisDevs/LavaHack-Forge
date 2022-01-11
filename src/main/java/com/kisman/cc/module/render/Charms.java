@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class Charms extends Module {
     public Setting targetRender = new Setting("TargetRender", this, true);
     public Setting render = new Setting("Redner", this, false);
     public Setting customColor = new Setting("CustomColor", this, false);
-    public Setting color = new Setting("Color", this, "Color", new float[] {1, 0, 0, 1});
+    public Setting color = new Setting("Color", this, "Color", new Colour(255, 0, 0));
 
     public static Charms instance;
 

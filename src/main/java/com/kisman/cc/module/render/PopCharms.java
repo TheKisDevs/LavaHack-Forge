@@ -4,6 +4,7 @@ import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.manager.Managers;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -33,8 +34,8 @@ public class PopCharms extends Module {
     private Setting colorG = new Setting("ColorG", this, 1, 0, 1, false);
     private Setting colorB = new Setting("ColorB", this, 1, 0, 1, false);
     private Setting colorA = new Setting("ColorA", this, 1, 0, 1, false);
-    private Setting fillColor = new Setting("FillColor", this, "FillColor", new float[] {0.3f, 0.3f, 0.3f, 1});
-    private Setting outColor = new Setting("OutlineColor", this, "OutlineColor", new float[] {0.3f, 0.3f, 0.3f, 1});
+//    private Setting fillColor = new Setting("FillColor", this, "FillColor", new Colour(1f, 1f, 1f));
+//    private Setting outColor = new Setting("OutlineColor", this, "OutlineColor", new Colour(1f, 1f, 1f));
 
     private EntityOtherPlayerMP player;
     private EntityPlayer entity;

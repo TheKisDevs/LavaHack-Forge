@@ -12,6 +12,7 @@ public class Help extends Command {
         ChatUtils.message("Commands:");
         ChatUtils.message("bind <key> <module>");
         ChatUtils.message("bind list");
+        ChatUtils.message("credits");
         ChatUtils.message("flip - this command only for Hypixel Skyblock");
         ChatUtils.message("friend <add/remove> <player's name>");
         ChatUtils.message("friend list");
@@ -21,7 +22,7 @@ public class Help extends Command {
         ChatUtils.message("saveconfig");
         ChatUtils.message("setkey - this command only for Hypixel Skyblock");
         ChatUtils.message("slider <module> <slider's name> <value>");
-        ChatUtils.message("toggle");
+        ChatUtils.message("toggle <module>");
         ChatUtils.message("tp <x> <y> <z>");
         ChatUtils.message("tp <player's nickname>");
     }

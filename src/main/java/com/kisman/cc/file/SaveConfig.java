@@ -7,13 +7,9 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 public class SaveConfig {
     public static void init() {
@@ -30,22 +26,12 @@ public class SaveConfig {
     }
 
     private static void registerFiles(String location, String name) throws IOException {
-        if (Files.exists(Paths.get(Kisman.fileName + location + name + ".json"))) {
-            new File(Kisman.fileName + location + name + ".json").delete();
-        } else {
-            Files.createFile(Paths.get(Kisman.fileName + location + name + ".json"));
-        }
-
+        if (Files.exists(Paths.get(Kisman.fileName + location + name + ".json"))) new File(Kisman.fileName + location + name + ".json").delete();
+        else Files.createFile(Paths.get(Kisman.fileName + location + name + ".json"));
     }
 
     private static void saveModules() throws IOException {
-        for (Module module : Kisman.instance.moduleManager.getModuleList()) {
-            try {
-                saveModuleDirect(module, Kisman.instance.settingsManager.getSettingsByMod(module) != null && !Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        for (Module module : Kisman.instance.moduleManager.getModuleList()) try {saveModuleDirect(module, Kisman.instance.settingsManager.getSettingsByMod(module) != null && !Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty());} catch (IOException e) {e.printStackTrace();}
     }
 
     private static void saveModuleDirect(Module module, boolean settings) throws IOException {
@@ -61,32 +47,15 @@ public class SaveConfig {
             if(!(Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty())) {
                 for (Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
                     if (setting != null) {
-                        if (setting.isCheck()) {
-                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValBoolean()));
-                        }
-                        if (setting.isCombo()) {
-                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValString()));
-                        }
-                        if (setting.isSlider()) {
-                            settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
-                        }
-                        /*if(setting.isColorPicker()) {
-                            settingObject.add(setting.getName() + "H", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
-                            settingObject.add(setting.getName() + "S", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
-                            settingObject.add(setting.getName() + "B", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
-                            settingObject.add(setting.getName() + "A", new JsonPrimitive(setting.getColorPicker().getColorHSB()[0]));
-                            settingObject.add(setting.getName() + "RainBow", new JsonPrimitive(setting.isRainbow()));
-                            settingObject.add(setting.getName() + "Syns", new JsonPrimitive(setting.isSyns()));
-                        }*/
+                        if (setting.isCheck()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValBoolean()));
+                        if (setting.isCombo()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValString()));
+                        if (setting.isSlider()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
+                        if(setting.isColorPicker()) settingObject.add(setting.getName(), new JsonPrimitive(setting.toString()));
                     }
                 }
             }
-
             settingObject.add("key", new JsonPrimitive(Keyboard.getKeyName(module.getKey())));
         }
-
-
-
         moduleObject.add("Settings", settingObject);
         String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
         fileOutputStreamWriter.write(jsonString);

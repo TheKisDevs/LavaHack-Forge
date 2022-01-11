@@ -111,7 +111,7 @@ public class AutoCrystal extends Module {
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
 
     private final Setting render = new Setting("Render", this, true);
-    private final Setting color = new Setting("Color", this, "Color", new float[] {0.9f, 0.11f, 0.11f, 1});
+    private final Setting color = new Setting("Color", this, "Color", new Colour(0.9f, 0.11f, 0.11f));
     private final Setting renderMode = new Setting("RenderMode", this, Renders.Fill);
     private final Setting renderDamage = new Setting("RenderDamage", this, true);
 

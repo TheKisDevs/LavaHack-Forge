@@ -43,6 +43,7 @@ public class ColorPickerButton extends Component{
       this.y = button.parent.getY();
       this.offset = offset;
       colorPicker.setColor(set.getColorHSB());
+      colorPicker.lastGui(Kisman.instance.clickGui);
   }
 
   public void setOff(int offset) {
@@ -157,7 +158,6 @@ public class ColorPickerButton extends Component{
         set.setColor(ColorModule.instance.synsColor.getColorHSB());
     }
     set.setColour(new Colour(set.getR(), set.getG(), set.getB(), set.getA()));
-    set.setSyns(colorPicker.syns);
     set.setRainbow(colorPicker.isRainbowState());
     set.setColorPicker(colorPicker);
   }
@@ -200,9 +200,9 @@ public class ColorPickerButton extends Component{
   }
 
   final int colour(Color color, float alpha, int index) {
-    final float red = (float) color.getRed() / 255;
-    final float green = (float) color.getGreen() / 255;
-    final float blue = (float) color.getBlue() / 255;
+    final float red = (float) color.getRed() / 255f;
+    final float green = (float) color.getGreen() / 255f;
+    final float blue = (float) color.getBlue() / 255f;
 
     if(index == 1) {  
       return new Color(red, green, blue, alpha).getRed();

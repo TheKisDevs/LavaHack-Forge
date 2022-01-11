@@ -1,16 +1,14 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 import net.minecraft.entity.item.EntityEnderCrystal;
 
 public class CrystalModifier extends Module {
     public static CrystalModifier instance;
 
     public Setting mode = new Setting("Mode", this, Modes.Fill);
-
-
     public Setting preview = new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world));
 
 
@@ -34,20 +32,15 @@ public class CrystalModifier extends Module {
     public Setting outsideCube2 = new Setting("OutsideCube2", this, true);
     public Setting texture = new Setting("Texture", this, false);
     public Setting customColor = new Setting("CustomColor", this, false);
-    public Setting crystalColor = new Setting("CrystalColor", this, "Color", new float[] {0, 0, 1, 1});
+    public Setting crystalColor = new Setting("CrystalColor", this, "Color", new Colour(0, 0, 255));
 
     private Setting outlineLine = new Setting("OutLineLine", this, "OutLine");
 
     public Setting outline = new Setting("Outline", this, false);
     public Setting outlineMode = new Setting("OutlineMode", this, OutlineModes.Wire);
-    public Setting lineWidth = new Setting("LineWidht", this, 3, 0.5, 5, false);
-    public Setting color = new Setting("Color", this, "Color", new float[] {1, 0, 0, 1});
+    public Setting lineWidth = new Setting("LineWidth", this, 3, 0.5, 5, false);
+    public Setting color = new Setting("Color", this, "Color", new Colour(255, 0, 0));
 
-
-    private Setting enchantedLine = new Setting("EnchantedLine", this, "Enchanted");
-
-    public Setting enchanted = new Setting("Enchanted", this, false);
-    public Setting enchColor = new Setting("EnchColor", this, "Color", new float[] {0, 1, 0, 1});
 
     private Setting speedLine = new Setting("SpeedLine", this, "Speed");
 
@@ -87,10 +80,6 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(lineWidth);
         setmgr.rSetting(color);
 
-        setmgr.rSetting(enchantedLine);
-        setmgr.rSetting(enchanted);
-        setmgr.rSetting(enchColor);
-
         setmgr.rSetting(speedLine);
         setmgr.rSetting(speed);
         setmgr.rSetting(bounce);
@@ -103,6 +92,7 @@ public class CrystalModifier extends Module {
 
     public enum Modes {
         Fill,
-        Wireframe
+        Wireframe,
+        None
     }
 }

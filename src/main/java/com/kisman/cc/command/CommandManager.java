@@ -25,6 +25,7 @@ public class CommandManager {
 	public void addCommands() {
 		commands.add(new Bind());
 		commands.add(new ColfCmd());
+		commands.add(new Credits());
 		commands.add(new Flip());
 		commands.add(new FriendCommand());
 		commands.add(new Help());

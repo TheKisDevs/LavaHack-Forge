@@ -6,7 +6,6 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class FriendCommand extends Command {
     public String[] subCommands = new String[] {"add", "remove", "list"};
-    private String regex1 = "[list]";
 
     public FriendCommand() {
         super("friend");
@@ -22,7 +21,7 @@ public class FriendCommand extends Command {
                     Kisman.instance.friendManager.removeFriend(args[1]);
                     ChatUtils.complete(args[1] + " removed from friends :(");
                 } else ChatUtils.error("Usage: " + getSyntax());
-            } else if(args[0] != null && args[0].matches(regex1)) {
+            } else if(args[0] != null && args.length == 1) {
                 ChatUtils.message("----------------------------------");
                 ChatUtils.message("Friends:");
                 ChatUtils.message(Kisman.instance.friendManager.getFriendsNames());
@@ -31,11 +30,6 @@ public class FriendCommand extends Command {
         } catch (Exception e) {ChatUtils.error("Usage: " + getSyntax());}
     }
 
-    public String getDescription() {
-        return "friend's command";
-    }
-
-    public String getSyntax() {
-        return "friend <add/remove> <player's name> or friend list";
-    }
+    public String getDescription() {return "friend's command";}
+    public String getSyntax() {return "friend <add/remove> <player's name> or friend list";}
 }

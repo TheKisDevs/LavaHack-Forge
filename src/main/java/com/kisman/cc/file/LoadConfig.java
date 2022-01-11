@@ -7,12 +7,8 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.file.*;
 
 public class LoadConfig {
     public static void init() {
@@ -56,28 +52,13 @@ public class LoadConfig {
         if(settings) {
             for (Setting setting : Kisman.instance.settingsManager.getSettingsByMod(module)) {
                 JsonElement dataObject = settingObject.get(setting.getName());
-                JsonElement[] colour = new JsonElement[] {
-                        settingObject.get(setting.getName() + "H"),
-                        settingObject.get(setting.getName() + "S"),
-                        settingObject.get(setting.getName() + "B"),
-                        settingObject.get(setting.getName() + "A"),
-                        settingObject.get(setting.getName() + "RainBow"),
-                        settingObject.get(setting.getName() + "Syns")
-                };
 
                 try {
                     if (dataObject != null && dataObject.isJsonPrimitive()) {
                         if (setting.isCheck()) setting.setValBoolean(dataObject.getAsBoolean());
                         if (setting.isCombo()) setting.setValString(dataObject.getAsString());
                         if (setting.isSlider()) setting.setValDouble(dataObject.getAsDouble());
-                        if(setting.isColorPicker()) {
-                            setting.getColorPicker().setColor(0, colour[0].getAsFloat());
-                            setting.getColorPicker().setColor(1, colour[1].getAsFloat());
-                            setting.getColorPicker().setColor(2, colour[2].getAsFloat());
-                            setting.getColorPicker().setColor(3, colour[3].getAsFloat());
-                            setting.setRainbow(colour[4].getAsBoolean());
-                            setting.setSyns(colour[5].getAsBoolean());
-                        }
+                        if(setting.isColorPicker()) setting.fromJson(dataObject);
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(setting.getName() + " " + module.getName());
@@ -128,7 +109,6 @@ public class LoadConfig {
             JsonElement dataObject = settingObject.get(module.getName());
 
             if(dataObject != null && dataObject.isJsonPrimitive()) try {module.visible = dataObject.getAsBoolean();} catch (NullPointerException e) {e.printStackTrace();}
-
         }
 
         inputStream.close();

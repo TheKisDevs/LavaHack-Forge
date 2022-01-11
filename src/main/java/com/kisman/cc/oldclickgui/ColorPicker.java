@@ -26,6 +26,8 @@ public class ColorPicker extends GuiScreen {
 
     private int selectedColorFinal;
 
+    private GuiScreen lastGui;
+
     public ColorPicker() {
         this.color = new float[] {0.4f, 1.0f, 1.0f, 1.0f};
         this.pickingColor = false;
@@ -45,6 +47,10 @@ public class ColorPicker extends GuiScreen {
         this.alphaSliderY = pickerY;
         this.alphaSliderWidth = 10;
         this.alphaSliderHeight = pickerHeight;
+    }
+
+    public void lastGui(GuiScreen lastGui) {
+        this.lastGui = lastGui;
     }
 
     @Override
@@ -98,24 +104,15 @@ public class ColorPicker extends GuiScreen {
         Gui.drawRect(selectedX - 2, selectedY + (selectedHeight * 2) - 2 + selectedWidth, selectedX + 2 + selectedWidth, selectedY + (selectedHeight * 3) + 2 + selectedWidth, 0xFC000000);
         CustomFontUtil.drawString("Syns", selectedX - 2 - CustomFontUtil.getStringWidth("Syns"), (selectedY + (selectedHeight * 2) - ((selectedHeight - CustomFontUtil.getFontHeight()) / 2)), 0xFC000000);
 
+        if(rainbowState) Gui.drawRect(selectedX, selectedY + (selectedHeight * 2), selectedX + selectedWidth, selectedY + (selectedHeight * 3), -1);
 
-        if(rainbowState) {
-            Gui.drawRect(selectedX, selectedY + (selectedHeight * 2), selectedX + selectedWidth, selectedY + (selectedHeight * 3), -1);
-        }
-
-        if(syns) {
-            Gui.drawRect(selectedX, selectedY + (selectedHeight * 2) + selectedWidth, selectedX + selectedWidth, selectedY + (selectedHeight * 3) + selectedWidth, -1);
-
-        }
+        if(syns) Gui.drawRect(selectedX, selectedY + (selectedHeight * 2) + selectedWidth, selectedX + selectedWidth, selectedY + (selectedHeight * 3) + selectedWidth, -1);
 
         {
             final int cursorX = (int) (pickerX + color[1]*pickerWidth);
             final int cursorY = (int) ((pickerY + pickerHeight) - color[2]*pickerHeight);
             Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
         }
-//        for (int i = 1; i < pickerHeight/10; i++) {
-//            Gui.drawRect(selectedX - 2, pickerY + i * 14, selectedX + 12, pickerY + i * 14, 0xFC000000);
-//        }
     }
 
     final int alpha(Color color, float alpha) {
@@ -256,18 +253,11 @@ public class ColorPicker extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        if(keyCode == Keyboard.KEY_ESCAPE) {
-            mc.displayGuiScreen(Kisman.instance.clickGui);
-        }
-        if (keyCode == Keyboard.KEY_R) {
-            this.rainbowState = !this.rainbowState;
-        }
-        if(keyCode == Keyboard.KEY_S) {
-            syns = !syns;
-        }
-        if (keyCode == Keyboard.KEY_LEFT) {
-            this.rainbowSpeed -= 0.1;
-        } else if (keyCode == Keyboard.KEY_RIGHT) this.rainbowSpeed += 0.1;
+        if(keyCode == Keyboard.KEY_ESCAPE) mc.displayGuiScreen(lastGui);
+        if (keyCode == Keyboard.KEY_R) this.rainbowState = !this.rainbowState;
+        if(keyCode == Keyboard.KEY_S) syns = !syns;
+        if (keyCode == Keyboard.KEY_LEFT) this.rainbowSpeed -= 0.1;
+        else if (keyCode == Keyboard.KEY_RIGHT) this.rainbowSpeed += 0.1;
     }
 
     public int getColor() {

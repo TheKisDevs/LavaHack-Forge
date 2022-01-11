@@ -1,18 +1,15 @@
 package com.kisman.cc.module.misc;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.HUD;
+import com.kisman.cc.module.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.ArrayList;
 
-public class VisualRange extends Module {
-    private ArrayList<String> names;
-    private ArrayList<String> newnames;
+public class  VisualRange extends Module {
+    private final ArrayList<String> names;
+    private final ArrayList<String> newnames;
 
     public VisualRange() {
         super("VisualRange", "", Category.MISC);
@@ -24,39 +21,13 @@ public class VisualRange extends Module {
     public void update() {
         this.newnames.clear();
         try {
-            for (final Entity entity : mc.world.loadedEntityList) {
-                if (entity instanceof EntityPlayer && !entity.getName().equalsIgnoreCase(mc.player.getName())) {
-                    this.newnames.add(entity.getName());
-                }
-            }
+            for (final Entity entity : mc.world.loadedEntityList) if (entity instanceof EntityPlayer && !entity.getName().equalsIgnoreCase(mc.player.getName())) this.newnames.add(entity.getName());
             if (!this.names.equals(this.newnames)) {
-                for (final String name : this.newnames) {
-                    if (!this.names.contains(name)) {
-                        String msg = name + " entered visual range!";
-
-                        /*if(HUD.instance.visualRange.getValBoolean()) {
-                            Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());
-                        }*/
-
-                        ChatUtils.warning(msg);
-                    }
-                }
-                for (final String name : this.names) {
-                    if (!this.newnames.contains(name)) {
-                        String msg = name + " left visual range!";
-
-                        /*if(HUD.instance.visualRange.getValBoolean()) {
-                            Kisman.instance.notificationProcessor.addNotification(msg + " [VisualRange]", HUD.instance.inOutTime.getValInt(), HUD.instance.lifetime.getValInt());                        }
-*/
-                        ChatUtils.message(msg);
-                    }
-                }
+                for (final String name : this.newnames) if (!this.names.contains(name)) ChatUtils.warning(name + " entered in visual range!");
+                for (final String name : this.names) if (!this.newnames.contains(name)) ChatUtils.message(name + " left from visual range!");
                 this.names.clear();
-                for (final String name : this.newnames) {
-                    this.names.add(name);
-                }
+                this.names.addAll(this.newnames);
             }
-        }
-        catch (Exception ex) {}
+        } catch (Exception ignored) {}
     }
 }

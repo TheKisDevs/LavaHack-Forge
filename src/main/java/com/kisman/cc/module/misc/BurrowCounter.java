@@ -14,28 +14,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BurrowCounter extends Module {
     private final ConcurrentHashMap<EntityPlayer, Integer> players = new ConcurrentHashMap<>();
-    List<EntityPlayer> anti_spam = new ArrayList<>();
-    private boolean flag;
+    private final List<EntityPlayer> anti_spam = new ArrayList<>();
 
     public BurrowCounter() {
         super("BurrowCounter", "BurrowCounter", Category.MISC);
-    }
-
-    public void onEnable() {
-
     }
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
         for (EntityPlayer player : mc.world.playerEntities) {
-            BlockPos position = new BlockPos(player.posX, player.posY + 0.2D, player.posZ);
-            if (mc.world.getBlockState(position).getBlock().equals(Blocks.OBSIDIAN) && !flag) {
-                if (anti_spam.contains(player)) continue;
+            if (anti_spam.contains(player)) continue;
+            BlockPos pos = new BlockPos(player.posX, player.posY + 0.2D, player.posZ);
+            if (mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
                 add_player(player);
                 anti_spam.add(player);
-            } else if (!mc.world.getBlockState(position).getBlock().equals(Blocks.OBSIDIAN)) {
-                anti_spam.remove(player);
             }
         }
     }

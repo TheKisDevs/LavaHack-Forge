@@ -54,14 +54,14 @@ public class EntityESP extends Module{
     private Setting playerMode = new Setting("Players", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "2D", "2D #2", "Glow")));
 
     //colors
-    private Setting playerColor = new Setting("PlayerColor", this, "PlayerColor", new float[] {0.54f, 0.11f, 0.92f, 1});
-    private Setting playerShader = new Setting("PlayerShader", this, false);
-    private Setting glowPlayer = new Setting("GlowPlayer", this, false);
-    private Setting quality = new Setting("Quality", this, 1, 0, 5, false);
-    private Setting radius = new Setting("Radius", this, 2, 0, 5, false);
-    private Setting monstersColor = new Setting("MonstersColor", this, "MonsterColor", new float[] {0.11f, 0.92f, 0.73f, 1});
-    private Setting itemsColor = new Setting("ItemsColor", this, "ItemsColor", new float[] {0.11f, 0.51f, 0.92f, 1});
-    private Setting entityColor = new Setting("EntityColor", this, "EntityColor", new float[] {0.92f, 0.57f, 0.11f, 1});
+//    private Setting playerColor = new Setting("PlayerColor", this, "PlayerColor", new float[] {0.54f, 0.11f, 0.92f, 1});
+//    private Setting playerShader = new Setting("PlayerShader", this, false);
+//    private Setting glowPlayer = new Setting("GlowPlayer", this, false);
+//    private Setting quality = new Setting("Quality", this, 1, 0, 5, false);
+//    private Setting radius = new Setting("Radius", this, 2, 0, 5, false);
+//    private Setting monstersColor = new Setting("MonstersColor", this, "MonsterColor", new float[] {0.11f, 0.92f, 0.73f, 1});
+//    private Setting itemsColor = new Setting("ItemsColor", this, "ItemsColor", new float[] {0.11f, 0.51f, 0.92f, 1});
+//    private Setting entityColor = new Setting("EntityColor", this, "EntityColor", new float[] {0.92f, 0.57f, 0.11f, 1});
 
     //2d
     private Setting twodimetsionespline = new Setting("2DESP", this, "2D ESP setting");
@@ -95,13 +95,13 @@ public class EntityESP extends Module{
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 100, 10, 260, true));
 
         Kisman.instance.settingsManager.rSetting(new Setting("PlayersLine", this, "Players"));
-        setmgr.rSetting(playerColor);
-        setmgr.rSetting(playerMode);
-        setmgr.rSetting(playerShader);
-        setmgr.rSetting(glowPlayer);
-        setmgr.rSetting(quality);
-        setmgr.rSetting(radius);
-
+//        setmgr.rSetting(playerColor);
+//        setmgr.rSetting(playerMode);
+//        setmgr.rSetting(playerShader);
+//        setmgr.rSetting(glowPlayer);
+//        setmgr.rSetting(quality);
+//        setmgr.rSetting(radius);
+//
         setmgr.rSetting(twodimetsionespline);
         setmgr.rSetting(box);
         setmgr.rSetting(tags);
@@ -115,16 +115,16 @@ public class EntityESP extends Module{
         setmgr.rSetting(local);*/
 
         Kisman.instance.settingsManager.rSetting(new Setting("MonstersLine", this, "Monsters"));
-        setmgr.rSetting(monstersColor);
+//        setmgr.rSetting(monstersColor);
         Kisman.instance.settingsManager.rSetting(new Setting("Monsters", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
 
         Kisman.instance.settingsManager.rSetting(new Setting("ItemsLine", this, "Items"));
         Kisman.instance.settingsManager.rSetting(new Setting("Items", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
-        setmgr.rSetting(itemsColor);
+//        setmgr.rSetting(itemsColor);
 
         Kisman.instance.settingsManager.rSetting(new Setting("EntityLine", this, "Entity"));
         Kisman.instance.settingsManager.rSetting(new Setting("Entity", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow"))));
-        setmgr.rSetting(entityColor);
+//        setmgr.rSetting(entityColor);
     }
 
     public void onEnable() {
@@ -298,14 +298,14 @@ public class EntityESP extends Module{
         }
     });
 
-    @SubscribeEvent
+//    @SubscribeEvent
     public void onRenderWorld(RenderGameOverlayEvent event) {
         if(mc.player == null && mc.world == null) return;
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             GL11.glPushMatrix();
 
-            if(playerShader.getValBoolean()) {
+            /*if(playerShader.getValBoolean()) {
                 FlowShader.INSTANCE.startDraw(event.getPartialTicks());
                 mc.world.loadedEntityList.stream().filter(e -> e instanceof EntityPlayer && e != mc.player).forEach(e -> mc.renderManager.renderEntityStatic(e, event.getPartialTicks(), true));
                 FlowShader.INSTANCE.stopDraw(Color.WHITE, 1, 1);
@@ -316,7 +316,7 @@ public class EntityESP extends Module{
                 GlowShader.INSTANCE.startDraw(event.getPartialTicks());
                 mc.world.loadedEntityList.stream().filter(e -> e instanceof EntityPlayer && e != mc.player).forEach(e -> mc.renderManager.renderEntityStatic(e, event.getPartialTicks(), true));
                 GlowShader.INSTANCE.stopDraw(new Color(playerColor.getR(), playerColor.getG(), playerColor.getB(), playerColor.getA()), (float) radius.getValDouble(), (float) quality.getValDouble());
-            }
+            }*/
 
             GL11.glPopMatrix();
         }

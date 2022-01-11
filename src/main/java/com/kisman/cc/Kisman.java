@@ -140,35 +140,19 @@ public class Kisman {
     
     @SubscribeEvent
     public void key(KeyInputEvent e) {
-    	if (mc.world == null || mc.player == null) {
-            return;
-        }
-
+    	if (mc.world == null || mc.player == null) return;
     	try {
             if (Keyboard.isCreated()) {
                 if (Keyboard.getEventKeyState()) {
                     int keyCode = Keyboard.getEventKey();
-                    if (keyCode <= 1)
-                    	return;
+                    if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode && keyCode > 0) {
                     		m.toggle();
                             if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-//                            SaveConfig.init();
                     	}
-
-/*                        for(Setting set : settingsManager.getSettingsByMod(m)) {
-                            if(set.isBind() && set.getKey() == keyCode) {
-                                System.out.println("3");
-                                moduleManager.key(Keyboard.getEventCharacter(), Keyboard.getEventKey(), m);
-                            }
-                        }*/
                     }
-                    for (HudModule m : hudModuleManager.modules) {
-                        if (m.getKey() == keyCode && keyCode > 0) {
-                            m.toggle();
-                        }
-                    }
+                    for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode && keyCode > 0) m.toggle();
                 }
             }
         } catch (Exception q) { q.printStackTrace(); }
@@ -177,15 +161,9 @@ public class Kisman {
     public static String getName() {
         if(instance.init) {
             switch (Config.instance.nameMode.getValString()) {
-                case "kismancc": {
-                    return NAME;
-                }
-                case "lavahack": {
-                    return "LavaHack";
-                }
-                case "custom": {
-                    return Config.instance.customName.getValString();
-                }
+                case "kismancc": return NAME;
+                case "lavahack": return "LavaHack";
+                case "custom": return Config.instance.customName.getValString();
             }
         }
         return NAME;

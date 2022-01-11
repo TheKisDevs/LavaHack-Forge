@@ -93,6 +93,22 @@ public class ClickGuiNew extends GuiScreen {
                     if (Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
                         if(!Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
                             for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(module)) {
+                                if(set.isColorPicker()) {
+                                    settingPane.addComponent(new Label(renderer, set.getTitle()));
+                                    ColorButton sb = new ColorButton(renderer, set.getColorHSB());
+                                    settingPane.addComponent(sb);
+                                    sb.setListener(val -> {
+                                        set.setColour(val);
+                                        return true;
+                                    });
+                                    sb.setSynsListener(val -> {
+                                        set.setSyns(val);
+                                        return true;
+                                    });
+
+                                    onRenderListeners.add(() -> sb.setValue(set.getColour()));
+                                    onRenderListeners.add(() -> sb.syns = (set.isSyns()));
+                                }
                                 if(set.isString()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
                                     StringButton sb = new StringButton(renderer, set.getdString());

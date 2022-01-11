@@ -40,9 +40,7 @@ public class TextUtil {
     public static String shrug = "\u00af\\_(\u30c4)_/\u00af";
 
     public static String stripColor(String input) {
-        if (input == null) {
-            return null;
-        }
+        if (input == null) return null;
         return STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
     }
 
@@ -117,11 +115,26 @@ public class TextUtil {
         return coloredString;
     }
 
+    /**
+     * Returns the Integers value as a full 32bit hex string:
+     * <p>
+     * <p>get32BitString(-1) -> "FFFFFFFF"
+     * <p>get32BitString(0) -> "00000000"
+     * <p>get32BitString(128) -> "00000080"
+     * <p>...
+     *
+     * @param value the integer to get the 32bit string from.
+     * @return a 32bit string representing the integers value.
+     */
+    public static String get32BitString(int value) {
+        StringBuilder r = new StringBuilder(Integer.toHexString(value));
+        while (r.length() < 8) r.insert(0, 0);
+        return r.toString().toUpperCase();
+    }
+
     public static String cropMaxLengthMessage(String s, int i) {
         String output = "";
-        if (s.length() >= 256 - i) {
-            output = s.substring(0, 256 - i);
-        }
+        if (s.length() >= 256 - i) output = s.substring(0, 256 - i);
         return output;
     }
 
@@ -143,7 +156,6 @@ public class TextUtil {
         RED,
         LIGHT_PURPLE,
         YELLOW
-
     }
 }
 

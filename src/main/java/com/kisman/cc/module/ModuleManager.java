@@ -80,6 +80,7 @@ public class ModuleManager {
 		modules.add(new AutoGlobal());
 		modules.add(new ChatAnimation());
 		modules.add(new ChatSuffix());
+		modules.add(new Credits());
 		modules.add(new Notification());
 		modules.add(new Spammer());
 		modules.add(new TimeStamps());

@@ -1,6 +1,5 @@
 package com.kisman.cc.util;
 
-
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -57,27 +56,18 @@ public class Colour {
     }
 
     public Color getColor() {
-        if(isInt) {
-            return new Color(r, g, b, a);
-        } else {
-            return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255);
-        }
+        if(isInt) return new Color(r, g, b, a);
+        else return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255);
     }
 
     public int getRGB() {
-        if(isInt) {
-            return new Color(r, g, b, a).getRGB();
-        } else {
-            return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255).getRGB();
-        }
+        if(isInt) return new Color(r, g, b, a).getRGB();
+        else return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255).getRGB();
     }
 
     public float getR() {
-        if(isInt) {
-            return (float) r / 255;
-        } else {
-            return r1;
-        }
+        if(isInt) return (float) r / 255;
+        else return r1;
     }
 
     public float getG() {
@@ -97,26 +87,17 @@ public class Colour {
     }
 
     public float getA() {
-        if(isInt) {
-            return (float) a / 255;
-        } else {
-            return a1;
-        }
+        if(isInt) return (float) a / 255;
+        else return a1;
     }
 
     public int getAlpha() {
-        if(isInt) {
-            return a;
-        } else {
-            return (int) a1 * 255;
-        }
+        if(isInt) return a;
+        else return (int) a1 * 255;
     }
 
     public void glColor() {
-        if(isInt) {
-            GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
-        } else {
-            GlStateManager.color(r1, g1, b1, a1);
-        }
+        if(isInt) GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
+        else GlStateManager.color(r1, g1, b1, a1);
     }
 }

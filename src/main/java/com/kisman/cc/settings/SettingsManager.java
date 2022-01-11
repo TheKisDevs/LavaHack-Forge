@@ -1,7 +1,6 @@
 package com.kisman.cc.settings;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.kisman.cc.module.Module;
 
@@ -33,9 +32,7 @@ public class SettingsManager {
 	}
 
 	public void rSettings(Setting... in) {
-		for(Setting set : in) {
-			settings.add(set);
-		}
+		settings.addAll(Arrays.asList(in));
 	}
 	
 	public ArrayList<Setting> getSettings(){
@@ -44,48 +41,28 @@ public class SettingsManager {
 
 	public ArrayList<Setting> getSubSettingsByMod(Module mod, Setting set) {
 		ArrayList<Setting> out = new ArrayList<>();
-		for(Setting s : this.subsetting) {
-			if(s.getParentMod() == mod && s.getSetparent() == set) {
-				out.add(s);
-			}
-		}
+		for(Setting s : this.subsetting) if(s.getParentMod() == mod && s.getSetparent() == set) out.add(s);
 		if(out.isEmpty()) return null;
-
 		return out;
 	}
 	
 	public ArrayList<Setting> getSettingsByMod(Module mod) {
 		ArrayList<Setting> out = new ArrayList<>();
-		for(Setting s : getSettings()){
-			if(s.getParentMod() == mod){
-				out.add(s);
-			}
-		}
-		if(out.isEmpty()){
-			return null;
-		}
+		for(Setting s : getSettings()) if(s.getParentMod() == mod) out.add(s);
+		if(out.isEmpty()) return null;
 		return out;
 	}
 
 	public ArrayList<Setting> getSettingsByHudMod(HudModule mod) {
 		ArrayList<Setting> out = new ArrayList<Setting>();
-		for(Setting s : getSettings()) {
-			if(s.isHud()) {
-				if(s.getParentHudModule().equals(mod)) {
-					out.add(s);
-				}
-			}
-		}
-		if(out.isEmpty()) {
-			return null;
-		}
+		for(Setting s : getSettings()) if(s.isHud()) if(s.getParentHudModule().equals(mod)) out.add(s);
+		if(out.isEmpty()) return null;
 		return out;
 	}
 
 	public Setting getSubSettingByName(Module mod, Setting set, String name) {
 		for(Setting s : this.subsetting) {
 			if(set.isHud()) return null;
-
 			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod && set.getSetparent() == set) return set;
 		}
 		System.out.println("[kisman.cc] Error Sub Setting NOT found: '" + name +"'!");
@@ -93,13 +70,9 @@ public class SettingsManager {
 	}
 	
 	public Setting getSettingByName(Module mod, String name){
-		for(Setting set : getSettings()){
-			if(set.isHud()) {
-				return null;
-			}
-			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod){
-				return set;
-			}
+		for(Setting set : getSettings()) {
+			if(set.isHud()) return null;
+			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
 		}
 		System.err.println("[kisman.cc] Error Setting NOT found: '" + name +"'!");
 		return null;

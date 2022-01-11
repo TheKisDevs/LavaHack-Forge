@@ -34,10 +34,10 @@ public class Toggle extends Command{
         }
 
         try {
-
             Kisman.instance.moduleManager.getModule(module).setToggled(
                 !Kisman.instance.moduleManager.getModule(module).isToggled()
             );
+            ChatUtils.complete("Module " + module + " has been toggled!");
         } catch(Exception e) {
             ChatUtils.error("Usage: " + getSyntax());
         }

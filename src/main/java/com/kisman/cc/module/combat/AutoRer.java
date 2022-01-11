@@ -3,6 +3,7 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.mixin.mixins.accessor.AccessorCPacketUseEntity;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
@@ -32,9 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ public class AutoRer extends Module {
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
+    private final Setting friend_ = new Setting("Friend", this, FriendMode.AntiTotemPop);
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
     private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
@@ -69,9 +69,10 @@ public class AutoRer extends Module {
     private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
 
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
-    public final Setting minDMG = new Setting("MinDMG", this, 6, 0, 37, true);
-    public final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 37, true);
-    public final Setting lethalMult = new Setting("LethalMult", this, 0, 0, 6, false);
+    public final Setting minDMG = new Setting("Min DMG", this, 6, 0, 37, true);
+    public final Setting maxSelfDMG = new Setting("Max Self DMG", this, 18, 0, 37, true);
+    private final Setting maxFriendDMG = new Setting("Max Freind DMG", this, 10, 0, 37, true);
+    public final Setting lethalMult = new Setting("Lethal Mult", this, 0, 0, 6, false);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -137,6 +138,7 @@ public class AutoRer extends Module {
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
+        setmgr.rSetting(friend_);
 
         setmgr.rSetting(delayLine);
         setmgr.rSetting(placeDelay);
@@ -147,6 +149,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(dmgLine);
         setmgr.rSetting(minDMG);
         setmgr.rSetting(maxSelfDMG);
+        setmgr.rSetting(maxFriendDMG);
         setmgr.rSetting(lethalMult);
 
         setmgr.rSetting(renderLine);
@@ -267,7 +270,7 @@ public class AutoRer extends Module {
     @EventHandler
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
         if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
-            placedList.add(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos());
+            try {placedList.add(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos());} catch (Exception ignored) {}
         }
     });
 
@@ -296,7 +299,6 @@ public class AutoRer extends Module {
                 }
             }
         }
-
         this.placePos = placePos;
     }
 
@@ -365,10 +367,17 @@ public class AutoRer extends Module {
             Entity entity = mc.world.loadedEntityList.get(i);
 
             if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                Friend friend = getNearFriendWithMaxDamage(entity);
+                double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+
+                if(friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
+                    if(friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return;
+                    else if(friend.isTotemFailed) return;
+                    if(friend.damage >= maxFriendDMG.getValInt()) return;
+                }
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
-                    float selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
+                    double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
 
                     if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
                         if(maxDamage <= targetDamage) {
@@ -398,41 +407,56 @@ public class AutoRer extends Module {
         else mc.player.swingArm(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
     }
 
-    public enum Render {
-        None,
-        Default,
-        Advanced
+    private Friend getNearFriendWithMaxDamage(Entity entity) {
+        ArrayList<Friend> friendsWithMaxDamage = new ArrayList<>();
+
+        for(EntityPlayer player : mc.world.playerEntities) {
+            if(mc.player == player) continue;
+            if(FriendManager.instance.isFriend(player)) {
+                double friendDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                if(friendDamage <= maxFriendDMG.getValInt() || friendDamage * lethalMult.getValDouble() >= player.getHealth() + player.getAbsorptionAmount()) friendsWithMaxDamage.add(new Friend(player, friendDamage, friendDamage * lethalMult.getValDouble() >= player.getHealth() + player.getAbsorptionAmount()));
+            }
+        }
+
+        Friend nearFriendWithMaxDamage = null;
+        double maxDamage = 0.5;
+
+        for(Friend friend : friendsWithMaxDamage) {
+            double friendDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+            if(friendDamage > maxDamage) {
+                maxDamage = friendDamage;
+                nearFriendWithMaxDamage = new Friend(friend.friend, friendDamage);
+            }
+        }
+
+        return nearFriendWithMaxDamage;
     }
 
-    public enum InfoMode {
-        Target,
-        Damage,
-        Both
-    }
+    public enum Render {None, Default, Advanced}
+    public enum InfoMode {Target, Damage, Both}
+    public enum Rotate {Off, Place, Break, All}
+    public enum Raytrace {None, Place, Break, Both}
+    public enum SwitchMode {None, Normal, Silent}
+    public enum SwingMode {MainHand, OffHand, PacketSwing}
+    public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
 
-    public enum Rotate {
-        Off,
-        Place,
-        Break,
-        All
-    }
+    private static class Friend {
+        public final EntityPlayer friend;
+        public double damage;
+        public boolean isTotemPopped;
+        public boolean isTotemFailed = false;
 
-    public enum Raytrace {
-        None,
-        Place,
-        Break,
-        Both
-    }
+        public Friend(EntityPlayer friend, double damage) {
+            this.friend = friend;
+            this.damage = damage;
+            this.isTotemPopped = false;
+        }
 
-    public enum SwitchMode {
-        None,
-        Normal,
-        Silent
-    }
-
-    public enum SwingMode {
-        MainHand,
-        OffHand,
-        PacketSwing
+        public Friend(EntityPlayer friend, double damage, boolean isTotemPopped) {
+            this.friend = friend;
+            this.damage = damage;
+            if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
+            this.isTotemPopped = isTotemPopped;
+        }
     }
 }

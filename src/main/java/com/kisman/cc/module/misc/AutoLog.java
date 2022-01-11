@@ -1,8 +1,7 @@
 package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.network.play.server.SPacketDisconnect;
 import net.minecraft.util.text.TextComponentString;
@@ -21,7 +20,7 @@ public class AutoLog extends Module {
 
         if(mc.player.getHealth() < health) {
             mc.getConnection().handleDisconnect(new SPacketDisconnect(new TextComponentString("your health < " + health)));
-            toggle();
+            setToggled(false);
         }
     }
 }

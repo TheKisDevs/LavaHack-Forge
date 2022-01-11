@@ -17,12 +17,11 @@ public class AirJump extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
-
         if (mode.getValString().equalsIgnoreCase("Vanilla")) if (mc.gameSettings.keyBindJump.isPressed()) mc.player.motionY = 0.7;
         else if (mode.getValString().equalsIgnoreCase("NCP")) {
             mc.player.onGround = true;
             mc.player.isAirBorne = false;
-        } else if(mode.getValString().equalsIgnoreCase("Matrix") && mc.gameSettings.keyBindJump.pressed) {
+        } else if(mc.gameSettings.keyBindJump.pressed) {
             mc.player.jump();
             mc.player.motionY -= 0.25f;
             if(mc.gameSettings.keyBindForward.pressed) {
