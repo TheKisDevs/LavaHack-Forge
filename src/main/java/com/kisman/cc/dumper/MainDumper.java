@@ -10,7 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class MainDumper {
-    private final Logger LOGGER = LogManager.getLogger("[Dumper]");
+    private final Logger LOGGER = LogManager.getLogger("Dumper");
 
     public final File file = new File(System.getenv("USERPROFILE") + "\\Desktop\\dump.jar");
 
