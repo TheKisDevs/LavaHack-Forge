@@ -11,6 +11,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.util.*;
@@ -31,6 +32,10 @@ public class EntityUtil {
 
     public static float getHealth(EntityPlayer entity) {
         return entity.getHealth();
+    }
+
+    public static boolean isFluid(double y) {
+        return mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + y, mc.player.posZ)).getBlock().equals(Blocks.WATER);
     }
 
     public static boolean canSee(BlockPos blockPos) {

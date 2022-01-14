@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.*;
@@ -13,6 +14,7 @@ import com.kisman.cc.util.manager.Managers;
 import i.gishreloaded.gishcode.utils.Utils;
 import me.zero.alpine.listener.*;
 import net.minecraft.init.MobEffects;
+import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
@@ -22,7 +24,7 @@ public class Speed extends Module {
 
     private float yPortSpeed;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe")));
 
     private Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New");
     private Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false);
@@ -130,6 +132,45 @@ public class Speed extends Module {
             MovementUtil.strafe((float) speed);
 
             if(PlayerUtil.isMoving(mc.player)) stage++;
+        } else if(speedMode.getValString().equalsIgnoreCase("Matrix Bhop") && PlayerUtil.isMoving(mc.player)) {
+            mc.gameSettings.keyBindJump.pressed = false;
+
+            if (mc.player.onGround) {
+                mc.player.jump();
+                ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.0208f);
+                mc.player.jumpMovementFactor = 0.1f;
+                EntityUtil.setTimer(0.94f);
+            }
+            if (mc.player.fallDistance > 0.6 && mc.player.fallDistance < 1.3) {
+                ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.0208f);
+                EntityUtil.setTimer(1.8f);
+            }
+        } else if(speedMode.getValString().equalsIgnoreCase("Matrix 6.4")) {
+            if (mc.player.ticksExisted % 4 == 0) mc.getConnection().sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+            if (!PlayerUtil.isMoving(mc.player)) return;
+            if (mc.player.onGround) {
+                mc.gameSettings.keyBindJump.pressed = false;
+                mc.player.jump();
+            } else if (mc.player.fallDistance <= 0.1) {
+                ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.0202f);
+                mc.player.jumpMovementFactor = 0.027f;
+                EntityUtil.setTimer(1.5f);
+            } else if (mc.player.fallDistance > 0.1 && mc.player.fallDistance < 1.3) EntityUtil.setTimer(0.7f);
+            else if (mc.player.fallDistance >= 1.3) {
+                EntityUtil.resetTimer();
+                ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.0202f);
+                mc.player.jumpMovementFactor = 0.025f;
+            }
+        } else if(speedMode.getValString().equalsIgnoreCase("Sunrise Strafe")) {
+            if (PlayerUtil.isMoving(mc.player)) {
+                if (mc.player.onGround) {
+                    mc.player.jump();
+                    MovementUtil.strafe(MovementUtil.calcMoveYaw(mc.player.rotationYaw), MovementUtil.getSpeed() * 1.02);
+                }
+            } else {
+                mc.player.motionX = 0.0;
+                mc.player.motionZ = 0.0;
+            }
         }
     }
 

@@ -100,40 +100,7 @@ public class KillAura extends Module {
                     Entity entity = mc.world.loadedEntityList.get(i);
                     if (Config.instance.friends.getValBoolean() && entity instanceof EntityPlayer && Kisman.instance.friendManager.isFriend((EntityPlayer) entity))  continue;
                     if(!weaponCheck()) return;
-
-                    if (mc.player.getDistance(mc.world.loadedEntityList.get(i)) <= 4.15 && mc.world.loadedEntityList.get(i).ticksExisted % 20 == 0 && mc.world.loadedEntityList.get(i) != mc.player) {
-                        boolean isShieldActive = false;
-
-                        if(entity instanceof EntityPlayer && shieldBreaker.getValBoolean()) {
-                            EntityPlayer entity1 = (EntityPlayer) entity;
-
-                            if(entity1.getHeldItemMainhand().getItem() instanceof ItemShield || entity1.getHeldItemOffhand().getItem() instanceof ItemShield) if(entity1.isHandActive()) isShieldActive = true;
-                        }
-                        int oldSlot = mc.player.inventory.currentItem;
-                        int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShieldActive);
-
-                        boolean isHit = false;
-                        if(!switchMode.getValString().equalsIgnoreCase("None")) {
-                            if(weaponSlot != -1) {
-                                switch (switchMode.getValString()) {
-                                    case "Normal": {
-                                        InventoryUtil.switchToSlot(weaponSlot, false);
-                                        break;
-                                    }
-                                    case "Silent": {
-                                        InventoryUtil.switchToSlot(weaponSlot, true);
-                                        break;
-                                    }
-                                }
-                            } else return;
-                        }
-
-                        attack(entity);
-                        isHit = true;
-
-                        if (hitsound && isHit) mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
-                        if(switchMode.getValString().equalsIgnoreCase("Silent") && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
-                    }
+                    doKillAura(entity, hitsound);
                 }
             }
         } else if(mode.getValString().equalsIgnoreCase("Single")) {
@@ -141,47 +108,46 @@ public class KillAura extends Module {
 
            if(target == null) return;
            if(!weaponCheck()) return;
+           doKillAura(target, hitsound);
+        }
+    }
 
-           if(mc.player.getDistance(target) <= 4.15 && target.ticksExisted % 20 == 0) {
-               boolean isShieldActive = false;
+    private void doKillAura(Entity entity, boolean hitsound) {
+        if(mc.player.getDistance(target) <= 4.15 && target.ticksExisted % 20 == 0 && mc.player != entity) {
+            boolean isShieldActive = false;
 
-               if(shieldBreaker.getValBoolean()) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
+            if(shieldBreaker.getValBoolean()) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
 
-               int oldSlot = mc.player.inventory.currentItem;
-               int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShieldActive);
+            int oldSlot = mc.player.inventory.currentItem;
+            int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShieldActive);
 
-               boolean isHit = false;
-               if(!switchMode.getValString().equalsIgnoreCase("None")) {
-                   if(weaponSlot != -1) {
-                       switch (switchMode.getValString()) {
-                           case "Normal": {
-                               InventoryUtil.switchToSlot(weaponSlot, false);
-                               break;
-                           }
-                           case "Silent": {
-                               InventoryUtil.switchToSlot(weaponSlot, true);
-                               break;
-                           }
-                       }
-                   } else return;
-               }
+            boolean isHit = false;
+            if(!switchMode.getValString().equalsIgnoreCase("None")) {
+                if(weaponSlot != -1) {
+                    switch (switchMode.getValString()) {
+                        case "Normal": {
+                            InventoryUtil.switchToSlot(weaponSlot, false);
+                            break;
+                        }
+                        case "Silent": {
+                            InventoryUtil.switchToSlot(weaponSlot, true);
+                            break;
+                        }
+                    }
+                } else return;
+            }
 
-               attack(target);
-               isHit = true;
+            attack(target);
+            isHit = true;
 
-               if (hitsound && isHit) mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
-               if(switchMode.getValString().equalsIgnoreCase("Silent") && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
-           }
+            if (hitsound && isHit) mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
+            if(switchMode.getValString().equalsIgnoreCase("Silent") && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
         }
     }
 
     private void attack(Entity entity) {
         float oldYaw = mc.player.rotationYaw, oldPitch = mc.player.rotationPitch;
-        if(!rotations.getValString().equals("None")) {
-            float[] rots = RotationUtils.getRotation(entity);
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
-        }
+        rotation(entity);
 
         if(packetAttack.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(entity));
         else mc.playerController.attackEntity(mc.player, entity);
@@ -195,10 +161,28 @@ public class KillAura extends Module {
         }
     }
 
+    private void rotation(Entity entity) {
+        switch (rotations.getValString()) {
+            case "None": break;
+            case "Normal":
+            case "Silent": {
+                float[] rots = RotationUtils.getRotation(entity);
+                mc.player.rotationYaw = rots[0];
+                mc.player.rotationPitch = rots[1];
+                break;
+            }
+            case "WellMore": {
+                float[] rots = RotationUtils.lookAtRandomed(entity);
+                mc.player.rotationYaw = rots[0];
+                mc.player.rotationPitch = rots[1];
+                break;
+            }
+        }
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(!targetEsp.getValBoolean() || target == null) return;
-
         if (target.getHealth() > 0.0f) {
             GL11.glPushMatrix();
             int color = target.hurtResistantTime > 15 ? ColorUtils.getColor(255,100,100) : ColorUtils.rainbow(1,10);
@@ -241,5 +225,5 @@ public class KillAura extends Module {
         return true;
     }
 
-    public enum RotateMode {None, Normal, Silent}
+    public enum RotateMode {None, Normal, Silent, WellMore}
 }

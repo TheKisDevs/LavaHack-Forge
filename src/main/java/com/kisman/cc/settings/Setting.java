@@ -294,7 +294,7 @@ public class Setting {
 		if(isCheck()) return String.valueOf(getValBoolean());
 		if(isSlider()) return String.valueOf(onlyint ? getValInt() : getValDouble());
 		if(isString()) return getValString();
-		if(isColorPicker()) return TextUtil.get32BitString(colour.getRGB()) + "-" + syns + "-" + rainbow;
+		if(isColorPicker()) return TextUtil.get32BitString((colour != null) ? colour.getRGB() : new Color(1f, 1f, 1f).getRGB()) + "-" + syns + "-" + rainbow;
 		return super.toString();
 	}
 

@@ -20,18 +20,13 @@ public class Main {
     public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
         k.init();
 
-        if(!Kisman.instance.d1.preInit()) {
-            throw new NoStackTraceThrowable("YesComment");
-        }
+        if(!Kisman.instance.d1.preInit()) throw new NoStackTraceThrowable("YesComment");
 
         AutoTrap.instance.setToggled(false);
-
         MinecraftForge.EVENT_BUS.register(this);
 
         if(k.d2 == null && Dumper.instance.isToggled()) throw new NoStackTraceThrowable("Dumper init Failed");
-
         k.d2.init();
-//        k.d3.init(event);
     }
 
     @SubscribeEvent

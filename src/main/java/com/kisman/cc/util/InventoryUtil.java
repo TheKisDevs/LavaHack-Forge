@@ -115,7 +115,7 @@ public class InventoryUtil {
         if (getItemSlot(item, Inventory.HOTBAR, true) != -1 && mc.player.inventory.currentItem != getItemSlot(item, Inventory.HOTBAR, true))
             switchToSlot(getItemSlot(item, Inventory.HOTBAR, true), switchMode);
 
-        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
+//        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
     }
 
     public static int getBlockInHotbar(boolean onlyObby) {

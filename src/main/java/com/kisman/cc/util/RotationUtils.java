@@ -49,6 +49,32 @@ public class RotationUtils {
         if (this.random.nextGaussian() > 0.8) this.z = Math.random();
     }
 
+    public static float[] lookAtRandomed(Entity entityIn) {
+        double diffX = entityIn.posX - mc.player.posX;
+        double diffZ = entityIn.posZ - mc.player.posZ;
+        double diffY;
+
+        if (entityIn instanceof EntityLivingBase) diffY = entityIn.posY + entityIn.getEyeHeight() - (mc.player.posY + mc.player.getEyeHeight()) - 0.4;
+        else diffY = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (mc.player.posY + mc.player.getEyeHeight());
+
+        double dist = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
+
+        float yaw = ((float) (((Math.atan2(diffZ, diffX) * 180.0 / Math.PI) - 90.0f)) + MathUtil.getRandom(-2, 2));
+        float pitch = ((float) (-(Math.atan2(diffY, dist) * 180.0 / Math.PI)) + MathUtil.getRandom(-2, 2));
+        yaw = mc.player.rotationYaw + getFixedRotation(MathHelper.wrapDegrees(yaw - mc.player.rotationYaw));
+        pitch = mc.player.rotationPitch + getFixedRotation(MathHelper.wrapDegrees(pitch - mc.player.rotationPitch));
+        return new float[] {yaw, pitch};
+    }
+
+    public static float getFixedRotation(float value) {
+        return (Math.round(value / getGCD())) * getGCD();
+    }
+
+    private static float getGCD() {
+        float f = (float) (mc.gameSettings.mouseSensitivity * 0.6D + 0.2D);
+        return ((f * f * f * 8.0f) * 0.15f);
+    }
+
     public RotationUtils() {
         this.random = new Random();
         this.serverRotation = new Rotation(0.0f, 0.0f);
@@ -273,7 +299,7 @@ public class RotationUtils {
 
     public static
     String getDirection4D ( boolean northRed ) {
-        int dirnumber = getDirection4D ( );
+        int dirnumber = getDirection4D();
         if ( dirnumber == 0 ) return "South (+Z)";
         if ( dirnumber == 1 ) return "West (-X)";
         if ( dirnumber == 2 ) return ( northRed ? TextFormatting.RED : "" ) + "North (-Z)";

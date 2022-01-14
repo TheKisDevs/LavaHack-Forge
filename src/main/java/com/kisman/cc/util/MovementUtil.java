@@ -43,6 +43,12 @@ public class MovementUtil {
         return defaultSpeed;
     }
 
+    public static void strafe(float yaw, double speed) {
+        if (!isMoving()) return;
+        mc.player.motionX = -Math.sin(yaw) * speed;
+        mc.player.motionZ = Math.cos(yaw) * speed;
+    }
+
     public static double getDistance2D() {
         double xDist = mc.player.posX - mc.player.prevPosX;
         double zDist = mc.player.posZ - mc.player.prevPosZ;
@@ -74,5 +80,40 @@ public class MovementUtil {
         if (mc.player.moveStrafing < 0.0f) var1 += 90.0f * forward;
 
         return var1 *= (float)Math.PI / 180;
+    }
+
+    public static void hClip(double off) {
+        double yaw = Math.toRadians(mc.player.rotationYaw);
+        mc.player.setPosition(mc.player.posX + (-Math.sin(yaw) * off), mc.player.posY, mc.player.posZ + (Math.cos(yaw) * off));
+    }
+
+    public static float getRoundedForward() {
+        return getRoundedMovementInput(mc.player.movementInput.moveForward);
+    }
+
+    public static float getRoundedStrafing() {
+        return getRoundedMovementInput(mc.player.movementInput.moveStrafe);
+    }
+
+    private static final float getRoundedMovementInput(float input) {
+        return (input > 0.0F) ? 1.0F : ((input < 0.0F) ? -1.0F : 0.0F);
+    }
+
+    public static float calcMoveYaw(float targetYaw) {
+        float moveForward = getRoundedForward();
+        float moveString = getRoundedStrafing();
+        float yawIn = targetYaw;
+        float strafe = 90 * moveString;
+        strafe *= (moveForward != 0.0F) ? (moveForward * 0.5F) : 1.0F;
+        float yaw = yawIn - strafe;
+        yaw -= ((moveForward < 0.0F) ? 180 : 0);
+        yaw = (float) Math.toRadians(yaw);
+
+        float sens = mc.gameSettings.mouseSensitivity / 0.005F;
+        float f = 0.005F * sens;
+        float gcd = f * f * f * 1.2F;
+        yaw -= yaw % gcd;
+
+        return yaw;
     }
 }

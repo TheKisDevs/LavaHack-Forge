@@ -254,4 +254,47 @@ public class Render2DUtil extends GuiScreen {
     public static void drawRoundedRect(double startX, double startY, double endX, double endY, Color color) {
         drawRoundedRect((float) startX, (float) startY, (float) endX, (float) endY, color.getRGB(), Config.instance.glowRadius.getValFloat());
     }
+
+    public static void drawShadowSliders(double x, double y, double sliderWidth, double sliderHeight, int color, double lineWidth) {
+        //slider base
+        drawGradientRect(x, y, x + sliderWidth, y + sliderHeight, color, Color.BLACK.getRGB());
+
+        //outline
+        drawOutlineRect(x, y, x + sliderWidth, y + sliderHeight, lineWidth, color);
+    }
+
+    public static void drawOutlineRect(double x1, double y1, double x2, double y2, double lineWidth, int color) {
+        drawRect(x1, y1, x2, y1 + lineWidth, color);
+        drawRect(x1, y2 - lineWidth, x2, y2, color);
+        drawRect(x1, y1, x1 + lineWidth, y2, color);
+        drawRect(x2 - lineWidth, y1, x2, y2, color);
+    }
+
+    public static void drawGradientRect(double left, double top, double right, double bottom, int startColor, int endColor) {
+        float f = (float)(startColor >> 24 & 255) / 255.0F;
+        float f1 = (float)(startColor >> 16 & 255) / 255.0F;
+        float f2 = (float)(startColor >> 8 & 255) / 255.0F;
+        float f3 = (float)(startColor & 255) / 255.0F;
+        float f4 = (float)(endColor >> 24 & 255) / 255.0F;
+        float f5 = (float)(endColor >> 16 & 255) / 255.0F;
+        float f6 = (float)(endColor >> 8 & 255) / 255.0F;
+        float f7 = (float)(endColor & 255) / 255.0F;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.shadeModel(7425);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos(right, top, instance.zLevel).color(f1, f2, f3, f).endVertex();
+        bufferbuilder.pos(left, top, instance.zLevel).color(f1, f2, f3, f).endVertex();
+        bufferbuilder.pos(left, bottom, instance.zLevel).color(f5, f6, f7, f4).endVertex();
+        bufferbuilder.pos(right, bottom, instance.zLevel).color(f5, f6, f7, f4).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(7424);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
 }

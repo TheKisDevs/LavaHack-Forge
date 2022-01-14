@@ -157,11 +157,11 @@ public class CustomFontUtil {
         }
     }
 
-    public static void drawCenteredStringWithShadow(String text, float x, float y, int color) {
+    public static void drawCenteredStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
             switch (getCustomFont()) {
                 case "Verdana": {
-                    Kisman.instance.customFontRenderer.drawCenteredStringWithShadow(getStringModofiers() + text, x, y - 1f, color);
+                    Kisman.instance.customFontRenderer.drawCenteredStringWithShadow(getStringModofiers() + text, (float) x, (float) y - 1f, color);
                     break;
                 }
                 case "Comfortaa": {
@@ -178,7 +178,7 @@ public class CustomFontUtil {
                 }
             }
         } else {
-            fontRenderer.drawStringWithShadow(getStringModofiers() + text, x - fontRenderer.getStringWidth(getStringModofiers() + text) / 2.0F, y, color);
+            fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float) x - fontRenderer.getStringWidth(getStringModofiers() + text) / 2.0F, (float) y, color);
         }
     }
 

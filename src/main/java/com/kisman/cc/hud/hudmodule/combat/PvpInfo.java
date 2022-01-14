@@ -20,7 +20,9 @@ public class PvpInfo extends HudModule {
         int heigth = 2 + CustomFontUtil.getFontHeight();
         int count = 0;
 
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "KA: " + (isToggled(KillAura.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, y, -1);
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "ReR: " + (isToggled(AutoRer.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, y, -1);
+        count++;
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "KA: " + (isToggled(KillAura.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "CA: " + (isToggled(AutoCrystalRewrite.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
         count++;
@@ -33,6 +35,8 @@ public class PvpInfo extends HudModule {
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "AT: " + (isToggled(AutoTrap.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HF: " + (isToggled(HoleFiller.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
+        count++;
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "CF: " + (isToggled(CrystalFiller.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
     }
 
     private boolean isToggled(Module mod) {

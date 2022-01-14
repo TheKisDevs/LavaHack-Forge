@@ -1,8 +1,7 @@
 package com.kisman.cc.hud.hudmodule.player;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.hudmodule.HudCategory;
-import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextFormatting;

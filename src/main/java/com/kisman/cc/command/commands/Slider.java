@@ -3,8 +3,6 @@ package com.kisman.cc.command.commands;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 import com.kisman.cc.file.SaveConfig;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.settings.Setting;
 
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
@@ -21,7 +19,15 @@ public class Slider extends Command{
 
         try {
             module = args[0];
-            name = args[1];
+            String str = "";
+            int startIndex = 0, endIndex = 0;
+            for(int i = 1; i < args.length; i++) {
+                startIndex = args[i].indexOf('\"');
+                endIndex = args[i].lastIndexOf('\"', startIndex);
+                if(endIndex > startIndex) break;
+                str += args[i] + " ";
+            }
+            name = str.substring(startIndex, endIndex);
         } catch(Exception e) {
             ChatUtils.error("Usage: " + getSyntax());
             return;
@@ -66,6 +72,6 @@ public class Slider extends Command{
 
 	@Override
 	public String getSyntax() {
-		return "slider <module> <slider name> <value>";
+		return "slider <module> <\"slider name\"> <value>";
 	}
 }

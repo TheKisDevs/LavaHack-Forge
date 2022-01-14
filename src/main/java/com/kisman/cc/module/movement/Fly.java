@@ -39,7 +39,7 @@ public class Fly extends Module {
     }
 
     public void onDisable() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         mc.player.capabilities.isFlying = false;
         mc.player.capabilities.setFlySpeed(0.1f);

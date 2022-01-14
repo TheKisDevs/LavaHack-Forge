@@ -53,6 +53,7 @@ public class ModuleManager {
 		modules.add(new CrystalFiller());
 		modules.add(new HoleFiller());
 		modules.add(new KillAura());
+		modules.add(new NoFriendDamage());
 		modules.add(new OffHand());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
@@ -138,6 +139,7 @@ public class ModuleManager {
 		modules.add(new HoleTP());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
+		modules.add(new LongJump());
 		modules.add(new NoJumpDelay());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());

@@ -62,7 +62,7 @@ public class Colour {
 
     public int getRGB() {
         if(isInt) return new Color(r, g, b, a).getRGB();
-        else return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255).getRGB();
+        else return new Color((int) r1 * 255, (int) g1 * 255, (int) b1 * 255, (int) a1 * 255).getRGB();
     }
 
     public float getR() {

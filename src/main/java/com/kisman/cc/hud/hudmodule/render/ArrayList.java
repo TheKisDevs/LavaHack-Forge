@@ -38,35 +38,50 @@ public class ArrayList extends HudModule{
 
         int count = 0;
         int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA()).getRGB();
-        Color colorObj = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColorsToColorObj(100, 100) : new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA());
-        float heigth = CustomFontUtil.getFontHeight() + 2;
+        double heigth = CustomFontUtil.getFontHeight() + HUD.instance.offsets.getValDouble() + 1;
         float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), null);
 
-        for(Module mod : mods) {
+        for(int j = 0; j < mods.size(); j++) {
+            Module mod = mods.get(j);
             if(mod != null && mod.isToggled() && mod.visible) {
                 String name = mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo());
 
                 switch (HUD.instance.arrGradient.getValString()) {
                     case "None": {
-                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), color);
-
-                        if(HUD.instance.glow.getValBoolean()) {
-                            Render2DUtil.drawRoundedRect((double) (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), (double) ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), colorObj);
+                        if(HUD.instance.background.getValBoolean()) {
+                            double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
                         }
 
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), HUD.instance.arrY.getValDouble() + (heigth * count), color);
+
+                        if(HUD.instance.glow.getValBoolean()) {
+                            double offset = HUD.instance.glowOffset.getValDouble() + HUD.instance.offsets.getValDouble() / 2;
+                            Render2DUtil.drawGlow((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) - offset, ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(color, HUD.instance.glowAlpha.getValInt()).getRGB());
+                        }
                         break;
                     }
                     case "Simple": {
-                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), 255).getRGB());
-
-                        if(HUD.instance.glow.getValBoolean()) {
-                            Render2DUtil.drawRoundedRect((double) (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count), (double) ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), 255));
+                        if(HUD.instance.background.getValBoolean()) {
+                            double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
                         }
 
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), 255).getRGB());
+
+                        if(HUD.instance.glow.getValBoolean()) {
+                            double offset = HUD.instance.glowOffset.getValDouble() + HUD.instance.offsets.getValDouble() / 2;
+                            Render2DUtil.drawGlow((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) - offset, ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), HUD.instance.glowAlpha.getValInt()).getRGB());
+                        }
                         break;
                     }
                     case "Sideway": {
                         int update = (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name));
+
+                        if(HUD.instance.background.getValBoolean()) {
+                            double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
 
                         for(int i = 0; i < mod.getName().length(); ++i) {
                             String str = String.valueOf(mod.getName().charAt(i));
@@ -83,4 +98,6 @@ public class ArrayList extends HudModule{
             }
         }
     }
+
+    private void drawBackground(double x, double y, double x1, double y1) {Render2DUtil.drawRect(x, y, x1, y1, ColorUtils.injectAlpha(Color.BLACK, HUD.instance.bgAlpha.getValInt()).getRGB());}
 }

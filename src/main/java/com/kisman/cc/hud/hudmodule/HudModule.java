@@ -11,7 +11,8 @@ public class HudModule {
 	private HudCategory category;
 	private boolean toggled;
 	public boolean visible = true;
-	private int x = 0, y = 0, w = 0, h = 0;
+	public boolean drag = false;
+	private double x = 0, y = 0, w = 0, h = 0;
 
 	public HudModule(String name, String description, HudCategory category) {
 		this.name = name;
@@ -22,11 +23,12 @@ public class HudModule {
 	}
 
 	public HudModule(String name, HudCategory category) {
-		this.name = name;
-		this.description = "";
-		this.key = 0;
-		this.category = category;
-		this.toggled = false;
+		this(name, "", category);
+	}
+
+	public HudModule(String name, HudCategory category, boolean drag) {
+		this(name, category);
+		this.drag = drag;
 	}
 
 	public void setToggled(boolean toggled) {
@@ -52,12 +54,12 @@ public class HudModule {
 	public HudCategory getCategory() {return this.category;}
 	public void update(){}
 	public void render(){}
-	public int getX() {return x;}
-	public void setX(int x) {this.x = x;}
-	public int getY() {return y;}
-	public void setY(int y) {this.y = y;}
-	public int getW() {return w;}
-	public void setW(int w) {this.w = w;}
-	public int getH() {return h;}
-	public void setH(int h) {this.h = h;}
+	public double getX() {return x;}
+	public void setX(double x) {this.x = x;}
+	public double getY() {return y;}
+	public void setY(double y) {this.y = y;}
+	public double getW() {return w;}
+	public void setW(double w) {this.w = w;}
+	public double getH() {return h;}
+	public void setH(double h) {this.h = h;}
 }

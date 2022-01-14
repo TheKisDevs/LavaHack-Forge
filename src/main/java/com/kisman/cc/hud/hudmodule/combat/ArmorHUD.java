@@ -1,17 +1,13 @@
 package com.kisman.cc.hud.hudmodule.combat;
 
-import com.kisman.cc.hud.hudmodule.HudCategory;
-import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.*;
+import net.minecraft.item.*;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -28,11 +24,11 @@ public class ArmorHUD extends HudModule {
     public void onRender(RenderGameOverlayEvent.Text event) {
         if(mc.player == null && mc.world == null) return;
 
-        ScaledResolution resolution = event.getResolution();
+        ScaledResolution rs = event.getResolution();
         RenderItem itemRender = mc.getRenderItem();
-        int i = resolution.getScaledWidth() / 2;
+        int i = rs.getScaledWidth() / 2;
         int iteration = 0;
-        int y = resolution.getScaledHeight() - 55 - (mc.player.isInWater() ? 10 : 0);
+        int y = rs.getScaledHeight() - 55 - (mc.player.isInWater() ? 10 : 0);
 
         for (ItemStack is : mc.player.inventory.armorInventory) {
             iteration++;
@@ -84,7 +80,6 @@ public class ArmorHUD extends HudModule {
                 GlStateManager.enableAlpha();
                 GlStateManager.popMatrix();
             }
-
             if (HUD.instance.armExtra.getValBoolean()) {
                 Item currentHeldItem = Wrapper.INSTANCE.inventory().getCurrentItem().getItem();
                 int currentHeldItemCount = Wrapper.INSTANCE.inventory().getCurrentItem().getCount();
@@ -122,19 +117,13 @@ public class ArmorHUD extends HudModule {
                 armourCompress = 2;
                 armourSpacing = 20;
             }
-
             GlStateManager.enableDepth();
             GlStateManager.disableLighting();
         }
-
         GlStateManager.enableTexture2D();
-
         GlStateManager.enableDepth();
         GlStateManager.disableLighting();
     }
 
-    int getItemsOffHand(Item i) {
-        return Wrapper.INSTANCE.inventory().offHandInventory.stream().
-                filter(itemStack -> itemStack.getItem() == i).mapToInt(ItemStack::getCount).sum();
-    }
+    private int getItemsOffHand(Item i) {return Wrapper.INSTANCE.inventory().offHandInventory.stream().filter(itemStack -> itemStack.getItem() == i).mapToInt(ItemStack::getCount).sum();}
 }
