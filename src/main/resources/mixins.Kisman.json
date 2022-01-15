@@ -37,6 +37,7 @@
     "accessor.ISession"
   ],
   "client": [
-    "MixinGuiContainer"
+    "MixinGuiContainer",
+    "MixinModelBook"
   ]
 }
