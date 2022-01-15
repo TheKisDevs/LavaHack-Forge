@@ -7,7 +7,7 @@ import com.kisman.cc.settings.Setting;
 public class ReverseStep extends Module {
     public ReverseStep() {
         super("ReverseStep", "", Category.MOVEMENT);
-        Kisman.instance.settingsManager.rSetting(new Setting("Height", this, 1.0, 0.5, 2.5, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Height", this, 1.0, 0.5, 4, false));
     }
 
     public void update() {

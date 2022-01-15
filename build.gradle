@@ -83,6 +83,7 @@ configurations {
 }
 
 dependencies {
+    compile 'com.yworks:yguard:2.9.2'
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -100,6 +101,37 @@ dependencies {
     }
     compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
+}
+
+task yGuardObfuscate {
+    group 'yGuard'
+    description 'Obfuscates existing archives.'
+    dependsOn "installDist"
+
+    doLast {
+        ant.taskdef(
+                name: 'yguard',
+                classname: 'com.yworks.yguard.YGuardTask',
+                classpath: sourceSets.main.runtimeClasspath.asPath
+        )
+
+        def archivePath = jar.archiveFile.get().asFile.path
+        ant.yguard {
+            inoutpair(in: archivePath, out: archivePath.replace(".jar", "_obf.jar"))
+            // don't let the obfuscator remove the "Deprecated" attributes from the .class file entries
+            attribute(name: "Deprecated")
+            shrink(logfile: "${buildDir}/yshrink.log.xml") {
+                keep {
+                    'class'(classes: 'protected', methods: 'protected', fields: 'protected')
+                }
+            }
+            rename(mainclass: "Main", logfile: "${buildDir}/yguard.log.xml") {
+                keep {
+                    'class'(classes: 'protected', methods: 'protected', fields: 'protected')
+                }
+            }
+        }
+    }
 }
 
 processResources {

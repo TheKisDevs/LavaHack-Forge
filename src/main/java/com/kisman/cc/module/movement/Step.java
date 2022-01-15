@@ -12,7 +12,7 @@ public class Step extends Module {
 
         instance = this;
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Heigth", this, 0.5f, 0.5f, 2.5f, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Heigth", this, 0.5f, 0.5f, 4, false));
     }
 
     public void update() {
