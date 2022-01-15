@@ -3,10 +3,13 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.module.*;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.AnimationUtils;
 import com.kisman.cc.util.RenderUtil;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -18,29 +21,21 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL11.*;
 
 public class TargetESP extends Module {
-    private Setting depth = new Setting("Depth", this, true);
-    private Setting animSpeed = new Setting("Anim Speed", this, 1, 0.1f, 10, false);
-    private Setting orbitSpeed = new Setting("Orbit Speed", this, 1, 0.1f, 10, false);
-    private Setting width = new Setting("Width", this, 2.5f, 0.1f, 5, false);
-    private Setting orbit = new Setting("Orbit", this, true);
-    private Setting trail = new Setting("Trail", this, true);
-    private Setting fill = new Setting("Fill", this, false);
-    private Setting rainbow = new Setting("Rainbow", this, true);
+    private Setting deltaTime = new Setting("Delta Time", this, 1, 0.1, 10, false);
+    private Setting colorMode = new Setting("Color Mode", this, ColorMode.Astolfo);
 
     private ArrayList<EntityPlayer> targets = new ArrayList<>();
-    private Color color = new Color(210, 100, 100);
+
+    private int test;
+    private float animtest;
+    private boolean anim;
+    private double time;
 
     public TargetESP() {
         super("TargetESP", Category.RENDER);
 
-        setmgr.rSetting(depth);
-        setmgr.rSetting(animSpeed);
-        setmgr.rSetting(orbitSpeed);
-        setmgr.rSetting(width);
-        setmgr.rSetting(orbit);
-        setmgr.rSetting(trail);
-        setmgr.rSetting(fill);
-        setmgr.rSetting(rainbow);
+        setmgr.rSetting(deltaTime);
+        setmgr.rSetting(colorMode);
     }
 
     public void onEnable() {
@@ -67,68 +62,68 @@ public class TargetESP extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(!targets.isEmpty()) {
-            for(EntityPlayer player : targets) {
-                int n, n2, n3;
-                float f;
+            for(EntityPlayer target : targets) {
+                if (target.getHealth() > 0 && !target.isDead) {
+                    time += .01 * (deltaTime.getValDouble() * .1);
+                    double height = 0.8 * (1 + Math.sin(2 * Math.PI * (time * .3)));
+                    if (height > 0.995) anim = true;
+                    else if (height < 0.05) anim = false;
 
-                glPushMatrix();
-                RenderUtil.Method1386();
+                    final double x = target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosX;
+                    final double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosY;
+                    final double z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().viewerPosZ;
 
-                if(depth.getValBoolean()) GlStateManager.enableDepth();
-
-                RenderManager renderManager = mc.renderManager;
-
-                float[] fArray = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-                float f2 = f = (float) (System.currentTimeMillis() % 7200L) / 7200.0f;
-                int n4 = Color.getHSBColor(f2, fArray[1], fArray[2]).getRGB();
-                ArrayList<Vec3d> arrayList = new ArrayList<>();
-                double d = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)event.getPartialTicks() - renderManager.renderPosX;
-                double d2 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)event.getPartialTicks() - renderManager.renderPosY;
-                double d3 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)event.getPartialTicks() - renderManager.renderPosZ;
-                double d4 = -Math.cos((double)System.currentTimeMillis() / 1000.0 * (double) animSpeed.getValFloat()) * ((double) player.height / 2.0) + (double) player.height / 2.0;
-                GL11.glLineWidth(width.getValFloat());
-                GL11.glBegin(1);
-                for (n3 = 0; n3 <= 360; ++n3) {
-                    Vec3d vec3d = new Vec3d(d + Math.sin((double)n3 * Math.PI / 180.0) * 0.5, d2 + d4 + 0.01, d3 + Math.cos((double)n3 * Math.PI / 180.0) * 0.5);
-                    arrayList.add(vec3d);
-                }
-                for (n3 = 0; n3 < arrayList.size() - 1; ++n3) {
-                    float f3 = (fill.getValBoolean() ? 1.0f : (float) color.getAlpha() / 255.0f);
-                    int n5 = n4 >> 16 & 0xFF;
-                    n2 = n4 >> 8 & 0xFF;
-                    n = n4 & 0xFF;
-                    float f4 = orbit.getValBoolean() ? (trail.getValBoolean() ? (float)Math.max(0.0, -0.3183098861837907 * Math.atan(Math.tan(Math.PI * (double)((float)n3 + 1.0f) / (double)arrayList.size() + (double)System.currentTimeMillis() / 1000.0 * (double) orbitSpeed.getValFloat()))) : (float)Math.max(0.0, Math.abs(Math.sin((double)(((float)n3 + 1.0f) / (float)arrayList.size()) * Math.PI + (double)System.currentTimeMillis() / 1000.0 * (double) orbitSpeed.getValFloat())) * 2.0 - 1.0)) : (f3 = fill.getValBoolean() ? 1.0f : (float) color.getAlpha() / 255.0f);
-                    if (rainbow.getValBoolean()) {
-                        GL11.glColor4f((float)n5 / 255.0f, (float)n2 / 255.0f, (float)n / 255.0f, f3);
-                    } else {
-                        GL11.glColor4f((float) color.getRed() / 255.0f, (float) color.getGreen() / 255.0f, (float) color.getBlue() / 255.0f, f3);
+                    GlStateManager.enableBlend();
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH);
+                    GlStateManager.disableDepth();
+                    GlStateManager.disableTexture2D();
+                    GlStateManager.disableAlpha();
+                    GL11.glLineWidth(0.8F);
+                    GL11.glShadeModel(GL11.GL_SMOOTH);
+                    GL11.glDisable(GL11.GL_CULL_FACE);
+                    final double size = target.width * 1.2;
+                    if (test <= 10) {
+                        if (anim) animtest += 0.01F;
+                        else animtest -= 0.01F;
+                        test = 10;
                     }
-                    GL11.glVertex3d(arrayList.get(n3).x, arrayList.get(n3).y, arrayList.get(n3).z);
-                    GL11.glVertex3d(arrayList.get(n3 + 1).x, arrayList.get(n3 + 1).y, arrayList.get(n3 + 1).z);
-                    n4 = Color.getHSBColor(f2 += 0.0027777778f, fArray[1], fArray[2]).getRGB();
-                }
-                GL11.glEnd();
-                if (fill.getValBoolean()) {
-                    f2 = f;
-                    GL11.glBegin(9);
-                    for (n3 = 0; n3 < arrayList.size() - 1; ++n3) {
-                        int n6 = n4 >> 16 & 0xFF;
-                        n2 = n4 >> 8 & 0xFF;
-                        n = n4 & 0xFF;
-                        if (rainbow.getValBoolean()) {
-                            GL11.glColor4f((float)n6 / 255.0f, (float)n2 / 255.0f, (float)n / 255.0f, (float) color.getAlpha() / 255.0f);
-                        } else {
-                            GL11.glColor4f((float) color.getRed() / 255.0f, (float) color.getGreen() / 255.0f, (float) color.getBlue() / 255.0f, (float) color.getAlpha() / 255f);
+                    test--;
+                    double gg = mc.player.onGround ? 0.35 : 0.65;
+                    double y2 = 0;
+                    y2 += target.getEyeHeight() - (target.isSneaking() ? 0.25D : 0.0D);
+                    if (animtest <= y) anim = true;
+                    else if (animtest >= y + y2 + gg) anim = false;
+
+                    GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+                    {
+                        for (int j = 0; j < 361; j++) {
+                            ColorUtils.glColor(colorMode.getValString().equals(ColorMode.Astolfo.name()) ? ColorUtils.astolfoColors(100, 100) : ColorUtils.rainbow().getRGB(),  (int) (255 * (1 - height)));
+                            double x1 = x + Math.cos(Math.toRadians(j)) * size;
+                            double z1 = z - Math.sin(Math.toRadians(j)) * size;
+                            GL11.glVertex3d(x1, y + animtest, z1);
+                            ColorUtils.glColor(colorMode.getValString().equals(ColorMode.Astolfo.name()) ? ColorUtils.astolfoColors(100, 100) : ColorUtils.rainbow().getRGB(), 0);
+                            GL11.glVertex3d(x1, y + animtest + (.5 * height), z1);
                         }
-                        GL11.glVertex3d(arrayList.get(n3).x, arrayList.get(n3).y, arrayList.get(n3).z);
-                        GL11.glVertex3d(arrayList.get(n3 + 1).x, arrayList.get(n3 + 1).y, arrayList.get(n3 + 1).z);
-                        n4 = Color.getHSBColor(f2 += 0.0027777778f, fArray[1], fArray[2]).getRGB();
                     }
                     GL11.glEnd();
+                    GL11.glBegin(GL11.GL_LINE_LOOP);
+                    {
+                        for (int j = 0; j < 361; j++) {
+                            ColorUtils.glColor(colorMode.getValString().equals(ColorMode.Astolfo.name()) ? ColorUtils.astolfoColors(100, 100) : ColorUtils.rainbow().getRGB(),  255);
+                            GL11.glVertex3d(x + Math.cos(Math.toRadians(j)) * size, y + animtest, z - Math.sin(Math.toRadians(j)) * size);
+                        }
+                    }
+                    GL11.glEnd();
+                    GlStateManager.enableAlpha();
+                    GL11.glShadeModel(GL11.GL_FLAT);
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH);
+                    GL11.glEnable(GL11.GL_CULL_FACE);
+                    GlStateManager.enableTexture2D();
+                    GlStateManager.enableDepth();
+                    GlStateManager.disableBlend();
+                    GlStateManager.resetColor();
                 }
-                GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderUtil.Method1385();
-                GlStateManager.popMatrix();
             }
         }
     }
@@ -137,4 +132,6 @@ public class TargetESP extends Module {
         for(EntityPlayer player : targets) if(targets.indexOf(player) == index) return true;
         return false;
     }
+
+    public enum ColorMode {Astolfo, Rainbow}
 }
