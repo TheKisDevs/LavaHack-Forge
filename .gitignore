@@ -26,6 +26,7 @@ saves
 config
 screenshots
 crash-reports
+.log
 
 # Files from Forge MDK
 forge*changelog.txt
