@@ -104,7 +104,7 @@ public class ModuleManager {
 //		modules.add(new HandCharms());
 		modules.add(new HoleESP());
 //		modules.add(new ItemCharms());
-		modules.add(new KismanESP());
+		modules.add(new JumpCircle());
 		modules.add(new NameTags());
 //		modules.add(new NoPitchLimit());
 		modules.add(new NoRender());

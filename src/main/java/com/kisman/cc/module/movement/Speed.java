@@ -11,12 +11,13 @@ import com.kisman.cc.settings.*;
 
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.manager.Managers;
-import i.gishreloaded.gishcode.utils.Utils;
+import i.gishreloaded.gishcode.utils.*;
 import me.zero.alpine.listener.*;
-import net.minecraft.init.MobEffects;
+import net.minecraft.block.Block;
+import net.minecraft.init.*;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
 
 public class Speed extends Module {
@@ -24,11 +25,12 @@ public class Speed extends Module {
 
     private float yPortSpeed;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop")));
+
+    private Setting useTimer = new Setting("Use Timer", this, false);
 
     private Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New");
     private Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false);
-    private Setting useTimer = new Setting("Use Timer", this, false);
     private Setting slow = new Setting("Slow", this, false);
     private Setting cap = new Setting("Cap", this, 10, 0, 10, false);
     private Setting scaleCap = new Setting("Scale Cap", this, false);
@@ -41,10 +43,22 @@ public class Speed extends Module {
     private Setting stiLine = new Setting("StiLine", this, "Sti");
     private Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true);
 
+    private Setting bhopLine = new Setting("BhopLine", this, "Bhop");
+    private Setting useMotion = new Setting("Use Motion", this, false);
+    private Setting useMotionInAir = new Setting("Use Motion In Air", this, false);
+    private Setting jumpMovementFactorSpeed = new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false);
+    private Setting jumpMovementFactor = new Setting("Jump Movement Factor", this, false);
+    private Setting boostSpeed = new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false);
+    private Setting boostFactor = new Setting("Boost Factor", this, false);
+
     private int stage;
     private double speed;
     private double dist;
     private boolean boost;
+
+    private BlockPos lastPos;
+    private Motion currentMotion;
+    private double y = 1;
 
     public Speed() {
         super("Speed", "speed", Category.MOVEMENT);
@@ -53,9 +67,10 @@ public class Speed extends Module {
 
         setmgr.rSetting(speedMode);
 
+        setmgr.rSetting(useTimer);
+
         setmgr.rSetting(strafeNewLine);
         setmgr.rSetting(strafeSpeed);
-        setmgr.rSetting(useTimer);
         setmgr.rSetting(slow);
         setmgr.rSetting(cap);
         setmgr.rSetting(scaleCap);
@@ -68,6 +83,14 @@ public class Speed extends Module {
 
         setmgr.rSetting(stiLine);
         setmgr.rSetting(stiSpeed);
+
+        setmgr.rSetting(bhopLine);
+        setmgr.rSetting(useMotion);
+        setmgr.rSetting(useMotionInAir);
+        setmgr.rSetting(jumpMovementFactor);
+        setmgr.rSetting(jumpMovementFactorSpeed);
+        setmgr.rSetting(boostSpeed);
+        setmgr.rSetting(boostFactor);
     }
 
     public void onEnable() {
@@ -92,8 +115,7 @@ public class Speed extends Module {
 
         super.setDisplayInfo("[" + speedMode.getValString() + TextFormatting.GRAY + "]");
 
-        this.yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
-
+        yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
         dist = MovementUtil.getDistance2D();
 
         if(mc.player.moveForward > 0 && mc.player.hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
@@ -171,7 +193,7 @@ public class Speed extends Module {
                 mc.player.motionX = 0.0;
                 mc.player.motionZ = 0.0;
             }
-        }
+        } else if(speedMode.getValString().equalsIgnoreCase("Bhop")) doBhop();
     }
 
     private void doYPortSpeed() {
@@ -202,6 +224,118 @@ public class Speed extends Module {
 
         return ret;
     }
+
+    public static double[] directionSpeed(double speed) {
+        float forward = mc.player.movementInput.moveForward;
+        float side = mc.player.movementInput.moveStrafe;
+        float yaw = mc.player.prevRotationYaw + (mc.player.rotationYaw - mc.player.prevRotationYaw) * mc.getRenderPartialTicks();
+
+        if (forward != 0.0f) {
+            if (side > 0.0f) yaw += ((forward > 0.0f) ? -45 : 45);
+            else if (side < 0.0f) yaw += ((forward > 0.0f) ? 45 : -45);
+            side = 0.0f;
+            if (forward > 0.0f) forward = 1.0f;
+            else if (forward < 0.0f) forward = -1.0f;
+        }
+
+        final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+        final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+        final double posX = forward * speed * cos + side * speed * sin;
+        final double posZ = forward * speed * sin - side * speed * cos;
+        return new double[]{posX, posZ};
+    }
+
+    private double getBaseMotionSpeed() {
+        double baseSpeed = 0.2873D;
+        if (mc.player.isPotionActive(MobEffects.SPEED)) {
+            int amplifier = mc.player.getActivePotionEffect(MobEffects.SPEED).getAmplifier();
+            baseSpeed *= 1.0D + 0.2D * ((double) amplifier + 1);
+        }
+        return baseSpeed;
+    }
+
+    private void doBhop() {
+        currentMotion = getMotion();
+        mc.player.setSprinting(true);
+
+        if(mc.gameSettings.keyBindForward.isKeyDown()) {
+            if(mc.player.onGround) {
+                if(useMotion.getValBoolean() && currentMotion != null) {
+                    switch (currentMotion) {
+                        case mX:
+                            mc.player.motionX=mc.player.motionX-0.1;
+                            break;
+                        case X:
+                            mc.player.motionX=mc.player.motionX+0.1;
+                            break;
+                        case mY:
+                            mc.player.motionY=mc.player.motionY-0.1;
+                            break;
+                        case Y:
+                            mc.player.motionY=mc.player.motionY+0.1;
+                            break;
+                    }
+                }
+                y = 1;
+                EntityUtil.resetTimer();
+                if(useTimer.getValBoolean()) Managers.instance.timerManager.updateTimer(this, 2, 1.3f);
+                mc.player.jump();
+                double[] dirSpeed = directionSpeed((getBaseMotionSpeed() * boostSpeed.getValDouble()) + (boostFactor.getValBoolean() ? 0.3 : 0));
+                mc.player.motionX = dirSpeed[0];
+                mc.player.motionZ = dirSpeed[1];
+            } else {
+                if(jumpMovementFactor.getValBoolean()) mc.player.jumpMovementFactor = jumpMovementFactorSpeed.getValFloat();
+                if(y == 1) y = mc.player.getPositionVector().y;
+                else {
+                    if(mc.player.getPositionVector().y < y) {
+                        y = mc.player.getPositionVector().y;
+                        mc.player.motionX = 0;
+                        mc.player.motionZ = 0;
+                        if(useTimer.getValBoolean()) EntityUtil.resetTimer();
+                        Managers.instance.timerManager.updateTimer(this, 2, 16);
+                    } else {
+                        y = mc.player.getPositionVector().y;
+                        if(useMotionInAir.getValBoolean() && currentMotion != null) {
+                            switch (currentMotion) {
+                                case mX:
+                                    mc.player.motionX = mc.player.motionX - 0.2;
+                                    break;
+                                case X:
+                                    mc.player.motionX = mc.player.motionX + 0.2;
+                                    break;
+                                case mY:
+                                    mc.player.motionY = mc.player.motionY - 0.2;
+                                    break;
+                                case Y:
+                                    mc.player.motionY = mc.player.motionY + 0.2;
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Motion getMotion() {
+        BlockPos posToCheck = new BlockPos(EntityUtil.getRoundedBlockPos(mc.player).getX(), EntityUtil.getRoundedBlockPos(mc.player).getY(), EntityUtil.getRoundedBlockPos(mc.player).getZ());
+        if(getBlock(posToCheck) == Blocks.AIR && lastPos != null) {
+            if(posToCheck != lastPos) {
+                if(lastPos.add(0, 0, -1).equals(posToCheck)) return Motion.mY;
+                if(lastPos.add(0, 0, 1).equals(posToCheck)) return Motion.Y;
+                if(lastPos.add(1, 0, 0).equals(posToCheck)) return Motion.X;
+                if(lastPos.add(-1, 0, 0).equals(posToCheck)) return Motion.mX;
+            }
+        } else lastPos = new BlockPos(EntityUtil.getRoundedBlockPos(mc.player).getX(), EntityUtil.getRoundedBlockPos(mc.player).getY(), EntityUtil.getRoundedBlockPos(mc.player).getZ());
+        return null;
+    }
+
+    private Block getBlock(BlockPos pos) {
+        if(pos != null) return mc.world.getBlockState(pos).getBlock();
+        return null;
+    }
+
+    public enum Motion {X,Y,mX,mY}
 
     @EventHandler
     private final Listener<PacketEvent.Receive> listener1 = new Listener<>(event -> {

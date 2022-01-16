@@ -24,6 +24,7 @@ import com.kisman.cc.util.hwid.Verificator;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
+import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
@@ -40,6 +41,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
 
+@Obfuscation(exclude = true, applyToMembers = true)
 public class Kisman {
     public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";
@@ -89,7 +91,6 @@ public class Kisman {
 
     public Verificator d1;
     public MainDumper d2;
-//    public MainColf d3;
 
     public Kisman() {
         instance = this;
@@ -147,12 +148,12 @@ public class Kisman {
                     int keyCode = Keyboard.getEventKey();
                     if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) {
-                    	if (m.getKey() == keyCode && keyCode > 0) {
+                    	if (m.getKey() == keyCode) {
                     		m.toggle();
                             if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
                     	}
                     }
-                    for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode && keyCode > 0) m.toggle();
+                    for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
                 }
             }
         } catch (Exception q) { q.printStackTrace(); }

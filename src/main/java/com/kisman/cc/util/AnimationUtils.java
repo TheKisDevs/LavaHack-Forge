@@ -1,7 +1,5 @@
 package com.kisman.cc.util;
 
-import net.minecraft.util.math.MathHelper;
-
 public class AnimationUtils {
     public float value;
     public long lastTime;
@@ -34,18 +32,14 @@ public class AnimationUtils {
     }
 
     public float getValue() {
-        if (this.value == this.end) {
-            return this.value;
-        }
+        if (this.value == this.end) return this.value;
         if (this.increasing) {
             if (this.value >= this.end) {
                 this.value = this.end;
                 return this.value;
             }
             this.value += this.changePerMillisecond * (float)(System.currentTimeMillis() - this.lastTime);
-            if (this.value > this.end) {
-                this.value = this.end;
-            }
+            if (this.value > this.end) this.value = this.end;
             this.lastTime = System.currentTimeMillis();
             return this.value;
         }

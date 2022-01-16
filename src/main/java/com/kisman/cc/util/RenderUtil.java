@@ -1067,6 +1067,35 @@ public class RenderUtil {
         }
     }
 
+    public static void drawCircle(BlockPos pos, double radius, Color color) {
+        final RenderManager renderManager = mc.renderManager;
+        GL11.glPushMatrix();
+        GL11.glTranslated(pos.getX() - renderManager.renderPosX, pos.getY() - renderManager.renderPosX, pos.getZ() - renderManager.renderPosX);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL11.glLineWidth(1F);
+        GL11.glColor4f(color.getRed() / 255.0F, color.getGreen() / 255.0F, color.getBlue() / 255.0F, color.getAlpha() / 255.0F);
+        GL11.glRotatef(90F, 1F, 0F, 0F);
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+
+        for (int i = 0; i < 360; i++) GL11.glVertex2d(Math.cos(i * Math.PI / 180.0) * radius, (Math.sin(i * Math.PI / 180.0) * radius));
+
+        GL11.glVertex2d(Math.cos(360 * Math.PI / 180.0) * radius, (Math.sin(360 * Math.PI / 180.0) * radius));
+
+        GL11.glEnd();
+
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+
+        GL11.glPopMatrix();
+    }
+
     public static void drawColumn(float x, float y, float z, float radius, float red, float green, float blue, float alpha, int amount, double height){
         double Hincrement = height/amount;
         float Rincrement = (radius/amount) * (float) height;

@@ -6,17 +6,16 @@ import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.hypixel.util.ConfigHandler;
+import com.kisman.cc.util.TickRateUtil;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.*;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
@@ -32,6 +31,7 @@ public class EventProcessor {
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
+        Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
     }
 
     @SubscribeEvent
@@ -58,17 +58,11 @@ public class EventProcessor {
     public void onChatMessage(ClientChatEvent event) {
         if(event.getMessage().startsWith(Kisman.instance.commandManager.cmdPrefixStr)) {
             try {
-                String str1 = event.getMessage();
-                String str2 = str1.substring(0);
-
-                Kisman.instance.commandManager.runCommands(str2);
-
+                Kisman.instance.commandManager.runCommands(event.getMessage().substring(0));
                 event.setCanceled(true);
             } catch (Exception e) {}
         }
     }
-
-
 
     //NEC events
     @SubscribeEvent
@@ -95,13 +89,10 @@ public class EventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void chat(ClientChatReceivedEvent event) {
-        if (!event.getMessage().getUnformattedText().startsWith("Your new API key is "))
-            return;
+        if (!event.getMessage().getUnformattedText().startsWith("Your new API key is ")) return;
         String key = event.getMessage().getUnformattedText().split("key is ")[1];
         ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL, "APIKey", key);
-        ChatUtils.complete(
-                TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
-                        TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + key
+        ChatUtils.complete(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + key
         );
     }
 
@@ -110,10 +101,7 @@ public class EventProcessor {
         if(event.getPacket() instanceof SPacketEntityStatus && ((SPacketEntityStatus) event.getPacket()).getOpCode() == 35) {
             TotemPopEvent totemPopEvent = new TotemPopEvent(((SPacketEntityStatus) event.getPacket()).getEntity(mc.world));
             MinecraftForge.EVENT_BUS.post(totemPopEvent);
-
-            if(totemPopEvent.isCanceled()) {
-                event.cancel();
-            }
+            if(totemPopEvent.isCanceled()) event.cancel();
         }
     });
 }

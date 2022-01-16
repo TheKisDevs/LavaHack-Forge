@@ -13,6 +13,7 @@ public class Managers {
 
     public FPSManager fpsManager;
     public PulseManager pulseManager;
+    public TimerManager timerManager;
 
     public AtomicLong lagTimer = new AtomicLong();
 
@@ -30,6 +31,7 @@ public class Managers {
     public void init() {
         fpsManager = new FPSManager();
         pulseManager = new PulseManager();
+        timerManager = new TimerManager();
 
         Kisman.EVENT_BUS.subscribe(listener);
     }

@@ -104,9 +104,9 @@ dependencies {
 }
 
 task yGuardObfuscate {
+    dependsOn jar
     group 'yGuard'
-    description 'Obfuscates existing archives.'
-    dependsOn "installDist"
+    description 'Obfuscates and shrinks the java archive.'
 
     doLast {
         ant.taskdef(
@@ -115,20 +115,16 @@ task yGuardObfuscate {
                 classpath: sourceSets.main.runtimeClasspath.asPath
         )
 
-        def archivePath = jar.archiveFile.get().asFile.path
         ant.yguard {
-            inoutpair(in: archivePath, out: archivePath.replace(".jar", "_obf.jar"))
-            // don't let the obfuscator remove the "Deprecated" attributes from the .class file entries
-            attribute(name: "Deprecated")
-            shrink(logfile: "${buildDir}/yshrink.log.xml") {
-                keep {
-                    'class'(classes: 'protected', methods: 'protected', fields: 'protected')
+            inoutpairs {
+                fileset(dir: "./build/install/module") {
+                    include(name: "module*.jar")
+                    exclude(name: "*_obf.jar")
                 }
             }
-            rename(mainclass: "Main", logfile: "${buildDir}/yguard.log.xml") {
-                keep {
-                    'class'(classes: 'protected', methods: 'protected', fields: 'protected')
-                }
+
+            rename(logFile: "./build/install/module/rename.log", annotationClass: "com.yworks.util.annotation.Obfuscation") {
+                property(name: "naming-scheme", value: "mix")
             }
         }
     }
@@ -173,6 +169,7 @@ jar {
 }
 shadowJar {
     dependencies {
+        include(dependency('com.yworks:yguard'))
         include(dependency('org.spongepowered:mixin'))
         include(dependency('net.jodah:typetools'))
         include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))

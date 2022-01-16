@@ -23,14 +23,7 @@ public class PortalESP extends Module {
     public void onRenderWorld(RenderWorldLastEvent event) {
         ArrayList<BlockPos> blocks = new ArrayList<>();
 
-        for(BlockPos pos : BlockInteractionHelper.getSphere(PlayerUtil.GetLocalPlayerPosFloored(), (float) range.getValDouble(), range.getValInt(), false, true, 0)) {
-            if(mc.world.getBlockState(pos).getBlock() == Blocks.PORTAL) {
-                blocks.add(pos);
-            }
-        }
-
-        for(BlockPos pos : blocks) {
-            RenderUtil.drawBlockESP(pos, 0.67f, 0, 1);
-        }
+        for(BlockPos pos : CrystalUtils.getSphere(range.getValFloat(), true, false)) if(mc.world.getBlockState(pos).getBlock() == Blocks.PORTAL) blocks.add(pos);
+        for(BlockPos pos : blocks) RenderUtil.drawBlockESP(pos, 0.67f, 0, 1);
     }
 }
