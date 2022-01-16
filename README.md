@@ -14,7 +14,7 @@ Full stack Minecraft cheat for playing at anarchy servers
 - discord - `lava_frai#0498`
 
 `BigJMuffin`
-- discord - `! BigJMuffin#6215`
+- discord - `! BigTermedMuffin#8434`
 
 `PunCakeCat`
 - discord - `PunCakeCat#4572` 
