@@ -10,6 +10,7 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
+import com.kisman.cc.module.client.Dumper;
 import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.*;
@@ -20,6 +21,7 @@ import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
+import com.kisman.cc.util.hwid.NoStackTraceThrowable;
 import com.kisman.cc.util.hwid.Verificator;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
@@ -28,6 +30,7 @@ import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.*;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -41,6 +44,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
 
+@SideOnly(Side.CLIENT)
 @Obfuscation(exclude = true, applyToMembers = true)
 public class Kisman {
     public static final String NAME = "kisman.cc+";
@@ -96,7 +100,11 @@ public class Kisman {
         instance = this;
     }
 
-    public void init() {
+    public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
+        d1 = new Verificator();
+
+        if(!d1.preInit()) throw new NoStackTraceThrowable("YesComment");
+
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
 
@@ -129,12 +137,14 @@ public class Kisman {
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();
 
-        d1 = new Verificator();
-        d2 = new MainDumper();
-
         //load configs
         LoadConfig.init();
+        //load glow shader
         ShaderShell.init();
+
+        //load some features
+        d2 = new MainDumper();
+        d2.init();
 
         init = true;
     }

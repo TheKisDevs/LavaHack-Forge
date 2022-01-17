@@ -24,12 +24,13 @@ public class MixinItemRenderer {
             float rotateMainY = 0;
             float rotateMainZ = 0;
 
+            boolean isEating = PlayerUtil.IsEating();
             boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
-            boolean isSwingMain = isSwing && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !PlayerUtil.IsEating());
+            boolean isSwingMain = isSwing && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
             if (isSwing) {
-                switch ((SwingAnimation.StrongMode) SwingAnimation.instance.strongMode.getValEnum()) {
-                    case Blockhit1: {
+                switch (SwingAnimation.instance.strongMode.getValString()) {
+                    case "Blockhit1": {
                         if(hand == EnumHandSide.RIGHT) {
                             rotateMainX = 72;
                             rotateMainY = 180;
@@ -37,7 +38,7 @@ public class MixinItemRenderer {
                         }
                         break;
                     }
-                    case Blockhit2: {
+                    case "Blockhit2": {
                         if (hand == EnumHandSide.RIGHT) {
                             rotateMainX = 344;
                             rotateMainY = 225;
@@ -53,21 +54,32 @@ public class MixinItemRenderer {
             }
 
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.RIGHT) {
-                GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
-                GlStateManager.rotate(isSwingMain ? rotateMainX : (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (getSet("RotateRightX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                GlStateManager.rotate(isSwingMain ? rotateMainY : (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                GlStateManager.rotate(isSwingMain ? rotateMainZ : (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                if(isEating && ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
+                else {
+                    GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
+                    GlStateManager.rotate(isSwingMain ? rotateMainX : (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (getSet("RotateRightX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+                    GlStateManager.rotate(isSwingMain ? rotateMainY : (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+                    GlStateManager.rotate(isSwingMain ? rotateMainZ : (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                }
                 GlStateManager.scale(ViewModel.instance.scaleRightX.getValDouble(), ViewModel.instance.scaleRightY.getValDouble(), ViewModel.instance.scaleRightZ.getValDouble());
             }
 
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.LEFT) {
-                GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
-                GlStateManager.rotate((!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                GlStateManager.rotate((!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                if(PlayerUtil.isEatingOffhand() && ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
+                else {
+                    GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                }
                 GlStateManager.scale(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
             }
         } else this.transformSideFirstPerson(hand, y);
+    }
+
+    private void drawDefaultPos(EnumHandSide hand, float y) {
+        int i = hand == EnumHandSide.RIGHT ? 1 : -1;
+        GlStateManager.translate((float)i * 0.56F, -0.52F + y * -0.6F, -0.72F);
     }
 
     private Setting getSet(String name) {

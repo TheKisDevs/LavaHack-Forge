@@ -1,13 +1,13 @@
 package com.kisman.cc.dumper;
 
+import com.kisman.cc.module.client.Dumper;
 import net.minecraft.launchwrapper.*;
 import org.apache.logging.log4j.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 
 public class MainDumper {
     private final Logger LOGGER = LogManager.getLogger("Dumper");
@@ -16,6 +16,11 @@ public class MainDumper {
 
     public void init() throws NoSuchFieldException, IOException, IllegalAccessException {
         LOGGER.info("Dumping class loader...");
+
+        if(!Dumper.instance.isToggled()) {
+            LOGGER.info("Dumper is disable, dumping shutdown..");
+            return;
+        }
 
         final Field field = LaunchClassLoader.class.getDeclaredField("resourceCache");
         field.setAccessible(true);
@@ -31,10 +36,7 @@ public class MainDumper {
 
                 stream.write(bytes);
                 stream.closeEntry();
-            }
-            catch (Exception e) {
-                LOGGER.info("Failed to dump " + name.replace("/", "."));
-            }
+            } catch (Exception e) {LOGGER.info("Failed to dump " + name.replace("/", "."));}
         });
 
         stream.closeEntry();

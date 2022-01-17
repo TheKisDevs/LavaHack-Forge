@@ -26,7 +26,7 @@ public class Fly extends Module {
         if(mode.getValString().equalsIgnoreCase("Vanilla")) {
             mc.player.capabilities.isFlying = true;
             mc.player.capabilities.setFlySpeed(flySpeed);
-        } else {
+        } else if(mode.getValString().equalsIgnoreCase("WellMore")) {
             if(mc.player.onGround) mc.player.motionY = 1.0;
             else {
                 mc.player.capabilities.isFlying = true;

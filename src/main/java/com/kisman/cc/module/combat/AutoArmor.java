@@ -1,19 +1,16 @@
  package com.kisman.cc.module.combat;
 
  import com.kisman.cc.Kisman;
- import com.kisman.cc.module.Category;
- import com.kisman.cc.module.Module;
+ import com.kisman.cc.module.*;
  import com.kisman.cc.util.InventoryUtil;
  import com.kisman.cc.settings.*;
 
  import net.minecraft.client.gui.inventory.GuiContainer;
  import net.minecraft.client.renderer.InventoryEffectRenderer;
- import net.minecraft.enchantment.Enchantment;
- import net.minecraft.enchantment.EnchantmentHelper;
+ import net.minecraft.enchantment.*;
  import net.minecraft.init.Items;
  import net.minecraft.inventory.ClickType;
- import net.minecraft.item.ItemArmor;
- import net.minecraft.item.ItemStack;
+ import net.minecraft.item.*;
 
  import java.util.HashMap;
  import java.util.List;
@@ -32,9 +29,7 @@
 
          if (mc.player.ticksExisted % 2 == 0) return;
          // check screen
-         if (mc.currentScreen instanceof GuiContainer
-                 && !(mc.currentScreen instanceof InventoryEffectRenderer))
-             return;
+         if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;
 
          List<ItemStack> armorInventory = mc.player.inventory.armorInventory;
          List<ItemStack> inventory = mc.player.inventory.mainInventory;

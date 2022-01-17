@@ -195,6 +195,17 @@ public class InventoryUtil {
         return slots;
     }
 
+    public static List<Integer> findAllItemSlots(Item itemToFind) {
+        List<Integer> slots = new ArrayList<>();
+        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
+
+        for (int i = 0; i < 36; i++) {
+            if (itemToFind != mainInventory.get(i).item) continue;
+            slots.add(i);
+        }
+        return slots;
+    }
+
     public static List<Integer> findAllBlockSlots(Class<? extends Block> blockToFind) {
         List<Integer> slots = new ArrayList<>();
         List<ItemStack> mainInventory = mc.player.inventory.mainInventory;

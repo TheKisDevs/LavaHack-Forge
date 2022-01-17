@@ -3,7 +3,6 @@ package com.kisman.cc.module.movement;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerTravel;
 import com.kisman.cc.module.*;
-import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
@@ -64,13 +63,10 @@ public class ElytraFly extends Module {
 
         if(equipElytra.getValBoolean()) {
             if(mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA) elytraSlot = InventoryUtil.findItem(Items.ELYTRA, 0, 36);
-
             if(elytraSlot != -1) {
                 boolean armorOnChest = mc.player.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.AIR;
-
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 6, 0, ClickType.PICKUP, mc.player);
-
                 if(armorOnChest) mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
             }
         }
@@ -78,6 +74,13 @@ public class ElytraFly extends Module {
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
+
+        if(mc.player != null && elytraSlot != -1 && equipElytra.getValBoolean()) {
+            boolean hasItem = !mc.player.inventory.getStackInSlot(elytraSlot).isEmpty() || mc.player.inventory.getStackInSlot(elytraSlot).getItem() != Items.AIR;
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 6, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
+            if (hasItem) mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 6, 0, ClickType.PICKUP, mc.player);
+        }
     }
 
     @EventHandler

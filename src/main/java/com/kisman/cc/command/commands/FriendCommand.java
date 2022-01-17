@@ -21,11 +21,11 @@ public class FriendCommand extends Command {
                     Kisman.instance.friendManager.removeFriend(args[1]);
                     ChatUtils.complete(args[1] + " removed from friends :(");
                 } else ChatUtils.error("Usage: " + getSyntax());
-            } else if(args[0] != null && args.length == 1) {
-                ChatUtils.message("----------------------------------");
-                ChatUtils.message("Friends:");
-                ChatUtils.message(Kisman.instance.friendManager.getFriendsNames());
-                ChatUtils.message("----------------------------------");
+            } else if(args[0].equalsIgnoreCase(subCommands[2])) {
+                ChatUtils.simpleMessage("----------------------------------");
+                ChatUtils.simpleMessage("Friends:");
+                ChatUtils.simpleMessage(Kisman.instance.friendManager.getFriendsNames());
+                ChatUtils.simpleMessage("----------------------------------");
             }
         } catch (Exception e) {ChatUtils.error("Usage: " + getSyntax());}
     }

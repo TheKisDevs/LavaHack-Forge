@@ -16,6 +16,8 @@ import static org.lwjgl.opengl.GL11.*;
 public class ViewModel extends Module {
     public static ViewModel instance;
 
+    public Setting customEating = new Setting("Custom Eating", this, false);
+
     //item FOV
     public Setting itemFOV = new Setting("ItemFOV", this, false);
     public Setting fov = new Setting("FOV", this, 130, 70, 200, true);
@@ -67,6 +69,8 @@ public class ViewModel extends Module {
     public ViewModel() {
         super("ViewModel", "modeL vieM", Category.RENDER);
         instance = this;
+
+        setmgr.rSetting(customEating);
 
         setmgr.rSetting(itemFOV);
         setmgr.rSetting(fov);

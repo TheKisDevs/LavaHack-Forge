@@ -77,6 +77,7 @@ public class ModuleManager {
 		modules.add(new Test());
 		//chat
 		modules.add(new AntiSpamBypass());
+		modules.add(new AntiSpammer());
 		modules.add(new AutoEZ());
 		modules.add(new AutoGlobal());
 		modules.add(new ChatAnimation());

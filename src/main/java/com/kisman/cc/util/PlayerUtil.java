@@ -262,6 +262,10 @@ public class PlayerUtil {
         return mc.player != null && mc.player.getHeldItemMainhand().getItem() instanceof ItemFood && mc.player.isHandActive();
     }
 
+    public static boolean isEatingOffhand() {
+        return mc.player != null && mc.player.getHeldItemOffhand().getItem() instanceof ItemFood && mc.player.isHandActive();
+    }
+
     public static boolean isCurrentViewEntity() {
         return mc.getRenderViewEntity() == mc.player;
     }

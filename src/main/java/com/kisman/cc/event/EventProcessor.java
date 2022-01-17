@@ -5,7 +5,9 @@ import com.kisman.cc.command.commands.Flip;
 import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
+import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hypixel.util.ConfigHandler;
+import com.kisman.cc.module.combat.AutoTrap;
 import com.kisman.cc.util.TickRateUtil;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
@@ -32,6 +34,12 @@ public class EventProcessor {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
+    }
+
+    @SubscribeEvent
+    public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        AutoTrap.instance.setToggled(false);
+        SaveConfig.init();
     }
 
     @SubscribeEvent

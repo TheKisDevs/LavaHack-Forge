@@ -3,11 +3,10 @@ package com.kisman.cc.module.movement;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AirJump extends Module {
-    private Setting mode = new Setting("Mode", this, "Vanilla", new ArrayList<>(Arrays.asList("Vanilla", "NCP", "Matrix")));
+    private Setting mode = new Setting("Mode", this, "Vanilla", Arrays.asList("Vanilla", "NCP", "Matrix"));
 
     public AirJump() {
         super("AirJump", "Category", Category.MOVEMENT);
@@ -21,7 +20,7 @@ public class AirJump extends Module {
         else if (mode.getValString().equalsIgnoreCase("NCP")) {
             mc.player.onGround = true;
             mc.player.isAirBorne = false;
-        } else if(mc.gameSettings.keyBindJump.pressed) {
+        } else if(mode.getValString().equalsIgnoreCase("Matrix") && mc.gameSettings.keyBindJump.pressed) {
             mc.player.jump();
             mc.player.motionY -= 0.25f;
             if(mc.gameSettings.keyBindForward.pressed) {

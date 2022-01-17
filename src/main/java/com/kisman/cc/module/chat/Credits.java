@@ -11,7 +11,7 @@ public class Credits extends Module {
     }
 
     public void onEnable() {
-        msg = "\nCredits:";
+        msg = "\nCredits:\n";
 
         add("CatClient base", "First ClickGui");
         add("HeroCode", "Settings system");

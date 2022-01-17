@@ -9,6 +9,7 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.bypasses.SilentSwitchBypass;
 import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
@@ -61,7 +62,7 @@ public class AutoRer extends Module {
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
     public final Setting minDMG = new Setting("Min DMG", this, 6, 0, 37, true);
     public final Setting maxSelfDMG = new Setting("Max Self DMG", this, 18, 0, 37, true);
-    private final Setting maxFriendDMG = new Setting("Max Freind DMG", this, 10, 0, 37, true);
+    private final Setting maxFriendDMG = new Setting("Max Friend DMG", this, 10, 0, 37, true);
     public final Setting lethalMult = new Setting("Lethal Mult", this, 0, 0, 6, false);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
@@ -74,7 +75,7 @@ public class AutoRer extends Module {
     private final Setting blue = new Setting("Blue", this, 0, 0, 1, false);
     private final Setting alpha = new Setting("Blue", this, 1, 0, 1, false);
 
-    private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced render");
+    private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced Render");
 
     private final Setting startRed = new Setting("Start Red", this, 0, 0, 1, false);
     private final Setting startGreen = new Setting("Start Green", this, 0, 0, 1, false);
@@ -303,30 +304,25 @@ public class AutoRer extends Module {
 
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
 
+        SilentSwitchBypass bypass = new SilentSwitchBypass(Items.END_CRYSTAL);
         EnumHand hand = null;
-
+        boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
+        boolean silentBypass = switch_.getValString().equals("SilentBypass");
         int oldSlot = mc.player.inventory.currentItem;
         int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
 
-        if(crystalSlot == -1) return;
+        if(crystalSlot == -1 && !silentBypass) return;
 
-        switch (switch_.getValString()) {
-            case "None": if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
-            case "Normal": {
-                if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
-                    InventoryUtil.switchToSlot(crystalSlot, false);
-                } break;
-            }
-            case "Silent": {
-                if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) {
-                    InventoryUtil.switchToSlot(crystalSlot, true);
-                } break;
-            }
+        if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && !offhand) {
+            if(switch_.getValString().equals("None")) return;
+            else if ("Normal".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, false);
+            else if ("Silent".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, true);
+            else if (silentBypass) bypass.doSwitch();
         }
 
+        if(mc.player == null) return;
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
 
-        boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
 
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
@@ -344,7 +340,8 @@ public class AutoRer extends Module {
         }
 
         if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1 && switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+        if(oldSlot != -1 && !silentBypass && switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+        if(silentBypass) bypass.doSwitch();
     }
 
     private void doBreak() {
@@ -426,7 +423,7 @@ public class AutoRer extends Module {
     public enum InfoMode {Target, Damage, Both}
     public enum Rotate {Off, Place, Break, All}
     public enum Raytrace {None, Place, Break, Both}
-    public enum SwitchMode {None, Normal, Silent}
+    public enum SwitchMode {None, Normal, Silent, SilentBypass}
     public enum SwingMode {MainHand, OffHand, PacketSwing}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
 

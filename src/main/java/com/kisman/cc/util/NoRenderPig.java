@@ -1,9 +1,7 @@
 package com.kisman.cc.util;
 
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPig;
+import net.minecraftforge.fml.relauncher.*;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.client.Minecraft;
 
@@ -21,5 +19,4 @@ public class NoRenderPig extends RenderPig {
     if(this.mc.player.getRidingEntity() == pig) d1 -= 0.5;
     super.doRender(pig, d0, d1, d2, f1, f2);
   }
-
 }

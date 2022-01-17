@@ -13,7 +13,7 @@ public class Credits extends Command {
     @Override
     public void runCommand(String s, String[] args) {
         if(args.length == 0) {
-            msg = "\nCredits:";
+            msg = "\nCredits:\n";
 
             add("CatClient base", "First ClickGui");
             add("HeroCode", "Settings system");

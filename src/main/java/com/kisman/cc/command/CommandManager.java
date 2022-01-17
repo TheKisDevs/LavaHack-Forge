@@ -23,6 +23,7 @@ public class CommandManager {
 	}
 
 	public void addCommands() {
+		commands.add(new AntiSpammerCommand());
 		commands.add(new Bind());
 		commands.add(new ColfCmd());
 		commands.add(new Credits());
@@ -50,22 +51,15 @@ public class CommandManager {
 			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) {
 				command.runCommand(readString, args);
 				commandResolved = true;
-/*				if(!command.getSyntax().equalsIgnoreCase("loadconfig") || !command.getSyntax().equalsIgnoreCase("saveconfig")) {
-					SaveConfig.init();
-				}*/
 				break;
 			}
 		}
-		if(!commandResolved){
-			ChatUtils.error("Cannot resolve internal command: \u00a7c" + commandName);
-		}
+		if(!commandResolved) ChatUtils.error("Cannot resolve internal command: \u00a7c" + commandName);
 	}
 
 	@SubscribeEvent
 	public void onKeyPressed(InputEvent.KeyInputEvent event) {
 		if (Wrapper.INSTANCE.mc().currentScreen != null) return;
-		for(Command cmd : commands)
-    		if(cmd.getKey() == Keyboard.getEventKey())
-    			Kisman.instance.commandManager.runCommands("." + cmd.getExecute());
+		for(Command cmd : commands) if(cmd.getKey() == Keyboard.getEventKey()) Kisman.instance.commandManager.runCommands("." + cmd.getExecute());
 	}
 }
