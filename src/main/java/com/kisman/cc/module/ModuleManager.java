@@ -99,8 +99,8 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
-//		modules.add(new EntityESP());
-		modules.add(new FramebufferTest());
+		modules.add(new EntityESP());
+//		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
 //		modules.add(new HandCharms());
 		modules.add(new HoleESP());
@@ -168,6 +168,7 @@ public class ModuleManager {
 		modules.add(new Velocity());
 		//exploit
 		modules.add(new AntiLogger());
+		modules.add(new AntiVanish());
 		modules.add(new AutoKick());
 //		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
@@ -221,22 +222,13 @@ public class ModuleManager {
 	
 	public ArrayList<Module> getModulesInCategory(Category c) {
 		ArrayList<Module> mods = new ArrayList<>();
-		for (Module m : this.modules) {
-			if (m.getCategory() == c) {
-				mods.add(m);
-			}
-		}
+		for (Module m : this.modules) if (m.getCategory() == c) mods.add(m);
 		return mods;
 	}
 
 	public ArrayList<Module> getEnabledModules() {
 		ArrayList<Module> enabled = new ArrayList<>();
-		modules.stream().forEach(module -> {
-			if(module.isToggled()) {
-				enabled.add(module);
-			}
-		});
-
+		modules.stream().filter(module -> module.isToggled()).forEach(enabled::add);
 		return enabled;
 	}
 
@@ -254,20 +246,12 @@ public class ModuleManager {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
-		for(Module m : modules) {
-			if(m.isToggled()) {
-				m.update();
-			}
-		}
+		for(Module m : modules) if(m.isToggled()) m.update();
 	}
 
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent event) {
-		for(Module m : modules) {
-			if(m.isToggled()) {
-				m.render();
-			}
-		}
+		for(Module m : modules) if(m.isToggled()) m.render();
 	}
 
 	public void key(char typedChar, int key, Module mod) {

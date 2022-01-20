@@ -1,26 +1,16 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.util.RenderUtil;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityDispenser;
-import net.minecraft.tileentity.TileEntityDropper;
-import net.minecraft.tileentity.TileEntityEnderChest;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.tileentity.TileEntityShulkerBox;
+import net.minecraft.tileentity.*;
 
 public class StorageESP extends Module{
     private Setting distance = new Setting("Distance", this, 100, 10, 100, true);
-
-    private Setting renderMode = new Setting("RenderMode", this, RenderMode.Both);
 
     boolean chest = true;
     boolean eChest = true;
@@ -34,7 +24,6 @@ public class StorageESP extends Module{
         super("StorageESP", "sosat", Category.RENDER);
 
         setmgr.rSetting(distance);
-//        setmgr.rSetting(renderMode);
 
         Kisman.instance.settingsManager.rSetting(new Setting("Chest", this, true));
         Kisman.instance.settingsManager.rSetting(new Setting("EChest", this, true));
@@ -60,46 +49,14 @@ public class StorageESP extends Module{
         mc.world.loadedTileEntityList.stream()
             .filter(tileEntity -> tileEntity.getDistanceSq(mc.player.posX, mc.player.posY, mc.player.posZ) <= distance.getValDouble())
             .forEach(tileEntity -> {
-                if(tileEntity instanceof TileEntityChest && chest) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.94f, 0.60f, 0.11f);
-                }
-                if(tileEntity instanceof TileEntityEnderChest && eChest) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.53f, 0.11f, 0.94f);
-                }
-                if(tileEntity instanceof TileEntityShulkerBox && shulkerBox) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.8f, 0.08f, 0.93f);
-                }
-                if(tileEntity instanceof TileEntityDispenser && dispenser) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                }
-                if(tileEntity instanceof TileEntityFurnace && furnace) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                }
-                if(tileEntity instanceof TileEntityHopper && hopper) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                }
-                if(tileEntity instanceof TileEntityDropper && dropper) {
-                    RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                }
+                if(tileEntity instanceof TileEntityChest && chest) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.94f, 0.60f, 0.11f);
+                if(tileEntity instanceof TileEntityEnderChest && eChest) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.53f, 0.11f, 0.94f);
+                if(tileEntity instanceof TileEntityShulkerBox && shulkerBox) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.8f, 0.08f, 0.93f);
+                if(tileEntity instanceof TileEntityDispenser && dispenser) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
+                if(tileEntity instanceof TileEntityFurnace && furnace) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
+                if(tileEntity instanceof TileEntityHopper && hopper) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
+                if(tileEntity instanceof TileEntityDropper && dropper) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
             }
         );
-    }
-
-    /*private void render(BlockPos pos, float red, float green, float blue) {
-        switch ((RenderMode) renderMode.getValEnum()) {
-            case Both: {
-                RenderUtil.drawBlockESP(pos, red, green, blue);
-                break;
-            }
-            case Fill: {
-                RenderUtil.drawBoundingBox(pos, );
-            }
-        }
-    }*/
-
-    public enum RenderMode {
-        Fill,
-        Outline,
-        Both
     }
 }

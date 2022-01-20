@@ -1,8 +1,7 @@
 package com.kisman.cc.oldclickgui;
 
 import com.kisman.cc.Kisman;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -27,6 +26,7 @@ public class ColorPicker extends GuiScreen {
     private int selectedColorFinal;
 
     private GuiScreen lastGui;
+    public boolean bool1;
 
     public ColorPicker() {
         this.color = new float[] {0.4f, 1.0f, 1.0f, 1.0f};
@@ -253,7 +253,7 @@ public class ColorPicker extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        if(keyCode == Keyboard.KEY_ESCAPE) mc.displayGuiScreen(lastGui);
+        if(keyCode == Keyboard.KEY_ESCAPE) if(bool1) mc.displayGuiScreen(Kisman.instance.clickGuiNew); else mc.displayGuiScreen(null);
         if (keyCode == Keyboard.KEY_R) this.rainbowState = !this.rainbowState;
         if(keyCode == Keyboard.KEY_S) syns = !syns;
         if (keyCode == Keyboard.KEY_LEFT) this.rainbowSpeed -= 0.1;

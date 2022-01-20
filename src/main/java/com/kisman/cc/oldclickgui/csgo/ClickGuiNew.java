@@ -44,7 +44,7 @@ public class ClickGuiNew extends GuiScreen {
 
         for(Category cat : Category.values()) {
             Pane spoilerPane = new Pane(renderer, new GridLayout(1));
-            Button button = new Button(renderer, cat.name());
+            Button button = new Button(renderer, cat.getName());
             buttonPane.addComponent(button);
             button.setOnClickListener(() -> setCurrentCategory(cat));
 
@@ -99,8 +99,13 @@ public class ClickGuiNew extends GuiScreen {
                                     settingPane.addComponent(sb);
                                     sb.setListener(val -> {
                                         set.setColour(val);
+                                        set.setR(val.r);
+                                        set.setG(val.g);
+                                        set.setB(val.b);
+                                        set.setA(val.a);
                                         return true;
                                     });
+
                                     sb.setSynsListener(val -> {
                                         set.setSyns(val);
                                         return true;

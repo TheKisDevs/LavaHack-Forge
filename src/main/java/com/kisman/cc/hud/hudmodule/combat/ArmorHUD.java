@@ -17,7 +17,7 @@ public class ArmorHUD extends HudModule {
     private int armourSpacing;
 
     public ArmorHUD() {
-        super("ArmorHUD", "ArmorHUD", HudCategory.COMBAT);
+        super("ArmorHud", "ArmorHUD", HudCategory.COMBAT);
     }
 
     @SubscribeEvent

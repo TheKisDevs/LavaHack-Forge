@@ -2,28 +2,22 @@ package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.mixin.mixins.accessor.ICPacketPlayer;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.InventoryUtil.*;
 import com.kisman.cc.util.RenderBuilder.*;
 import com.kisman.cc.util.Rotation.*;
-import com.kisman.cc.util.cosmos.CosmosRenderUtil;
-import com.kisman.cc.util.cosmos.Raytrace;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import com.kisman.cc.util.cosmos.*;
+import me.zero.alpine.listener.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -135,7 +129,6 @@ public class Surround extends Module {
                     super.setToggled(false);
                     return;
                 }
-
                 break;
             }
             case "SURROUNDED": {
@@ -143,12 +136,9 @@ public class Surround extends Module {
                     super.setToggled(false);
                     return;
                 }
-
                 break;
             }
-            case "PERSISTENT": {
-                break;
-            }
+            case "PERSISTENT": break;
         }
 
         handleSurround();
@@ -213,7 +203,7 @@ public class Surround extends Module {
         if (!isInHole(mc.player)) {
             InventoryUtil.switchToSlot(Item.getItemFromBlock(Blocks.OBSIDIAN), (Switch) autoSwitch.getValEnum());
 
-            placeSurround();
+            try {placeSurround();} catch (Exception ignored) {}
 
             InventoryUtil.switchToSlot(oldSlot, Switch.NORMAL);
         }
@@ -225,16 +215,13 @@ public class Surround extends Module {
             if (Objects.equals(BlockUtil.getBlockResistance(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)))), BlockUtil.BlockResistance.BLANK) && surroundPlaced <= blocksPerTick.getValDouble()) {
                 surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
-                if (RaytraceUtil.raytraceBlock(surroundPosition, Raytrace.NORMAL) && raytrace.getValBoolean())
-                    return;
-
+                if (RaytraceUtil.raytraceBlock(surroundPosition, Raytrace.NORMAL) && raytrace.getValBoolean()) return;
                 if (surroundPosition != BlockPos.ORIGIN) {
                     if (!rotate.getValString().equals(Rotate.NONE.name())) {
                         float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);
                         surroundRotation = new Rotation((float) (surroundAngles[0] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (float) (surroundAngles[1] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)),(Rotate) rotate.getValEnum());
 
-                        if (!Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch()))
-                            surroundRotation.updateModelRotations();
+                        if (!Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) surroundRotation.updateModelRotations();
                     }
                 }
 
@@ -311,12 +298,8 @@ public class Surround extends Module {
     }
 
     public static HoleUtil.BlockSafety isBlockSafe(Block block) {
-        if (block == Blocks.BEDROCK) {
-            return HoleUtil.BlockSafety.UNBREAKABLE;
-        }
-        if (block == Blocks.OBSIDIAN || block == Blocks.ENDER_CHEST || block == Blocks.ANVIL) {
-            return HoleUtil.BlockSafety.RESISTANT;
-        }
+        if (block == Blocks.BEDROCK) return HoleUtil.BlockSafety.UNBREAKABLE;
+        if (block == Blocks.OBSIDIAN || block == Blocks.ENDER_CHEST || block == Blocks.ANVIL) return HoleUtil.BlockSafety.RESISTANT;
         return HoleUtil.BlockSafety.BREAKABLE;
     }
 
@@ -333,24 +316,19 @@ public class Surround extends Module {
         HoleUtil.BlockSafety temp;
 
         temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.DOWN.offset(pos)).getBlock());
-        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
-            output.put(HoleUtil.BlockOffset.DOWN, temp);
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE) output.put(HoleUtil.BlockOffset.DOWN, temp);
 
         temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.NORTH.offset(pos)).getBlock());
-        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
-            output.put(HoleUtil.BlockOffset.NORTH, temp);
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE) output.put(HoleUtil.BlockOffset.NORTH, temp);
 
         temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.SOUTH.offset(pos)).getBlock());
-        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
-            output.put(HoleUtil.BlockOffset.SOUTH, temp);
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE) output.put(HoleUtil.BlockOffset.SOUTH, temp);
 
         temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.EAST.offset(pos)).getBlock());
-        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
-            output.put(HoleUtil.BlockOffset.EAST, temp);
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE) output.put(HoleUtil.BlockOffset.EAST, temp);
 
         temp = isBlockSafe(mc.world.getBlockState(HoleUtil.BlockOffset.WEST.offset(pos)).getBlock());
-        if (temp != HoleUtil.BlockSafety.UNBREAKABLE)
-            output.put(HoleUtil.BlockOffset.WEST, temp);
+        if (temp != HoleUtil.BlockSafety.UNBREAKABLE) output.put(HoleUtil.BlockOffset.WEST, temp);
 
         return output;
     }

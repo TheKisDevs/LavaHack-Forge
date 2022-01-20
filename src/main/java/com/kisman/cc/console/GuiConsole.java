@@ -3,36 +3,19 @@ package com.kisman.cc.console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.*;
-
 import javax.annotation.Nullable;
-
 import com.kisman.cc.util.ColorUtil;
-import net.minecraft.util.text.TextFormatting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
+import org.lwjgl.input.*;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.*;
-
-// import i.gishreloaded.gishcode.command.Command;
-// import i.gishreloaded.gishcode.hack.hacks.ClickGui;
-// import i.gishreloaded.gishcode.managers.CommandManager;
-// import i.gishreloaded.gishcode.managers.FileManager;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ITabCompleter;
-import net.minecraft.util.TabCompleter;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.math.*;
+import net.minecraft.util.text.*;
+import net.minecraftforge.fml.relauncher.*;
 
 @SideOnly(Side.CLIENT)
 public class GuiConsole extends GuiScreen implements ITabCompleter {
@@ -58,9 +41,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter {
     
     void init() {
 		this.cmds.clear();
-        for(Command c : Kisman.instance.commandManager.commands){
-        	this.cmds.add(c.getCommand() + " - " + c.getDescription());
-        }
+        for(Command c : Kisman.instance.commandManager.commands) this.cmds.add(c.getCommand() + " - " + c.getDescription());
     }
 
     /**
@@ -102,11 +83,8 @@ public class GuiConsole extends GuiScreen implements ITabCompleter {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         this.tabCompleter.resetRequested();
 
-        if (keyCode == 15) {
-            this.tabCompleter.complete();
-        } else {
-            this.tabCompleter.resetDidComplete();
-        }
+        if (keyCode == 15) this.tabCompleter.complete();
+        else this.tabCompleter.resetDidComplete();
 
         if (keyCode == 1) {
             this.mc.displayGuiScreen((GuiScreen)null);
@@ -226,9 +204,7 @@ public class GuiConsole extends GuiScreen implements ITabCompleter {
         this.inputField.drawTextBox();
         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 
-        if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) {
-            this.handleComponentHover(itextcomponent, mouseX, mouseY);
-        }
+        if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null) this.handleComponentHover(itextcomponent, mouseX, mouseY);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

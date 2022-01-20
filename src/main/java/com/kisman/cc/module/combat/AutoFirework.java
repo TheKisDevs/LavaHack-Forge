@@ -1,26 +1,19 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.AbstractChestHorse;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.init.*;
 import net.minecraft.item.ItemTool;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
@@ -70,13 +63,11 @@ public class AutoFirework extends Module {
     private Map<BlockPos, Integer> retries = new HashMap<>();
     private TimerUtils retryTimer = new TimerUtils();
     private boolean didPlace = false;
-    private boolean switchedItem;
     private boolean isSneaking;
     private int lastHotbarSlot;
     private int placements = 0;
     private boolean smartRotate = false;
     private BlockPos startPos = null;
-    private boolean isPlacing;
 
     private AimBot aimBot;
     public EntityPlayer target = null;
@@ -117,12 +108,8 @@ public class AutoFirework extends Module {
     }
 
     public void onEnable() {
-        if(!aimBot.isToggled()) {
-            aimBot.setToggled(true);
-        }
-
+        if(!aimBot.isToggled()) aimBot.setToggled(true);
         aimBot.rotationSpoof = null;
-
         startPos = EntityUtil.getRoundedBlockPos(mc.player);
         lastHotbarSlot = mc.player.inventory.currentItem;
         retries.clear();
@@ -130,29 +117,20 @@ public class AutoFirework extends Module {
 
     public void onDisable() {
         aimBot.rotationSpoof = null;
-
-        isPlacing = false;
         isSneaking = EntityUtil.stopSneaking(isSneaking);
     }
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        if(target != null) {
-            super.setDisplayInfo("[" +  target.getDisplayName().getFormattedText() + TextFormatting.GRAY + "]");
-        } else {
-            super.setDisplayInfo("");
-        }
+        if(target != null) super.setDisplayInfo("[" +  target.getDisplayName().getFormattedText() + TextFormatting.GRAY + "]");
+        else super.setDisplayInfo("");
 
-        if(needPause()) {
-            return;
-        }
-
+        if(needPause()) return;
         if(target != null) {
             BlockPos playerPos = target.getPosition();
 
             //place trap
-
             smartRotate = false;
             doTrap();
 
@@ -189,11 +167,8 @@ public class AutoFirework extends Module {
                                 new Vec3d(target.posX + 0.5, target.posY - 0.5,
                                         target.posZ + 0.5));
 
-                        if(result == null || result.sideHit  == null) {
-                            facing = EnumFacing.UP;
-                        } else {
-                            facing = result.sideHit;
-                        }
+                        if(result == null || result.sideHit  == null) facing = EnumFacing.UP;
+                        else facing = result.sideHit;
                     }
 
                     mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing,
@@ -206,18 +181,14 @@ public class AutoFirework extends Module {
                     ));
 
                     //switch return
-                    if(switchFireReturn.getValBoolean()) {
-                        InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
-                    }
+                    if(switchFireReturn.getValBoolean()) InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
 
                     //reset timer
                     delayTimer.reset();
                     trapTimer.reset();
                 }
             }
-        } else {
-            findNewTarget();
-        }
+        } else findNewTarget();
     }
 
     private void findNewTarget() {
@@ -233,56 +204,26 @@ public class AutoFirework extends Module {
     }
 
     private boolean needPause() {
-        if(pauseWhileEating.getValBoolean() && PlayerUtil.IsEating()) {
-            return true;
-        }
-
-        if(minHealthPause.getValBoolean()) {
-            if(mc.player.getHealth() + mc.player.getAbsorptionAmount() < requiredHealth.getValDouble()) {
-                return true;
-            }
-        }
-
-        if(pauseIfHittingBlock.getValBoolean() && mc.playerController.isHittingBlock && mc.player.getHeldItemMainhand().getItem() instanceof ItemTool) {
-            return true;
-        }
-
-        return false;
+        if(pauseWhileEating.getValBoolean() && PlayerUtil.IsEating()) return true;
+        if(minHealthPause.getValBoolean() && mc.player.getHealth() + mc.player.getAbsorptionAmount() < requiredHealth.getValDouble()) return true;
+        return pauseIfHittingBlock.getValBoolean() && mc.playerController.isHittingBlock && mc.player.getHeldItemMainhand().getItem() instanceof ItemTool;
     }
 
     public boolean isValidTarget(Entity entity) {
-        if (entity == null)
-            return false;
-
-        if (!(entity instanceof EntityLivingBase))
-            return false;
-
-        if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f)
-            return false;
-
-        if (entity.getDistance(mc.player) > 20.0f)
-            return false;
-
-        if (entity instanceof EntityPlayer) {
-            if (entity == mc.player)
-                return false;
-
-            return true;
-        }
-
+        if (entity == null) return false;
+        if (!(entity instanceof EntityLivingBase)) return false;
+        if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f) return false;
+        if (entity.getDistance(mc.player) > 20.0f) return false;
+        if (entity instanceof EntityPlayer) return entity != mc.player;
         return false;
     }
 
     private void doTrap() {
-        if(check()) {
-            return;
-        }
+        if(check()) return;
 
         doStaticTrap();
 
-        if(didPlace) {
-            trapTimer.reset();
-        }
+        if(didPlace) trapTimer.reset();
     }
 
     private void doStaticTrap() {
@@ -300,11 +241,8 @@ public class AutoFirework extends Module {
                 this.placeBlock(position);
                 this.retries.put(position, (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
                 this.retryTimer.reset();
-            }
-            else {
-                if (placeability != 3) {
-                    continue;
-                }
+            } else {
+                if (placeability != 3) continue;
                 this.placeBlock(position);
             }
         }
@@ -315,17 +253,15 @@ public class AutoFirework extends Module {
         if(mc.player == null) return false;
         if(startPos == null) return false;
 
-        isPlacing = false;
         didPlace = false;
         placements = 0;
         final int obbySlot2 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
         if (obbySlot2 == -1) {
             setToggled(false);
-        }
-        final int obbySlot3 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
-        if (!super.isToggled()) {
             return true;
         }
+        final int obbySlot3 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
+        if (!super.isToggled()) return true;
         if (!startPos.equals(EntityUtil.getRoundedBlockPos(mc.player))) {
             setToggled(false);
             return true;
@@ -349,15 +285,11 @@ public class AutoFirework extends Module {
 
     private void placeBlock(final BlockPos pos) {
         if (this.placements < this.blocksPerTick.getValInt() && AutoTrap.mc.player.getDistanceSq(pos) <= MathUtil.square(5.0)) {
-            isPlacing = true;
-
             final int originalSlot = AutoTrap.mc.player.inventory.currentItem;
             final int obbySlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
             final int eChestSot = InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9);
 
-            if (obbySlot == -1 && eChestSot == -1) {
-                this.toggle();
-            }
+            if (obbySlot == -1 && eChestSot == -1) this.toggle();
 
             if (this.smartRotate) {
                 AutoTrap.mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);

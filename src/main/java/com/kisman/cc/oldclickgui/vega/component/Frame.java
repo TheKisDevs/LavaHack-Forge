@@ -61,7 +61,7 @@ public class Frame {
         Gui.drawRect(this.x - 1, this.y - 3, this.x + this.width + 1, this.y + this.height + 1, (ColorUtils.getColor(60, 60, 70)));
         Gui.drawRect(this.x, this.y - 4, this.x + this.width, this.y + this.height, (ColorUtils.getColor(34, 34, 40)));
 
-        String str = cat.name() + (Config.instance.guiRenderSIze.getValBoolean() && !buttons.isEmpty() ? " [" + buttons.size() + "]" : "");
+        String str = cat.getName() + (Config.instance.guiRenderSIze.getValBoolean() && !buttons.isEmpty() ? " [" + buttons.size() + "]" : "");
 
         CustomFontUtil.drawCenteredStringWithShadow(str, x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), open ? ColorUtils.astolfoColors(100, 100) : -1);
 

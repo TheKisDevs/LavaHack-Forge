@@ -1,6 +1,5 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.oldclickgui.csgo.*;
@@ -36,7 +35,7 @@ public class ColorButton extends AbstractComponent {
         setHeight(preferredHeight);
 
         colorPicker.setColor(color);
-        colorPicker.lastGui(Kisman.instance.clickGuiNew);
+        colorPicker.bool1 = true;
     }
 
     public ColorButton(IRenderer renderer, float[] color) {

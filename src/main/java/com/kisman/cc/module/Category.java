@@ -9,8 +9,9 @@ public enum Category {
 	RENDER("Render"),
 	MISC("Misc"),
 	EXPLOIT("Exploit");
+//	DL("CoordExploit");
 
 	private final String name;
-
-	Category(String name) { this.name = name; }
+	Category(final String name) { this.name = name;}
+	public final String getName() {return name;}
 }

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = Entity.class, priority = 10000)
-public abstract class MixinEntity {
+public class MixinEntity {
     @Shadow
     public double posX;
     @Shadow
@@ -46,25 +46,15 @@ public abstract class MixinEntity {
     @Shadow
     public World world;
 
-//    @Shadow
-//    @Override
-//    public abstract boolean equals(final Object p0);
-
-/*    @Shadow
-    public abstract boolean isSprinting();
+    @Shadow
+    public void move(final MoverType type, final double x, final double y, final double z) {}
 
     @Shadow
-    public abstract boolean isRiding();*/
+    public AxisAlignedBB getEntityBoundingBox() {return null;}
 
     @Shadow
-    public abstract void move(final MoverType type, final double x, final double y, final double z);
+    protected boolean getFlag(final int p0) {return true;}
 
     @Shadow
-    public abstract AxisAlignedBB getEntityBoundingBox();
-
-    @Shadow
-    public abstract boolean getFlag(final int p0);
-
-    @Shadow
-    public abstract Entity getLowestRidingEntity();
+    public Entity getLowestRidingEntity() {return null;}
 }

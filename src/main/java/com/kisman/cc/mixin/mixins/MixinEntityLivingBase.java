@@ -11,16 +11,16 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityLivingBase.class, priority = 10000)
-public abstract class MixinEntityLivingBase extends MixinEntity {
+public class MixinEntityLivingBase extends MixinEntity {
     @Shadow public EnumHand swingingHand;
     @Shadow public ItemStack activeItemStack;
     @Shadow public float moveStrafing;
     @Shadow public float moveVertical;
     @Shadow public float moveForward;
     @Shadow protected void jump() {}
-    @Shadow public abstract boolean isElytraFlying();
-    @Shadow public  boolean isPotionActive(Potion potionIn) {return false;};
-    @Shadow public  PotionEffect getActivePotionEffect(Potion potionIn) {return null;};
+    @Shadow public boolean isElytraFlying() {return true;}
+    @Shadow public  boolean isPotionActive(Potion potionIn) {return false;}
+    @Shadow public  PotionEffect getActivePotionEffect(Potion potionIn) {return null;}
 
     @Inject(method = "getArmSwingAnimationEnd", at = @At("HEAD"), cancellable = true)
     private void yesido(CallbackInfoReturnable<Integer> cir) {

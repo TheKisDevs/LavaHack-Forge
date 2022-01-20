@@ -20,6 +20,5 @@ public class SilentSwitchBypass {
         mc.playerController.windowClick(mc.player.inventoryContainer.windowId, newSlot, 0, ClickType.PICKUP, mc.player);
         mc.playerController.windowClick(mc.player.inventoryContainer.windowId, oldSlot, 0, ClickType.PICKUP, mc.player);
         mc.playerController.windowClick(mc.player.inventoryContainer.windowId, newSlot, 0, ClickType.PICKUP, mc.player);
-        mc.playerController.updateController();
     }
 }

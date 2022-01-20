@@ -48,14 +48,12 @@ public class Indicators extends HudModule {
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
         switch (HUD.instance.indicThemeMode.getValString()) {
-            case "Default": {
+            case "Default":
                 drawDefault();
                 break;
-            }
-            case "Rewrite": {
+            case "Rewrite":
                 drawRewrite();
                 break;
-            }
         }
     }
 

@@ -10,7 +10,6 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.Dumper;
 import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.*;
@@ -173,7 +172,8 @@ public class Kisman {
         if(instance.init) {
             switch (Config.instance.nameMode.getValString()) {
                 case "kismancc": return NAME;
-                case "lavahack": return "LavaHack";
+                case "LavaHack": return "LavaHack";
+                case "TheKisDevs": return "TheKisDevs";
                 case "custom": return Config.instance.customName.getValString();
             }
         }

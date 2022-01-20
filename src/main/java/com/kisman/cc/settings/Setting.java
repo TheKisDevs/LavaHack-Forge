@@ -10,8 +10,7 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.TextUtil;
+import com.kisman.cc.util.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
@@ -307,6 +306,12 @@ public class Setting {
 				int color = 0;
 				try {color = (int) Long.parseLong(values[0], 16);} catch (Exception e) {e.printStackTrace();}
 				colour = new Colour(color);
+				r = colour.r;
+				g = colour.g;
+				b = colour.b;
+				a = colour.a;
+				float[] hsb = Color.RGBtoHSB(r, g, b, null);
+				colorHSB = new float[] {hsb[0], hsb[1], hsb[2], a / 255f};
 
 				boolean syncBuf = false;
 				try {syncBuf = Boolean.parseBoolean(values[1]);} catch (Exception e) {e.printStackTrace();}
@@ -320,6 +325,12 @@ public class Setting {
 			int color = 0;
 			try {color = (int) Long.parseLong(parse, 16);} catch (Exception e) {e.printStackTrace();}
 			colour = new Colour(color);
+			r = colour.r;
+			g = colour.g;
+			b = colour.b;
+			a = colour.a;
+			float[] hsb = Color.RGBtoHSB(r, g, b, null);
+			colorHSB = new float[] {hsb[0], hsb[1], hsb[2], a / 255f};
 		}
 	}
 

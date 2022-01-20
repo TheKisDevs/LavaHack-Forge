@@ -49,10 +49,14 @@ public class HUD extends Module {
 	public Setting logoGlow = new Setting("Glow", this, false);
 	public Setting logoBold = new Setting("Name Bold", this, false);
 
-	public Setting indicLine = new Setting("IndicLine", this, "Indicators");
+	private Setting indicLine = new Setting("IndicLine", this, "Indicators");
 	public Setting indicY = new Setting("Indicators Y", this, 20, 0, mc.displayHeight, true);
 	public Setting indicThemeMode = new Setting("Indicators Theme", this, IndicatorsThemeMode.Default);
 	public Setting indicShadowSliders = new Setting("Indicators Shadow Sliders", this, false);
+
+	private Setting thudLine = new Setting("ThudLine", this, "TargetHud");
+	public Setting thudTheme = new Setting("TargetHud Theme", this, TargetHudThemeMode.Vega);
+	public Setting thudShadowSliders = new Setting("TargetHud Shadow Sliders", this, false);
 
 	public HUD() {
 		super("HudEditor", "hud editor", Category.CLIENT);
@@ -100,6 +104,10 @@ public class HUD extends Module {
 		setmgr.rSetting(indicY);
 		setmgr.rSetting(indicThemeMode);
 		setmgr.rSetting(indicShadowSliders);
+
+		setmgr.rSetting(thudLine);
+		setmgr.rSetting(thudTheme);
+		setmgr.rSetting(thudShadowSliders);
 	}
 
 	public void onEnable() {
@@ -110,4 +118,5 @@ public class HUD extends Module {
 	public enum LogoMode {Simple, CSGO}
 	public enum Gradient {None, Simple, Sideway, Astolfo}
 	public enum IndicatorsThemeMode {Default, Rewrite}
+	public enum TargetHudThemeMode {Vega, Rewrite}
 }

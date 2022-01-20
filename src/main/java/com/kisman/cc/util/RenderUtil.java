@@ -286,7 +286,6 @@ public class RenderUtil {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
 
         for(BlockPos pos : blocks) {
-
             IBlockState iblockstate = world.getBlockState(pos);
 
             double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)ticks;
@@ -306,45 +305,6 @@ public class RenderUtil {
         glDisable(GL_LINE_SMOOTH);
         glPopMatrix();
 	}
-	
-	// public static void drawXRayBlocks(LinkedList<XRayBlock> blocks, float ticks) {
-	// 	glPushMatrix();
-    //     glEnable(GL_BLEND);
-    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //     glEnable(GL_LINE_SMOOTH);
-    //     glLineWidth(1);
-    //     glDisable(GL_TEXTURE_2D);
-    //     glEnable(GL_CULL_FACE);
-    //     glDisable(GL_DEPTH_TEST);
-    //     glDisable(GL11.GL_LIGHTING);
-
-    //     WorldClient world = Wrapper.INSTANCE.world();
-    //     EntityPlayerSP player = Wrapper.INSTANCE.player();
-
-    //     for(XRayBlock block : blocks) {
-    //         BlockPos pos = block.getBlockPos();
-    //         XRayData data = block.getxRayData();
-
-    //         IBlockState iblockstate = world.getBlockState(pos);
-
-    //         double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)ticks;
-    //         double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)ticks;
-    //         double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)ticks;
-
-    //         int color = new Color(data.getRed(), data.getGreen(), data.getBlue(), 255).getRGB();
-    //         GLUtils.glColor(color);
-
-    //         AxisAlignedBB boundingBox = iblockstate.getSelectedBoundingBox(world, pos).grow(0.0020000000949949026D).offset(-x, -y, -z);
-    //         drawSelectionBoundingBox(boundingBox);
-    //     }
-
-    //     glEnable(GL11.GL_LIGHTING);
-    //     glEnable(GL_DEPTH_TEST);
-    //     glEnable(GL_TEXTURE_2D);
-    //     glDisable(GL_BLEND);
-    //     glDisable(GL_LINE_SMOOTH);
-    //     glPopMatrix();
-	// }
 
     public static void drawBlockFlatESP(BlockPos pos, float red, float green, float blue) {
         glPushMatrix();
@@ -361,7 +321,7 @@ public class RenderUtil {
         double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
 
         glTranslated(-renderPosX, -renderPosY, -renderPosZ);
-        /*glTranslated(pos.getX(), pos.getY(), pos.getZ());*/
+        glTranslated(pos.getX(), pos.getY(), pos.getZ());
 
         glColor4f(red, green, blue, 0.30F);
         drawSolidBox();
@@ -411,16 +371,9 @@ public class RenderUtil {
         drawBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1, height, 1, color, color.getAlpha(), sides);
     }
 
-    public static void drawBox(AxisAlignedBB bb, boolean check, double height, Colour color, int sides) {
-        drawBox(bb, check, height, color, color.getAlpha(), sides);
-    }
-
     public static void drawBox(AxisAlignedBB bb, boolean check, double height, Colour color, int alpha, int sides) {
-        if (check) {
-            drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ, color, alpha, sides);
-        } else {
-            drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, height, bb.maxZ - bb.minZ, color, alpha, sides);
-        }
+        if (check) drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ, color, alpha, sides);
+        else drawBox(bb.minX, bb.minY, bb.minZ, bb.maxX - bb.minX, height, bb.maxZ - bb.minZ, color, alpha, sides);
     }
 
     public static void drawBox(double x, double y, double z, double w, double h, double d, Colour color, int alpha, int sides) {
@@ -466,6 +419,38 @@ public class RenderUtil {
 
         glTranslated(-renderPosX, -renderPosY, -renderPosZ);
         glTranslated(pos.getX(), pos.getY(), pos.getZ());
+
+        glColor4f(red, green, blue, 0.30F);
+        drawSolidBox();
+        glColor4f(red, green, blue, 0.7F);
+        drawOutlinedBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
+    public static void drawBoxESP(Entity entity, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
+        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
+        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+
+        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
+        glTranslated(entity.posX, entity.posY, entity.posZ);
 
         glColor4f(red, green, blue, 0.30F);
         drawSolidBox();
@@ -862,17 +847,6 @@ public class RenderUtil {
         tessellator.draw();
     }
 
-/*    public static void drawBox(double x, double y, double z, double w, double h, double d, Colour color, int alpha, int sides) {
-        GlStateManager.disableAlpha();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        color.glColor();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        doVerticies(new AxisAlignedBB(x, y, z, x + w, y + h, z + d), color, alpha, bufferbuilder, sides, false);
-        tessellator.draw();
-        GlStateManager.enableAlpha();
-    }*/
-
     public static void drawGradientBlockOutline(AxisAlignedBB bb, Color startColor, Color endColor, float linewidth) {
         float red = (float) startColor.getRed() / 255.0f;
         float green = (float) startColor.getGreen() / 255.0f;
@@ -965,30 +939,7 @@ public class RenderUtil {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public static void drawHLine(float par1, float par2, float par3, int color) {
-
-        if (par2 < par1) {
-            float var5 = par1;
-            par1 = par2;
-            par2 = var5;
-        }
-
-        drawRect(par1, par3, par2 + 1, par3 + 1, color);
-    }
-
-    public static void drawVLine(float par1, float par2, float par3, int color) {
-
-        if (par3 < par2) {
-            float var5 = par2;
-            par2 = par3;
-            par3 = var5;
-        }
-
-        drawRect(par1, par2 + 1, par1 + 1, par3, color);
-    }
-
     public static void drawRect(float left, float top, float right, float bottom, int color) {
-
         float var5;
 
         if (left < right) {
@@ -1051,12 +1002,8 @@ public class RenderUtil {
     }
 
     public static void drawCircle(float x, float y, float z, float radius, float red, float green, float blue, float alpha){
-        //IBlockState iblockstate = RenderUtil.mc.world.getBlockState(new BlockPos(x, y, z));
-        //Vec3d interpPos = EntityUtil.getInterpolatedPos(RenderUtil.mc.player, RenderUtil.mc.getRenderPartialTicks());
         Minecraft mc = Minecraft.getMinecraft();
-
         BlockPos pos = new BlockPos(x, y, z);
-        //AxisAlignedBB bb = iblockstate.getSelectedBoundingBox(RenderUtil.mc.world, new BlockPos(x, y, z)).offset(-interpPos.x, -interpPos.y, -interpPos.z);
         AxisAlignedBB bb = new AxisAlignedBB((double) pos.getX() - mc.getRenderManager().viewerPosX, (double) pos.getY() - mc.getRenderManager().viewerPosY,
                 (double) pos.getZ() - mc.getRenderManager().viewerPosZ,
                 (double) (pos.getX() + 1) - mc.getRenderManager().viewerPosX,
@@ -1187,20 +1134,14 @@ public class RenderUtil {
 
             for (int i = 0; i < text.length; i++) {
                 double w = CustomFontUtil.getStringWidth(text[i]) / 2;
-                if (w > width) {
-                    width = w;
-                }
+                if (w > width) width = w;
             }
             drawBorderedRect(-width - 1, -mc.fontRenderer.FONT_HEIGHT, width + 2, 1, 1.8f, new Colour(0, 4, 0, 255).getRGB(), new Colour(244, 4, 0, 255).getRGB());
         }
         GlStateManager.enableTexture2D();
-        for (int i = 0; i < text.length; i++) {
-            CustomFontUtil.drawStringWithShadow(text[i], -CustomFontUtil.getStringWidth(text[i]) / 2, i * (mc.fontRenderer.FONT_HEIGHT + 1) + start, -1);
-        }
+        for (int i = 0; i < text.length; i++) CustomFontUtil.drawStringWithShadow(text[i], -CustomFontUtil.getStringWidth(text[i]) / 2, i * (mc.fontRenderer.FONT_HEIGHT + 1) + start, -1);
         GlStateManager.disableTexture2D();
-        if (type != 2) {
-            GlStateManager.popMatrix();
-        }
+        if (type != 2) GlStateManager.popMatrix();
     }
 
     public static void prepare() {
@@ -1258,6 +1199,7 @@ public class RenderUtil {
         GL11.glEnable((int)2896);
         GL11.glEnable((int)3553);
     }
+
     private static void colorVertex(double x, double y, double z, Colour color, int alpha, BufferBuilder bufferbuilder) {
         bufferbuilder.pos(x - mc.getRenderManager().viewerPosX, y - mc.getRenderManager().viewerPosY, z - mc.getRenderManager().viewerPosZ).color(color.r, color.g, color.b, alpha).endVertex();
     }
@@ -1358,22 +1300,12 @@ public class RenderUtil {
     }
 
     public static void GLPre(boolean depth, boolean texture, boolean clean, boolean bind, boolean override, float lineWidth) {
-        if (depth) {
-            GL11.glDisable((int)2896);
-        }
-        if (texture == false) {
-            GL11.glEnable((int)3042);
-        }
+        if (depth) GL11.glDisable((int)2896);
+        if (!texture) GL11.glEnable((int)3042);
         GL11.glLineWidth((float)lineWidth);
-        if (clean != false) {
-            GL11.glDisable((int)3553);
-        }
-        if (bind != false) {
-            GL11.glDisable((int)2929);
-        }
-        if (override == false) {
-            GL11.glEnable((int)2848);
-        }
+        if (!clean) GL11.glDisable((int)3553);
+        if (bind) GL11.glDisable((int)2929);
+        if (!override) GL11.glEnable((int)2848);
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GL11.glHint((int)3154, (int)4354);
         GlStateManager.depthMask((boolean)false);

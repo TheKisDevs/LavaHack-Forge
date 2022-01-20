@@ -53,23 +53,15 @@
          for (Integer slot : slots) {
              ItemStack item = inventory.get(slot);
              // 7 is the id for thorns
-             if (noThorns && EnchantmentHelper.getEnchantments(item).containsKey(Enchantment.getEnchantmentByID(7))) {
-                 thorns.put(slot, item);
-             } else {
-                 armour.put(slot, item);
-             }
+             if (noThorns && EnchantmentHelper.getEnchantments(item).containsKey(Enchantment.getEnchantmentByID(7))) thorns.put(slot, item);
+             else armour.put(slot, item);
          }
 
          armour.forEach(((integer, itemStack) -> {
              ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
              int armorType = itemArmor.armorType.ordinal() - 2;
-
-             if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem().equals(Items.ELYTRA)) {
-                 return;
-             }
-
+             if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem().equals(Items.ELYTRA)) return;
              int armorValue = itemArmor.damageReduceAmount;
-
              if (armorValue > bestArmorValues[armorType]) {
                  bestArmorSlots[armorType] = integer;
                  bestArmorValues[armorType] = armorValue;
@@ -81,17 +73,10 @@
                  ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
                  int armorType = itemArmor.armorType.ordinal() - 2;
 
-                 // Thorns is only put in when all other is lost
-                 if (!(armorInventory.get(armorType) == ItemStack.EMPTY && bestArmorSlots[armorType] == -1)) {
-                     return;
-                 }
-
-                 if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem().equals(Items.ELYTRA)) {
-                     return;
-                 }
-
+                 // Thorns Is only put in when all other is lost
+                 if (!(armorInventory.get(armorType) == ItemStack.EMPTY && bestArmorSlots[armorType] == -1)) return;
+                 if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem().equals(Items.ELYTRA)) return;
                  int armorValue = itemArmor.damageReduceAmount;
-
                  if (armorValue > bestArmorValues[armorType]) {
                      bestArmorSlots[armorType] = integer;
                      bestArmorValues[armorType] = armorValue;
@@ -103,14 +88,9 @@
          for (int i = 0; i < 4; i++) {
              // check if better armor was found
              int slot = bestArmorSlots[i];
-             if (slot == -1) {
-                 continue;
-             }
+             if (slot == -1) continue;
              // hotbar fix
-             if (slot < 9) {
-                 slot += 36;
-             }
-
+             if (slot < 9) slot += 36;
              // pick up inventory slot
              mc.playerController.windowClick(0, slot, 0, ClickType.PICKUP, mc.player);
              // click on armour slot

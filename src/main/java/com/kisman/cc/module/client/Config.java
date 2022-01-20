@@ -63,9 +63,5 @@ public class Config extends Module {
         }
     }
 
-    public enum NameMode {
-        kismancc,
-        lavahack,
-        custom
-    }
+    public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
 }

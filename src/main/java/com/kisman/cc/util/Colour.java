@@ -51,7 +51,11 @@ public class Colour {
         this.r1 = ColorUtils.getRed(color);
         this.g1 = ColorUtils.getGreen(color);
         this.b1 = ColorUtils.getBlue(color);
-        this.a1 = 1;
+        this.a1 = ColorUtils.getAlpha(color);
+        this.r = (int) (r1 * 255);
+        this.g = (int) (g1 * 255);
+        this.b = (int) (b1 * 255);
+        this.a = (int) (a1 * 255);
         isInt = false;
     }
 

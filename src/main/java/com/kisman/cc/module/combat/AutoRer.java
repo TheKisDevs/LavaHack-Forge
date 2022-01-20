@@ -100,9 +100,6 @@ public class AutoRer extends Module {
     private Entity lastHitEntity = null;
     private double renderDamage;
     public boolean rotating;
-    private float pitch;
-    private float yaw;
-    private int rotationPacketsSpoofed;
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
@@ -202,6 +199,7 @@ public class AutoRer extends Module {
 
         if(currentTarget == null) return;
         else super.setDisplayInfo("[" + currentTarget.getName() + "]");
+        if(currentTarget.isDead || currentTarget.getHealth() < 0) currentTarget = EntityUtil.getTarget(targetRange.getValFloat());
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
             calculatePlace();
             calcTimer.reset();
@@ -213,6 +211,7 @@ public class AutoRer extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
+        if(renderPos == null) return;
         switch (render.getValString()) {
             case "None": break;
             case "Default": {
@@ -283,14 +282,14 @@ public class AutoRer extends Module {
                         if(maxDamage <= targetDamage) {
                             maxDamage = targetDamage;
                             placePos = pos;
-                            renderPos = pos;
-                            renderDamage = targetDamage;
                         }
                     }
                 }
             }
         }
         this.placePos = placePos;
+        this.renderPos = placePos;
+        this.renderDamage = maxDamage;
     }
 
     private void doPlace() {
