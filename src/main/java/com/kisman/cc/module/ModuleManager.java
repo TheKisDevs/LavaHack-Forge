@@ -13,12 +13,10 @@ import com.kisman.cc.module.movement.*;
 import com.kisman.cc.module.player.*;
 import com.kisman.cc.module.render.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.*;
 
 public class ModuleManager {
 	public ArrayList<Module> modules;
@@ -82,6 +80,7 @@ public class ModuleManager {
 		modules.add(new AutoGlobal());
 		modules.add(new ChatAnimation());
 		modules.add(new ChatSuffix());
+		modules.add(new ChatTTF());
 		modules.add(new Credits());
 		modules.add(new Notification());
 		modules.add(new Spammer());
@@ -141,6 +140,7 @@ public class ModuleManager {
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new LongJump());
+		modules.add(new NoFall());
 		modules.add(new NoJumpDelay());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
@@ -228,7 +228,7 @@ public class ModuleManager {
 
 	public ArrayList<Module> getEnabledModules() {
 		ArrayList<Module> enabled = new ArrayList<>();
-		modules.stream().filter(module -> module.isToggled()).forEach(enabled::add);
+		modules.stream().filter(Module::isToggled).forEach(enabled::add);
 		return enabled;
 	}
 

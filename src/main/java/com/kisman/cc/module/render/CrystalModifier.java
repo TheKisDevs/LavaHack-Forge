@@ -85,14 +85,6 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(bounce);
     }
 
-    public enum OutlineModes {
-        Wire,
-        Flat
-    }
-
-    public enum Modes {
-        Fill,
-        Wireframe,
-        None
-    }
+    public enum OutlineModes {Wire, Flat}
+    public enum Modes {Fill, Wireframe,}
 }

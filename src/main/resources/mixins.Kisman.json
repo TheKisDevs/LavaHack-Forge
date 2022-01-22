@@ -14,7 +14,6 @@
     "MixinGuiIngame",
     "MixinGuiMainMenu",
     "MixinGuiMultiplayer",
-    "MixinGuiNewChat",
     "MixinItemRenderer",
     "MixinLayerBipedArmor",
     "MixinMinecraft",
@@ -38,6 +37,7 @@
   ],
   "client": [
     "MixinGuiContainer",
+    "MixinGuiNewChat",
     "MixinModelBook"
   ]
 }

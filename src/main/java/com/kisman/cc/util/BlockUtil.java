@@ -61,25 +61,18 @@ public class BlockUtil {
             return 0;
         }
 
-        if (!rayTracePlaceCheck(pos, rayTrace, 0.0f)) {
-            return -1;
-        }
-
+        if (!rayTracePlaceCheck(pos, rayTrace, 0.0f)) return -1;
         if (entityCheck) {
             for (final Entity entity : mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos))) {
                 if (!(entity instanceof EntityItem)) {
-                    if (entity instanceof EntityXPOrb) {
-                        continue;
-                    }
+                    if (entity instanceof EntityXPOrb) continue;
                     return 1;
                 }
             }
         }
 
         for (final EnumFacing side : getPossibleSides(pos)) {
-            if (!canBeClicked(pos.offset(side))) {
-                continue;
-            }
+            if (!canBeClicked(pos.offset(side))) continue;
             return 3;
         }
 
@@ -247,10 +240,7 @@ public class BlockUtil {
         float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
         float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
 
-        return new float[]{
-                mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw),
-                mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch)
-        };
+        return new float[]{mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch)};
     }
 
     public static Vec3d getEyesPos() {
@@ -281,13 +271,9 @@ public class BlockUtil {
     public static boolean placeBlock(final BlockPos pos) {
         final Block block = BlockUtil.mc.world.getBlockState(pos).getBlock();
         final EnumFacing direction = calcSide(pos);
-        if (direction == null) {
-            return false;
-        }
+        if (direction == null) return false;
         final boolean activated = block.onBlockActivated(BlockUtil.mc.world, pos, BlockUtil.mc.world.getBlockState(pos), BlockUtil.mc.player, EnumHand.MAIN_HAND, direction, 0.0f, 0.0f, 0.0f);
-        if (activated) {
-            BlockUtil.mc.player.connection.sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
-        }
+        if (activated) BlockUtil.mc.player.connection.sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
         BlockUtil.mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos.offset(direction), direction.getOpposite(), EnumHand.MAIN_HAND, 0.5f, 0.5f, 0.5f));
         BlockUtil.mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
         if (activated || BlockUtil.unshift) {
@@ -301,9 +287,7 @@ public class BlockUtil {
     public static boolean placeBlockSmartRotate(final BlockPos pos, final EnumHand hand, final boolean rotate, final boolean packet, final boolean isSneaking) {
         boolean sneaking = false;
         final EnumFacing side = getFirstFacing(pos);
-        if (side == null) {
-            return isSneaking;
-        }
+        if (side == null) return isSneaking;
         final BlockPos neighbour = pos.offset(side);
         final EnumFacing opposite = side.getOpposite();
         final Vec3d hitVec = new Vec3d(neighbour).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
@@ -312,9 +296,7 @@ public class BlockUtil {
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
             sneaking = true;
         }
-        if (rotate) {
-            RotationUtils.lookAtVec3d(hitVec);
-        }
+        if (rotate) RotationUtils.lookAtVec3d(hitVec);
         rightClickBlock(neighbour, hitVec, hand, opposite, packet);
         mc.player.swingArm(EnumHand.MAIN_HAND);
         mc.rightClickDelayTimer = 4;

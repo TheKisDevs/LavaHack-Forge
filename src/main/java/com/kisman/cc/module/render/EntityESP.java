@@ -18,11 +18,11 @@ import org.lwjgl.opengl.GL11;
 public class EntityESP extends Module{
     private Setting range = new Setting("Range", this, 50, 0, 100, true);
 
-    private Setting players = new Setting("Players", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow", "Outline")));
-    private Setting monsters = new Setting("Monsters", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow", "Outline")));
-    private Setting items = new Setting("Items", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow", "Outline")));
-    private Setting passive =  new Setting("Passive", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow", "Outline")));
-    private Setting entities = new Setting("Entities", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow", "Outline")));
+    private Setting players = new Setting("Players", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
+    private Setting monsters = new Setting("Monsters", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
+    private Setting items = new Setting("Items", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
+    private Setting passive =  new Setting("Passive", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
+    private Setting entities = new Setting("Entities", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
 
     //colors
     private Setting playerColor = new Setting("PlayerColor", this, "PlayerColor", new float[] {0.54f, 0.11f, 0.92f, 1});
@@ -89,39 +89,11 @@ public class EntityESP extends Module{
             case "Glow":
                 entity.glowing = true;
                 break;
-            case "Outline":
-                entity.glowing = false;
-                drawOutline(red, green, blue);
         }
     }
 
-    private void drawOutline(float red, float green, float blue) {
-        GL11.glPushAttrib(1048575);
-        GL11.glPolygonMode(1032, 6913);
-        GL11.glDisable(3008);
-        GL11.glDisable(3553);
-        GL11.glDisable(2896);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, 771);
-        GL11.glLineWidth(5f);
-        GL11.glEnable(2960);
-        GL11.glDisable(2929);
-        GL11.glDepthMask(false);
-        GL11.glEnable(10754);
-        GL11.glColor4f(red, green, blue, 1f);
-
-        GL11.glEnable(2929);
-        GL11.glDepthMask(true);
-
-        GL11.glEnable(3042);
-        GL11.glEnable(2896);
-        GL11.glEnable(3553);
-        GL11.glEnable(3008);
-        GL11.glPopAttrib();
-    }
-
     private boolean isValid(Entity entity) {
-        if (mc.gameSettings.thirdPersonView == 0) if (entity == mc.player) return false;
+        if (entity == mc.player) return false;
         return (entity instanceof EntityPlayer && !players.getValString().equalsIgnoreCase("None")) || (entity instanceof EntityMob && !monsters.getValString().equalsIgnoreCase("None")) || (entity instanceof EntityAnimal && !passive.getValString().equalsIgnoreCase("None")) || (entity instanceof EntityItem && !items.getValString().equalsIgnoreCase("None") || (entity instanceof EntityXPOrb && !items.getValString().equalsIgnoreCase("None")));
     }
 }

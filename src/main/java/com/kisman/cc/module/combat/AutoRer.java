@@ -212,18 +212,8 @@ public class AutoRer extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(renderPos == null) return;
-        switch (render.getValString()) {
-            case "None": break;
-            case "Default": {
-                RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-                break;
-            }
-            case "Advanced": {
-                RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-                break;
-            }
-        }
-
+        if(render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+        else if(render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
         if(text.getValBoolean()) RenderUtil.drawText(renderPos, ((Math.floor(renderDamage) == renderDamage) ? String.valueOf(Integer.valueOf((int) renderDamage)) : String.format("%.1f", renderDamage)));
     }
 

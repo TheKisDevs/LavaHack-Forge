@@ -1,7 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
-import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
-import com.kisman.cc.oldclickgui.csgo.IRenderer;
+import com.kisman.cc.oldclickgui.csgo.*;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import net.minecraft.util.text.TextFormatting;
 
@@ -68,12 +67,6 @@ public class ComboBox extends AbstractComponent {
             }
         }
         renderer.drawRect(x + getWidth() - preferredHeight, y, preferredHeight, getHeight(), (hovered || opened) ? Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
-
-        renderer.drawTriangle(
-                x + getWidth() - preferredHeight + preferredHeight / 4.0, y + preferredHeight / 4.0,
-                x + getWidth() - preferredHeight + preferredHeight / 2.0, y + preferredHeight * 3.0 / 4.0,
-                x + getWidth() - preferredHeight + preferredHeight * 3.0 / 4.0, y + preferredHeight / 4.0,
-                Window.FOREGROUND);
 
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered && !opened) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 

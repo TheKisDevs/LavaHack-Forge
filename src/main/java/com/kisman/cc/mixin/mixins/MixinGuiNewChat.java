@@ -1,7 +1,9 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.module.chat.*;
+import com.kisman.cc.module.render.NoRender;
 import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
@@ -70,14 +72,16 @@ public abstract class MixinGuiNewChat {
         return this.lineBeingDrawn = line;
     }
 
-    @ModifyArg(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"), index = 3)
-    private int modifyTextOpacity(int original) {
+    @Redirect(method = {"drawChat"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
+    private int drawStringWithShadow(FontRenderer fontRenderer, String text, float x, float y, int color) {
+        int newY = (int) y;
         if (this.lineBeingDrawn <= this.newLines) {
-            int opacity = original >> 24 & 0xFF;
+            int opacity = (int) y >> 24 & 0xFF;
             opacity *= (int)this.animationPercent;
-            return (original & 0xFFFFFF) | opacity << 24;
+            newY = ((int) y & 0xFFFFFF) | opacity << 24;
         }
-        return original;
+        if(ChatTTF.instance != null && ChatTTF.instance.isToggled()) return CustomFontUtil.drawStringWithShadow(text, x, newY, color);
+        return fontRenderer.drawStringWithShadow(text, x, newY, color);
     }
 
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))

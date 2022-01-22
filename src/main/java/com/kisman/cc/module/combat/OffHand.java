@@ -1,20 +1,16 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.friend.FriendManager;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.ClickType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,9 +24,9 @@ public class OffHand extends Module {
     private final Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
     private final Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
     private final Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
-    private final Setting offhandGapOnSword = new Setting("OffhandGapOnSword", this, true);
-//    private Setting swordItem = new Setting("SwordItem",)
+    private final Setting offhandGapOnSword = new Setting("GapOnSword", this, true);
     private final Setting hotbarFirst = new Setting("HotbarFirst", this, false);
+    private final Setting useUpdateController = new Setting("Use UpdateController", this, true);
 
 
     public OffHand() {
@@ -45,6 +41,7 @@ public class OffHand extends Module {
         setmgr.rSetting(totemOnElytra);
         setmgr.rSetting(offhandGapOnSword);
         setmgr.rSetting(hotbarFirst);
+        setmgr.rSetting(useUpdateController);
     }
 
     public void update() {
@@ -95,7 +92,7 @@ public class OffHand extends Module {
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 45, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
-                mc.playerController.updateController();
+                if(useUpdateController.getValBoolean()) mc.playerController.updateController();
 
                 ChatUtils.complete(ChatFormatting.BLUE + "Offhand now has a " + display);
             }

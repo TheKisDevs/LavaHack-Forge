@@ -22,13 +22,13 @@ public class CustomFontRenderer extends CustomFont {
         setupBoldItalicIDs();
     }
 
-    public void drawStringWithShadow(String text, double x, double y, int color) {
+    public float drawStringWithShadow(String text, double x, double y, int color) {
         drawString(text, x + 1.0D, y + 1.0D, color, true);
-        drawString(text, x, y, color, false);
+        return drawString(text, x, y, color, false);
     }
 
-    public void drawString(String text, float x, float y, int color) {
-        drawString(text, x, y, color, false);
+    public float drawString(String text, float x, float y, int color) {
+        return drawString(text, x, y, color, false);
     }
 
     public void drawCenteredStringWithShadow(String text, float x, float y, int color) {

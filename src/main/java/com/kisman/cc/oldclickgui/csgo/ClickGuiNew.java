@@ -1,8 +1,8 @@
 package com.kisman.cc.oldclickgui.csgo;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.components.*;
 import com.kisman.cc.oldclickgui.csgo.components.Button;
 import com.kisman.cc.oldclickgui.csgo.components.Label;
@@ -12,8 +12,7 @@ import com.kisman.cc.oldclickgui.csgo.layout.GridLayout;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.input.*;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -43,12 +42,14 @@ public class ClickGuiNew extends GuiScreen {
         List<Pane> paneList = new ArrayList<>();
 
         for(Category cat : Category.values()) {
+            ArrayList<Module> modules = Kisman.instance.moduleManager.getModulesInCategory(cat);
             Pane spoilerPane = new Pane(renderer, new GridLayout(1));
-            Button button = new Button(renderer, cat.getName());
+            Button button = new Button(renderer, cat.getName() + (Config.instance.guiRenderSIze.getValBoolean() ? " [" + modules.size() + "]" : ""));
             buttonPane.addComponent(button);
             button.setOnClickListener(() -> setCurrentCategory(cat));
 
-            for(Module module : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+
+            for(Module module : modules) {
                 Pane settingPane = new Pane(renderer, new GridLayout(4));
 
                 {
@@ -93,6 +94,10 @@ public class ClickGuiNew extends GuiScreen {
                     if (Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
                         if(!Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
                             for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(module)) {
+                                if(set.isPreview()) {
+                                    settingPane.addComponent(new Label(renderer, set.getTitle()));
+                                    settingPane.addComponent(new PreviewButton(renderer, set.getEntity()));
+                                }
                                 if(set.isColorPicker()) {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
                                     ColorButton sb = new ColorButton(renderer, set.getColorHSB());
@@ -204,9 +209,7 @@ public class ClickGuiNew extends GuiScreen {
 
         int maxWidth = Integer.MIN_VALUE;
 
-        for(Pane pane : paneList) {
-            maxWidth = Math.max(maxWidth, pane.getWidth());
-        }
+        for(Pane pane : paneList) maxWidth = Math.max(maxWidth, pane.getWidth());
 
         window.setWidth(28 + maxWidth);
 
@@ -229,9 +232,9 @@ public class ClickGuiNew extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        for (ActionEventListener onRenderListener : onRenderListeners) {
-            onRenderListener.onActionEvent();
-        }
+        for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
+
+        window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSIze.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
 
         Point point = MathUtil.calculateMouseLocation();
         window.mouseMoved(point.x * 2, point.y * 2);

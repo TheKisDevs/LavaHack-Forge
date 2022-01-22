@@ -4,6 +4,7 @@ import com.kisman.cc.file.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -20,6 +21,7 @@ public class Config extends Module {
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
+    public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("Pulse Max", this, 110, 0, 255, true);
     public Setting pulseSpeed = new Setting("Pulse Speed", this, 1.5, 0.1, 10, false);
@@ -41,6 +43,7 @@ public class Config extends Module {
         setmgr.rSetting(glowRadius);
         setmgr.rSetting(guiAstolfo);
         setmgr.rSetting(guiRenderSIze);
+        setmgr.rSetting(guiOpenAnimation);
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
         setmgr.rSetting(pulseSpeed);
@@ -54,11 +57,13 @@ public class Config extends Module {
     public void onUpdate(TickEvent.ClientTickEvent event) {
         if(saveConfig.getValBoolean()) {
             SaveConfig.init();
+            ChatUtils.complete("Config saved");
             saveConfig.setValBoolean(false);
         }
 
         if(loadConfig.getValBoolean()) {
             LoadConfig.init();
+            ChatUtils.complete("Config loaded");
             loadConfig.setValBoolean(false);
         }
     }

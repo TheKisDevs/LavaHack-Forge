@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class BlockOutline extends Module {
     public static BlockOutline instance;
 
-    private float[] color = new float[] {0.78f, 0.62f, 0.88f, 1f};
+    private float[] color = new float[] {0, 0, 1f, 1f};
 
     private String renderMode = "";
 
@@ -26,8 +26,6 @@ public class BlockOutline extends Module {
         instance = this;
 
         Kisman.instance.settingsManager.rSetting(new Setting("RenderMode", this, "Outline", new ArrayList<>(Arrays.asList("Outline", "Box", "OutlineBox", "Flat"))));
-
-        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
     }
 
     public void update() {
@@ -36,16 +34,12 @@ public class BlockOutline extends Module {
 
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
-        if(mc.objectMouseOver == null) {
-            return;
-        }
+        if(mc.objectMouseOver == null) return;
         if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
             Block block = BlockUtils.getBlock(mc.objectMouseOver.getBlockPos());
             BlockPos blockPos = mc.objectMouseOver.getBlockPos();
 
-            if (Block.getIdFromBlock(block) == 0) {
-                return;
-            }
+            if (Block.getIdFromBlock(block) == 0) return;
             if(this.renderMode.equalsIgnoreCase("OutlineBox")) {
                 RenderUtil.drawBlockESP(
                         blockPos,

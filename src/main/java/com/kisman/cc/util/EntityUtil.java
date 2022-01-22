@@ -143,12 +143,12 @@ public class EntityUtil {
         return block;
     }
 
-    public static boolean isInLiquid() {
+    public static boolean isInLiquid(boolean feet) {
         if (mc.player != null) {
             if (mc.player.fallDistance >= 3.0f) return false;
             boolean inLiquid = false;
             final AxisAlignedBB bb = mc.player.getRidingEntity() != null ? mc.player.getRidingEntity().getEntityBoundingBox() : mc.player.getEntityBoundingBox();
-            int y = (int) bb.minY;
+            int y = MathHelper.floor(bb.minY - (feet ? 0.03 : 0.2));
             for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX) + 1; x++) {
                 for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ) + 1; z++) {
                     final Block block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
@@ -161,6 +161,10 @@ public class EntityUtil {
             return inLiquid;
         }
         return false;
+    }
+
+    public static boolean isInLiquid() {
+        return isInLiquid(false);
     }
 
     public static float calculate(final double posX, final double posY, final double posZ, final EntityLivingBase entity) {

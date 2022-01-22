@@ -132,29 +132,16 @@ public class CustomFontUtil {
         return fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
     }
 
-    public static void drawStringWithShadow(String text, double x, double y, int color) {
+    public static int drawStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
             switch (getCustomFont()) {
-                case "Verdana": {
-                    Kisman.instance.customFontRenderer.drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
-                    break;
-                }
-                case "Comfortaa": {
-                    comfortaa18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-                case "Consolas": {
-                    consolas18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-                case "Comfortaa Light": {
-                    comfortaal18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
-                    break;
-                }
+                case "Verdana": return (int) Kisman.instance.customFontRenderer.drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
+                case "Comfortaa": return (int) comfortaa18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
+                case "Consolas": return (int) consolas18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
+                case "Comfortaa Light": return (int) comfortaal18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
             }
-        } else {
-            fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float)x, (float)y, color);
         }
+        return fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float)x, (float)y, color);
     }
 
     public static void drawCenteredStringWithShadow(String text, double x, double y, int color) {

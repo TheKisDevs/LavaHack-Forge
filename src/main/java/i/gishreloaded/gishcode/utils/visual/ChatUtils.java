@@ -2,14 +2,8 @@ package i.gishreloaded.gishcode.utils.visual;
 
 import com.kisman.cc.Kisman;
 
-//import i.gishreloaded.gishcode.hack.hacks.GhostMode;
-
-import i.gishreloaded.gishcode.utils.Utils;
 import i.gishreloaded.gishcode.wrappers.Wrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 
 public class ChatUtils {
 	// TODO Rewrite to LogManager
@@ -31,7 +25,7 @@ public class ChatUtils {
 	}
 
 	public static void complete(Object message) {
-		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.GREEN + Kisman.getName() + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.BLACK + "[" + TextFormatting.GREEN + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void warning(Object message) {

@@ -1,20 +1,15 @@
 package com.kisman.cc.module.render;
 
 import com.google.common.collect.Sets;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HoleESP extends Module {
@@ -26,8 +21,6 @@ public class HoleESP extends Module {
     private Setting type = new Setting("Type", this, "Both", new ArrayList<>(Arrays.asList("Outline", "Fill", "Both")));
     private Setting mode = new Setting("Mode", this, "Air", new ArrayList<>(Arrays.asList("Air", "Ground", "Flat", "Slab", "Double")));
     private Setting ufoAlpha = new Setting("UFOAlpha", this, 255, 0, 255, true);
-
-//    private Setting render = new Setting("RenderMode", this, "FlatOutline", new ArrayList<>(Arrays.asList("None", "FlatOutline", "Flat", "Outline", "Full")));
 
     private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
 
@@ -42,7 +35,7 @@ public class HoleESP extends Module {
 
 
     private Setting custom = new Setting("Custom", this, "CustomHoles");
-    private Setting customMode = new Setting("CusomMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Double", "Custom")));
+    private Setting customMode = new Setting("CustomMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Double", "Custom")));
 
     private ConcurrentHashMap<AxisAlignedBB, Colour> holes;
 
@@ -150,7 +143,7 @@ public class HoleESP extends Module {
                 break;
             }
             case "Flat": {
-                RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
+                RenderUtil.drawBox(hole, true, 0.01, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
                 break;
             }
             case "Slab": {
@@ -185,7 +178,7 @@ public class HoleESP extends Module {
                 break;
             }
             case "Flat": {
-                RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                RenderUtil.drawBoundingBoxWithSides(hole.setMaxY(hole.minY + 0.01), width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
                 break;
             }
             case "Slab": {

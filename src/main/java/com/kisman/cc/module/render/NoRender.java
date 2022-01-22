@@ -16,6 +16,7 @@ public class NoRender extends Module {
     public Setting armor = new Setting("Armor", this, false);
     public Setting overlay = new Setting("Overlay", this, false);
     public Setting book = new Setting("Book", this, false);
+    public Setting chatBackground = new Setting("Chat Background", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -27,6 +28,7 @@ public class NoRender extends Module {
         setmgr.rSetting(armor);
         setmgr.rSetting(overlay);
         setmgr.rSetting(book);
+        setmgr.rSetting(chatBackground);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));
