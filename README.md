@@ -19,7 +19,7 @@ Full stack Minecraft cheat for playing at anarchy servers
 `PunCakeCat`
 - discord - `PunCakeCat#4572` 
 
-`Skarlord99`
+`Skarlord99`noob
 - discord - `Skarlord99#5871`
 
 ###### Setup:
