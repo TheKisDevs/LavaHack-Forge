@@ -51,8 +51,8 @@ public class ColorButton extends AbstractComponent {
         updateHeight();
     }
 
-    public ColorButton(IRenderer renderer, Colour color) {
-        this(renderer, color, PREFERRED_WIDTH, PREFERRED_HEIGHT);
+    public ColorButton(IRenderer renderer, Colour colour) {
+        this(renderer, colour, PREFERRED_WIDTH, PREFERRED_HEIGHT);
     }
 
     private void updateWidth() {
@@ -83,6 +83,8 @@ public class ColorButton extends AbstractComponent {
             }
             value = new Colour(finalColor);
         }
+
+        if(listener != null) listener.onValueChange(value);
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {
@@ -151,9 +153,6 @@ public class ColorButton extends AbstractComponent {
         return (mouseX > x + 1 && mouseX < x + 109) && (mouseY > y + 107 && mouseY < y + 120);
     }
 
-    public boolean isInsideButtonOnly(int mouseX, int mouseY) {
-        return (mouseX > x && mouseX < x + getWidth()) && (mouseY > y && mouseY < y + 10);
-    }
     public void drawPicker(int pickerX, int pickerY, int hueSliderX, int hueSliderY, int alphaSliderX, int alphaSliderY, int mouseX, int mouseY) {
         float[] color = new float[]{0, 0, 0, 0};
 
@@ -309,11 +308,7 @@ public class ColorButton extends AbstractComponent {
 
 
     public static String readClipboard() {
-        try {
-            return (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-        } catch (IOException | UnsupportedFlavorException exception) {
-            return null;
-        }
+        try {return (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);} catch (IOException | UnsupportedFlavorException exception) {return null;}
     }
 
     public static void drawGradientRect(final double leftpos, final double top, final double right, final double bottom, final int col1, final int col2) {

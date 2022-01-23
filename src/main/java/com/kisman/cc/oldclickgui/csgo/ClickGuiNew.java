@@ -98,7 +98,7 @@ public class ClickGuiNew extends GuiScreen {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
                                     settingPane.addComponent(new PreviewButton(renderer, set.getEntity()));
                                 }
-                                /*if(set.isColorPicker()) {
+                                if(set.isColorPicker()) {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
                                     ColorButton sb = new ColorButton(renderer, set.getColour());
                                     settingPane.addComponent(sb);
@@ -112,7 +112,7 @@ public class ClickGuiNew extends GuiScreen {
                                     });
 
                                     onRenderListeners.add(() -> sb.setValue(set.getColour()));
-                                }*/
+                                }
                                 if(set.isString()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
                                     StringButton sb = new StringButton(renderer, set.getdString());
