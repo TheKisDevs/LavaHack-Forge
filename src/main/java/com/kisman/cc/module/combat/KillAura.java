@@ -83,7 +83,7 @@ public class KillAura extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
         if(mc.player.isDead) return;
 
         boolean player = Kisman.instance.settingsManager.getSettingByName(this, "Player").getValBoolean();
@@ -100,7 +100,7 @@ public class KillAura extends Module {
                     Entity entity = mc.world.loadedEntityList.get(i);
                     if (Config.instance.friends.getValBoolean() && entity instanceof EntityPlayer && Kisman.instance.friendManager.isFriend((EntityPlayer) entity))  continue;
                     if(!weaponCheck()) return;
-                    doKillAura(entity, hitsound);
+                    doKillAura(entity, hitsound, false);
                 }
             }
         } else if(mode.getValString().equalsIgnoreCase("Single")) {
@@ -108,15 +108,15 @@ public class KillAura extends Module {
 
            if(target == null) return;
            if(!weaponCheck()) return;
-           doKillAura(target, hitsound);
+           doKillAura(target, hitsound, true);
         }
     }
 
-    private void doKillAura(Entity entity, boolean hitsound) {
-        if(mc.player.getDistance(target) <= 4.15 && target.ticksExisted % 20 == 0 && mc.player != entity) {
+    private void doKillAura(Entity entity, boolean hitsound, boolean single) {
+        if(mc.player.getDistance(entity) <= 4.15 && entity.ticksExisted % 20 == 0 && mc.player != entity) {
             boolean isShieldActive = false;
 
-            if(shieldBreaker.getValBoolean()) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
+            if(shieldBreaker.getValBoolean() && single) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
 
             int oldSlot = mc.player.inventory.currentItem;
             int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShieldActive);
@@ -137,7 +137,7 @@ public class KillAura extends Module {
                 } else return;
             }
 
-            attack(target);
+            attack(entity);
             isHit = true;
 
             if (hitsound && isHit) mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_STONE_BREAK, 1));
