@@ -1,9 +1,7 @@
-# lava_hack
-Full stack Minecraft cheat for playing at anarchy servers
-
-<img src="https://img.shields.io/github/languages/code-size/lambda-client/lambda.svg" alt="Code size"/>
-<img src="https://img.shields.io/github/repo-size/lambda-client/lambda.svg" alt="GitHub repo size"/>
-<img src="https://tokei.rs/b1/github/lambda-client/lambda?category=code" alt="Lines of Code"/>
+<h1 align="center">kisman.cc b0.1.6.1</h1>
+<div align="center">
+  <img src="https://img.shields.io/github/contributors/kisman2000/lava_hack" alt="GitHub contributors"/> <img src="https://img.shields.io/github/languages/code-size/kisman2000/lava_hack" alt="GitHub code size in bytes"/> <img src="https://tokei.rs/b1/github/kisman2000/lava_hack" alt="GitHub lines of code"/> <img src="https://img.shields.io/github/last-commit/kisman2000/lava_hack" alt="GitHub last commit"/> <img src="https://img.shields.io/github/downloads/kisman2000/lava_hack/total?style=flat-square" alt="Total downloads"> <a href="https://www.codefactor.io/repository/github/kisman2000/lava_hack"><img src="https://www.codefactor.io/repository/github/kisman2000/lava_hack/badge" alt="CodeFactor" /></a>
+</div>
 
 ###### **Dev team:**
 `_kisman_` 
