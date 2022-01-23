@@ -34,7 +34,7 @@ public class Window {
         this.height = height;
     }
 
-    public void render(IRenderer renderer) {
+    public void render(IRenderer renderer, int mouseX, int mouseY) {
         int fontHeight = renderer.getStringHeight(title);
         int headerFontOffset = fontHeight / 4;
 

@@ -100,6 +100,12 @@ public class PreviewButton extends AbstractComponent {
         return false;
     }
 
+    @Override
+    public boolean mouseReleased(int button, int x, int y, boolean offscreen) {
+
+        return super.mouseReleased(button, x, y, offscreen);
+    }
+
     public void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, Entity ent) {
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();

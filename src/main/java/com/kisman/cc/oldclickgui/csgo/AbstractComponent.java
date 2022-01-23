@@ -3,6 +3,7 @@ package com.kisman.cc.oldclickgui.csgo;
 public abstract class AbstractComponent {
     protected int x;
     protected int y;
+    protected int mouseX, mouseY;
     protected IRenderer renderer;
     private int width;
     private int height;

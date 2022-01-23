@@ -27,19 +27,12 @@ public class Pane extends AbstractComponent {
 
         updateComponentLocation();
 
-        for (AbstractComponent component : components) {
-            component.render();
-        }
+        for (AbstractComponent component : components) component.render();
     }
 
     @Override
     public boolean isSizeChanged() {
-        for (AbstractComponent component : components) {
-            if (component.isSizeChanged()) {
-                return true;
-            }
-        }
-
+        for (AbstractComponent component : components) if (component.isSizeChanged()) return true;
         return super.isSizeChanged();
     }
 
@@ -87,9 +80,7 @@ public class Pane extends AbstractComponent {
         final boolean[] consumed = {false};
 
         components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
-            if (!consumed[0])
-                if (component.mouseMove(x, y, offscreen))
-                    consumed[0] = true;
+            if (!consumed[0]) if (component.mouseMove(x, y, offscreen)) consumed[0] = true;
         });
 
         return consumed[0];
@@ -100,9 +91,7 @@ public class Pane extends AbstractComponent {
         final boolean[] consumed = {false};
 
         components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
-            if (!consumed[0])
-                if (component.mousePressed(button, x, y, offscreen))
-                    consumed[0] = true;
+            if (!consumed[0]) if (component.mousePressed(button, x, y, offscreen)) consumed[0] = true;
         });
 
         return consumed[0];
@@ -113,9 +102,7 @@ public class Pane extends AbstractComponent {
         final boolean[] consumed = {false};
 
         components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
-            if (!consumed[0])
-                if (component.mouseReleased(button, x, y, offscreen))
-                    consumed[0] = true;
+            if (!consumed[0]) if (component.mouseReleased(button, x, y, offscreen)) consumed[0] = true;
         });
 
         return consumed[0];
@@ -126,9 +113,7 @@ public class Pane extends AbstractComponent {
         final boolean[] consumed = {false};
 
         components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
-            if (!consumed[0])
-                if (component.keyPressed(key, c))
-                    consumed[0] = true;
+            if (!consumed[0]) if (component.keyPressed(key, c)) consumed[0] = true;
         });
 
         return consumed[0];
@@ -149,13 +134,8 @@ public class Pane extends AbstractComponent {
     }
 
     private void updateSize() {
-        for (AbstractComponent component : components) {
-            if (component instanceof Pane) {
-                ((Pane) component).updateSize();
-            }
-        }
+        for (AbstractComponent component : components) if (component instanceof Pane) ((Pane) component).updateSize();
         int[] optimalDiemension = layoutManager.getOptimalDiemension(components, Integer.MAX_VALUE);
-
         if (super.getWidth() <= 0) setWidth(optimalDiemension[0]);
         if (super.getHeight() <= 0) setHeight(optimalDiemension[1]);
     }

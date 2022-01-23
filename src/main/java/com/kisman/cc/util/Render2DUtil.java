@@ -15,6 +15,8 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -154,35 +156,6 @@ public class Render2DUtil extends GuiScreen {
         GlStateManager.enableTexture2D();
     }
 
-    public static void drawHueSlider(int x, int y, int w, int h, float hue) {
-        int step = 0;
-
-        if(h > w) {
-            drawRect(x, y, x + w, y + h, 0xFFFF0000);
-            y+= 4;
-
-            for(int index = 0; index < 6; index++) {
-                int prevStep = Color.HSBtoRGB(step / 6f, 1f, 1f);
-                int nexStep = Color.HSBtoRGB((step + 1) / 6f, 1f, 1f);
-                instance.drawGradientRect(x, y + step * (h / 6), x + w, y + (step + 1) * (h / 6), prevStep, nexStep);
-                step++;
-            }
-
-            final int sliderMinY = (int) (y + (h * hue)) - 4;
-
-            drawRect(x, sliderMinY - 1, x + w, sliderMinY + 1, -1);
-        } else {
-            for(int index = 0; index <6; index++) {
-                int prevStep = Color.HSBtoRGB(step / 6f, 1f, 1f);
-                int nextStep = Color.HSBtoRGB((step + 1) / 6f, 1f, 1f);
-                gradient((int) (x + step * (w / 6f)), y, x + (step + 1) * (w / 6), y + h, prevStep, nextStep, true);
-            }
-
-            final int sliderMinX = (int) (x + (w * hue));
-            drawRect(sliderMinX -1, y, sliderMinX + 1, y + h, -1);
-        }
-    }
-
     public static void gradient(int minX, int minY, int maxX, int maxY, int startColor, int endColor, boolean left) {
         if(left) {
             final float startA = (startColor >> 24 & 0xFF) / 255.0f;
@@ -198,7 +171,7 @@ public class Render2DUtil extends GuiScreen {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glShadeModel(GL11.GL_SMOOTH);
+            GL11.glShadeModel(GL_SMOOTH);
             GL11.glBegin(GL11.GL_POLYGON);
             {
                 GL11.glColor4f(startR, startG, startB, startA);
@@ -215,8 +188,24 @@ public class Render2DUtil extends GuiScreen {
         } else instance.drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
 
-    public static void drawGradient(int left, int top, int right, int bottom, int startColor, int endColor) {
-        instance.drawGradientRect(left, top, right, bottom, startColor, endColor);
+    public static void drawLeftGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder builder = tessellator.getBuffer();
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.shadeModel(GL_SMOOTH);
+        builder.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        builder.pos(right, top, 0).color((float) (endColor >> 24 & 255) / 255.0F, (float) (endColor >> 16 & 255) / 255.0F, (float) (endColor >> 8 & 255) / 255.0F, (float) (endColor >> 24 & 255) / 255.0F).endVertex();
+        builder.pos(left, top, 0).color((float) (startColor >> 16 & 255) / 255.0F, (float) (startColor >> 8 & 255) / 255.0F, (float) (startColor & 255) / 255.0F, (float) (startColor >> 24 & 255) / 255.0F).endVertex();
+        builder.pos(left, bottom, 0).color((float) (startColor >> 16 & 255) / 255.0F, (float) (startColor >> 8 & 255) / 255.0F, (float) (startColor & 255) / 255.0F, (float) (startColor >> 24 & 255) / 255.0F).endVertex();
+        builder.pos(right, bottom, 0).color((float) (endColor >> 24 & 255) / 255.0F, (float) (endColor >> 16 & 255) / 255.0F, (float) (endColor >> 8 & 255) / 255.0F, (float) (endColor >> 24 & 255) / 255.0F).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(GL_FLAT);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
     }
 
     public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color, float radius) {

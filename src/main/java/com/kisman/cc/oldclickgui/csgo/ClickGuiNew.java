@@ -98,9 +98,9 @@ public class ClickGuiNew extends GuiScreen {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
                                     settingPane.addComponent(new PreviewButton(renderer, set.getEntity()));
                                 }
-                                if(set.isColorPicker()) {
+                                /*if(set.isColorPicker()) {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
-                                    ColorButton sb = new ColorButton(renderer, set.getColorHSB());
+                                    ColorButton sb = new ColorButton(renderer, set.getColour());
                                     settingPane.addComponent(sb);
                                     sb.setListener(val -> {
                                         set.setColour(val);
@@ -111,14 +111,8 @@ public class ClickGuiNew extends GuiScreen {
                                         return true;
                                     });
 
-                                    sb.setSynsListener(val -> {
-                                        set.setSyns(val);
-                                        return true;
-                                    });
-
                                     onRenderListeners.add(() -> sb.setValue(set.getColour()));
-                                    onRenderListeners.add(() -> sb.syns = (set.isSyns()));
-                                }
+                                }*/
                                 if(set.isString()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
                                     StringButton sb = new StringButton(renderer, set.getdString());
@@ -243,7 +237,7 @@ public class ClickGuiNew extends GuiScreen {
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        window.render(renderer);
+        window.render(renderer, mouseX, mouseY);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 

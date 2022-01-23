@@ -11,6 +11,7 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.ColorPicker;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.util.*;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
@@ -230,6 +231,7 @@ public class Setting {
 		this.parent = parent;
 		this.title = title;
 		this.colorHSB = colorHSB;
+		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
 		this.mode = "ColorPicker";
 	}
 
@@ -239,9 +241,7 @@ public class Setting {
 		this.title = title;
 		this.colour = colour;
 		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
-		this.colorHSB = new float[] {
-				color[0], color[1], color[2], (float) colour.a / 255f
-		};
+		this.colorHSB = new float[] {color[0], color[1], color[2], (float) colour.a / 255f};
 		this.mode = "ColorPicker";
 	}
 
