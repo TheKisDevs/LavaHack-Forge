@@ -35,6 +35,7 @@ public class AutoRer extends Module {
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
     private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
     private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
+    private final Setting logic = new Setting("Logic", this, LogicMode.PlaceBreak);
     public final Setting terrain = new Setting("Terrain", this, false);
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
     private final Setting fastCalc = new Setting("Fast Calc", this, true);
@@ -110,6 +111,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(breakRange);
         setmgr.rSetting(breakWallRange);
         setmgr.rSetting(targetRange);
+        setmgr.rSetting(logic);
         setmgr.rSetting(terrain);
         setmgr.rSetting(switch_);
         setmgr.rSetting(fastCalc);
@@ -205,16 +207,29 @@ public class AutoRer extends Module {
             calcTimer.reset();
         }
 
-        doPlace();
-        doBreak();
+        doAutoRer();
+    }
+
+    private void doAutoRer() {
+        if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
+            doPlace();
+            doBreak();
+        } else {
+            doBreak();
+            doPlace();
+        }
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(renderPos == null) return;
-        if(render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-        else if(render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-        if(text.getValBoolean()) RenderUtil.drawText(renderPos, ((Math.floor(renderDamage) == renderDamage) ? String.valueOf(Integer.valueOf((int) renderDamage)) : String.format("%.1f", renderDamage)));
+        if(renderPos != null){
+            if (render.getValString().equalsIgnoreCase("Default"))
+                RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            else if (render.getValString().equalsIgnoreCase("Advanced"))
+                RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
+            if (text.getValBoolean())
+                RenderUtil.drawText(renderPos, ((Math.floor(renderDamage) == renderDamage) ? String.valueOf(Integer.valueOf((int) renderDamage)) : String.format("%.1f", renderDamage)));
+        }
     }
 
     @EventHandler
@@ -415,6 +430,7 @@ public class AutoRer extends Module {
     public enum SwitchMode {None, Normal, Silent, SilentBypass}
     public enum SwingMode {MainHand, OffHand, PacketSwing}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
+    public enum LogicMode {PlaceBreak, BreakPlace}
 
     private static class Friend {
         public final EntityPlayer friend;

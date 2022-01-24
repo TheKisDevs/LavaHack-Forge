@@ -98,6 +98,7 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
+//		modules.add(new CustomHotbar());
 		modules.add(new EntityESP());
 //		modules.add(new FramebufferTest());
 		modules.add(new FullBright());

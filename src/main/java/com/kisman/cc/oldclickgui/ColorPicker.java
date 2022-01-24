@@ -42,10 +42,10 @@ public class ColorPicker extends GuiScreen {
         this.hueSliderX = pickerX;
         this.hueSliderY = pickerY + pickerHeight + 6;
         this.hueSliderWidth = pickerWidth;
-        this.hueSliderHeight = 10;
+        this.hueSliderHeight = 20;
         this.alphaSliderX = pickerX + pickerWidth + 6;
         this.alphaSliderY = pickerY;
-        this.alphaSliderWidth = 10;
+        this.alphaSliderWidth = 20;
         this.alphaSliderHeight = pickerHeight;
     }
 

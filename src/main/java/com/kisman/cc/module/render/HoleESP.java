@@ -75,7 +75,9 @@ public class HoleESP extends Module {
         List<BlockPos> blockPosList = EntityUtil.getSphere(PlayerUtil.getPlayerPos(), range, range, false, true, 0);
 
         for (BlockPos pos : blockPosList) {
-            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR) || mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR) || mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) continue;
+            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) continue;
+            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR)) continue;
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR)) continue;
             if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) possibleHoles.add(pos);
         }
 

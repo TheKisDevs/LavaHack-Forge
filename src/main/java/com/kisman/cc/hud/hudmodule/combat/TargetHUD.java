@@ -123,7 +123,7 @@ public class TargetHUD extends HudModule {
             }
 
             //draw cooldown slider
-            double cooldownPercentage = MathHelper.clamp(mc.player.getCooledAttackStrength(0), 0.1, 1);
+            double cooldownPercentage = MathHelper.clamp(target.getCooledAttackStrength(0), 0.1, 1);
             cdBarWidth = AnimationUtils.animate(cooldownPercentage * maxSlidersWidth, cdBarWidth, 0.05);
             CustomFontUtil.drawStringWithShadow("Cooldown", x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 27 + 4 + 12, ColorUtils.astolfoColors(100, 100));
             drawSlider(x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight() * 2 + 27 + 6 + 12, cdBarWidth, CustomFontUtil.getFontHeight());
