@@ -72,15 +72,14 @@ public class Colour {
     }
 
     public Colour(int color) {
-        this.r1 = ColorUtils.getRed(color);
-        this.g1 = ColorUtils.getGreen(color);
-        this.b1 = ColorUtils.getBlue(color);
-        this.a1 = ColorUtils.getAlpha(color);
-        this.r = ((int) r1 * 255);
-        this.g = ((int) g1 * 255);
-        this.b = ((int) b1 * 255);
-        this.a = ((int) a1 * 255);
-        isInt = false;
+        this.r = ColorUtils.getRed(color);
+        this.g = ColorUtils.getGreen(color);
+        this.b = ColorUtils.getBlue(color);
+        this.a = ColorUtils.getAlpha(color);
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
         fixColorRange();
     }
 
