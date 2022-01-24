@@ -27,6 +27,7 @@ config
 screenshots
 crash-reports
 .log
+TODO.txt
 
 # Files from Forge MDK
 forge*changelog.txt
