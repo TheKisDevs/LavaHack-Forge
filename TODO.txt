@@ -1,10 +1,12 @@
 For b0.1.6.1:
 
+Add PvpResources
 Add CameraClip
 Add ColorPicker in new cs gui - _kisman_
 Add Particles in new cs gui - PunCakeCat
 Update CheckBox in new cs gui - Skarlord99
 Fix AutoRer render
+Fix AutoEZ
 
 For b0.2
 
