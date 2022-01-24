@@ -223,10 +223,11 @@ public class Setting {
 		this.parent = parent;
 		this.title = title;
 		this.colorHSB = colorHSB;
+		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
 		this.mode = simpleMode ? "ColorPickerSimple" : "ColorPicker";
 	}
 
-	public Setting(String name, Module parent, String title, float[] colorHSB) {//, int dColor
+	public Setting(String name, Module parent, String title, float[] colorHSB) {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
@@ -235,7 +236,7 @@ public class Setting {
 		this.mode = "ColorPicker";
 	}
 
-	public Setting(String name, Module parent, String title, Colour colour) {//, int dColor
+	public Setting(String name, Module parent, String title, Colour colour) {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
@@ -243,15 +244,6 @@ public class Setting {
 		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
 		this.colorHSB = new float[] {color[0], color[1], color[2], (float) colour.a / 255f};
 		this.mode = "ColorPicker";
-	}
-
-	public Setting(String name, HudModule parent, String title, float[] colorHSB) {//, int dColor
-		this.name = name;
-		this.hudParent = parent;
-		this.title = title;
-		this.colorHSB = colorHSB;
-		this.mode = "ColorPickerHud";
-		this.hud = true;
 	}
 
 	public Setting(String name, HudModule parent, int x1, int y1, int x2, int y2) {

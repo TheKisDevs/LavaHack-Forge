@@ -23,19 +23,21 @@ public class ColorButton extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;
     private static final int PREFERRED_HEIGHT = 24;
 
-    private int preferredWidth;
-    private int preferredHeight;
+    private final int preferredWidth;
+    private final int preferredHeight;
     private boolean hovered;
     private boolean opened;
     private boolean selected;
 
     private Colour value;
 
-    private static Tessellator tessellator = Tessellator.getInstance();
-    private static BufferBuilder builder = tessellator.getBuffer();
+    private static final Tessellator tessellator = Tessellator.getInstance();
+    private static final BufferBuilder builder = tessellator.getBuffer();
     private boolean pickingColor = false;
     private boolean pickingHue = false;
     private boolean pickingAlpha = false;
+    private int[] pickerCoord = new int[] {x / 2 + 1, y / 2 + 12, x / 2 + 111, y / 2 + 12, x / 2 + 1, y / 2 + 94};
+    private final int pickerWidth = 108, pickerHeight = 80, hueSliderWidth = 14, hueSliderHeight = 105, alphaSliderWidth = 108, alphaSliderHeight = 12;
 
     private Color finalColor;
 
@@ -69,17 +71,18 @@ public class ColorButton extends AbstractComponent {
     public void render() {
         updateWidth();
         updateHeight();
+        pickerCoord = new int[] {x / 2 + 1, y / 2 + 12, x / 2 + 111, y / 2 + 12, x / 2 + 1, y / 2 + 94};
 
-        renderer.drawRect(x, y, getWidth(), getHeight(), value.getColor());
+        try {if(!opened) renderer.drawRect(x, y, getWidth(), getHeight(), value.getColor());} catch(Exception ignored) {}
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
         String hex = String.format("#%06x", value.getRGB() & 0xFFFFFF);
         if (opened) {
-            drawPicker(x + 1, y + 12, x + 111, y + 12, x + 1, y + 94, mouseX, mouseY);
-            CustomFontUtil.drawStringWithShadow(selected ? ChatFormatting.UNDERLINE + hex : hex, x + 109 / 2f - (CustomFontUtil.getStringWidth(hex) / 2f), y + 109 + (11 / 2f) - (CustomFontUtil.getFontHeight() / 2f), -1);
+            drawPicker(x / 2 + 1, y / 2 + 12, x / 2 + 111, y / 2 + 12, x / 2 + 1, y / 2 + 94, mouseX, mouseY);
+            CustomFontUtil.drawStringWithShadow(selected ? ChatFormatting.UNDERLINE + hex : hex, x / 2f + 109 / 2f - (CustomFontUtil.getStringWidth(hex) / 2f), y / 2f + 109 + (11 / 2f) - (CustomFontUtil.getFontHeight() / 2f), -1);
             if (selected) {
-                CustomFontUtil.drawStringWithShadow(isInsideCopy(mouseX, mouseY) ? ChatFormatting.UNDERLINE + "Copy" : "Copy", (x + ((107) / 8f) * 2) - (CustomFontUtil.getStringWidth("Copy") / 2f), y + 120, -1);
-                CustomFontUtil.drawStringWithShadow(isInsidePaste(mouseX, mouseY) ? ChatFormatting.UNDERLINE + "Paste" : "Paste", (x + ((107) / 8f) * 6) - (CustomFontUtil.getStringWidth("Paste") / 2f), y + 120, -1);
+                CustomFontUtil.drawStringWithShadow(isInsideCopy(mouseX, mouseY) ? ChatFormatting.UNDERLINE + "Copy" : "Copy", (x + ((107) / 8f) * 2) - (CustomFontUtil.getStringWidth("Copy") / 2f), y / 2f + 120, -1);
+                CustomFontUtil.drawStringWithShadow(isInsidePaste(mouseX, mouseY) ? ChatFormatting.UNDERLINE + "Paste" : "Paste", (x + ((107) / 8f) * 6) - (CustomFontUtil.getStringWidth("Paste") / 2f), y / 2f + 120, -1);
             }
             value = new Colour(finalColor);
         }
@@ -88,7 +91,7 @@ public class ColorButton extends AbstractComponent {
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {
-        hovered = !offscreen && x >= this.x && y >= this.y && x <= this.x + getWidth() && y <= this.y + getHeight();
+        hovered = !offscreen && x >= this.x && y >= this.y && x <= this.x + getWidth() && y <= this.y + preferredHeight;
     }
 
     @Override
@@ -111,13 +114,21 @@ public class ColorButton extends AbstractComponent {
             }
             if (selected && isInsidePaste(x, y)) {
                 if (readClipboard() != null) {
-                    if (Objects.requireNonNull(readClipboard()).startsWith("#")) {
-                        value = new Colour(Color.decode(Objects.requireNonNull(readClipboard())));
-                        return true;
-                    } else {
-                        Minecraft.getMinecraft().player.sendMessage(new TextComponentString("The color your pasting is not a hex-type color."));
-                        return true;
-                    }
+                    if (Objects.requireNonNull(readClipboard()).startsWith("#")) value = new Colour(Color.decode(Objects.requireNonNull(readClipboard())));
+                    else Minecraft.getMinecraft().player.sendMessage(new TextComponentString("The color your pasting is not a hex-type color."));
+                    return true;
+                }
+            }
+            if (!pickingColor && !pickingHue && !pickingAlpha) {
+                if (mouseOver(pickerCoord[0], pickerCoord[1], pickerCoord[0] + pickerWidth, pickerCoord[1] + pickerHeight, mouseX, mouseY)) {
+                    pickingColor = true;
+                    return true;
+                } else if (mouseOver(pickerCoord[2], pickerCoord[3], pickerCoord[2] + hueSliderWidth, pickerCoord[3] + hueSliderHeight, mouseX, mouseY)) {
+                    pickingHue = true;
+                    return true;
+                } else if (mouseOver(pickerCoord[4], pickerCoord[5], pickerCoord[4] + alphaSliderWidth, pickerCoord[5] + alphaSliderHeight, mouseX, mouseY)) {
+                    pickingAlpha = true;
+                    return true;
                 }
             }
         } else if(button == 1 && opened) {
@@ -142,37 +153,21 @@ public class ColorButton extends AbstractComponent {
     }
 
     public boolean isInsideCopy(int mouseX, int mouseY) {
-        return (mouseX > x + 1 && mouseX < x + (107 / 2f)) && (mouseY > y + 120 && mouseY < y + 130);
+        return (mouseX > x / 2 + 1 && mouseX < x / 2f + (107 / 2f)) && (mouseY > y / 2 + 120 && mouseY < y / 2 + 130);
     }
 
     public boolean isInsidePaste(int mouseX, int mouseY) {
-        return (mouseX > x + (107 / 2f) && mouseX < x + 109) && (mouseY > y + 120 && mouseY < y + 130);
+        return (mouseX > x / 2f + (107 / 2f) && mouseX < x / 2 + 109) && (mouseY > y / 2 + 120 && mouseY < y / 2 + 130);
     }
 
     public boolean isInsideHex(int mouseX, int mouseY) {
-        return (mouseX > x + 1 && mouseX < x + 109) && (mouseY > y + 107 && mouseY < y + 120);
+        return (mouseX > x / 2 + 1 && mouseX < x / 2 + 109) && (mouseY > y / 2 + 107 && mouseY < y / 2 + 120);
     }
 
     public void drawPicker(int pickerX, int pickerY, int hueSliderX, int hueSliderY, int alphaSliderX, int alphaSliderY, int mouseX, int mouseY) {
         float[] color = new float[]{0, 0, 0, 0};
 
         try {color = new float[]{Color.RGBtoHSB(value.r, value.g, value.b, null)[0], Color.RGBtoHSB(value.r, value.g, value.b, null)[1], Color.RGBtoHSB(value.r, value.g, value.b, null)[2], value.a1};} catch (Exception ignored) {   }
-
-        int pickerWidth = 108;
-        int pickerHeight = 80;
-        int hueSliderWidth = 14;
-        int hueSliderHeight = 105;
-        int alphaSliderWidth = 108;
-        int alphaSliderHeight = 12;
-
-        if (!pickingColor && !pickingHue && !pickingAlpha) {
-            if (Mouse.isButtonDown(0) && mouseOver(pickerX, pickerY, pickerX + pickerWidth, pickerY + pickerHeight, mouseX, mouseY)) {
-                pickingColor = true;
-            } else if (Mouse.isButtonDown(0) && mouseOver(hueSliderX, hueSliderY, hueSliderX + hueSliderWidth, hueSliderY + hueSliderHeight, mouseX, mouseY)) {
-                pickingHue = true;
-            } else if (Mouse.isButtonDown(0) && mouseOver(alphaSliderX, alphaSliderY, alphaSliderX + alphaSliderWidth, alphaSliderY + alphaSliderHeight, mouseX, mouseY))
-                pickingAlpha = true;
-        }
 
         if (pickingHue) {
             float restrictedY = (float) Math.min(Math.max(hueSliderY, mouseY), hueSliderY + hueSliderHeight);

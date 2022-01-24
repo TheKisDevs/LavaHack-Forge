@@ -16,6 +16,11 @@ public class Colour {
         this.g = g;
         this.b = b;
         this.a = a;
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
+        fixColorRange();
     }
 
     public Colour(int r, int g, int b) {
@@ -23,6 +28,11 @@ public class Colour {
         this.g = g;
         this.b = b;
         this.a = 255;
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = 1;
+        fixColorRange();
     }
 
     public Colour(Colour color, int a) {
@@ -30,13 +40,22 @@ public class Colour {
         this.g = color.g;
         this.b = color.b;
         this.a = a;
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
+        fixColorRange();
     }
 
     public Colour(float r, float g, float b) {
         this.r1 = r;
         this.g1 = g;
         this.b1 = b;
+        this.r = ((int) r1 * 255);
+        this.g = ((int) g1 * 255);
+        this.b = ((int) b1 * 255);
         isInt = false;
+        fixColorRange();
     }
 
     public Colour(float r, float g, float b, float a) {
@@ -44,7 +63,12 @@ public class Colour {
         this.g1 = g;
         this.b1 = b;
         this.a1 = a;
+        this.r = ((int) r1 * 255);
+        this.g = ((int) g1 * 255);
+        this.b = ((int) b1 * 255);
+        this.a = ((int) a1 * 255);
         isInt = false;
+        fixColorRange();
     }
 
     public Colour(int color) {
@@ -52,11 +76,31 @@ public class Colour {
         this.g1 = ColorUtils.getGreen(color);
         this.b1 = ColorUtils.getBlue(color);
         this.a1 = ColorUtils.getAlpha(color);
-        this.r = (int) (r1 * 255);
-        this.g = (int) (g1 * 255);
-        this.b = (int) (b1 * 255);
-        this.a = (int) (a1 * 255);
+        this.r = ((int) r1 * 255);
+        this.g = ((int) g1 * 255);
+        this.b = ((int) b1 * 255);
+        this.a = ((int) a1 * 255);
         isInt = false;
+        fixColorRange();
+    }
+
+    private void fixColorRange() {
+        if(r > 255) r = 255;
+        else if(r < 0) r = 0;
+        if(g > 255) g = 255;
+        else if(g < 0) g = 0;
+        if(b > 255) b= 255;
+        else if(b < 0) b = 0;
+        if(a > 255) a = 255;
+        else if(a< 0) a = 0;
+        if(r1 > 1) r1 = 1;
+        else if(r1 < 0) r1 = 0;
+        if(g1 > 1) g1 = 1;
+        else if(g1 < 0) g1 = 0;
+        if(b1 > 1) b1 = 1;
+        else if(b1 < 0) b1 = 0;
+        if(a1 > 1) a1 = 1;
+        else if(a1 < 0) a1 = 0;
     }
 
     public Colour(Color color) {
@@ -69,8 +113,7 @@ public class Colour {
     }
 
     public int getRGB() {
-        if(isInt) return new Color(r, g, b, a).getRGB();
-        else return new Color((int) r1 * 255, (int) g1 * 255, (int) b1 * 255, (int) a1 * 255).getRGB();
+        return new Color(r, g, b, a).getRGB();
     }
 
     public float getR() {
@@ -79,19 +122,13 @@ public class Colour {
     }
 
     public float getG() {
-        if(isInt) {
-            return (float) g / 255;
-        } else {
-            return g1;
-        }
+        if(isInt) return (float) g / 255;
+        else return g1;
     }
 
     public float getB() {
-        if(isInt) {
-            return (float) b / 255;
-        } else {
-            return b1;
-        }
+        if(isInt) return (float) b / 255;
+        else return b1;
     }
 
     public float getA() {
