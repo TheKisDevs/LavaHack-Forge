@@ -33,6 +33,7 @@ public class Credits extends Module {
         add("Phobos 1.9.0", "RangeVisualisator");
         add("NEC", "NEC");
         add("RerHack.club", "Help me with AutoRer");
+        add("Aurora", "ChatTTF");
         add("Some contributors", "some modules");
 
         ChatUtils.simpleMessage(msg);
