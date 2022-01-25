@@ -54,46 +54,12 @@ public class CustomFontUtil {
     }
 
     public static int getStringWidth(String text) {
-/*        if(CustomFont.instance != null && customFont()) {
-            switch(getCustomFont()) {
-                case "Verdana": return verdata18.getStringWidth(text);
-                case "Comfortaa": return comfortaal18.getStringWidth(text);
-                case "Comfortaa Light": return comfortaal18.getStringWidth(text);
-                case "Consolas": return consolas18.getStringWidth(text);
-            }
-        }
-
-        return fontRenderer.getStringWidth(text);*/
-        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (comfortaa18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
-//        return customFont() ? (Kisman.instance.customFontRenderer.getStringWidth(text) + 3) : fontRenderer.getStringWidth(text);
+        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") || getCustomFont().equalsIgnoreCase("Comfortaa Bold") ? (comfortaa18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
     }
 
     public static int getStringWidth(String text, boolean gui) {
-/*        if(CustomFont.instance != null && customFont()) {
-            switch(getCustomFont()) {
-                case "Verdana": return verdata18.getStringWidth(text);
-                case "Comfortaa": return comfortaal18.getStringWidth(text);
-                case "Comfortaa Light": return comfortaal18.getStringWidth(text);
-                case "Consolas": return consolas18.getStringWidth(text);
-            }
-        }
-
-        return fontRenderer.getStringWidth(text);*/
-        return customFont() ? getCustomFont().equals("Verdana") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (Kisman.instance.customFontRenderer1.getStringWidth(text)) : (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (consolas15.getStringWidth(text)) : (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (comfortaa15.getStringWidth(text)) : (comfortaal18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
+        return customFont() ? getCustomFont().equals("Verdana") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (Kisman.instance.customFontRenderer1.getStringWidth(text)) : (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (consolas15.getStringWidth(text)) : (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") || getCustomFont().equalsIgnoreCase("Comfortaa Bold") ? (CSGOGui.instance.customSize.getValBoolean() && gui) ? (comfortaa15.getStringWidth(text)) : (comfortaal18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
     }
-
-/*    public static int getStringWidth(String text, boolean gui) {
-        if(CustomFont.instance != null && customFont()) {
-            switch(getCustomFont()) {
-                case "Verdana": return (CSGOGui.instance.customSize.getValBoolean() && gui ? verdata15 : verdata18).getStringWidth(text);
-                case "Comfortaa": return (CSGOGui.instance.customSize.getValBoolean() && gui ? comfortaa15 : comfortaa18).getStringWidth(text);
-                case "Comfortaa Light": return (CSGOGui.instance.customSize.getValBoolean() && gui ? comfortaal15 : comfortaal18).getStringWidth(text);
-                case "Consolas": return (CSGOGui.instance.customSize.getValBoolean() && gui ? consolas15 : consolas18).getStringWidth(text);
-            }
-        }
-
-        return fontRenderer.getStringWidth(text);
-    }*/
 
     public static void drawString(String text, double x, double y, int color, boolean gui) {
         if (customFont()) {
@@ -114,10 +80,11 @@ public class CustomFontUtil {
                     comfortaal18.drawString(getStringModofiers() + text, x, y, color);
                     break;
                 }
+                case "Comfortaa Bold":
+                    comfortaab18.drawString(text, x, y, color);
+                    break;
             }
-        } else {
-            fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
-        }
+        } else fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
     }
 
     public static int drawString(String text, double x, double y, int color) {
@@ -127,6 +94,7 @@ public class CustomFontUtil {
                 case "Comfortaa": return (int) comfortaa18.drawString(getStringModofiers() + text, x, y, color);
                 case "Consolas": return (int) consolas18.drawString(getStringModofiers() + text, x, y, color);
                 case "Comfortaa Light": return (int) comfortaal18.drawString(getStringModofiers() + text, x, y, color);
+                case "Comfortaa Bold": return (int) comfortaab18.drawString(getStringModofiers() + text, x, y, color);
             }
         }
         return fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
@@ -139,6 +107,7 @@ public class CustomFontUtil {
                 case "Comfortaa": return (int) comfortaa18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
                 case "Consolas": return (int) consolas18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
                 case "Comfortaa Light": return (int) comfortaal18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
+                case "Comfortaa Bold": return (int) comfortaab18.drawStringWithShadow(getStringModofiers() + text, x, y, color);
             }
         }
         return fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float)x, (float)y, color);
@@ -163,76 +132,20 @@ public class CustomFontUtil {
                     comfortaal18.drawCenteredStringWithShadow(getStringModofiers() + text, x, y, color);
                     break;
                 }
+                case "Comfortaa Bold":
+                    comfortaab18.drawCenteredStringWithShadow(getStringModofiers() + text, x, y, color);
+                    break;
             }
-        } else {
-            fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float) x - fontRenderer.getStringWidth(getStringModofiers() + text) / 2.0F, (float) y, color);
-        }
-    }
-
-    public static void drawCenteredString(String text, float x, float y, int color) {
-        if (customFont()) {
-            switch (getCustomFont()) {
-                case "Verdana": {
-                    Kisman.instance.customFontRenderer.drawCenteredString(getStringModofiers() + text, x, y - 1f, color);
-                    break;
-                }
-                case "Comfortaa": {
-                    comfortaa18.drawCenteredString(getStringModofiers() + text, x, y - 1f, color);
-                    break;
-                }
-                case "Consolas": {
-                    consolas18.drawCenteredString(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-                case "Comfortaa Light": {
-                    comfortaal18.drawCenteredString(getStringModofiers() + text, x, y, color);
-                    break;
-                }
-            }
-        } else {
-            fontRenderer.drawString(getStringModofiers() + text, (int)(x - (getStringWidth(getStringModofiers() + text) / 2)), (int)y, color);
-        }
+        } else fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float) x - fontRenderer.getStringWidth(getStringModofiers() + text) / 2.0F, (float) y, color);
     }
 
     public static int getFontHeight(boolean gui) {
-/*        if(CustomFont.instance != null) {
-            if(CustomFont.turnOn) {
-                switch(CustomFont.instance.mode.getValString()) {
-                    case "Verdana": return (CSGOGui.instance.customSize.getValBoolean() && gui ? verdana15 : verdana18).fontHeight;
-                    case "Comfortaa": return (CSGOGui.instance.customSize.getValBoolean() && gui ? comfortaa15 : comfortaa18).fontHeight;
-                    case "Comfortaa Light": return (CSGOGui.instance.customSize.getValBoolean() && gui ? comfortaal15 : comfortaal18).fontHeight;
-                    case "Consolas": return (CSGOGui.instance.customSize.getValBoolean() && gui ? consolas15 : consolas18).fontHeight;
-                }
-            }
-        }
-
-        return fontRenderer.FONT_HEIGHT;*/
         return customFont() ? getCustomFont().equalsIgnoreCase("Verdana") ? (Kisman.instance.customFontRenderer.fontHeight / 2 - 1) : getCustomFont().equalsIgnoreCase("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui ?  (consolas15.fontHeight - 8) / 2 : (consolas18.fontHeight - 8) / 2) : (comfortaa18.fontHeight - 8) / 2 : fontRenderer.FONT_HEIGHT;
 
     }
 
     public static int getFontHeight() {
-/*        if(CustomFont.instance != null) {
-            if(customFont()) {
-                switch(CustomFont.instance.mode.getValString()) {
-                    case "Verdana": return verdata18.fontHeight;
-                    case "Comfortaa": return comfortaa15.fontHeight;
-                    case "Comfortaa Light": return comfortaal18.fontHeight;
-                    case "Consolas": return consolas18.fontHeight;
-                }
-            }
-        }
-
-        return fontRenderer.FONT_HEIGHT;*/
         return customFont() ? getCustomFont().equalsIgnoreCase("Verdana") ? (Kisman.instance.customFontRenderer.fontHeight / 2 - 1) : getCustomFont().equalsIgnoreCase("Consolas") ? (consolas15.fontHeight - 8) / 2 : (comfortaa18.fontHeight - 8) / 2 : fontRenderer.FONT_HEIGHT;
-    }
-
-    public static boolean validateFont(String font) {
-        for (String s : GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()) {
-            if (s.equals(font))
-                return true;
-        }
-        return false;
     }
 
     private static boolean customFont() {
@@ -246,15 +159,8 @@ public class CustomFontUtil {
     private static String getStringModofiers() {
         String str = "";
         if(CustomFont.instance != null) {
-
-            if(CustomFont.instance.italic.getValBoolean()) {
-                str += TextFormatting.ITALIC;
-            }
-
-            if(CustomFont.instance.bold.getValBoolean() && getCustomFont().equalsIgnoreCase("Verdana")) {
-                str += TextFormatting.BOLD;
-            }
-
+            if(CustomFont.instance.italic.getValBoolean()) str += TextFormatting.ITALIC;
+            if(CustomFont.instance.bold.getValBoolean() && getCustomFont().equalsIgnoreCase("Verdana")) str += TextFormatting.BOLD;
         }
         return str;
     }

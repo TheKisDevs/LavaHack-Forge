@@ -60,9 +60,7 @@ public abstract class MixinGuiNewChat {
     private void translate(CallbackInfo ci) {
         if (ChatAnimation.instance.isToggled()) {
             float y = 1.0f;
-            if (!this.isScrolled) {
-                y += (9.0f - 9.0f * this.animationPercent) * this.getChatScale();
-            }
+            if (!this.isScrolled) y += (9.0f - 9.0f * this.animationPercent) * this.getChatScale();
             GlStateManager.translate(0.0f, y, 0.0f);
         }
     }
@@ -70,6 +68,13 @@ public abstract class MixinGuiNewChat {
     @ModifyArg(method = "drawChat" , at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;", ordinal = 0, remap = false), index = 0)
     private int getLineBeingDrawn(int line) {
         return this.lineBeingDrawn = line;
+    }
+
+    @Redirect(method = {"drawChat"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V"))
+    private void drawBackground(int left, int top, int right, int bottom, int color) {
+        if(NoRender.instance.chatBackground.getValBoolean()) return;
+
+        Gui.drawRect(left, top, right, bottom, color);
     }
 
     @Redirect(method = {"drawChat"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))

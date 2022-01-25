@@ -27,6 +27,7 @@ import com.kisman.cc.util.glow.ShaderShell;
 import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.*;
 import org.apache.logging.log4j.*;
@@ -41,6 +42,7 @@ import org.lwjgl.opengl.Display;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.HashMap;
 
 @SideOnly(Side.CLIENT)
 @Obfuscation(exclude = true, applyToMembers = true)
@@ -61,6 +63,7 @@ public class Kisman {
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
+    public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 
     public boolean init = false;
 

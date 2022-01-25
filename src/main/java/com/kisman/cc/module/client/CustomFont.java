@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting;
 import java.util.*;
 
 public class CustomFont extends Module {
-    public Setting mode = new Setting("Mode", this, "Comfortaa", new ArrayList<>(Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Consolas")));
+    public Setting mode = new Setting("Mode", this, "Comfortaa", new ArrayList<>(Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas")));
     public Setting bold = new Setting("Bold", this, false);
     public Setting italic = new Setting("Italic", this, false);
 

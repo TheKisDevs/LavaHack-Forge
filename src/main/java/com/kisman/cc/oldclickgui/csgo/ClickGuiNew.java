@@ -230,6 +230,7 @@ public class ClickGuiNew extends GuiScreen {
 
         window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSIze.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
 
+        GL11.glPushMatrix();
         Point point = MathUtil.calculateMouseLocation();
         window.mouseMoved(point.x * 2, point.y * 2);
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -240,6 +241,22 @@ public class ClickGuiNew extends GuiScreen {
         window.render(renderer, mouseX, mouseY);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glPopMatrix();
+
+        if(Config.instance.guiOpenAnimation.getValBoolean()) {
+            GL11.glPushMatrix();
+
+            float insizer = 0;
+            if (Kisman.map.containsKey(this)) {
+                Kisman.map.entrySet().forEach(m -> m.setValue(lerp(m.getValue(), 0.5f, 0.06f)));
+                insizer = -Kisman.map.get(this);
+            }
+            GL11.glTranslated(-insizer * 4.75, -insizer * 2.75, 0);
+            GL11.glScaled(1 + insizer / 100, 1 + insizer / 100, 1);
+            GL11.glTranslated(0, -insizer, 0);
+
+            GL11.glPopMatrix();
+        }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -285,5 +302,9 @@ public class ClickGuiNew extends GuiScreen {
     private void setCurrentCategory(Category category) {
         spoilerPane.clearComponents();
         spoilerPane.addComponent(categoryPaneMap.get(category));
+    }
+
+    private float lerp(float start, float end, float step){
+        return start + step * (end - start);
     }
 }

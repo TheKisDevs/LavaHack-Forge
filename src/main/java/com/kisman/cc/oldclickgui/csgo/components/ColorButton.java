@@ -30,8 +30,6 @@ public class ColorButton extends AbstractComponent {
     private int alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight;
     private int selectedColorFinal;
 
-    private int mouseXByPicker, mouseYByPicker;
-
     private ValueChangeListener<Colour> listener;
 
     public ColorButton(IRenderer renderer, Colour colour, int preferredWidth, int preferredHeight) {
@@ -39,12 +37,13 @@ public class ColorButton extends AbstractComponent {
         this.preferredWidth = preferredWidth;
         this.preferredHeight = preferredHeight;
         this.value = colour;
-        this.color = new float[] {colour.r1, colour.g1, colour.b1, 1};
-        this.pickingColor = false;
+        float[] hsb = Color.RGBtoHSB(value.r, value.g, value.b, null);
+        this.color = new float[] {hsb[0], hsb[1], hsb[2], value.a1};
+        this.pickingColor = this.pickingAlpha = this.pickingHue = false;
 
         this.pickerWidth = 120;
         this.pickerHeight = 100;
-        this.pickerX = x / 2 + pickerWidth;
+        this.pickerX = x / 2;
         this.pickerY = y / 2 + preferredHeight / 2;
         this.hueSliderX = pickerX;
         this.hueSliderY = pickerY + pickerHeight + 6;
@@ -63,11 +62,6 @@ public class ColorButton extends AbstractComponent {
         this(renderer, colour, PREFERRED_WIDTH, PREFERRED_HEIGHT);
     }
 
-    private void setupCustomMouseCoords(int mouseX, int mouseY) {
-        mouseXByPicker = mouseX - x;
-        mouseYByPicker = mouseY - y;
-    }
-
     private void updateWidth() {
         if(opened) setWidth((pickerWidth + 6 + alphaSliderWidth) * 2);
         else setWidth(preferredWidth);
@@ -77,6 +71,19 @@ public class ColorButton extends AbstractComponent {
         if (opened) setHeight(preferredHeight + (pickerHeight + 6 + hueSliderHeight) * 2);
         else setHeight(preferredHeight);
     }
+
+/*    private void updateDragging(int mouseX, int mouseY) {
+        int pickerX = x / 2;
+        int pickerY = y / 2 + preferredHeight / 2;
+        int hueSliderX = pickerX;
+        int hueSliderY = pickerY + pickerHeight + 6;
+        int hueSliderWidth = pickerWidth;
+        int hueSliderHeight = 10;
+        int alphaSliderX = pickerX + pickerWidth + 6;
+        int alphaSliderY = pickerY;
+        int alphaSliderWidth = 10;
+        int alphaSliderHeight = pickerHeight;
+    }*/
 
     @Override
     public void render() {
@@ -90,7 +97,6 @@ public class ColorButton extends AbstractComponent {
         this.alphaSliderY = pickerY;
         this.alphaSliderWidth = 10;
         this.alphaSliderHeight = pickerHeight;
-        this.color = new float[] {value.r1, value.g1, value.b1, value.a1};
         updateWidth();
         updateHeight();
 
@@ -98,30 +104,6 @@ public class ColorButton extends AbstractComponent {
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
         if (opened) {
-            if (this.pickingHue) {
-                if (this.hueSliderWidth > this.hueSliderHeight) {
-                    float restrictedX = (float) Math.min(Math.max(hueSliderX, mouseXByPicker), hueSliderX + hueSliderWidth);
-                    this.color[0] = (restrictedX - (float) hueSliderX) / hueSliderWidth;
-                } else {
-                    float restrictedY = (float) Math.min(Math.max(hueSliderY, mouseYByPicker), hueSliderY + hueSliderHeight);
-                    this.color[0] = (restrictedY - (float) hueSliderY) / hueSliderHeight;
-                }
-            }
-            if (this.pickingAlpha) {
-                if (this.alphaSliderWidth > this.alphaSliderHeight) {
-                    float restrictedX = (float) Math.min(Math.max(alphaSliderX, mouseXByPicker), alphaSliderX + alphaSliderWidth);
-                    this.color[3] = 1 - (restrictedX - (float) alphaSliderX) / alphaSliderWidth;
-                } else {
-                    float restrictedY = (float) Math.min(Math.max(alphaSliderY, mouseYByPicker), alphaSliderY + alphaSliderHeight);
-                    this.color[3] = 1 - (restrictedY - (float) alphaSliderY) / alphaSliderHeight;
-                }
-            }
-            if (this.pickingColor) {
-                float restrictedX = (float) Math.min(Math.max(pickerX, mouseXByPicker), pickerX + pickerWidth);
-                float restrictedY = (float) Math.min(Math.max(pickerY, mouseYByPicker), pickerY + pickerHeight);
-                this.color[1] = (restrictedX - (float) pickerX) / pickerWidth;
-                this.color[2] = 1 - (restrictedY - (float) pickerY) / pickerHeight;
-            }
             int selectedX = pickerX + pickerWidth + 6;
             int selectedY = pickerY + pickerHeight + 6;
             int selectedWidth = 10;
@@ -157,7 +139,11 @@ public class ColorButton extends AbstractComponent {
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {
-        hovered = !offscreen && x >= this.x && y >= this.y && x <= this.x + getWidth() && y <= this.y + preferredHeight;
+        hovered = !offscreen && x >= this.x && y >= this.y && x <= this.x + getWidth() && y <= this.y + getHeight();
+    }
+
+    private boolean kismanontop(int x, int y, boolean offscreen) {
+        return !offscreen && x >= this.x && y >= this.y && x <= this.x + getWidth() && y <= this.y + preferredHeight;
     }
 
     protected boolean check(int minX, int minY, int maxX, int maxY, int curX, int curY) {
@@ -166,7 +152,8 @@ public class ColorButton extends AbstractComponent {
 
     @Override
     public boolean mouseMove(int x, int y, boolean offscreen) {
-        setupCustomMouseCoords(x, y);
+        updateHovered(x, y, offscreen);
+        updateValue(x / 2 , y / 2);
         return false;
     }
 
@@ -175,26 +162,60 @@ public class ColorButton extends AbstractComponent {
         if (button == 0) {
             updateHovered(x, y, offscreen);
 
-            if(hovered) {
+            if(kismanontop(x, y, offscreen)) {
                 opened = !opened;
                 updateWidth();
                 updateHeight();
                 return true;
             }
             if(opened) {
-                pickingColor = check(pickerX, pickerY, pickerX + pickerWidth, pickerY + pickerHeight, mouseXByPicker, mouseYByPicker);
-                pickingHue = check(hueSliderX, hueSliderY, hueSliderX + hueSliderWidth, hueSliderY + hueSliderHeight, mouseXByPicker, mouseYByPicker);
-                pickingAlpha = check(alphaSliderX, alphaSliderY, alphaSliderX + alphaSliderWidth, alphaSliderY + alphaSliderHeight, mouseXByPicker, mouseYByPicker);
+                pickingColor = !offscreen && check(pickerX, pickerY, pickerX + pickerWidth, pickerY + pickerHeight, x / 2, y / 2);
+                System.out.println(pickerX + " | " + pickerY + " | " + pickerWidth + " | " + pickerHeight + " | " + x + " | " + y);
+                pickingHue = !offscreen && check(hueSliderX, hueSliderY, hueSliderX + hueSliderWidth, hueSliderY + hueSliderHeight, x / 2, y / 2);
+                pickingAlpha = !offscreen && check(alphaSliderX, alphaSliderY, alphaSliderX + alphaSliderWidth, alphaSliderY + alphaSliderHeight, x / 2, y / 2);
+                if(pickingAlpha || pickingColor || pickingHue) updateValue(x / 2, y / 2);
                 return pickingColor || pickingHue || pickingAlpha;
             }
         }
         return false;
     }
 
+    private void updateValue(int mouseX, int mouseY) {
+        if (this.pickingHue) {
+            if (this.hueSliderWidth > this.hueSliderHeight) {
+                float restrictedX = (float) Math.min(Math.max(hueSliderX, mouseX), hueSliderX + hueSliderWidth);
+                this.color[0] = (restrictedX - (float) hueSliderX) / hueSliderWidth;
+            } else {
+                float restrictedY = (float) Math.min(Math.max(hueSliderY, mouseY), hueSliderY + hueSliderHeight);
+                this.color[0] = (restrictedY - (float) hueSliderY) / hueSliderHeight;
+            }
+        }
+        if (this.pickingAlpha) {
+            if (this.alphaSliderWidth > this.alphaSliderHeight) {
+                float restrictedX = (float) Math.min(Math.max(alphaSliderX, mouseX), alphaSliderX + alphaSliderWidth);
+                this.color[3] = 1 - (restrictedX - (float) alphaSliderX) / alphaSliderWidth;
+            } else {
+                float restrictedY = (float) Math.min(Math.max(alphaSliderY, mouseY), alphaSliderY + alphaSliderHeight);
+                this.color[3] = 1 - (restrictedY - (float) alphaSliderY) / alphaSliderHeight;
+            }
+        }
+        if (this.pickingColor) {
+            float restrictedX = (float) Math.min(Math.max(pickerX, mouseX), pickerX + pickerWidth);
+            float restrictedY = (float) Math.min(Math.max(pickerY, mouseY), pickerY + pickerHeight);
+            this.color[1] = (restrictedX - (float) pickerX) / pickerWidth;
+            this.color[2] = 1 - (restrictedY - (float) pickerY) / pickerHeight;
+        }
+    }
+
     @Override
     public boolean mouseReleased(int button, int x, int y, boolean offscreen) {
-        pickingColor = pickingHue = pickingAlpha = false;
-        return true;
+        updateHovered(x, y, offscreen);
+        if((pickingColor || pickingHue || pickingAlpha) && button == 0) {
+            updateValue(x / 2, y / 2);
+            pickingColor = pickingHue = pickingAlpha = false;
+            return true;
+        }
+        return false;
     }
 
     public Colour getValue() {
@@ -203,7 +224,8 @@ public class ColorButton extends AbstractComponent {
 
     public void setValue(Colour value) {
         this.value = value;
-        this.color = new float[] {value.r1, value.g1, value.b1, value.a1};
+        float[] hsb = Color.RGBtoHSB(value.r, value.g, value.b, null);
+        color = new float[] {hsb[0], hsb[1], hsb[2], value.a1};
     }
 
     public void setListener(ValueChangeListener<Colour> listener) {

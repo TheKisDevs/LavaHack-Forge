@@ -14,7 +14,7 @@ public class NotEnoughCoinsModule extends Module {
     public Setting demand = new Setting("Demand", this, 3, 1, Integer.MAX_VALUE, true);
     public Setting minProfitPercent = new Setting("MinProfitPercent", this, 0, 0, 100, true);
     public Setting alertSound = new Setting("AlertSound", this, true);
-    public Setting onlyHypixelWorking = new Setting("OnlyHypixelWorking", this, true);
+    public Setting onlyHypixelWorking = new Setting("OnlyOnHypixelWorking", this, true);
 
     public NotEnoughCoinsModule() {
         super("NotEnoughCoins", "NotEnoughCoins", Category.CLIENT);
