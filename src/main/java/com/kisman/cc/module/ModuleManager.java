@@ -29,6 +29,7 @@ public class ModuleManager {
 
 	public void init() {
 		//combat
+		modules.add(new AimAssist());
 		modules.add(new AimBot());
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
@@ -70,7 +71,6 @@ public class ModuleManager {
 		modules.add(new NewGui());
 		modules.add(new NotEnoughCoinsModule());
 		modules.add(new ExampleModule());
-		modules.add(new ParticleGui());
 		modules.add(new SandBox());
 		modules.add(new Test());
 		//chat
@@ -202,7 +202,7 @@ public class ModuleManager {
 		modules.add(new PigPOV());
 		modules.add(new SelfDamage());
 //		modules.add(new TeamRusherLag());
-//		modules.add(new Tracker());
+		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());

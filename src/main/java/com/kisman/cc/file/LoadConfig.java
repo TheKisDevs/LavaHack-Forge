@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
+import com.kisman.cc.module.player.TeleportBack;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Keyboard;
 
@@ -87,7 +88,7 @@ public class LoadConfig {
         for(Module module : Kisman.instance.moduleManager.modules) {
             JsonElement dataObject = settingObject.get(module.getName());
 
-            if(dataObject != null && dataObject.isJsonPrimitive()) try {module.setToggled(dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
+            if(dataObject != null && dataObject.isJsonPrimitive()) try {if(!(module instanceof TeleportBack)) module.setToggled(dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
         }
 
         inputStream.close();

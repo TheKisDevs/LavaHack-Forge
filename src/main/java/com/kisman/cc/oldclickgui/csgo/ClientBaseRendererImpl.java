@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.util.GLUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
@@ -14,6 +15,7 @@ public class ClientBaseRendererImpl implements IRenderer {
 
     @Override
     public void drawOutline(double x, double y, double w, double h, float lineWidth, Color c) {
+        if(!Config.instance.guiOutline.getValBoolean()) return;
         glLineWidth(lineWidth);
         GLUtil.drawRect(GL_LINE_LOOP, (int) x / 2, (int) y / 2, (int) x / 2 + (int) w / 2, (int) y / 2 + (int) h / 2, ColorUtils.getColor(c));
     }

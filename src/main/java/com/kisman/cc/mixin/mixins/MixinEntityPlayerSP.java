@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(value = EntityPlayerSP.class, priority = 10000)
-public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
+public class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow public MovementInput movementInput;
-    @Shadow protected abstract boolean isCurrentViewEntity();
+    @Shadow protected boolean isCurrentViewEntity() {return true;}
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MoverType type, double x, double y, double z, CallbackInfo ci) {

@@ -2,6 +2,7 @@ package com.kisman.cc.oldclickgui.csgo;
 
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.components.Pane;
+import com.kisman.cc.util.Render2DUtil;
 
 import java.awt.*;
 
@@ -43,6 +44,10 @@ public class Window {
         renderer.drawRect(x, y, width, height, BACKGROUND);
         renderer.drawRect(x, y, width, headerHeight, SECONDARY_FOREGROUND);
 
+        if(Config.instance.guiGlow.getValBoolean()) {
+            Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + width) / 2, (y + headerHeight) / 2, SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
+        }
+
         renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : FOREGROUND);
 
         if (contentPane != null) {
@@ -67,8 +72,6 @@ public class Window {
 
                 dragX = this.x - x;
                 dragY = this.y - y;
-
-//                drag(x, y);
             }
         }
     }

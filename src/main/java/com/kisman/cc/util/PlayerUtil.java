@@ -1,6 +1,5 @@
 package com.kisman.cc.util;
 
-import com.kisman.cc.module.combat.AutoCrystalBypass;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -15,7 +14,6 @@ import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PlayerUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -58,24 +56,6 @@ public class PlayerUtil {
         }
 
         return entity;
-    }
-
-    public static List<EntityPlayer> getPlayerTargets(double withinDistance) {
-        List<EntityPlayer> targets = new ArrayList<>();
-
-        targets.addAll(getPlayersInRadius(withinDistance).stream().filter(player -> AutoCrystalBypass.instance.isValidTarget(player)).collect(Collectors.toList()));
-        targets.sort(Comparators.entityDistance);
-
-        return targets;
-    }
-
-    public static BlockPos[][] surroundBlockPos() {
-        if(mc.player == null && mc.world == null) return null;
-        return new BlockPos[][] {
-                {null, new BlockPos(Math.floor(mc.player.posX) + 1, Math.floor(mc.player.posY), Math.floor(mc.player.posZ)), null},
-                {new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ) + 1), null, new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ) - 1)},
-                {null, new BlockPos(Math.floor(mc.player.posX) - 1, Math.floor(mc.player.posY), Math.floor(mc.player.posZ)), null}
-        };
     }
 
     // Find closest target

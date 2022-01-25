@@ -15,7 +15,9 @@ public class HUD extends Module {
 	public Setting astolfoColor = new Setting("Astolfo Color", this, false);
 	public Setting offsets = new Setting("Offsets", this, 2, 0, 10, true);
 	public Setting glow = new Setting("Glow", this, false);
-	public Setting glowOffset = new Setting("Glow Offset", this, 6, 0, 20, true);
+	public Setting glowV2 = new Setting("Second glow", this, false);
+	public Setting glowOffset = new Setting("Glow Offset", this, 5, 1, 20, true);
+	public Setting glowRadius = new Setting("Glow Radius", this, 0, 0, 20, true);
 	public Setting glowAlpha = new Setting("Glow Alpha", this, 255, 0, 255, true);
 	public Setting background = new Setting("Background", this, false);
 	public Setting bgAlpha = new Setting("Bg Alpha", this, 255, 0, 255, true);
@@ -66,7 +68,9 @@ public class HUD extends Module {
 		setmgr.rSetting(astolfoColor);
 		setmgr.rSetting(offsets);
 		setmgr.rSetting(glow);
+		setmgr.rSetting(glowV2);
 		setmgr.rSetting(glowOffset);
+		setmgr.rSetting(glowRadius);
 		setmgr.rSetting(glowAlpha);
 		setmgr.rSetting(background);
 		setmgr.rSetting(bgAlpha);

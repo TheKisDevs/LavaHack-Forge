@@ -17,8 +17,10 @@ public class Config extends Module {
     public Setting customName = new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true);
     public Setting scrollSpeed = new Setting("Scroll Speed", this, 15, 0, 100, Slider.NumberType.PERCENT);
     public Setting guiGlow = new Setting("Gui Glow", this, false);
-    public Setting glowOffset = new Setting("Glow Offset", this, 6, 0, 20, true);
+    public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true);
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true);
+    public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true);
+    public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
     public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
@@ -41,6 +43,8 @@ public class Config extends Module {
         setmgr.rSetting(guiGlow);
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(glowRadius);
+        setmgr.rSetting(glowBoxSize);
+        setmgr.rSetting(guiOutline);
         setmgr.rSetting(guiAstolfo);
         setmgr.rSetting(guiRenderSIze);
         setmgr.rSetting(guiOpenAnimation);

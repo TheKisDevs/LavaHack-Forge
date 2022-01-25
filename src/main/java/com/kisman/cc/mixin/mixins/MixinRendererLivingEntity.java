@@ -14,17 +14,18 @@ import net.minecraft.entity.*;
 import static org.lwjgl.opengl.GL11.*;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 
 @Mixin(value = RenderLivingBase.class, priority = 10000)
-public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
+public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
     @Shadow protected ModelBase mainModel;
-    protected ModelBase entityModel;
 
     protected MixinRendererLivingEntity() {
         super(null);
@@ -87,4 +88,6 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
     protected boolean isVisible(T p_isVisible_1_) {
         return !p_isVisible_1_.isInvisible() || this.renderOutlines;
     }
+
+    @Nullable @Override protected ResourceLocation getEntityTexture(T t) {return null;}
 }

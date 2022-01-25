@@ -208,6 +208,14 @@ public class Render2DUtil extends GuiScreen {
         GlStateManager.enableTexture2D();
     }
 
+    public static void drawRoundedRect(double startX, double startY, double endX, double endY, Color color, double radius) {
+        drawRoundedRect((float) startX - radius, (float) startY - radius, (float) endX + radius, (float) endY + radius, color.getRGB(), Config.instance.glowRadius.getValFloat());
+    }
+
+    public static void drawRoundedRect(double startX, double startY, double endX, double endY, int color, float radius) {
+        drawRoundedRect((float) startX, (float) startY, (float) endX, (float) endY, color, radius);
+    }
+
     public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color, float radius) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);

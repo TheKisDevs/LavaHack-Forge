@@ -40,7 +40,6 @@ public class KeybindButton extends Button {
     @Override
     public void render() {
         super.render();
-        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Config.instance.guiAstolfo.getValBoolean() && listening ? renderer.astolfoColorToObj() :  Window.FOREGROUND);
     }
 
     @Override

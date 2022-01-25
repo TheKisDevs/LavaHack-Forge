@@ -17,12 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.awt.*;
 
 @Mixin(value = RenderEnderCrystal.class, priority = 10000)
-public abstract class MixinRenderEnderCrystal {
+public class MixinRenderEnderCrystal {
     @Final @Shadow private ModelBase modelEnderCrystal;
     @Final @Shadow private ModelBase modelEnderCrystalNoBase;
     @Final @Shadow private static ResourceLocation ENDER_CRYSTAL_TEXTURES;
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    @Shadow public abstract void doRender(EntityEnderCrystal entity, double x, double y, double z, float entityYaw, float partialTicks);
+    @Shadow public void doRender(EntityEnderCrystal entity, double x, double y, double z, float entityYaw, float partialTicks) {};
 
     @Redirect(method = "doRender(Lnet/minecraft/entity/item/EntityEnderCrystal;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBase;render(Lnet/minecraft/entity/Entity;FFFFFF)V"))
     private void render1(ModelBase var1, Entity var2, float var3, float var4, float var5, float var6, float var7, float var8) {

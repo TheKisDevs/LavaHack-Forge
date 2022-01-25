@@ -1,20 +1,14 @@
 package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventPlayerMotionUpdate;
-import com.kisman.cc.event.events.EventSpawnEntity;
-import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.combat.AntiTrap;
-import com.kisman.cc.module.combat.AutoCrystalBypass;
+import com.kisman.cc.event.events.*;
+import com.kisman.cc.module.*;
+import com.kisman.cc.module.combat.*;
 import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
-import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.item.EntityExpBottle;
+import me.zero.alpine.listener.*;
+import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -24,16 +18,14 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Tracker extends Module {
     private Setting autoEnable = new Setting("AutoEnable", this, false);
     private Setting autoDisable = new Setting("AutoDisable", this, true);
 
     private final TimerUtils timer = new TimerUtils();
-    private final Set<BlockPos> manuallyPlaced = new HashSet<BlockPos>();
+    private final Set<BlockPos> manuallyPlaced = new HashSet<>();
     private EntityPlayer trackedPlayer;
     private int usedExp = 0;
     private int usedStacks = 0;
@@ -44,7 +36,6 @@ public class Tracker extends Module {
     public Tracker() {
         super("Tracker", "Tracks players in 1v1s. Only good in duels tho!", Category.MISC);
 
-        Kisman.EVENT_BUS.subscribe(listener2);
         Kisman.EVENT_BUS.subscribe(listener3);
 
         setmgr.rSetting(autoEnable);
@@ -54,9 +45,9 @@ public class Tracker extends Module {
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(listener2);
+        Kisman.EVENT_BUS.subscribe(listener4);
 
         this.manuallyPlaced.clear();
-//        AntiTrap.placedPos.clear();
         this.shouldEnable = false;
         this.trackedPlayer = null;
         this.usedExp = 0;
@@ -67,7 +58,6 @@ public class Tracker extends Module {
 
     public void onDisable() {
         this.manuallyPlaced.clear();
-//        AntiTrap.placedPos.clear();
         this.shouldEnable = false;
         this.trackedPlayer = null;
         this.usedExp = 0;
@@ -77,21 +67,24 @@ public class Tracker extends Module {
 
         Kisman.EVENT_BUS.unsubscribe(listener1);
         Kisman.EVENT_BUS.unsubscribe(listener2);
+        Kisman.EVENT_BUS.unsubscribe(listener4);
     }
 
     public void update() {
-        if(trackedPlayer == null) {
+        if(mc.player == null || mc.world == null) return;
 
-        } else {
-            if (this.usedStacks != this.usedExp / 64) {
-                this.usedStacks = this.usedExp / 64;
-                ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.");
-            }
+        trackedPlayer = AutoRer.currentTarget;
 
-            if (this.usedCStacks != this.usedCrystals / 64) {
-                this.usedCStacks = this.usedCrystals / 64;
-                ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.");
-            }
+        if(trackedPlayer == null) return;
+
+        if (this.usedStacks != this.usedExp / 64) {
+            this.usedStacks = this.usedExp / 64;
+            ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.");
+        }
+
+        if (this.usedCStacks != this.usedCrystals / 64) {
+            this.usedCStacks = this.usedCrystals / 64;
+            ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.");
         }
     }
 
@@ -120,7 +113,7 @@ public class Tracker extends Module {
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
         if (mc.player != null && mc.world != null && event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock) {
             final CPacketPlayerTryUseItemOnBlock packet = (CPacketPlayerTryUseItemOnBlock)event.getPacket();
-            if (Tracker.mc.player.getHeldItem(packet.hand).getItem() == Items.END_CRYSTAL && !AntiTrap.instance.placedPos.contains(packet.position) && !AutoCrystalBypass.instance.placedCrystal.contains(packet.position)) {
+            if (Tracker.mc.player.getHeldItem(packet.hand).getItem() == Items.END_CRYSTAL && !AntiTrap.instance.placedPos.contains(packet.position) && !AutoRer.instance.placedList.contains(packet.position)) {
                 this.manuallyPlaced.add(packet.position);
             }
         }
@@ -136,7 +129,7 @@ public class Tracker extends Module {
                 this.timer.reset();
                 this.shouldEnable = true;
             }
-            else if (this.autoDisable.getValBoolean() && message.contains("has defeated") && message.contains(Tracker.mc.player.getName()) && !message.contains("<")) {
+            else if (this.autoDisable.getValBoolean() && message.contains("has defeated") && message.contains(mc.player.getName()) && !message.contains("<")) {
                 super.setToggled(false);
             }
         }
@@ -151,7 +144,7 @@ public class Tracker extends Module {
 
     @EventHandler
     private final Listener<EventSpawnEntity> listener4 = new Listener<>(event -> {
-        if (event.entity instanceof EntityExpBottle && Objects.equals(Tracker.mc.world.getClosestPlayerToEntity(event.entity, 3.0), this.trackedPlayer)) {
+        if (event.entity instanceof EntityExpBottle && Objects.equals(mc.world.getClosestPlayerToEntity(event.entity, 3.0), this.trackedPlayer)) {
             ++this.usedExp;
         }
 
@@ -160,7 +153,7 @@ public class Tracker extends Module {
                 AntiTrap.instance.placedPos.remove(event.entity.getPosition().down());
             } else if (this.manuallyPlaced.contains(event.entity.getPosition().down())) {
                 this.manuallyPlaced.remove(event.entity.getPosition().down());
-            } else if (!AutoCrystalBypass.instance.placedCrystal.contains(event.entity.getPosition().down())) {
+            } else if (!AutoRer.instance.placedList.contains(event.entity.getPosition().down())) {
                 ++this.usedCrystals;
             }
         }

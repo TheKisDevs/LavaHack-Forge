@@ -53,7 +53,7 @@ public class ScrollPane extends Pane {
             renderer.drawRect(x + getWidth() - sliderWidth, y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY), sliderWidth, sliderHeight, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE);
 
             if(Config.instance.guiGlow.getValBoolean()) {
-                Render2DUtil.drawRoundedRect(x + getWidth() - sliderWidth, y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY), x + getWidth(),y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY) + sliderHeight, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE);
+                Render2DUtil.drawRoundedRect((x + getWidth() - sliderWidth) / 2, (y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY)) / 2, (x + getWidth()) / 2,(y + (getHeight() - sliderHeight) * (scrollOffset / (double) maxY) + sliderHeight) / 2, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE, Config.instance.glowBoxSize.getValDouble());
             }
         }
     }

@@ -1,7 +1,9 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
 import com.kisman.cc.oldclickgui.csgo.Window;
+import com.kisman.cc.util.Render2DUtil;
 import net.minecraft.util.text.TextFormatting;
 
 public class ComboBox extends AbstractComponent {
@@ -69,6 +71,8 @@ public class ComboBox extends AbstractComponent {
         renderer.drawRect(x + getWidth() - preferredHeight, y, preferredHeight, getHeight(), (hovered || opened) ? Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
 
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered && !opened) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+
+        if(Config.instance.guiGlow.getValBoolean()) Render2DUtil.drawRoundedRect((x + getWidth() - preferredHeight) / 2, y / 2, (x + getWidth()) / 2, (y + getHeight()) / 2, (hovered || opened) ? Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
 
         String text = selectedIndex != -1 ?  values[selectedIndex] : TextFormatting.RED + "ERROR";
 

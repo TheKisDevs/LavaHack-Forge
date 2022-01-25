@@ -9,7 +9,11 @@ Fix AutoRer render
 Fix AutoEZ
 Fix Astolfo gradient in ArrayList - _kisman_
 Fix Alpha in color picker - _kisman_
+Fix Scaffold crash\
+Test Motion crystal
+добавить чек в аимасисн на то может ли игрок ударить таргета - _kisman_
 
 For b0.2
 
 Add CustomHotbar(check "todo" folder) - _kisman_
+Add second glow for more hud

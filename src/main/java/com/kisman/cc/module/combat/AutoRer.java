@@ -43,6 +43,8 @@ public class AutoRer extends Module {
     private final Setting instant = new Setting("Instant", this, true);
     private final Setting inhibit = new Setting("Inhibit", this, true);
     private final Setting syns = new Setting("Syns", this, true);
+    private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
+    private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent);
     private final Setting ai = new Setting("AI", this, false);
 
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
@@ -90,7 +92,7 @@ public class AutoRer extends Module {
 
     public static AutoRer instance;
 
-    private final List<BlockPos> placedList = new ArrayList<>();
+    public final List<BlockPos> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
     private final TimerUtils breakTimer = new TimerUtils();
     private final TimerUtils calcTimer = new TimerUtils();
@@ -119,6 +121,8 @@ public class AutoRer extends Module {
         setmgr.rSetting(instant);
         setmgr.rSetting(inhibit);
         setmgr.rSetting(syns);
+        setmgr.rSetting(rotate);
+        setmgr.rSetting(rotateMode);
         setmgr.rSetting(ai);
 
         setmgr.rSetting(placeLine);
@@ -330,6 +334,14 @@ public class AutoRer extends Module {
 
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
+        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+
+        if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All")) {
+            float[] rots = RotationUtils.getRotation(currentTarget);
+            mc.player.rotationYaw = rots[0];
+            mc.player.rotationPitch = rots[1];
+        }
+
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
@@ -343,6 +355,10 @@ public class AutoRer extends Module {
             AutoRerAI.collect(placePos, targetDamage, selfDamage);
         }
 
+        if((rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
+            mc.player.rotationYaw = oldRots[0];
+            mc.player.rotationPitch = oldRots[1];
+        }
         if(hand != null) mc.player.setActiveHand(hand);
         if(oldSlot != -1 && !silentBypass && switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
         if(silentBypass) bypass.doSwitch();
@@ -382,10 +398,23 @@ public class AutoRer extends Module {
 
         if(crystal == null) return;
 
+        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+
+        if(rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) {
+            float[] rots = RotationUtils.getRotation(crystal);
+            mc.player.rotationYaw = rots[0];
+            mc.player.rotationPitch = rots[1];
+        }
+
         lastHitEntity = crystal;
         mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         swing();
         breakTimer.reset();
+
+        if((rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
+            mc.player.rotationYaw = oldRots[0];
+            mc.player.rotationPitch = oldRots[1];
+        }
 
         BlockPos toRemove = null;
 
@@ -431,6 +460,7 @@ public class AutoRer extends Module {
     public enum SwingMode {MainHand, OffHand, PacketSwing}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}
+    public enum RotateMode {Normal, Silent}
 
     private static class Friend {
         public final EntityPlayer friend;

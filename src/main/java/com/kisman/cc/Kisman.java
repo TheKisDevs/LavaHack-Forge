@@ -16,7 +16,6 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
 import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.oldclickgui.vega.Gui;
-import com.kisman.cc.particle.ParticleSystem;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
@@ -88,7 +87,6 @@ public class Kisman {
     public RPC discord;
     public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
-    public ParticleSystem particleSystem;
     public ServerManager serverManager;
     public Shaders shaders;
     public SandBoxShaders sandBoxShaders;
@@ -133,7 +131,6 @@ public class Kisman {
         discord = new RPC();
         rotationUtils = new RotationUtils();
         eventProcessor = new EventProcessor();
-        particleSystem = new ParticleSystem(100, true, 150);
         serverManager = new ServerManager();
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();

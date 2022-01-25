@@ -23,19 +23,19 @@ public class MixinAbstractClientPlayer extends MixinEntityPlayer {
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
         if(Cape.instance.isToggled() && playerInfo == mc.player.getPlayerInfo()) {
-            switch( Cape.instance.mode.getValString()) {
-                case "Static": {
-                    cir.setReturnValue(new ResourceLocation("kismancc:cape/cape1.png"));
-                    break;
-                }
-                case "Gif": {
+            switch(Cape.instance.mode.getValString()) {
+                case "Gif":
                     cir.setReturnValue(getCape());
                     break;
-                }
-                case "xulu+": {
+                case "Xulu+":
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/xuluplus/xulupluscape.png"));
                     break;
-                }
+                case "Kuro":
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/kuro/kuro.png"));
+                    break;
+                case "GentleManMC":
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/gentlemanmc/GentlemanMC.png"));
+                    break;
             }
         }
     }

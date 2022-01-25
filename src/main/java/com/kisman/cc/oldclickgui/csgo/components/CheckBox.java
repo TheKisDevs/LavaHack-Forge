@@ -42,8 +42,8 @@ public class CheckBox extends AbstractComponent {
 
         renderer.drawOutline(x, y, preferredHeight, preferredHeight, 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
-        if(Config.instance.guiGlow.getValBoolean()) {
-            Render2DUtil.drawRoundedRect(x, y, x + preferredHeight, y + preferredHeight, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+        if(Config.instance.guiGlow.getValBoolean() && selected) {
+            Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + preferredHeight) / 2, (y + preferredHeight) / 2, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
         }
 
         //y + renderer.getStringHeight(title) / 4
