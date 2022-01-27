@@ -4,6 +4,8 @@ Add More color customization for hud - _kisman_
 Add PvpResources
 Add CameraClip
 Add Particles in new cs gui - PunCakeCat
+Add TargetStrafe - kisman
+Add fallDist - kisman
 Update CheckBox in new cs gui - Skarlord99
 Fix AutoRer render
 Fix AutoEZ

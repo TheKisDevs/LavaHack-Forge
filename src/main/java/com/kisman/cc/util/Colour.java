@@ -107,8 +107,7 @@ public class Colour {
     }
 
     public Color getColor() {
-        if(isInt) return new Color(r, g, b, a);
-        else return new Color(r1 * 255, g1 * 255, b1 * 255, a1 * 255);
+        return new Color(r, g, b, a);
     }
 
     public int getRGB() {

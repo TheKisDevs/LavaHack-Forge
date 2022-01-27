@@ -31,6 +31,8 @@ public class KillAura extends Module {
     private Setting mode = new Setting("Mode", this, "Sword", Arrays.asList("Single", "Multi"));
 
     private Setting hitLine = new Setting("HitLine", this, "Hit");
+    private Setting useFallDist = new Setting("Use Fall Dist", this, false);
+    private Setting fallDistance = new Setting("Fall Distance", this, 0.25, 0, 1, false);
     private Setting shieldBreaker = new Setting("Shield Breaker", this, true);
     private Setting packetAttack = new Setting("Packet Attack", this, false);
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
@@ -38,8 +40,6 @@ public class KillAura extends Module {
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
 
     private Setting invisible = new Setting("Invisible", this, false);
-
-    private Setting fallDistance = new Setting("Fall Distance", this, 0.1, 0, 0.2, false);
 
     private Setting renderLine = new Setting("RenderLine", this, "Render");
     private Setting targetEsp = new Setting("Target ESP", this, true);
@@ -55,6 +55,8 @@ public class KillAura extends Module {
         setmgr.rSetting(mode);
 
         setmgr.rSetting(hitLine);
+        setmgr.rSetting(useFallDist);
+        setmgr.rSetting(fallDistance);
         setmgr.rSetting(shieldBreaker);
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
         setmgr.rSetting(packetAttack);
@@ -72,7 +74,6 @@ public class KillAura extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("DistanceLine", this, "Distance"));
 
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 4.25f, false));
-        setmgr.rSetting(fallDistance);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(targetEsp);
@@ -100,6 +101,7 @@ public class KillAura extends Module {
                     Entity entity = mc.world.loadedEntityList.get(i);
                     if (Config.instance.friends.getValBoolean() && entity instanceof EntityPlayer && Kisman.instance.friendManager.isFriend((EntityPlayer) entity))  continue;
                     if(!weaponCheck()) return;
+                    if(!fallCheck() && useFallDist.getValBoolean()) return;
                     doKillAura(entity, hitsound, false);
                 }
             }
@@ -108,8 +110,13 @@ public class KillAura extends Module {
 
            if(target == null) return;
            if(!weaponCheck()) return;
+            if(!fallCheck() && useFallDist.getValBoolean()) return;
            doKillAura(target, hitsound, true);
         }
+    }
+
+    private boolean fallCheck() {
+        return mc.player.fallDistance > fallDistance.getValFloat();
     }
 
     private void doKillAura(Entity entity, boolean hitsound, boolean single) {

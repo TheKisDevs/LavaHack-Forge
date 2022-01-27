@@ -2,7 +2,6 @@ package com.kisman.cc.oldclickgui.vega.component.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.oldclickgui.component.components.sub.Keybind;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
 import com.kisman.cc.oldclickgui.vega.component.components.sub.KeyBind;

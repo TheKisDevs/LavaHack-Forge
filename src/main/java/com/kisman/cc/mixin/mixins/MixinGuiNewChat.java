@@ -15,12 +15,10 @@ import java.util.List;
 
 @Mixin(value = GuiNewChat.class, priority = 10000)
 public class MixinGuiNewChat {
-    @Shadow
-    public boolean isScrolled;
+    @Shadow public boolean isScrolled;
     private float percentComplete;
     private int newLines;
     private long prevMillis;
-    private boolean configuring;
     private float animationPercent;
     private int lineBeingDrawn;
 
@@ -32,20 +30,14 @@ public class MixinGuiNewChat {
     public float getChatScale() {return 0;}
 
     private void updatePercentage(final long diff) {
-        if (percentComplete < 1.0f) {
-            percentComplete += 0.004f * diff;
-        }
+        if (percentComplete < 1.0f) percentComplete += 0.004f * diff;
         percentComplete = (float) MathUtil.clamp(percentComplete, 0.0, 1.0);
     }
 
-    @Inject(method = "drawChat", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawChat", at = @At("HEAD"))
     private void modifyChatRendering(CallbackInfo ci) {
         if (ChatAnimation.instance != null) {
             if(ChatAnimation.instance.isToggled()) {
-                if (this.configuring) {
-                    ci.cancel();
-                    return;
-                }
                 final long current = System.currentTimeMillis();
                 final long diff = current - this.prevMillis;
                 this.prevMillis = current;

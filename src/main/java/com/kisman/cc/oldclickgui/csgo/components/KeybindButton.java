@@ -1,8 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
-import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.IRenderer;
-import com.kisman.cc.oldclickgui.csgo.Window;
 import org.lwjgl.input.Keyboard;
 
 import java.util.function.Function;

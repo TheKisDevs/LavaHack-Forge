@@ -50,19 +50,15 @@ public class Slider extends AbstractComponent {
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered || changing) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
         int sliderWidth = 4;
-
         double sliderPos = (value - minValue) / (maxValue - minValue) * (getWidth() - sliderWidth);
 
         renderer.drawRect(x + sliderPos, y + 2, sliderWidth, getHeight() - 3, (hovered || changing) ? Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() :  Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND);
 
-        if(Config.instance.guiGlow.getValBoolean()) {
-            Render2DUtil.drawRoundedRect((x + sliderPos) / 2, (y + 2) / 2, (x + sliderPos + sliderWidth) / 2, (y + 2 + getHeight() - 3) / 2, (hovered || changing) ? Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() :  Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
-        }
+        if(Config.instance.guiGlow.getValBoolean()) Render2DUtil.drawRoundedRect((x + sliderPos) / 2, (y + 2) / 2, (x + sliderPos + sliderWidth) / 2, (y + 2 + getHeight() - 3) / 2, (hovered || changing) ? Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() :  Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
 
         String text = numberType.getFormatter().apply(value);
 
-        //y + renderer.getStringHeight(title) / 4
-        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Config.instance.guiAstolfo.getValBoolean() && hovered ? renderer.astolfoColorToObj() : Window.FOREGROUND);
+        renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
     }
 
     @Override

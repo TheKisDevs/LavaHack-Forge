@@ -52,7 +52,7 @@ public class Breadcrumbs extends Module {
         double lastPosX = 114514.0;
         double lastPosY = 114514.0;
         double lastPosZ = 114514.0;
-        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
         for (int i = 0; i < positions.size(); i++) {
             Helper bc = positions.get(i);
             ColorUtils.glColor(ColorUtils.astolfoColors(100, 100), alpha.getValInt());

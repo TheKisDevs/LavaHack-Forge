@@ -34,22 +34,6 @@ public class CrystalUtils {
         return CrystalUtils.mc.world.rayTraceBlocks(new Vec3d(CrystalUtils.mc.player.posX, CrystalUtils.mc.player.posY + (double)CrystalUtils.mc.player.getEyeHeight(), CrystalUtils.mc.player.posZ), new Vec3d((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), false, true, false) == null;
     }
 
-    public static boolean CanPlaceCrystalIfObbyWasAtPos(final BlockPos pos) {
-        final Minecraft mc = Minecraft.getMinecraft();
-
-        final Block floor = mc.world.getBlockState(pos.add(0, 1, 0)).getBlock();
-        final Block ceil = mc.world.getBlockState(pos.add(0, 2, 0)).getBlock();
-
-        if (floor == Blocks.AIR && ceil == Blocks.AIR) {
-            if (mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos.add(0, 1, 0))).isEmpty()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
     public static boolean isEntityMoving(EntityLivingBase entityLivingBase) {
         return entityLivingBase.motionX > Double.longBitsToDouble(Double.doubleToLongBits(0.5327718501168097) ^ 0x7FE10C778D0F6544L) || entityLivingBase.motionY > Double.longBitsToDouble(Double.doubleToLongBits(0.07461435496686485) ^ 0x7FB319ED266512E7L) || entityLivingBase.motionZ > Double.longBitsToDouble(Double.doubleToLongBits(0.9006325807477794) ^ 0x7FECD1FB6B00C2E7L);
     }
@@ -62,11 +46,7 @@ public class CrystalUtils {
             final Block floor = mc.world.getBlockState(pos.add(0, 1, 0)).getBlock();
             final Block ceil = mc.world.getBlockState(pos.add(0, 2, 0)).getBlock();
 
-            if (floor == Blocks.AIR && ceil == Blocks.AIR) {
-                if (mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos.add(0, 1, 0))).isEmpty()) {
-                    return true;
-                }
-            }
+            if (floor == Blocks.AIR && ceil == Blocks.AIR) if (mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos.add(0, 1, 0))).isEmpty()) return true;
         }
 
         return false;
@@ -176,10 +156,12 @@ public class CrystalUtils {
         return calculateDamage(world, posX, posY, posZ, entity, interlopedAmount, false);
     }
 
+    public static float calculateDamage(BlockPos pos, Entity entity, boolean terrain) {
+        return calculateDamage(mc.world, pos.getX(), pos.getY(), pos.getZ(), entity, terrain);
+    }
+
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
-        if (entity == mc.player) {
-            if (mc.player.capabilities.isCreativeMode) return 0.0f;
-        }
+        if (entity == mc.player) if (mc.player.capabilities.isCreativeMode) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
         double dist = entity.getDistance(posX, posY, posZ);

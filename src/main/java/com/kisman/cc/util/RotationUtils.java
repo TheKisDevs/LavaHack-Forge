@@ -198,6 +198,13 @@ public class RotationUtils {
         return new Vec2f((float) yaw, (float) pitch);
     }
 
+    public static float[] getRotationToPos(BlockPos pos) {
+        double lengthXZ = Math.hypot(pos.getX(), pos.getZ());
+        double yaw = normalizeAngle(Math.toDegrees(Math.atan2(pos.getZ(), pos.getX())) - 90.0);
+        double pitch = normalizeAngle(Math.toDegrees(-Math.atan2(pos.getY(), lengthXZ)));
+        return new float[] {(float) yaw, (float) pitch};
+    }
+
     public static double normalizeAngle(double angle) {
         angle %= 360.0;
 

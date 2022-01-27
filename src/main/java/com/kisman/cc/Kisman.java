@@ -10,7 +10,6 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.newclickgui.*;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
@@ -23,7 +22,6 @@ import com.kisman.cc.util.hwid.*;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
-import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
@@ -44,7 +42,6 @@ import java.nio.file.*;
 import java.util.HashMap;
 
 @SideOnly(Side.CLIENT)
-@Obfuscation(exclude = true, applyToMembers = true)
 public class Kisman {
     public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";
@@ -72,14 +69,12 @@ public class Kisman {
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
-    public ClickGui clickGui;
     public ClickGuiNew clickGuiNew;
     public BlockGui blockGui;
     public GuiConsole guiConsole;
     public ColorPicker colorPicker;
     public ColorUtil colorUtil;
     public HudGui hudGui;
-    public NewGui newGui;
     public Gui gui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
@@ -116,14 +111,12 @@ public class Kisman {
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
         hudModuleManager = new HudModuleManager();
-    	clickGui = new ClickGui();
         clickGuiNew = new ClickGuiNew();
     	blockGui = new BlockGui();
         guiConsole = new GuiConsole();
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
-        newGui = new NewGui();
         gui = new Gui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);

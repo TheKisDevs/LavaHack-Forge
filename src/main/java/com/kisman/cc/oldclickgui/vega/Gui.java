@@ -5,7 +5,6 @@ import com.kisman.cc.event.events.clickguiEvents.drawScreen.render.GuiRenderPost
 import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
 import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
 import com.kisman.cc.module.Category;
-import com.kisman.cc.module.client.ClickGUI;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;

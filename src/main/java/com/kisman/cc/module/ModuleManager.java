@@ -58,9 +58,6 @@ public class ModuleManager {
 		modules.add(new Surround());
 		//client
 		modules.add(new Cape());
-		modules.add(new ClickGUI());
-		modules.add(new ClientFont());
-		modules.add(new ColorModule());
 		modules.add(new Config());
 		modules.add(new Console());
 		modules.add(new CSGOGui());
@@ -188,6 +185,7 @@ public class ModuleManager {
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 //		modules.add(new StrongholdFinder());
+		modules.add(new Teleport());
 		modules.add(new TickShift());
 		modules.add(new Timer());
 		modules.add(new WaterLeave());

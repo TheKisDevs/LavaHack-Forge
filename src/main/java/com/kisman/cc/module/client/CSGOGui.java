@@ -1,29 +1,26 @@
 package com.kisman.cc.module.client;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-
-import java.util.Arrays;
+import org.lwjgl.input.Keyboard;
 
 public class CSGOGui extends Module {
     public static CSGOGui instance;
 
-    private Setting gui = new Setting("Gui", this, "New", Arrays.asList("Old", "New"));
     public Setting customSize = new Setting("CustomFontSize", this, false);
 
     public CSGOGui() {
-        super("CSGOGui", "CSGOGui", Category.CLIENT);
+        super("CsgoGui", "CSGOGui", Category.CLIENT);
+        super.setKey(Keyboard.KEY_U);
 
         instance = this;
 
-        setmgr.rSetting(gui);
         setmgr.rSetting(customSize);
     }
 
     public void onEnable() {
-        mc.displayGuiScreen(gui.getValString().equalsIgnoreCase("Old") ? Kisman.instance.newGui : Kisman.instance.clickGuiNew);
+        mc.displayGuiScreen(Kisman.instance.clickGuiNew);
         this.setToggled(false);
     }
 }

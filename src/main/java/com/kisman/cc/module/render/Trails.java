@@ -28,7 +28,7 @@ public class Trails extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         bcs.add(new TrailUtil(mc.player.getPositionVector()));
     }

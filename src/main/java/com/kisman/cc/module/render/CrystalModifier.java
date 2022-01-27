@@ -39,7 +39,7 @@ public class CrystalModifier extends Module {
     public Setting outline = new Setting("Outline", this, false);
     public Setting outlineMode = new Setting("OutlineMode", this, OutlineModes.Wire);
     public Setting lineWidth = new Setting("LineWidth", this, 3, 0.5, 5, false);
-    public Setting color = new Setting("Color", this, "Color", new Colour(255, 0, 0));
+    public Setting color = new Setting("Outline Color", this, "Color", new Colour(255, 0, 0));
 
 
     private Setting speedLine = new Setting("SpeedLine", this, "Speed");
@@ -53,8 +53,6 @@ public class CrystalModifier extends Module {
         instance = this;
 
         setmgr.rSetting(mode);
-
-        setmgr.rSetting(preview);
 
         setmgr.rSetting(scaleLine);
         setmgr.rSetting(scaleX);

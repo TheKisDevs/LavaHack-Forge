@@ -222,8 +222,11 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
-		this.colorHSB = colorHSB;
 		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
+		this.r = colour.r;
+		this.g = colour.g;
+		this.b = colour.b;
+		this.a = colour.a;
 		this.mode = simpleMode ? "ColorPickerSimple" : "ColorPicker";
 	}
 
@@ -231,8 +234,11 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
-		this.colorHSB = colorHSB;
 		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
+		this.r = colour.r;
+		this.g = colour.g;
+		this.b = colour.b;
+		this.a = colour.a;
 		this.mode = "ColorPicker";
 	}
 
@@ -242,7 +248,10 @@ public class Setting {
 		this.title = title;
 		this.colour = colour;
 		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
-		this.colorHSB = new float[] {color[0], color[1], color[2], (float) colour.a / 255f};
+		this.r = colour.r;
+		this.g = colour.g;
+		this.b = colour.b;
+		this.a = colour.a;
 		this.mode = "ColorPicker";
 	}
 
@@ -302,8 +311,6 @@ public class Setting {
 				g = colour.g;
 				b = colour.b;
 				a = colour.a;
-				float[] hsb = Color.RGBtoHSB(r, g, b, null);
-				colorHSB = new float[] {hsb[0], hsb[1], hsb[2], a / 255f};
 
 				boolean syncBuf = false;
 				try {syncBuf = Boolean.parseBoolean(values[1]);} catch (Exception e) {e.printStackTrace();}
@@ -321,8 +328,6 @@ public class Setting {
 			g = colour.g;
 			b = colour.b;
 			a = colour.a;
-			float[] hsb = Color.RGBtoHSB(r, g, b, null);
-			colorHSB = new float[] {hsb[0], hsb[1], hsb[2], a / 255f};
 		}
 	}
 
@@ -511,9 +516,6 @@ public class Setting {
 	public void setColour(Colour colour) {
 		this.colour = colour;
 		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
-		this.colorHSB = new float[] {
-				color[0], color[1], color[2], (float) colour.a / 255f
-		};
 	}
 
 	public Enum getValEnum() {
@@ -758,60 +760,52 @@ public class Setting {
 
 	public boolean isItems() { return mode.equalsIgnoreCase("Items"); }
 
-	public boolean isPreview() { return mode.equalsIgnoreCase("Preview") ? true : false; }
+	public boolean isPreview() { return mode.equalsIgnoreCase("Preview"); }
 
-	public boolean isBind() { return mode.equalsIgnoreCase("Bind") ? true : false; }
+	public boolean isBind() { return mode.equalsIgnoreCase("Bind"); }
 
-	public boolean isCategory() { return this.mode.equalsIgnoreCase("Category") ? true : false; }
+	public boolean isCategory() { return this.mode.equalsIgnoreCase("Category"); }
 
-	public boolean isString() { return this.mode.equalsIgnoreCase("String") ? true : false; }
+	public boolean isString() { return this.mode.equalsIgnoreCase("String"); }
 
-	public boolean isVoid() { return this.mode.equalsIgnoreCase("Void") ? true : false; }
+	public boolean isVoid() { return this.mode.equalsIgnoreCase("Void"); }
 	
 	public boolean isCombo(){
-		return this.mode.equalsIgnoreCase("Combo") ? true : false;
+		return this.mode.equalsIgnoreCase("Combo");
 	}
 	
 	public boolean isCheck(){
-		return this.mode.equalsIgnoreCase("Check") ? true : false;
+		return this.mode.equalsIgnoreCase("Check");
 	}
 
-	public boolean isCheckHud() { return this.mode.equalsIgnoreCase("CheckHud") ? true : false; }
+	public boolean isCheckHud() { return this.mode.equalsIgnoreCase("CheckHud"); }
 	
 	public boolean isSlider(){
-		return this.mode.equalsIgnoreCase("Slider") ? true : false;
+		return this.mode.equalsIgnoreCase("Slider");
 	}
 
 	public boolean isLine() {
-		return this.mode.equalsIgnoreCase("Line") ? true : false;
+		return this.mode.equalsIgnoreCase("Line");
 	}
 
-//	public boolean isCategory() {
-//		return this.mode.equalsIgnoreCase("Category") ? true : false;
-//	}
-//
 	public boolean isCategoryLine() {
-		return this.mode.equalsIgnoreCase("CategoryLine") ? true : false;
+		return this.mode.equalsIgnoreCase("CategoryLine");
 	}
-//
-//	public boolean isCategoryCheck() {
-//		return this.mode.equalsIgnoreCase("CategoryCheck") ? true : false;
-//	}
 
 	public boolean isColorPicker() {
-		return this.mode.equalsIgnoreCase("ColorPicker") ? true : false;
+		return this.mode.equalsIgnoreCase("ColorPicker");
 	}
 
 	public boolean isColorPickerSimple() {
-		return this.mode.equalsIgnoreCase("ColorPickerSimple") ? true : false;
+		return this.mode.equalsIgnoreCase("ColorPickerSimple");
 	}
 
 	public boolean isColorPickerHud() {
-		return this.mode.equalsIgnoreCase("ColorPickerHud") ? true : false;
+		return this.mode.equalsIgnoreCase("ColorPickerHud");
 	}
 
 	public boolean isDrawHud() {
-		return this.mode.equalsIgnoreCase("DrawHud") ? true : false;
+		return this.mode.equalsIgnoreCase("DrawHud");
 	}
 
 	public boolean isExampleColor() { return mode.equalsIgnoreCase("ExampleColor"); }

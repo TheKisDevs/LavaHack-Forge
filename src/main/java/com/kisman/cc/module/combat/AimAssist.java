@@ -4,6 +4,7 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 
 public class AimAssist extends Module {
@@ -20,14 +21,17 @@ public class AimAssist extends Module {
     }
 
     public void update() {
+        if(mc.player == null || mc.world == null) return;
         target = EntityUtil.getTarget(range.getValFloat());
 
         if(target == null) return;
         else super.setDisplayInfo("[" + target.getName() + TextFormatting.GRAY + "]");
 
-        float[] rotsToTarget = RotationUtils.getRotation(target);
+        if(mc.objectMouseOver.entityHit != null && mc.objectMouseOver.entityHit.equals(RayTraceResult.Type.ENTITY) && mc.objectMouseOver.entityHit != target) {
+            float[] rotsToTarget = RotationUtils.getRotation(target);
 
-        mc.player.rotationYaw = (float) AnimationUtils.animate( rotsToTarget[0], mc.player.rotationYaw, speed.getValFloat());
-        mc.player.rotationPitch = (float) AnimationUtils.animate( rotsToTarget[1], mc.player.rotationPitch, speed.getValFloat());
+            mc.player.rotationYaw = (float) AnimationUtils.animate(rotsToTarget[0], mc.player.rotationYaw, speed.getValFloat());
+            mc.player.rotationPitch = (float) AnimationUtils.animate(rotsToTarget[1], mc.player.rotationPitch, speed.getValFloat());
+        }
     }
 }

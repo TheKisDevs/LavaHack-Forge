@@ -8,7 +8,6 @@ import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.util.Timer;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 import java.util.ArrayList;

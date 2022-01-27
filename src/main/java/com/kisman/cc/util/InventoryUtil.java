@@ -1,6 +1,5 @@
 package com.kisman.cc.util;
 
-import com.kisman.cc.mixin.mixins.accessor.IPlayerControllerMP;
 import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +26,7 @@ public class InventoryUtil {
     }
 
     public static void switchToSlot(int slot, boolean silent) {
+        if(slot == -1) return;
         if (!silent) mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
         else {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));

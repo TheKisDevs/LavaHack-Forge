@@ -18,6 +18,7 @@ import java.util.*;
 
 public class AutoTrap extends Module {
     public static AutoTrap instance;
+    private Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
     private Setting disableOnComplete = new Setting("DisableOnComplete", this, false);
     private Setting placeDelay = new Setting("Delay", this, 50, 0, 100, true);
     private Setting rotate = new Setting("Rotate", this, true);
@@ -28,19 +29,16 @@ public class AutoTrap extends Module {
     private Setting range = new Setting("Range", this, 4, 1, 5, false);
     private Setting raytrace = new Setting("RayTrace", this, false);
 
-
     private TimerUtils timer = new TimerUtils();
     private Map<BlockPos, Integer> retries = new HashMap<>();
     private TimerUtils retryTimer = new TimerUtils();
     public EntityPlayer target;
     private boolean didPlace = false;
-    private boolean switchedItem;
     private boolean isSneaking;
     private int oldSlot;
     private int placements = 0;
     private boolean smartRotate = false;
     private BlockPos startPos = null;
-    private boolean isPlacing;
 
     public AutoTrap() {
         super("AutoTrap", "trapping all players", Category.COMBAT);
@@ -48,6 +46,7 @@ public class AutoTrap extends Module {
 
         instance = this;
 
+        setmgr.rSetting(targetRange);
         setmgr.rSetting(disableOnComplete);
         setmgr.rSetting(placeDelay);
         setmgr.rSetting(rotate);
@@ -68,7 +67,6 @@ public class AutoTrap extends Module {
     }
 
     public void onDisable() {
-        isPlacing = false;
         isSneaking = EntityUtil.stopSneaking(isSneaking);
     }
 
@@ -80,15 +78,9 @@ public class AutoTrap extends Module {
     }
 
     private void doTrap() {
-        if(check()) {
-            return;
-        }
-
+        if(check()) return;
         doStaticTrap();
-
-        if(didPlace) {
-            timer.reset();
-        }
+        if(didPlace) timer.reset();
     }
 
     private void doStaticTrap() {
@@ -106,11 +98,8 @@ public class AutoTrap extends Module {
                 this.placeBlock(position);
                 this.retries.put(position, (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
                 this.retryTimer.reset();
-            }
-            else {
-                if (placeability != 3) {
-                    continue;
-                }
+            } else {
+                if (placeability != 3) continue;
                 this.placeBlock(position);
             }
         }
@@ -120,17 +109,12 @@ public class AutoTrap extends Module {
         if(mc.player == null) return false;
         if(startPos == null) return false;
 
-        isPlacing = false;
         didPlace = false;
         placements = 0;
         final int obbySlot2 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
-        if (obbySlot2 == -1) {
-            setToggled(false);
-        }
+        if (obbySlot2 == -1) setToggled(false);
         final int obbySlot3 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
-        if (!super.isToggled()) {
-            return true;
-        }
+        if (!super.isToggled()) return true;
         if (!startPos.equals(EntityUtil.getRoundedBlockPos(mc.player))) {
             setToggled(false);
             return true;
@@ -148,22 +132,17 @@ public class AutoTrap extends Module {
             this.oldSlot = mc.player.inventory.currentItem;
         }
         isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        target = (EntityPlayer) getNearTarget(mc.player);
+        target = EntityUtil.getTarget(targetRange.getValFloat());
         return target == null || !timer.passedMillis(placeDelay.getValInt());
     }
 
     private void placeBlock(final BlockPos pos) {
         if (this.placements < this.blocksPerTick.getValInt() && mc.player.getDistanceSq(pos) <= MathUtil.square(5.0)) {
-            isPlacing = true;
-
             final int originalSlot = mc.player.inventory.currentItem;
             final int obbySlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
             final int eChestSot = InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9);
 
-            if (obbySlot == -1 && eChestSot == -1) {
-                this.toggle();
-            }
-
+            if (obbySlot == -1 && eChestSot == -1) this.toggle();
             if (this.smartRotate) {
                 mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
                 mc.playerController.updateController();
@@ -181,28 +160,5 @@ public class AutoTrap extends Module {
             this.didPlace = true;
             ++this.placements;
         }
-    }
-
-    private EntityLivingBase getNearTarget(EntityPlayer distanceTarget) {
-        return mc.world.loadedEntityList.stream()
-                .filter(entity -> isValidTarget(entity))
-                .map(entity -> (EntityLivingBase) entity)
-                .min(Comparator.comparing(entity -> distanceTarget.getDistance(entity)))
-                .orElse(null);
-    }
-
-    private boolean isValidTarget(Entity entity) {
-        if (entity == null) return false;
-        if (!(entity instanceof EntityLivingBase)) return false;
-        if (Config.instance.friends.getValBoolean() && Kisman.instance.friendManager.isFriend((EntityPlayer) entity)) return false;
-        if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f) return false;
-        if (entity.getDistance(mc.player) > range.getValDouble()) return false;
-        if (entity instanceof EntityPlayer) {
-            if (entity == mc.player) return false;
-
-            return true;
-        }
-
-        return false;
     }
 }

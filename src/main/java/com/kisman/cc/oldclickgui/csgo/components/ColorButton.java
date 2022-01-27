@@ -1,5 +1,6 @@
 package com.kisman.cc.oldclickgui.csgo.components;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import com.kisman.cc.util.*;
@@ -72,19 +73,6 @@ public class ColorButton extends AbstractComponent {
         else setHeight(preferredHeight);
     }
 
-/*    private void updateDragging(int mouseX, int mouseY) {
-        int pickerX = x / 2;
-        int pickerY = y / 2 + preferredHeight / 2;
-        int hueSliderX = pickerX;
-        int hueSliderY = pickerY + pickerHeight + 6;
-        int hueSliderWidth = pickerWidth;
-        int hueSliderHeight = 10;
-        int alphaSliderX = pickerX + pickerWidth + 6;
-        int alphaSliderY = pickerY;
-        int alphaSliderWidth = 10;
-        int alphaSliderHeight = pickerHeight;
-    }*/
-
     @Override
     public void render() {
         this.pickerX = x / 2;
@@ -101,7 +89,13 @@ public class ColorButton extends AbstractComponent {
         updateHeight();
 
         try {if(!opened) renderer.drawRect(x, y, getWidth(), getHeight(), value.getColor());} catch(Exception ignored) {}
+        if(opened) {
+            String text = "Red: " + value.r + " Green: " + value.g + " Blue: " + value.b;
+            renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
+        }
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+
+        if(Config.instance.guiGlow.getValBoolean()) Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + getWidth()) / 2, (y + preferredHeight) / 2, value.getColor(), Config.instance.glowBoxSize.getValDouble());
 
         if (opened) {
             int selectedX = pickerX + pickerWidth + 6;

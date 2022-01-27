@@ -2,15 +2,13 @@ package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.ai.autorer.AutoRerAI;
-import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.event.events.*;
 import com.kisman.cc.friend.FriendManager;
-import com.kisman.cc.mixin.mixins.accessor.AccessorCPacketUseEntity;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
-import com.yworks.util.annotation.Obfuscation;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
@@ -29,7 +27,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Obfuscation(exclude = true, applyToMembers = true)
 public class AutoRer extends Module {
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
@@ -39,8 +36,12 @@ public class AutoRer extends Module {
     public final Setting terrain = new Setting("Terrain", this, false);
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
     private final Setting fastCalc = new Setting("Fast Calc", this, true);
+    private final Setting motionCrystal = new Setting("Motion Crystal", this, false);
+    private final Setting motionCalc = new Setting("Motion Calc", this, false);
     private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
     private final Setting instant = new Setting("Instant", this, true);
+    private final Setting instantCalc = new Setting("Instant Calc", this, true);
+    private final Setting instantRotate = new Setting("Instant Rotate", this, true);
     private final Setting inhibit = new Setting("Inhibit", this, true);
     private final Setting syns = new Setting("Syns", this, true);
     private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
@@ -61,6 +62,7 @@ public class AutoRer extends Module {
     private final Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
     private final Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
     private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
+    private final Setting multiplication = new Setting("Multiplication", this, 1, 1, 10, true);
 
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
     public final Setting minDMG = new Setting("Min DMG", this, 6, 0, 37, true);
@@ -97,11 +99,10 @@ public class AutoRer extends Module {
     private final TimerUtils breakTimer = new TimerUtils();
     private final TimerUtils calcTimer = new TimerUtils();
     private final TimerUtils renderTimer = new TimerUtils();
+    private final TimerUtils predictTimer = new TimerUtils();
     public static EntityPlayer currentTarget;
-    private BlockPos renderPos;
     private BlockPos placePos;
     private Entity lastHitEntity = null;
-    private double renderDamage;
     public boolean rotating;
 
     public AutoRer() {
@@ -117,13 +118,17 @@ public class AutoRer extends Module {
         setmgr.rSetting(terrain);
         setmgr.rSetting(switch_);
         setmgr.rSetting(fastCalc);
+        setmgr.rSetting(motionCrystal);
+        setmgr.rSetting(motionCalc);
         setmgr.rSetting(swing);
         setmgr.rSetting(instant);
+        setmgr.rSetting(instantCalc);
+        setmgr.rSetting(instantRotate);
         setmgr.rSetting(inhibit);
         setmgr.rSetting(syns);
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateMode);
-        setmgr.rSetting(ai);
+//        setmgr.rSetting(ai);
 
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
@@ -139,6 +144,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(breakDelay);
         setmgr.rSetting(calcDelay);
         setmgr.rSetting(clearDelay);
+        setmgr.rSetting(multiplication);
 
         setmgr.rSetting(dmgLine);
         setmgr.rSetting(minDMG);
@@ -172,23 +178,23 @@ public class AutoRer extends Module {
         placeTimer.reset();
         renderTimer.reset();
         currentTarget = null;
-        renderPos = null;
         rotating = false;
 
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
+        Kisman.EVENT_BUS.subscribe(motion);
     }
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener1);
+        Kisman.EVENT_BUS.unsubscribe(motion);
 
         placedList.clear();
         breakTimer.reset();
         placeTimer.reset();
         renderTimer.reset();
         currentTarget = null;
-        renderPos = null;
         rotating = false;
     }
 
@@ -197,7 +203,6 @@ public class AutoRer extends Module {
 
         if(renderTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
-            renderPos = null;
             renderTimer.reset();
         }
 
@@ -205,35 +210,62 @@ public class AutoRer extends Module {
 
         if(currentTarget == null) return;
         else super.setDisplayInfo("[" + currentTarget.getName() + "]");
-        if(currentTarget.isDead || currentTarget.getHealth() < 0) currentTarget = EntityUtil.getTarget(targetRange.getValFloat());
+        if(motionCrystal.getValBoolean()) return;
+        else if(motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
             calculatePlace();
             calcTimer.reset();
         }
 
-        doAutoRer();
+        if(multiplication.getValInt() == 1) doAutoRer(null);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRer(null);
     }
 
-    private void doAutoRer() {
+    @EventHandler
+    private final Listener<EventPlayerMotionUpdate> motion = new Listener<>(event -> {
+        if(!motionCrystal.getValBoolean() || currentTarget == null) return;
+        if(motionCalc.getValBoolean() && fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
+            calculatePlace();
+            calcTimer.reset();
+        }
+        if(multiplication.getValInt() == 1) doAutoRer(event);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRer(event);
+    });
+
+    private void doAutoRer(EventPlayerMotionUpdate event) {
         if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
-            doPlace();
+            doPlace(event);
             doBreak();
         } else {
             doBreak();
-            doPlace();
+            doPlace(event);
         }
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(renderPos != null){
-            if (render.getValString().equalsIgnoreCase("Default"))
-                RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-            else if (render.getValString().equalsIgnoreCase("Advanced"))
-                RenderUtil.drawGradientFilledBox(renderPos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-            if (text.getValBoolean())
-                RenderUtil.drawText(renderPos, ((Math.floor(renderDamage) == renderDamage) ? String.valueOf(Integer.valueOf((int) renderDamage)) : String.format("%.1f", renderDamage)));
+        if(placePos != null){
+            if (render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
+            if (text.getValBoolean()) {
+                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
+            }
         }
+    }
+
+    private void attackCrystalPredict(int entityID, BlockPos pos) {
+        if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
+            float[] rots = RotationUtils.getRotationToPos(pos);
+            mc.player.rotationYaw = rots[0];
+            mc.player.rotationPitch = rots[1];
+        }
+        CPacketUseEntity packet = new CPacketUseEntity();
+        packet.entityId = entityID;
+        packet.action = CPacketUseEntity.Action.ATTACK;
+        mc.player.connection.sendPacket(packet);
+        breakTimer.reset();
+        predictTimer.reset();
     }
 
     @EventHandler
@@ -241,19 +273,30 @@ public class AutoRer extends Module {
         if(event.getPacket() instanceof SPacketSpawnObject && instant.getValBoolean()) {
             SPacketSpawnObject packet =  (SPacketSpawnObject) event.getPacket();
             if (packet.getType() == 51) {
+                if(!(mc.world.getEntityByID(packet.getEntityID()) instanceof EntityEnderCrystal)) return;
                 BlockPos toRemove = null;
                 for (BlockPos pos : placedList) {
                     boolean canSee = EntityUtil.canSee(pos);
                     if (mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) >= (canSee ? breakRange.getValDouble() : breakWallRange.getValDouble())) break;
 
-                    toRemove = pos;
-                    if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(packet.getEntityID());} catch (Exception ignored) {}
+                    if(instantCalc.getValBoolean() && currentTarget != null) {
+                        float targetDamage = CrystalUtils.calculateDamage(pos, currentTarget, terrain.getValBoolean());
+                        if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
+                            float selfDamage = CrystalUtils.calculateDamage(pos, mc.player, terrain.getValBoolean());
+                            if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
+                                toRemove = pos;
+                                if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(packet.getEntityID());} catch (Exception ignored) {}
+                                attackCrystalPredict(packet.getEntityID(), pos);
+                                swing();
+                            }
+                        }
+                    } else {
+                        toRemove = pos;
+                        if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(packet.getEntityID());} catch (Exception ignored) {}
+                        attackCrystalPredict(packet.getEntityID(), pos);
+                        swing();
+                    }
 
-                    AccessorCPacketUseEntity hitPacket = (AccessorCPacketUseEntity) new CPacketUseEntity();
-                    hitPacket.setEntityId(packet.getEntityID());
-                    hitPacket.setAction(CPacketUseEntity.Action.ATTACK);
-                    mc.player.connection.sendPacket((CPacketUseEntity) hitPacket);
-                    swing();
                     break;
                 }
                 if (toRemove != null) placedList.remove(toRemove);
@@ -297,11 +340,9 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = placePos;
-        this.renderPos = placePos;
-        this.renderDamage = maxDamage;
     }
 
-    private void doPlace() {
+    private void doPlace(EventPlayerMotionUpdate event) {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
 
         if(!fastCalc.getValBoolean()) {
@@ -325,21 +366,25 @@ public class AutoRer extends Module {
             if(switch_.getValString().equals("None")) return;
             else if ("Normal".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, false);
             else if ("Silent".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, true);
+            else if(SwitchMode.SilentFix.name().equals(switch_.getValString())) mc.player.connection.sendPacket(new CPacketHeldItemChange(crystalSlot));
             else if (silentBypass) bypass.doSwitch();
         }
 
         if(mc.player == null) return;
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
-
-
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
 
-        if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All")) {
+        if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
             float[] rots = RotationUtils.getRotation(currentTarget);
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
+            if(!motionCrystal.getValBoolean()) {
+                mc.player.rotationYaw = rots[0];
+                mc.player.rotationPitch = rots[1];
+            } else if(event != null) {
+                event.setYaw(rots[0]);
+                event.setPitch(rots[1]);
+            }
         }
 
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
@@ -347,7 +392,6 @@ public class AutoRer extends Module {
         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
         mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         placeTimer.reset();
-        renderPos = placePos;
 
         if(ai.getValBoolean()) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
@@ -360,8 +404,10 @@ public class AutoRer extends Module {
             mc.player.rotationPitch = oldRots[1];
         }
         if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1 && !silentBypass && switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
-        if(silentBypass) bypass.doSwitch();
+        if(oldSlot != -1 && !silentBypass) {
+            if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+            else if (switch_.getValString().equals(SwitchMode.SilentFix.name())) mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
+        } else if(silentBypass) bypass.doSwitch();
     }
 
     private void doBreak() {
@@ -456,7 +502,7 @@ public class AutoRer extends Module {
     public enum InfoMode {Target, Damage, Both}
     public enum Rotate {Off, Place, Break, All}
     public enum Raytrace {None, Place, Break, Both}
-    public enum SwitchMode {None, Normal, Silent, SilentBypass}
+    public enum SwitchMode {None, Normal, Silent, SilentFix, SilentBypass}
     public enum SwingMode {MainHand, OffHand, PacketSwing}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}

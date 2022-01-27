@@ -60,6 +60,7 @@ public class LoadConfig {
                         if (setting.isCombo()) setting.setValString(dataObject.getAsString());
                         if (setting.isSlider()) setting.setValDouble(dataObject.getAsDouble());
                         if(setting.isColorPicker()) setting.fromJson(dataObject);
+                        if(setting.isBind()) setting.setKey(dataObject.getAsInt());
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(setting.getName() + " " + module.getName());

@@ -1,20 +1,8 @@
 package com.kisman.cc.oldclickgui;
 
-import java.io.*;
-import java.util.*;
-
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.clickguiEvents.drawScreen.render.GuiRenderPostEvent;
-import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEvent;
-import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
-import com.kisman.cc.module.client.ClickGUI;
-import com.kisman.cc.module.client.Config;
-import com.kisman.cc.oldclickgui.component.*;
-import com.kisman.cc.module.Category;
 import com.kisman.cc.util.*;
 import net.minecraft.client.gui.*;
 import net.minecraftforge.fml.relauncher.*;
-import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class ClickGui extends GuiScreen {
@@ -62,121 +50,6 @@ public class ClickGui extends GuiScreen {
 	public static int GActiveText = 255;
 	public static int BActiveText = 255;
 	public static int AActiveText = 255;
-
-	public static ArrayList<Frame> frames;
-
-	public ClickGui() {
-		frames = new ArrayList<>();
-		int frameX = 5;
-		for(Category category : Category.values()) {
-			Frame frame = new Frame(category);
-			frame.setX(frameX);
-			frames.add(frame);
-			frameX += frame.getWidth() + 1;
-		}
-	}
-
-	@Override
-	public void initGui() {
-	}
-
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		scrollWheelCheck();
-		for(Frame frame : frames) {
-			frame.renderFrame(this.fontRenderer);
-			frame.updatePosition(mouseX, mouseY);
-			for(Component comp : frame.getComponents()) {
-				comp.updateComponent(mouseX, mouseY);
-			}
-		}
-
-		GuiRenderPostEvent event = new GuiRenderPostEvent(mouseX, mouseY, partialTicks);
-		Kisman.EVENT_BUS.post(event);
-	}
-
-	@Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-		MouseClickedPreEvent event = new MouseClickedPreEvent(mouseX, mouseY, mouseButton);
-		Kisman.EVENT_BUS.post(event);
-
-		if(event.isCancelled()) return;
-
-		for(Frame frame : frames) {
-			if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 0) {
-				frame.setDrag(true);
-				frame.dragX = mouseX - frame.getX();
-				frame.dragY = mouseY - frame.getY();
-			}
-			if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 1) {
-				frame.setOpen(!frame.isOpen());
-			}
-			if(frame.isOpen()) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.mouseClicked(mouseX, mouseY, mouseButton);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	protected void keyTyped(char typedChar, int keyCode) {
-		for(Frame frame : frames) {
-			if(frame.isOpen() && keyCode != 1) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.keyTyped(typedChar, keyCode);
-					}
-				}
-			}
-		}
-
-		if (keyCode == 1) {
-            this.mc.displayGuiScreen(null);
-        }
-	}
-
-
-	@Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-		MouseReleasedPreEvent event = new MouseReleasedPreEvent(mouseX, mouseY, state);
-		Kisman.EVENT_BUS.post(event);
-
-		if(event.isCancelled()) return;
-
-		for(Frame frame : frames) {
-			frame.setDrag(false);
-		}
-		for(Frame frame : frames) {
-			if(frame.isOpen()) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.mouseReleased(mouseX, mouseY, state);
-					}
-				}
-			}
-		}
-	}
-
-	private void scrollWheelCheck() {
-		int dWheel = Mouse.getDWheel();
-		if(dWheel < 0){
-			for(Frame frame : frames) {
-				frame.setY(frame.getY() - (int) Config.instance.scrollSpeed.getValDouble());
-			}
-		} else if(dWheel > 0){
-			for(Frame frame : frames){
-				frame.setY(frame.getY() + (int) Config.instance.scrollSpeed.getValDouble());
-			}
-		}
-	}
-
-/*	@Override
-	public boolean doesGuiPauseGame() {
-		return true;
-	}*/
 
 	public static LineMode getSetLineMode() {
 		return setLineMode;

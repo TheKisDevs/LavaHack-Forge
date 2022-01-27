@@ -17,6 +17,7 @@ public class ViewModel extends Module {
     public static ViewModel instance;
 
     public Setting customEating = new Setting("Custom Eating", this, false);
+    public Setting translate = new Setting("Translate", this, true);
 
     //item FOV
     public Setting itemFOV = new Setting("ItemFOV", this, false);
@@ -71,6 +72,7 @@ public class ViewModel extends Module {
         instance = this;
 
         setmgr.rSetting(customEating);
+        setmgr.rSetting(translate);
 
         setmgr.rSetting(itemFOV);
         setmgr.rSetting(fov);

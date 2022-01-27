@@ -83,7 +83,6 @@ configurations {
 }
 
 dependencies {
-    compile 'com.yworks:yguard:2.9.2'
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -101,33 +100,6 @@ dependencies {
     }
     compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
-}
-
-task yGuardObfuscate {
-    dependsOn jar
-    group 'yGuard'
-    description 'Obfuscates and shrinks the java archive.'
-
-    doLast {
-        ant.taskdef(
-                name: 'yguard',
-                classname: 'com.yworks.yguard.YGuardTask',
-                classpath: sourceSets.main.runtimeClasspath.asPath
-        )
-
-        ant.yguard {
-            inoutpairs {
-                fileset(dir: "./build/install/module") {
-                    include(name: "module*.jar")
-                    exclude(name: "*_obf.jar")
-                }
-            }
-
-            rename(logFile: "./build/install/module/rename.log", annotationClass: "com.yworks.util.annotation.Obfuscation") {
-                property(name: "naming-scheme", value: "mix")
-            }
-        }
-    }
 }
 
 processResources {
