@@ -10,8 +10,10 @@
     "Mode": "Air",
     "UFOAlpha": 84.0,
     "ObsidianHoles": true,
+    "ObbyColor": "FF000000-false-false",
     "BedrockHoles": true,
-    "CusomMode": "Single",
+    "BedrockColor": "FF000000-false-false",
+    "CustomMode": "Double",
     "key": "NONE"
   }
 }

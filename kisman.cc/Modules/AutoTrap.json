@@ -1,6 +1,7 @@
 {
   "Module": "AutoTrap",
   "Settings": {
+    "Target Range": 10.0,
     "DisableOnComplete": false,
     "Delay": 50.0,
     "Rotate": true,

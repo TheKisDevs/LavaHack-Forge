@@ -91,7 +91,7 @@ public class ShaderCharms extends Module {
     public void onRenderWorld(RenderWorldLastEvent event) {
         {
             FramebufferShader framebufferShader = null;
-            boolean itemglow = false, gradient = false;
+            boolean itemglow = false, gradient = false;;
             switch(mode.getValString()) {
               case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
               case "RED": framebufferShader = RedShader.RED_SHADER; break;
@@ -100,6 +100,7 @@ public class ShaderCharms extends Module {
               case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
               case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
               case "GRADIENT": framebufferShader = GradientOutlineShader.INSTANCE; gradient = true; break;
+              case "UNU": framebufferShader = UnuShader.UNU_SHADER; break;
             }
 
             if (framebufferShader == null) return;
@@ -209,6 +210,6 @@ public class ShaderCharms extends Module {
     }
 
     public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT
+        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT, UNU
     }
 }

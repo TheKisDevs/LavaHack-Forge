@@ -1,4 +1,7 @@
 {
   "Module": "Spider",
-  "Settings": {}
+  "Settings": {
+    "Mode": "Default",
+    "key": "NONE"
+  }
 }

@@ -2,8 +2,9 @@
   "Module": "Jesus",
   "Settings": {
     "Mode": "Matrix",
-    "SpeedMatrix": 0.6000000238418579,
-    "SpeedSolid": 1.0,
+    "Speed Matrix": 0.6000000238418579,
+    "Speed Solid": 1.0,
+    "Speed Pixel": 4.0,
     "key": "NONE"
   }
 }

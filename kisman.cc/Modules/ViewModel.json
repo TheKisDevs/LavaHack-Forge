@@ -1,6 +1,8 @@
 {
   "Module": "ViewModel",
   "Settings": {
+    "Custom Eating": false,
+    "Translate": true,
     "ItemFOV": false,
     "FOV": 130.0,
     "RightX": 0.0,
@@ -46,6 +48,7 @@
     "HandScaleLeftX": 0.0,
     "HandScaleLeftY": 0.0,
     "HandScaleLeftZ": 0.0,
+    "Use Custom Alpha": false,
     "Alpha": 255.0,
     "key": "NONE"
   }

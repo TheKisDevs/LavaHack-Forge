@@ -2,7 +2,7 @@
   "Module": "StorageESP",
   "Settings": {
     "Distance": 53.0,
-    "Chest": false,
+    "Chest": true,
     "EChest": true,
     "ShulkerBox": true,
     "Dispenser": true,

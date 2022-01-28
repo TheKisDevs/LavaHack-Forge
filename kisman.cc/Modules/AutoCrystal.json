@@ -42,6 +42,7 @@
     "ArmorBreaker": true,
     "ArmorPercent": 20.0,
     "Render": true,
+    "Color": "00000000-false-false",
     "RenderMode": "Fill",
     "RenderDamage": true,
     "key": "NONE"

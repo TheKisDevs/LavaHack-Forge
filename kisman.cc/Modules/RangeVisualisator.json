@@ -3,8 +3,8 @@
   "Settings": {
     "Mode": "Circle",
     "Radius": 4.5,
-    "LineWidth": 1.5,
-    "Own": "None",
+    "LineWidth": 3.78,
+    "Own": "Sphere",
     "RayTrace": true,
     "key": "NONE"
   }

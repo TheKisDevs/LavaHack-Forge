@@ -6,8 +6,9 @@
     "FallBackMode": "Crystal",
     "FallBackDistance": 15.0,
     "TotemOnElytra": true,
-    "OffhandGapOnSword": true,
+    "GapOnSword": true,
     "HotbarFirst": false,
+    "Use UpdateController": true,
     "key": "NONE"
   }
 }

@@ -1,9 +1,9 @@
 {
   "Modules": {
-    "ArmorHUD": false,
+    "ArmorHud": false,
     "PvpInfo": false,
     "PvpResources": false,
-    "TargetHUD": false,
+    "TargetHud": false,
     "Speed": false,
     "ArrayList": false,
     "Coords": false,

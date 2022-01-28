@@ -5,7 +5,7 @@
     "Demand": 1.342177279E9,
     "MinProfitPercent": 0.0,
     "AlertSound": false,
-    "OnlyHypixelWorking": false,
+    "OnlyOnHypixelWorking": true,
     "key": "NONE"
   }
 }
