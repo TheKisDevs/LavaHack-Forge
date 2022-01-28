@@ -5,8 +5,10 @@
     "HurtCam": false,
     "Armor": false,
     "Overlay": false,
+    "Book": false,
+    "Chat Background": false,
     "Potion": true,
-    "Weather": false,
+    "Weather": true,
     "Block": false,
     "Lava": false,
     "key": "NONE"

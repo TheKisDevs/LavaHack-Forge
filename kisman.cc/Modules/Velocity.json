@@ -2,7 +2,7 @@
   "Module": "Velocity",
   "Settings": {
     "Mode": "Packet",
-    "Explotion": true,
+    "Explosion": true,
     "Bobbers": true,
     "NoPush": true,
     "key": "NONE"

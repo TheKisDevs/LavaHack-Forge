@@ -10,13 +10,13 @@
     "RayTrace": false,
     "Packet": false,
     "Confirm": false,
-    "Reactive": true,
-    "ChainPop": false,
+    "Rewrite": false,
+    "Dynamic": false,
+    "Support": "None",
+    "Retries": 5.0,
     "Rotate": "NONE",
     "RotateCenter": false,
     "RotateRandom": false,
-    "Render": true,
-    "RenderMode": "FILL",
     "key": "NONE"
   }
 }

@@ -79,6 +79,7 @@ public class ShaderCharms extends Module {
               case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
               case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
               case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
+              case "UNU": framebufferShader = UnuShader.UNU_SHADER; break;
             }
 
             if (framebufferShader == null) return;
@@ -153,6 +154,6 @@ public class ShaderCharms extends Module {
     }
 
     public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE
+        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, UNU
     }
 }

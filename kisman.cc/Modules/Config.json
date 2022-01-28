@@ -3,14 +3,20 @@
   "Settings": {
     "Friends": false,
     "Name Mode": "kismancc",
-    "ScrollSpeed": 15.0,
-    "GuiGlow": true,
-    "GlowOffset": 9.0,
-    "GuiAstolfo": true,
-    "GuiRenderSize": false,
-    "PulseMin": 255.0,
-    "PulseMax": 110.0,
-    "PulseSpeed": 6.29,
+    "Scroll Speed": 15.0,
+    "Gui Glow": false,
+    "Glow Offset": 6.0,
+    "Glow Radius": 15.0,
+    "Glow Box Size": 0.0,
+    "Gui Outline": true,
+    "Gui Astolfo": false,
+    "Gui Render Size": false,
+    "Gui Open Animation": false,
+    "Pulse Min": 255.0,
+    "Pulse Max": 110.0,
+    "Pulse Speed": 1.5,
+    "Save Config": false,
+    "Load Config": false,
     "key": "NONE"
   }
 }

@@ -1,8 +1,7 @@
 {
-  "Module": "CSGOGui",
+  "Module": "CsgoGui",
   "Settings": {
-    "Gui": "New",
     "CustomFontSize": true,
-    "key": "NONE"
+    "key": "J"
   }
 }

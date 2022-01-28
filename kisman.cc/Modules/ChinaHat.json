@@ -1,6 +1,7 @@
 {
   "Module": "ChinaHat",
   "Settings": {
+    "Color": "FFFF0000-false-false",
     "key": "NONE"
   }
 }

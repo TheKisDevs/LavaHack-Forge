@@ -19,7 +19,7 @@ public class LoadConfig {
             loadEnabledModules();
             loadVisibledModules();
             loadEnabledHudModules();
-        } catch (IOException e) {e.printStackTrace();}
+        } catch (IOException | JsonSyntaxException e) {e.printStackTrace();}
     }
 
     private static void loadModules() throws IOException {

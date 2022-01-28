@@ -1,6 +1,7 @@
 {
   "Module": "ExampleModule",
   "Settings": {
+    "ExampleColorPicker": "FF545252-false-false",
     "key": "NONE"
   }
 }
