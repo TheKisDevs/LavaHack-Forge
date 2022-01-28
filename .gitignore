@@ -27,6 +27,7 @@ config
 screenshots
 crash-reports
 .log
+hs_err_pid*
 
 # Files from Forge MDK
 forge*changelog.txt
