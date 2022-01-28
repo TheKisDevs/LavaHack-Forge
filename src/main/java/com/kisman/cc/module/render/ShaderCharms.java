@@ -41,6 +41,16 @@ public class ShaderCharms extends Module {
     private Setting saturation = new Setting("Saturation", this, 36, 0, 100, Slider.NumberType.PERCENT);
     private Setting brightness = new Setting("Brightness", this, 100, 0, 100, Slider.NumberType.PERCENT);
 
+    private Setting quality = new Setting("Quality", this, 1, 0, 20, false);
+    private Setting gradientAlpha = new Setting("Gradient Alpha", this, false);
+    private Setting alphaGradient = new Setting("Alpha Gradient Value", this, 255, 0, 255, true);
+    private Setting duplicateOutline = new Setting("Duplicate Outline", this, 1, 0, 20, false);
+    private Setting moreGradientOutline = new Setting("More Gradient", this, 1, 0, 10, false);
+    private Setting creepyOutline = new Setting("Creepy", this, 1, 0, 20, false);
+    private Setting alpha = new Setting("Alpha", this, 1, 0, 1, false);
+    private Setting numOctavesOutline = new Setting("Num Octaves", this, 5, 1, 30, true);
+    private Setting speedOutline = new Setting("Speed", this, 0.1, 0.001, 0.1, false);
+
     public ShaderCharms() {
         super("ShaderCharms", Category.RENDER);
         setmgr.rSetting(mode);
@@ -61,6 +71,16 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(delay);
         setmgr.rSetting(saturation);
         setmgr.rSetting(brightness);
+
+        setmgr.rSetting(quality);
+        setmgr.rSetting(gradientAlpha);
+        setmgr.rSetting(alphaGradient);
+        setmgr.rSetting(duplicateOutline);
+        setmgr.rSetting(moreGradientOutline);
+        setmgr.rSetting(creepyOutline);
+        setmgr.rSetting(alpha);
+        setmgr.rSetting(numOctavesOutline);
+        setmgr.rSetting(speedOutline);
     }
 
     public void update() {
@@ -71,7 +91,7 @@ public class ShaderCharms extends Module {
     public void onRenderWorld(RenderWorldLastEvent event) {
         {
             FramebufferShader framebufferShader = null;
-            boolean itemglow = false;
+            boolean itemglow = false, gradient = false;
             switch(mode.getValString()) {
               case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
               case "RED": framebufferShader = RedShader.RED_SHADER; break;
@@ -79,6 +99,7 @@ public class ShaderCharms extends Module {
               case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
               case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
               case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
+              case "GRADIENT": framebufferShader = GradientOutlineShader.INSTANCE; gradient = true; break;
             }
 
             if (framebufferShader == null) return;
@@ -86,7 +107,7 @@ public class ShaderCharms extends Module {
             GlStateManager.pushMatrix();
             GlStateManager.matrixMode(5888);
             GlStateManager.pushMatrix();
-            if(itemglow && framebufferShader instanceof ItemShader) {
+            if(itemglow) {
                 ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
                 ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
                 ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
@@ -96,6 +117,17 @@ public class ShaderCharms extends Module {
                 ((ItemShader) framebufferShader).mix = mix.getValFloat();
                 ((ItemShader) framebufferShader).alpha = 1f;
                 ((ItemShader) framebufferShader).useImage = false;
+            } else if(gradient) {
+                ((GradientOutlineShader) framebufferShader).color = getColor();
+                ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
             }
             framebufferShader.startDraw(event.getPartialTicks());
             for (Entity entity : mc.world.loadedEntityList) {
@@ -109,6 +141,7 @@ public class ShaderCharms extends Module {
                 Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
             }
             framebufferShader.stopDraw();
+            if(gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
             GlStateManager.color(1f, 1f, 1f);
             GlStateManager.matrixMode(5889);
             GlStateManager.popMatrix();
@@ -117,6 +150,19 @@ public class ShaderCharms extends Module {
         }
 
         if(items.getValBoolean()) {
+            FramebufferShader framebufferShader = null;
+            boolean itemglow = false, gradient = false;
+            switch(mode.getValString()) {
+                case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
+                case "RED": framebufferShader = RedShader.RED_SHADER; break;
+                case "SMOKE": framebufferShader = SmokeShader.SMOKE_SHADER; break;
+                case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
+                case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
+                case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
+                case "GRADIENT": framebufferShader = GradientOutlineShader.INSTANCE; gradient = true; break;
+            }
+
+            if (framebufferShader == null) return;
             GlStateManager.pushMatrix();
             GlStateManager.pushAttrib();
             GlStateManager.enableBlend();
@@ -124,19 +170,32 @@ public class ShaderCharms extends Module {
             GlStateManager.enableDepth();
             GlStateManager.depthMask(true);
             GlStateManager.enableAlpha();
-            ItemShader shader = ItemShader.ITEM_SHADER;
-            shader.red = getColor().getRed() / 255f;
-            shader.green = getColor().getGreen() / 255f;
-            shader.blue = getColor().getBlue() / 255f;
-            shader.radius = radius.getValFloat();
-            shader.quality = 1;
-            shader.blur = blur.getValBoolean();
-            shader.mix = mix.getValFloat();
-            shader.alpha = 1f;
-            shader.useImage = false;
-            shader.startDraw(event.getPartialTicks());
+            if(itemglow) {
+                ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
+                ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
+                ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                ((ItemShader) framebufferShader).radius = radius.getValFloat();
+                ((ItemShader) framebufferShader).quality = 1;
+                ((ItemShader) framebufferShader).blur = blur.getValBoolean();
+                ((ItemShader) framebufferShader).mix = mix.getValFloat();
+                ((ItemShader) framebufferShader).alpha = 1f;
+                ((ItemShader) framebufferShader).useImage = false;
+            } else if(gradient) {
+                ((GradientOutlineShader) framebufferShader).color = getColor();
+                ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+            }
+            framebufferShader.startDraw(event.getPartialTicks());
             mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
-            shader.stopDraw();
+            framebufferShader.stopDraw();
+            if(gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
             GlStateManager.disableBlend();
             GlStateManager.disableAlpha();
             GlStateManager.disableDepth();
@@ -147,12 +206,9 @@ public class ShaderCharms extends Module {
 
     private Color getColor() {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
-//        Color color = new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
-//        float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), new float[] {0, saturation.getValFloat(), brightness.getValInt()});
-//        return Color.getHSBColor(hsb[0], saturation.getValFloat() / 100, brightness.getValInt());
     }
 
     public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE
+        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT
     }
 }

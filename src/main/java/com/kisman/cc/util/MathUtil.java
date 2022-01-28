@@ -3,15 +3,11 @@ package com.kisman.cc.util;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.math.*;
 import java.util.*;
 import java.util.List;
 
@@ -22,6 +18,10 @@ public class MathUtil {
 
     public static Vec3d direction(float yaw) {
         return new Vec3d(Math.cos(degToRad(yaw + 90f)), 0, Math.sin(degToRad(yaw + 90f)));
+    }
+
+    public static AxisAlignedBB blockPosToDefaultBB(BlockPos pos) {
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1);
     }
 
     /**

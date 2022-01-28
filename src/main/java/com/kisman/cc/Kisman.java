@@ -61,6 +61,12 @@ public class Kisman {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 
+    public static final boolean allowToConfiguredAnotherClients;
+
+    static {
+        allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
+    }
+
     public boolean init = false;
 
     private Minecraft mc;
@@ -150,14 +156,25 @@ public class Kisman {
                     if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode) {
-                    		m.toggle();
+                            m.toggle();
                             if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
                     	}
                     }
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                }
+                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }
         } catch (Exception q) { q.printStackTrace(); }
+    }
+
+    private void onRelease(int key) {
+        for(Module m : moduleManager.modules) {
+            if(m.getKey() == key) {
+                if(m.hold) {
+                    m.toggle();
+                    if (moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
+                }
+            }
+        }
     }
 
     public static String getName() {

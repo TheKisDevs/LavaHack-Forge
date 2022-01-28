@@ -8,7 +8,7 @@ Add Particles in new cs gui - PunCakeCat
 Test TargetStrafe
 Fix hold binds
 Test rewrite AutoTrap
-Add RewriteRotate in Surround
+Test RewriteRotate in Surround
 Update CheckBox in new cs gui - Skarlord99
 Fix AutoRer render
 Fix AutoEZ

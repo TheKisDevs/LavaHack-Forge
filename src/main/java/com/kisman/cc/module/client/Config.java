@@ -29,6 +29,7 @@ public class Config extends Module {
     public Setting pulseSpeed = new Setting("Pulse Speed", this, 1.5, 0.1, 10, false);
     public Setting saveConfig = new Setting("Save Config", this, false);
     public Setting loadConfig = new Setting("Load Config", this, false);
+    public  Setting configurate = new Setting("Configurate", this, true);
 
 
     public Config() {
@@ -53,6 +54,7 @@ public class Config extends Module {
         setmgr.rSetting(pulseSpeed);
         setmgr.rSetting(saveConfig);
         setmgr.rSetting(loadConfig);
+        setmgr.rSetting(configurate);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

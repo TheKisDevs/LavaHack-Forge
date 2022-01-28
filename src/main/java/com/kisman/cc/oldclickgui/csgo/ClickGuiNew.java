@@ -91,6 +91,19 @@ public class ClickGuiNew extends GuiScreen {
                 }
 
                 {
+                    settingPane.addComponent(new Label(renderer, "Bind Mode"));
+                    ComboBox cb = new ComboBox(renderer, new String[] {"Toggle", "Hold"}, module.hold ? 1 : 0);
+                    settingPane.addComponent(cb);
+
+                    cb.setListener(val -> {
+                        module.hold = val != 0;
+                        return true;
+                    });
+
+                    onRenderListeners.add(() -> cb.setSelectedIndex(module.hold ? 1 : 0));
+                }
+
+                {
                     if (Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
                         if(!Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty()) {
                             for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(module)) {

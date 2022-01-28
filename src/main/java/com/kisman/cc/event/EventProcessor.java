@@ -7,11 +7,14 @@ import com.kisman.cc.event.events.*;
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hypixel.util.ConfigHandler;
+import com.kisman.cc.module.Module;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.combat.AutoTrap;
 import com.kisman.cc.util.TickRateUtil;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
@@ -34,6 +37,7 @@ public class EventProcessor {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
+        Kisman.EVENT_BUS.subscribe(packet);
     }
 
     @SubscribeEvent
@@ -68,9 +72,31 @@ public class EventProcessor {
             try {
                 Kisman.instance.commandManager.runCommands(event.getMessage().substring(0));
                 event.setCanceled(true);
-            } catch (Exception e) {}
+            } catch (Exception ignored) {}
         }
     }
+
+    @EventHandler
+    private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketChat && !Kisman.allowToConfiguredAnotherClients && Config.instance.configurate.getValBoolean()) {
+            SPacketChat packet = (SPacketChat) event.getPacket();
+            String message = packet.chatComponent.getUnformattedText();
+            if(message.contains("+")) {
+                String formattedMessage = message.substring(message.indexOf("+"));
+                try {
+                    String[] args = formattedMessage.split(" ");
+                    if (args[0] != null && args[1] != null) {
+                        Module module = Kisman.instance.moduleManager.getModule(args[1]);
+                        if (module == null) return;
+                        if (args[0].equalsIgnoreCase("disable") || args[0].equalsIgnoreCase("+disable")) module.setToggled(false);
+                        else if (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("+enable")) module.setToggled(true);
+                        else if (args[0].equalsIgnoreCase("block") || args[0].equalsIgnoreCase("+block")) module.block = true;
+                        else if (args[0].equalsIgnoreCase("unblock") || args[0].equalsIgnoreCase("+unlock")) module.block = true;
+                    }
+                } catch(Exception ignored) {}
+            }
+        }
+    });
 
     //NEC events
     @SubscribeEvent

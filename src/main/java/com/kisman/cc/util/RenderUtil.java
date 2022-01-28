@@ -1,53 +1,30 @@
 package com.kisman.cc.util;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LINES;
-import static org.lwjgl.opengl.GL11.GL_LINE_SMOOTH;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-import java.util.Objects;
+import java.text.*;
+import java.util.*;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.module.client.CustomFont;
 import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.customfont.norules.CFontRenderer;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.culling.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.*;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL32;
-import org.lwjgl.util.glu.Cylinder;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.glu.Sphere;
+import net.minecraft.util.math.*;
+import org.lwjgl.util.glu.*;
 
 import javax.annotation.Nullable;
 
@@ -56,9 +33,6 @@ public class RenderUtil {
     private static final Frustum frustrum = new Frustum();
 	
 	private static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-	public static int splashTickPos = 0;
-	public static boolean isSplash = false;
-
     public static ICamera camera = new Frustum();
 
     public static void drawSmoothRect(float left, float top, float right, float bottom, int color) {
@@ -72,6 +46,56 @@ public class RenderUtil {
         drawRect2(left * 2.0f, bottom * 2.0f - 1.0f, right * 2.0f, bottom * 2.0f, color);
         GL11.glDisable(3042);
         GL11.glScalef(2.0f, 2.0f, 2.0f);
+    }
+
+    public static void drawBoxESP(final AxisAlignedBB pos, final Color color, final Color line, final float lineWidth, final boolean outline, final boolean box, final int boxAlpha, final int outlineAlpha) {
+        final AxisAlignedBB bb = new AxisAlignedBB(pos.minX - mc.getRenderManager().viewerPosX, pos.minY - mc.getRenderManager().viewerPosY, pos.minZ - mc.getRenderManager().viewerPosZ, pos.maxX - mc.getRenderManager().viewerPosX, pos.maxY - mc.getRenderManager().viewerPosY, pos.maxZ - mc.getRenderManager().viewerPosZ);
+        camera.setPosition(Objects.requireNonNull(mc.getRenderViewEntity()).posX, mc.getRenderViewEntity().posY, mc.getRenderViewEntity().posZ);
+        if (camera.isBoundingBoxInFrustum(pos)) {
+            GlStateManager.pushMatrix();
+            GlStateManager.enableBlend();
+            GlStateManager.disableDepth();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+            GlStateManager.disableTexture2D();
+            GlStateManager.depthMask(false);
+            GL11.glEnable(2848);
+            GL11.glHint(3154, 4354);
+            GL11.glLineWidth(lineWidth);
+            if (box) RenderGlobal.renderFilledBox(bb, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, boxAlpha / 255.0f);
+            if (outline) RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, line.getRed() / 255.0f, line.getGreen() / 255.0f, line.getBlue() / 255.0f, outlineAlpha / 255.0f);
+            GL11.glDisable(2848);
+            GlStateManager.depthMask(true);
+            GlStateManager.enableDepth();
+            GlStateManager.enableTexture2D();
+            GlStateManager.disableBlend();
+            GlStateManager.popMatrix();
+        }
+    }
+
+    public static void drawProgressBox(AxisAlignedBB pos, float progress, Color color) {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+
+        float nxOff = ( float ) (pos.minX + (pos.getCenter().x - pos.minX) * progress);
+        float nyOff = ( float ) (pos.minY + (pos.getCenter().y - pos.minY) * progress);
+        float nzOff = ( float ) (pos.minZ + (pos.getCenter().z - pos.minZ) * progress);
+        float mxOff = ( float ) (pos.maxX + (pos.getCenter().x - pos.maxX) * progress);
+        float myOff = ( float ) (pos.maxY + (pos.getCenter().y - pos.maxY) * progress);
+        float mzOff = ( float ) (pos.maxZ + (pos.getCenter().z - pos.maxZ) * progress);
+
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(nxOff, nyOff, nzOff, mxOff, myOff, mzOff);
+
+        drawBoxESP(axisAlignedBB, color, color, 1f, true, true, color.getAlpha(), 255);
+
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 
     public static void drawRect2(float left, float top, float right, float bottom, int color) {

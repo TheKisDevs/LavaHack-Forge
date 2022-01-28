@@ -38,6 +38,7 @@
   "client": [
     "MixinGuiContainer",
     "MixinGuiNewChat",
-    "MixinModelBook"
+    "MixinModelBook",
+    "MixinPlayerControllerMP"
   ]
 }

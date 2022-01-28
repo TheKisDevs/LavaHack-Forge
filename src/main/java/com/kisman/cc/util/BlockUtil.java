@@ -4,23 +4,17 @@ import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.*;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.world.IBlockAccess;
 
 import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class BlockUtil {
-
     public static final List blackList;
     public static final List shulkerList;
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -38,19 +32,12 @@ public class BlockUtil {
         return mc.world.getBlockState(pos);
     }
 
-    public static boolean checkForNeighbours(BlockPos blockPos) {
-        if (!hasNeighbour(blockPos)) {
-
-            for (EnumFacing side : EnumFacing.values()) {
-                BlockPos neighbour = blockPos.offset(side);
-                if (hasNeighbour(neighbour)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return true;
+    public static boolean canBlockBeBroken(final BlockPos pos) {
+        final IBlockState blockState = mc.world.getBlockState(pos);
+        final Block block = blockState.getBlock();
+        return block.getBlockHardness(blockState, mc.world, pos) != -1;
     }
+
     public static int isPositionPlaceable(final BlockPos pos, final boolean rayTrace) {
         return isPositionPlaceable(pos, rayTrace, true);
     }
@@ -75,15 +62,12 @@ public class BlockUtil {
             if (!canBeClicked(pos.offset(side))) continue;
             return 3;
         }
-
         return 2;
     }
 
     public static Vec3d[] convertVec3ds(final Vec3d vec3d, final Vec3d[] input) {
         final Vec3d[] output = new Vec3d[input.length];
-        for (int i = 0; i < input.length; ++i) {
-            output[i] = vec3d.add(input[i]);
-        }
+        for (int i = 0; i < input.length; ++i) output[i] = vec3d.add(input[i]);
         return output;
     }
 
@@ -92,20 +76,13 @@ public class BlockUtil {
     }
 
     public static List<Vec3d> targets(final Vec3d vec3d, final boolean antiScaffold, final boolean antiStep, final boolean legs, final boolean platform, final boolean antiDrop, final boolean raytrace) {
-        final ArrayList<Vec3d> placeTargets = new ArrayList<Vec3d>();
-        if (antiDrop) {
-            Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiDropOffsetList));
-        }
-        if (platform) {
-            Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, platformOffsetList));
-        }
-        if (legs) {
-            Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, legOffsetList));
-        }
+        final ArrayList<Vec3d> placeTargets = new ArrayList<>();
+        if (antiDrop) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiDropOffsetList));
+        if (platform) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, platformOffsetList));
+        if (legs) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, legOffsetList));
         Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, OffsetList));
-        if (antiStep) {
-            Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiStepOffsetList));
-        } else {
+        if (antiStep) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiStepOffsetList));
+        else {
             final List<Vec3d> vec3ds = getUnsafeBlocksFromVec3d(vec3d, 2, false);
             if (vec3ds.size() == 4) {
                 for (final Vec3d vector : vec3ds) {
@@ -113,24 +90,17 @@ public class BlockUtil {
                     switch (BlockUtil.isPositionPlaceable(position, raytrace)) {
                         case -1:
                         case 1:
-                        case 2: {
-                            continue;
-                        }
-                        case 3: {
+                        case 2: continue;
+                        case 3:
                             placeTargets.add(vec3d.add(vector));
                             break;
-                        }
                     }
-                    if (antiScaffold) {
-                        Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiScaffoldOffsetList));
-                    }
+                    if (antiScaffold) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiScaffoldOffsetList));
                     return placeTargets;
                 }
             }
         }
-        if (antiScaffold) {
-            Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiScaffoldOffsetList));
-        }
+        if (antiScaffold) Collections.addAll(placeTargets, BlockUtil.convertVec3ds(vec3d, antiScaffoldOffsetList));
         return placeTargets;
     }
 
@@ -140,9 +110,7 @@ public class BlockUtil {
         offsets.add(new Vec3d(1.0, y, 0.0));
         offsets.add(new Vec3d(0.0, y, -1.0));
         offsets.add(new Vec3d(0.0, y, 1.0));
-        if (floor) {
-            offsets.add(new Vec3d(0.0, (y - 1), 0.0));
-        }
+        if (floor) offsets.add(new Vec3d(0.0, (y - 1), 0.0));
         return offsets;
     }
 
@@ -157,9 +125,7 @@ public class BlockUtil {
         for (final Vec3d vector : getOffsets(height, floor)) {
             final BlockPos targetPos = new BlockPos(pos).add(vector.x, vector.y, vector.z);
             final Block block = mc.world.getBlockState(targetPos).getBlock();
-            if (block instanceof BlockAir || block instanceof BlockLiquid || block instanceof BlockTallGrass || block instanceof BlockFire || block instanceof BlockDeadBush || block instanceof BlockSnow) {
-                vec3ds.add(vector);
-            }
+            if (block instanceof BlockAir || block instanceof BlockLiquid || block instanceof BlockTallGrass || block instanceof BlockFire || block instanceof BlockDeadBush || block instanceof BlockSnow) vec3ds.add(vector);
         }
         return vec3ds;
     }
@@ -182,29 +148,20 @@ public class BlockUtil {
             float f2 = (float)(vec.y - pos.getY());
             float f3 = (float)(vec.z - pos.getZ());
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f2, f3));
-        }
-        else {
-            mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, pos, direction, vec, hand);
-        }
+        } else mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, pos, direction, vec, hand);
         mc.player.swingArm(EnumHand.MAIN_HAND);
         mc.rightClickDelayTimer = 4;
     }
 
     public static double getNearestBlockBelow() {
-        for (double y = BlockUtil.mc.player.posY; y > 0.0; y -= 0.001) {
-            if (!(mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock() instanceof BlockSlab) && BlockUtil.mc.world.getBlockState(new BlockPos(BlockUtil.mc.player.posX, y, BlockUtil.mc.player.posZ)).getBlock().getDefaultState().getCollisionBoundingBox((IBlockAccess) mc.world, new BlockPos(0, 0, 0)) != null) {
-                return y;
-            }
-        }
+        for (double y = BlockUtil.mc.player.posY; y > 0.0; y -= 0.001) if (!(mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock() instanceof BlockSlab) && BlockUtil.mc.world.getBlockState(new BlockPos(BlockUtil.mc.player.posX, y, BlockUtil.mc.player.posZ)).getBlock().getDefaultState().getCollisionBoundingBox((IBlockAccess) mc.world, new BlockPos(0, 0, 0)) != null) return y;
         return -1.0;
     }
 
     private static boolean hasNeighbour(BlockPos blockPos) {
         for (EnumFacing side : EnumFacing.values()) {
             BlockPos neighbour = blockPos.offset(side);
-            if (!mc.world.getBlockState(neighbour).getMaterial().isReplaceable()) {
-                return true;
-            }
+            if (!mc.world.getBlockState(neighbour).getMaterial().isReplaceable()) return true;
         }
         return false;
     }
@@ -320,27 +277,19 @@ public class BlockUtil {
                 BlockUtil.mc.getConnection().sendPacket(new CPacketEntityAction(BlockUtil.mc.player, CPacketEntityAction.Action.START_SNEAKING));
                 BlockUtil.unshift = true;
             }
-            if (offsetState.getBlock().canCollideCheck(offsetState, false) && !offsetState.getMaterial().isReplaceable()) {
-                return side;
-            }
+            if (offsetState.getBlock().canCollideCheck(offsetState, false) && !offsetState.getMaterial().isReplaceable()) return side;
         }
         return null;
     }
 
 
     public static List<EnumFacing> getPossibleSides(final BlockPos pos) {
-        final ArrayList<EnumFacing> facings = new ArrayList<EnumFacing>();
-        if (BlockUtil.mc.world == null || pos == null) {
-            return facings;
-        }
+        final ArrayList<EnumFacing> facings = new ArrayList<>();
+        if (BlockUtil.mc.world == null || pos == null) return facings;
         for (final EnumFacing side : EnumFacing.values()) {
             final BlockPos neighbour = pos.offset(side);
             final IBlockState blockState = BlockUtil.mc.world.getBlockState(neighbour);
-            if (blockState != null && blockState.getBlock().canCollideCheck(blockState, false)) {
-                if (!blockState.getMaterial().isReplaceable()) {
-                    facings.add(side);
-                }
-            }
+            if (blockState != null && blockState.getBlock().canCollideCheck(blockState, false)) if (!blockState.getMaterial().isReplaceable()) facings.add(side);
         }
         return facings;
     }
@@ -348,63 +297,34 @@ public class BlockUtil {
     public static void placeBlock(BlockPos blockPos, boolean packet, boolean antiGlitch) {
         for (EnumFacing enumFacing : EnumFacing.values()) {
             if (!(getBlockResistance(blockPos.offset(enumFacing)) == BlockResistance.BLANK)) {
-                for (Entity entity : mc.world.loadedEntityList) {
-                    if (new AxisAlignedBB(blockPos).intersects(entity.getEntityBoundingBox()))
-                        return;
-                }
-
+                for (Entity entity : mc.world.loadedEntityList) if (new AxisAlignedBB(blockPos).intersects(entity.getEntityBoundingBox())) return;
                 mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
-
-                if (packet)
-                    mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(blockPos.offset(enumFacing), enumFacing.getOpposite(), EnumHand.MAIN_HAND, 0, 0, 0));
-                else
-                    mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos.offset(enumFacing), enumFacing.getOpposite(), new Vec3d(blockPos), EnumHand.MAIN_HAND);
-
+                if (packet) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(blockPos.offset(enumFacing), enumFacing.getOpposite(), EnumHand.MAIN_HAND, 0, 0, 0));
+                else mc.playerController.processRightClickBlock(mc.player, mc.world, blockPos.offset(enumFacing), enumFacing.getOpposite(), new Vec3d(blockPos), EnumHand.MAIN_HAND);
                 mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
-
-                if (antiGlitch)
-                    mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos.offset(enumFacing), enumFacing.getOpposite()));
-
+                if (antiGlitch) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos.offset(enumFacing), enumFacing.getOpposite()));
                 return;
             }
         }
     }
 
     public static EnumFacing getPlaceableSide(BlockPos pos) {
-
         for (EnumFacing side : EnumFacing.values()) {
-
             BlockPos neighbour = pos.offset(side);
-
-            if (!mc.world.getBlockState(neighbour).getBlock().canCollideCheck(mc.world.getBlockState(neighbour), false)) {
-                continue;
-            }
-
+            if (!mc.world.getBlockState(neighbour).getBlock().canCollideCheck(mc.world.getBlockState(neighbour), false)) continue;
             IBlockState blockState = mc.world.getBlockState(neighbour);
-            if (!blockState.getMaterial().isReplaceable()) {
-                return side;
-            }
+            if (!blockState.getMaterial().isReplaceable()) return side;
         }
-
         return null;
     }
 
     public static EnumFacing getPlaceableSideExlude(BlockPos pos, ArrayList<EnumFacing> excluding) {
-
         for (EnumFacing side : EnumFacing.values()) {
-
             if (!excluding.contains(side)) {
-
                 BlockPos neighbour = pos.offset(side);
-
-                if (!mc.world.getBlockState(neighbour).getBlock().canCollideCheck(mc.world.getBlockState(neighbour), false)) {
-                    continue;
-                }
-
+                if (!mc.world.getBlockState(neighbour).getBlock().canCollideCheck(mc.world.getBlockState(neighbour), false)) continue;
                 IBlockState blockState = mc.world.getBlockState(neighbour);
-                if (!blockState.getMaterial().isReplaceable()) {
-                    return side;
-                }
+                if (!blockState.getMaterial().isReplaceable()) return side;
             }
         }
 
@@ -412,7 +332,6 @@ public class BlockUtil {
     }
 
     public static Vec3d getCenterOfBlock(double playerX, double playerY, double playerZ) {
-
         double newX = Math.floor(playerX) + 0.5;
         double newY = Math.floor(playerY);
         double newZ = Math.floor(playerZ) + 0.5;
@@ -422,18 +341,10 @@ public class BlockUtil {
 
     @SuppressWarnings("deprecation")
     public static BlockResistance getBlockResistance(BlockPos block) {
-        if (mc.world.isAirBlock(block))
-            return BlockResistance.BLANK;
-
-        else if (mc.world.getBlockState(block).getBlock().getBlockHardness(mc.world.getBlockState(block), mc.world, block) != -1 && !(mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST)))
-            return BlockResistance.BREAKABLE;
-
-        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST))
-            return BlockResistance.RESISTANT;
-
-        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(block).getBlock().equals(Blocks.BARRIER))
-            return BlockResistance.UNBREAKABLE;
-
+        if (mc.world.isAirBlock(block)) return BlockResistance.BLANK;
+        else if (mc.world.getBlockState(block).getBlock().getBlockHardness(mc.world.getBlockState(block), mc.world, block) != -1 && !(mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST))) return BlockResistance.BREAKABLE;
+        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.OBSIDIAN) || mc.world.getBlockState(block).getBlock().equals(Blocks.ANVIL) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENCHANTING_TABLE) || mc.world.getBlockState(block).getBlock().equals(Blocks.ENDER_CHEST)) return BlockResistance.RESISTANT;
+        else if (mc.world.getBlockState(block).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(block).getBlock().equals(Blocks.BARRIER)) return BlockResistance.UNBREAKABLE;
         return null;
     }
 
@@ -450,9 +361,7 @@ public class BlockUtil {
     public static boolean isObbyHole(final BlockPos blockPos) {
         for (final BlockPos pos : getTouchingBlocks(blockPos)) {
             final IBlockState touchingState = BlockUtil.mc.world.getBlockState(pos);
-            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.OBSIDIAN) {
-                return false;
-            }
+            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.OBSIDIAN) return false;
         }
         return true;
     }
@@ -460,9 +369,7 @@ public class BlockUtil {
     public static boolean isBedrockHole(final BlockPos blockPos) {
         for (final BlockPos pos : getTouchingBlocks(blockPos)) {
             final IBlockState touchingState = BlockUtil.mc.world.getBlockState(pos);
-            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.BEDROCK) {
-                return false;
-            }
+            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.BEDROCK) return false;
         }
         return true;
     }
@@ -470,9 +377,7 @@ public class BlockUtil {
     public static boolean isBothHole(final BlockPos blockPos) {
         for (final BlockPos pos : getTouchingBlocks(blockPos)) {
             final IBlockState touchingState = BlockUtil.mc.world.getBlockState(pos);
-            if (touchingState.getBlock() == Blocks.AIR || (touchingState.getBlock() != Blocks.BEDROCK && touchingState.getBlock() != Blocks.OBSIDIAN)) {
-                return false;
-            }
+            if (touchingState.getBlock() == Blocks.AIR || (touchingState.getBlock() != Blocks.BEDROCK && touchingState.getBlock() != Blocks.OBSIDIAN)) return false;
         }
         return true;
     }
@@ -480,9 +385,7 @@ public class BlockUtil {
     public static boolean isElseHole(final BlockPos blockPos) {
         for (final BlockPos pos : getTouchingBlocks(blockPos)) {
             final IBlockState touchingState = BlockUtil.mc.world.getBlockState(pos);
-            if (touchingState.getBlock() == Blocks.AIR || !touchingState.isFullBlock()) {
-                return false;
-            }
+            if (touchingState.getBlock() == Blocks.AIR || !touchingState.isFullBlock()) return false;
         }
         return true;
     }
@@ -492,29 +395,12 @@ public class BlockUtil {
     }
 
     public static boolean canPlaceBlock(BlockPos pos) {
-        try {
-            for (Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
-                if (entity instanceof EntityItem == false) {
-                    return false;
-                }
-            }
-        } catch (ConcurrentModificationException ignored) {
-
-        }
-
-        if (!isSolid(pos) && canBeClicked(pos)) {
-            return true;
-        }
-
-        return false;
+        try {for (Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) if (!(entity instanceof EntityItem)) return false;} catch (ConcurrentModificationException ignored) { }
+        return !isSolid(pos) && canBeClicked(pos);
     }
 
     public static boolean isSolid(BlockPos pos) {
-        try {
-            return mc.world.getBlockState(pos).getMaterial().isSolid();
-        } catch (NullPointerException e) {
-            return false;
-        }
+        try {return mc.world.getBlockState(pos).getMaterial().isSolid();} catch (NullPointerException e) {return false;}
     }
 
     public enum BlockResistance {

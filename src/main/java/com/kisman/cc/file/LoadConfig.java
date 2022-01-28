@@ -19,6 +19,7 @@ public class LoadConfig {
             loadEnabledModules();
             loadVisibledModules();
             loadEnabledHudModules();
+            loadBindModes();
         } catch (IOException e) {e.printStackTrace();}
     }
 
@@ -132,6 +133,27 @@ public class LoadConfig {
             JsonElement dataObject = settingObject.get(module.getName());
 
             if(dataObject != null && dataObject.isJsonPrimitive()) try {module.setToggled(dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
+        }
+
+        inputStream.close();
+    }
+
+    private static void loadBindModes() throws IOException {
+        String enabledLocation = Kisman.fileName + Kisman.mainName;
+
+        if (!Files.exists(Paths.get(enabledLocation + "BindModes" + ".json"))) return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "BindModes" + ".json"));
+        JsonObject moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
+
+        if (moduleObject.get("Modules") == null) return;
+
+        JsonObject settingObject = moduleObject.get("Modules").getAsJsonObject();
+
+        for(Module module : Kisman.instance.moduleManager.modules) {
+            JsonElement dataObject = settingObject.get(module.getName());
+
+            if(dataObject != null && dataObject.isJsonPrimitive()) try {module.hold = (dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
         }
 
         inputStream.close();

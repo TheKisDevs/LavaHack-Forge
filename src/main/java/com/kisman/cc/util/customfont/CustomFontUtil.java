@@ -54,7 +54,7 @@ public class CustomFontUtil {
     }
 
     public static int getStringWidth(String text) {
-        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(text)) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") || getCustomFont().equalsIgnoreCase("Comfortaa Bold") ? (comfortaa18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
+        return customFont() ? getCustomFont().equals("Verdana") ? (Kisman.instance.customFontRenderer.getStringWidth(getStringModofiers() + text)) : getCustomFont().equals("Consolas") ? (consolas18.getStringWidth(text)) : getCustomFont().equalsIgnoreCase("Comfortaa") || getCustomFont().equalsIgnoreCase("Comfortaa Light") || getCustomFont().equalsIgnoreCase("Comfortaa Bold") ? (comfortaa18.getStringWidth(text)) : fontRenderer.getStringWidth(text) : fontRenderer.getStringWidth(text);
     }
 
     public static int getStringWidth(String text, boolean gui) {

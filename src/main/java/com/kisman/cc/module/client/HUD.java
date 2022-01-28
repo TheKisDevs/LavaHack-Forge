@@ -120,7 +120,7 @@ public class HUD extends Module {
 	}
 
 	public enum LogoMode {Simple, CSGO}
-	public enum Gradient {None, Simple, Sideway, Astolfo}
+	public enum Gradient {None, Simple, Sideway}
 	public enum IndicatorsThemeMode {Default, Rewrite}
 	public enum TargetHudThemeMode {Vega, Rewrite}
 }

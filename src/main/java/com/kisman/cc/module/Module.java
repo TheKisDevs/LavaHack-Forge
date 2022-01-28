@@ -17,6 +17,8 @@ public class Module {
 	private boolean toggled;
 	private final boolean subscribes;
 	public boolean visible = true;
+	public boolean hold = false;
+	public boolean block = false;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -36,12 +38,14 @@ public class Module {
 	}
 
 	public void setToggled(boolean toggled) {
+		if(block) return;
 		this.toggled = toggled;
 		if (this.toggled) onEnable();
 		else onDisable();
 	}
 
 	public void toggle() {
+		if(block) return;
 		toggled = !toggled;
 		if (toggled) onEnable();
 		else onDisable();

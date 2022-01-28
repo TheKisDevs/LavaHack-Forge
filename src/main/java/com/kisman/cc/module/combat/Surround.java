@@ -4,18 +4,22 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.mixin.mixins.accessor.ICPacketPlayer;
 import com.kisman.cc.module.*;
+import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.Rotation;
 import com.kisman.cc.util.Rotation.*;
-import com.kisman.cc.util.cosmos.*;
+import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 
 import java.util.*;
@@ -34,9 +38,13 @@ public class Surround extends Module {
     private Setting packet = new Setting("Packet", this, false);
     private Setting confirm = new Setting("Confirm", this, false);
     private Setting rewrite = new Setting("Rewrite", this, false);
-    private Setting dynamic = new Setting("Dynamic", this, false);
-    private Setting support = new Setting("Support", this, SupportModes.None);
-    private Setting retries = new Setting("Retries", this, 5, 0, 20, true);
+    private Setting dynamic = new Setting("Rewrite Dynamic", this, false);
+    private Setting support = new Setting("Rewrite Support", this, SupportModes.None);
+    private Setting retries = new Setting("Rewrite Retries", this, 5, 0, 20, true);
+    private Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
+    private Setting destroyCrystals = new Setting("Rewrite Destroy Crystals", this, true);
+    private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, Slider.NumberType.TIME);
+    private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
 
     private Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
     private Setting rotateCenter = new Setting("RotateCenter", this, false);
@@ -51,6 +59,7 @@ public class Surround extends Module {
     private BlockPos oldPos = BlockPos.ORIGIN;
     private BlockPos surroundPosition = BlockPos.ORIGIN;
     private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
+    private TimerUtils breakTimer = new TimerUtils();
 
     public Surround() {
         super("Surround", "Surround", Category.COMBAT);
@@ -70,6 +79,10 @@ public class Surround extends Module {
         setmgr.rSetting(dynamic);
         setmgr.rSetting(support);
         setmgr.rSetting(retries);
+        setmgr.rSetting(rewriteRotate);
+        setmgr.rSetting(destroyCrystals);
+        setmgr.rSetting(breakDelay);
+        setmgr.rSetting(breakRange);
 
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateCenter);
@@ -81,7 +94,7 @@ public class Surround extends Module {
 
         oldPos = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
 
-        switch ( center.getValString()) {
+        switch (center.getValString()) {
             case "TELEPORT": {
                 double xPosition = mc.player.getPositionVector().x;
                 double zPosition = mc.player.getPositionVector().z;
@@ -132,7 +145,6 @@ public class Surround extends Module {
                 }
                 break;
             }
-            case "PERSISTENT": break;
         }
 
         handleSurround();
@@ -167,8 +179,9 @@ public class Surround extends Module {
 
             if(switch_.getValString().equals("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
         } else if(rewrite.getValBoolean()) placeSurround();
-    }
 
+        if(destroyCrystals.getValBoolean()) destroyCrystals(getUnsafeBlocks());
+    }
 
     public void placeSurround() {
         if(!rewrite.getValBoolean()) {
@@ -176,7 +189,7 @@ public class Surround extends Module {
                 if (Objects.equals(BlockUtil.getBlockResistance(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)))), BlockUtil.BlockResistance.BLANK) && surroundPlaced <= blocksPerTick.getValDouble()) {
                     surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
-                    if (RaytraceUtil.raytraceBlock(surroundPosition, Raytrace.NORMAL) && raytrace.getValBoolean()) return;
+                    if (RaytraceUtil.raytraceBlock(surroundPosition, RaytraceUtil.Raytrace.NORMAL) && raytrace.getValBoolean()) return;
                     if (surroundPosition != BlockPos.ORIGIN) {
                         if (!rotate.getValString().equals(Rotate.NONE.name())) {
                             float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);
@@ -199,24 +212,71 @@ public class Surround extends Module {
             }
         } else {
             if(!getUnsafeBlocks().isEmpty()) {
+                if(destroyCrystals.getValBoolean()) destroyCrystals(getUnsafeBlocks());
                 int blockSlot;
                 if(InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9) != -1) blockSlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
                 else if(InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9) != -1) blockSlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
                 else return;
 
                 InventoryUtil.switchToSlot(blockSlot, switch_.getValString().equals("Silent"));
+                float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
                 for(BlockPos pos : getUnsafeBlocks()) {
+                    if(!rewriteRotate.getValString().equalsIgnoreCase(RotateModes.None.name())) {
+                        float[] rots = RotationUtils.getRotationToPos(pos);
+                        mc.player.rotationYaw = rots[0];
+                        mc.player.rotationPitch = rots[1];
+                    }
                     if(!support.getValString().equalsIgnoreCase(SupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || support.getValString().equalsIgnoreCase(SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) place(pos.down());
                     if(!BlockUtil2.isPositionPlaceable(pos, true, true, tries <= retries.getValInt())) continue;
                     place(pos);
                     tries++;
                 }
                 if(switch_.getValString().equals("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
+                if(rewriteRotate.getValString().equalsIgnoreCase(RotateModes.Silent.name())) {
+                    mc.player.rotationYaw = oldRots[0];
+                    mc.player.rotationPitch = oldRots[1];
+                }
             }
             placement = 0;
             if(!getUnsafeBlocks().isEmpty()) return;
             tries = 0;
             if(completion.getValString().equalsIgnoreCase(Completion.ToggleAfterComplete.name())) setToggled(false);
+        }
+    }
+
+    private void destroyCrystals(List<BlockPos> positions) {
+        if(!breakTimer.passedMillis(breakDelay.getValLong())) return;
+        ArrayList<EntityEnderCrystal> crystalsToBreak = new ArrayList<>();
+
+        for(Entity entity : mc.world.loadedEntityList) {
+            if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) <= breakRange.getValDouble()) {
+                EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
+                for(BlockPos pos : positions) if(crystal.getEntityBoundingBox().intersects(MathUtil.blockPosToDefaultBB(pos))) crystalsToBreak.add(crystal);
+            }
+        }
+
+        if(crystalsToBreak.isEmpty()) return;
+
+        for(EntityEnderCrystal crystal : crystalsToBreak) {
+            breakCrystal(crystal);
+        }
+    }
+
+    private void breakCrystal(EntityEnderCrystal crystal) {
+        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+        if(!rewriteRotate.getValString().equalsIgnoreCase(RotateModes.None.name())) {
+            float[] rots = RotationUtils.getRotation(crystal);
+            mc.player.rotationYaw = rots[0];
+            mc.player.rotationPitch = rots[1];
+        }
+
+        mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+        breakTimer.reset();
+
+        if(rewriteRotate.getValString().equalsIgnoreCase(RotateModes.Silent.name())) {
+            mc.player.rotationYaw = oldRots[0];
+            mc.player.rotationPitch = oldRots[1];
         }
     }
 
@@ -378,4 +438,5 @@ public class Surround extends Module {
 
     public enum SupportModes {None, Dynamic, Static}
     public enum SwitchModes {Normal, Silent}
+    public enum RotateModes {None, Normal, Silent}
 }

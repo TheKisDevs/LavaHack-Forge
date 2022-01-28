@@ -20,6 +20,8 @@ import java.util.*;
 
 public class AutoFirework extends Module {
     public static AutoFirework instance;
+    
+    private Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
 
     private Setting delayLine = new Setting("DLine", this, "Delays");
 
@@ -77,6 +79,8 @@ public class AutoFirework extends Module {
 
         aimBot = AimBot.instance;
         instance = this;
+
+        setmgr.rSetting(targetRange);
 
         setmgr.rSetting(delayLine);
         setmgr.rSetting(delay);
@@ -144,11 +148,7 @@ public class AutoFirework extends Module {
 
                     //rotate
                     if (rotate.getValBoolean()) {
-                        final double pos[] =  EntityUtil.calculateLookAt(
-                                target.posX + 0.5,
-                                target.posY - 0.5,
-                                target.posZ + 0.5,
-                                mc.player);
+                        final double[] pos =  EntityUtil.calculateLookAt(target.posX + 0.5, target.posY - 0.5, target.posZ + 0.5, mc.player);
 
                         aimBot.rotationSpoof = new RotationSpoof((float) pos[0], (float) pos[1]);
 
@@ -162,23 +162,12 @@ public class AutoFirework extends Module {
                     EnumFacing facing = null;
 
                     if(raytrace.getValBoolean()) {
-                        RayTraceResult result = mc.world.rayTraceBlocks(
-                                new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ),
-                                new Vec3d(target.posX + 0.5, target.posY - 0.5,
-                                        target.posZ + 0.5));
-
+                        RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(target.posX + 0.5, target.posY - 0.5, target.posZ + 0.5));
                         if(result == null || result.sideHit  == null) facing = EnumFacing.UP;
                         else facing = result.sideHit;
                     }
 
-                    mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing,
-                            fireHand.getValString().equalsIgnoreCase("Default") ?
-                                    mc.player.getHeldItemOffhand().getItem() == Items.FIREWORKS ? EnumHand.OFF_HAND : EnumHand.OFF_HAND :
-                                    fireHand.getValString().equalsIgnoreCase("MainHand") ?
-                                            EnumHand.MAIN_HAND :
-                                            EnumHand.OFF_HAND,
-                            0, 0, 0
-                    ));
+                    mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing, fireHand.getValString().equalsIgnoreCase("Default") ? mc.player.getHeldItemOffhand().getItem() == Items.FIREWORKS ? EnumHand.OFF_HAND : EnumHand.OFF_HAND : fireHand.getValString().equalsIgnoreCase("MainHand") ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, 0, 0, 0));
 
                     //switch return
                     if(switchFireReturn.getValBoolean()) InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
@@ -188,34 +177,13 @@ public class AutoFirework extends Module {
                     trapTimer.reset();
                 }
             }
-        } else findNewTarget();
-    }
-
-    private void findNewTarget() {
-        target = (EntityPlayer) getNearTarget(mc.player);
-    }
-
-    private EntityLivingBase getNearTarget(Entity distanceTarget) {
-        return mc.world.loadedEntityList.stream()
-                .filter(entity -> isValidTarget(entity))
-                .map(entity -> (EntityLivingBase) entity)
-                .min(Comparator.comparing(entity -> distanceTarget.getDistance(entity)))
-                .orElse(null);
+        } else target = EntityUtil.getTarget(targetRange.getValFloat());
     }
 
     private boolean needPause() {
         if(pauseWhileEating.getValBoolean() && PlayerUtil.IsEating()) return true;
         if(minHealthPause.getValBoolean() && mc.player.getHealth() + mc.player.getAbsorptionAmount() < requiredHealth.getValDouble()) return true;
         return pauseIfHittingBlock.getValBoolean() && mc.playerController.isHittingBlock && mc.player.getHeldItemMainhand().getItem() instanceof ItemTool;
-    }
-
-    public boolean isValidTarget(Entity entity) {
-        if (entity == null) return false;
-        if (!(entity instanceof EntityLivingBase)) return false;
-        if (entity.isDead || ((EntityLivingBase)entity).getHealth() <= 0.0f) return false;
-        if (entity.getDistance(mc.player) > 20.0f) return false;
-        if (entity instanceof EntityPlayer) return entity != mc.player;
-        return false;
     }
 
     private void doTrap() {
@@ -232,7 +200,7 @@ public class AutoFirework extends Module {
     }
 
     private void placeList(final List<Vec3d> list) {
-        list.sort((vec3d, vec3d2) -> Double.compare(AutoTrap.mc.player.getDistanceSq(vec3d2.x, vec3d2.y, vec3d2.z), AutoTrap.mc.player.getDistanceSq(vec3d.x, vec3d.y, vec3d.z)));
+        list.sort((vec3d, vec3d2) -> Double.compare(mc.player.getDistanceSq(vec3d2.x, vec3d2.y, vec3d2.z), mc.player.getDistanceSq(vec3d.x, vec3d.y, vec3d.z)));
         list.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
         for (final Vec3d vec3d3 : list) {
             final BlockPos position = new BlockPos(vec3d3);
@@ -248,11 +216,8 @@ public class AutoFirework extends Module {
         }
     }
 
-
     private boolean check() {
-        if(mc.player == null) return false;
-        if(startPos == null) return false;
-
+        if(mc.player == null || startPos == null) return false;
         didPlace = false;
         placements = 0;
         final int obbySlot2 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
@@ -275,11 +240,11 @@ public class AutoFirework extends Module {
             setToggled(false);
             return true;
         }
-        if (AutoTrap.mc.player.inventory.currentItem != this.lastHotbarSlot && AutoTrap.mc.player.inventory.currentItem != obbySlot3) {
-            this.lastHotbarSlot = AutoTrap.mc.player.inventory.currentItem;
+        if (mc.player.inventory.currentItem != this.lastHotbarSlot && mc.player.inventory.currentItem != obbySlot3) {
+            this.lastHotbarSlot = mc.player.inventory.currentItem;
         }
         isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        target = (EntityPlayer) getNearTarget(mc.player);
+        target = EntityUtil.getTarget(targetRange.getValFloat());
         return target == null || !trapTimer.passedMillis(trapDelay.getValInt());
     }
 
@@ -292,17 +257,17 @@ public class AutoFirework extends Module {
             if (obbySlot == -1 && eChestSot == -1) this.toggle();
 
             if (this.smartRotate) {
-                AutoTrap.mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
-                AutoTrap.mc.playerController.updateController();
+                mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
+                mc.playerController.updateController();
                 isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, true, true, this.isSneaking);
-                AutoTrap.mc.player.inventory.currentItem = originalSlot;
-                AutoTrap.mc.playerController.updateController();
+                mc.player.inventory.currentItem = originalSlot;
+                mc.playerController.updateController();
             } else {
-                AutoTrap.mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
-                AutoTrap.mc.playerController.updateController();
+                mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
+                mc.playerController.updateController();
                 isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, this.rotate.getValBoolean(), true, this.isSneaking);
-                AutoTrap.mc.player.inventory.currentItem = originalSlot;
-                AutoTrap.mc.playerController.updateController();
+                mc.player.inventory.currentItem = originalSlot;
+                mc.playerController.updateController();
             }
 
             this.didPlace = true;

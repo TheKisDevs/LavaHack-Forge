@@ -366,7 +366,6 @@ public class AutoRer extends Module {
             if(switch_.getValString().equals("None")) return;
             else if ("Normal".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, false);
             else if ("Silent".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, true);
-            else if(SwitchMode.SilentFix.name().equals(switch_.getValString())) mc.player.connection.sendPacket(new CPacketHeldItemChange(crystalSlot));
             else if (silentBypass) bypass.doSwitch();
         }
 
@@ -406,7 +405,6 @@ public class AutoRer extends Module {
         if(hand != null) mc.player.setActiveHand(hand);
         if(oldSlot != -1 && !silentBypass) {
             if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
-            else if (switch_.getValString().equals(SwitchMode.SilentFix.name())) mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
         } else if(silentBypass) bypass.doSwitch();
     }
 
@@ -502,7 +500,7 @@ public class AutoRer extends Module {
     public enum InfoMode {Target, Damage, Both}
     public enum Rotate {Off, Place, Break, All}
     public enum Raytrace {None, Place, Break, Both}
-    public enum SwitchMode {None, Normal, Silent, SilentFix, SilentBypass}
+    public enum SwitchMode {None, Normal, Silent, SilentBypass}
     public enum SwingMode {MainHand, OffHand, PacketSwing}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}

@@ -5,7 +5,6 @@ import com.kisman.cc.module.combat.holefiller.Hole;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
-import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +66,7 @@ public class HoleFiller extends Module {
         else super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getName() + TextFormatting.GRAY + "]");
 
         if(target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) target = EntityUtil.getTarget(range.getValFloat());
-        else if(timer.passedMillis(delay.getValLong())){
+        else if(timer.passedMillis(delay.getValLong()) && target != null){
             findHoles(mc.player, (float) range.getValDouble());
             findTargetHole();
 
@@ -152,14 +151,7 @@ public class HoleFiller extends Module {
         return holeblocks >= 9;
     }
 
-    public enum PlaceMode {
-        Always,
-        Smart
-    }
-
-    public enum SwitchMode {
-        None,
-        Normal,
-        Silent
-    }
+    public enum RotateMode {None, Normal, Silent}
+    public enum PlaceMode {Always, Smart}
+    public enum SwitchMode {None, Normal, Silent}
 }

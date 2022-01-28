@@ -2,14 +2,11 @@ package com.kisman.cc.module.render.shader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.shader.Framebuffer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
-public abstract class FramebufferShader extends Shader
-{
+public abstract class FramebufferShader extends Shader {
     public Minecraft mc;
     public static Framebuffer framebuffer;
     public boolean entityShadows;
@@ -47,9 +44,7 @@ public abstract class FramebufferShader extends Shader
     }
 
     public Framebuffer setupFrameBuffer(Framebuffer frameBuffer) {
-        if (frameBuffer != null) {
-            frameBuffer.deleteFramebuffer();
-        }
+        if (frameBuffer != null) frameBuffer.deleteFramebuffer();
         frameBuffer = new Framebuffer(this.mc.displayWidth, this.mc.displayHeight, true);
         return frameBuffer;
     }

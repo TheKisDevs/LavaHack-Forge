@@ -19,9 +19,8 @@ public class SaveConfig {
             saveEnabledModules();
             saveVisibledModules();
             saveEnabledHudModules();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            saveBindModes();
+        } catch (IOException e) {e.printStackTrace();}
         Kisman.LOGGER.info("Saved Config!");
     }
 
@@ -103,6 +102,22 @@ public class SaveConfig {
         JsonObject enabledObject = new JsonObject();
 
         for(HudModule mod : Kisman.instance.hudModuleManager.modules) enabledObject.add(mod.getName(), new JsonPrimitive(mod.isToggled()));
+
+        moduleObject.add("Modules", enabledObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
+
+    private static void saveBindModes() throws IOException {
+        registerFiles(Kisman.mainName, "BindModes");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.mainName + "BindModes" + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject enabledObject = new JsonObject();
+
+        for(Module mod : Kisman.instance.moduleManager.modules) enabledObject.add(mod.getName(), new JsonPrimitive(mod.hold));
 
         moduleObject.add("Modules", enabledObject);
         String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));

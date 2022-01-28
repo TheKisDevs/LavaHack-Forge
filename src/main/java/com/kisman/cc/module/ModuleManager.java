@@ -153,6 +153,7 @@ public class ModuleManager {
 		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
+		modules.add(new TargetStrafe());
 //		modules.add(new Zoom());
 		//player
 		modules.add(new AntiKnokBack());
@@ -207,11 +208,7 @@ public class ModuleManager {
 	}
 	
 	public Module getModule(String name) {
-		for (Module m : this.modules) {
-			if (m.getName().equalsIgnoreCase(name)) {
-				return m;
-			}
-		}
+		for (Module m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
 		return null;
 	}
 	
