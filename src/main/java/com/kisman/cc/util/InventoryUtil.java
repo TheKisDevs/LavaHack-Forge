@@ -80,7 +80,7 @@ public class InventoryUtil {
         return ( long ) ((ticks / 20.0f) * 1000);
     }
 
-    public boolean canHarvestBlock(Block block, BlockPos pos, ItemStack stack) {
+    public static boolean canHarvestBlock(Block block, BlockPos pos, ItemStack stack) {
         IBlockState state = mc.world.getBlockState(pos);
         state = state.getBlock().getActualState(state, mc.world, pos);
         if (state.getMaterial().isToolNotRequired()) return true;
