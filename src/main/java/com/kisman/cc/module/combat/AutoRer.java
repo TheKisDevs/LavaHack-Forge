@@ -26,6 +26,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoRer extends Module {
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
@@ -56,6 +58,8 @@ public class AutoRer extends Module {
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
     private final Setting friend_ = new Setting("Friend", this, FriendMode.AntiTotemPop);
+    private final Setting clientSide = new Setting("Client Side", this, false);
+    private final Setting manualBreaker = new Setting("Manual Breaker", this, false);
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
     private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
@@ -69,6 +73,12 @@ public class AutoRer extends Module {
     public final Setting maxSelfDMG = new Setting("Max Self DMG", this, 18, 0, 37, true);
     private final Setting maxFriendDMG = new Setting("Max Friend DMG", this, 10, 0, 37, true);
     public final Setting lethalMult = new Setting("Lethal Mult", this, 0, 0, 6, false);
+
+    private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
+    private final Setting threadMode = new Setting("Thread Mode", this, ThreadMode.None);
+    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 0, 1000, Slider.NumberType.TIME);
+    private final Setting threadSyns = new Setting("Thread Syns", this, true);
+    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -100,7 +110,13 @@ public class AutoRer extends Module {
     private final TimerUtils calcTimer = new TimerUtils();
     private final TimerUtils renderTimer = new TimerUtils();
     private final TimerUtils predictTimer = new TimerUtils();
+    private final TimerUtils manualTimer = new TimerUtils();
+    private final TimerUtils synsTimer = new TimerUtils();
+    private ScheduledExecutorService executor;
+    private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
+    private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
     public static EntityPlayer currentTarget;
+    private Thread thread;
     private BlockPos placePos;
     private Entity lastHitEntity = null;
     public boolean rotating;
@@ -138,6 +154,8 @@ public class AutoRer extends Module {
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
         setmgr.rSetting(friend_);
+        setmgr.rSetting(clientSide);
+        setmgr.rSetting(manualBreaker);
 
         setmgr.rSetting(delayLine);
         setmgr.rSetting(placeDelay);
@@ -151,6 +169,12 @@ public class AutoRer extends Module {
         setmgr.rSetting(maxSelfDMG);
         setmgr.rSetting(maxFriendDMG);
         setmgr.rSetting(lethalMult);
+
+        setmgr.rSetting(threadLine);
+        setmgr.rSetting(threadMode);
+        setmgr.rSetting(threadDelay);
+        setmgr.rSetting(threadSyns);
+        setmgr.rSetting(threadSynsValue);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
@@ -177,8 +201,12 @@ public class AutoRer extends Module {
         breakTimer.reset();
         placeTimer.reset();
         renderTimer.reset();
+        predictTimer.reset();
+        manualTimer.reset();
         currentTarget = null;
         rotating = false;
+
+        if(!threadMode.getValString().equalsIgnoreCase("None")) processMultiThreading();
 
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
@@ -190,12 +218,53 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener1);
         Kisman.EVENT_BUS.unsubscribe(motion);
 
+        if(thread != null) shouldInterrupt.set(false);
+        if(executor != null) executor.shutdown();
         placedList.clear();
         breakTimer.reset();
         placeTimer.reset();
         renderTimer.reset();
+        predictTimer.reset();
+        manualTimer.reset();
         currentTarget = null;
         rotating = false;
+    }
+
+    private void processMultiThreading() {
+        if(threadMode.getValString().equalsIgnoreCase("While")) handleWhile();
+        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool(false);
+    }
+
+    private ScheduledExecutorService getExecutor() {
+        final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(RAutoRer.getInstance(this), 0L, this.threadDelay.getValLong(), TimeUnit.MILLISECONDS);
+        return service;
+    }
+
+    private void handleWhile() {
+        if(thread == null || thread.isInterrupted() || thread.isAlive() || (synsTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
+            if(thread == null) thread = new Thread(RAutoRer.getInstance(this));
+            else if(synsTimer.passedMillis(threadSynsValue.getValLong()) && !shouldInterrupt.get() && threadSyns.getValBoolean()) {
+                shouldInterrupt.set(true);
+                synsTimer.reset();
+                return;
+            }
+            if(thread != null && (thread.isInterrupted() || !thread.isAlive())) thread = new Thread(RAutoRer.getInstance(this));
+            if(thread != null && thread.getState().equals(Thread.State.NEW)) {
+                try {
+                    thread.start();
+                } catch (Exception ignored) {}
+                synsTimer.reset();
+            }
+        }
+    }
+
+    private void handlePool(boolean justDoIt) {
+        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
+            if(executor != null) executor.shutdown();
+            executor = getExecutor();
+            synsTimer.reset();
+        }
     }
 
     public void update() {
@@ -210,15 +279,45 @@ public class AutoRer extends Module {
 
         if(currentTarget == null) return;
         else super.setDisplayInfo("[" + currentTarget.getName() + "]");
-        if(motionCrystal.getValBoolean()) return;
-        else if(motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
+        if(threadMode.getValString().equalsIgnoreCase("None")) {
+            if (manualBreaker.getValBoolean()) manualBreaker();
+            if (motionCrystal.getValBoolean()) return;
+            else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
+            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
+                calculatePlace();
+                calcTimer.reset();
+            }
+
+            if (multiplication.getValInt() == 1) doAutoRerLogic(null);
+            else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null);
+        } else processMultiThreading();
+    }
+
+    public void doAutoRerFotThread() {
+        if(manualBreaker.getValBoolean()) manualBreaker();
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
             calculatePlace();
             calcTimer.reset();
         }
 
-        if(multiplication.getValInt() == 1) doAutoRer(null);
-        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRer(null);
+        if(multiplication.getValInt() == 1) doAutoRerLogic(null);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null);
+    }
+
+    private void manualBreaker() {
+        RayTraceResult result = mc.objectMouseOver;
+        if(manualTimer.passedMillis(200) && mc.gameSettings.keyBindUseItem.isKeyDown() && mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE && mc.player.inventory.getCurrentItem().getItem() != Items.GOLDEN_APPLE && mc.player.inventory.getCurrentItem().getItem() != Items.BOW && mc.player.inventory.getCurrentItem().getItem() != Items.EXPERIENCE_BOTTLE && result != null) {
+            if(result.typeOfHit.equals(RayTraceResult.Type.ENTITY) && result.entityHit instanceof EntityEnderCrystal) {
+                mc.player.connection.sendPacket(new CPacketUseEntity(result.entityHit));
+                manualTimer.reset();
+            } else if(result.typeOfHit.equals(RayTraceResult.Type.BLOCK)) {
+                for (Entity target : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(new BlockPos(mc.objectMouseOver.getBlockPos().getX(), mc.objectMouseOver.getBlockPos().getY() + 1.0, mc.objectMouseOver.getBlockPos().getZ())))) {
+                    if(!(target instanceof EntityEnderCrystal)) continue;
+                    mc.player.connection.sendPacket(new CPacketUseEntity(target));
+                    manualTimer.reset();
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -228,11 +327,11 @@ public class AutoRer extends Module {
             calculatePlace();
             calcTimer.reset();
         }
-        if(multiplication.getValInt() == 1) doAutoRer(event);
-        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRer(event);
+        if(multiplication.getValInt() == 1) doAutoRerLogic(event);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(event);
     });
 
-    private void doAutoRer(EventPlayerMotionUpdate event) {
+    private void doAutoRerLogic(EventPlayerMotionUpdate event) {
         if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
             doPlace(event);
             doBreak();
@@ -453,6 +552,7 @@ public class AutoRer extends Module {
         lastHitEntity = crystal;
         mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         swing();
+        if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);
         breakTimer.reset();
 
         if((rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
@@ -496,6 +596,7 @@ public class AutoRer extends Module {
         return nearFriendWithMaxDamage;
     }
 
+    public enum ThreadMode {None, Pool, Sound, While}
     public enum Render {None, Default, Advanced}
     public enum InfoMode {Target, Damage, Both}
     public enum Rotate {Off, Place, Break, All}
@@ -523,6 +624,40 @@ public class AutoRer extends Module {
             this.damage = damage;
             if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
             this.isTotemPopped = isTotemPopped;
+        }
+    }
+
+    public static class RAutoRer implements Runnable {
+        private static RAutoRer instance;
+        private AutoRer autoRer;
+
+        public static RAutoRer getInstance(AutoRer autoRer) {
+            if(instance == null) {
+                instance = new RAutoRer();
+                instance.autoRer = autoRer;
+            }
+            return instance;
+        }
+
+        @Override
+        public void run() {
+            if(autoRer.threadMode.getValString().equalsIgnoreCase("While")) {
+                while (autoRer.isToggled() && autoRer.threadMode.getValString().equalsIgnoreCase("While")) {
+                    if(autoRer.shouldInterrupt.get()) {
+                        autoRer.shouldInterrupt.set(false);
+                        autoRer.synsTimer.reset();
+                        autoRer.thread.interrupt();
+                    }
+                    autoRer.threadOngoing.set(true);
+                    autoRer.doAutoRerFotThread();
+                    autoRer.threadOngoing.set(false);
+                    try {Thread.sleep(autoRer.threadDelay.getValLong());} catch (InterruptedException e) {autoRer.thread.interrupt();}
+                }
+            } else if(!autoRer.threadMode.getValString().equalsIgnoreCase("None")) {
+                autoRer.threadOngoing.set(true);
+                autoRer.doAutoRerFotThread();
+                autoRer.threadOngoing.set(false);
+            }
         }
     }
 }
