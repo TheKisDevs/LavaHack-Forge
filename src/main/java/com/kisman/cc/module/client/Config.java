@@ -4,6 +4,7 @@ import com.kisman.cc.file.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -20,6 +21,7 @@ public class Config extends Module {
     public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true);
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true);
     public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true);
+    public Setting guiParticles = new Setting("Gui Particles", this, true);
     public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
@@ -29,7 +31,8 @@ public class Config extends Module {
     public Setting pulseSpeed = new Setting("Pulse Speed", this, 1.5, 0.1, 10, false);
     public Setting saveConfig = new Setting("Save Config", this, false);
     public Setting loadConfig = new Setting("Load Config", this, false);
-    public  Setting configurate = new Setting("Configurate", this, true);
+    public Setting configurate = new Setting("Configurate", this, true);
+    public Setting particlesColor = new Setting("Particles Color", this, "Particles Color", new Colour(0, 0, 255));
 
 
     public Config() {
@@ -45,6 +48,7 @@ public class Config extends Module {
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(glowRadius);
         setmgr.rSetting(glowBoxSize);
+        setmgr.rSetting(guiParticles);
         setmgr.rSetting(guiOutline);
         setmgr.rSetting(guiAstolfo);
         setmgr.rSetting(guiRenderSIze);
@@ -55,6 +59,7 @@ public class Config extends Module {
         setmgr.rSetting(saveConfig);
         setmgr.rSetting(loadConfig);
         setmgr.rSetting(configurate);
+        setmgr.rSetting(particlesColor);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

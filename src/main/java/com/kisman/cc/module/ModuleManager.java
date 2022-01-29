@@ -65,11 +65,11 @@ public class ModuleManager {
 		modules.add(new DiscordRPC());
 		modules.add(new Dumper());
 		modules.add(new HUD());
-		modules.add(new NewGui());
 		modules.add(new NotEnoughCoinsModule());
 		modules.add(new ExampleModule());
 		modules.add(new SandBox());
 		modules.add(new Test());
+		modules.add(new VegaGui());
 		//chat
 		modules.add(new AntiSpamBypass());
 		modules.add(new AntiSpammer());

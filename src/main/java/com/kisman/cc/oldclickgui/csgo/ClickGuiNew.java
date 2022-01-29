@@ -9,6 +9,7 @@ import com.kisman.cc.oldclickgui.csgo.components.Label;
 import com.kisman.cc.oldclickgui.csgo.components.ScrollPane;
 import com.kisman.cc.oldclickgui.csgo.layout.FlowLayout;
 import com.kisman.cc.oldclickgui.csgo.layout.GridLayout;
+import com.kisman.cc.oldclickgui.particle.ParticleSystem;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
 import net.minecraft.client.gui.GuiScreen;
@@ -26,9 +27,11 @@ public class ClickGuiNew extends GuiScreen {
     private final Pane spoilerPane;
     private Window window;
     private IRenderer renderer;
+    private ParticleSystem particleSystem;
     private List<ActionEventListener> onRenderListeners = new ArrayList<>();
 
     public ClickGuiNew() {
+        particleSystem = new ParticleSystem(300);
         categoryPaneMap = new HashMap<>();
         renderer = new ClientBaseRendererImpl();
         spoilerPane = new Pane(renderer, new GridLayout(1));
@@ -267,19 +270,10 @@ public class ClickGuiNew extends GuiScreen {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix();
 
-        if(Config.instance.guiOpenAnimation.getValBoolean()) {
-            GL11.glPushMatrix();
-
-            float insizer = 0;
-            if (Kisman.map.containsKey(this)) {
-                Kisman.map.entrySet().forEach(m -> m.setValue(lerp(m.getValue(), 0.5f, 0.06f)));
-                insizer = -Kisman.map.get(this);
-            }
-            GL11.glTranslated(-insizer * 4.75, -insizer * 2.75, 0);
-            GL11.glScaled(1 + insizer / 100, 1 + insizer / 100, 1);
-            GL11.glTranslated(0, -insizer, 0);
-
-            GL11.glPopMatrix();
+        if(Config.instance.guiParticles.getValBoolean()) {
+            particleSystem.tick(10);
+            particleSystem.render();
+            particleSystem.onUpdate();
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
