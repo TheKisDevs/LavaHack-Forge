@@ -13,7 +13,7 @@ public class ParticleSystem
     private final List<Particle> particleList;
 
     public ParticleSystem(final int initAmount) {
-        this.particleList = new ArrayList<Particle>();
+        this.particleList = new ArrayList<>();
         this.addParticles(initAmount);
     }
 

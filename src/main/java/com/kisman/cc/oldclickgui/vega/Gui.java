@@ -7,12 +7,10 @@ import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreE
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.particle.ParticleSystem;
-import com.kisman.cc.oldclickgui.vega.component.Component;
-import com.kisman.cc.oldclickgui.vega.component.Frame;
+import com.kisman.cc.oldclickgui.vega.component.*;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.*;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
@@ -41,24 +39,19 @@ public class Gui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        particleSystem.tick(10);
-        particleSystem.render();
-        particleSystem.onUpdate();
+        if(Config.instance.guiParticles.getValBoolean()) {
+            particleSystem.tick(10);
+            particleSystem.render();
+            particleSystem.onUpdate();
+        }
         scrollWheelCheck();
         for(Frame frame : frames) {
             frame.renderComponent();
-            //frame.updateComponent(mouseX, mouseY);
             for(Button b : frame.buttons) {
-                //b.renderComponent();
-                //b.updateComponent(mouseX, mouseY);
                 b.x = b.parent.x;
                 b.y = b.parent.y;
-                for(Component comp : b.comp)
-                {
-                    comp.updateComponent(mouseX, mouseY);
-                }
+                for(Component comp : b.comp)  comp.updateComponent(mouseX, mouseY);
             }
-
         }
 
         GuiRenderPostEvent event = new GuiRenderPostEvent(mouseX, mouseY, partialTicks, GuiRenderPostEvent.Gui.NewGui);
@@ -67,17 +60,8 @@ public class Gui extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        for(Frame frame : frames) {
-            if(frame.open && keyCode != 1 && !frame.buttons.isEmpty()) {
-                for(Button b : frame.buttons) {
-                    b.keyTyped(typedChar, keyCode);
-                }
-            }
-        }
-
-        if(keyCode == 1) {
-            mc.displayGuiScreen(null);
-        }
+        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.buttons.isEmpty()) for(Button b : frame.buttons) b.keyTyped(typedChar, keyCode);
+        if(keyCode == 1) mc.displayGuiScreen(null);
     }
 
     @Override
@@ -95,17 +79,8 @@ public class Gui extends GuiScreen {
                 frame.refresh();
             }
 
-            if(frame.isMouseOnButton(mouseX, mouseY) && mouseButton == 1) {
-                frame.open = !frame.open;
-            }
-
-            if(frame.open) {
-                if(!frame.buttons.isEmpty()) {
-                    for(Button b : frame.buttons) {
-                        b.mouseClicked(mouseX, mouseY, mouseButton);
-                    }
-                }
-            }
+            if(frame.isMouseOnButton(mouseX, mouseY) && mouseButton == 1) frame.open = !frame.open;
+            if(frame.open) if(!frame.buttons.isEmpty()) for(Button b : frame.buttons) b.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
@@ -115,19 +90,8 @@ public class Gui extends GuiScreen {
         Kisman.EVENT_BUS.post(event);
 
         if(event.isCancelled()) return;
-
-
-        for(Frame frame : frames) {
-            frame.dragging = false;
-        }
-
-        for(Frame frame : frames) {
-            if(frame.open && !frame.buttons.isEmpty()) {
-                for(Button b : frame.buttons) {
-                    b.mouseReleased(mouseX, mouseY, state);
-                }
-            }
-        }
+        for(Frame frame : frames) frame.dragging = false;
+        for(Frame frame : frames) if(frame.open && !frame.buttons.isEmpty()) for(Button b : frame.buttons) b.mouseReleased(mouseX, mouseY, state);
     }
 
     @Override
@@ -137,15 +101,7 @@ public class Gui extends GuiScreen {
 
     private void scrollWheelCheck() {
         int dWheel = Mouse.getDWheel();
-        if(dWheel < 0){
-            for(Frame frame : frames) {
-                frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
-            }
-        }
-        else if(dWheel > 0){
-            for(Frame frame : frames){
-                frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
-            }
-        }
+        if(dWheel < 0) for(Frame frame : frames) frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
+        else if(dWheel > 0) for(Frame frame : frames) frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
     }
 }
