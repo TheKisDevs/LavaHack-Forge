@@ -205,6 +205,7 @@ public class ModuleManager {
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
+		modules.add(new PacketEat());
 	}
 	
 	public Module getModule(String name) {
