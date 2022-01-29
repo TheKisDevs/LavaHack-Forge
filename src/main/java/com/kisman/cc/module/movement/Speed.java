@@ -138,7 +138,7 @@ public class Speed extends Module {
             if(useTimer.getValBoolean() && Managers.instance.passed(250)) EntityUtil.setTimer(1.0888f);
             if(!Managers.instance.passed(lagTime.getValInt())) return;
             if(stage == 1 && PlayerUtil.isMoving(mc.player)) speed = 1.35 * MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()) - 0.01;
-            else if(stage == 2 && PlayerUtil.isMoving(mc.player)) {
+            else if(stage == 2 && PlayerUtil.isMoving(mc.player) && mc.player.onGround) {
                 mc.player.motionY = 0.3999 + MovementUtil.getJumpSpeed();
                 speed *= boost ? 1.6835 : 1.395;
             } else if(stage == 3) {

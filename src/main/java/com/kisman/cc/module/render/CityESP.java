@@ -141,25 +141,28 @@ public class CityESP extends Module {
             if (mc.world.getBlockState(pos).getBlock() != Blocks.AIR) directions.put(pos, weakSide);
         }
 
-        directions.forEach(((blockPos, blockOffset) -> {
-            if (blockOffset == HoleUtil.BlockOffset.DOWN) return;
-            BlockPos pos1 = blockOffset.left(blockPos.down(down.getValInt()), sides.getValInt());
-            BlockPos pos2 = blockOffset.forward(blockOffset.right(blockPos, sides.getValInt()), depth.getValInt());
-            List<BlockPos> square = EntityUtil.getSquare(pos1, pos2);
-            IBlockState holder = mc.world.getBlockState(blockPos);
-            mc.world.setBlockToAir(blockPos);
+        try {
+            directions.forEach(((blockPos, blockOffset) -> {
+                if (blockOffset == HoleUtil.BlockOffset.DOWN) return;
+                BlockPos pos1 = blockOffset.left(blockPos.down(down.getValInt()), sides.getValInt());
+                BlockPos pos2 = blockOffset.forward(blockOffset.right(blockPos, sides.getValInt()), depth.getValInt());
+                List<BlockPos> square = EntityUtil.getSquare(pos1, pos2);
+                IBlockState holder = mc.world.getBlockState(blockPos);
+                mc.world.setBlockToAir(blockPos);
 
-            for (BlockPos pos : square) {
-                if (CrystalUtils.canPlaceCrystal(pos.down(), true, ignoreCrystals.getValBoolean())) {
-                    if (CrystalUtils.calculateDamage(mc.world, (double) pos.getX() + 0.5d, pos.getY(), (double) pos.getZ() + 0.5d, player, false) >= minDMG.getValInt()) {
-                        if (CrystalUtils.calculateDamage(mc.world, (double) pos.getX() + 0.5d, pos.getY(), (double) pos.getZ() + 0.5d, mc.player, false) <= maxSelfDMG.getValInt()) cityableSides.add(blockPos);
-                        break;
+                for (BlockPos pos : square) {
+                    if (CrystalUtils.canPlaceCrystal(pos.down(), true, ignoreCrystals.getValBoolean())) {
+                        if (CrystalUtils.calculateDamage(mc.world, (double) pos.getX() + 0.5d, pos.getY(), (double) pos.getZ() + 0.5d, player, false) >= minDMG.getValInt()) {
+                            if (CrystalUtils.calculateDamage(mc.world, (double) pos.getX() + 0.5d, pos.getY(), (double) pos.getZ() + 0.5d, mc.player, false) <= maxSelfDMG.getValInt())
+                                cityableSides.add(blockPos);
+                            break;
+                        }
                     }
                 }
-            }
 
-            mc.world.setBlockState(blockPos, holder);
-        }));
+                mc.world.setBlockState(blockPos, holder);
+            }));
+        } catch (Exception ignored) {}
 
         return cityableSides;
     }
@@ -177,7 +180,7 @@ public class CityESP extends Module {
         }
     }
 
-    public static enum MineMode {Packet, Vanilla}
-    public static enum TargetMode {Single, All}
-    public static enum SelectMode {Closest, All}
+    public enum MineMode {Packet, Vanilla}
+    public enum TargetMode {Single, All}
+    public enum SelectMode {Closest, All}
 }

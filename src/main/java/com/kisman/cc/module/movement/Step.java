@@ -12,6 +12,8 @@ public class Step extends Module {
         super("Step", "setting your step", Category.MOVEMENT);
 
         instance = this;
+
+        setmgr.rSetting(height);
     }
 
     public void update() {

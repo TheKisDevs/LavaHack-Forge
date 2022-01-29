@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +50,7 @@ public class AutoRer extends Module {
     private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
     private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent);
     private final Setting ai = new Setting("AI", this, false);
+    private final Setting calcDistSort = new Setting("Calc Dist Sort", this, false);
 
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
     private final Setting place = new Setting("Place", this, true);
@@ -145,6 +147,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateMode);
 //        setmgr.rSetting(ai);
+        setmgr.rSetting(calcDistSort);
 
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
@@ -251,9 +254,7 @@ public class AutoRer extends Module {
             }
             if(thread != null && (thread.isInterrupted() || !thread.isAlive())) thread = new Thread(RAutoRer.getInstance(this));
             if(thread != null && thread.getState().equals(Thread.State.NEW)) {
-                try {
-                    thread.start();
-                } catch (Exception ignored) {}
+                try {thread.start();} catch (Exception ignored) {}
                 synsTimer.reset();
             }
         }
@@ -293,7 +294,7 @@ public class AutoRer extends Module {
         } else processMultiThreading();
     }
 
-    public void doAutoRerFotThread() {
+    public void doAutoRerForThread() {
         if(manualBreaker.getValBoolean()) manualBreaker();
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
             calculatePlace();
@@ -419,6 +420,10 @@ public class AutoRer extends Module {
         double maxDamage = 0.5;
         BlockPos placePos = null;
         List<BlockPos> sphere = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
+        if(calcDistSort.getValBoolean()) {
+            sphere.sort(Comparator.comparingDouble(pos -> currentTarget.getDistanceSq(pos)));
+            sphere.sort(Comparator.comparingDouble(pos -> mc.player.getDistanceSq(pos)));
+        }
 
         for(int size = sphere.size(), i = 0; i < size; ++i) {
             BlockPos pos = sphere.get(i);
@@ -552,7 +557,7 @@ public class AutoRer extends Module {
         lastHitEntity = crystal;
         mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         swing();
-        if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);
+        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);} catch (Exception ignored) {}
         breakTimer.reset();
 
         if((rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
@@ -649,13 +654,13 @@ public class AutoRer extends Module {
                         autoRer.thread.interrupt();
                     }
                     autoRer.threadOngoing.set(true);
-                    autoRer.doAutoRerFotThread();
+                    autoRer.doAutoRerForThread();
                     autoRer.threadOngoing.set(false);
                     try {Thread.sleep(autoRer.threadDelay.getValLong());} catch (InterruptedException e) {autoRer.thread.interrupt();}
                 }
             } else if(!autoRer.threadMode.getValString().equalsIgnoreCase("None")) {
                 autoRer.threadOngoing.set(true);
-                autoRer.doAutoRerFotThread();
+                autoRer.doAutoRerForThread();
                 autoRer.threadOngoing.set(false);
             }
         }

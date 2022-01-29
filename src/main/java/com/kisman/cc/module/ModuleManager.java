@@ -180,6 +180,7 @@ public class ModuleManager {
 		modules.add(new MultiTask());
 		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());
+		modules.add(new PacketEat());
 		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new Rubberband());
@@ -205,7 +206,6 @@ public class ModuleManager {
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
-		modules.add(new PacketEat());
 	}
 	
 	public Module getModule(String name) {

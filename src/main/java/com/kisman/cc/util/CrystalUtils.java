@@ -178,24 +178,14 @@ public class CrystalUtils {
         double blockDensity =  0;
 
         try {
-            if(terrain) {
-                blockDensity = getBlockDensity(vec3d, entity.getEntityBoundingBox());
-            } else {
-                blockDensity =  entity.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
-            }
-        } catch (Exception e) {}
+            if(terrain) blockDensity = getBlockDensity(vec3d, entity.getEntityBoundingBox());
+            else blockDensity =  entity.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
+        } catch (Exception ignored) {}
 
         double v = (1.0D - distancedsize) * blockDensity;
         float damage = (int) ((v * v + v) / 2.0D * 7.0D * doubleExplosionSize + 1.0D);
         double finald = 1.0D;
-        /*
-         * if (entity instanceof EntityLivingBase) finald =
-         * getBlastReduction((EntityLivingBase) entity,getDamageMultiplied(damage));
-         */
-        if (entity instanceof EntityLivingBase) {
-            finald = getBlastReduction((EntityLivingBase) entity, getDamageMultiplied(world, damage),
-                    new Explosion(world, null, posX, posY, posZ, 6F, false, true));
-        }
+        if (entity instanceof EntityLivingBase) finald = getBlastReduction((EntityLivingBase) entity, getDamageMultiplied(world, damage), new Explosion(world, null, posX, posY, posZ, 6F, false, true));
         return (float) finald;
     }
 
