@@ -3,8 +3,7 @@ package com.kisman.cc.util;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.util.pyro.Rotation;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -16,8 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.*;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
@@ -299,13 +297,11 @@ public class RotationUtils {
         return new float[] { f, f2 };
     }
 
-    public static
-    int getDirection4D ( ) {
+    public static int getDirection4D ( ) {
         return MathHelper.floor ( ( mc.player.rotationYaw * 4.0F / 360.0F ) + 0.5D ) & 3;
     }
 
-    public static
-    String getDirection4D ( boolean northRed ) {
+    public static String getDirection4D ( boolean northRed ) {
         int dirnumber = getDirection4D();
         if ( dirnumber == 0 ) return "South (+Z)";
         if ( dirnumber == 1 ) return "West (-X)";

@@ -29,6 +29,7 @@ public class KillAura extends Module {
     public EntityPlayer target;
 
     private Setting mode = new Setting("Mode", this, "Sword", Arrays.asList("Single", "Multi"));
+    private Setting attackCooldown = new Setting("Attack Cooldown", this, 1, 0, 1, false);
 
     private Setting hitLine = new Setting("HitLine", this, "Hit");
     private Setting useFallDist = new Setting("Use Fall Dist", this, false);
@@ -36,6 +37,8 @@ public class KillAura extends Module {
     private Setting shieldBreaker = new Setting("Shield Breaker", this, true);
     private Setting packetAttack = new Setting("Packet Attack", this, false);
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
+    private Setting oldPosUse = new Setting("Old Pos Use", this, false);
+    private Setting onlyCrits = new Setting("Only Crits", this, true);
 
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
 
@@ -53,6 +56,7 @@ public class KillAura extends Module {
         instance = this;
 
         setmgr.rSetting(mode);
+        setmgr.rSetting(attackCooldown);
 
         setmgr.rSetting(hitLine);
         setmgr.rSetting(useFallDist);
@@ -61,6 +65,8 @@ public class KillAura extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
         setmgr.rSetting(packetAttack);
         setmgr.rSetting(rotations);
+        setmgr.rSetting(oldPosUse);
+        setmgr.rSetting(onlyCrits);
 
         setmgr.rSetting(new Setting("WeaponLine", this, "Weapon"));
         setmgr.rSetting(weapon);
@@ -73,7 +79,7 @@ public class KillAura extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("DistanceLine", this, "Distance"));
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 4.25f, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 6, false));
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(targetEsp);
@@ -86,6 +92,7 @@ public class KillAura extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
         if(mc.player.isDead) return;
+        if(mc.player.getCooledAttackStrength(0) <= (onlyCrits.getValBoolean() ? 0.95f : attackCooldown.getValFloat())) return;
 
         boolean player = Kisman.instance.settingsManager.getSettingByName(this, "Player").getValBoolean();
         boolean monster = Kisman.instance.settingsManager.getSettingByName(this, "Monster").getValBoolean();
@@ -153,7 +160,7 @@ public class KillAura extends Module {
     }
 
     private void attack(Entity entity) {
-        float oldYaw = mc.player.rotationYaw, oldPitch = mc.player.rotationPitch;
+        float oldYaw = mc.player.rotationYaw, oldPitch = mc.player.rotationPitch, oldYawOffset = mc.player.renderYawOffset, oldYawHead = mc.player.rotationYawHead;
         rotation(entity);
 
         if(packetAttack.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(entity));
@@ -164,6 +171,11 @@ public class KillAura extends Module {
 
         if(rotations.getValString().equals("Silent")) {
             mc.player.rotationYaw = oldYaw;
+            mc.player.rotationPitch = oldPitch;
+        } else if(rotations.getValString().equals("SilentMatrix")) {
+            mc.player.rotationYaw = oldYaw;
+            mc.player.renderYawOffset = oldYawOffset;
+            mc.player.rotationYawHead = oldYawHead;
             mc.player.rotationPitch = oldPitch;
         }
     }
@@ -184,6 +196,13 @@ public class KillAura extends Module {
                 mc.player.rotationPitch = rots[1];
                 break;
             }
+            case "Matrix":
+                float[] rots = RotationUtils.getMatrixRotations(entity, oldPosUse.getValBoolean());
+                mc.player.rotationYaw = rots[0];
+                mc.player.renderYawOffset = rots[0];
+                mc.player.rotationYawHead = rots[0];
+                mc.player.rotationPitch = rots[1];
+                break;
         }
     }
 
@@ -232,5 +251,5 @@ public class KillAura extends Module {
         return true;
     }
 
-    public enum RotateMode {None, Normal, Silent, WellMore}
+    public enum RotateMode {None, Normal, Silent, WellMore, Matrix, SilentMatrix}
 }

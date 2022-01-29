@@ -29,6 +29,8 @@ public class NoSlow extends Module {
     private Setting ignoreConsole = new Setting("IgnoreConsole", this, true);
     private Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false);
 
+    private Setting matrix = new Setting("Matrix", this, false);
+
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
 
@@ -40,6 +42,8 @@ public class NoSlow extends Module {
         setmgr.rSetting(ignoreChat);
         setmgr.rSetting(ignoreConsole);
         setmgr.rSetting(ignoreClickGui);
+
+        setmgr.rSetting(matrix);
     }
 
     public void onEnable() {
@@ -55,13 +59,18 @@ public class NoSlow extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         if (mc.player.isHandActive() && items.getValBoolean()) if (mc.player.getHeldItem(mc.player.getActiveHand()).getItem() instanceof ItemShield) if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0 && mc.player.getItemInUseMaxCount() >= 8) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.getHorizontalFacing()));
 
         if(slimeBlocks.getValBoolean()) {
             if(mc.player.getRidingEntity() != null) Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.8f);
             else Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
+        }
+
+        if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && PlayerUtil.isMoving(mc.player)) {
+            mc.player.motionX *= 0.9;
+            mc.player.motionZ *= 0.9;
         }
     }
 

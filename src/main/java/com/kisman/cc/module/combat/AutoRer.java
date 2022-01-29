@@ -43,7 +43,7 @@ public class AutoRer extends Module {
     private final Setting instantCalc = new Setting("Instant Calc", this, true);
     private final Setting instantRotate = new Setting("Instant Rotate", this, true);
     private final Setting inhibit = new Setting("Inhibit", this, true);
-    private final Setting syns = new Setting("Syns", this, true);
+    public final Setting syns = new Setting("Syns", this, true);
     private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
     private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent);
     private final Setting ai = new Setting("AI", this, false);

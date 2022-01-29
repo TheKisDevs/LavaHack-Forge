@@ -49,7 +49,7 @@ public class TargetStrafe extends Module {
             invertStrafe();
         }
 
-        if(autoJump.getValBoolean() && mc.player.onGround) mc.player.motionY -= -0.008599899709224701;
+        if(autoJump.getValBoolean() && mc.player.onGround) mc.player.jump();
         if(mc.gameSettings.keyBindLeft.isKeyDown()) direction = 1;
         if(mc.gameSettings.keyBindRight.isKeyDown()) direction = -1;
 
