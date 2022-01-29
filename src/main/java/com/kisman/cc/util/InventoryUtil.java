@@ -8,6 +8,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.item.*;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -202,6 +203,43 @@ public class InventoryUtil {
             switchToSlot(getItemSlot(item, Inventory.HOTBAR, true), switchMode);
 
 //        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
+    }
+
+    public static void switchToSlotGhost(final int slot) {
+        if (slot != -1 && InventoryUtil.mc.player.inventory.currentItem != slot) {
+            InventoryUtil.mc.player.connection.sendPacket((Packet)new CPacketHeldItemChange(slot));
+        }
+    }
+
+    public static void switchToSlotGhost(final Block block) {
+        if (getBlockInHotbar(block) != -1 && InventoryUtil.mc.player.inventory.currentItem != getBlockInHotbar(block)) {
+            InventoryUtil.mc.player.connection.sendPacket((Packet)new CPacketHeldItemChange(getBlockInHotbar(block)));
+        }
+    }
+
+    public static void switchToSlotGhost(final Item item) {
+        if (getHotbarItemSlot(item) != -1 && InventoryUtil.mc.player.inventory.currentItem != getHotbarItemSlot(item)) {
+            switchToSlotGhost(getHotbarItemSlot(item));
+        }
+    }
+
+    public static int getHotbarItemSlot(final Item item) {
+        for (int i = 0; i < 9; ++i) {
+            if (InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem() == item) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int getBlockInHotbar(final Block block) {
+        for (int i = 0; i < 9; ++i) {
+            final Item item = InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem();
+            if (item instanceof ItemBlock && ((ItemBlock)item).getBlock().equals(block)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static int getBlockInHotbar(boolean onlyObby) {
