@@ -1,8 +1,0 @@
-{
-  "Module": "Rubberband",
-  "Settings": {
-    "Mode": "Packet",
-    "Motion": 5.0,
-    "key": "NONE"
-  }
-}

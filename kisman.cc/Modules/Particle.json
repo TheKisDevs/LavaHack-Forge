@@ -1,9 +1,0 @@
-{
-  "Module": "Particle",
-  "Settings": {
-    "RenderMode": "Single",
-    "Heart": false,
-    "Crit": false,
-    "key": "NONE"
-  }
-}

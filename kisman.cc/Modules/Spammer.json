@@ -1,9 +1,0 @@
-{
-  "Module": "Spammer",
-  "Settings": {
-    "GlobalMode": false,
-    "Delay": 2534.0,
-    "CustomMessage": false,
-    "key": "NONE"
-  }
-}

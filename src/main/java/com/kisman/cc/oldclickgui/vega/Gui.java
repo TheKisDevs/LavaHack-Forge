@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.clickguiEvents.mouseClicked.MouseClickedPreEve
 import com.kisman.cc.event.events.clickguiEvents.mouseReleased.MouseReleasedPreEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
+import com.kisman.cc.oldclickgui.particle.ParticleSystem;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.Frame;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
@@ -21,8 +22,12 @@ import java.util.ArrayList;
 public class Gui extends GuiScreen {
     public ArrayList<Frame> frames;
 
+    public ParticleSystem particleSystem;
+
     public Gui() {
         frames = new ArrayList<>();
+
+        particleSystem = new ParticleSystem(300);
 
         int x = 3;
         int y = 6;
@@ -36,6 +41,9 @@ public class Gui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        particleSystem.tick(10);
+        particleSystem.render();
+        particleSystem.onUpdate();
         scrollWheelCheck();
         for(Frame frame : frames) {
             frame.renderComponent();

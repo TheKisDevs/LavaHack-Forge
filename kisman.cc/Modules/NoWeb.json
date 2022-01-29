@@ -1,9 +1,0 @@
-{
-  "Module": "NoWeb",
-  "Settings": {
-    "OnGround": false,
-    "MotionX": 0.84,
-    "MotionY": 1.0,
-    "key": "NONE"
-  }
-}

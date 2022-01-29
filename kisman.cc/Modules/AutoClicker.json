@@ -1,8 +1,0 @@
-{
-  "Module": "AutoClicker",
-  "Settings": {
-    "MinCPS": 8.0,
-    "MaxCPS": 15.47,
-    "key": "NONE"
-  }
-}
