@@ -20,6 +20,8 @@ public class CustomFontUtil {
     public static CFontRenderer comfortaal15 = new CFontRenderer(getFontTTF("comfortaa-light", 15), true, true);
     public static CFontRenderer comfortaal16 = new CFontRenderer(getFontTTF("comfortaa-light", 16), true, true);
 
+    public static CFontRenderer comfortaab72 = new CFontRenderer(getFontTTF("comfortaa-bold", 72), true, true);
+    public static CFontRenderer comfortaab55 = new CFontRenderer(getFontTTF("comfortaa-bold", 55), true, true);
     public static CFontRenderer comfortaab20 = new CFontRenderer(getFontTTF("comfortaa-bold", 22), true, true);
     public static CFontRenderer comfortaab18 = new CFontRenderer(getFontTTF("comfortaa-bold", 18), true, true);
     public static CFontRenderer comfortaab16 = new CFontRenderer(getFontTTF("comfortaa-bold", 16), true, true);
@@ -141,7 +143,10 @@ public class CustomFontUtil {
 
     public static int getFontHeight(boolean gui) {
         return customFont() ? getCustomFont().equalsIgnoreCase("Verdana") ? (Kisman.instance.customFontRenderer.fontHeight / 2 - 1) : getCustomFont().equalsIgnoreCase("Consolas") ? (CSGOGui.instance.customSize.getValBoolean() && gui ?  (consolas15.fontHeight - 8) / 2 : (consolas18.fontHeight - 8) / 2) : (comfortaa18.fontHeight - 8) / 2 : fontRenderer.FONT_HEIGHT;
+    }
 
+    public static int getFontHeight(CFontRenderer customFont) {
+        return (customFont.fontHeight - 8) / 2;
     }
 
     public static int getFontHeight() {

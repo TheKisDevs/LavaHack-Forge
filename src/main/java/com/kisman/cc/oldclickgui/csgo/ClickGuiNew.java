@@ -138,7 +138,13 @@ public class ClickGuiNew extends GuiScreen {
                                         return true;
                                     });
 
+                                    sb.setListener2(newValue -> {
+                                        set.setRainbow(newValue);
+                                        return true;
+                                    });
+
                                     onRenderListeners.add(() -> sb.setValue(set.getColour()));
+                                    onRenderListeners.add(() -> sb.setValue(set.isRainbow()));
                                 }
                                 if(set.isString()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));

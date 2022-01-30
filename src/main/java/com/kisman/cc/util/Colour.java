@@ -83,6 +83,14 @@ public class Colour {
         fixColorRange();
     }
 
+    public static Colour fromHSB(float[] hsb, int alpha) {
+        return new Colour(ColorUtils.injectAlpha(Color.getHSBColor(hsb[0], hsb[1], hsb[2]), alpha));
+    }
+
+    public float[] RGBtoHSB() {
+        return Color.RGBtoHSB(r, g, b, null);
+    }
+
     private void fixColorRange() {
         if(r > 255) r = 255;
         else if(r < 0) r = 0;

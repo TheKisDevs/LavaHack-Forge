@@ -2,7 +2,6 @@ package com.kisman.cc.util.render;
 
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.util.manager.Managers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.*;
 
 public class PulseManager {

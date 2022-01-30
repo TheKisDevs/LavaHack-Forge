@@ -2,12 +2,10 @@ package com.kisman.cc.oldclickgui.csgo.components;
 
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.Window;
-import com.kisman.cc.oldclickgui.csgo.AbstractComponent;
-import com.kisman.cc.oldclickgui.csgo.IRenderer;
+import com.kisman.cc.oldclickgui.csgo.*;
 import com.kisman.cc.util.Render2DUtil;
 
 import java.awt.*;
-import java.util.function.Supplier;
 
 public class CheckBox extends AbstractComponent {
     private static final int PREFERRED_HEIGHT = 22;
@@ -41,12 +39,7 @@ public class CheckBox extends AbstractComponent {
         }
 
         renderer.drawOutline(x, y, preferredHeight, preferredHeight, 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
-
-        if(Config.instance.guiGlow.getValBoolean() && selected) {
-            Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + preferredHeight) / 2, (y + preferredHeight) / 2, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
-        }
-
-        //y + renderer.getStringHeight(title) / 4
+        if(Config.instance.guiGlow.getValBoolean() && selected) Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + preferredHeight) / 2, (y + preferredHeight) / 2, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
         renderer.drawString(x + preferredHeight + preferredHeight / 4, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);
     }
 
@@ -67,20 +60,15 @@ public class CheckBox extends AbstractComponent {
             updateHovered(x, y, offscreen);
 
             if (hovered) {
-
                 boolean newVal = !selected;
                 boolean change = true;
 
-                if (listener != null) {
-                    change = listener.onValueChange(newVal);
-                }
-
+                if (listener != null) change = listener.onValueChange(newVal);
                 if (change) selected = newVal;
 
                 return true;
             }
         }
-
         return false;
     }
 

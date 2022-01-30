@@ -27,11 +27,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoRer extends Module {
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
+    private final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
     private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
     private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
@@ -55,13 +57,16 @@ public class AutoRer extends Module {
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
     private final Setting place = new Setting("Place", this, true);
     public final Setting secondCheck = new Setting("Second Check", this, false);
+    private final Setting thirdCheck = new Setting("Third Check", this, false);
     public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
+    private final Setting multiPlace = new Setting("Multi Place", this, false);
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
     private final Setting friend_ = new Setting("Friend", this, FriendMode.AntiTotemPop);
     private final Setting clientSide = new Setting("Client Side", this, false);
     private final Setting manualBreaker = new Setting("Manual Breaker", this, false);
+    private final Setting removeAfterAttack = new Setting("Remove After Attack", this, false);
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
     private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
@@ -129,6 +134,7 @@ public class AutoRer extends Module {
         instance = this;
 
         setmgr.rSetting(placeRange);
+        setmgr.rSetting(placeWallRange);
         setmgr.rSetting(breakRange);
         setmgr.rSetting(breakWallRange);
         setmgr.rSetting(targetRange);
@@ -152,13 +158,16 @@ public class AutoRer extends Module {
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
         setmgr.rSetting(secondCheck);
+        setmgr.rSetting(thirdCheck);
         setmgr.rSetting(armorBreaker);
+        setmgr.rSetting(multiPlace);
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
         setmgr.rSetting(friend_);
         setmgr.rSetting(clientSide);
         setmgr.rSetting(manualBreaker);
+        setmgr.rSetting(removeAfterAttack);
 
         setmgr.rSetting(delayLine);
         setmgr.rSetting(placeDelay);
@@ -235,7 +244,7 @@ public class AutoRer extends Module {
 
     private void processMultiThreading() {
         if(threadMode.getValString().equalsIgnoreCase("While")) handleWhile();
-        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool(false);
+        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool();
     }
 
     private ScheduledExecutorService getExecutor() {
@@ -260,8 +269,8 @@ public class AutoRer extends Module {
         }
     }
 
-    private void handlePool(boolean justDoIt) {
-        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
+    private void handlePool() {
+        if(executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
             if(executor != null) executor.shutdown();
             executor = getExecutor();
             synsTimer.reset();
@@ -295,6 +304,7 @@ public class AutoRer extends Module {
     }
 
     public void doAutoRerForThread() {
+        if(mc.player == null || mc.world == null) return;
         if(manualBreaker.getValBoolean()) manualBreaker();
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
             calculatePlace();
@@ -411,8 +421,13 @@ public class AutoRer extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
-        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
-            try {placedList.add(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos());} catch (Exception ignored) {}
+        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) try {placedList.add(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos());} catch (Exception ignored) {}
+        if(removeAfterAttack.getValBoolean() && event.getPacket() instanceof CPacketUseEntity) {
+            CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
+            if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && packet.getEntityFromWorld(mc.world) instanceof EntityEnderCrystal) {
+                Objects.requireNonNull(packet.getEntityFromWorld(mc.world)).setDead();
+                try {mc.world.removeEntityFromWorld(packet.entityId);} catch(Exception ignored) {}
+            }
         }
     });
 
@@ -428,7 +443,8 @@ public class AutoRer extends Module {
         for(int size = sphere.size(), i = 0; i < size; ++i) {
             BlockPos pos = sphere.get(i);
 
-            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean())) {
+            if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
+            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean())) {
                 float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
@@ -444,6 +460,10 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = placePos;
+    }
+
+    private boolean isPosValid(BlockPos pos) {
+        return mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= (EntityUtil.canSee(pos) ?  placeRange.getValDouble() : placeWallRange.getValDouble());
     }
 
     private void doPlace(EventPlayerMotionUpdate event) {
@@ -464,7 +484,7 @@ public class AutoRer extends Module {
         int oldSlot = mc.player.inventory.currentItem;
         int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
 
-        if(crystalSlot == -1 && !silentBypass) return;
+        if(crystalSlot == -1 && !silentBypass && !offhand) return;
 
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && !offhand) {
             if(switch_.getValString().equals("None")) return;

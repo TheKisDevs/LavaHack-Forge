@@ -4,6 +4,7 @@ import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.csgo.*;
 import com.kisman.cc.oldclickgui.csgo.Window;
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
 
@@ -21,6 +22,7 @@ public class ColorButton extends AbstractComponent {
     private boolean opened;
 
     private Colour value;
+    private boolean value2;
 
     private float[] color;
     private boolean pickingColor;
@@ -29,9 +31,11 @@ public class ColorButton extends AbstractComponent {
     private int pickerX, pickerY, pickerWidth, pickerHeight;
     private int hueSliderX, hueSliderY, hueSliderWidth, hueSliderHeight;
     private int alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight;
+    private int rainbowX, rainbowY, rainbowWidth, rainbowHeight;
     private int selectedColorFinal;
 
     private ValueChangeListener<Colour> listener;
+    private ValueChangeListener<Boolean> listener2;
 
     public ColorButton(IRenderer renderer, Colour colour, int preferredWidth, int preferredHeight) {
         super(renderer);
@@ -54,6 +58,10 @@ public class ColorButton extends AbstractComponent {
         this.alphaSliderY = pickerY;
         this.alphaSliderWidth = 10;
         this.alphaSliderHeight = pickerHeight;
+        this.rainbowX = pickerX;
+        this.rainbowY = hueSliderY + hueSliderHeight + 6;
+        this.rainbowHeight = CustomFontUtil.getFontHeight() + 10;
+        this.rainbowWidth = rainbowHeight;
 
         updateWidth();
         updateHeight();
@@ -69,7 +77,7 @@ public class ColorButton extends AbstractComponent {
     }
 
     private void updateHeight() {
-        if (opened) setHeight(preferredHeight + (pickerHeight + 6 + hueSliderHeight) * 2);
+        if (opened) setHeight(preferredHeight + (pickerHeight + 6 * 2 + hueSliderHeight + rainbowHeight) * 2);
         else setHeight(preferredHeight);
     }
 
@@ -85,6 +93,10 @@ public class ColorButton extends AbstractComponent {
         this.alphaSliderY = pickerY;
         this.alphaSliderWidth = 10;
         this.alphaSliderHeight = pickerHeight;
+        this.rainbowX = pickerX;
+        this.rainbowY = hueSliderY + hueSliderHeight + 6;
+        this.rainbowHeight = CustomFontUtil.getFontHeight() + 10;
+        this.rainbowWidth = rainbowHeight;
         updateWidth();
         updateHeight();
 
@@ -109,6 +121,7 @@ public class ColorButton extends AbstractComponent {
             this.drawPickerBase(pickerX, pickerY, pickerWidth, pickerHeight, selectedRed, selectedGreen, selectedBlue, this.color[3]);
             this.drawHueSlider(hueSliderX, hueSliderY, hueSliderWidth, hueSliderHeight, this.color[0]);
             this.drawAlphaSlider(alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight, selectedRed, selectedGreen, selectedBlue, this.color[3]);
+            this.drawButton(rainbowX, rainbowY, rainbowWidth, rainbowHeight, value2, "Rainbow");
             //final int
             this.selectedColorFinal = alpha(new Color(Color.HSBtoRGB(this.color[0], this.color[1], this.color[2])), this.color[3]);
             Gui.drawRect(selectedX, selectedY, selectedX + selectedWidth, selectedY + selectedHeight, this.selectedColorFinal);
@@ -123,6 +136,20 @@ public class ColorButton extends AbstractComponent {
         }
 
         if(listener != null) listener.onValueChange(value);
+    }
+
+    private void drawButton(int x, int y, int width, int height, boolean state, String title) {
+        renderer.drawRect(x, y, width, height, hovered ? Window.SECONDARY_FOREGROUND : Window.TERTIARY_FOREGROUND);
+
+        if (state) {
+            Color color = hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND;
+
+            renderer.drawRect(x, y, width, height,color);
+        }
+
+        renderer.drawOutline(x, y, width, height, 1.0f, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
+        if(Config.instance.guiGlow.getValBoolean() && state) Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + width) / 2, (y + height) / 2, hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
+        renderer.drawString(x + width + height / 4, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);
     }
 
     final int alpha(Color color, float alpha) {
@@ -216,15 +243,22 @@ public class ColorButton extends AbstractComponent {
         return value;
     }
 
+    public boolean getValue2() {
+        return value2;
+    }
+
+    public void setValue(boolean value) {
+        value2 = value;
+    }
+
     public void setValue(Colour value) {
         this.value = value;
         float[] hsb = Color.RGBtoHSB(value.r, value.g, value.b, null);
         color = new float[] {hsb[0], hsb[1], hsb[2], value.a1};
     }
 
-    public void setListener(ValueChangeListener<Colour> listener) {
-        this.listener = listener;
-    }
+    public void setListener(ValueChangeListener<Colour> listener) {this.listener = listener;}
+    public void setListener2(ValueChangeListener<Boolean> listener) {this.listener2 = listener;}
 
     private void drawHueSlider(int x, int y, int width, int height, float hue) {
         int step = 0;

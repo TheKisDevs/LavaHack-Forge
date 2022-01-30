@@ -5,6 +5,9 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.util.render.PulseManager;
 import me.zero.alpine.listener.*;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,6 +17,7 @@ public class Managers {
     public FPSManager fpsManager;
     public PulseManager pulseManager;
     public TimerManager timerManager;
+    public ColorManager colorManager;
 
     public AtomicLong lagTimer = new AtomicLong();
 
@@ -21,19 +25,19 @@ public class Managers {
         instance = this;
     }
 
-    public String getRainbowCommandMessage() {
-        StringBuilder stringBuilder = new StringBuilder("[" + Kisman.NAME + "]");
-        stringBuilder.insert(0, "\u00a7+");
-        stringBuilder.append("\u00a7r");
-        return stringBuilder.toString();
-    }
-
     public void init() {
         fpsManager = new FPSManager();
         pulseManager = new PulseManager();
         timerManager = new TimerManager();
+        colorManager = new ColorManager();
 
+        MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(listener);
+    }
+
+    @SubscribeEvent
+    public void onUpdate(TickEvent.ClientTickEvent event) {
+        colorManager.update();
     }
 
     @EventHandler private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {if(event.getPacket() instanceof SPacketPlayerPosLook) lagTimer.set(System.currentTimeMillis());});

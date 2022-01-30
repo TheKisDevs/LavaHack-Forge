@@ -96,6 +96,7 @@ public class ModuleManager {
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
 //		modules.add(new CustomHotbar());
+		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
 //		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
@@ -121,7 +122,7 @@ public class ModuleManager {
 		modules.add(new SwingAnimation());
 		modules.add(new TargetESP());
 //		modules.add(new Tracers());
-//		modules.add(new Trails());
+		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());

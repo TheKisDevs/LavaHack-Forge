@@ -1,26 +1,71 @@
 package com.kisman.cc.module.combat;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.util.BlockUtil;
-import net.minecraft.block.state.IBlockState;
+import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import i.gishreloaded.gishcode.utils.TimerUtils;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.network.play.server.SPacketBlockBreakAnim;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 
 public class BreakAlert extends Module {
+    private Setting messageType = new Setting("Message Type", this, MessageType.Chat);
+    private Setting displayShowDelay = new Setting("Display Show Delay", this, 1000, 1, 5000, Slider.NumberType.TIME);
+
+    private ArrayList<BlockPos> blocksBeginBroken = new ArrayList<>();
+    private TimerUtils renderTimer = new TimerUtils();
+
     public BreakAlert() {
         super("BreakAlert", Category.COMBAT);
+
+        setmgr.rSetting(messageType);
+        setmgr.rSetting(displayShowDelay);
+    }
+
+    public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(receive);
+        blocksBeginBroken.clear();
     }
 
     public void update() {
-        if(mc.player == null || mc.world == null) return;
-        if(getSurroundBlocks().isEmpty()) return;
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-        for(BlockPos pos : getSurroundBlocks()) if(BlockUtil.canBlockBeBroken(pos)) blocks.add(pos);
-        ArrayList<BlockPos> blocksForAlert = new ArrayList<>();
-//        for(BlockPos pos : blocks) pos.
+        if(mc.player == null || mc.world == null || blocksBeginBroken.isEmpty()) return;
+
+        for(BlockPos pos : blocksBeginBroken) if(messageType.getValString().equalsIgnoreCase(MessageType.Chat.name())) ChatUtils.warning(TextFormatting.DARK_PURPLE + "Break Alert! " + TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!");
     }
+
+    @SubscribeEvent
+    public void onRender(RenderGameOverlayEvent.Text event) {
+        for(BlockPos pos : blocksBeginBroken) {
+            if(messageType.getValString().equalsIgnoreCase(MessageType.Display.name())) {
+                ScaledResolution sr = new ScaledResolution(mc);
+                CustomFontUtil.comfortaab72.drawCenteredStringWithShadow(TextFormatting.DARK_PURPLE + "Break Alert!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 - CustomFontUtil.getFontHeight(CustomFontUtil.comfortaab72), -1);
+                CustomFontUtil.comfortaab55.drawCenteredStringWithShadow(TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 5, -1);
+            }
+        }
+    }
+
+    @EventHandler
+    private final Listener<PacketEvent.Receive> receive = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketBlockBreakAnim) {
+            SPacketBlockBreakAnim packet = (SPacketBlockBreakAnim) event.getPacket();
+
+            if(getSurroundBlocks().isEmpty() || !getSurroundBlocks().contains(packet.getPosition())) return;
+            if(!blocksBeginBroken.contains(packet.getPosition()) && packet.getProgress() > 0 && packet.getProgress() <= 10) blocksBeginBroken.add(packet.getPosition());
+            else if(packet.getProgress() <= 0 || packet.getProgress() > 10) blocksBeginBroken.remove(packet.getPosition());
+        }
+    });
 
     private ArrayList<BlockPos> getSurroundBlocks() {
         int z;
@@ -68,4 +113,6 @@ public class BreakAlert extends Module {
         }
         return pos.add(x, Double.longBitsToDouble(Double.doubleToLongBits(1.4868164896774578E308) ^ 0x7FEA7759ABE7F7C1L), z);
     }
+
+    public enum MessageType {Chat, Display}
 }
