@@ -1,5 +1,7 @@
 For b0.1.6.1:
 
+save friends
+LagProtect - сделать так что бы когда ты перезаходил на сервер, кристаллка перезапускалась(после возрождения тоже)
 Add More color customization for hud - _kisman_
 Add PvpResources
 Add CameraClip
@@ -9,6 +11,11 @@ Fix AutoEZ
 Fix Alpha in color picker - _kisman_
 Fix Scaffold crash\
 Test killaura
+Fix vegagui slider dragging
+Add round to sliders from vegagui
+fix matrix rots in killaura
+Cast sliders from vegagui bg to default
+fix autorer
 добавить чек в аимасисн на то может ли игрок ударить таргета - _kisman_
 
 For b0.2
