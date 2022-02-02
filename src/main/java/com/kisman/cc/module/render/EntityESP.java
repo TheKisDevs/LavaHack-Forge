@@ -3,6 +3,8 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.kisman.cc.Kisman;
@@ -11,6 +13,7 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
@@ -66,7 +69,7 @@ public class EntityESP extends Module{
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         mc.world.loadedEntityList.stream().filter(this::isValid).forEach(entity -> {
-            if(entity instanceof EntityPlayer) render(entity, players.getValString(), players.getR() / 255f, players.getG() / 255f, players.getB() / 255f, event.getPartialTicks());
+            if(entity instanceof EntityPlayer) render(entity, players.getValString(), players.getR() / 255f, players.getG()/ 255f, players.getB() / 255f, event.getPartialTicks());
             if(entity instanceof EntityMob) render(entity, monsters.getValString(), monsters.getR() / 255f, monsters.getG() / 255f, monsters.getB() / 255f, event.getPartialTicks());
             if(entity instanceof EntityAnimal) render(entity, passive.getValString(), passive.getR() / 255f, passive.getG() / 255f, passive.getB() / 255f, event.getPartialTicks());
             if(entity instanceof EntityItem) render(entity, items.getValString(), items.getR() / 255f, items.getG() / 255f, items.getB() / 255f, event.getPartialTicks());
@@ -83,7 +86,9 @@ public class EntityESP extends Module{
                 entity.glowing = false;
                 break;
             case "Box2":
-                RenderUtil.drawBoxESP(entity, red, green, blue);
+                RenderUtil.drawBoxESP(new AxisAlignedBB(entity.posX - 0.3f, entity.posY, entity.posZ - 0.3f, entity.posX + 0.3f, entity.posY + 1.9f, entity.posZ + 0.3f), new Color(playerColor.getR(), playerColor.getG(), playerColor.getB()), 1f, true, true, 100, 255);
+
+
                 entity.glowing = false;
                 break;
             case "Glow":
