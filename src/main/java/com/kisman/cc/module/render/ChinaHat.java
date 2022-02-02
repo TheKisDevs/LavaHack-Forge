@@ -1,14 +1,11 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.util.glu.Cylinder;
-import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.*;
 
 import static org.lwjgl.opengl.GL11.*;
 

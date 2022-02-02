@@ -2,8 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -29,9 +28,7 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
         EventPlayerApplyCollision event = new EventPlayerApplyCollision(entity);
         Kisman.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
-            ci.cancel();
-        }
+        if (event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "isPushedByWater()Z", at = @At("HEAD"), cancellable = true)
@@ -39,8 +36,6 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
         EventPlayerPushedByWater event = new EventPlayerPushedByWater();
         Kisman.EVENT_BUS.post(event);
 
-        if (event.isCancelled()) {
-            cir.setReturnValue(false);
-        }
+        if (event.isCancelled()) cir.setReturnValue(false);
     }
 }

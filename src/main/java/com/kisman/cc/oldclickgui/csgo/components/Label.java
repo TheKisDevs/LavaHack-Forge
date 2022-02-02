@@ -15,6 +15,9 @@ public class Label extends AbstractComponent {
         renderer.drawString(x, y + 11 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
     }
 
+    @Override
+    public void postRender() {}
+
     public String getText() {
         return text;
     }

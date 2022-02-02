@@ -2,8 +2,7 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.KamiTessellator;
+import com.kisman.cc.util.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,15 +33,16 @@ public class EyeFinder extends Module {
         final RayTraceResult result = e.rayTrace(6.0, mc.getRenderPartialTicks());
         if (result == null) return;
         final Vec3d eyes = e.getPositionEyes(mc.getRenderPartialTicks());
+        GL11.glPushMatrix();
         GlStateManager.enableDepth();
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
-        final double posX = eyes.x - EyeFinder.mc.getRenderManager().renderPosX;
-        final double posY = eyes.y - EyeFinder.mc.getRenderManager().renderPosY;
-        final double posZ = eyes.z - EyeFinder.mc.getRenderManager().renderPosZ;
-        final double posX2 = result.hitVec.x - EyeFinder.mc.getRenderManager().renderPosX;
-        final double posY2 = result.hitVec.y - EyeFinder.mc.getRenderManager().renderPosY;
-        final double posZ2 = result.hitVec.z - EyeFinder.mc.getRenderManager().renderPosZ;
+        final double posX = eyes.x - mc.getRenderManager().renderPosX;
+        final double posY = eyes.y - mc.getRenderManager().renderPosY;
+        final double posZ = eyes.z - mc.getRenderManager().renderPosZ;
+        final double posX2 = result.hitVec.x - mc.getRenderManager().renderPosX;
+        final double posY2 = result.hitVec.y - mc.getRenderManager().renderPosY;
+        final double posZ2 = result.hitVec.z - mc.getRenderManager().renderPosZ;
         GL11.glColor4f(0.2f, 0.1f, 0.3f, 0.8f);
         GlStateManager.glLineWidth(1.5f);
         GL11.glBegin(1);
@@ -51,17 +51,9 @@ public class EyeFinder extends Module {
         GL11.glVertex3d(posX2, posY2, posZ2);
         GL11.glVertex3d(posX2, posY2, posZ2);
         GL11.glEnd();
-        if (result.typeOfHit == RayTraceResult.Type.BLOCK) {
-            KamiTessellator.prepare(7);
-            GL11.glEnable(2929);
-            final BlockPos b = result.getBlockPos();
-            final float x = b.getX() - 0.01f;
-            final float y = b.getY() - 0.01f;
-            final float z = b.getZ() - 0.01f;
-            KamiTessellator.drawBox(KamiTessellator.getBufferBuilder(), x, y, z, 1.01f, 1.01f, 1.01f, 51, 25, 73, 200, 63);
-            KamiTessellator.release();
-        }
+        if (result.typeOfHit == RayTraceResult.Type.BLOCK) RenderUtil.drawBlockESP(result.getBlockPos(), 51 / 255f, 25 / 255f, 73 / 255f);
         GlStateManager.enableTexture2D();
         GlStateManager.enableLighting();
+        GL11.glPopMatrix();
     }
 }

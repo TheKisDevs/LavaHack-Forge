@@ -12,12 +12,15 @@
  import net.minecraft.inventory.ClickType;
  import net.minecraft.item.*;
 
- import java.util.HashMap;
- import java.util.List;
+ import java.util.*;
 
  public class AutoArmor extends Module{
+     public static AutoArmor instance;
+
      public AutoArmor() {
          super("AutoArmor", "ebate srate lox!", Category.COMBAT);
+
+         instance = this;
 
          Kisman.instance.settingsManager.rSetting(new Setting("NoThorns", this, false));
      }
@@ -41,9 +44,7 @@
          // initialize with currently equipped armour
          for (int i = 0; i < 4; i++) {
              ItemStack oldArmour = armorInventory.get(i);
-             if (oldArmour.getItem() instanceof ItemArmor) {
-                 bestArmorValues[i] = ((ItemArmor) oldArmour.getItem()).damageReduceAmount;
-             }
+             if (oldArmour.getItem() instanceof ItemArmor) bestArmorValues[i] = ((ItemArmor) oldArmour.getItem()).damageReduceAmount;
          }
 
          List<Integer> slots = InventoryUtil.findAllItemSlots(ItemArmor.class);

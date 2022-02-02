@@ -95,6 +95,9 @@ public class ComboBox extends AbstractComponent {
     }
 
     @Override
+    public void postRender() {}
+
+    @Override
     public boolean mouseMove(int x, int y, boolean offscreen) {
         updateHovered(x, y, offscreen);
 

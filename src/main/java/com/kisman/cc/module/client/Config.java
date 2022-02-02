@@ -21,6 +21,7 @@ public class Config extends Module {
     public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true);
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true);
     public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true);
+    public Setting guiDesc = new Setting("Gui Desc", this, false);
     public Setting guiParticles = new Setting("Gui Particles", this, true);
     public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
@@ -48,6 +49,7 @@ public class Config extends Module {
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(glowRadius);
         setmgr.rSetting(glowBoxSize);
+        setmgr.rSetting(guiDesc);
         setmgr.rSetting(guiParticles);
         setmgr.rSetting(guiOutline);
         setmgr.rSetting(guiAstolfo);

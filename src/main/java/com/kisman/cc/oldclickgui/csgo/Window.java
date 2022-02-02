@@ -44,9 +44,7 @@ public class Window {
         renderer.drawRect(x, y, width, height, BACKGROUND);
         renderer.drawRect(x, y, width, headerHeight, SECONDARY_FOREGROUND);
 
-        if(Config.instance.guiGlow.getValBoolean()) {
-            Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + width) / 2, (y + headerHeight) / 2, SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
-        }
+        if(Config.instance.guiGlow.getValBoolean()) Render2DUtil.drawRoundedRect(x / 2, y / 2, (x + width) / 2, (y + headerHeight) / 2, SECONDARY_FOREGROUND, Config.instance.glowBoxSize.getValDouble());
 
         renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : FOREGROUND);
 
@@ -62,6 +60,9 @@ public class Window {
         }
     }
 
+    public void postRender(IRenderer renderer) {
+        if(contentPane != null) contentPane.postRender();
+    }
 
     public void mousePressed(int button, int x, int y) {
         if (this.contentPane != null) contentPane.mousePressed(button, x, y, false);

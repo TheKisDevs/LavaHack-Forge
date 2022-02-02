@@ -9,13 +9,12 @@ import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.combat.AutoTrap;
+import com.kisman.cc.module.combat.*;
 import com.kisman.cc.util.TickRateUtil;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.server.SPacketChat;
-import net.minecraft.network.play.server.SPacketEntityStatus;
+import net.minecraft.network.play.server.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,7 +27,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import java.util.*;
 
 public class EventProcessor {
-    private Minecraft mc = Minecraft.getMinecraft();
+    private final Minecraft mc = Minecraft.getMinecraft();
 
     //NEC vars
     public boolean hasRan = false;
@@ -44,6 +43,18 @@ public class EventProcessor {
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         AutoTrap.instance.setToggled(false);
         SaveConfig.init();
+        if(AutoRer.instance.lagProtect.getValBoolean()) AutoRer.instance.setToggled(false);
+    }
+
+    private void disableCa() {
+        boolean old = AutoRer.instance.isToggled();
+        AutoRer.instance.setToggled(false);
+        AutoRer.instance.setToggled(old);
+    }
+
+    @SubscribeEvent
+    public void onConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        if(AutoRer.instance.lagProtect.getValBoolean()) disableCa();
     }
 
     @SubscribeEvent
@@ -78,6 +89,7 @@ public class EventProcessor {
 
     @EventHandler
     private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketRespawn && AutoRer.instance.lagProtect.getValBoolean()) disableCa();
         if(event.getPacket() instanceof SPacketChat && !Kisman.allowToConfiguredAnotherClients && Config.instance.configurate.getValBoolean()) {
             SPacketChat packet = (SPacketChat) event.getPacket();
             String message = packet.chatComponent.getUnformattedText();
@@ -104,21 +116,13 @@ public class EventProcessor {
         if(ConfigHandler.hasKey(Configuration.CATEGORY_GENERAL, "Flip")){
             Timer timer = new Timer();
             hasRan = true;
-            timer.schedule(
-                    new TimerTask() {
+            timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             Flip.flip(mc.player);
                         }
-                    },
-                    2000
-            );
-        } else {
-            ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,
-                    "Flip",
-                    "true"
-            );
-        }
+                    }, 2000);
+        } else ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL, "Flip", "true");
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -126,8 +130,7 @@ public class EventProcessor {
         if (!event.getMessage().getUnformattedText().startsWith("Your new API key is ")) return;
         String key = event.getMessage().getUnformattedText().split("key is ")[1];
         ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL, "APIKey", key);
-        ChatUtils.complete(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + key
-        );
+        ChatUtils.complete(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + key);
     }
 
     @EventHandler

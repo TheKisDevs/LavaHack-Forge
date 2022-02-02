@@ -47,6 +47,13 @@ public class Colour {
         fixColorRange();
     }
 
+    public Colour(Color color, float a) {
+        this(color);
+        this.a = (int) a * 255;
+        this.a1 = a;
+        fixColorRange();
+    }
+
     public Colour(float r, float g, float b) {
         this.r1 = r;
         this.g1 = g;

@@ -25,13 +25,13 @@ public class HoleESP extends Module {
     private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
 
     private Setting obbyHoles = new Setting("ObsidianHoles", this, true);
-    private Setting obbyColor = new Setting("ObbyColor", this, "ObbyColor", new float[] {0, 1, 0, 1}, false);
+    private Setting obbyColor = new Setting("ObbyColor", this, "ObbyColor", new Colour(255, 0, 0));
 
 
     private Setting bedrock = new Setting("_BedrockHoles", this, "BedrockHoles");
 
     private Setting bedrockHoles = new Setting("BedrockHoles", this, true);
-    private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new float[] {0, 1, 0, 1}, false);
+    private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new Colour(0, 255, 0));
 
 
     private Setting custom = new Setting("Custom", this, "CustomHoles");
@@ -65,7 +65,6 @@ public class HoleESP extends Module {
 
     public void update() {
         if (mc.player == null || mc.world == null) return;
-
         if (holes == null) holes = new ConcurrentHashMap<>();
         else holes.clear();
 
@@ -112,91 +111,69 @@ public class HoleESP extends Module {
 
     private void renderHoles(AxisAlignedBB hole, Colour color) {
         switch (type.getValString()) {
-            case "Outline": {
+            case "Outline":
                 renderOutline(hole, color);
                 break;
-            }
-            case "Fill": {
+            case "Fill":
                 renderFill(hole, color);
                 break;
-            }
-            case "Both": {
+            case "Both":
                 renderOutline(hole, color);
                 renderFill(hole, color);
                 break;
-            }
+
         }
     }
 
     private void renderFill(AxisAlignedBB hole, Colour color) {
+        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
         Colour fillColor = new Colour(color, 50);
         int ufoAlpha = (this.ufoAlpha.getValInt() * 50) / 255;
 
-        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
-
         switch (mode.getValString()) {
-            case "Air": {
+            case "Air":
                 if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
                 else RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
                 break;
-            }
-            case "Ground": {
+            case "Ground":
                 RenderUtil.drawBox(hole.offset(0, -1, 0), true, 1, new Colour(fillColor, ufoAlpha), fillColor.getAlpha(), GeometryMasks.Quad.ALL);
                 break;
-            }
-            case "Flat": {
+            case "Flat":
                 RenderUtil.drawBox(hole, true, 0.01, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
                 break;
-            }
-            case "Slab": {
+            case "Slab":
                 if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
                 else RenderUtil.drawBox(hole, false, slabHeight.getValDouble(), fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
                 break;
-            }
-            case "Double": {
+            case "Double":
                 if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
                 else RenderUtil.drawBox(hole.setMaxY(hole.maxY + 1), true, 2, fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
                 break;
-            }
         }
     }
 
     private void renderOutline(AxisAlignedBB hole, Colour color) {
+        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
         Colour outlineColor = new Colour(color, 255);
 
-        if (ignoreOwnHole.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) return;
-
         switch (mode.getValString()) {
-            case "Air": {
-                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
-                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
-                } else {
-                    RenderUtil.drawBoundingBox(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt());
-                }
+            case "Air":
+                if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                else RenderUtil.drawBoundingBox(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt());
                 break;
-            }
-            case "Ground": {
+            case "Ground":
                 RenderUtil.drawBoundingBox(hole.offset(0, -1, 0), width.getValInt(), new Colour(outlineColor, ufoAlpha.getValInt()), outlineColor.getAlpha());
                 break;
-            }
-            case "Flat": {
+            case "Flat":
                 RenderUtil.drawBoundingBoxWithSides(hole.setMaxY(hole.minY + 0.01), width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
                 break;
-            }
-            case "Slab": {
-                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
-                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
-                } else {
-                    RenderUtil.drawBoundingBox(hole.setMaxY(hole.minY + slabHeight.getValDouble()), width.getValInt(), outlineColor, ufoAlpha.getValInt());
-                }
+            case "Slab":
+                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                else RenderUtil.drawBoundingBox(hole.setMaxY(hole.minY + slabHeight.getValDouble()), width.getValInt(), outlineColor, ufoAlpha.getValInt());
                 break;
-            }
             case "Double": {
-                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) {
-                    RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
-                } else {
-                    RenderUtil.drawBoundingBox(hole.setMaxY(hole.maxY + 1), width.getValInt(), outlineColor, ufoAlpha.getValInt() / 255);
-                }
+                if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
+                else RenderUtil.drawBoundingBox(hole.setMaxY(hole.maxY + 1), width.getValInt(), outlineColor, ufoAlpha.getValInt() / 255);
                 break;
             }
         }

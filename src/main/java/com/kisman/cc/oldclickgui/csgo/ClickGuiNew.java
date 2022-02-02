@@ -276,6 +276,8 @@ public class ClickGuiNew extends GuiScreen {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix();
 
+        window.postRender(renderer);
+
         if(Config.instance.guiParticles.getValBoolean()) {
             particleSystem.tick(10);
             particleSystem.render();

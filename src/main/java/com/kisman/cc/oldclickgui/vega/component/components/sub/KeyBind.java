@@ -52,24 +52,14 @@ public class KeyBind extends Component {
 
     @Override
     public void keyTyped(char typedChar, int key) {
-        System.out.println("5");
         if(this.binding) {
-            if(b.mod.getKey() == 0) {
-                this.b.mod.setKey(key);
-                this.binding = false;
-            } else {
-                b.mod.setKey(key);
-                binding = false;
-            }
+            this.b.mod.setKey(key);
+            this.binding = false;
         }
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(button == 0) {
-            if(isMouseOnButton(mouseX, mouseY)) {
-                binding=true;
-            }
-        }
+        if(isMouseOnButton(mouseX, mouseY) && button == 0) binding = !binding;
     }
 
     public void mouseReleased(int mouseX, int mouseY, int button) {
@@ -78,8 +68,6 @@ public class KeyBind extends Component {
 
 
     private boolean isMouseOnButton(int x, int y) {
-        if(x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset) return true;
-
-        return false;
+        return x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset;
     }
 }

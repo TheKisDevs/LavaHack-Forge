@@ -1,8 +1,7 @@
 package com.kisman.cc.oldclickgui.vega.component;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.util.Timer;
@@ -35,7 +34,6 @@ public class Frame {
         for(Module mod : Kisman.instance.moduleManager.modules) {
             if(mod.getCategory().equals(cat)) {
                 buttons.add(new Button(this.x, this.y, offset, width, height, this, mod));
-
                 offset += height;
             }
         }
@@ -64,11 +62,7 @@ public class Frame {
 
         CustomFontUtil.drawCenteredStringWithShadow(str, x + (width / 2), y + ((height - CustomFontUtil.getFontHeight()) / 2), open ? ColorUtils.astolfoColors(100, 100) : -1);
 
-        if(open && !buttons.isEmpty()) {
-            for (Button button : buttons) {
-                    button.renderComponent();
-            }
-        }
+        if(open && !buttons.isEmpty()) for (Button button : buttons) button.renderComponent();
     }
 
     public void updateComponent(int mouseX, int mouseY) {
@@ -79,9 +73,7 @@ public class Frame {
     }
 
     public boolean isMouseOnButton(int x, int y) {
-        if(x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height) return true;
-
-        return false;
+        return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
     }
 
     public void refresh() {
@@ -91,11 +83,9 @@ public class Frame {
             b.offset = off;
             off += height;
 
-            if(b.open)
-            {
+            if(b.open) {
                 for(Component comp : b.comp) {
                     comp.newOff(off);
-
                     comp.renderComponent();
                     off += height;
                 }
