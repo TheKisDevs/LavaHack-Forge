@@ -2,6 +2,7 @@ package com.kisman.cc.file;
 
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -10,6 +11,7 @@ import org.lwjgl.input.Keyboard;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 public class SaveConfig {
     public static void init() {
@@ -20,8 +22,20 @@ public class SaveConfig {
             saveVisibledModules();
             saveEnabledHudModules();
             saveBindModes();
+            saveFriends();
         } catch (IOException e) {e.printStackTrace();}
         Kisman.LOGGER.info("Saved Config!");
+    }
+
+    private static void saveFriends() throws IOException {
+        registerFiles(Kisman.miscName, "friends.txt");
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt").toFile()))) {
+            for (int i = 0; i < FriendManager.instance.getFriends().size(); i++) {
+                bw.write(FriendManager.instance.getFriends().get(i));
+                if (i != FriendManager.instance.getFriends().size() - 1) bw.newLine();
+            }
+        }
     }
 
     private static void registerFiles(String location, String name) throws IOException {

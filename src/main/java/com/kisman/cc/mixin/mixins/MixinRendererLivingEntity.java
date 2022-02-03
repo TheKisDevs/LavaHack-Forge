@@ -59,8 +59,8 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_LIGHTING);
 
-                final Setting color = Charms.instance.color;
                 if(Charms.instance.customColor.getValBoolean()) {
+                    final Setting color = Charms.instance.color;
                     if(Charms.instance.targetRender.getValBoolean()) {
                         if(AutoRer.currentTarget == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getA());
                         else GL11.glColor4f(color.getR() / 255f, color.getG() / 255f, color.getB() / 255f, color.getA() / 255f);

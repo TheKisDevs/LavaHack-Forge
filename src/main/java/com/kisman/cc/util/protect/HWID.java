@@ -1,4 +1,4 @@
-package com.kisman.cc.util.hwid;
+package com.kisman.cc.util.protect;
 
 import com.kisman.cc.Kisman;
 

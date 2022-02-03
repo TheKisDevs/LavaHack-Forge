@@ -51,7 +51,7 @@ public class NoInteract extends Module {
                     (block == Blocks.ENDER_CHEST && enderChest.getValBoolean()) ||
                     (block == Blocks.CHEST && chest.getValBoolean()) ||
                     (block == Blocks.ANVIL && anvil.getValBoolean()) ||
-                    (mc.objectMouseOver.entityHit != null && mc.objectMouseOver.entityHit instanceof EntityArmorStand && armorStand.getValBoolean())){
+                    (mc.objectMouseOver.entityHit instanceof EntityArmorStand && armorStand.getValBoolean())){
                 event.cancel();
             }
         }

@@ -3,14 +3,17 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.PlayerUtil;
+import com.kisman.cc.util.*;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +30,7 @@ public class OffHand extends Module {
     private final Setting offhandGapOnSword = new Setting("GapOnSword", this, true);
     private final Setting hotbarFirst = new Setting("HotbarFirst", this, false);
     private final Setting useUpdateController = new Setting("Use UpdateController", this, true);
-
+    private final Setting antiTotemFail = new Setting("Anti Totem Fail", this, true);
 
     public OffHand() {
         super("OffHand", "gg", Category.COMBAT);
@@ -42,6 +45,7 @@ public class OffHand extends Module {
         setmgr.rSetting(offhandGapOnSword);
         setmgr.rSetting(hotbarFirst);
         setmgr.rSetting(useUpdateController);
+        setmgr.rSetting(antiTotemFail);
     }
 
     public void update() {
@@ -49,6 +53,11 @@ public class OffHand extends Module {
         if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
 
         super.setDisplayInfo("[" + mode.getValString() + "]");
+
+        if(canTotemFail() && antiTotemFail.getValBoolean()) {
+            switchOffHandIfNeed("Totem");
+            return;
+        }
 
         if (!mc.player.getHeldItemMainhand().isEmpty()) {
             if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
@@ -62,6 +71,19 @@ public class OffHand extends Module {
             return;
         }
         switchOffHandIfNeed(mode.getValString());
+    }
+
+    private boolean canTotemFail() {
+        if(!mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) && !mc.player.getHeldItemOffhand().getItem().equals(Items.TOTEM_OF_UNDYING)) {
+            for(Entity entity : mc.world.loadedEntityList) {
+                if(entity instanceof EntityEnderCrystal) {
+                    EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
+                    double selfDamage = CrystalUtils.calculateDamage(mc.world, new BlockPos(crystal.posX + 0.5, crystal.posY, crystal.posZ + 0.5), mc.player);
+                    if(selfDamage >= mc.player.getHealth() + mc.player.getAbsorptionAmount()) return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void switchOffHandIfNeed(String mode) {

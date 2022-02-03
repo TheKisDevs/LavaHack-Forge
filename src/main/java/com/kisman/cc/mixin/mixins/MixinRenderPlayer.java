@@ -2,15 +2,12 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.module.render.*;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 
 @Mixin(RenderPlayer.class)
 public class MixinRenderPlayer {

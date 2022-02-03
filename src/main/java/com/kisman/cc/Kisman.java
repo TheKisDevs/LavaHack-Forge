@@ -3,7 +3,6 @@ package com.kisman.cc;
 import com.kisman.cc.app.MainWindow;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
-import com.kisman.cc.dumper.MainDumper;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.friend.FriendManager;
@@ -18,7 +17,7 @@ import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
-import com.kisman.cc.util.hwid.*;
+import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
@@ -54,7 +53,6 @@ public class Kisman {
     public static final String miscName = "Misc/";
     public static final String sandboxName = "SandBox/";
     public static final String pluginName = "Plugins/";
-    public static float TICK_TIMER = 1;
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -94,17 +92,18 @@ public class Kisman {
     public Managers managers;
 
     public Verificator d1;
-    public MainDumper d2;
 
     public Kisman() {
         instance = this;
     }
 
-    public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
         d1 = new Verificator();
-
         if(!d1.preInit()) throw new NoStackTraceThrowable("YesComment");
+        AntiDump.check();
+    }
 
+    public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
 
@@ -138,10 +137,6 @@ public class Kisman {
         LoadConfig.init();
         //load glow shader
         ShaderShell.init();
-
-        //load some features
-        d2 = new MainDumper();
-        d2.init();
 
         init = true;
     }

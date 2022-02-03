@@ -42,14 +42,12 @@ public class EventProcessor {
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         AutoTrap.instance.setToggled(false);
+        if(AutoRer.instance.lagProtect.getValBoolean()) disableCa();
         SaveConfig.init();
-        if(AutoRer.instance.lagProtect.getValBoolean()) AutoRer.instance.setToggled(false);
     }
 
     private void disableCa() {
-        boolean old = AutoRer.instance.isToggled();
         AutoRer.instance.setToggled(false);
-        AutoRer.instance.setToggled(old);
     }
 
     @SubscribeEvent

@@ -13,10 +13,7 @@ Fix Scaffold crash\
 Test killaura
 Fix vegagui slider dragging
 Add round to sliders from vegagui
-fix matrix rots in killaura
 Cast sliders from vegagui bg to default
-fix autorer
-add anvil to nointeract
 добавить чек в аимасисн на то может ли игрок ударить таргета - _kisman_
 
 For b0.2

@@ -13,10 +13,8 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
 
 public class EntityESP extends Module{
     private Setting range = new Setting("Range", this, 50, 0, 100, true);
@@ -86,9 +84,7 @@ public class EntityESP extends Module{
                 entity.glowing = false;
                 break;
             case "Box2":
-                RenderUtil.drawBoxESP(new AxisAlignedBB(entity.posX - 0.3f, entity.posY, entity.posZ - 0.3f, entity.posX + 0.3f, entity.posY + 1.9f, entity.posZ + 0.3f), new Color(playerColor.getR(), playerColor.getG(), playerColor.getB()), 1f, true, true, 100, 255);
-
-
+                RenderUtil.drawBoxESP(entity.getEntityBoundingBox(), new Color(playerColor.getR(), playerColor.getG(), playerColor.getB()), 1f, true, true, 100, 255);
                 entity.glowing = false;
                 break;
             case "Glow":

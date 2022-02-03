@@ -57,7 +57,7 @@ public class FastPlace extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.EXPERIENCE_BOTTLE) && this.exp.getValBoolean()) {
             FastPlace.mc.rightClickDelayTimer = 0;

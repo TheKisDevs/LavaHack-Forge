@@ -37,8 +37,6 @@ public class ModuleManager {
 		modules.add(new AutoArmor());
 		modules.add(new AutoBowExploit());
 		modules.add(new AutoClicker());
-		modules.add(new AutoCrystal());
-		modules.add(new AutoCrystalRewrite());
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());
 		modules.add(new AutoRer());
@@ -46,8 +44,6 @@ public class ModuleManager {
 		modules.add(new AutoTrap());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
-		modules.add(new Burrow());
-		modules.add(new BurrowBypass());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
 		modules.add(new HoleFiller());
@@ -57,13 +53,13 @@ public class ModuleManager {
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
+		modules.add(new AutoConfig());
 		modules.add(new Cape());
 		modules.add(new Config());
 		modules.add(new Console());
 		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
-		modules.add(new Dumper());
 		modules.add(new HUD());
 		modules.add(new NotEnoughCoinsModule());
 		modules.add(new ExampleModule());

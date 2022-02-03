@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class FriendManager {
     public static FriendManager instance;
 
-    private final ArrayList<String> friendsName;
+    private ArrayList<String> friendsName;
 
     public FriendManager() {
         friendsName = new ArrayList<>();
@@ -33,4 +33,5 @@ public class FriendManager {
     public void removeFriend(String name) {if(!friendsName.isEmpty() && friendsName.contains(name)) friendsName.remove(name);}
     public boolean isFriend(EntityPlayer player) {return friendsName.contains(player.getName()) && Config.instance.friends.getValBoolean();}
     public boolean isFriend(String name) {return friendsName.contains(name) && Config.instance.friends.getValBoolean();}
+    public void setFriendsList(ArrayList<String> list) {friendsName = list;}
 }

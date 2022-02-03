@@ -1,22 +1,16 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.module.render.CrystalModifier;
-import net.minecraft.client.model.ModelEnderCrystal;
-import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 @Mixin(value = ModelEnderCrystal.class, priority = 10000)
 public class MixinModelEnderCrystal {
-    @Shadow
-    private ModelRenderer cube;
-    @Shadow
-    private ModelRenderer glass;
-    @Shadow
-    private ModelRenderer base;
+    @Final @Shadow private ModelRenderer cube;
+    @Final @Shadow private ModelRenderer glass;
+    @Shadow private ModelRenderer base;
 
     /**
      * @author

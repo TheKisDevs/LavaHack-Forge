@@ -13,17 +13,17 @@ public class AntiSpammerCommand extends Command {
     public void runCommand(String s, String[] args) {
         try {
             if(args[0].equalsIgnoreCase("add")) {
-                AntiSpammer.instance.strings.add(args[1]);
+                AntiSpammer.instance.illegalWords.add(args[1]);
                 ChatUtils.complete(args[1] + " added to AntiSpammer list");
             } else if(args[0].equalsIgnoreCase("remove")) {
-                AntiSpammer.instance.strings.remove(args[1]);
+                AntiSpammer.instance.illegalWords.remove(args[1]);
                 ChatUtils.complete(args[1] + " removed from AntiSpammer list");
             } else if(args[0].equalsIgnoreCase("clear")) {
-                AntiSpammer.instance.strings.clear();
+                AntiSpammer.instance.illegalWords.clear();
                 ChatUtils.complete("AntiSpammer list has been cleared");
             } else if(args[0].equalsIgnoreCase("list")) {
                 ChatUtils.simpleMessage("AntiSpammer list:");
-                for(String str : AntiSpammer.instance.strings) ChatUtils.simpleMessage(str);
+                for(String str : AntiSpammer.instance.illegalWords) ChatUtils.simpleMessage(str);
             }
         } catch (Exception e) {
             ChatUtils.error("Usage:" + getDescription());
