@@ -11,11 +11,13 @@ public class Main {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
+        AntiDump.check();
         k.init();
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
+        AntiDump.check();
         k.preInit();
     }
 }
