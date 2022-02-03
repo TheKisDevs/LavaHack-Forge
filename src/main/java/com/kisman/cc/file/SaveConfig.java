@@ -11,7 +11,6 @@ import org.lwjgl.input.Keyboard;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.ArrayList;
 
 public class SaveConfig {
     public static void init() {
@@ -28,7 +27,8 @@ public class SaveConfig {
     }
 
     private static void saveFriends() throws IOException {
-        registerFiles(Kisman.miscName, "friends.txt");
+        if (Files.exists(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt"))) new File(Kisman.fileName + Kisman.miscName + "friends.txt").delete();
+        else Files.createFile(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt"));
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt").toFile()))) {
             for (int i = 0; i < FriendManager.instance.getFriends().size(); i++) {
