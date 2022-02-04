@@ -1,9 +1,7 @@
 package com.kisman.cc.oldclickgui.vega.component.components.sub;
 
-import com.kisman.cc.module.Module;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
-import com.kisman.cc.oldclickgui.vega.component.components.sub.patterns.DefaultButton;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
@@ -53,21 +51,14 @@ public class ModeButton extends Component {
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(button == 0) {
-            if(isMouseOnButton(mouseX, mouseY)) {
-                set.setValBoolean(!set.getValBoolean());
-            }
-        }
+        if(isMouseOnButton(mouseX, mouseY) && button == 0) set.setValBoolean(!set.getValBoolean());
     }
 
     public void mouseReleased(int mouseX, int mouseY, int button) {
         drag = false;
     }
 
-
     private boolean isMouseOnButton(int x, int y) {
-        if(x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset) return true;
-
-        return false;
+        return x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset;
     }
 }

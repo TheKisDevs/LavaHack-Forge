@@ -37,7 +37,7 @@ public class KillAura extends Module {
     private Setting shieldBreaker = new Setting("Shield Breaker", this, true);
     private Setting packetAttack = new Setting("Packet Attack", this, false);
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
-    private Setting oldPosUse = new Setting("Old Pos Use", this, false);
+    private Setting betterRots = new Setting("Better Rotations", this, false);
     private Setting onlyCrits = new Setting("Only Crits", this, true);
 
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
@@ -65,7 +65,7 @@ public class KillAura extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("HitSound", this, false));
         setmgr.rSetting(packetAttack);
         setmgr.rSetting(rotations);
-        setmgr.rSetting(oldPosUse);
+        setmgr.rSetting(betterRots);
         setmgr.rSetting(onlyCrits);
 
         setmgr.rSetting(new Setting("WeaponLine", this, "Weapon"));
@@ -172,7 +172,7 @@ public class KillAura extends Module {
         if(rotations.getValString().equals("Silent")) {
             mc.player.rotationYaw = oldYaw;
             mc.player.rotationPitch = oldPitch;
-        } else if(rotations.getValString().equals("SilentMatrix")) {
+        } else if(rotations.getValString().equals("SilentWellMore")) {
             mc.player.rotationYaw = oldYaw;
             mc.player.renderYawOffset = oldYawOffset;
             mc.player.rotationYawHead = oldYawHead;
@@ -193,16 +193,13 @@ public class KillAura extends Module {
             case "WellMore": {
                 float[] rots = RotationUtils.lookAtRandomed(entity);
                 mc.player.rotationYaw = rots[0];
+                if (betterRots.getValBoolean()) {
+                    mc.player.renderYawOffset = rots[0];
+                    mc.player.rotationYawHead = rots[0];
+                }
                 mc.player.rotationPitch = rots[1];
                 break;
             }
-            case "Matrix":
-                float[] rots = RotationUtils.getMatrixRotations(entity, oldPosUse.getValBoolean());
-                mc.player.rotationYaw = rots[0];
-                mc.player.renderYawOffset = rots[0];
-                mc.player.rotationYawHead = rots[0];
-                mc.player.rotationPitch = rots[1];
-                break;
         }
     }
 
@@ -251,5 +248,5 @@ public class KillAura extends Module {
         return true;
     }
 
-    public enum RotateMode {None, Normal, Silent, WellMore, Matrix, SilentMatrix}
+    public enum RotateMode {None, Normal, Silent, WellMore, SilentWellMore}
 }

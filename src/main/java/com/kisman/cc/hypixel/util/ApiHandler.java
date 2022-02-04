@@ -1,8 +1,6 @@
 package com.kisman.cc.hypixel.util;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.commands.Flip;
 
@@ -17,12 +15,9 @@ public class ApiHandler {
 
   // Will make configurable
   private static final ArrayList<String> filter =
-      new ArrayList<>(
-          Arrays.asList("TRAVEL_SCROLL", "COSMETIC", "DUNGEON_PASS", "ARROW_POISON", "PET_ITEM"));
+      new ArrayList<>(Arrays.asList("TRAVEL_SCROLL", "COSMETIC", "DUNGEON_PASS", "ARROW_POISON", "PET_ITEM"));
   
-  private static final ArrayList<String> nameFilter =
-	      new ArrayList<>(
-	          Arrays.asList("STARRED", "SALMON", "PERFECT", "BEASTMASTER", "MASTER_SKULL"));
+  private static final ArrayList<String> nameFilter = new ArrayList<>(Arrays.asList("STARRED", "SALMON", "PERFECT", "BEASTMASTER", "MASTER_SKULL"));
   
   
   public static void getBins(HashMap<String, Double> dataset) {
@@ -32,18 +27,10 @@ public class ApiHandler {
 			JsonObject binJson = getJson("https://moulberry.codes/lowestbin.json").getAsJsonObject();
 			for (Map.Entry<String, JsonElement> auction : binJson.entrySet()) {
 				skip = false;
-				for(String name: nameFilter) {
-					if(auction.getKey().contains(name)) {
-						skip = true;
-					}
-				}
-				if(!skip) {
-					dataset.put(auction.getKey(), auction.getValue().getAsDouble());
-				}
+				for(String name: nameFilter) if(auction.getKey().contains(name)) skip = true;
+				if(!skip) dataset.put(auction.getKey(), auction.getValue().getAsDouble());
 			}
-		} catch (Exception e) {
-			Kisman.LOGGER.error(e.getMessage(), e);
-		}
+		} catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
 		Flip.initialDataset.putAll(dataset);
 		
   }
@@ -56,28 +43,15 @@ public class ApiHandler {
               .getAsJsonObject();
 
       for (Entry<String, JsonElement> jsonElement : items.entrySet()) {
-    	  if(jsonElement.getValue().getAsJsonObject().has("clean_price")) {
-    		  dataset.put(jsonElement.getKey(), (jsonElement.getValue().getAsJsonObject().get("clean_price").getAsDouble()));
-    	  }
-    	  
-    	  if(jsonElement.getValue().getAsJsonObject().has("price") && !jsonElement.getValue().getAsJsonObject().has("clean_price")) {
-    		  dataset.put(jsonElement.getKey(), (jsonElement.getValue().getAsJsonObject().get("price").getAsDouble()));
-    	  }
+    	  if(jsonElement.getValue().getAsJsonObject().has("clean_price")) dataset.put(jsonElement.getKey(), (jsonElement.getValue().getAsJsonObject().get("clean_price").getAsDouble()));
+    	  if(jsonElement.getValue().getAsJsonObject().has("price") && !jsonElement.getValue().getAsJsonObject().has("clean_price")) dataset.put(jsonElement.getKey(), (jsonElement.getValue().getAsJsonObject().get("price").getAsDouble()));
         
       }
-    } catch (Exception e) {
-      Kisman.LOGGER.error(e.getMessage(), e);
-    }
+    } catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
     
     Flip.secondDataset.putAll(dataset);
     
-    for(Map.Entry<String, Double> entry : Flip.secondDataset.entrySet()) {
-    	if(Flip.initialDataset.containsKey(entry.getKey())) {
-    		if(Flip.initialDataset.get(entry.getKey()) > entry.getValue()) {
-    			Flip.initialDataset.remove(entry.getKey());
-    		}
-    	}
-    }
+    for(Map.Entry<String, Double> entry : Flip.secondDataset.entrySet()) if(Flip.initialDataset.containsKey(entry.getKey())) if(Flip.initialDataset.get(entry.getKey()) > entry.getValue()) Flip.initialDataset.remove(entry.getKey());
   }
 
   public static void itemIdsToNames(LinkedHashMap<String, Double> initialDataset) {
@@ -119,9 +93,7 @@ public class ApiHandler {
           .forEachOrdered(x -> sortedMap.put(x.getKey(), (double) Math.round(x.getValue())));
 
       Flip.secondDataset = sortedMap;
-    } catch (Exception e) {
-        Kisman.LOGGER.error(e.getMessage(), e);
-    }
+    } catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
   }
 
   private static String getUuid(String name) {
@@ -141,12 +113,7 @@ public class ApiHandler {
     String uuid = getUuid(name);
 
     try {
-      JsonArray profilesArray =
-          Objects.requireNonNull(
-                  getJson("https://api.hypixel.net/skyblock/profiles?key=" + key + "&uuid=" + uuid))
-              .getAsJsonObject()
-              .get("profiles")
-              .getAsJsonArray();
+      JsonArray profilesArray = Objects.requireNonNull(getJson("https://api.hypixel.net/skyblock/profiles?key=" + key + "&uuid=" + uuid)).getAsJsonObject().get("profiles").getAsJsonArray();
 
       // Get last played profile
       int profileIndex = 0;
@@ -154,20 +121,8 @@ public class ApiHandler {
       for (int i = 0; i < profilesArray.size(); i++) {
         Instant lastSaveLoop;
         try {
-          lastSaveLoop =
-              Instant.ofEpochMilli(
-                  profilesArray
-                      .get(i)
-                      .getAsJsonObject()
-                      .get("members")
-                      .getAsJsonObject()
-                      .get(uuid)
-                      .getAsJsonObject()
-                      .get("last_save")
-                      .getAsLong());
-        } catch (Exception e) {
-          continue;
-        }
+          lastSaveLoop = Instant.ofEpochMilli(profilesArray.get(i).getAsJsonObject().get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("last_save").getAsLong());
+        } catch (Exception e) {continue;}
 
         if (lastSaveLoop.isAfter(lastProfileSave)) {
           profileIndex = i;
@@ -175,19 +130,8 @@ public class ApiHandler {
         }
       }
 
-      Flip.purse =
-          profilesArray
-              .get(profileIndex)
-              .getAsJsonObject()
-              .get("members")
-              .getAsJsonObject()
-              .get(uuid)
-              .getAsJsonObject()
-              .get("coin_purse")
-              .getAsDouble();
-    } catch (Exception e) {
-        Kisman.LOGGER.error(e.getMessage(), e);
-    }
+      Flip.purse = profilesArray.get(profileIndex).getAsJsonObject().get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("coin_purse").getAsDouble();
+    } catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
   }
 
   public static void getFlips(
@@ -212,20 +156,11 @@ public class ApiHandler {
                     if (item.getAsJsonObject().get("starting_bid").getAsDouble() <= Flip.purse) {
                       String rawName = item.getAsJsonObject().get("item_name").getAsString();
                       String name = new String(rawName.getBytes(), StandardCharsets.UTF_8);
-                      /*if(dataset.containsKey(entry.getKey())) {
-                    	  continue;
-                      }*/
                       
                       if(entry.getValue() - item.getAsJsonObject().get("starting_bid").getAsLong() > 50000) {
-                          Flip.namedDataset.put(
-                                  name,
-                                  entry.getValue()
-                                      - item.getAsJsonObject().get("starting_bid").getAsLong());
+                          Flip.namedDataset.put(name, entry.getValue() - item.getAsJsonObject().get("starting_bid").getAsLong());
 
-                          if (item.getAsJsonObject().has("uuid")) {
-                            commands.add(
-                                "/viewauction " + item.getAsJsonObject().get("uuid").getAsString());
-                         }
+                          if (item.getAsJsonObject().has("uuid")) commands.add("/viewauction " + item.getAsJsonObject().get("uuid").getAsString());
                       }
                     }
                   }
@@ -235,9 +170,7 @@ public class ApiHandler {
           }
         }
       }
-    } catch (Exception e) {
-        Kisman.LOGGER.error(e.getMessage(), e);
-    }
+    } catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
 
     Flip.commands.addAll(commands);
   }
@@ -246,13 +179,8 @@ public class ApiHandler {
     int pages = 0;
     try {
       pages =
-          Objects.requireNonNull(getJson("https://api.hypixel.net/skyblock/auctions?page=0"))
-              .getAsJsonObject()
-              .get("totalPages")
-              .getAsInt();
-    } catch (Exception e) {
-        Kisman.LOGGER.error(e.getMessage(), e);
-    }
+          Objects.requireNonNull(getJson("https://api.hypixel.net/skyblock/auctions?page=0")).getAsJsonObject().get("totalPages").getAsInt();
+    } catch (Exception e) {Kisman.LOGGER.error(e.getMessage(), e);}
     return pages;
   }
 }

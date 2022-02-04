@@ -1,4 +1,4 @@
-package com.kisman.cc.util.hwid;
+package com.kisman.cc.util.protect;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.app.HWIDWindow;
@@ -14,21 +14,12 @@ public class Verificator {
             throw new NoStackTraceThrowable("Verify HWID Failed!");
         } else {
             if(HWID.getHWIDList().contains(HWID.getHWID())) {
-//                Kisman.instance.mainWindow.frame.setVisible(false);
                 Kisman.LOGGER.info("HWID Verify! Done");
                 return true;
             } else if(HWID.getHWIDList().contains("0")) {
                 DiscordWebhook hook = new DiscordWebhook(Kisman.instance.HWID_LOGS);
-                hook.addEmbed(new DiscordWebhook.EmbedObject()
-                        .setTitle("HWID Logs!")
-                        .addField("ING: ", Minecraft.getMinecraft().session.getUsername(), true)
-                        .addField("HWID: ", HWID.getHWID(), true)
-                );
-
-                try {
-                    hook.execute();
-                } catch (IOException e) {}
-
+                hook.addEmbed(new DiscordWebhook.EmbedObject().setTitle("HWID Logs!").addField("ING: ", Minecraft.getMinecraft().session.getUsername(), true).addField("HWID: ", HWID.getHWID(), true));
+                try {hook.execute();} catch (IOException ignored) {}
                 throw new NoStackTraceThrowable("Register HWID Complete! ShutDown!");
             }
         }

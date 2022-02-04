@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinRenderGlobal {
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     public void onDrawSelectionBox(EntityPlayer player, RayTraceResult movingObjectPositionIn, int execute, float partialTicks, CallbackInfo ci) {
-        if(BlockOutline.instance.isToggled()) {
-            ci.cancel();
-        }
+        if(BlockOutline.instance.isToggled()) ci.cancel();
     }
 }

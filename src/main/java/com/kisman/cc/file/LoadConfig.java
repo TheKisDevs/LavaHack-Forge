@@ -2,6 +2,7 @@ package com.kisman.cc.file;
 
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.player.TeleportBack;
@@ -10,6 +11,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 public class LoadConfig {
     public static void init() {
@@ -20,7 +22,18 @@ public class LoadConfig {
             loadVisibledModules();
             loadEnabledHudModules();
             loadBindModes();
+            loadFriends();
         } catch (IOException | JsonSyntaxException e) {e.printStackTrace();}
+    }
+
+    private static void loadFriends() throws IOException {
+        if (!Files.exists(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt"))) return;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(Kisman.fileName + Kisman.miscName + "friends.txt"))))) {
+            ArrayList<String> friends = new ArrayList<>();
+            String inputLine;
+            while ((inputLine = br.readLine()) != null) friends.add(inputLine);
+            FriendManager.instance.setFriendsList(friends);
+        }
     }
 
     private static void loadModules() throws IOException {

@@ -14,6 +14,7 @@ public class Spoiler extends AbstractComponent {
     private Pane contentPane;
     private boolean opened = false;
     private Module mod = null;
+    private final int[] mouseCoords = new int[] {0, 0};
 
     public Spoiler(IRenderer renderer, String title, int preferredWidth, int preferredHeight, Pane contentPane) {
         super(renderer);
@@ -34,9 +35,7 @@ public class Spoiler extends AbstractComponent {
     @Override
     public void render() {
         if (hovered) renderer.drawRect(x, y, getWidth(), preferredHeight, Window.SECONDARY_FOREGROUND);
-
         renderer.drawOutline(x, y, getWidth(), preferredHeight, 1.0f, Window.SECONDARY_FOREGROUND);
-
         renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + preferredHeight / 2 - renderer.getStringHeight(title) / 2, title, Config.instance.guiAstolfo.getValBoolean() && isToggled() ? renderer.astolfoColorToObj() : Window.FOREGROUND);
 
         if (opened) {
@@ -52,7 +51,19 @@ public class Spoiler extends AbstractComponent {
     }
 
     @Override
+    public void postRender() {
+        if(Config.instance.guiDesc.getValBoolean() && hovered && mod != null) {
+            int offset = 10;
+            renderer.drawRect(mouseCoords[0] + offset, mouseCoords[1], getWidth(), preferredHeight, Window.SECONDARY_FOREGROUND);
+            renderer.drawOutline(mouseCoords[0] + offset, mouseCoords[1], getWidth(), preferredHeight, 1.0f, Window.SECONDARY_FOREGROUND);
+            renderer.drawString(mouseCoords[0] + offset + getWidth() / 2 - renderer.getStringWidth(title) / 2, mouseCoords[1] + preferredHeight / 2 - renderer.getStringHeight(title) / 2, mod.getDescription(), Window.FOREGROUND);
+        }
+    }
+
+    @Override
     public boolean mouseMove(int x, int y, boolean offscreen) {
+        mouseCoords[0] = x;
+        mouseCoords[1] = y;
         updateHovered(x, y, offscreen);
 
         return opened && contentPane.mouseMove(x, y, offscreen);

@@ -3,14 +3,10 @@ package com.kisman.cc.oldclickgui.vega.component.components.sub;
 import com.kisman.cc.oldclickgui.vega.component.Component;
 import com.kisman.cc.oldclickgui.vega.component.components.Button;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Render2DUtil;
-import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.Gui;
-import org.lwjgl.Sys;
 
-import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -23,7 +19,6 @@ public class Slider extends Component {
     private int width, height;
     private double renderWidth;
     private boolean drag = false;
-    private boolean hover = false;
 
     public Slider(Button b, Setting s, int offset) {
         this.b = b;
@@ -46,9 +41,6 @@ public class Slider extends Component {
         Gui.drawRect(this.x, this.y + 7 + offset, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 2 + offset, (ColorUtils.getColor(80, 80, 95)));
         Gui.drawRect(this.x, this.y + 8 + offset, (int)((double)this.x + 3 + this.renderWidth - 3), this.y + this.height - 3 + offset, (ColorUtils.getColor(95, 95, 115)));
 
-        //Render2DUtil.drawRectangle(new Rectangle(this.x, this.y + offset, width,this.height), new Color(40, 40, 50));
-
-
         CustomFontUtil.drawCenteredStringWithShadow(s.getName() + ": " + s.getValDouble(), x + (width / 2), y + 3 + offset + ((height - CustomFontUtil.getFontHeight()) / 2), drag ? ColorUtils.astolfoColors(100, 100) : -1);
     }
 
@@ -56,23 +48,15 @@ public class Slider extends Component {
         this.x = b.parent.x;
         this.y = b.parent.y;
 
-        hover = isMouseOnButton(mouseX, mouseY);
-
         double diff = Math.min(88, Math.max(0, mouseX - this.x));
-
         double min = s.getMin();
         double max = s.getMax();
 
-        renderWidth = 88 * (s.getValDouble() - min) / (max - min);
+        renderWidth = width * (s.getValDouble() - min) / (max - min);
         if (drag) {
             System.out.println(diff);
-            if (diff == 0) {
-                s.setValDouble(s.getMin());
-            }
-            else {
-                double newValue = roundToPlace(((diff / 88) * (max - min) + min), 2);
-                s.setValDouble(newValue);
-            }
+            if (diff == 0) s.setValDouble(s.getMin());
+            else s.setValDouble(roundToPlace(((diff / width) * (max - min) + min), 2));
         }
     }
 
@@ -81,41 +65,20 @@ public class Slider extends Component {
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(button == 0) {
-            if(isMouseOnButton(mouseX, mouseY)) {
-                drag = true;
-            }
-        }
+        if(isMouseOnButton(mouseX, mouseY) && button == 0) drag = true;
     }
 
     public void mouseReleased(int mouseX, int mouseY, int button) {
         drag = false;
     }
 
-    public boolean isMouseOnButtonD(int x, int y) {
-        if(x > this.x && x < this.x + (b.parent.width / 2 + 1) && y > this.y && y < this.y + 12) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isMouseOnButtonI(int x, int y) {
-        if(x > this.x + b.parent.width / 2 && x < this.x + b.parent.width && y > this.y && y < this.y + 12) {
-            return true;
-        }
-        return false;
-    }
 
     private boolean isMouseOnButton(int x, int y) {
-        if(x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset) return true;
-
-        return false;
+        return x > this.x && x < this.x + this.width && y > this.y + offset && y < this.y + this.height + this.offset;
     }
 
     private static double roundToPlace(double value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
+        if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();

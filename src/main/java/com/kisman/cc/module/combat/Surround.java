@@ -12,13 +12,10 @@ import com.kisman.cc.util.Rotation.*;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 
@@ -42,7 +39,7 @@ public class Surround extends Module {
     private Setting support = new Setting("Rewrite Support", this, SupportModes.None);
     private Setting retries = new Setting("Rewrite Retries", this, 5, 0, 20, true);
     private Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
-    private Setting destroyCrystals = new Setting("Rewrite Destroy Crystals", this, true);
+    private Setting crystalBreaker = new Setting("Rewrite Crystal Breaker", this, true);
     private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, Slider.NumberType.TIME);
     private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
 
@@ -80,7 +77,7 @@ public class Surround extends Module {
         setmgr.rSetting(support);
         setmgr.rSetting(retries);
         setmgr.rSetting(rewriteRotate);
-        setmgr.rSetting(destroyCrystals);
+        setmgr.rSetting(crystalBreaker);
         setmgr.rSetting(breakDelay);
         setmgr.rSetting(breakRange);
 
@@ -179,8 +176,6 @@ public class Surround extends Module {
 
             if(switch_.getValString().equals("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
         } else if(rewrite.getValBoolean()) placeSurround();
-
-        if(destroyCrystals.getValBoolean()) destroyCrystals(getUnsafeBlocks());
     }
 
     public void placeSurround() {
@@ -212,7 +207,6 @@ public class Surround extends Module {
             }
         } else {
             if(!getUnsafeBlocks().isEmpty()) {
-                if(destroyCrystals.getValBoolean()) destroyCrystals(getUnsafeBlocks());
                 int blockSlot;
                 if(InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9) != -1) blockSlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
                 else if(InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9) != -1) blockSlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
@@ -226,8 +220,12 @@ public class Surround extends Module {
                         mc.player.rotationYaw = rots[0];
                         mc.player.rotationPitch = rots[1];
                     }
-                    if(!support.getValString().equalsIgnoreCase(SupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || support.getValString().equalsIgnoreCase(SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) place(pos.down());
+                    if(!support.getValString().equalsIgnoreCase(SupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || support.getValString().equalsIgnoreCase(SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) {
+                        if(crystalBreaker.getValBoolean()) doCrystalBreaker(pos.down());
+                        place(pos.down());
+                    }
                     if(!BlockUtil2.isPositionPlaceable(pos, true, true, tries <= retries.getValInt())) continue;
+                    if(crystalBreaker.getValBoolean()) doCrystalBreaker(pos);
                     place(pos);
                     tries++;
                 }
@@ -244,39 +242,17 @@ public class Surround extends Module {
         }
     }
 
-    private void destroyCrystals(List<BlockPos> positions) {
-        if(!breakTimer.passedMillis(breakDelay.getValLong())) return;
-        ArrayList<EntityEnderCrystal> crystalsToBreak = new ArrayList<>();
-
-        for(Entity entity : mc.world.loadedEntityList) {
-            if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) <= breakRange.getValDouble()) {
-                EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
-                for(BlockPos pos : positions) if(crystal.getEntityBoundingBox().intersects(MathUtil.blockPosToDefaultBB(pos))) crystalsToBreak.add(crystal);
+    private void doCrystalBreaker(BlockPos pos) {
+        for(Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
+            if(entity instanceof EntityEnderCrystal) {
+                if(!rewriteRotate.getValString().equalsIgnoreCase(RotateModes.None.name())) {
+                    float[] rots = RotationUtils.getRotationToPos(pos);
+                    mc.player.rotationYaw = rots[0];
+                    mc.player.rotationPitch = rots[1];
+                }
+                mc.player.connection.sendPacket(new CPacketUseEntity(entity));
+                mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
             }
-        }
-
-        if(crystalsToBreak.isEmpty()) return;
-
-        for(EntityEnderCrystal crystal : crystalsToBreak) {
-            breakCrystal(crystal);
-        }
-    }
-
-    private void breakCrystal(EntityEnderCrystal crystal) {
-        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
-        if(!rewriteRotate.getValString().equalsIgnoreCase(RotateModes.None.name())) {
-            float[] rots = RotationUtils.getRotation(crystal);
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
-        }
-
-        mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-        mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
-        breakTimer.reset();
-
-        if(rewriteRotate.getValString().equalsIgnoreCase(RotateModes.Silent.name())) {
-            mc.player.rotationYaw = oldRots[0];
-            mc.player.rotationPitch = oldRots[1];
         }
     }
 

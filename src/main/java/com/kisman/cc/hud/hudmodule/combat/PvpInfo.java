@@ -24,8 +24,6 @@ public class PvpInfo extends HudModule {
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "KA: " + (isToggled(KillAura.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
         count++;
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "CA: " + (isToggled(AutoCrystalRewrite.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
-        count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "FA: " + (isToggled(AutoFirework.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "OFF: " + (isToggled(OffHand.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), 1, count * heigth + y, -1);

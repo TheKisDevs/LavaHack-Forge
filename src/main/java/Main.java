@@ -1,4 +1,5 @@
 import com.kisman.cc.Kisman;
+import com.kisman.cc.util.protect.AntiDump;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
 
@@ -10,6 +11,13 @@ public class Main {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
+        AntiDump.check();
         k.init();
+    }
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
+        AntiDump.check();
+        k.preInit();
     }
 }

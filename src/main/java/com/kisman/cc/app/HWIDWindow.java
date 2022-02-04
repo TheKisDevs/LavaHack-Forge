@@ -1,6 +1,6 @@
 package com.kisman.cc.app;
 
-import com.kisman.cc.util.hwid.*;
+import com.kisman.cc.util.protect.*;
 
 import javax.swing.*;
 import java.awt.*;

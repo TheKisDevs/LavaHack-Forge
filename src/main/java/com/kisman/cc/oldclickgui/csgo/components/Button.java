@@ -37,6 +37,8 @@ public class Button extends AbstractComponent {
         renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(title) / 2, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);
     }
 
+    @Override public void postRender() {}
+
     @Override
     public boolean mouseMove(int x, int y, boolean offscreen) {
         updateHovered(x, y, offscreen);

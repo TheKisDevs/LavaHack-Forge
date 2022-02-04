@@ -14,8 +14,7 @@ import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.init.*;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.*;
@@ -24,14 +23,13 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoRer extends Module {
+    public final Setting lagProtect = new Setting("Lag Protect", this, true);
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
     private final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
@@ -132,6 +130,8 @@ public class AutoRer extends Module {
         super("AutoRer", Category.COMBAT);
 
         instance = this;
+
+        setmgr.rSetting(lagProtect);
 
         setmgr.rSetting(placeRange);
         setmgr.rSetting(placeWallRange);

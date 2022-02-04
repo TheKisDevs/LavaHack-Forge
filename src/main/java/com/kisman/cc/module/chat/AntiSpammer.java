@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class AntiSpammer extends Module {
     public static AntiSpammer instance;
 
-    public ArrayList<String> strings = new ArrayList<>();
+    public ArrayList<String> illegalWords = new ArrayList<>();
 
     public AntiSpammer() {
         super("AntiSpammer", Category.CHAT);
@@ -33,7 +33,7 @@ public class AntiSpammer extends Module {
         if (event.getEra().equals(Event.Era.PRE) && event.getPacket() instanceof SPacketChat) {
             if (!((SPacketChat) event.getPacket()).isSystem()) return;
             String message = ((SPacketChat) event.getPacket()).chatComponent.getFormattedText();
-            for(String str : strings) message = message.replaceAll(str, "");
+            for(String str : illegalWords) message = message.replaceAll(str, "");
             ((SPacketChat) event.getPacket()).chatComponent = new TextComponentString(message);
         }
     });

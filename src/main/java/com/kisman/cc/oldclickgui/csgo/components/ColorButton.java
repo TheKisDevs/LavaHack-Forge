@@ -103,7 +103,7 @@ public class ColorButton extends AbstractComponent {
         try {if(!opened) renderer.drawRect(x, y, getWidth(), getHeight(), value.getColor());} catch(Exception ignored) {}
         if(opened) {
             String text = "Red: " + value.r + " Green: " + value.g + " Blue: " + value.b;
-            renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
+            renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + preferredHeight / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
         }
         renderer.drawOutline(x, y, getWidth(), getHeight(), 1.0f, (hovered) ? Window.SECONDARY_OUTLINE : Window.SECONDARY_FOREGROUND);
 
@@ -136,7 +136,11 @@ public class ColorButton extends AbstractComponent {
         }
 
         if(listener != null) listener.onValueChange(value);
+        if(listener2 != null) listener2.onValueChange(value2);
     }
+
+    @Override
+    public void postRender() {}
 
     private void drawButton(int x, int y, int width, int height, boolean state, String title) {
         renderer.drawRect(x, y, width, height, hovered ? Window.SECONDARY_FOREGROUND : Window.TERTIARY_FOREGROUND);
@@ -153,10 +157,7 @@ public class ColorButton extends AbstractComponent {
     }
 
     final int alpha(Color color, float alpha) {
-        final float red = (float) color.getRed() / 255;
-        final float green = (float) color.getGreen() / 255;
-        final float blue = (float) color.getBlue() / 255;
-        return new Color(red, green, blue, alpha).getRGB();
+        return new Colour(color, alpha).getRGB();
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {

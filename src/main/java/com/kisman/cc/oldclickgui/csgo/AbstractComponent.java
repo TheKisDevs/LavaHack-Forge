@@ -14,6 +14,7 @@ public abstract class AbstractComponent {
     }
 
     public abstract void render();
+    public abstract void postRender();
 
     public int getEventPriority() {
         return 0;

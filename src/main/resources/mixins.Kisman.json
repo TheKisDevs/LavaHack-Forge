@@ -24,7 +24,6 @@
     "MixinRenderGlobal",
     "MixinRenderItem",
     "MixinRenderPlayer",
-    "MixinTimer",
     "MixinWorld",
     "accessor.AccessorCPacketUseEntity",
     "accessor.AccessorEntityPlayer",
@@ -36,6 +35,7 @@
   ],
   "client": [
     "MixinGuiContainer",
+    "MixinGuiIngame",
     "MixinGuiNewChat",
     "MixinModelBook",
     "MixinPlayerControllerMP"

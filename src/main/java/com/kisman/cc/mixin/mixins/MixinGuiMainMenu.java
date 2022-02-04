@@ -46,19 +46,16 @@ public class MixinGuiMainMenu extends GuiScreen {
     //sandbox
     @Inject(method = "renderSkybox", at = @At("HEAD"), cancellable = true)
     public void renderSkybox(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if(SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader != null)
-            ci.cancel();
+        if(SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader != null) ci.cancel();
     }
 
     @Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiMainMenu;drawGradientRect(IIIIII)V", ordinal = 0))
     public void drawGradientRect1(GuiMainMenu guiMainMenu, int left, int top, int right, int bottom, int startColor, int endColor) {
-        if(!SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader == null)
-            drawGradientRect(left, top, right, bottom, startColor, endColor);
+        if(!SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader == null) drawGradientRect(left, top, right, bottom, startColor, endColor);
     }
 
     @Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiMainMenu;drawGradientRect(IIIIII)V", ordinal = 1))
     public void drawGradientRect2(GuiMainMenu guiMainMenu, int left, int top, int right, int bottom, int startColor, int endColor) {
-        if(!SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader == null)
-            drawGradientRect(left, top, right, bottom, startColor, endColor);
+        if(!SandBox.instance.isToggled() && Kisman.instance.sandBoxShaders.currentshader == null) drawGradientRect(left, top, right, bottom, startColor, endColor);
     }
 }

@@ -1,4 +1,4 @@
-package com.kisman.cc.util.hwid;
+package com.kisman.cc.util.protect;
 
 public class NoStackTraceThrowable extends RuntimeException {
 

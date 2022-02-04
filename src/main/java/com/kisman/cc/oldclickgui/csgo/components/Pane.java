@@ -31,15 +31,18 @@ public class Pane extends AbstractComponent {
     }
 
     @Override
+    public void postRender() {
+        for (AbstractComponent component : components) component.postRender();
+    }
+
+    @Override
     public boolean isSizeChanged() {
         for (AbstractComponent component : components) if (component.isSizeChanged()) return true;
         return super.isSizeChanged();
     }
 
     private void resetSizeChanged() {
-        for (AbstractComponent component : components) {
-            component.setSizeChanged(false);
-        }
+        for (AbstractComponent component : components) component.setSizeChanged(false);
     }
 
     protected void updateComponentLocation() {

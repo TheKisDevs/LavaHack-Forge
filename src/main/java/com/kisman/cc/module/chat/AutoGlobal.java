@@ -22,8 +22,6 @@ public class AutoGlobal extends Module {
                 !event.getMessage().startsWith("--") &&
                 !event.getMessage().startsWith("-") &&
                 !event.getMessage().startsWith("+")
-        ) {
-            event.setMessage("!" + event.getMessage());
-        }
+        ) event.setMessage("!" + event.getMessage());
     }
 }
