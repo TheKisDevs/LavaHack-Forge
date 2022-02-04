@@ -35,7 +35,6 @@ public class ModuleManager {
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
 		modules.add(new AutoArmor());
-		modules.add(new AutoBowExploit());
 		modules.add(new AutoClicker());
 		modules.add(new AutoFirework());
 		modules.add(new AutoPot());

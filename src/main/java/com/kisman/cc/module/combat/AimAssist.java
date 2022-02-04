@@ -27,7 +27,7 @@ public class AimAssist extends Module {
         if(target == null) return;
         else super.setDisplayInfo("[" + target.getName() + TextFormatting.GRAY + "]");
 
-        if(mc.objectMouseOver.entityHit != null && mc.objectMouseOver.entityHit.equals(RayTraceResult.Type.ENTITY) && mc.objectMouseOver.entityHit != target) {
+        if(mc.objectMouseOver.entityHit != null && mc.objectMouseOver.typeOfHit.equals(RayTraceResult.Type.ENTITY) && mc.objectMouseOver.entityHit != target) {
             float[] rotsToTarget = RotationUtils.getRotation(target);
 
             mc.player.rotationYaw = (float) AnimationUtils.animate(rotsToTarget[0], mc.player.rotationYaw, speed.getValFloat());

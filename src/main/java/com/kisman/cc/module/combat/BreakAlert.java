@@ -42,18 +42,20 @@ public class BreakAlert extends Module {
     public void update() {
         if(mc.player == null || mc.world == null || blocksBeginBroken.isEmpty()) return;
 
-        for(BlockPos pos : blocksBeginBroken) if(messageType.getValString().equalsIgnoreCase(MessageType.Chat.name())) ChatUtils.warning(TextFormatting.DARK_PURPLE + "Break Alert! " + TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!");
+        for(int i = 0; i < blocksBeginBroken.size(); i++) if(messageType.getValString().equalsIgnoreCase(MessageType.Chat.name())) ChatUtils.warning(TextFormatting.DARK_PURPLE + "Break Alert! " + TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!");
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        for(BlockPos pos : blocksBeginBroken) {
-            if(messageType.getValString().equalsIgnoreCase(MessageType.Display.name())) {
-                ScaledResolution sr = new ScaledResolution(mc);
-                CustomFontUtil.comfortaab72.drawCenteredStringWithShadow(TextFormatting.DARK_PURPLE + "Break Alert!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 - CustomFontUtil.getFontHeight(CustomFontUtil.comfortaab72), -1);
-                CustomFontUtil.comfortaab55.drawCenteredStringWithShadow(TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 5, -1);
+        if(renderTimer.passedMillis(displayShowDelay.getValLong())){
+            for(int i = 0; i < blocksBeginBroken.size(); i++) {
+               if(messageType.getValString().equalsIgnoreCase(MessageType.Display.name())) {
+                    ScaledResolution sr = new ScaledResolution(mc);
+                    CustomFontUtil.comfortaab72.drawCenteredStringWithShadow(TextFormatting.DARK_PURPLE + "Break Alert!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 - CustomFontUtil.getFontHeight(CustomFontUtil.comfortaab72), -1);
+                    CustomFontUtil.comfortaab55.drawCenteredStringWithShadow(TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 5, -1);
+                }
             }
-        }
+        } else renderTimer.reset();
     }
 
     @EventHandler

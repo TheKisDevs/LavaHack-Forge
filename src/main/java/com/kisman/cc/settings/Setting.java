@@ -282,6 +282,13 @@ public class Setting {
 		this.mode = "Items";
 	}
 
+	public Enum getEnumByName() {
+		if(optionEnum == null) return null;
+		Enum enumVal = optionEnum;
+		String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+		return Enum.valueOf(enumVal.getClass(), values[index]);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if(isCombo()) return sval.equals(obj);

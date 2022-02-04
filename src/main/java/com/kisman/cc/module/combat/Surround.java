@@ -38,10 +38,12 @@ public class Surround extends Module {
     private Setting dynamic = new Setting("Rewrite Dynamic", this, false);
     private Setting support = new Setting("Rewrite Support", this, SupportModes.None);
     private Setting retries = new Setting("Rewrite Retries", this, 5, 0, 20, true);
+    private Setting protectRetries = new Setting("Rewrite Protect Retries", this, 5, 0, 20, true);
     private Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
     private Setting crystalBreaker = new Setting("Rewrite Crystal Breaker", this, true);
     private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, Slider.NumberType.TIME);
     private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
+    private Setting rewriteProtected = new Setting("Rewrite Protect Vec", this, false);
 
     private Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
     private Setting rotateCenter = new Setting("RotateCenter", this, false);
@@ -51,12 +53,13 @@ public class Surround extends Module {
 
     private int oldSlot = -1;
     private int placement;
-    private int tries;
+    private int tries, tries2;
     private int surroundPlaced = 0;
     private BlockPos oldPos = BlockPos.ORIGIN;
     private BlockPos surroundPosition = BlockPos.ORIGIN;
     private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
     private TimerUtils breakTimer = new TimerUtils();
+    private ArrayList<BlockPos> protectOffsets = new ArrayList<>();
 
     public Surround() {
         super("Surround", "Surround", Category.COMBAT);
@@ -76,10 +79,12 @@ public class Surround extends Module {
         setmgr.rSetting(dynamic);
         setmgr.rSetting(support);
         setmgr.rSetting(retries);
+        setmgr.rSetting(protectRetries);
         setmgr.rSetting(rewriteRotate);
         setmgr.rSetting(crystalBreaker);
         setmgr.rSetting(breakDelay);
         setmgr.rSetting(breakRange);
+        setmgr.rSetting(rewriteProtected);
 
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateCenter);
@@ -229,6 +234,14 @@ public class Surround extends Module {
                     place(pos);
                     tries++;
                 }
+                block0: {
+                    if(protectOffsets.isEmpty() || !rewriteProtected.getValBoolean()) break block0;
+                    for(BlockPos pos : protectOffsets) {
+                        if(!BlockUtil2.isPositionPlaceable(pos, true, true, tries2 <= protectRetries.getValInt())) continue;
+                        if(crystalBreaker.getValBoolean()) doCrystalBreaker(pos);
+                        place(pos);
+                    }
+                }
                 if(switch_.getValString().equals("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
                 if(rewriteRotate.getValString().equalsIgnoreCase(RotateModes.Silent.name())) {
                     mc.player.rotationYaw = oldRots[0];
@@ -237,6 +250,7 @@ public class Surround extends Module {
             }
             placement = 0;
             if(!getUnsafeBlocks().isEmpty()) return;
+            if(protectOffsets.isEmpty()) tries2 = 0;
             tries = 0;
             if(completion.getValString().equalsIgnoreCase(Completion.ToggleAfterComplete.name())) setToggled(false);
         }
@@ -343,6 +357,7 @@ public class Surround extends Module {
 
     private List<BlockPos> getOffsets() {
         ArrayList<BlockPos> offsets = new ArrayList<>();
+        protectOffsets.clear();
         if (dynamic.getValBoolean()) {
             int z;
             int x;
@@ -357,18 +372,35 @@ public class Surround extends Module {
             for (x = 1; x < lengthX + 1; ++x) {
                 tempOffsets.add(addToPosition(getPlayerPosition(), x, 1 + lengthZ));
                 tempOffsets.add(addToPosition(getPlayerPosition(), x, -(1 + negativeLengthZ)));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), x, 1 + lengthZ), x, 2 + lengthZ));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), x, 1 + lengthZ), x, 3 + lengthZ));                
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), x, -(1 + negativeLengthZ)), x, -(2 + negativeLengthZ)));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), x, -(1 + negativeLengthZ)), x, -(3 + negativeLengthZ)));
+
             }
             for (x = 0; x <= negativeLengthX; ++x) {
                 tempOffsets.add(addToPosition(getPlayerPosition(), -x, 1 + lengthZ));
                 tempOffsets.add(addToPosition(getPlayerPosition(), -x, -(1 + negativeLengthZ)));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -x, 1 + lengthZ), -x, 2 + lengthZ));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -x, 1 + lengthZ), -x, 3 + lengthZ));                
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -x, -(1 + negativeLengthZ)), -x, -(2 + negativeLengthZ)));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -x, -(1 + negativeLengthZ)), -x, -(3 + negativeLengthZ)));
             }
             for (z = 1; z < lengthZ + 1; ++z) {
                 tempOffsets.add(addToPosition(getPlayerPosition(), 1 + lengthX, z));
                 tempOffsets.add(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), 1 + lengthX, z), 2 + lengthX, z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), 1 + lengthX, z), 3 + lengthX, z));                
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), z), -(2 + negativeLengthX), z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), z), -(3 + negativeLengthX), z));
             }
             for (z = 0; z <= negativeLengthZ; ++z) {
                 tempOffsets.add(addToPosition(getPlayerPosition(), 1 + lengthX, -z));
                 tempOffsets.add(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), -z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), 1 + lengthX, z), 2 + lengthX, -z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), 1 + lengthX, z), 3 + lengthX, z));                
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), -z), -(2 + negativeLengthX), -z));
+                protectOffsets.add(addToPosition(addToPosition(getPlayerPosition(), -(1 + negativeLengthX), -z), -(3 + negativeLengthX), -z));
             }
             offsets.addAll(tempOffsets);
         } else for (EnumFacing side : EnumFacing.HORIZONTALS) offsets.add(getPlayerPosition().add(side.getFrontOffsetX(), 0, side.getFrontOffsetZ()));

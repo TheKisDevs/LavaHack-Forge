@@ -7,8 +7,7 @@ import org.lwjgl.opengl.*;
 import net.minecraft.client.*;
 import org.lwjgl.input.*;
 
-public class ParticleSystem
-{
+public class ParticleSystem{
     private static final float SPEED = 0.2f;
     private final List<Particle> particleList;
 
@@ -18,9 +17,7 @@ public class ParticleSystem
     }
 
     public void addParticles(final int n) {
-        for (int i = 0; i < n; ++i) {
-            this.particleList.add(Particle.generateParticle());
-        }
+        for (int i = 0; i < n; ++i) this.particleList.add(Particle.generateParticle());
     }
 
     public static double distance(final float x, final float y, final float x1, final float y1) {
@@ -28,9 +25,7 @@ public class ParticleSystem
     }
 
     public void tick(final int delta) {
-        for (final Particle particle : this.particleList) {
-            particle.tick(delta, 0.1f);
-        }
+        for (final Particle particle : this.particleList) particle.tick(delta, 0.1f);
     }
 
     private void drawLine(final float f, final float f2, final float f3, final float f4, final float r, final float g, final float b, final float a) {
@@ -51,9 +46,7 @@ public class ParticleSystem
         GL11.glDisable(3553);
         GL11.glDisable(2929);
         GL11.glDepthMask(false);
-        if (Minecraft.getMinecraft().currentScreen == null) {
-            return;
-        }
+        if (Minecraft.getMinecraft().currentScreen == null) return;
         for (final Particle particle : this.particleList) {
             GL11.glColor4f(StaticParticles.color.getRed() / 255.0f, StaticParticles.color.getGreen() / 255.0f, StaticParticles.color.getBlue() / 255.0f, particle.getAlpha() / 255.0f);
             GL11.glPointSize(particle.getSize());
@@ -68,16 +61,14 @@ public class ParticleSystem
             for (final Particle particle2 : this.particleList) {
                 final float distance = particle.getDistanceTo(particle2);
                 if (distance <= dist && (distance((float)Width, (float)Height, particle.getX(), particle.getY()) <= dist || distance((float)Width, (float)Height, particle2.getX(), particle2.getY()) <= dist)) {
-                    if (nearestDistance > 0.0f && distance > nearestDistance) {
-                        continue;
-                    }
+                    if (nearestDistance > 0.0f && distance > nearestDistance) continue;
+                    
                     nearestDistance = distance;
                     nearestParticle = particle2;
                 }
             }
-            if (nearestParticle == null) {
-                continue;
-            }
+            if (nearestParticle == null) continue;
+            
             final float alpha = Math.min(1.0f, Math.min(1.0f, 1.0f - nearestDistance / dist));
             this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color.getRed() / 255.0f, StaticParticles.color.getGreen() / 255.0f, StaticParticles.color.getBlue() / 255.0f, alpha);
         }
@@ -95,10 +86,8 @@ public class ParticleSystem
         GL11.glPopMatrix();
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate(){
         StaticParticles.onUpdate();
     }
-
 }
 

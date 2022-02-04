@@ -82,4 +82,5 @@ public class Config extends Module {
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
+    public enum ParticlesBoxMode {Static, Dynamic}
 }

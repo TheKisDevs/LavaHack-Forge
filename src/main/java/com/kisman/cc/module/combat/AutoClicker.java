@@ -1,15 +1,12 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import org.lwjgl.input.Mouse;
 
 import io.netty.util.internal.ThreadLocalRandom;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class AutoClicker extends Module {
 

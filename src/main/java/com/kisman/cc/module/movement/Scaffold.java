@@ -199,8 +199,5 @@ public class Scaffold extends Module {
 
     private boolean verifyStack(ItemStack stack) {return !stack.isEmpty() && stack.getItem() instanceof ItemBlock;}
 
-    public enum Modes {
-        Tower,
-        Normal
-    }
+    public enum Modes {Tower, Normal}
 }

@@ -3,7 +3,6 @@ package com.kisman.cc.module.chat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.settings.Setting;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -16,7 +15,6 @@ public class AntiSpamBypass extends Module {
         super("AntiSpamBypass", "AntiSpamBypass", Category.CHAT);
 
         random = new Random();
-
         random.nextInt();
     }
 
@@ -32,8 +30,6 @@ public class AntiSpamBypass extends Module {
                 !event.getMessage().startsWith("--") &&
                 !event.getMessage().startsWith("-") &&
                 !event.getMessage().startsWith("+")
-        ) {
-            event.setMessage(event.getMessage() + " | " + random.nextInt());
-        }
+        ) event.setMessage(event.getMessage() + " | " + random.nextInt());
     }
 }

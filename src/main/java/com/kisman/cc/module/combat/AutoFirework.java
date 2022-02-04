@@ -7,7 +7,6 @@ import com.kisman.cc.util.*;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.item.ItemTool;
@@ -144,7 +143,6 @@ public class AutoFirework extends Module {
                 if (Math.sqrt(mc.player.getDistanceSq(playerPos.getX(), playerPos.getY(), playerPos.getZ())) <= range.getValDouble()) {
                     //switch
                     final int oldSlot = mc.player.inventory.getBestHotbarSlot();
-                    int newSlot = InventoryUtil.findItemInHotbar(Items.FIREWORKS.getClass());
 
                     //rotate
                     if (rotate.getValBoolean()) {
