@@ -1,13 +1,18 @@
 package com.kisman.cc.oldclickgui.particle;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import com.kisman.cc.oldclickgui.particle.settings.StaticParticles;
 import org.lwjgl.opengl.*;
 import net.minecraft.client.*;
 import org.lwjgl.input.*;
 
-public class ParticleSystem{
+import static org.lwjgl.opengl.GL11.*;
+
+public class ParticleSystem
+{
     private static final float SPEED = 0.2f;
     private final List<Particle> particleList;
 
@@ -28,13 +33,38 @@ public class ParticleSystem{
         for (final Particle particle : this.particleList) particle.tick(delta, 0.1f);
     }
 
-    private void drawLine(final float f, final float f2, final float f3, final float f4, final float r, final float g, final float b, final float a) {
-        GL11.glColor4f(r, g, b, a);
+    //Draws a line
+    private void drawLine(final float f, final float f2, final float f3, final float f4, Color color) {
+        GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         GL11.glLineWidth(0.5f);
         GL11.glBegin(1);
         GL11.glVertex2f(f, f2);
         GL11.glVertex2f(f3, f4);
         GL11.glEnd();
+    }
+
+    //Draws a Gradient line
+    private void drawGradientLine(final float f, final float f2, final float f3, final float f4, Color startcolor,  Color endcolor) {
+        GL11.glPushMatrix();
+        GL11.glDisable(GL_TEXTURE_2D);
+        GL11.glEnable(GL_BLEND);
+        GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glShadeModel(GL_SMOOTH);
+
+        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, startcolor.getAlpha() / 255.0f);
+        GL11.glLineWidth(0.5f);
+        GL11.glBegin(1);
+
+        GL11.glVertex2f(f, f2);
+
+        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, endcolor.getAlpha() / 255.0f);
+
+        GL11.glVertex2f(f3, f4);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        GL11.glEnd();
+        glPopMatrix();
     }
 
     public void render() {
@@ -62,15 +92,19 @@ public class ParticleSystem{
                 final float distance = particle.getDistanceTo(particle2);
                 if (distance <= dist && (distance((float)Width, (float)Height, particle.getX(), particle.getY()) <= dist || distance((float)Width, (float)Height, particle2.getX(), particle2.getY()) <= dist)) {
                     if (nearestDistance > 0.0f && distance > nearestDistance) continue;
-                    
                     nearestDistance = distance;
                     nearestParticle = particle2;
                 }
             }
             if (nearestParticle == null) continue;
-            
             final float alpha = Math.min(1.0f, Math.min(1.0f, 1.0f - nearestDistance / dist));
-            this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color.getRed() / 255.0f, StaticParticles.color.getGreen() / 255.0f, StaticParticles.color.getBlue() / 255.0f, alpha);
+            //Checks if two gradient particles mode is enabled
+            if(StaticParticles.IsTwoGParticlesEnabled)
+            {
+                this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor);
+            }else {
+                this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
+            }
         }
         GL11.glPushMatrix();
         GL11.glTranslatef(0.5f, 0.5f, 0.5f);
@@ -86,8 +120,10 @@ public class ParticleSystem{
         GL11.glPopMatrix();
     }
 
-    public void onUpdate(){
+    public void onUpdate()
+    {
         StaticParticles.onUpdate();
     }
+
 }
 
