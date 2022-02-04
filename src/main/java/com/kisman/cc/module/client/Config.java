@@ -40,6 +40,8 @@ public class Config extends Module {
     public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255));
     public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255));
 
+    public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false);
+
     public Config() {
         super("Config", Category.CLIENT, false);
 
@@ -69,6 +71,8 @@ public class Config extends Module {
         setmgr.rSetting(TwoGradientParticles);
         setmgr.rSetting(particlesGStartColor);
         setmgr.rSetting(particlesGEndColor);
+        setmgr.rSetting(particlesWidth);
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 
