@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import com.kisman.cc.oldclickgui.particle.settings.StaticParticles;
 import org.lwjgl.opengl.*;
 import net.minecraft.client.*;
 import org.lwjgl.input.*;
