@@ -51,7 +51,7 @@ public class ParticleSystem
         glShadeModel(GL_SMOOTH);
 
         GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, startcolor.getAlpha() / 255.0f);
-        GL11.glLineWidth(0.5f);
+        GL11.glLineWidth(1f);
         GL11.glBegin(1);
 
         GL11.glVertex2f(f, f2);
