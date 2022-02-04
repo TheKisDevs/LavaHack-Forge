@@ -34,6 +34,10 @@ public class Config extends Module {
     public Setting configurate = new Setting("Configurate", this, true);
     public Setting particlesColor = new Setting("Particles Color", this, "Particles Color", new Colour(0, 0, 255));
 
+    public Setting TwoGradientParticles = new Setting("Two Gradient Particles", this, true);
+
+    public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255));
+    public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255));
 
     public Config() {
         super("Config", Category.CLIENT, false);
@@ -60,7 +64,9 @@ public class Config extends Module {
         setmgr.rSetting(loadConfig);
         setmgr.rSetting(configurate);
         setmgr.rSetting(particlesColor);
-
+        setmgr.rSetting(TwoGradientParticles);
+        setmgr.rSetting(particlesGStartColor);
+        setmgr.rSetting(particlesGEndColor);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
