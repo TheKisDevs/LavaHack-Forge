@@ -48,7 +48,7 @@ public class Render2DUtil extends GuiScreen {
         glLineWidth(width);
         glBegin(GL_LINE_LOOP);
         for(int i = 0; i < segments; i++) {
-            if(i > degrees) continue;
+            if(i > degrees) break;
             float theta = (float) (2f * Math.PI * i / segments);
 
             float x = (float) (radius * Math.cos(theta));
