@@ -46,7 +46,7 @@ public class Render2DUtil extends GuiScreen {
     public static void drawProgressCircle(double cx, double cy, double radius, Color color, float width, double degrees, int segments) {
         ColorUtils.glColor(color);
         glLineWidth(width);
-        glBegin(GL_LINE_LOOP);
+        glBegin(GL_LINE);
         for(int i = 0; i < segments; i++) {
             if(i > degrees) break;
             float theta = (float) (2f * Math.PI * i / segments);
