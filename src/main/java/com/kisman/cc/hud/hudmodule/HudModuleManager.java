@@ -37,6 +37,7 @@ public class HudModuleManager {
 		modules.add(new Logo());
 		modules.add(new Radar());
 		modules.add(new Welcomer());
+		modules.add(new PacketChat());
 
 		//player
 		modules.add(new Indicators());
