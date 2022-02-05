@@ -43,7 +43,7 @@ public class ParticleSystem
     }
 
     //Draws a Gradient line
-    private void drawGradientLine(final float f, final float f2, final float f3, final float f4, Color startcolor,  Color endcolor) {
+    private void drawGradientLine(final float f, final float f2, final float f3, final float f4, Color startcolor,  Color endcolor, float width) {
         GL11.glPushMatrix();
         GL11.glDisable(GL_TEXTURE_2D);
         GL11.glEnable(GL_BLEND);
@@ -51,7 +51,7 @@ public class ParticleSystem
         glShadeModel(GL_SMOOTH);
 
         GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, startcolor.getAlpha() / 255.0f);
-        GL11.glLineWidth(1f);
+        GL11.glLineWidth(width);
         GL11.glBegin(1);
 
         GL11.glVertex2f(f, f2);
@@ -100,7 +100,7 @@ public class ParticleSystem
             //Checks if two gradient particles mode is enabled
             if(StaticParticles.IsTwoGParticlesEnabled)
             {
-                this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor);
+                this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
             }else {
                 this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
             }
