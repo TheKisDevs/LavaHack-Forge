@@ -48,7 +48,7 @@ public class Config extends Module {
         super("Config", Category.CLIENT, false);
 
         instance = this;
-
+        setmgr.rSetting(guiBetterCheckBox);
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
