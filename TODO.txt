@@ -12,6 +12,7 @@ test dynamic protect surround
 Fix vegagui slider dragging
 Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
+add reset binds
 
 For b0.2
 
