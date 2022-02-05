@@ -24,7 +24,7 @@ public class Indicators extends HudModule {
     private double borderOffset = 5;
 
     public Indicators() {
-        super("Indicators", "", HudCategory.PLAYER);
+        super("Indicators", HudCategory.PLAYER, true);
     }
 
     public void update() {

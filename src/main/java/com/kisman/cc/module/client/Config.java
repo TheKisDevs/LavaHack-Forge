@@ -26,6 +26,8 @@ public class Config extends Module {
     public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
+    public Setting guiBetterCheckBox = new Setting("Gui Better CheckBox", this, false);
+
     public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("Pulse Max", this, 110, 0, 255, true);
@@ -35,7 +37,7 @@ public class Config extends Module {
     public Setting configurate = new Setting("Configurate", this, true);
     public Setting particlesColor = new Setting("Particles Color", this, "Particles Color", new Colour(0, 0, 255));
 
-    public Setting TwoGradientParticles = new Setting("Two Gradient Particles", this, true);
+    public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None);
 
     public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255));
     public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255));
@@ -60,6 +62,7 @@ public class Config extends Module {
         setmgr.rSetting(guiOutline);
         setmgr.rSetting(guiAstolfo);
         setmgr.rSetting(guiRenderSIze);
+        setmgr.rSetting(guiBetterCheckBox);
         setmgr.rSetting(guiOpenAnimation);
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
@@ -68,7 +71,7 @@ public class Config extends Module {
         setmgr.rSetting(loadConfig);
         setmgr.rSetting(configurate);
         setmgr.rSetting(particlesColor);
-        setmgr.rSetting(TwoGradientParticles);
+        setmgr.rSetting(particlesGradientMode);
         setmgr.rSetting(particlesGStartColor);
         setmgr.rSetting(particlesGEndColor);
         setmgr.rSetting(particlesWidth);
@@ -93,4 +96,5 @@ public class Config extends Module {
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
     public enum ParticlesBoxMode {Static, Dynamic}
+    public enum ParticlesGradientMode {None, Default, Syns}
 }

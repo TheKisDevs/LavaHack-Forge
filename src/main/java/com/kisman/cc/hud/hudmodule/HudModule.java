@@ -20,6 +20,7 @@ public class HudModule {
 		this.key = 0;
 		this.category = category;
 		this.toggled = false;
+		this.drag = false;
 	}
 
 	public HudModule(String name, HudCategory category) {

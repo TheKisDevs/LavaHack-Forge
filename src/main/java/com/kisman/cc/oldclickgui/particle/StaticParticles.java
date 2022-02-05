@@ -32,7 +32,7 @@ public class StaticParticles {
         endColor = Config.instance.particlesGEndColor.getColour().getColor();
 
         //sets particles gradient var to the one from settings
-        IsTwoGParticlesEnabled = Config.instance.TwoGradientParticles.getValBoolean();
+        IsTwoGParticlesEnabled = !Config.instance.particlesGradientMode.getValString().equals(Config.ParticlesGradientMode.None.name());
 
         //sets particles width var to the one from settings
         particleWidth = Config.instance.particlesWidth.getValFloat();

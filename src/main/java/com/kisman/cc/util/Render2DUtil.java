@@ -2,6 +2,8 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.util.glow.ShaderShell;
+import com.kisman.cc.util.render.objects.*;
+
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
@@ -12,7 +14,6 @@ import net.minecraft.client.gui.*;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,6 +26,10 @@ public class Render2DUtil extends GuiScreen {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void drawAbstract(AbstractObject drawing) {
+        if(drawing != null) drawing.render();
+    }
+
+    public static void drawAbstract(ObjectWithGlow drawing) {
         if(drawing != null) drawing.render();
     }
 
@@ -59,40 +64,9 @@ public class Render2DUtil extends GuiScreen {
         glEnd();
     }
 
-    public class AbstractObject {
-        public ArrayList<double[]> vectors;
-        public Color color;
-        public boolean line;
-        public float width;
-    
-        public AbstractObject(ArrayList<double[]> vectors, Color color, boolean line, float width) {
-            this.vectors = vectors;
-            this.color = color;
-            this.line = line;
-            this.width = width;
-        }
-    
-        public void render() {
-            ColorUtils.glColor(color);
-            if(line) {
-                glLineWidth(width);
-                glBegin(GL_POINTS);
-            } else glBegin(GL_POLYGON);
-    
-            setupVectors();
-    
-            glEnd();
-        }
-    
-        private void setupVectors() {
-            for(double[] vector : vectors) glVertex2d(vector[0], vector[1]);
-        }
-    }
-
     public static void drawLine(int x, int y, int length, DrawLineMode drawLineMode, int color) {
         if(drawLineMode == DrawLineMode.VERTICAL) Gui.drawRect(x, y, x + 1, y + length, color);
         else Gui.drawRect(x, y, x + length, y + 1, color);
-        
     }
 
     public static void drawTexture(ResourceLocation texture, int x, int y, int width, int height) {

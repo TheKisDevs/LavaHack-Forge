@@ -3,14 +3,15 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
+
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.init.*;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -28,6 +29,7 @@ public class CityESP extends Module {
     private Setting maxSelfDMG = new Setting("Max Self DMG", this, 7, 0, 20, true);
     private Setting ignoreCrystals = new Setting("Ignore Crystals", this, true);
     private Setting mine = new Setting("Mine", this, false);
+    private Setting mineKey = new Setting("Mine Key", this, Keyboard.KEY_LSHIFT);
     private Setting switchPick = new Setting("Switch Pick", this, true);
     private Setting mineDist = new Setting("Mine Dist", this, 5, 0, 10, true);
     private Setting mineMode = new Setting("Mine Mode", this, MineMode.Packet);
@@ -51,6 +53,7 @@ public class CityESP extends Module {
         setmgr.rSetting(maxSelfDMG);
         setmgr.rSetting(ignoreCrystals);
         setmgr.rSetting(mine);
+        setmgr.rSetting(mineKey);
         setmgr.rSetting(switchPick);
         setmgr.rSetting(mineDist);
         setmgr.rSetting(mineMode);
@@ -89,7 +92,7 @@ public class CityESP extends Module {
         }
 
         if(mine.getValBoolean()) {
-            if(mc.gameSettings.keyBindSneak.pressed) {
+            if(mineKey.getKey() != Keyboard.KEY_NONE && Keyboard.isKeyDown(mineKey.getKey())) {
                 for(List<BlockPos> poss : cityable.values()) {
                     boolean found = false;
                     for(BlockPos block : poss) {

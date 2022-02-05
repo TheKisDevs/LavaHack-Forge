@@ -6,6 +6,8 @@ import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.objects.*;
+
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -35,6 +37,7 @@ public class FramebufferTest extends Module {
         shader = ItemShader.ITEM_SHADER;
 
         setmgr.rSetting(degrees);
+        setmgr.rSetting(radius);
     }
 
     @SubscribeEvent
@@ -42,6 +45,8 @@ public class FramebufferTest extends Module {
         ScaledResolution sr = event.getResolution();
         Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2, 10, Color.GREEN, 3f, degrees.getValDouble(), (int) 360);
         Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 30, 10, Color.GREEN, 3f, degrees.getValDouble(), (int) 4);
+
+        Render2DUtil.drawAbstract(new ObjectWithGlow(new Vec4d(new double[]{200, 200}, new double[]{300, 200}, new double[]{300, 300}, new double[]{200, 300}), Color.RED, radius.getValFloat()));
     }
 
     private Color getColor() {return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());}

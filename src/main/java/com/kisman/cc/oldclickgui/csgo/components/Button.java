@@ -12,7 +12,7 @@ public class Button extends AbstractComponent {
     private int preferredWidth;
     private int preferredHeight;
     private boolean hovered;
-    private ActionEventListener listener;
+    private ActionEventListener listener, listener2;
 
     public Button(IRenderer renderer, String title, int preferredWidth, int preferredHeight) {
         super(renderer);
@@ -60,6 +60,14 @@ public class Button extends AbstractComponent {
 
                 return true;
             }
+        } else if(button == 1) {
+            updateHovered(x, y, offscreen);
+
+            if (hovered && listener2 != null) {
+                listener2.onActionEvent();
+
+                return true;
+            }
         }
 
         return false;
@@ -82,5 +90,13 @@ public class Button extends AbstractComponent {
 
     public void setOnClickListener(ActionEventListener listener) {
         this.listener = listener;
+    }
+
+    public ActionEventListener getOnClickListener2() {
+        return listener2;
+    }
+
+    public void setOnClickListener2(ActionEventListener listener) {
+        this.listener2 = listener;
     }
 }
