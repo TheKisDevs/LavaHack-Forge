@@ -17,6 +17,9 @@ public class StaticParticles {
     //Will make particles color gradient if enabled
     public static boolean IsTwoGParticlesEnabled = true;
 
+    //The var on what will depend particles width
+    public static float particleWidth = 2.5f;
+
     //Update void
     public static void onUpdate() {
         //sets particles color to the one from settings
@@ -30,5 +33,8 @@ public class StaticParticles {
 
         //sets particles gradient var to the one from settings
         IsTwoGParticlesEnabled = Config.instance.TwoGradientParticles.getValBoolean();
+
+        //sets particles width var to the one from settings
+        particleWidth = Config.instance.particlesWidth.getValFloat();
     }
 }
