@@ -93,7 +93,7 @@ public class ModuleManager {
 //		modules.add(new CustomHotbar());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-//		modules.add(new FramebufferTest());
+		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
 //		modules.add(new HandCharms());
 		modules.add(new HoleESP());
@@ -130,7 +130,6 @@ public class ModuleManager {
 		modules.add(new ElytraFly());
 		modules.add(new FastSwim());
 		modules.add(new Fly());
-		modules.add(new HoleTP());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new LongJump());
@@ -155,6 +154,7 @@ public class ModuleManager {
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
 		modules.add(new FastPlace());
+		modules.add(new FreeCam());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new Refill());

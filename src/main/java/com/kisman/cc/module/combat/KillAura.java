@@ -39,6 +39,7 @@ public class KillAura extends Module {
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
     private Setting betterRots = new Setting("Better Rotations", this, false);
     private Setting onlyCrits = new Setting("Only Crits", this, true);
+    private Setting resetCd = new Setting("Reset Cooldown", this, false);
 
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
 
@@ -46,6 +47,8 @@ public class KillAura extends Module {
 
     private Setting renderLine = new Setting("RenderLine", this, "Render");
     private Setting targetEsp = new Setting("Target ESP", this, true);
+
+    private Setting wallDistance = new Setting("Wall Distance", this, 3, 0, 5, false);
 
     private Setting switchMode = new Setting("Switch Mode", this, "None", new ArrayList<>(Arrays.asList("None", "Normal", "Silent")));
     private Setting packetSwitch = new Setting("Packet Switch", this, true);
@@ -67,6 +70,7 @@ public class KillAura extends Module {
         setmgr.rSetting(rotations);
         setmgr.rSetting(betterRots);
         setmgr.rSetting(onlyCrits);
+        setmgr.rSetting(resetCd);
 
         setmgr.rSetting(new Setting("WeaponLine", this, "Weapon"));
         setmgr.rSetting(weapon);
@@ -80,6 +84,7 @@ public class KillAura extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("DistanceLine", this, "Distance"));
 
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 6, false));
+        setmgr.rSetting(wallDistance);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(targetEsp);
@@ -167,7 +172,7 @@ public class KillAura extends Module {
         else mc.playerController.attackEntity(mc.player, entity);
 
         mc.player.swingArm(EnumHand.MAIN_HAND);
-        mc.player.resetCooldown();
+        if(resetCd.getValBoolean()) mc.player.resetCooldown();
 
         if(rotations.getValString().equals("Silent")) {
             mc.player.rotationYaw = oldYaw;

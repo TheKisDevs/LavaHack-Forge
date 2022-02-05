@@ -79,11 +79,11 @@ public class EntityUtil {
         return false;
     }
 
-    public static EntityPlayer getTarget(final float range) {
+    public static EntityPlayer getTarget(final float range, float wallRange) {
         EntityPlayer currentTarget = null;
         for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
             final EntityPlayer player = mc.world.playerEntities.get(i);
-            if (!isntValid(player, range)) {
+            if (!isntValid(player, range, wallRange)) {
                 if (currentTarget == null) currentTarget = player;
                 else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
             }
@@ -91,8 +91,12 @@ public class EntityUtil {
         return currentTarget;
     }
 
-    public static boolean isntValid(final EntityPlayer entity, final double range) {
-        return mc.player.getDistance(entity) > range || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity);
+    public static EntityPlayer getTarget(final float range) {
+        return getTarget(range, range);
+    }
+
+    public static boolean isntValid(final EntityPlayer entity, final double range, double wallRange) {
+        return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity);
     }
 
     public static boolean isPassive(Entity e) {
