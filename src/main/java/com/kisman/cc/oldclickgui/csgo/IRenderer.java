@@ -3,6 +3,7 @@ package com.kisman.cc.oldclickgui.csgo;
 import java.awt.*;
 
 public interface IRenderer {
+    void drawCheckMark(float x, float y, int width, int color);
     void drawRect(double x, double y, double w, double h, Color c);
     void drawOutline(double x, double y, double w, double h, float lineWidth, Color c);
     void setColor(Color c);

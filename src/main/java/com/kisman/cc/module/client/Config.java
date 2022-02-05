@@ -26,6 +26,8 @@ public class Config extends Module {
     public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
+    public Setting guiBetterCheckBox = new Setting("Gui Better CheckBox", this, false);
+
     public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("Pulse Max", this, 110, 0, 255, true);
@@ -46,7 +48,7 @@ public class Config extends Module {
         super("Config", Category.CLIENT, false);
 
         instance = this;
-
+        setmgr.rSetting(guiBetterCheckBox);
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
