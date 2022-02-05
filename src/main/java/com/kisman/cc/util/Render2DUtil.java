@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /* 
 * @author _kisman_
-* @credits loader
+* @credits github.com/TheKisDevs/loader
 */
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
@@ -26,6 +26,37 @@ public class Render2DUtil extends GuiScreen {
 
     public static void drawAbstract(AbstractObject drawing) {
         if(drawing != null) drawing.render();
+    }
+
+    public static void drawCircle(double cx, double cy, double radius, Color color, float width, int segments) {
+        ColorUtils.glColor(color);
+        glLineWidth(width);
+        glBegin(GL_LINE_LOOP);
+        for(int i = 0; i < segments; i++) {
+            float theta = (float) (2f * Math.PI * i / segments);
+
+            float x = (float) (radius * Math.cos(theta));
+            float y = (float) (radius * Math.sin(theta));
+
+            glVertex2d(x + cx, y + cy);
+        }
+        glEnd();
+    }
+
+    public static void drawProgressCircle(double cx, double cy, double radius, Color color, float width, double degrees, int segments) {
+        ColorUtils.glColor(color);
+        glLineWidth(width);
+        glBegin(GL_LINE_LOOP);
+        for(int i = 0; i < segments; i++) {
+            if(i > degrees) continue;
+            float theta = (float) (2f * Math.PI * i / segments);
+
+            float x = (float) (radius * Math.cos(theta));
+            float y = (float) (radius * Math.sin(theta));
+
+            glVertex2d(x + cx, y + cy);
+        }
+        glEnd();
     }
 
     public class AbstractObject {
@@ -57,6 +88,7 @@ public class Render2DUtil extends GuiScreen {
             for(double[] vector : vectors) glVertex2d(vector[0], vector[1]);
         }
     }
+
     public static void drawLine(int x, int y, int length, DrawLineMode drawLineMode, int color) {
         if(drawLineMode == DrawLineMode.VERTICAL) Gui.drawRect(x, y, x + 1, y + length, color);
         else Gui.drawRect(x, y, x + length, y + 1, color);

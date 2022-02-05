@@ -7,6 +7,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 
 public class FramebufferTest extends Module {
-    private Setting blur = new Setting("Blur", this, true);
+    private Setting degrees = new Setting("Degrees", this, 200, 0, 360, true);
     private Setting radius = new Setting("Radius", this, 2, 0.1f, 10, false);
     private Setting mix = new Setting("Mix", this, 1, 0, 1, false);
     private Setting red = new Setting("Red", this, 1, 0, 1, false);
@@ -33,47 +34,14 @@ public class FramebufferTest extends Module {
 
         shader = ItemShader.ITEM_SHADER;
 
-        setmgr.rSetting(blur);
-        setmgr.rSetting(radius);
-        setmgr.rSetting(mix);
-        setmgr.rSetting(red);
-        setmgr.rSetting(green);
-        setmgr.rSetting(blue);
-        setmgr.rSetting(rainbow);
-        setmgr.rSetting(delay);
-        setmgr.rSetting(saturation);
-        setmgr.rSetting(brightness);
+        setmgr.rSetting(degrees);
     }
 
     @SubscribeEvent
-    public void onRender(RenderWorldLastEvent event) {
-        GlStateManager.pushMatrix();
-        GlStateManager.pushAttrib();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.enableDepth();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableAlpha();
-        shader.red = getColor().getRed() / 255f;
-        shader.green = getColor().getGreen() / 255f;
-        shader.blue = getColor().getBlue() / 255f;
-        shader.blur = blur.getValBoolean();
-        shader.mix = mix.getValFloat();
-        shader.alpha = 1f;
-        shader.useImage = false;
-        shader.radius = radius.getValFloat();
-        shader.quality = 1;
-        shader.startDraw(mc.getRenderPartialTicks());
-
-        Render2DUtil.drawRect(100, 100, 200, 200, getColor().getRGB());
-        CustomFontUtil.drawString("Shader on text test", 250, 100, getColor().getRGB());
-
-        shader.stopDraw();
-        GlStateManager.disableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.disableDepth();
-        GlStateManager.popAttrib();
-        GlStateManager.popMatrix();
+    public void onRender(RenderGameOverlayEvent event) {
+        ScaledResolution sr = event.getResolution();
+        Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2, 10, Color.GREEN, 3f, 200d, (int) 360);
+        Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 30, 10, Color.GREEN, 3f, 200d, (int) 4);
     }
 
     private Color getColor() {return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());}
