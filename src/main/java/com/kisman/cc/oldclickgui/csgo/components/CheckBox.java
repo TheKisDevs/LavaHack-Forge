@@ -30,7 +30,7 @@ public class CheckBox extends AbstractComponent {
 
     @Override
     public void render() {
-        renderer.drawRect(x, y, preferredHeight, preferredHeight,  Window.SECONDARY_FOREGROUND);
+        renderer.drawRect(x, y, preferredHeight, preferredHeight, hovered ? Window.SECONDARY_FOREGROUND : Window.TERTIARY_FOREGROUND);
 
         if (selected) {
             Color color = hovered ? Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.TERTIARY_FOREGROUND : Window.SECONDARY_FOREGROUND;
