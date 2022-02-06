@@ -20,6 +20,11 @@ public class StaticParticles {
     //The var on what will depend particles width
     public static float particleWidth = 2.5f;
 
+    //Particles Current Mode
+    public static String mode = "Default";
+
+    //Particles Mode Type
+    public static String modeDEfType = "Default";
     //Update void
     public static void onUpdate() {
         //sets particles color to the one from settings
@@ -36,5 +41,11 @@ public class StaticParticles {
 
         //sets particles width var to the one from settings
         particleWidth = Config.instance.particlesWidth.getValFloat();
+
+        //sets particles current rendering mode to the one from settings
+        mode = Config.instance.particlesGradientMode.getValString();
+
+        //sets particles default rendering mode to the one from settings
+        modeDEfType = Config.ParticlesGradientMode.Default.name();
     }
 }
