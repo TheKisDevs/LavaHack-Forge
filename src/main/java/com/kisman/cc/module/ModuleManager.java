@@ -157,6 +157,7 @@ public class ModuleManager {
 		modules.add(new FreeCam());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
+		modules.add(new PacketLogger());
 		modules.add(new Refill());
 		modules.add(new Swing());
 		modules.add(new TeleportBack());

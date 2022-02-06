@@ -46,7 +46,7 @@ public class PacketLogger extends Module{
         if(values.getValBoolean()) for(Field field : event.getPacket().getClass().getDeclaredFields()) message += " " + field.getName() + "[" + field.toString() + "]";
         
         ChatUtils.simpleMessage(message);
-        PacketChat.Instance.logs.messages.add(new Message(message));
+        PacketChat.Instance.logs.ActiveMessages.add(new Message(message));
     });
 
     @EventHandler

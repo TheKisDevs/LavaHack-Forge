@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Log {
 
-    public ArrayList<Message> messages = new ArrayList<>();
+    public ArrayList<Message> ActiveMessages = new ArrayList<>();
+    public ArrayList<Message> PassiveMessages = new ArrayList<>();
 
 }
