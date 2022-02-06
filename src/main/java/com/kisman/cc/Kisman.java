@@ -6,6 +6,7 @@ import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
@@ -79,6 +80,7 @@ public class Kisman {
     public ColorPicker colorPicker;
     public ColorUtil colorUtil;
     public HudGui hudGui;
+    public HudEditorGui hudEditorGui;
     public Gui gui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
@@ -122,6 +124,7 @@ public class Kisman {
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
     	hudGui = new HudGui();
+        hudEditorGui = new HudEditorGui();
         gui = new Gui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);

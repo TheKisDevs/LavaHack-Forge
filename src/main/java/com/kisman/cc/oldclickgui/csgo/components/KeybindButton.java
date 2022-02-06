@@ -32,6 +32,11 @@ public class KeybindButton extends Button {
             updateState();
         });
 
+        setOnClickListener2(() -> {
+            if(listener != null) listener.onValueChange(Keyboard.KEY_NONE);
+            updateState();
+        });
+
         updateState();
     }
 
@@ -50,6 +55,18 @@ public class KeybindButton extends Button {
                 old.onActionEvent();
             });
         } else super.setOnClickListener(listener);
+    }
+
+    @Override
+    public void setOnClickListener2(ActionEventListener listener) {
+        if (getOnClickListener2() != null) {
+            ActionEventListener old = getOnClickListener2();
+
+            super.setOnClickListener2(() -> {
+                listener.onActionEvent();
+                old.onActionEvent();
+            });
+        } else super.setOnClickListener2(listener);
     }
 
     @Override

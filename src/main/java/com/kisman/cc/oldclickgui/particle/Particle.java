@@ -1,12 +1,19 @@
 package com.kisman.cc.oldclickgui.particle;
 
 import org.lwjgl.util.vector.*;
+
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+
 import java.util.*;
+
+import com.kisman.cc.util.Colour;
+
 import org.lwjgl.opengl.*;
 
 public class Particle
 {
     private float alpha;
+    public Colour color;
     private final Vector2f pos;
     private static final Random random;
     private float size;
@@ -16,6 +23,7 @@ public class Particle
         this.velocity = velocity;
         this.pos = new Vector2f(x, y);
         this.size = size;
+        this.color = ColorUtils.getRandomColour();
     }
 
     public static Particle generateParticle() {
@@ -71,6 +79,7 @@ public class Particle
     }
 
     public void tick(final int delta, final float speed) {
+        color.nextColor();
         final Vector2f pos = this.pos;
         pos.x += this.velocity.getX() * delta * speed;
         final Vector2f pos2 = this.pos;

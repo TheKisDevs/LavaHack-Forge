@@ -4,8 +4,19 @@ import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.Color;
+import java.util.Random;
+
+import com.kisman.cc.util.Colour;
 
 public class ColorUtils {
+    public static Colour getRandomColour() {
+        Random rand = new Random();
+        Color start = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+        float[] hsb = Color.RGBtoHSB(start.getRed(), start.getGreen(), start.getBlue(), null);
+        hsb[1] = hsb[2] = 1;
+        return new Colour(hsb);
+    }
+
 	public static Color rainbow() {
 		long offset = 999999999999L;
         float hue = (float) (System.nanoTime() + offset) / 1.0E10f % 1.0f;

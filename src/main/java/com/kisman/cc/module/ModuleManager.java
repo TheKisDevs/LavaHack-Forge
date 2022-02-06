@@ -43,6 +43,7 @@ public class ModuleManager {
 		modules.add(new AutoTrap());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
+		modules.add(new BreakAlert());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
 		modules.add(new HoleFiller());
@@ -60,6 +61,7 @@ public class ModuleManager {
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
 		modules.add(new HUD());
+		modules.add(new HudEditorTest());
 		modules.add(new NotEnoughCoinsModule());
 		modules.add(new ExampleModule());
 		modules.add(new SandBox());

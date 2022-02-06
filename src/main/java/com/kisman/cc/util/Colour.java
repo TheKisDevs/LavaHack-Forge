@@ -11,6 +11,10 @@ public class Colour {
 
     private boolean isInt = true;
 
+    public Colour(float[] hsb) {
+        this(Color.getHSBColor(hsb[0], hsb[1], hsb[2]));
+    } 
+
     public Colour(int r, int g, int b, int a) {
         this.r = r;
         this.g = g;
@@ -90,6 +94,26 @@ public class Colour {
         fixColorRange();
     }
 
+    public void nextColor() {
+        float[] hsb = RGBtoHSB();
+        double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
+        rainbowState %= 360.0;
+        hsb[0] = (float) (rainbowState / 360.0);
+        setColour(Colour.fromHSB(hsb, a));
+    }
+
+    private void setColour(Colour color) {
+        this.r = ColorUtils.getRed(color.r);
+        this.g = ColorUtils.getGreen(color.g);
+        this.b = ColorUtils.getBlue(color.b);
+        this.a = ColorUtils.getAlpha(color.a);
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
+        fixColorRange();
+    }
+
     public static Colour fromHSB(float[] hsb, int alpha) {
         return new Colour(ColorUtils.injectAlpha(Color.getHSBColor(hsb[0], hsb[1], hsb[2]), alpha));
     }
@@ -155,7 +179,6 @@ public class Colour {
     }
 
     public void glColor() {
-        if(isInt) GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f);
-        else GlStateManager.color(r1, g1, b1, a1);
+        GlStateManager.color(r1, g1, b1, a1);
     }
 }

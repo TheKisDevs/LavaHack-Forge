@@ -4,14 +4,15 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import com.kisman.cc.module.client.Config;
+
 import org.lwjgl.opengl.*;
 import net.minecraft.client.*;
 import org.lwjgl.input.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class ParticleSystem
-{
+public class ParticleSystem {
     private static final float SPEED = 0.2f;
     private final List<Particle> particleList;
 
@@ -77,7 +78,8 @@ public class ParticleSystem
         GL11.glDepthMask(false);
         if (Minecraft.getMinecraft().currentScreen == null) return;
         for (final Particle particle : this.particleList) {
-            GL11.glColor4f(StaticParticles.color.getRed() / 255.0f, StaticParticles.color.getGreen() / 255.0f, StaticParticles.color.getBlue() / 255.0f, particle.getAlpha() / 255.0f);
+            if(Config.instance.particlesGradientMode.getValString().equals(Config.ParticlesGradientMode.Syns.name())) particle.color.glColor();
+            else GL11.glColor4f(StaticParticles.color.getRed() / 255.0f, StaticParticles.color.getGreen() / 255.0f, StaticParticles.color.getBlue() / 255.0f, particle.getAlpha() / 255.0f);
             GL11.glPointSize(particle.getSize());
             GL11.glBegin(0);
             GL11.glVertex2f(particle.getX(), particle.getY());
@@ -98,12 +100,10 @@ public class ParticleSystem
             if (nearestParticle == null) continue;
             final float alpha = Math.min(1.0f, Math.min(1.0f, 1.0f - nearestDistance / dist));
             //Checks if two gradient particles mode is enabled
-            if(StaticParticles.IsTwoGParticlesEnabled)
-            {
-                this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
-            }else {
-                this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
-            }
+            if(StaticParticles.IsTwoGParticlesEnabled){
+                if(Config.instance.particlesGradientMode.equals(Config.ParticlesGradientMode.Default.name())) this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
+                else this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), particle.color.getColor(), nearestParticle.color.getColor(), StaticParticles.particleWidth);
+            } else this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
         }
         GL11.glPushMatrix();
         GL11.glTranslatef(0.5f, 0.5f, 0.5f);
