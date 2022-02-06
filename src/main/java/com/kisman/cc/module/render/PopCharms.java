@@ -1,31 +1,21 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.manager.Managers;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PopCharms extends Module {
     public Setting selfPop = new Setting("SelfPop", this, false);
-//    public Setting color = new Setting("Color", this, "Color", new float[] {0.3f, 0.3f, 0.3f, 1});
-//    public Setting offset = new Setting("Offset", this, 6, 0, 15, true);
-//    public Setting speed = new Setting("VSpeed", this, 1, 0.1, 5, false);
     private Setting angle = new Setting("Angle", this, false);
     private Setting angleSpeed = new Setting("AngleSpeed", this, 150, 0, 500, true);
     private Setting fadeSpeed = new Setting("FadeSpeed", this, 200, 0, 500, true);
@@ -34,8 +24,6 @@ public class PopCharms extends Module {
     private Setting colorG = new Setting("ColorG", this, 1, 0, 1, false);
     private Setting colorB = new Setting("ColorB", this, 1, 0, 1, false);
     private Setting colorA = new Setting("ColorA", this, 1, 0, 1, false);
-//    private Setting fillColor = new Setting("FillColor", this, "FillColor", new Colour(1f, 1f, 1f));
-//    private Setting outColor = new Setting("OutlineColor", this, "OutlineColor", new Colour(1f, 1f, 1f));
 
     private EntityOtherPlayerMP player;
     private EntityPlayer entity;
@@ -63,12 +51,11 @@ public class PopCharms extends Module {
     @SubscribeEvent
     public void onPop(TotemPopEvent event) {
         if(!selfPop.getValBoolean() && event.getPopEntity() == mc.player) return;
-
         if(!(event.getPopEntity() instanceof EntityPlayer)) return;
 
         entity = (EntityPlayer) event.getPopEntity();
 
-        GameProfile profile = new GameProfile(mc.player.getUniqueID(), "");
+        GameProfile profile = new GameProfile(entity.getUniqueID(), "");
         player = new EntityOtherPlayerMP(mc.world, profile);
         player.copyLocationAndAnglesFrom(entity);
         player.rotationYaw = entity.rotationYaw;
@@ -82,25 +69,19 @@ public class PopCharms extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        block6: {
         if(player == null || entity == null) return;
             color = new Color(255, 255, 255, 255);
             opacity = Float.intBitsToFloat(Float.floatToIntBits(1.6358529E38f) ^ 0x7EF622C3);
             time = System.currentTimeMillis();
             duration = time - this.startTime;
             startAlpha = (float) color.getAlpha() / 255;
-            if (duration < (long) (fadeSpeed.getValInt() * 10)) {
-                opacity = startAlpha - (float)duration / (float)(fadeSpeed.getValInt() * 10);
-            }
+            if (duration < (long) (fadeSpeed.getValInt() * 10)) opacity = startAlpha - (float)duration / (float)(fadeSpeed.getValInt() * 10);
             if (duration < (long)(fadeSpeed.getValInt() * 10)) {
-                GL11.glPushMatrix();
-                if (angle.getValBoolean()) {
-                    GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), (float)((float)duration / (float)(angleSpeed.getValInt() * 10)), (float)Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
-                }
-                mc.renderManager.renderEntityStatic((Entity)player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
-                GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
-                GL11.glPopMatrix();
-            }
+            GL11.glPushMatrix();
+            if (angle.getValBoolean()) GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), (float)((float)duration / (float)(angleSpeed.getValInt() * 10)), (float)Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
+            mc.renderManager.renderEntityStatic((Entity)player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
+            GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
+            GL11.glPopMatrix();
         }
     }
 }

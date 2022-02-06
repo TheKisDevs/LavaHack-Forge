@@ -15,7 +15,7 @@ public class Anchor extends Module {
     private final Setting timer = new Setting("Timer", this, false);
     private final Setting timerValue = new Setting("Timer Value", this, 5, 0.1f, 20, false);
     private final Setting disableAfterComplete = new Setting("Disable After Complete", this, false);
-    private final Setting fastFall = new Setting("Fast Fall", this, 5, 1, 20, true);
+    private final Setting fastFall = new Setting("Fast Fall", this, false);
     private final Setting cancelMovement = new Setting("Cancel Movement", this, false);
     private final Setting usePitchInCM = new Setting("Use Pitch in CancelMove", this, true);
 
@@ -117,6 +117,8 @@ public class Anchor extends Module {
         }
 
         doCancelMovement(pitch);        
+
+        if(isBlockHole(PlayerUtil.getPlayerPos())) using = false;
 
         if(using && timer.getValBoolean()) EntityUtil.setTimer(timerValue.getValFloat());
         else EntityUtil.resetTimer();

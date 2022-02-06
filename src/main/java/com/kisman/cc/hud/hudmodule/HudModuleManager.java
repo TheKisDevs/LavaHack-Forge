@@ -23,6 +23,7 @@ public class HudModuleManager {
 	public void init() {
 		//combat
 		modules.add(new ArmorHUD());
+		modules.add(new CrystalPerSecond());
 		modules.add(new PvpInfo());
 		modules.add(new PvpResources());
 		modules.add(new TargetHUD());

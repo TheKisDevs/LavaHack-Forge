@@ -39,7 +39,7 @@ public class Coord extends HudModule {
     }
 
     @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent event) {
+    public void onRender(RenderGameOverlayEvent.Text event) {
         ScaledResolution sr = new ScaledResolution(mc);
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {

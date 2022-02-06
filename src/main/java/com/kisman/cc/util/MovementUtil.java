@@ -2,6 +2,7 @@ package com.kisman.cc.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Objects;
@@ -13,6 +14,15 @@ public class MovementUtil {
     public static boolean isBlockAboveHead() {
         AxisAlignedBB bb = new AxisAlignedBB(mc.player.posX - 0.3, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ + 0.3, mc.player.posX + 0.3, mc.player.posY + 2.5, mc.player.posZ - 0.3);
         return !MovementUtil.mc.world.getCollisionBoxes(mc.player, bb).isEmpty();
+    }
+
+    public static double getBaseMoveSpeed() {
+        double baseSpeed = .2873;
+        if (mc.player != null && mc.player.isPotionActive(Objects.requireNonNull(Potion.getPotionById(1)))) {
+            final int amplifier = Objects.requireNonNull(mc.player.getActivePotionEffect(Objects.requireNonNull(Potion.getPotionById(1)))).getAmplifier();
+            baseSpeed *= 1.0 + 0.2 * (amplifier + 1);
+        }
+        return baseSpeed;
     }
 
     public static double getSpeed() {return getSpeed(false, 0.2873);}

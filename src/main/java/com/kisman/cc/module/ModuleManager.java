@@ -132,6 +132,7 @@ public class ModuleManager {
 		modules.add(new ElytraFly());
 		modules.add(new FastSwim());
 		modules.add(new Fly());
+		modules.add(new HoleSnap());
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new LongJump());

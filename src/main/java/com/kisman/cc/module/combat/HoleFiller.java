@@ -98,7 +98,7 @@ public class HoleFiller extends Module {
 
                 BlockUtil.placeBlock(targetHole.pos);
 
-                if(switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
+                try{if(switchMode.getValString().equals(SwitchMode.Silent.name()) && oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);} catch(Exception ignored) {}
 
                 timer.reset();
             }
