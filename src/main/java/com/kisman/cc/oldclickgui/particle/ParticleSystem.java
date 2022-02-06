@@ -99,9 +99,12 @@ public class ParticleSystem {
             }
             if (nearestParticle == null) continue;
             final float alpha = Math.min(1.0f, Math.min(1.0f, 1.0f - nearestDistance / dist));
+
             //Checks if two gradient particles mode is enabled
             if(StaticParticles.IsTwoGParticlesEnabled){
-                if(Config.instance.particlesGradientMode.equals(Config.ParticlesGradientMode.Default.name())) this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
+                //Checks if rendering gradient mode is default
+                if(StaticParticles.mode.equals(StaticParticles.modeDEfType))
+                    this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
                 else this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), particle.color.getColor(), nearestParticle.color.getColor(), StaticParticles.particleWidth);
             } else this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
         }

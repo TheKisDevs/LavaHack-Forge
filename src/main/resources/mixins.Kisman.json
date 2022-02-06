@@ -30,7 +30,6 @@
     "accessor.AccessorPlayerControllerMP",
     "accessor.ICPacketPlayer",
     "accessor.IEntityPlayerSP",
-    "accessor.IPlayerControllerMP",
     "accessor.ISession"
   ],
   "client": [
