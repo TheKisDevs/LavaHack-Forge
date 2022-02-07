@@ -10,11 +10,7 @@ import com.kisman.cc.util.Colour;
 
 public class ColorUtils {
     public static Colour getRandomColour() {
-        Random rand = new Random();
-        Color start = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
-        float[] hsb = Color.RGBtoHSB(start.getRed(), start.getGreen(), start.getBlue(), null);
-        hsb[1] = hsb[2] = 1;
-        return new Colour(hsb);
+        return Colour.fromHSB(new float[] {new Random().nextFloat(), 1, 1}, 255);
     }
 
 	public static Color rainbow() {

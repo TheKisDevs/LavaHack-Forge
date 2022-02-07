@@ -31,8 +31,12 @@ public class NoSlow extends Module {
 
     private Setting matrix = new Setting("Matrix", this, false);
 
+    public static NoSlow instance;
+
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
+
+        instance = this;
 
         setmgr.rSetting(invMove);
         setmgr.rSetting(items);

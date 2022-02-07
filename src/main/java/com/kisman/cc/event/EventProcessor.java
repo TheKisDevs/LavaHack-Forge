@@ -11,9 +11,13 @@ import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.util.TickRateUtil;
+import com.kisman.cc.util.manager.Managers;
+
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
@@ -84,6 +88,13 @@ public class EventProcessor {
             } catch (Exception ignored) {}
         }
     }
+
+    @EventHandler
+    private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
+        if(event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
+            Managers.instance.crystalManager.place((CPacketPlayerTryUseItemOnBlock) event.getPacket(), System.currentTimeMillis());
+        }
+    });
 
     @EventHandler
     private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {

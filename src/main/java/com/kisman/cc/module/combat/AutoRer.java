@@ -22,7 +22,6 @@ import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -355,12 +354,15 @@ public class AutoRer extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(placePos != null){
-            if (render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-            if (text.getValBoolean()) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
+            if(!render.getValString().equalsIgnoreCase("None")) {
+                RenderUtil.drawBlockESP(placePos, 1, 1, 1);
             }
+            // if (render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            // else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
+            // if (text.getValBoolean()) {
+                // float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                // RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
+            // }
         }
     }
 

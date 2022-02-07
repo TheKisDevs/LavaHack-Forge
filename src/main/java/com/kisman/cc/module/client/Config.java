@@ -44,6 +44,8 @@ public class Config extends Module {
 
     public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false);
 
+    public Setting particleTest = new Setting("Particle Test", this, true);
+
     public Config() {
         super("Config", Category.CLIENT, false);
 
@@ -75,6 +77,7 @@ public class Config extends Module {
         setmgr.rSetting(particlesGStartColor);
         setmgr.rSetting(particlesGEndColor);
         setmgr.rSetting(particlesWidth);
+        setmgr.rSetting(particleTest);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

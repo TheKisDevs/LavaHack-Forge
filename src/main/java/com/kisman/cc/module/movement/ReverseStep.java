@@ -11,6 +11,8 @@ public class ReverseStep extends Module {
     public ReverseStep() {
         super("ReverseStep", "", Category.MOVEMENT);
 
+        instance = this;
+
         setmgr.rSetting(height);
     }
 

@@ -4,16 +4,10 @@ import com.kisman.cc.hud.hudmodule.HudCategory;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.hud.hudmodule.render.packetchat.Log;
 import com.kisman.cc.hud.hudmodule.render.packetchat.Message;
-import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.CustomFont;
 import com.kisman.cc.module.client.HUD;
-import com.kisman.cc.oldclickgui.vega.component.Frame;
-import com.kisman.cc.util.AnimationUtils;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
@@ -22,13 +16,9 @@ public class PacketChat extends HudModule {
 
     public static PacketChat Instance;
 
-    private final TimerUtils timer = new TimerUtils();
-    private int sliderWidth = 200;
-    private int sliderHeight = 20;
     private int width = 200;
 
     private final String header = "PacketChat";
-    private final String stringWithMaxLength = "Cooldown";
     private double borderOffset = 5;
 
     public Log logs = new Log();
@@ -66,14 +56,6 @@ public class PacketChat extends HudModule {
         double offset = CustomFontUtil.getFontHeight() + borderOffset;
         int count = 0;
 
-        double prevX = mc.player.posX - mc.player.prevPosX;
-        double prevZ = mc.player.posZ - mc.player.prevPosZ;
-        double lastDist = Math.sqrt(prevX * prevX + prevZ * prevZ);
-        double currSpeed = lastDist * 15.3571428571D / 4;
-
-
-        double healthPercentage = mc.player.getHealth() / mc.player.getMaxHealth();
-
 
         //draw background
         Render2DUtil.drawRect(x + 3, y + 3, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
@@ -110,23 +92,6 @@ public class PacketChat extends HudModule {
             if(pcount>=height/borderOffset)
                 up();
         }
-
-
-    }
-
-    private void drawStringWithShadow(String text, double x, double y, int color) {
-        if(CustomFont.turnOn) CustomFontUtil.consolas15.drawStringWithShadow(text, x, y, color);
-        else mc.fontRenderer.drawStringWithShadow(text, (int) x, (int) y, color);
-    }
-
-    private int getHeight() {
-        if(CustomFont.turnOn) return  CustomFontUtil.consolas15.getStringHeight();
-        else return mc.fontRenderer.FONT_HEIGHT;
-    }
-
-    private int getStringWidth(String text) {
-        if(CustomFont.turnOn) return  CustomFontUtil.consolas15.getStringWidth(text);
-        else return mc.fontRenderer.getStringWidth(text);
     }
 
     public void up()

@@ -18,6 +18,7 @@ public class Managers {
     public PulseManager pulseManager;
     public TimerManager timerManager;
     public ColorManager colorManager;
+    public CrystalManager crystalManager;
 
     public AtomicLong lagTimer = new AtomicLong();
 
@@ -30,6 +31,7 @@ public class Managers {
         pulseManager = new PulseManager();
         timerManager = new TimerManager();
         colorManager = new ColorManager();
+        crystalManager = new CrystalManager();
 
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(listener);
@@ -38,6 +40,7 @@ public class Managers {
     @SubscribeEvent
     public void onUpdate(TickEvent.ClientTickEvent event) {
         colorManager.update();
+        crystalManager.update();
     }
 
     @EventHandler private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {if(event.getPacket() instanceof SPacketPlayerPosLook) lagTimer.set(System.currentTimeMillis());});

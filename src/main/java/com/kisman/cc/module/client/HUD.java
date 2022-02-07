@@ -25,7 +25,7 @@ public class HUD extends Module {
 	private final Setting arrLine = new Setting("ArrLine", this, "ArrayList");
 	public Setting arrMode = new Setting("ArrayList Mode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT")));
 	public Setting arrY = new Setting("ArrayList Y", this, 150, 0, mc.displayHeight, true);
-	public Setting arrColor = new Setting("ArrayList Color", this, "Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
+	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
 	public Setting arrGradient = new Setting("Array Gradient", this, Gradient.None);
 	public Setting arrGradientDiff = new Setting("Array Gradient Diff", this, 200, 0, 1000, Slider.NumberType.TIME);
 
@@ -59,6 +59,9 @@ public class HUD extends Module {
 	private Setting thudLine = new Setting("ThudLine", this, "TargetHud");
 	public Setting thudTheme = new Setting("TargetHud Theme", this, TargetHudThemeMode.Vega);
 	public Setting thudShadowSliders = new Setting("TargetHud Shadow Sliders", this, false);
+
+	private Setting crystalpsLine = new Setting("CrystalPRLine", this, "Crystal Per Second");
+	public Setting crystalpsY = new Setting("Crystal Per Second Y", this, 50, 0, mc.displayHeight, true); 
 
 	public HUD() {
 		super("HudEditor", "hud editor", Category.CLIENT);
@@ -112,6 +115,9 @@ public class HUD extends Module {
 		setmgr.rSetting(thudLine);
 		setmgr.rSetting(thudTheme);
 		setmgr.rSetting(thudShadowSliders);
+
+		setmgr.rSetting(crystalpsLine);
+		setmgr.rSetting(crystalpsY);
 	}
 
 	public void onEnable() {

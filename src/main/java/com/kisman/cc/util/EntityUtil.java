@@ -11,8 +11,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.*;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
+import net.minecraft.init.*;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -29,6 +28,11 @@ public class EntityUtil {
     private static final DamageSource EXPLOSION_SOURCE;
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static boolean isBlockAboveHead(EntityPlayer target) {
+        AxisAlignedBB bb = new AxisAlignedBB(target.posX - 0.3, target.posY + (double) target.getEyeHeight(), target.posZ + 0.3, target.posX + 0.3, target.posY + 2.5, target.posZ - 0.3);
+        return !mc.world.getCollisionBoxes(target, bb).isEmpty();
+    }
 
     public static float getHealth(EntityPlayer entity) {
         return entity.getHealth();

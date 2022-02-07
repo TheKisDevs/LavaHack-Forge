@@ -6,6 +6,7 @@ import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
 import java.util.*;
 
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.util.Colour;
 
 import org.lwjgl.opengl.*;
@@ -79,7 +80,7 @@ public class Particle
     }
 
     public void tick(final int delta, final float speed) {
-        color.nextColor();
+        if(Config.instance.particleTest.getValBoolean()) color.nextColor();
         final Vector2f pos = this.pos;
         pos.x += this.velocity.getX() * delta * speed;
         final Vector2f pos2 = this.pos;
