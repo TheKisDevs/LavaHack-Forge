@@ -67,6 +67,42 @@ public class ParticleSystem {
         glPopMatrix();
     }
 
+    //Draws a Gradient line glowing effect
+    private void drawGradientLineGlowing(final float f, final float f2, final float f3, final float f4, Color startcolor,  Color endcolor, float width) {
+        GL11.glPushMatrix();
+        GL11.glDisable(GL_TEXTURE_2D);
+        GL11.glEnable(GL_BLEND);
+        GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glShadeModel(GL_SMOOTH);
+
+        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, 0.6f);
+        GL11.glLineWidth(width+1);
+        GL11.glBegin(1);
+
+        GL11.glVertex2f(f, f2);
+
+        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, 0.6f);
+
+        GL11.glVertex2f(f3, f4);
+
+        //
+
+        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, 0.3f);
+        GL11.glLineWidth(width+1+0.7f);
+        GL11.glBegin(1);
+
+        GL11.glVertex2f(f, f2);
+
+        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, 0.3f);
+
+        GL11.glVertex2f(f3, f4);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        GL11.glEnd();
+        glPopMatrix();
+    }
+
     public void render() {
         GL11.glPushMatrix();
         GL11.glEnable(3042);
@@ -104,8 +140,13 @@ public class ParticleSystem {
             if(StaticParticles.IsTwoGParticlesEnabled){
                 //Checks if rendering gradient mode is default
                 if(StaticParticles.mode.equals(StaticParticles.modeDEfType))
+                {
                     this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
-                else this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), particle.color.getColor(), nearestParticle.color.getColor(), StaticParticles.particleWidth);
+                    this.drawGradientLineGlowing(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
+                }else
+                {
+                    this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), particle.color.getColor(), nearestParticle.color.getColor(), StaticParticles.particleWidth);
+                }
             } else this.drawLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.color);
         }
         GL11.glPushMatrix();
