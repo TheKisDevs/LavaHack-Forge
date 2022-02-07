@@ -7,12 +7,11 @@ Update CheckBox in new cs gui - Skarlord99
 Fix AutoRer render
 Fix AutoEZ
 Fix Alpha in color picker - _kisman_
-Test killaura
+Test line in autorer
 test dynamic protect surround
 Fix vegagui slider dragging
 Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
-add reset binds
 
 For b0.2
 
