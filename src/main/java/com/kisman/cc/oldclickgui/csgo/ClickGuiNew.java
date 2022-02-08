@@ -325,6 +325,14 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
+    public void onGuiClosed() {
+        try {
+            mc.entityRenderer.getShaderGroup().deleteShaderGroup();
+        } catch (Exception ignored) {}
+        super.onGuiClosed();
+    }
+
+    @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mousePressed(mouseButton, mouseX * 2, mouseY * 2);

@@ -6,6 +6,12 @@ import java.util.List;
 
 import com.kisman.cc.module.client.Config;
 
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.Vector3d;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.*;
 import net.minecraft.client.*;
 import org.lwjgl.input.*;
@@ -101,6 +107,76 @@ public class ParticleSystem {
         glDisable(GL_BLEND);
         GL11.glEnd();
         glPopMatrix();
+    }
+
+    public static void drawGlowingLine(Vector3d start, Vector3d end, float thickness, Color color, float alpha)
+    {
+        if(start == null || end == null)
+            return;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bb = tessellator.getBuffer();
+        int smoothFactor = Minecraft.getMinecraft().gameSettings.ambientOcclusion;
+        int layers = 10 + smoothFactor * 20;
+        GlStateManager.pushMatrix();
+        start = start.scale(-1D);
+        end = end.scale(-1D);
+        GlStateManager.translate(-start.x,-start.y,-start.z);
+        start = end.subtract(start);
+        end = end.subtract(end);
+
+        {
+            double x = end.x - start.x;
+            double y = end.y - start.y;
+            double z = end.z - start.z;
+            double diff = MathHelper.sqrt(x * x + z * z);
+            float yaw = (float) (Math.atan2(z, x) * 180.0D / 3.141592653589793D) - 90.0F;
+            float pitch = (float) -(Math.atan2(y, diff) * 180.0D / 3.141592653589793D);
+            GlStateManager.rotate(-yaw, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
+        }
+        for (int layer = 0; layer <= layers; ++layer) {
+            if(layer < layers) {
+                GlStateManager.color4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, 1.0F / layers / 2);
+                GlStateManager.depthMask(false);
+            } else {
+                GlStateManager.color4f(1.0F, 1.0F, 1.0F, alpha);
+                GlStateManager.depthMask(true);
+            }
+            double size = thickness + (layer < layers ? layer * (1.25D / layers) : 0.0D);
+            double d = (layer < layers ? 1.0D - layer * (1.0D / layers) : 0.0D) * 0.1D;
+            double width = 0.0625D * size;
+            double height = 0.0625D * size;
+            double length = start.distanceTo(end) + d;
+
+            bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+            bb.pos(-width, height, length).endVertex();
+            bb.pos(width, height, length).endVertex();
+            bb.pos(width, height, -d).endVertex();
+            bb.pos(-width, height, -d).endVertex();
+            bb.pos(width, -height, -d).endVertex();
+            bb.pos(width, -height, length).endVertex();
+            bb.pos(-width, -height, length).endVertex();
+            bb.pos(-width, -height, -d).endVertex();
+            bb.pos(-width, -height, -d).endVertex();
+            bb.pos(-width, -height, length).endVertex();
+            bb.pos(-width, height, length).endVertex();
+            bb.pos(-width, height, -d).endVertex();
+            bb.pos(width, height, length).endVertex();
+            bb.pos(width, -height, length).endVertex();
+            bb.pos(width, -height, -d).endVertex();
+            bb.pos(width, height, -d).endVertex();
+            bb.pos(width, -height, length).endVertex();
+            bb.pos(width, height, length).endVertex();
+            bb.pos(-width, height, length).endVertex();
+            bb.pos(-width, -height, length).endVertex();
+            bb.pos(width, -height, -d).endVertex();
+            bb.pos(width, height, -d).endVertex();
+            bb.pos(-width, height, -d).endVertex();
+            bb.pos(-width, -height, -d).endVertex();
+            tessellator.draw();
+        }
+        GlStateManager.popMatrix();
     }
 
     public void render() {
