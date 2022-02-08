@@ -34,7 +34,7 @@ public class PvpResources extends HudModule {
     }
 
     @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent event) {
+    public void onRender(RenderGameOverlayEvent.Text event) {
         ScaledResolution sr = event.getResolution();
         final int x = sr.getScaledWidth() / 2 + 5;
         final int y = sr.getScaledHeight() / 2 + 5;
