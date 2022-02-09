@@ -44,8 +44,8 @@ public class PacketChat extends HudModule {
 
     private void drawRewrite() {
 
-        if(logs.ActiveMessages.size()>30) logs.ActiveMessages.clear();
-        if(logs.PassiveMessages.size()>30) logs.PassiveMessages.clear();
+        if(logs.ActiveMessages.size()>=30) logs.ActiveMessages.clear();
+        if(logs.PassiveMessages.size()>=30) logs.PassiveMessages.clear();
 
         scrollWheelCheck();
 
@@ -82,8 +82,10 @@ public class PacketChat extends HudModule {
         int pcount = 0;
 
         //draws messages
-        for(Message message : logs.ActiveMessages)
+        logs.Iterator = logs.ActiveMessages.iterator();
+        while(logs.Iterator.hasNext())
         {
+            Message message = logs.Iterator.next();
             pcount++;
 
             CustomFontUtil.drawStringWithShadow(message.message, x + borderOffset, y + CustomFontUtil.getFontHeight() + (offset * count), ColorUtils.astolfoColors(100, 100));
@@ -91,6 +93,11 @@ public class PacketChat extends HudModule {
 
             if(pcount>=height/borderOffset)
                 up();
+
+            if(logs.ActiveMessages.size()>=30) logs.ActiveMessages.clear();
+            if(logs.PassiveMessages.size()>=30) logs.PassiveMessages.clear();
+
+            logs.Iterator = logs.ActiveMessages.iterator();
         }
     }
 

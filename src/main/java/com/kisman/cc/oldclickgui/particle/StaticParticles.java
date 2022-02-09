@@ -25,6 +25,10 @@ public class StaticParticles {
 
     //Particles Mode Type
     public static String modeDEfType = "Default";
+
+    //Particles Three Gradient Mode Type
+    public static String modeTGfType = "Three";
+
     //Update void
     public static void onUpdate() {
         //sets particles color to the one from settings
@@ -46,6 +50,10 @@ public class StaticParticles {
         mode = Config.instance.particlesGradientMode.getValString();
 
         //sets particles default rendering mode to the one from settings
-        modeDEfType = Config.ParticlesGradientMode.Default.name();
+        modeDEfType = Config.ParticlesGradientMode.TwoGradient.name();
+
+        //sets particles default rendering mode to the one from settings
+        modeTGfType = Config.ParticlesGradientMode.ThreeGradient.name();
+
     }
 }

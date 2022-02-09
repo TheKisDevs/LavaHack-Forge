@@ -3,6 +3,7 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
 public class CSGOGui extends Module {
@@ -22,5 +23,9 @@ public class CSGOGui extends Module {
     public void onEnable() {
         mc.displayGuiScreen(Kisman.instance.clickGuiNew);
         this.setToggled(false);
+
+        if(Config.instance.guiBlur.getValBoolean())
+            mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
+
     }
 }

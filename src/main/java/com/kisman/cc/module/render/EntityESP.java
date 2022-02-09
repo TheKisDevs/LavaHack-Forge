@@ -2,6 +2,7 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.RenderUtil;
 
 import java.awt.*;

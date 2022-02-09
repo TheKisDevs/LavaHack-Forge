@@ -46,7 +46,15 @@ public class PacketLogger extends Module{
         if(values.getValBoolean()) for(Field field : event.getPacket().getClass().getDeclaredFields()) message += " " + field.getName() + "[" + field.toString() + "]";
         
         ChatUtils.simpleMessage(message);
-        PacketChat.Instance.logs.ActiveMessages.add(new Message(message));
+        if(PacketChat.Instance.logs.ActiveMessages.size()+1>10)
+        {
+            if(PacketChat.Instance.logs.PassiveMessages.size()+1>10)
+                PacketChat.Instance.logs.PassiveMessages.remove(0);
+
+            PacketChat.Instance.up();
+            PacketChat.Instance.logs.ActiveMessages.add(new Message(message));
+
+        }else PacketChat.Instance.logs.ActiveMessages.add(new Message(message));
     });
 
     @EventHandler

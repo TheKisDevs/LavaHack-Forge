@@ -27,6 +27,7 @@ public class Config extends Module {
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
     public Setting guiBetterCheckBox = new Setting("Gui Better CheckBox", this, false);
+    public Setting guiBlur = new Setting("Gui Blur", this, true);
 
     public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
@@ -45,6 +46,7 @@ public class Config extends Module {
     public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false);
 
     public Setting particleTest = new Setting("Particle Test", this, true);
+
 
     public Config() {
         super("Config", Category.CLIENT, false);
@@ -78,6 +80,7 @@ public class Config extends Module {
         setmgr.rSetting(particlesGEndColor);
         setmgr.rSetting(particlesWidth);
         setmgr.rSetting(particleTest);
+        setmgr.rSetting(guiBlur);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -99,5 +102,5 @@ public class Config extends Module {
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
     public enum ParticlesBoxMode {Static, Dynamic}
-    public enum ParticlesGradientMode {None, Default, Syns}
+    public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
 }
