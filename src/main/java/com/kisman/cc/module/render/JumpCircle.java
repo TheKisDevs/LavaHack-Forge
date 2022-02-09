@@ -41,9 +41,9 @@ public class JumpCircle extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         EntityPlayerSP client = mc.player;
-        double ix = -(client.lastTickPosX + (client.posX - client.lastTickPosX) * pt);
-        double iy = -(client.lastTickPosY + (client.posY - client.lastTickPosY) * pt);
-        double iz = -(client.lastTickPosZ + (client.posZ - client.lastTickPosZ) * pt);
+        double ix = -(client.lastTickPosX + (client.posX - client.lastTickPosX) * event.getPartialTicks());
+        double iy = -(client.lastTickPosY + (client.posY - client.lastTickPosY) * event.getPartialTicks());
+        double iz = -(client.lastTickPosZ + (client.posZ - client.lastTickPosZ) * event.getPartialTicks());
         GL11.glPushMatrix();
         GL11.glTranslated(ix, iy, iz);
         GL11.glDisable(GL11.GL_CULL_FACE);

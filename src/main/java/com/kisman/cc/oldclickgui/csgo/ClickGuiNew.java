@@ -38,7 +38,7 @@ public class ClickGuiNew extends GuiScreen {
         renderer = new ClientBaseRendererImpl();
         spoilerPane = new Pane(renderer, new GridLayout(1));
         window = new Window(Kisman.getName(), 50, 50, 920, 420);
-        window2 = new VisualPreviewWindow("Visual Preview", 920 + 20, 50, 220, 330);
+        window2 = new VisualPreviewWindow("Visual Preview", 920 + 20, 50, 200, 280);
 
         Pane conentPane = new ScrollPane(renderer, new GridLayout(1));
         Pane buttonPane = new Pane(renderer, new FlowLayout());
@@ -354,8 +354,8 @@ public class ClickGuiNew extends GuiScreen {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mouseReleased(state, mouseX * 2, mouseY * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) {
-            window.mouseMoved(mouseX * 2, mouseY * 2);
-            window.mousePressed(state, mouseX * 2, mouseY * 2);
+            window2.mouseMoved(mouseX * 2, mouseY * 2);
+            window2.mouseReleased(state, mouseX * 2, mouseY * 2);
         }
 
         super.mouseReleased(mouseX, mouseY, state);
@@ -364,7 +364,7 @@ public class ClickGuiNew extends GuiScreen {
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         window.mouseMoved(mouseX * 2, mouseY * 2);
-        if(Config.instance.guiVisualPreview.getValBoolean()) window.mouseMoved(mouseX * 2, mouseY * 2);
+        if(Config.instance.guiVisualPreview.getValBoolean()) window2.mouseMoved(mouseX * 2, mouseY * 2);
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
     }
 
