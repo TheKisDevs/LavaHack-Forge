@@ -36,6 +36,7 @@
     "MixinGuiContainer",
     "MixinGuiIngame",
     "MixinGuiNewChat",
+    "MixinItemBlock",
     "MixinModelBook",
     "MixinPlayerControllerMP"
   ]

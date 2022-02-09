@@ -178,6 +178,7 @@ public class ModuleManager {
 		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new MultiTask());
+		modules.add(new NoGlitchBlocks());
 		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());
 		modules.add(new PacketEat());

@@ -24,9 +24,7 @@ public class MixinPlayerControllerMP {
     @Inject(method = "onPlayerDestroyBlock", at = @At("RETURN"))
     public void playerDestroyBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         DestroyBlockEvent event = new DestroyBlockEvent(pos);
-
         Kisman.EVENT_BUS.post(event);
-
         if(event.isCancelled()) cir.setReturnValue(false);
     }
 }
