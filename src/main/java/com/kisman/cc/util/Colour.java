@@ -2,6 +2,7 @@ package com.kisman.cc.util;
 
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
@@ -92,6 +93,10 @@ public class Colour {
         this.b1 = b / 255f;
         this.a1 = a / 255f;
         fixColorRange();
+    }
+
+    public Vec3d toVec3d() {
+        return new Vec3d(r1, g1, b1);
     }
 
     public void nextColor() {

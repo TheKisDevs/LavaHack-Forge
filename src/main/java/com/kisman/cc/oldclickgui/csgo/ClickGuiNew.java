@@ -7,6 +7,7 @@ import com.kisman.cc.oldclickgui.csgo.components.*;
 import com.kisman.cc.oldclickgui.csgo.components.Button;
 import com.kisman.cc.oldclickgui.csgo.components.Label;
 import com.kisman.cc.oldclickgui.csgo.components.ScrollPane;
+import com.kisman.cc.oldclickgui.csgo.components.visualpreview.VisualPreviewWindow;
 import com.kisman.cc.oldclickgui.csgo.layout.FlowLayout;
 import com.kisman.cc.oldclickgui.csgo.layout.GridLayout;
 import com.kisman.cc.oldclickgui.particle.ParticleSystem;
@@ -26,6 +27,7 @@ public class ClickGuiNew extends GuiScreen {
     private final HashMap<Category, Pane> categoryPaneMap;
     private final Pane spoilerPane;
     private Window window;
+    private VisualPreviewWindow window2;
     private IRenderer renderer;
     private ParticleSystem particleSystem;
     private List<ActionEventListener> onRenderListeners = new ArrayList<>();
@@ -36,6 +38,7 @@ public class ClickGuiNew extends GuiScreen {
         renderer = new ClientBaseRendererImpl();
         spoilerPane = new Pane(renderer, new GridLayout(1));
         window = new Window(Kisman.getName(), 50, 50, 920, 420);
+        window2 = new VisualPreviewWindow("Visual Preview", 920 + 20, 50, 220, 330);
 
         Pane conentPane = new ScrollPane(renderer, new GridLayout(1));
         Pane buttonPane = new Pane(renderer, new FlowLayout());
@@ -303,12 +306,14 @@ public class ClickGuiNew extends GuiScreen {
         GL11.glPushMatrix();
         Point point = MathUtil.calculateMouseLocation();
         window.mouseMoved(point.x * 2, point.y * 2);
+        if(Config.instance.guiVisualPreview.getValBoolean()) window2.mouseMoved(point.x * 2, point.y * 2);
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.glLineWidth(1.0f);
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         window.render(renderer, mouseX, mouseY);
+        if(Config.instance.guiVisualPreview.getValBoolean()) window2.drawScreen(renderer, mouseX, mouseY);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix();
@@ -336,6 +341,10 @@ public class ClickGuiNew extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mousePressed(mouseButton, mouseX * 2, mouseY * 2);
+        if(Config.instance.guiVisualPreview.getValBoolean()) {
+            window2.mouseMoved(mouseX * 2, mouseY * 2);
+            window2.mousePressed(mouseButton, mouseX * 2, mouseY * 2);
+        }
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -344,6 +353,10 @@ public class ClickGuiNew extends GuiScreen {
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mouseReleased(state, mouseX * 2, mouseY * 2);
+        if(Config.instance.guiVisualPreview.getValBoolean()) {
+            window.mouseMoved(mouseX * 2, mouseY * 2);
+            window.mousePressed(state, mouseX * 2, mouseY * 2);
+        }
 
         super.mouseReleased(mouseX, mouseY, state);
     }
@@ -351,6 +364,7 @@ public class ClickGuiNew extends GuiScreen {
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         window.mouseMoved(mouseX * 2, mouseY * 2);
+        if(Config.instance.guiVisualPreview.getValBoolean()) window.mouseMoved(mouseX * 2, mouseY * 2);
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
     }
 
@@ -373,9 +387,5 @@ public class ClickGuiNew extends GuiScreen {
     private void setCurrentCategory(Category category) {
         spoilerPane.clearComponents();
         spoilerPane.addComponent(categoryPaneMap.get(category));
-    }
-
-    private float lerp(float start, float end, float step){
-        return start + step * (end - start);
     }
 }

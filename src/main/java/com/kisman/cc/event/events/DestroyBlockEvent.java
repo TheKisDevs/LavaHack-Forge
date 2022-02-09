@@ -5,8 +5,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class DestroyBlockEvent extends Event {
     private BlockPos blockPos;
+    public Era era;
 
-    public DestroyBlockEvent(BlockPos blockPos) {
+    public DestroyBlockEvent(Era era, BlockPos blockPos) {
+        this.era = era;
         this.blockPos = blockPos;
     }
 

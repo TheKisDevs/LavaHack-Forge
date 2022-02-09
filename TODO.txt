@@ -1,17 +1,15 @@
 For b0.1.6.1:
 
 Add More color customization for hud - _kisman_
-Add PvpResources
 Add CameraClip
-Update CheckBox in new cs gui - Skarlord99
 Fix AutoRer render
 Fix AutoEZ
 Fix Alpha in color picker - _kisman_
-Test line in autorer
-test dynamic protect surround
+fix dynamic protect surround
 Fix vegagui slider dragging
 Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
+добавить плеер превью в гуишку как в инфинити(попросили)
 
 For b0.2
 

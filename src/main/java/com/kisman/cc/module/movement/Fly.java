@@ -4,10 +4,12 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
+import net.minecraft.network.play.client.CPacketEntityAction;
+
 import java.util.Arrays;
 
 public class Fly extends Module {
-    private Setting mode = new Setting("Mode", this, "Vanilla", Arrays.asList("Vanilla", "WellMore"));
+    private Setting mode = new Setting("Mode", this, "Vanilla", Arrays.asList("Vanilla", "WellMore", "ReallyWorld"));
 
     private float flySpeed;
 
@@ -34,6 +36,11 @@ public class Fly extends Module {
                 mc.player.motionX = 0.0;
                 mc.player.motionY = -0.02;
                 mc.player.motionZ = 0.0;
+            }
+        } else if(mode.getValString().equalsIgnoreCase("ReallyWorld")) {
+            if (mc.gameSettings.keyBindJump.pressed) {
+                if (mc.player.ticksExisted % 3 ==0 ) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                mc.player.jump();
             }
         }
     }

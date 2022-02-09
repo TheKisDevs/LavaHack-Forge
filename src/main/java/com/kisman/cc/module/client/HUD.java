@@ -28,6 +28,7 @@ public class HUD extends Module {
 	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
 	public Setting arrGradient = new Setting("Array Gradient", this, Gradient.None);
 	public Setting arrGradientDiff = new Setting("Array Gradient Diff", this, 200, 0, 1000, Slider.NumberType.TIME);
+	public Setting arrGlowBackground = new Setting("Array Glow Background", this, false);
 
 	private final Setting welLine = new Setting("WelLine", this, "Welcomer");
 	public Setting welColor = new Setting("WelColor", this, "WelcomerColor", new float[] {3f, 0.03f, 0.33f, 1f}, false);
@@ -84,6 +85,7 @@ public class HUD extends Module {
 		setmgr.rSetting(arrColor);
 		setmgr.rSetting(arrGradient);
 		setmgr.rSetting(arrGradientDiff);
+		setmgr.rSetting(arrGlowBackground);
 
 		setmgr.rSetting(welLine);
 		setmgr.rSetting(welColor);

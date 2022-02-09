@@ -28,7 +28,7 @@ public class Config extends Module {
     public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
     public Setting guiBetterCheckBox = new Setting("Gui Better CheckBox", this, false);
     public Setting guiBlur = new Setting("Gui Blur", this, true);
-
+    public Setting guiVisualPreview = new Setting("Gui Visual Preview", this, false);
     public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("Pulse Max", this, 110, 0, 255, true);
@@ -67,6 +67,8 @@ public class Config extends Module {
         setmgr.rSetting(guiAstolfo);
         setmgr.rSetting(guiRenderSIze);
         setmgr.rSetting(guiBetterCheckBox);
+        setmgr.rSetting(guiBlur);
+        setmgr.rSetting(guiVisualPreview);
         setmgr.rSetting(guiOpenAnimation);
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
@@ -80,7 +82,6 @@ public class Config extends Module {
         setmgr.rSetting(particlesGEndColor);
         setmgr.rSetting(particlesWidth);
         setmgr.rSetting(particleTest);
-        setmgr.rSetting(guiBlur);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
