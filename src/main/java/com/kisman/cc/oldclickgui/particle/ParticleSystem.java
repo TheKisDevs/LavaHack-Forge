@@ -81,25 +81,13 @@ public class ParticleSystem {
         GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glShadeModel(GL_SMOOTH);
 
-        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, 0.6f);
-        GL11.glLineWidth(width+1);
+        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, 151 * 55 / 255);
+        GL11.glLineWidth(width+4);
         GL11.glBegin(1);
 
         GL11.glVertex2f(f, f2);
 
-        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, 0.6f);
-
-        GL11.glVertex2f(f3, f4);
-
-        //
-
-        GL11.glColor4f(startcolor.getRed() / 255.0f, startcolor.getGreen() / 255.0f, startcolor.getBlue() / 255.0f, 0.3f);
-        GL11.glLineWidth(width+1+0.7f);
-        GL11.glBegin(1);
-
-        GL11.glVertex2f(f, f2);
-
-        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, 0.3f);
+        GL11.glColor4f(endcolor.getRed() / 255.0f, endcolor.getGreen() / 255.0f, endcolor.getBlue() / 255.0f, 151 * 55 / 255);
 
         GL11.glVertex2f(f3, f4);
 
@@ -107,76 +95,6 @@ public class ParticleSystem {
         glDisable(GL_BLEND);
         GL11.glEnd();
         glPopMatrix();
-    }
-
-    public static void drawGlowingLine(Vector3d start, Vector3d end, float thickness, Color color, float alpha)
-    {
-        if(start == null || end == null)
-            return;
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bb = tessellator.getBuffer();
-        int smoothFactor = Minecraft.getMinecraft().gameSettings.ambientOcclusion;
-        int layers = 10 + smoothFactor * 20;
-        GlStateManager.pushMatrix();
-        start = start.scale(-1D);
-        end = end.scale(-1D);
-        GlStateManager.translate(-start.x,-start.y,-start.z);
-        start = end.subtract(start);
-        end = end.subtract(end);
-
-        {
-            double x = end.x - start.x;
-            double y = end.y - start.y;
-            double z = end.z - start.z;
-            double diff = MathHelper.sqrt(x * x + z * z);
-            float yaw = (float) (Math.atan2(z, x) * 180.0D / 3.141592653589793D) - 90.0F;
-            float pitch = (float) -(Math.atan2(y, diff) * 180.0D / 3.141592653589793D);
-            GlStateManager.rotate(-yaw, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(pitch, 1.0F, 0.0F, 0.0F);
-        }
-        for (int layer = 0; layer <= layers; ++layer) {
-            if(layer < layers) {
-                GlStateManager.color4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, 1.0F / layers / 2);
-                GlStateManager.depthMask(false);
-            } else {
-                GlStateManager.color4f(1.0F, 1.0F, 1.0F, alpha);
-                GlStateManager.depthMask(true);
-            }
-            double size = thickness + (layer < layers ? layer * (1.25D / layers) : 0.0D);
-            double d = (layer < layers ? 1.0D - layer * (1.0D / layers) : 0.0D) * 0.1D;
-            double width = 0.0625D * size;
-            double height = 0.0625D * size;
-            double length = start.distanceTo(end) + d;
-
-            bb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-            bb.pos(-width, height, length).endVertex();
-            bb.pos(width, height, length).endVertex();
-            bb.pos(width, height, -d).endVertex();
-            bb.pos(-width, height, -d).endVertex();
-            bb.pos(width, -height, -d).endVertex();
-            bb.pos(width, -height, length).endVertex();
-            bb.pos(-width, -height, length).endVertex();
-            bb.pos(-width, -height, -d).endVertex();
-            bb.pos(-width, -height, -d).endVertex();
-            bb.pos(-width, -height, length).endVertex();
-            bb.pos(-width, height, length).endVertex();
-            bb.pos(-width, height, -d).endVertex();
-            bb.pos(width, height, length).endVertex();
-            bb.pos(width, -height, length).endVertex();
-            bb.pos(width, -height, -d).endVertex();
-            bb.pos(width, height, -d).endVertex();
-            bb.pos(width, -height, length).endVertex();
-            bb.pos(width, height, length).endVertex();
-            bb.pos(-width, height, length).endVertex();
-            bb.pos(-width, -height, length).endVertex();
-            bb.pos(width, -height, -d).endVertex();
-            bb.pos(width, height, -d).endVertex();
-            bb.pos(-width, height, -d).endVertex();
-            bb.pos(-width, -height, -d).endVertex();
-            tessellator.draw();
-        }
-        GlStateManager.popMatrix();
     }
 
     public void render() {
@@ -218,7 +136,7 @@ public class ParticleSystem {
                 if(StaticParticles.mode.equals(StaticParticles.modeDEfType))
                 {
                     this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
-                    this.drawGradientLineGlowing(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
+                    //this.drawGradientLineGlowing(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), StaticParticles.startColor, StaticParticles.endColor, StaticParticles.particleWidth);
                 }else
                 {
                     this.drawGradientLine(particle.getX(), particle.getY(), nearestParticle.getX(), nearestParticle.getY(), particle.color.getColor(), nearestParticle.color.getColor(), StaticParticles.particleWidth);
