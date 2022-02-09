@@ -11,6 +11,32 @@ public class MovementUtil {
     public static final double WALK_SPEED = 0.221;
     public static Minecraft mc = Minecraft.getMinecraft();
 
+    public static void setMotion(double speed) {
+        double forward = mc.player.movementInput.moveForward;
+        double strafe = mc.player.movementInput.moveStrafe;
+        float yaw = mc.player.rotationYaw;
+        if ((forward == 0.0D) && (strafe == 0.0D)) {
+            mc.player.motionX = 0;
+            mc.player.motionZ = 0;
+        } else {
+            if (forward != 0.0D) {
+                if (strafe > 0.0D) {
+                    yaw += (forward > 0.0D ? -45 : 45);
+                } else if (strafe < 0.0D) {
+                    yaw += (forward > 0.0D ? 45 : -45);
+                }
+                strafe = 0.0D;
+                if (forward > 0.0D) {
+                    forward = 1;
+                } else if (forward < 0.0D) {
+                    forward = -1;
+                }
+            }
+            mc.player.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F));
+            mc.player.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F));
+        }
+    }
+
     public static boolean isBlockAboveHead() {
         AxisAlignedBB bb = new AxisAlignedBB(mc.player.posX - 0.3, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ + 0.3, mc.player.posX + 0.3, mc.player.posY + 2.5, mc.player.posZ - 0.3);
         return !MovementUtil.mc.world.getCollisionBoxes(mc.player, bb).isEmpty();

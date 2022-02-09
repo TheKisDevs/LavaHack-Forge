@@ -69,7 +69,7 @@ public class ClickGuiNew extends GuiScreen {
                         return true;
                     });
 
-                    count++;
+                    count += 2;
                 }
 
                 {
@@ -83,7 +83,7 @@ public class ClickGuiNew extends GuiScreen {
                         return true;
                     });
 
-                    count++;
+                    count += 2;
                 }
 
                 {
@@ -98,7 +98,7 @@ public class ClickGuiNew extends GuiScreen {
                         return true;
                     });
 
-                    count++;
+                    count += 2;
                 }
 
                 {
@@ -113,7 +113,7 @@ public class ClickGuiNew extends GuiScreen {
 
                     onRenderListeners.add(() -> cb.setSelectedIndex(module.hold ? 1 : 0));
 
-                    count++;
+                    count += 2;
                 }
 
                 {
@@ -146,7 +146,7 @@ public class ClickGuiNew extends GuiScreen {
                                         return true;
                                     });
 
-                                    count++;
+                                    count += 2;
                                 }
                                 /*if(set.isPreview()) {
                                     settingPane.addComponent(new Label(renderer, set.getTitle()));
@@ -173,7 +173,7 @@ public class ClickGuiNew extends GuiScreen {
                                     onRenderListeners.add(() -> sb.setValue(set.getColour()));
                                     onRenderListeners.add(() -> sb.setValue(set.isRainbow()));
 
-                                    count++;
+                                    count += 2;
                                 }
                                 if(set.isString()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
@@ -186,7 +186,7 @@ public class ClickGuiNew extends GuiScreen {
 
                                     onRenderListeners.add(() -> sb.setValue(set.getValString()));
 
-                                    count++;
+                                    count += 2;
                                 }
                                 if (set.isCheck()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
@@ -199,7 +199,7 @@ public class ClickGuiNew extends GuiScreen {
 
                                     onRenderListeners.add(() -> cb.setSelected(set.getValBoolean()));
 
-                                    count++;
+                                    count += 2;
                                 }
                                 if (set.isSlider()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
@@ -233,7 +233,7 @@ public class ClickGuiNew extends GuiScreen {
 
                                     onRenderListeners.add(() -> sl.setValue(set.getValDouble()));
 
-                                    count++;
+                                    count += 2;
                                 }
                                 if (set.isCombo()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
@@ -249,7 +249,7 @@ public class ClickGuiNew extends GuiScreen {
 
                                     onRenderListeners.add(() -> cb.setSelectedIndex(set.getSelectedIndex()));
 
-                                    count++;
+                                    count += 2;
                                 }
                             }
                         }

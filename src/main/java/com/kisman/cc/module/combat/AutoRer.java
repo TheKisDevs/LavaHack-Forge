@@ -60,10 +60,12 @@ public class AutoRer extends Module {
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
+    private final Setting breakPriority = new Setting("Break Priority", this, BreakPriority.Damage);
     private final Setting friend_ = new Setting("Friend", this, FriendMode.AntiTotemPop);
     private final Setting clientSide = new Setting("Client Side", this, false);
     private final Setting manualBreaker = new Setting("Manual Breaker", this, false);
     private final Setting removeAfterAttack = new Setting("Remove After Attack", this, false);
+    private final Setting antiCevBreakerMode = new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None);
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
     private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
@@ -163,10 +165,12 @@ public class AutoRer extends Module {
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
+        setmgr.rSetting(breakPriority);
         setmgr.rSetting(friend_);
         setmgr.rSetting(clientSide);
         setmgr.rSetting(manualBreaker);
         setmgr.rSetting(removeAfterAttack);
+        setmgr.rSetting(antiCevBreakerMode);
 
         setmgr.rSetting(delayLine);
         setmgr.rSetting(placeDelay);
@@ -534,9 +538,37 @@ public class AutoRer extends Module {
         } else if(silentBypass) bypass.doSwitch();
     }
 
-    private void doBreak() {
-        if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
+    private Entity getCrystalForAntiCevBreaker() {
+        Entity crystal = null;
+        String mode = antiCevBreakerMode.getValString();
 
+        if(!mode.equals("None")) {
+            if(mode.equals("Cev") || mode.equals("Both")) {
+                for(Vec3i vec : AntiCevBreakerVectors.Cev.vectors) {
+                    BlockPos pos = mc.player.getPosition().add(vec);
+                    for(Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
+                        if(entity instanceof EntityEnderCrystal) {
+                            crystal = entity;
+                        }
+                    }
+                }
+            }
+            if(mode.equals("Civ") || mode.equals("Both")) {
+                for(Vec3i vec : AntiCevBreakerVectors.Civ.vectors) {
+                    BlockPos pos = mc.player.getPosition().add(vec);
+                    for(Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
+                        if(entity instanceof EntityEnderCrystal) {
+                            crystal = entity;
+                        }
+                    }
+                }
+            }
+        }
+
+        return crystal;
+    }
+
+    private Entity getCrystalWithMaxDamage() {
         Entity crystal = null;
         double maxDamage = 0.5;
 
@@ -548,9 +580,9 @@ public class AutoRer extends Module {
                 double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
                 if(friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
-                    if(friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return;
-                    else if(friend.isTotemFailed) return;
-                    if(friend.damage >= maxFriendDMG.getValInt()) return;
+                    if(friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
+                    else if(friend.isTotemFailed) return null;
+                    if(friend.damage >= maxFriendDMG.getValInt()) return null;
                 }
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
@@ -565,6 +597,18 @@ public class AutoRer extends Module {
                 }
             }
         }
+
+        return crystal;
+    }
+
+
+    private void doBreak() {
+        if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
+
+        Entity crystal = null;
+        
+        if(breakPriority.getValString().equals("Damage")) crystal = getCrystalWithMaxDamage();
+        else crystal = getCrystalForAntiCevBreaker();
 
         if(crystal == null) return;
 
@@ -633,6 +677,19 @@ public class AutoRer extends Module {
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}
     public enum RotateMode {Normal, Silent}
+    public enum AntiCevBreakerMode {None, Cev, Civ, Both}
+    public enum BreakPriority {Damage, CevBreaker}
+
+    public enum AntiCevBreakerVectors {
+        Cev(Arrays.asList(new Vec3i(0, 2, 0))),
+        Civ(Arrays.asList(new Vec3i(1, 2, 0), new Vec3i(-1, 2, 0), new Vec3i(0, 2, 1), new Vec3i(0, 2, -1), new Vec3i(1, 2, 1), new Vec3i(-1, 2, -1), new Vec3i(1, 2, -1), new Vec3i(-1, 2, 1)));
+
+        public final List<Vec3i> vectors;
+
+        AntiCevBreakerVectors(List<Vec3i> vectors) {
+            this.vectors = vectors;
+        }
+    }
 
     private static class Friend {
         public final EntityPlayer friend;

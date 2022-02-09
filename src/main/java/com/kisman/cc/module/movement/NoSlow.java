@@ -6,7 +6,7 @@ import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.ClickGui;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.PlayerUtil;
+import com.kisman.cc.util.*;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
@@ -15,9 +15,15 @@ import net.minecraft.item.ItemShield;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
+    private Setting mode = new Setting("Mode", this, Mode.None);
+
+    private Setting defaultLine = new Setting("Default Line", this, "Default Mode");
     private Setting invMove = new Setting("InvMove", this, true);
     private Setting items = new Setting("Items", this, true);
     private Setting ncpStrict = new Setting("NCPStrict", this, true);
@@ -29,8 +35,6 @@ public class NoSlow extends Module {
     private Setting ignoreConsole = new Setting("IgnoreConsole", this, true);
     private Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false);
 
-    private Setting matrix = new Setting("Matrix", this, false);
-
     public static NoSlow instance;
 
     public NoSlow() {
@@ -38,16 +42,18 @@ public class NoSlow extends Module {
 
         instance = this;
 
+        setmgr.rSetting(mode);
+
         setmgr.rSetting(invMove);
+        setmgr.rSetting(defaultLine);
         setmgr.rSetting(items);
         setmgr.rSetting(ncpStrict);
+        setmgr.rSetting(slimeBlocks);
 
         setmgr.rSetting(invLine);
         setmgr.rSetting(ignoreChat);
         setmgr.rSetting(ignoreConsole);
         setmgr.rSetting(ignoreClickGui);
-
-        setmgr.rSetting(matrix);
     }
 
     public void onEnable() {
@@ -72,9 +78,33 @@ public class NoSlow extends Module {
             else Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
         }
 
-        if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && PlayerUtil.isMoving(mc.player)) {
+        if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && PlayerUtil.isMoving(mc.player) && mode.getValString().equals("None")) {
             mc.player.motionX *= 0.9;
             mc.player.motionZ *= 0.9;
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingUpdate(LivingUpdateEvent event) {
+        if (mc.player.isHandActive() && !mc.player.isRiding() && mode.getValString().equals("Sunrise")) {
+            mc.player.movementInput.moveStrafe *= 0.2F;
+            mc.player.movementInput.moveForward *= 0.2F;
+            mc.player.sprintToggleTimer = 0;
+        }
+        if (mc.player.isHandActive() && !mc.player.isRiding()) {
+            if (mc.player.ticksExisted % 2 == 0) {
+                if (mc.player.onGround) {
+                    if (!mc.player.isSprinting()) {
+                        MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
+                    } else {
+                        MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.21);
+                    }
+                } else {
+                    mc.player.motionX *= 0.9f;
+                    mc.player.motionZ *= 0.9f;
+                }
+
+            }
         }
     }
 
@@ -127,4 +157,6 @@ public class NoSlow extends Module {
     });
 
     @EventHandler private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {if(event.getPacket() instanceof CPacketPlayer) if(ncpStrict.getValBoolean()) if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));});
+
+    public enum Mode {None, Bypass, Sunrise}
 }

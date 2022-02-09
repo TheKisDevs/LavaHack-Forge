@@ -11,7 +11,12 @@ import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.play.client.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 public class CevBreaker extends Module {
     //another
@@ -131,6 +136,10 @@ public class CevBreaker extends Module {
 
     private void placeCrystal() {
         // if(mc.player)
+        RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) posToUse.getX() + 0.5, ( double ) posToUse.getY() - 0.5, ( double ) posToUse.getZ() + 0.5));
+        EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
+        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(posToUse, facing, EnumHand.MAIN_HAND, 0, 0, 0));
+        mc.player.connection.sendPacket(new CPacketAnimation());
     }
 
     public enum ObbyBreakMode {Client, Packet}
