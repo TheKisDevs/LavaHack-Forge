@@ -4,12 +4,15 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
-public class MixinEntityPlayer extends MixinEntityLivingBase {
+public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
+    public MixinEntityPlayer(World worldIn) {super(worldIn);}
+
     @Shadow protected void doWaterSplashEffect() {}
 
     @Inject(method = "travel", at = @At("HEAD"), cancellable = true)

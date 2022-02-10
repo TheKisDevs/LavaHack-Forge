@@ -3,24 +3,25 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.RenderUtil;
 
 import org.lwjgl.opengl.GL11;
 
-import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+
 public class JumpCircle extends Module {
+    public static JumpCircle instance;
+
     private final byte MAX_JC_TIME = 20;
     private List<Circle> circles = new ArrayList<>();
 
@@ -29,6 +30,8 @@ public class JumpCircle extends Module {
 
     public JumpCircle() {
         super("JumpCircle", Category.RENDER);
+
+        instance = this;
 
         setmgr.rSetting(rainbow);
         setmgr.rSetting(color);
@@ -52,6 +55,9 @@ public class JumpCircle extends Module {
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        glDisable(GL11.GL_LIGHTING);
+
         GL11.glShadeModel(GL11.GL_SMOOTH);
         Collections.reverse(circles);
         try {
@@ -77,6 +83,9 @@ public class JumpCircle extends Module {
         } catch (Exception e) {
         }
         Collections.reverse(circles);
+
+        glEnable(GL11.GL_LIGHTING);
+
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glShadeModel(GL11.GL_FLAT);
