@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(value = EntityPlayerSP.class, priority = 10000)
-public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
+public class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow public MovementInput movementInput;
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}

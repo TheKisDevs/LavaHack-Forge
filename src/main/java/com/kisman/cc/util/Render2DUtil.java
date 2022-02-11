@@ -26,11 +26,17 @@ public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public double getZLevel() {return this.zLevel;}
+
     public static void drawAbstract(AbstractObject drawing) {
         if(drawing != null) drawing.render();
     }
 
     public static void drawAbstract(ObjectWithGlow drawing) {
+        if(drawing != null) drawing.render();
+    }
+
+    public static void drawAbstract(AbstractGradient drawing) {
         if(drawing != null) drawing.render();
     }
 

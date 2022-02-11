@@ -44,9 +44,13 @@ public class FramebufferTest extends Module {
     public void onRender(RenderGameOverlayEvent.Text event) {
         ScaledResolution sr = event.getResolution();
         Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2, 10, Color.GREEN, 3f, degrees.getValDouble(), (int) 360);
+
         Render2DUtil.drawProgressCircle(sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 30, 10, Color.GREEN, 3f, degrees.getValDouble(), (int) 4);
 
-        Render2DUtil.drawAbstract(new ObjectWithGlow(new Vec4d(new double[]{200, 200}, new double[]{300, 200}, new double[]{300, 300}, new double[]{200, 300}), Color.RED, radius.getValFloat()));
+        Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{200, 200}, new double[]{300, 200}, new double[]{300, 300}, new double[]{200, 300}), Color.RED, new Color(0, 0, 0), false));
+
+//        Render2DUtil.drawAbstract(new ObjectWithGlow(new Vec4d(new double[]{200, 200}, new double[]{300, 200}, new double[]{300, 300}, new double[]{200, 300}), Color.RED, radius.getValFloat()));
+
     }
 
     private Color getColor() {return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());}

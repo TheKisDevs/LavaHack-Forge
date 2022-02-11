@@ -4,6 +4,7 @@ import com.kisman.cc.module.render.*;
 import net.minecraft.entity.*;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.*;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(value = EntityLivingBase.class, priority = 10000)
-public abstract class MixinEntityLivingBase extends Entity {
+public class MixinEntityLivingBase extends Entity {
     @Shadow public EnumHand swingingHand;
     @Shadow public ItemStack activeItemStack;
     @Shadow public float moveStrafing;
@@ -23,6 +24,10 @@ public abstract class MixinEntityLivingBase extends Entity {
     @Shadow public  boolean isPotionActive(Potion potionIn) {return false;}
     @Shadow public  PotionEffect getActivePotionEffect(Potion potionIn) {return null;}
     public MixinEntityLivingBase(World worldIn) {super(worldIn);}
+
+    @Shadow @Override protected void entityInit() {}
+    @Shadow @Override public void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
+    @Shadow @Override public void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
 
     @Inject(method = "jump", at = @At("HEAD"))
     private void onJump(CallbackInfo ci) {

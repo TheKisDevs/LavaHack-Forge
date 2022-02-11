@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = AbstractClientPlayer.class, priority = 10000)
-public abstract class MixinAbstractClientPlayer extends EntityPlayer {
+public class MixinAbstractClientPlayer extends EntityPlayer {
     Minecraft mc = Minecraft.getMinecraft();
     String str1 = "cape-";
     String str2 = ".png";
@@ -25,6 +25,7 @@ public abstract class MixinAbstractClientPlayer extends EntityPlayer {
     public MixinAbstractClientPlayer(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
     @Shadow public boolean isSpectator() {return true;}
+    @Override public boolean isCreative() {return false;}
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {

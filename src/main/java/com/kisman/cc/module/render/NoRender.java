@@ -15,6 +15,7 @@ public class NoRender extends Module {
     public Setting hurtCam = new Setting("HurtCam", this, false);
     public Setting armor = new Setting("Armor", this, false);
     public Setting overlay = new Setting("Overlay", this, false);
+    public Setting guiOverlay = new Setting("Gui Overlay", this, false);
     public Setting book = new Setting("Book", this, false);
     public Setting chatBackground = new Setting("Chat Background", this, false);
 
@@ -27,6 +28,7 @@ public class NoRender extends Module {
         setmgr.rSetting(hurtCam);
         setmgr.rSetting(armor);
         setmgr.rSetting(overlay);
+        setmgr.rSetting(guiOverlay);
         setmgr.rSetting(book);
         setmgr.rSetting(chatBackground);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));

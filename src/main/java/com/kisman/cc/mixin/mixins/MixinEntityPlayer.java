@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
-public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
+public class MixinEntityPlayer extends MixinEntityLivingBase {
     public MixinEntityPlayer(World worldIn) {super(worldIn);}
 
     @Shadow protected void doWaterSplashEffect() {}

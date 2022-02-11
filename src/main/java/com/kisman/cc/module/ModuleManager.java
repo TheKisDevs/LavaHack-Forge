@@ -89,6 +89,7 @@ public class ModuleManager {
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
 		modules.add(new CityESP());
+		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
