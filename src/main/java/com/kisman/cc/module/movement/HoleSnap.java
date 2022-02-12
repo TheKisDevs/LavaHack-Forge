@@ -12,6 +12,7 @@ import java.util.*;
 public class HoleSnap extends Module {
     private Setting speedValue = new Setting("Speed", this, 0, 0, 2, false);
     private Setting range = new Setting("Range", this, 4, 0, 10, true);
+    private Setting disableIfNoHole = new Setting("Disable If No Hole", this, true);
 
     private BlockPos hole;
     private double yawRad,speed, lastDist;
@@ -22,12 +23,13 @@ public class HoleSnap extends Module {
 
         setmgr.rSetting(speedValue);
         setmgr.rSetting(range);
+        setmgr.rSetting(disableIfNoHole);
     }
 
     public void onEnable() {
         hole = null;
         hole = findHoles();
-        if(hole == null) super.setToggled(false);
+        if(hole == null && disableIfNoHole.getValBoolean()) super.setToggled(false);
     }
 
     public void onDisable() {
@@ -35,6 +37,10 @@ public class HoleSnap extends Module {
     }
 
     public void update() {
+        if(mc.player == null || mc.world == null) return;
+        hole = findHoles();
+        if(hole == null) return;
+
         if (mc.gameSettings.keyBindSneak.isKeyDown() || HoleUtil.isInHole(mc.player, true, false)) {
             PlayerUtil.centerPlayer(mc.player.getPositionVector());
             super.setToggled(false);

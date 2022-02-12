@@ -25,6 +25,8 @@ public class Fly extends Module {
 
         this.flySpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "FlySpeed").getValDouble();
 
+        super.setDisplayInfo("[" + mode.getValString() + "]");
+
         if(mode.getValString().equalsIgnoreCase("Vanilla")) {
             mc.player.capabilities.isFlying = true;
             mc.player.capabilities.setFlySpeed(flySpeed);

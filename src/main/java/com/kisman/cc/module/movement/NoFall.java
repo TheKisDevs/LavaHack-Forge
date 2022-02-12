@@ -38,8 +38,7 @@ public class NoFall extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> listener2 = new Listener<>(event -> {
-        Packet packet1 = event.getPacket();
-        if(packet1 instanceof CPacketPlayer || packet1 instanceof CPacketPlayer.PositionRotation || packet1 instanceof CPacketPlayer.Position || packet1 instanceof CPacketPlayer.Rotation) {
+        if(event.getPacket() instanceof CPacketPlayer) {
             CPacketPlayer packet = (CPacketPlayer) event.getPacket();
             switch(mode.getValString()) {
                 case "Packet":

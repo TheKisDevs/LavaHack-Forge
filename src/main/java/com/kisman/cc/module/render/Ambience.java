@@ -54,7 +54,7 @@ public class Ambience extends Module {
     }
 
     public void update() {
-        if(mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         cyrcle += speed.getValInt();
         mc.world.setWorldTime(infinity.getValBoolean() ? cyrcle : time.getValLong() * 1000L);
@@ -63,9 +63,7 @@ public class Ambience extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
-        if(event.getPacket() instanceof SPacketTimeUpdate) {
-            event.cancel();
-        }
+        if(event.getPacket() instanceof SPacketTimeUpdate) event.cancel();
     });
 
     public Color getColor() {

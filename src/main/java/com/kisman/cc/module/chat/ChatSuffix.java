@@ -14,6 +14,7 @@ public class ChatSuffix extends Module {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onChat(ClientChatEvent event) {
+        if(event.getMessage().startsWith("/")) return;
         event.setMessage(event.getMessage() + " | " + Kisman.getName() + " own you and all");
     }
 }

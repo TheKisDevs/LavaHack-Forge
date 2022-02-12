@@ -163,6 +163,7 @@ public class ModuleManager {
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Refill());
+		modules.add(new RoofInteract());
 		modules.add(new Swing());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
@@ -179,6 +180,7 @@ public class ModuleManager {
 		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new MultiTask());
+		modules.add(new NoClip());
 		modules.add(new NoGlitchBlocks());
 		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());

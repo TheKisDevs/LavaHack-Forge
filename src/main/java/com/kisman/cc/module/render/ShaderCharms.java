@@ -89,120 +89,157 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        {
-            FramebufferShader framebufferShader = null;
-            boolean itemglow = false, gradient = false;;
-            switch(mode.getValString()) {
-              case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
-              case "RED": framebufferShader = RedShader.RED_SHADER; break;
-              case "SMOKE": framebufferShader = SmokeShader.SMOKE_SHADER; break;
-              case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
-              case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
-              case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
-              case "GRADIENT": framebufferShader = GradientOutlineShader.INSTANCE; gradient = true; break;
-              case "UNU": framebufferShader = UnuShader.UNU_SHADER; break;
+        try {
+            {
+                FramebufferShader framebufferShader = null;
+                boolean itemglow = false, gradient = false;
+                ;
+                switch (mode.getValString()) {
+                    case "AQUA":
+                        framebufferShader = AquaShader.AQUA_SHADER;
+                        break;
+                    case "RED":
+                        framebufferShader = RedShader.RED_SHADER;
+                        break;
+                    case "SMOKE":
+                        framebufferShader = SmokeShader.SMOKE_SHADER;
+                        break;
+                    case "FLOW":
+                        framebufferShader = FlowShader.FLOW_SHADER;
+                        break;
+                    case "ITEMGLOW":
+                        framebufferShader = ItemShader.ITEM_SHADER;
+                        itemglow = true;
+                        break;
+                    case "PURPLE":
+                        framebufferShader = PurpleShader.PURPLE_SHADER;
+                        break;
+                    case "GRADIENT":
+                        framebufferShader = GradientOutlineShader.INSTANCE;
+                        gradient = true;
+                        break;
+                    case "UNU":
+                        framebufferShader = UnuShader.UNU_SHADER;
+                        break;
+                }
+
+                if (framebufferShader == null) return;
+                GlStateManager.matrixMode(5889);
+                GlStateManager.pushMatrix();
+                GlStateManager.matrixMode(5888);
+                GlStateManager.pushMatrix();
+                if (itemglow) {
+                    ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((ItemShader) framebufferShader).radius = radius.getValFloat();
+                    ((ItemShader) framebufferShader).quality = 1;
+                    ((ItemShader) framebufferShader).blur = blur.getValBoolean();
+                    ((ItemShader) framebufferShader).mix = mix.getValFloat();
+                    ((ItemShader) framebufferShader).alpha = 1f;
+                    ((ItemShader) framebufferShader).useImage = false;
+                } else if (gradient) {
+                    ((GradientOutlineShader) framebufferShader).color = getColor();
+                    ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                    ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                    ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+                }
+                framebufferShader.startDraw(event.getPartialTicks());
+                for (Entity entity : mc.world.loadedEntityList) {
+                    if (entity == mc.player || entity == mc.getRenderViewEntity()) continue;
+                    if (!((entity instanceof EntityPlayer && players.getValBoolean())
+                            || (entity instanceof EntityPlayer && friends.getValBoolean() && FriendManager.instance.isFriend(entity.getName()))
+                            || (entity instanceof EntityEnderCrystal && crystals.getValBoolean())
+                            || ((entity instanceof EntityMob || entity instanceof EntitySlime) && mobs.getValBoolean())
+                            || (entity instanceof EntityAnimal && animals.getValBoolean()))) continue;
+                    Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
+                    Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
+                }
+                framebufferShader.stopDraw();
+                if (gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
+                GlStateManager.color(1f, 1f, 1f);
+                GlStateManager.matrixMode(5889);
+                GlStateManager.popMatrix();
+                GlStateManager.matrixMode(5888);
+                GlStateManager.popMatrix();
             }
 
-            if (framebufferShader == null) return;
-            GlStateManager.matrixMode(5889);
-            GlStateManager.pushMatrix();
-            GlStateManager.matrixMode(5888);
-            GlStateManager.pushMatrix();
-            if(itemglow) {
-                ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
-                ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
-                ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
-                ((ItemShader) framebufferShader).radius = radius.getValFloat();
-                ((ItemShader) framebufferShader).quality = 1;
-                ((ItemShader) framebufferShader).blur = blur.getValBoolean();
-                ((ItemShader) framebufferShader).mix = mix.getValFloat();
-                ((ItemShader) framebufferShader).alpha = 1f;
-                ((ItemShader) framebufferShader).useImage = false;
-            } else if(gradient) {
-                ((GradientOutlineShader) framebufferShader).color = getColor();
-                ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
-                ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
-                ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
-                ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
-                ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
-                ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
-            }
-            framebufferShader.startDraw(event.getPartialTicks());
-            for (Entity entity : mc.world.loadedEntityList) {
-                if (entity == mc.player || entity == mc.getRenderViewEntity()) continue;
-                if (!((entity instanceof EntityPlayer && players.getValBoolean())
-                        || (entity instanceof EntityPlayer && friends.getValBoolean() && FriendManager.instance.isFriend(entity.getName()))
-                        || (entity instanceof EntityEnderCrystal && crystals.getValBoolean())
-                        || ((entity instanceof EntityMob || entity instanceof EntitySlime) && mobs.getValBoolean())
-                        || (entity instanceof EntityAnimal && animals.getValBoolean()))) continue;
-                Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
-                Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
-            }
-            framebufferShader.stopDraw();
-            if(gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
-            GlStateManager.color(1f, 1f, 1f);
-            GlStateManager.matrixMode(5889);
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(5888);
-            GlStateManager.popMatrix();
-        }
+            if (items.getValBoolean()) {
+                FramebufferShader framebufferShader = null;
+                boolean itemglow = false, gradient = false;
+                switch (mode.getValString()) {
+                    case "AQUA":
+                        framebufferShader = AquaShader.AQUA_SHADER;
+                        break;
+                    case "RED":
+                        framebufferShader = RedShader.RED_SHADER;
+                        break;
+                    case "SMOKE":
+                        framebufferShader = SmokeShader.SMOKE_SHADER;
+                        break;
+                    case "FLOW":
+                        framebufferShader = FlowShader.FLOW_SHADER;
+                        break;
+                    case "ITEMGLOW":
+                        framebufferShader = ItemShader.ITEM_SHADER;
+                        itemglow = true;
+                        break;
+                    case "PURPLE":
+                        framebufferShader = PurpleShader.PURPLE_SHADER;
+                        break;
+                    case "GRADIENT":
+                        framebufferShader = GradientOutlineShader.INSTANCE;
+                        gradient = true;
+                        break;
+                }
 
-        if(items.getValBoolean()) {
-            FramebufferShader framebufferShader = null;
-            boolean itemglow = false, gradient = false;
-            switch(mode.getValString()) {
-                case "AQUA": framebufferShader = AquaShader.AQUA_SHADER; break;
-                case "RED": framebufferShader = RedShader.RED_SHADER; break;
-                case "SMOKE": framebufferShader = SmokeShader.SMOKE_SHADER; break;
-                case "FLOW": framebufferShader = FlowShader.FLOW_SHADER; break;
-                case "ITEMGLOW": framebufferShader = ItemShader.ITEM_SHADER; itemglow = true; break;
-                case "PURPLE": framebufferShader = PurpleShader.PURPLE_SHADER; break;
-                case "GRADIENT": framebufferShader = GradientOutlineShader.INSTANCE; gradient = true; break;
+                if (framebufferShader == null) return;
+                GlStateManager.pushMatrix();
+                GlStateManager.pushAttrib();
+                GlStateManager.enableBlend();
+                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                GlStateManager.enableDepth();
+                GlStateManager.depthMask(true);
+                GlStateManager.enableAlpha();
+                if (itemglow) {
+                    ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((ItemShader) framebufferShader).radius = radius.getValFloat();
+                    ((ItemShader) framebufferShader).quality = 1;
+                    ((ItemShader) framebufferShader).blur = blur.getValBoolean();
+                    ((ItemShader) framebufferShader).mix = mix.getValFloat();
+                    ((ItemShader) framebufferShader).alpha = 1f;
+                    ((ItemShader) framebufferShader).useImage = false;
+                } else if (gradient) {
+                    ((GradientOutlineShader) framebufferShader).color = getColor();
+                    ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                    ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                    ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                    ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+                }
+                framebufferShader.startDraw(event.getPartialTicks());
+                mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
+                framebufferShader.stopDraw();
+                if (gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
+                GlStateManager.disableBlend();
+                GlStateManager.disableAlpha();
+                GlStateManager.disableDepth();
+                GlStateManager.popAttrib();
+                GlStateManager.popMatrix();
             }
-
-            if (framebufferShader == null) return;
-            GlStateManager.pushMatrix();
-            GlStateManager.pushAttrib();
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.enableDepth();
-            GlStateManager.depthMask(true);
-            GlStateManager.enableAlpha();
-            if(itemglow) {
-                ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
-                ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
-                ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
-                ((ItemShader) framebufferShader).radius = radius.getValFloat();
-                ((ItemShader) framebufferShader).quality = 1;
-                ((ItemShader) framebufferShader).blur = blur.getValBoolean();
-                ((ItemShader) framebufferShader).mix = mix.getValFloat();
-                ((ItemShader) framebufferShader).alpha = 1f;
-                ((ItemShader) framebufferShader).useImage = false;
-            } else if(gradient) {
-                ((GradientOutlineShader) framebufferShader).color = getColor();
-                ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
-                ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
-                ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
-                ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
-                ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
-                ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
-                ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
-            }
-            framebufferShader.startDraw(event.getPartialTicks());
-            mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
-            framebufferShader.stopDraw();
-            if(gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
-            GlStateManager.disableBlend();
-            GlStateManager.disableAlpha();
-            GlStateManager.disableDepth();
-            GlStateManager.popAttrib();
-            GlStateManager.popMatrix();
-        }
+        } catch (Exception ignored) {}
     }
 
     private Color getColor() {

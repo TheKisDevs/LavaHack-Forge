@@ -23,7 +23,7 @@ import org.lwjgl.input.Keyboard;
 public class NoSlow extends Module {
     private Setting mode = new Setting("Mode", this, Mode.None);
 
-    private Setting defaultLine = new Setting("Default Line", this, "Default Mode");
+    private Setting defaultLine = new Setting("Default Line", this, "Another");
     private Setting invMove = new Setting("InvMove", this, true);
     private Setting items = new Setting("Items", this, true);
     private Setting ncpStrict = new Setting("NCPStrict", this, true);

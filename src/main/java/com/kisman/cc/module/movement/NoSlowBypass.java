@@ -18,7 +18,7 @@ public class NoSlowBypass extends Module {
     }
 
     public void update() {
-        if(mc.player != null &&  mc.world != null) {
+        if(mc.player != null ||  mc.world != null) {
             Item item = mc.player.getActiveItemStack().getItem();
             if (sneaking && ((!mc.player.isHandActive() && item instanceof ItemFood || item instanceof ItemBow || item instanceof ItemPotion) || (!(item instanceof ItemFood) || !(item instanceof ItemBow) || !(item instanceof ItemPotion)))) {
                 mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
