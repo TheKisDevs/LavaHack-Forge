@@ -20,12 +20,14 @@ import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
+import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.relauncher.*;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
@@ -61,6 +63,7 @@ public class Kisman {
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 
     public static final boolean allowToConfiguredAnotherClients;
+    public static boolean isOpenAuthGui;
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
@@ -105,9 +108,12 @@ public class Kisman {
         AntiDump.check();
     }
 
-    public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
+
+        eventProcessor = new EventProcessor();
+        eventProcessor.onInit(event);
 
         mc = Minecraft.getMinecraft();
 
@@ -131,7 +137,6 @@ public class Kisman {
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
-        eventProcessor = new EventProcessor();
         serverManager = new ServerManager();
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();

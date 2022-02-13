@@ -2,6 +2,7 @@ package com.kisman.cc.util.protect.keyauth;
 
 import java.util.Scanner;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.util.protect.keyauth.api.KeyAuth;
 
 /**
@@ -10,16 +11,16 @@ import com.kisman.cc.util.protect.keyauth.api.KeyAuth;
 public class KeyAuthApp {
 	private static String url = "https://keyauth.win/api/1.1/";
 	
-	private static String ownerid = ""; // You can find out the owner id in the profile settings keyauth.com
-	private static String appname = ""; // Application name
-	private static String version = ""; // Application version
+	private static String ownerid = "hW04ojuQKY"; // You can find out the owner id in the profile settings keyauth.com
+	private static String appname = "kismanccplus"; // Application name
+	private static String version = "1.0"; // Application version
 
-	private static KeyAuth keyAuth = new KeyAuth(appname, ownerid, version, url);
+	public static KeyAuth keyAuth = new KeyAuth(appname, ownerid, version, url);
 
-	public void main(String[] args) throws InterruptedException {
+	public static void init() throws InterruptedException {
 		println("KeyAuth API Example");
 		println("\n\n Connecting...");
-		keyAuth.init();
+		//keyAuth.init();
 
 		println("\n\n [1] Login\n [2] Upgrade\n [3] License key only\n\n Choose option: ");
 

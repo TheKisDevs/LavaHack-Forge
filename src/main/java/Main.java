@@ -12,7 +12,7 @@ public class Main {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
         AntiDump.check();
-        k.init();
+        k.init(event);
     }
 
     @Mod.EventHandler

@@ -10,9 +10,11 @@ import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.combat.*;
+import com.kisman.cc.oldclickgui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 import com.kisman.cc.util.manager.Managers;
 
+import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
@@ -23,6 +25,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.*;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -41,6 +45,13 @@ public class EventProcessor {
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
+    }
+
+    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui) event.setCanceled(true);}
+
+    public void onInit(FMLInitializationEvent event) {
+        mc.displayGuiScreen(new AuthGui());
+        Kisman.isOpenAuthGui = true;
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.kisman.cc.util.protect.keyauth.api;
 
+import net.minecraft.client.Minecraft;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -78,6 +79,7 @@ public class KeyAuth {
 
 				if (response.getBody().equalsIgnoreCase("KeyAuth_Invalid")) {
 					// Calling the method with a disabled connection
+					Minecraft.getMinecraft().shutdown();
 					// System.exit(0);
 					System.out.println("invalid");
 				}
@@ -94,6 +96,7 @@ public class KeyAuth {
 				} else {
 					System.out.println(responseJSON.getString("message"));
 					// System.exit(0);
+					Minecraft.getMinecraft().shutdown();
 				}
 
 			} catch (Exception e) {
@@ -171,10 +174,10 @@ public class KeyAuth {
 		}
 	}
 
-	public void license(String key) {
+	public boolean license(String key) {
 		if (!initialized) {
 			System.out.println("\n\n Please initzalize first");
-			return;
+			return false;
 		}
 
 		HttpResponse<String> response;
@@ -184,24 +187,27 @@ public class KeyAuth {
 			response = Unirest.post(url).field("type", "license").field("key", key).field("hwid", hwid)
 					.field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid).asString();
 
+			System.out.println(response.getBody());
+
 			try {
 				JSONObject responseJSON = new JSONObject(response.getBody());
 
 				if (!responseJSON.getBoolean("success")) {
 					System.out.println("the license does not exist");
-					// System.exit(0);
+					Minecraft.getMinecraft().shutdown();
 				} else {
 					userData = new UserData(responseJSON);
-					
 					// optional success msg
 				}
 
-			} catch (Exception e) {
-
+			} catch (Exception ignored) {
+				return false;
 			}
 		} catch (UnirestException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	public void ban() {

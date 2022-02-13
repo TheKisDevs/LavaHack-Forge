@@ -38,6 +38,8 @@ public class KillAura extends Module {
     private Setting packetAttack = new Setting("Packet Attack", this, false);
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
     private Setting betterRots = new Setting("Better Rotations", this, false);
+    private Setting packetRots = new Setting("Packet Rotations", this, false);
+    private Setting preRots = new Setting("Pre Rots", this, true);
     private Setting onlyCrits = new Setting("Only Crits", this, true);
     private Setting resetCd = new Setting("Reset Cooldown", this, false);
 
@@ -69,6 +71,8 @@ public class KillAura extends Module {
         setmgr.rSetting(packetAttack);
         setmgr.rSetting(rotations);
         setmgr.rSetting(betterRots);
+        setmgr.rSetting(packetRots);
+        setmgr.rSetting(preRots);
         setmgr.rSetting(onlyCrits);
         setmgr.rSetting(resetCd);
 
@@ -133,6 +137,8 @@ public class KillAura extends Module {
 
     private void doKillAura(Entity entity, boolean hitsound, boolean single) {
         if(mc.player.getDistance(entity) <= 4.15 && entity.ticksExisted % 20 == 0 && mc.player != entity) {
+            if(preRots.getValBoolean()) doRots(target);
+
             boolean isShieldActive = false;
 
             if(shieldBreaker.getValBoolean() && single) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
@@ -166,7 +172,7 @@ public class KillAura extends Module {
 
     private void attack(Entity entity) {
         float oldYaw = mc.player.rotationYaw, oldPitch = mc.player.rotationPitch, oldYawOffset = mc.player.renderYawOffset, oldYawHead = mc.player.rotationYawHead;
-        rotation(entity);
+        if(!preRots.getValBoolean()) doRots(entity);
 
         if(packetAttack.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(entity));
         else mc.playerController.attackEntity(mc.player, entity);
@@ -182,29 +188,6 @@ public class KillAura extends Module {
             mc.player.renderYawOffset = oldYawOffset;
             mc.player.rotationYawHead = oldYawHead;
             mc.player.rotationPitch = oldPitch;
-        }
-    }
-
-    private void rotation(Entity entity) {
-        switch (rotations.getValString()) {
-            case "None": break;
-            case "Normal":
-            case "Silent": {
-                float[] rots = RotationUtils.getRotation(entity);
-                mc.player.rotationYaw = rots[0];
-                mc.player.rotationPitch = rots[1];
-                break;
-            }
-            case "WellMore": {
-                float[] rots = RotationUtils.lookAtRandomed(entity);
-                mc.player.rotationYaw = rots[0];
-                if (betterRots.getValBoolean()) {
-                    mc.player.renderYawOffset = rots[0];
-                    mc.player.rotationYawHead = rots[0];
-                }
-                mc.player.rotationPitch = rots[1];
-                break;
-            }
         }
     }
 
@@ -238,6 +221,39 @@ public class KillAura extends Module {
             GL11.glDisable(3042);
             GL11.glPopMatrix();
         }
+    }
+
+    private void doRots(Entity entityToRotate) {
+        switch (rotations.getValString()) {
+            case "None": break;
+            case "Normal":
+            case "Silent": {
+                float[] rots = RotationUtils.getRotation(entityToRotate);
+                if(packetRots.getValBoolean()) packetRotation(rots);
+                else rotation(rots);
+                break;
+            }
+            case "SilentWellMore":
+            case "WellMore": {
+                float[] rots = RotationUtils.lookAtRandomed(entityToRotate);
+                if(packetRots.getValBoolean()) packetRotation(rots);
+                else rotation(rots);
+                break;
+            }
+        }
+    }
+
+    private void packetRotation(float[] rots) {
+        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+    }
+
+    private void rotation(float[] rots) {
+        mc.player.rotationYaw = rots[0];
+        if (betterRots.getValBoolean()) {
+            mc.player.renderYawOffset = rots[0];
+            mc.player.rotationYawHead = rots[0];
+        }
+        mc.player.rotationPitch = rots[1];
     }
 
     private boolean weaponCheck() {

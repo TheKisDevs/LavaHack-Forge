@@ -49,7 +49,7 @@ public class Velocity extends Module{
     }
 
     public void update() {
-        if(!this.subscribing) {
+        if(!this.subscribing && mc.player != null && mc.world != null) {
             if(this.mode.equalsIgnoreCase("Matrix")) if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) if (mc.player.hurtTime > 0) mc.player.motionY = -0.2;
              else if(mode.equalsIgnoreCase("Matrix 6.4")) if(mc.player.hurtTime > 8) mc.player.onGround = true;
         }

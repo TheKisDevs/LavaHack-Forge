@@ -40,6 +40,8 @@ public class Render2DUtil extends GuiScreen {
         if(drawing != null) drawing.render();
     }
 
+    public static void drawRectWH(double x, double y, double width, double height, int color) {drawRect(x, y, x + width, y + height, color);}
+
     public static void drawCircle(double cx, double cy, double radius, Color color, float width, int segments) {
         ColorUtils.glColor(color);
         glLineWidth(width);
@@ -364,23 +366,70 @@ public class Render2DUtil extends GuiScreen {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder worldrenderer = tessellator.getBuffer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer
-                .pos(x, y+height, 0.0D)
-                .tex(uMin, vMax).endVertex();
-        worldrenderer
-                .pos(x+width, y+height, 0.0D)
-                .tex(uMax, vMax).endVertex();
-        worldrenderer
-                .pos(x+width, y, 0.0D)
-                .tex(uMax, vMin).endVertex();
-        worldrenderer
-                .pos(x, y, 0.0D)
-                .tex(uMin, vMin).endVertex();
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        builder.pos(x, y+height, 0.0D).tex(uMin, vMax).endVertex();
+        builder.pos(x+width, y+height, 0.0D).tex(uMax, vMax).endVertex();
+        builder.pos(x+width, y, 0.0D).tex(uMax, vMin).endVertex();
+        builder.pos(x, y, 0.0D).tex(uMin, vMin).endVertex();
         tessellator.draw();
 
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+    }
+
+    public static void drawBorderedRect(double x, double y, double width, double height, float lineWidth, int lineColor, int bgColor) {
+        drawRect(x, y, x + width, y + height, bgColor);
+        float f = (float) (lineColor >> 24 & 255) / 255.0F;
+        float f1 = (float) (lineColor >> 16 & 255) / 255.0F;
+        float f2 = (float) (lineColor >> 8 & 255) / 255.0F;
+        float f3 = (float) (lineColor & 255) / 255.0F;
+        GL11.glPushMatrix();
+        GL11.glPushAttrib(1048575);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glLineWidth(lineWidth);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex2d( x,  y);
+        GL11.glVertex2d( x + width,  y);
+        GL11.glVertex2d( x + width,  y);
+        GL11.glVertex2d( x + width,  y + height);
+        GL11.glVertex2d( x + width,  y + height);
+        GL11.glVertex2d( x,  y + height);
+        GL11.glVertex2d( x,  y + height);
+        GL11.glVertex2d( x,  y);
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glPopAttrib();
+        GL11.glPopMatrix();
+    }
+
+    public static boolean isHovered(double mouseX, double mouseY, double x, double y, double width, double height) {
+        return mouseX >= x && mouseX - width <= x && mouseY >= y && mouseY - height <= y;
+    }
+
+    public static void startScissor(double x, double y, double width, double height) {
+        startScissor(x, y, width, height, 1);
+    }
+
+    public static void startScissor(double x, double y, double width, double height, double factor) {
+        ScaledResolution resolution = new ScaledResolution(mc);
+        double scaleWidth = (double) mc.displayWidth / resolution.getScaledWidth_double();
+        double scaleHeight = (double) mc.displayHeight / resolution.getScaledHeight_double();
+
+        scaleWidth *= factor;
+        scaleHeight *= factor;
+
+        GL11.glScissor((int) (x * scaleWidth), (mc.displayHeight) - (int) ((y + height) * scaleHeight), (int) (width * scaleWidth), (int) (height * scaleHeight));
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+    }
+
+    public static void stopScissor() {
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 }
