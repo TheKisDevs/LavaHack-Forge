@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.io.IOException;
 
 public class AuthGui extends GuiScreen {
@@ -17,23 +18,14 @@ public class AuthGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-//        drawDefaultBackground();
+        Render2DUtil.drawRect(width / 2 - 100, height / 4 + 2, 200, 160, 13);
 
-        Render2DUtil.drawRoundedRect(width / 2 - 100, height / 4 + 2, 200, 160, 13, 0xFF141414);
-
-        CustomFontUtil.drawCenteredStringWithShadow("Auth with license key", width / 2, height / 4 + 6, -1);
-
-//        keyField.setX(width / 2 - 70);
-//        keyField.setY(height / 4 + 50);
-//        keyField.setWidth(140);
-//        keyField.setHeight(22);
-//        keyField.render(mouseX, mouseY, partialTicks);
+        CustomFontUtil.drawCenteredStringWithShadow("Auth with license key", width / 2, height / 4 + 6, Color.BLACK.getRGB());
 
         keyField.drawTextBox();
 
-        CustomFontUtil.drawCenteredStringWithShadow("If you have access but havent key, you can dm _kisman_#5039 for help", width / 2, 10, -1);
-
-        CustomFontUtil.drawCenteredStringWithShadow("(C) all rights reserved", width / 2, height - 14, 0xFF9C9B9C);
+        CustomFontUtil.drawCenteredStringWithShadow("If you have access but havent key, you can dm _kisman_#5039 for get help", width / 2, 10, Color.BLACK.getRGB());
+        CustomFontUtil.drawCenteredStringWithShadow("(C) All rights reserved", width / 2, height - 14, 0xFF9C9B9C);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -46,14 +38,7 @@ public class AuthGui extends GuiScreen {
 
     @Override
     protected void keyTyped(char chr, int keyCode) {
-//        keyField.keyTyped(chr, keyCode);
         keyField.textboxKeyTyped(chr, keyCode);
-        if (keyCode == 28) {
-            if (KeyAuthApp.keyAuth.license(keyField.getText().replaceAll(" ", ""))) {
-
-            }
-            statusTime = 50;
-        }
     }
 
     @Override
@@ -68,12 +53,7 @@ public class AuthGui extends GuiScreen {
         KeyAuthApp.keyAuth.init();
         Keyboard.enableRepeatEvents(true);
         keyField = new GuiTextField(2, Minecraft.getMinecraft().fontRenderer, width / 2 - 70, height / 4 + 50, 140, 22);
-//        keyField = new TextFieldWidget().setBorders(false);
-
         if(key != null && !key.isEmpty()) keyField.setText(key);
-
-//        keyField.setFillText("XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX");
-
         buttonList.add(new GuiButton(0, width - 25, 5, 20, 20, "X"));
         buttonList.add(new GuiButton(1, width / 2 - 50, height / 4 + 100, 100, 21, "Login"));
 
