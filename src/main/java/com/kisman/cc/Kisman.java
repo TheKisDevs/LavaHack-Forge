@@ -108,12 +108,12 @@ public class Kisman {
         AntiDump.check();
     }
 
-    public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
 
         eventProcessor = new EventProcessor();
-        eventProcessor.onInit(event);
+        eventProcessor.onInit();
 
         mc = Minecraft.getMinecraft();
 

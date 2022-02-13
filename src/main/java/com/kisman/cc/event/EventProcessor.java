@@ -49,7 +49,7 @@ public class EventProcessor {
 
     @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui) event.setCanceled(true);}
 
-    public void onInit(FMLInitializationEvent event) {
+    public void onInit() {
         mc.displayGuiScreen(new AuthGui());
         Kisman.isOpenAuthGui = true;
     }

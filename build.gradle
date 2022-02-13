@@ -101,13 +101,13 @@ dependencies {
     compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 
-    implementation group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    implementation group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.14'
-    implementation group: 'org.apache.httpcomponents', name: 'httpcore-nio', version: '4.4.14'
-    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
-    implementation group: 'org.json', name: 'json', version: '20210307'
-    implementation group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+    compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.14'
+    compile group: 'org.apache.httpcomponents', name: 'httpcore-nio', version: '4.4.14'
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
+    compile group: 'org.json', name: 'json', version: '20210307'
+    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
 }
 
 processResources {
@@ -159,6 +159,13 @@ shadowJar {
         include(dependency('org.yaml:snakeyaml'))
         include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
+        include(dependency('org.apache.httpcomponents:httpasyncclient'))
+        include(dependency('org.apache.httpcomponents:httpclient'))
+        include(dependency('org.apache.httpcomponents:httpcore'))
+        include(dependency('org.apache.httpcomponents:httpcore-nio'))
+        include(dependency('org.apache.httpcomponents:httpmime'))
+        include(dependency('org.json:json'))
+        include(dependency('com.mashape.unirest:unirest-java'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

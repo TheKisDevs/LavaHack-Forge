@@ -17,7 +17,7 @@ public class AuthGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
+//        drawDefaultBackground();
 
         Render2DUtil.drawRoundedRect(width / 2 - 100, height / 4 + 2, 200, 160, 13, 0xFF141414);
 

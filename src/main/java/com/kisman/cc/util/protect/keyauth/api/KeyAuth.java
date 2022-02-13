@@ -47,14 +47,9 @@ public class KeyAuth {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 					return null;
 				}
-
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				}
-
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				}
-
-			} };
+				public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+				public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+			}};
 
 			SSLContext sslcontext = SSLContext.getInstance("SSL");
 			sslcontext.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -78,9 +73,7 @@ public class KeyAuth {
 				JSONObject responseJSON = new JSONObject(response.getBody());
 
 				if (response.getBody().equalsIgnoreCase("KeyAuth_Invalid")) {
-					// Calling the method with a disabled connection
 					Minecraft.getMinecraft().shutdown();
-					// System.exit(0);
 					System.out.println("invalid");
 				}
 
@@ -90,88 +83,12 @@ public class KeyAuth {
 					System.out.println("Session ID: " + responseJSON.getString("sessionid"));
 
 				} else if (responseJSON.getString("message").equalsIgnoreCase("invalidver")) {
-					// Calling the method with a disabled version
-					// System.out.println(reponseJSON.getString("download"));
-
 				} else {
 					System.out.println(responseJSON.getString("message"));
-					// System.exit(0);
 					Minecraft.getMinecraft().shutdown();
 				}
-
-			} catch (Exception e) {
-
-			}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void login(String username, String password) {
-		if (!initialized) {
-			System.out.println("\n\n Please initzalize first");
-			return;
-		}
-
-		HttpResponse<String> response;
-		try {
-			String hwid = HWID.getHWID();
-
-			response = Unirest.post(url).field("type", "login").field("username", username).field("pass", password)
-					.field("hwid", hwid).field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid)
-					.asString();
-
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if (!responseJSON.getBoolean("success")) {
-					System.out.println("Error");
-					// System.exit(0);
-				} else {
-					userData = new UserData(responseJSON);
-
-					// optional success msg
-				}
-
-			} catch (Exception e) {
-
-			}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void upgrade(String username, String key) {
-		if (!initialized) {
-			System.out.println("\n\n Please initzalize first");
-			return;
-		}
-
-		HttpResponse<String> response;
-		try {
-			String hwid = HWID.getHWID();
-
-			response = Unirest.post(url).field("type", "upgrade").field("username", username).field("key", key)
-					.field("hwid", hwid).field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid)
-					.asString();
-
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if (!responseJSON.getBoolean("success")) {
-					System.out.println("Error");
-					// System.exit(0);
-				} else {
-
-					// optional success msg
-				}
-
-			} catch (Exception e) {
-
-			}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
+			} catch (Exception ignored) {}
+		} catch (UnirestException e) {e.printStackTrace();}
 	}
 
 	public boolean license(String key) {
@@ -195,14 +112,8 @@ public class KeyAuth {
 				if (!responseJSON.getBoolean("success")) {
 					System.out.println("the license does not exist");
 					Minecraft.getMinecraft().shutdown();
-				} else {
-					userData = new UserData(responseJSON);
-					// optional success msg
-				}
-
-			} catch (Exception ignored) {
-				return false;
-			}
+				} else userData = new UserData(responseJSON);
+			} catch (Exception e) {return false;}
 		} catch (UnirestException e) {
 			e.printStackTrace();
 			return false;

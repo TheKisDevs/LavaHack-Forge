@@ -1,5 +1,6 @@
 package com.kisman.cc.util.glow;
 
+import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 
@@ -75,7 +76,7 @@ public class ShaderShell {
         int shaderProgram = ARBShaderObjects.glCreateProgramObjectARB();
         if (shaderProgram == 0) {
             System.out.println("PC Issued");
-            System.exit(0);
+            Minecraft.getMinecraft().shutdown();
             return;
         }
         int shader = ARBShaderObjects.glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
