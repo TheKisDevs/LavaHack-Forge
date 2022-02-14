@@ -2,8 +2,8 @@ package com.kisman.cc.oldclickgui.auth;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.util.Render2DUtil;
-import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.input.Keyboard;
@@ -18,16 +18,20 @@ public class AuthGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        Render2DUtil.drawRect(width / 2 - 100, height / 4 + 2, 200, 160, 13);
+        Render2DUtil.drawRect(0, 0, width, height, Color.BLACK.getRGB());
 
-        CustomFontUtil.drawCenteredStringWithShadow("Auth with license key", width / 2, height / 4 + 6, Color.BLACK.getRGB());
+        drawCenteredStringWithShadow("Auth with license key", width / 2, height / 4 + 6, ColorUtils.astolfoColors(100, 100));
 
         keyField.drawTextBox();
 
-        CustomFontUtil.drawCenteredStringWithShadow("If you have access but havent key, you can dm _kisman_#5039 for get help", width / 2, 10, Color.BLACK.getRGB());
-        CustomFontUtil.drawCenteredStringWithShadow("(C) All rights reserved", width / 2, height - 14, 0xFF9C9B9C);
+        drawCenteredStringWithShadow("If you have access but havent key, you can dm _kisman_#5039 for get help", width / 2, 10, ColorUtils.astolfoColors(100, 100));
+        drawCenteredStringWithShadow("(C) All rights reserved", width / 2, height - 14, ColorUtils.astolfoColors(100, 100));
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    private void drawCenteredStringWithShadow(String text, double x, double y, int color) {
+        fontRenderer.drawStringWithShadow(text,  (int) x - fontRenderer.getStringWidth(text) / 2, (int) y, color);
     }
 
     @Override

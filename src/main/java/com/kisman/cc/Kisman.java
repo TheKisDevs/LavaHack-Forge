@@ -20,14 +20,12 @@ import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
-import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.relauncher.*;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
@@ -64,6 +62,7 @@ public class Kisman {
 
     public static final boolean allowToConfiguredAnotherClients;
     public static boolean isOpenAuthGui;
+    public static boolean autoUpdate;
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
@@ -96,15 +95,11 @@ public class Kisman {
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
 
-    public Verificator d1;
-
     public Kisman() {
         instance = this;
     }
 
     public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
-        d1 = new Verificator();
-        if(!d1.preInit()) throw new NoStackTraceThrowable("YesComment");
         AntiDump.check();
     }
 

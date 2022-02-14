@@ -54,6 +54,7 @@ public class ModuleManager {
 		modules.add(new Surround());
 		//client
 		modules.add(new AutoConfig());
+		modules.add(new AutoUpdate());
 		modules.add(new Cape());
 		modules.add(new Config());
 		modules.add(new Console());

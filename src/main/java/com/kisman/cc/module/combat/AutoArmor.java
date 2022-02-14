@@ -2,9 +2,11 @@
 
  import com.kisman.cc.Kisman;
  import com.kisman.cc.module.*;
+ import com.kisman.cc.oldclickgui.csgo.components.Slider;
  import com.kisman.cc.util.InventoryUtil;
  import com.kisman.cc.settings.*;
 
+ import i.gishreloaded.gishcode.utils.TimerUtils;
  import net.minecraft.client.gui.inventory.GuiContainer;
  import net.minecraft.client.renderer.InventoryEffectRenderer;
  import net.minecraft.enchantment.*;
@@ -14,34 +16,39 @@
 
  import java.util.*;
 
- public class AutoArmor extends Module{
+ public class AutoArmor extends Module {
+     private final Setting delay = new Setting("Delay", this, 0, 0, 100, Slider.NumberType.TIME);
+
      public static AutoArmor instance;
+     private final TimerUtils timer = new TimerUtils();
 
      public AutoArmor() {
          super("AutoArmor", "ebate srate lox!", Category.COMBAT);
 
          instance = this;
 
+         setmgr.rSetting(delay);
          Kisman.instance.settingsManager.rSetting(new Setting("NoThorns", this, false));
      }
 
+     public void onEnable() {
+         timer.reset();
+     }
+
      public void update() {
-         if(mc.player == null && mc.world == null) return;
+         if(mc.player == null || mc.world == null) return;
+         if(!timer.passedMillis(delay.getValLong())) return; else timer.reset();
+         if (mc.player.ticksExisted % 2 == 0) return;
+         if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;
 
          boolean noThorns = Kisman.instance.settingsManager.getSettingByName(this, "NoThorns").getValBoolean();
-
-         if (mc.player.ticksExisted % 2 == 0) return;
-         // check screen
-         if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;
 
          List<ItemStack> armorInventory = mc.player.inventory.armorInventory;
          List<ItemStack> inventory = mc.player.inventory.mainInventory;
 
-         // store slots and values of best armor pieces
          int[] bestArmorSlots = {-1, -1, -1, -1};
          int[] bestArmorValues = {-1, -1, -1, -1};
 
-         // initialize with currently equipped armour
          for (int i = 0; i < 4; i++) {
              ItemStack oldArmour = armorInventory.get(i);
              if (oldArmour.getItem() instanceof ItemArmor) bestArmorValues[i] = ((ItemArmor) oldArmour.getItem()).damageReduceAmount;
@@ -53,7 +60,6 @@
 
          for (Integer slot : slots) {
              ItemStack item = inventory.get(slot);
-             // 7 is the id for thorns
              if (noThorns && EnchantmentHelper.getEnchantments(item).containsKey(Enchantment.getEnchantmentByID(7))) thorns.put(slot, item);
              else armour.put(slot, item);
          }
@@ -74,7 +80,6 @@
                  ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
                  int armorType = itemArmor.armorType.ordinal() - 2;
 
-                 // Thorns Is only put in when all other is lost
                  if (!(armorInventory.get(armorType) == ItemStack.EMPTY && bestArmorSlots[armorType] == -1)) return;
                  if (armorType == 2 && mc.player.inventory.armorItemInSlot(armorType).getItem().equals(Items.ELYTRA)) return;
                  int armorValue = itemArmor.damageReduceAmount;
@@ -85,18 +90,12 @@
              }));
          }
 
-         // equip better armor
          for (int i = 0; i < 4; i++) {
-             // check if better armor was found
              int slot = bestArmorSlots[i];
              if (slot == -1) continue;
-             // hotbar fix
              if (slot < 9) slot += 36;
-             // pick up inventory slot
              mc.playerController.windowClick(0, slot, 0, ClickType.PICKUP, mc.player);
-             // click on armour slot
              mc.playerController.windowClick(0, 8 - i, 0, ClickType.PICKUP, mc.player);
-             // put back inventory slot
              mc.playerController.windowClick(0, slot, 0, ClickType.PICKUP, mc.player);
          }
      }
