@@ -297,7 +297,7 @@ public class AutoRer extends Module {
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-                calculatePlace();
+                doCalculatePlace();
                 calcTimer.reset();
             }
 
@@ -310,7 +310,7 @@ public class AutoRer extends Module {
         if(mc.player == null || mc.world == null) return;
         if(manualBreaker.getValBoolean()) manualBreaker();
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-            calculatePlace();
+            doCalculatePlace();
             calcTimer.reset();
         }
 
@@ -338,7 +338,7 @@ public class AutoRer extends Module {
     private final Listener<EventPlayerMotionUpdate> motion = new Listener<>(event -> {
         if(!motionCrystal.getValBoolean() || currentTarget == null) return;
         if(motionCalc.getValBoolean() && fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-            calculatePlace();
+            doCalculatePlace();
             calcTimer.reset();
         }
         if(multiplication.getValInt() == 1) doAutoRerLogic(event);
@@ -437,6 +437,10 @@ public class AutoRer extends Module {
         }
     });
 
+    private void doCalculatePlace() {
+        try {calculatePlace();} catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
+    }
+
     private void calculatePlace() {
         double maxDamage = 0.5;
         BlockPos placePos = null;
@@ -476,7 +480,7 @@ public class AutoRer extends Module {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
 
         if(!fastCalc.getValBoolean()) {
-            calculatePlace();
+            doCalculatePlace();
 
             if(placePos == null) return;
         }

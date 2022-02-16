@@ -61,6 +61,7 @@ public class ModuleManager {
 		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
 		modules.add(new DiscordRPC());
+		modules.add(new HalqGuiModule());
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
 		modules.add(new NotEnoughCoinsModule());

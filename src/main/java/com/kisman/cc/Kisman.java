@@ -13,6 +13,7 @@ import com.kisman.cc.module.client.Config;
 import com.kisman.cc.oldclickgui.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
+import com.kisman.cc.oldclickgui.halq.HalqGui;
 import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
@@ -84,6 +85,7 @@ public class Kisman {
     public HudGui hudGui;
     public HudEditorGui hudEditorGui;
     public Gui gui;
+    public HalqGui halqGui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
     public CommandManager commandManager;
@@ -127,6 +129,7 @@ public class Kisman {
     	hudGui = new HudGui();
         hudEditorGui = new HudEditorGui();
         gui = new Gui();
+        halqGui = new HalqGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);
         commandManager = new CommandManager();

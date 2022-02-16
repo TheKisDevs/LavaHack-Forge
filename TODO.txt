@@ -10,6 +10,7 @@ Fix vegagui slider dragging
 Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
 добавить плеер превью в гуишку как в инфинити(попросили)
+добавить что бы в слайдер можно было задавать любое значение
 
 For b0.2
 

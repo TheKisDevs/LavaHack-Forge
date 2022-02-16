@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
 import com.kisman.cc.hud.hudmodule.HudModule;

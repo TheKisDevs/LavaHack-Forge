@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.combat.KillAura;
 import com.kisman.cc.module.render.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
@@ -24,7 +25,7 @@ public class MixinItemRenderer {
 
             boolean isEating = PlayerUtil.IsEating();
             boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
-            boolean isSwingMain = isSwing && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
+            boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && KillAura.instance.isToggled() && KillAura.instance.target != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
             if (isSwing) {
                 switch (SwingAnimation.instance.strongMode.getValString()) {

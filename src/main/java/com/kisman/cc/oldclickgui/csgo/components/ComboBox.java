@@ -19,7 +19,6 @@ public class ComboBox extends AbstractComponent {
     private int selectedIndex;
 
     private boolean opened;
-    private int mouseX;
     private int mouseY;
 
     public ComboBox(IRenderer renderer, int preferredWidth, int preferredHeight, String[] values, int selectedIndex) {
