@@ -3,7 +3,7 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.RenderUtil;
+import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.BlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.*;
@@ -20,15 +20,19 @@ public class BlockOutline extends Module {
 
     private String renderMode = "";
 
+    private final Setting colorVal = new Setting("Color", this, "Color", new Colour(0, 0, 255));
+
     public BlockOutline() {
         super("BlockOutline", "BlockOutline", Category.RENDER);
 
         instance = this;
 
+        setmgr.rSetting(colorVal);
         Kisman.instance.settingsManager.rSetting(new Setting("RenderMode", this, "Outline", new ArrayList<>(Arrays.asList("Outline", "Box", "OutlineBox", "Flat"))));
     }
 
     public void update() {
+        this.color = new float[] {colorVal.getColour().getColor().getRed() / 255f, colorVal.getColour().getColor().getGreen() / 255f, colorVal.getColour().getColor().getBlue() / 255f};
         this.renderMode = Kisman.instance.settingsManager.getSettingByName(this, "RenderMode").getValString();
     }
 

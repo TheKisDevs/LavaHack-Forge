@@ -18,7 +18,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-/* 
+/**
 * @author _kisman_
 * @credits github.com/TheKisDevs/loader
 */

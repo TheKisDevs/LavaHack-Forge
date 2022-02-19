@@ -107,10 +107,26 @@ public class ElytraFly extends Module {
             case "Control":
                 handleControlMode(event);
                 break;
+            case "NormalPacket":
+                handleNormalPacketModeElytra(event);
+                break;
         }
     });
 
-    public void handleImmediateModeElytra(EventPlayerTravel travel) {
+    private void handleNormalPacketModeElytra(EventPlayerTravel travel) {
+        double[] dir = MathUtil.directionSpeedNoForward(speed.getValDouble());
+
+        if (mc.player.movementInput.jump) mc.player.motionY = speed.getValDouble();
+        if (mc.player.movementInput.sneak) mc.player.motionY = -speed.getValDouble();
+        if (mc.player.movementInput.moveStrafe != 0.0f || mc.player.movementInput.moveForward != 0.0f) {
+            mc.player.motionX = dir[0];
+            mc.player.motionZ = dir[1];
+        }
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+    }
+
+    private void handleImmediateModeElytra(EventPlayerTravel travel) {
         if (mc.player.movementInput.jump) {
             double motionSq = Math.sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ);
 
@@ -171,6 +187,6 @@ public class ElytraFly extends Module {
     }
 
     private enum Mode {
-        Normal, Control
+        Normal, Control, NormalPacket
     }
 }

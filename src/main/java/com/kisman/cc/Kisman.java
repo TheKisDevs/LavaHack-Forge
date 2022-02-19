@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 
-@SideOnly(Side.CLIENT)
 public class Kisman {
     public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";

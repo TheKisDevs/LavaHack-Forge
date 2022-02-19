@@ -9,10 +9,11 @@ fix dynamic protect surround
 Fix vegagui slider dragging
 Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
-добавить плеер превью в гуишку как в инфинити(попросили)
 добавить что бы в слайдер можно было задавать любое значение
+add search field in gui(for rastishka) ft rusherhack
 
 For b0.2
 
 Add CustomHotbar(check "todo" folder) - _kisman_
 Add second glow for more hud
+add nr glow

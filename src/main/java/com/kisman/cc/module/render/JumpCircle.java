@@ -66,22 +66,17 @@ public class JumpCircle extends Module {
                 double x = c.position().x;
                 double y = c.position().y - k * 0.5;
                 double z = c.position().z;
-                float start = k;
-                float end = start + 1f - k;
+                float end = k + 1f - k;
                 GL11.glBegin(GL11.GL_QUAD_STRIP);
                 for (int i = 0; i <= 360; i = i + 5) {
-                    GL11.glColor4f((float) c.color().x, (float) c.color().y, (float) c.color().z,
-                            0.2f * (1 - ((float) c.existed / MAX_JC_TIME)));
-                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i * 4)) * start, y,
-                            z + Math.sin(Math.toRadians(i * 4)) * start);
+                    GL11.glColor4f((float) c.color().x, (float) c.color().y, (float) c.color().z, 0.2f * (1 - ((float) c.existed / MAX_JC_TIME)));
+                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i * 4)) * k, y, z + Math.sin(Math.toRadians(i * 4)) * k);
                     GL11.glColor4f(1, 1, 1, 0.01f * (1 - ((float) c.existed / MAX_JC_TIME)));
-                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i)) * end, y + Math.sin(k * 8) * 0.5,
-                            z + Math.sin(Math.toRadians(i) * end));
+                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i)) * end, y + Math.sin(k * 8) * 0.5, z + Math.sin(Math.toRadians(i) * end));
                 }
                 GL11.glEnd();
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception ignored) {}
         Collections.reverse(circles);
 
         glEnable(GL11.GL_LIGHTING);
@@ -98,10 +93,6 @@ public class JumpCircle extends Module {
     public void handleEntityJump(Entity entity) {
         circles.add(new Circle(entity.getPositionVector(), rainbow.getValBoolean() ? new Colour(ColorUtils.rainbow(1, 1)).toVec3d() : color.getColour().toVec3d()));
     }
-    public double deltaTime()
-    {
-        return mc.getDebugFPS() > 0  ? (1.0000 / mc.getDebugFPS()) : 1;
-    }
 
     public class Circle {
         private final Vec3d vec;
@@ -113,16 +104,8 @@ public class JumpCircle extends Module {
             this.color = color;
         }
 
-        Vec3d position() {
-            return this.vec;
-        }
-
-        Vec3d color() {
-            return this.color;
-        }
-
-        boolean update() {
-            return ++existed > MAX_JC_TIME;
-        }
+        Vec3d position() {return this.vec;}
+        Vec3d color() {return this.color;}
+        boolean update() {return ++existed > MAX_JC_TIME;}
     }
 }

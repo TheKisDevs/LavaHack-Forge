@@ -28,6 +28,8 @@ public class ModuleManager {
 	}
 
 	public void init() {
+		modules.clear();
+
 		//combat
 		modules.add(new AimAssist());
 		modules.add(new AimBot());
@@ -95,33 +97,26 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
-//		modules.add(new CustomHotbar());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
 		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
-//		modules.add(new HandCharms());
 		modules.add(new HoleESP());
-//		modules.add(new ItemCharms());
+		modules.add(new HotbarModifier());
 		modules.add(new JumpCircle());
 		modules.add(new NameTags());
-//		modules.add(new NoPitchLimit());
 		modules.add(new NoRender());
 		modules.add(new Particle());
-//		modules.add(new PenisESP());
-//		modules.add(new PlayerModifier());
 		modules.add(new PopCharms());
 		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
 		modules.add(new Reverse());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
-//		modules.add(new SpawnsESP());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new TargetESP());
-//		modules.add(new Tracers());
 		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
@@ -148,14 +143,12 @@ public class ModuleManager {
 		modules.add(new NoWeb());
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());
-//		modules.add(new SafeWalk());
 		modules.add(new Scaffold());
 		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new Sprint());
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
-//		modules.add(new Zoom());
 		//player
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
@@ -173,7 +166,6 @@ public class ModuleManager {
 		modules.add(new AntiLogger());
 		modules.add(new AntiVanish());
 		modules.add(new AutoKick());
-//		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new BowExploitRewrite());
 		modules.add(new CactusLeave());
@@ -192,7 +184,6 @@ public class ModuleManager {
 		modules.add(new Rubberband());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
-//		modules.add(new StrongholdFinder());
 		modules.add(new Teleport());
 		modules.add(new TickShift());
 		modules.add(new Timer());
@@ -202,12 +193,10 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BurrowCounter());
 		modules.add(new FakePlayer());
-//		modules.add(new ItemScroller());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new PigPOV());
 		modules.add(new SelfDamage());
-//		modules.add(new TeamRusherLag());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());

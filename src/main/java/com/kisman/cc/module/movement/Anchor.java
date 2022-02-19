@@ -16,6 +16,7 @@ public class Anchor extends Module {
     private final Setting timerValue = new Setting("Timer Value", this, 5, 0.1f, 20, false);
     private final Setting disableAfterComplete = new Setting("Disable After Complete", this, false);
     private final Setting fastFall = new Setting("Fast Fall", this, false);
+    private final Setting fastFallMotion = new Setting("Fast Fall Motion", this, 10, 1, 10, false);
     private final Setting cancelMovement = new Setting("Cancel Movement", this, false);
     private final Setting usePitchInCM = new Setting("Use Pitch in CancelMove", this, true);
 
@@ -32,6 +33,7 @@ public class Anchor extends Module {
         setmgr.rSetting(timerValue);
         setmgr.rSetting(disableAfterComplete);
         setmgr.rSetting(fastFall);
+        setmgr.rSetting(fastFallMotion);
         setmgr.rSetting(cancelMovement);
         setmgr.rSetting(usePitchInCM);
         Kisman.instance.settingsManager.rSetting(new Setting("Pitch", this, 60, 0, 90, false));
@@ -95,7 +97,7 @@ public class Anchor extends Module {
                         mc.player.motionX = motionX / 2;
                         mc.player.motionZ = motionZ / 2;
                     }
-                    if(fastFall.getValBoolean()) mc.player.motionY = -10;
+                    if(fastFall.getValBoolean()) mc.player.motionY = -fastFallMotion.getValDouble();
                     using = true;
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
                     if (!mc.player.onGround) if (mc.gameSettings.keyBindJump.isKeyDown()) this.jumped = true;
@@ -105,13 +107,13 @@ public class Anchor extends Module {
                         if (!mc.player.onGround) ++this.packets;
                         if (!mc.player.onGround && !mc.player.isInsideOfMaterial(Material.WATER) && !mc.player.isInsideOfMaterial(Material.LAVA) && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.player.isOnLadder() && this.packets > 0) {
                             final BlockPos blockPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-                            for (double position : oneblockPositions) mc.player.connection.sendPacket(new CPacketPlayer.Position((double)(blockPos.getX() + 0.5f), mc.player.posY - position, (double)(blockPos.getZ() + 0.5f), true));
-                            mc.player.setPosition((double)(blockPos.getX() + 0.5f), BlockUtil.getNearestBlockBelow() + 0.1, (double)(blockPos.getZ() + 0.5f));
+                            for (double position : oneblockPositions) mc.player.connection.sendPacket(new CPacketPlayer.Position((blockPos.getX() + 0.5f), mc.player.posY - position, (blockPos.getZ() + 0.5f), true));
+                            mc.player.setPosition((blockPos.getX() + 0.5f), BlockUtil.getNearestBlockBelow() + 0.1, (blockPos.getZ() + 0.5f));
                             this.packets = 0;
                         }
                     }
 
-                    if(fastFall.getValBoolean()) mc.player.motionY = -10;
+                    if(fastFall.getValBoolean()) mc.player.motionY = -fastFallMotion.getValDouble();
                 }
             } else using = false;
         }

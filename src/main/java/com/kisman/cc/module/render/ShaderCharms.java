@@ -11,6 +11,8 @@ import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,6 +30,8 @@ public class ShaderCharms extends Module {
     private Setting friends = new Setting("Friends", this, true);
     private Setting mobs = new Setting("Mobs", this, false);
     private Setting animals = new Setting("Animals", this, false);
+    private Setting enderPearls = new Setting("Ender Pearls", this, false);
+    private Setting itemsEntity = new Setting("Items(Entity)", this, false);
     private Setting items = new Setting("Items", this, true);
 
     private Setting blur = new Setting("Blur", this, true);
@@ -59,6 +63,8 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(friends);
         setmgr.rSetting(mobs);
         setmgr.rSetting(animals);
+        setmgr.rSetting(enderPearls);
+        setmgr.rSetting(itemsEntity);
         setmgr.rSetting(items);
 
         setmgr.rSetting(blur);
@@ -157,6 +163,8 @@ public class ShaderCharms extends Module {
                             || (entity instanceof EntityPlayer && friends.getValBoolean() && FriendManager.instance.isFriend(entity.getName()))
                             || (entity instanceof EntityEnderCrystal && crystals.getValBoolean())
                             || ((entity instanceof EntityMob || entity instanceof EntitySlime) && mobs.getValBoolean())
+                            || ((entity instanceof EntityEnderPearl) && enderPearls.getValBoolean())
+                            || ((entity instanceof EntityItem) && itemsEntity.getValBoolean())
                             || (entity instanceof EntityAnimal && animals.getValBoolean()))) continue;
                     Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
                     Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());

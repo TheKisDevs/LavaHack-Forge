@@ -51,22 +51,13 @@ public class Utils {
 
 	public static String formatTime(long l) {
 		long minutes = l / 1000 / 60;
-
 		l -= minutes * 1000 * 60;
-
 		long seconds = l / 1000;
-
 		l -= seconds * 1000;
-
 		StringBuilder sb = new StringBuilder();
-
 		if (minutes != 0) sb.append(minutes).append("min ");
 		if (seconds != 0) sb.append(seconds).append("s ");
-
-		if (l != 0 || minutes == 0 && seconds == 0) {
-			sb.append(l).append("ms ");
-		}
-
+		if (l != 0 || minutes == 0 && seconds == 0) sb.append(l).append("ms ");
 		return sb.substring(0, sb.length() - 1);
 	}
 
