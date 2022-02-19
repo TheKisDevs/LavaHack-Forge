@@ -12,17 +12,17 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
+import static net.minecraft.client.gui.GuiIngame.WIDGETS_TEX_PATH;
+
 @Mixin(value = GuiIngame.class, priority = 10000)
 public class MixinGuiIngame extends Gui {
     @Shadow @Final public Minecraft mc;
-    @Shadow @Final public static ResourceLocation WIDGETS_TEX_PATH;
     @Shadow protected void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack) {}
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)

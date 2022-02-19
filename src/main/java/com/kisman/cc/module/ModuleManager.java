@@ -90,6 +90,7 @@ public class ModuleManager {
 		modules.add(new Animation());
 		modules.add(new BlockOutline());
 		modules.add(new Breadcrumbs());
+		modules.add(new CameraClip());
 		modules.add(new Charms());
 		modules.add(new ChinaHat());
 		modules.add(new CityESP());
@@ -117,7 +118,6 @@ public class ModuleManager {
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new TargetESP());
-		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());

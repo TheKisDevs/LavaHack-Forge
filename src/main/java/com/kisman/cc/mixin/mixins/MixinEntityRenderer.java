@@ -4,13 +4,10 @@ import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
 import com.kisman.cc.module.render.*;
-import com.kisman.cc.util.customfont.CustomFontUtil;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.*;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,9 +16,6 @@ import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.*;
-
 @Mixin(value = EntityRenderer.class, priority = 10000)
 public class MixinEntityRenderer {
     @Shadow @Final public int[] lightmapColors;
@@ -74,51 +68,8 @@ public class MixinEntityRenderer {
         return new Vector3f(first.x * (1.0f - factor) + second.x * factor, first.y * (1.0f - factor) + second.y * factor, first.z * (1.0f - factor) + first.z * factor);
     }
 
-    /**
-     * @author _kisman_
-     */
-//    @Overwrite
-    /*public void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
-        if(NameTags.instance.isToggled()) {
-            glEnable(32823);
-            glPolygonOffset(1, -1100000);
-        }
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, z);
-        GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
-        GlStateManager.scale(-0.025F, -0.025F, 0.025F);
-        GlStateManager.disableLighting();
-        GlStateManager.depthMask(false);
-        if (!isSneaking) GlStateManager.disableDepth();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        int i = CustomFontUtil.getStringWidth(str) / 2;
-        GlStateManager.disableTexture2D();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos( (-i - 1),  (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos( (-i - 1),  (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos( (i + 1),  (8 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        bufferbuilder.pos( (i + 1),  (-1 + verticalShift), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        if (!isSneaking) {
-            fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, -1);
-            GlStateManager.enableDepth();
-        }
-
-        GlStateManager.depthMask(true);
-        fontRendererIn.drawString(str, -fontRendererIn.getStringWidth(str) / 2, verticalShift, -1);
-        GlStateManager.enableLighting();
-        GlStateManager.disableBlend();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.popMatrix();
-        if(NameTags.instance.isToggled()) {
-            glPolygonOffset(1, 1000000);
-            glDisable(32823);
-        }
-    }*/
+    @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"), expect = 0)
+    private RayTraceResult rayTraceBlocks(WorldClient worldClient, Vec3d start, Vec3d end) {
+        return CameraClip.instance.isToggled() ? null : worldClient.rayTraceBlocks(start, end);
+    }
 }
