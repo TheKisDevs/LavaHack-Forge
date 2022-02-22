@@ -264,6 +264,10 @@ public class PlayerUtil {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }
 
+    public static BlockPos GetPlayerPosFloored(EntityPlayer player) {
+        return new BlockPos(Math.floor(player.posX), Math.floor(player.posY), Math.floor(player.posZ));
+    }
+
     public static BlockPos entityPosToFloorBlockPos(Entity e) {
         return new BlockPos(Math.floor(e.posX), Math.floor(e.posY), Math.floor(e.posZ));
     }

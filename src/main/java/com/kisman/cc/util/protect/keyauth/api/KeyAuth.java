@@ -94,6 +94,7 @@ public class KeyAuth {
 	public boolean license(String key) {
 		if (!initialized) {
 			System.out.println("\n\n Please initzalize first");
+			init();
 			return false;
 		}
 

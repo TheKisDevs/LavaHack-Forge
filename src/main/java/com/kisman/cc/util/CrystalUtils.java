@@ -80,9 +80,9 @@ public class CrystalUtils {
             int z = target.getPosition().getZ() - (int)range;
             while ((float)z <= (float) target.getPosition().getZ() + range) {
                 int y;
-                int n = y = sphere != false ? target.getPosition().getY() - (int)range : target.getPosition().getY();
+                int n = y = !sphere ? target.getPosition().getY() - (int)range : target.getPosition().getY();
                 while ((float)y < (float) target.getPosition().getY() + range) {
-                    double distance = (target.getPosition().getX() - x) * (target.getPosition().getX() - x) + (target.getPosition().getZ() - z) * (target.getPosition().getZ() - z) + (sphere != false ? (target.getPosition().getY() - y) * (target.getPosition().getY() - y) : 0);
+                    double distance = (target.getPosition().getX() - x) * (target.getPosition().getX() - x) + (target.getPosition().getZ() - z) * (target.getPosition().getZ() - z) + (!sphere ? (target.getPosition().getY() - y) * (target.getPosition().getY() - y) : 0);
                     if (distance < (double)(range * range) && (!hollow || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
                         blocks.add(new BlockPos(x, y, z));
                     }

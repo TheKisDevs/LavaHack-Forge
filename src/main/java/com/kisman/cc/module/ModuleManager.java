@@ -140,6 +140,7 @@ public class ModuleManager {
 		modules.add(new NoSlow());
 		modules.add(new NoSlowBypass());
 		modules.add(new NoSlowSneak());
+		modules.add(new NoStepDelay());
 		modules.add(new NoWeb());
 		modules.add(new Parkour());
 		modules.add(new ReverseStep());

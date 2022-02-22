@@ -1,7 +1,6 @@
 For b0.1.6.1:
 
 Add More color customization for hud - _kisman_
-Add CameraClip
 Fix AutoRer render
 Fix AutoEZ
 Fix Alpha in color picker - _kisman_
@@ -11,9 +10,12 @@ Add round to sliders from vegagui
 Cast sliders from vegagui bg to default
 добавить что бы в слайдер можно было задавать любое значение
 add search field in gui(for rastishka) ft rusherhack
+write rules if keyauth server arent working
 
 For b0.2
 
 Add CustomHotbar(check "todo" folder) - _kisman_
 Add second glow for more hud
 add nr glow
+add new logo theme(ft halqgui)
+add animations in halqgui

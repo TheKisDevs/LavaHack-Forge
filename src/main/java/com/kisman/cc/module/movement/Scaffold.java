@@ -165,12 +165,12 @@ public class Scaffold extends Module {
                 else if (x > 0.0D) x -= increment;
                 else x += increment;
             }
-            for (; z != 0.0D && isOffsetBBEmpty(0.0D, -1.0f, z);) {
+            while (z != 0.0D && isOffsetBBEmpty(0.0D, -1.0f, z)) {
                 if (z < increment && z >= -increment) z = 0.0D;
                 else if (z > 0.0D) z -= increment;
                 else z += increment;
             }
-            for (; x != 0.0D && z != 0.0D && isOffsetBBEmpty(x, -1.0f, z);) {
+            while (x != 0.0D && z != 0.0D && isOffsetBBEmpty(x, -1.0f, z)) {
                 if (x < increment && x >= -increment) x = 0.0D;
                 else if (x > 0.0D) x -= increment;
                 else x += increment;

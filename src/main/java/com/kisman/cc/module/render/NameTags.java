@@ -56,10 +56,10 @@ public class  NameTags extends Module {
         setmgr.rSetting(desc);
     }
 
-    @SubscribeEvent
+/*    @SubscribeEvent
     public void onRenderNameTag(RenderLivingEvent.Specials.Pre event) {
         if(event.getEntity() instanceof EntityPlayer) event.setCanceled(true);
-    }
+    }*/
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {

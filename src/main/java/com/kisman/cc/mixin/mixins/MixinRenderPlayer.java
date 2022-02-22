@@ -4,6 +4,7 @@ import com.kisman.cc.module.render.*;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.*;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
@@ -23,5 +24,10 @@ public class MixinRenderPlayer {
 
             GlStateManager.rotate(hue, 1, 0, hue);
         } else if(Reverse.instance.isToggled() && !Spin.instance.isToggled()) GlStateManager.rotate(180, 1, 0, 0);
+    }
+
+    @Inject(method = "renderEntityName(Lnet/minecraft/client/entity/AbstractClientPlayer;DDDLjava/lang/String;D)V", at = @At("HEAD"), cancellable = true)
+    private void drawBigBebra(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq, CallbackInfo ci) {
+        if(NameTags.instance.isToggled() && entityIn instanceof EntityPlayer) ci.cancel();
     }
 }
