@@ -17,6 +17,8 @@
 `Skarlord99`noob
 - discord - `Skarlord99#5871`
 
+`Hacker op`noob
+- discord - `Hacker op#1350`
 ###### Setup:
 Windows:
 
