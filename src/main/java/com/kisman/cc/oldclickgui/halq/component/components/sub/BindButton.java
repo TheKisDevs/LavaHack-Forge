@@ -41,7 +41,7 @@ public class BindButton extends Component {
             if(changing) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width, y + offset}, new double[] {x + HalqGui.width, y + offset + HalqGui.height}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), HalqGui.primaryColor));
         } else Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, changing ? HalqGui.primaryColor.getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(changing ? "Press a key..." : module != null ? "Bind: " + Keyboard.getKeyName(module.getKey()) : "Bind: " + Keyboard.getKeyName(setting.getKey()) , x, y + offset, HalqGui.width, HalqGui.height);
+        HalqGui.drawString(changing ? "Press a key..." : module != null ? "Bind: " + Keyboard.getKeyName(module.getKey()) : setting.getName() + ": " + Keyboard.getKeyName(setting.getKey()) , x, y + offset, HalqGui.width, HalqGui.height);
     }
 
     @Override

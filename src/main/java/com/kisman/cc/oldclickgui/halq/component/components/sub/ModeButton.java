@@ -20,6 +20,7 @@ public class ModeButton extends Component {
         this.y = y;
         this.offset = offset;
         this.values = setting.getStringValues();
+        this.index = setting.getSelectedIndex();
     }
 
     @Override
@@ -83,14 +84,5 @@ public class ModeButton extends Component {
 
     private boolean isMouseOnButton2(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + getHeight();
-    }
-
-    public static class ArrayComponent {
-        public String string;
-        public int index;
-        public ArrayComponent(String string, int index) {
-            this.string = string;
-            this.index = index;
-        }
     }
 }

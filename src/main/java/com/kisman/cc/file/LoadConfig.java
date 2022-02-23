@@ -91,9 +91,9 @@ public class LoadConfig {
     private static void loadEnabledModules() throws IOException{
         String enabledLocation = Kisman.fileName + Kisman.mainName;
 
-        if (!Files.exists(Paths.get(enabledLocation + "Toggle" + ".json"))) return;
+        if (!Files.exists(Paths.get(enabledLocation + "Toggle.json"))) return;
 
-        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "Toggle" + ".json"));
+        InputStream inputStream = Files.newInputStream(Paths.get(enabledLocation + "Toggle.json"));
         JsonObject moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();
 
         if (moduleObject.get("Modules") == null) return;

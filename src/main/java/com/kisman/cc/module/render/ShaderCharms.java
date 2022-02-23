@@ -7,7 +7,10 @@ import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.RenderUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockEnderChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -16,6 +19,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,6 +37,7 @@ public class ShaderCharms extends Module {
     private Setting enderPearls = new Setting("Ender Pearls", this, false);
     private Setting itemsEntity = new Setting("Items(Entity)", this, false);
     private Setting items = new Setting("Items", this, true);
+    private Setting storages = new Setting("Storages(cfg from StorageEsp)", this, false);
 
     private Setting blur = new Setting("Blur", this, true);
     private Setting radius = new Setting("Radius", this, 2, 0.1f, 10, false);
@@ -66,6 +71,7 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(enderPearls);
         setmgr.rSetting(itemsEntity);
         setmgr.rSetting(items);
+//        setmgr.rSetting(storages);
 
         setmgr.rSetting(blur);
         setmgr.rSetting(radius);
@@ -99,7 +105,7 @@ public class ShaderCharms extends Module {
             {
                 FramebufferShader framebufferShader = null;
                 boolean itemglow = false, gradient = false;
-                ;
+
                 switch (mode.getValString()) {
                     case "AQUA":
                         framebufferShader = AquaShader.AQUA_SHADER;

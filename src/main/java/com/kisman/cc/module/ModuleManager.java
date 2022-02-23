@@ -89,10 +89,8 @@ public class ModuleManager {
 		modules.add(new Ambience());
 		modules.add(new Animation());
 		modules.add(new BlockOutline());
-		modules.add(new Breadcrumbs());
 		modules.add(new CameraClip());
 		modules.add(new Charms());
-		modules.add(new ChinaHat());
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
@@ -196,6 +194,7 @@ public class ModuleManager {
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
+		modules.add(new Optimizer());
 		modules.add(new PigPOV());
 		modules.add(new SelfDamage());
 		modules.add(new Tracker());

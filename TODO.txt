@@ -11,6 +11,9 @@ Cast sliders from vegagui bg to default
 добавить что бы в слайдер можно было задавать любое значение
 add search field in gui(for rastishka) ft rusherhack
 write rules if keyauth server arent working
+fix rangevisualisator
+fix draggable hudeditor
+add colorpicker & lines in halqgui
 
 For b0.2
 
@@ -19,3 +22,4 @@ Add second glow for more hud
 add nr glow
 add new logo theme(ft halqgui)
 add animations in halqgui
+add shader storage esp

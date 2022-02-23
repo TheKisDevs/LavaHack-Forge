@@ -19,6 +19,7 @@ import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
+import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
@@ -96,6 +97,8 @@ public class Kisman {
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
 
+    public MainAiImpr aiImpr;
+
     public Kisman() {
         instance = this;
     }
@@ -107,6 +110,8 @@ public class Kisman {
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
         Display.setTitle(NAME + " | " + VERSION);
     	MinecraftForge.EVENT_BUS.register(this);
+
+        aiImpr = new MainAiImpr();
 
         eventProcessor = new EventProcessor();
         eventProcessor.onInit();
