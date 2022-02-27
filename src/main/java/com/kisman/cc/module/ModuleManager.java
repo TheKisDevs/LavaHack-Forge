@@ -82,7 +82,6 @@ public class ModuleManager {
 		modules.add(new Credits());
 		modules.add(new Notification());
 		modules.add(new Spammer());
-		modules.add(new TimeStamps());
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
@@ -110,6 +109,7 @@ public class ModuleManager {
 		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
 		modules.add(new Reverse());
+		modules.add(new ScoreboardModifier());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
 		modules.add(new Spin());
@@ -191,12 +191,14 @@ public class ModuleManager {
 		//misc
 		modules.add(new AutoLog());
 		modules.add(new BurrowCounter());
+		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
 		modules.add(new PigPOV());
 		modules.add(new SelfDamage());
+		modules.add(new TeamRusherLag());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());

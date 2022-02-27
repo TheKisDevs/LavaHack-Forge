@@ -50,7 +50,7 @@ public class ClickGuiNew extends GuiScreen {
         for(Category cat : Category.values()) {
             ArrayList<Module> modules = Kisman.instance.moduleManager.getModulesInCategory(cat);
             Pane spoilerPane = new Pane(renderer, new GridLayout(1));
-            Button button = new Button(renderer, cat.getName() + (Config.instance.guiRenderSIze.getValBoolean() ? " [" + modules.size() + "]" : ""));
+            Button button = new Button(renderer, cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + modules.size() + "]" : ""));
             buttonPane.addComponent(button);
             button.setOnClickListener(() -> setCurrentCategory(cat));
 
@@ -301,7 +301,7 @@ public class ClickGuiNew extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 
-        window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSIze.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
+        window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSize.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
 
         GL11.glPushMatrix();
         Point point = MathUtil.calculateMouseLocation();

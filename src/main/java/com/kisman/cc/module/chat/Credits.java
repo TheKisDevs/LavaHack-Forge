@@ -13,27 +13,30 @@ public class Credits extends Module {
     public void onEnable() {
         msg = "\nCredits:\n";
 
+        add("StupidDog", "Guide of client base");
         add("CatClient base", "First ClickGui");
         add("HeroCode", "Settings system");
-        add("Vega33", "BowExploitRewrite & shader gui design & Jesus");
-        add("TheRealDiOnFire", "Supporter");
+        add("Vega33", "BowExploitRewrite & shader gui design & Jesus(Matrix, Solid)");
+        add("TheRealDiOnFire", "agogus?");
         add("kshk", "Charms");
         add("salam4ik", "TeleportBack & glow shader");
         add("fendy", "BowExploit");
-        add("Neko+", "ColorPicker");
+        add("Neko+", "First ColorPicker");
         add("NekoPvP", "ItemFOV");
         add("cum stealer", "Simple mode from SwingAnimation");
         add("kqllqk", "CustomFont renderer");
         add("NoRules", "New CustomFont renderer from .ttf");
         add("SalHack", "First CA & Scaffold & more utilities files");
-        add("ZeroTwo", "Anchor");
-        add("sedza", "New logo");
+        add("sedza", "New logo of client");
         add("superblauberee27", "New CSGO gui");
         add("Phobos 1.3.1", "more .frag files");
         add("Phobos 1.9.0", "RangeVisualisator");
         add("NEC", "NEC");
         add("RerHack.club", "Help me with AutoRer");
         add("Aurora", "ChatTTF");
+        add("Wild 1.0", "The ideas about HotbarModifier and gradient checkbox");
+        add("FamilyFunPack", "PigPOV");
+        add("jewtricks", "TeamRusherLag");
         add("Some contributors", "some modules");
 
         ChatUtils.simpleMessage(msg);

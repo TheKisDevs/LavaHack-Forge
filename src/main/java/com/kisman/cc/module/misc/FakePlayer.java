@@ -36,6 +36,10 @@ public class FakePlayer extends Module {
         clonedPlayer.onLivingUpdate();
     }
 
+    public void update() {
+        if(mc.player == null || mc.world == null) super.setToggled(false);
+    }
+
     public void onDisable() {
         if(mc.world == null || mc.player == null) return;
         mc.world.removeEntityFromWorld(-1337);

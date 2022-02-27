@@ -123,6 +123,8 @@ public class Colour {
         return new Colour(ColorUtils.injectAlpha(Color.getHSBColor(hsb[0], hsb[1], hsb[2]), alpha));
     }
 
+    public float getHue() {return RGBtoHSB()[0];}
+
     public float[] RGBtoHSB() {
         return Color.RGBtoHSB(r, g, b, null);
     }

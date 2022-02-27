@@ -56,11 +56,6 @@ public class  NameTags extends Module {
         setmgr.rSetting(desc);
     }
 
-/*    @SubscribeEvent
-    public void onRenderNameTag(RenderLivingEvent.Specials.Pre event) {
-        if(event.getEntity() instanceof EntityPlayer) event.setCanceled(true);
-    }*/
-
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         for(EntityPlayer p : mc.world.playerEntities) {
@@ -107,7 +102,7 @@ public class  NameTags extends Module {
             if (!atheist.getValBoolean()) cross = "\u271d ";
         }
         int pingy = -1;
-        try {pingy = mc.getConnection().getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ex) {}
+        try {pingy = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ignored) {}
         String playerPing = pingy + "ms  ";
         final boolean pings = this.ping.getValBoolean();
         if (!pings) playerPing = "";
@@ -184,7 +179,7 @@ public class  NameTags extends Module {
         final ScaledResolution scaledRes = new ScaledResolution(mc);
         final double twoDscale = scaledRes.getScaleFactor() / Math.pow(scaledRes.getScaleFactor(), 2.0);
         final double scale = this.scale.getValDouble();
-        return (float)scale * 6.0f * ((float)twoDscale + (float)(player.getDistance(mc.getRenderViewEntity().posX, mc.getRenderViewEntity().posY, mc.getRenderViewEntity().posZ) / 10.5));
+        return (float)scale * 6.0f * ((float)twoDscale + (float)(player.getDistance(mc.renderViewEntity.posX, mc.getRenderViewEntity().posY, mc.getRenderViewEntity().posZ) / 10.5));
     }
 
     public void renderItem(ItemStack stack, int x, int y) {

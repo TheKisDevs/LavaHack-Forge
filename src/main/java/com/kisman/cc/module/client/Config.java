@@ -9,43 +9,46 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
 
 public class Config extends Module {
     public static Config instance;
 
     public Setting friends = new Setting("Friends", this, true);
     public Setting nameMode = new Setting("Name Mode", this, NameMode.kismancc);
-    public Setting customName = new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true);
+    public Setting customName = new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true).setVisible(() -> nameMode.getValBoolean());
     public Setting scrollSpeed = new Setting("Scroll Speed", this, 15, 0, 100, Slider.NumberType.PERCENT);
+    public Setting horizontalScroll = new Setting("Horizontal Scroll", this, false);
+    public Setting keyForHorizontalScroll = new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_NONE).setVisible(() -> horizontalScroll.getValBoolean());
     public Setting guiGlow = new Setting("Gui Glow", this, false);
-    public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true);
-    public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true);
-    public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true);
+    public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true).setVisible(() -> guiGlow.getValBoolean());
+    public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true).setVisible(() -> guiGlow.getValBoolean());
+    public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true).setVisible(() -> guiGlow.getValBoolean());
     public Setting guiDesc = new Setting("Gui Desc", this, false);
     public Setting guiParticles = new Setting("Gui Particles", this, true);
     public Setting guiOutline = new Setting("Gui Outline", this, true);
     public Setting guiAstolfo = new Setting("Gui Astolfo", this, false);
-    public Setting guiRenderSIze = new Setting("Gui Render Size", this, false);
+    public Setting guiRenderSize = new Setting("Gui Render Size", this, false);
     public Setting guiBetterCheckBox = new Setting("Gui Better CheckBox", this, false);
     public Setting guiBlur = new Setting("Gui Blur", this, true);
     public Setting guiVisualPreview = new Setting("Gui Visual Preview", this, false);
-    public Setting guiOpenAnimation = new Setting("Gui Open Animation", this, false);
+    public Setting guiShowBinds = new Setting("Gui Show Binds", this, false);
     public Setting pulseMin = new Setting("Pulse Min", this, 255, 0, 255, true);
     public Setting pulseMax = new Setting("Pulse Max", this, 110, 0, 255, true);
     public Setting pulseSpeed = new Setting("Pulse Speed", this, 1.5, 0.1, 10, false);
     public Setting saveConfig = new Setting("Save Config", this, false);
     public Setting loadConfig = new Setting("Load Config", this, false);
     public Setting configurate = new Setting("Configurate", this, true);
-    public Setting particlesColor = new Setting("Particles Color", this, "Particles Color", new Colour(0, 0, 255));
+    public Setting particlesColor = new Setting("Particles Color", this, "Particles Dots Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean());
 
-    public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None);
+    public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None).setVisible(() -> guiParticles.getValBoolean());
 
-    public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255));
-    public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255));
+    public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()));
+    public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()));
 
-    public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false);
+    public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false).setVisible(() -> guiParticles.getValBoolean());
 
-    public Setting particleTest = new Setting("Particle Test", this, true);
+    public Setting particleTest = new Setting("Particle Test", this, true).setVisible(() -> guiParticles.getValBoolean());
 
 
     public Config() {
@@ -57,6 +60,8 @@ public class Config extends Module {
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
         setmgr.rSetting(scrollSpeed);
+        setmgr.rSetting(horizontalScroll);
+        setmgr.rSetting(keyForHorizontalScroll);
         setmgr.rSetting(guiGlow);
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(glowRadius);
@@ -65,11 +70,11 @@ public class Config extends Module {
         setmgr.rSetting(guiParticles);
         setmgr.rSetting(guiOutline);
         setmgr.rSetting(guiAstolfo);
-        setmgr.rSetting(guiRenderSIze);
+        setmgr.rSetting(guiRenderSize);
         setmgr.rSetting(guiBetterCheckBox);
         setmgr.rSetting(guiBlur);
         setmgr.rSetting(guiVisualPreview);
-        setmgr.rSetting(guiOpenAnimation);
+        setmgr.rSetting(guiShowBinds);
         setmgr.rSetting(pulseMin);
         setmgr.rSetting(pulseMax);
         setmgr.rSetting(pulseSpeed);
@@ -102,6 +107,5 @@ public class Config extends Module {
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
-    public enum ParticlesBoxMode {Static, Dynamic}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
 }

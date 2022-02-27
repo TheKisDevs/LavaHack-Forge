@@ -16,9 +16,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoEZ extends Module {
-    static List<String> AutoGgMessages = new ArrayList<>(Arrays.asList("{name} owned by {player_name} with " + Kisman.getName(), "gg, {name}!", Kisman.getName() + " owning {name}"));
+    public static List<String> AutoGgMessages = new ArrayList<>(Arrays.asList("{name} owned by {player_name} with " + Kisman.getName(), "gg, {name}!", Kisman.getName() + " owning {name}"));
     private ConcurrentHashMap targetedPlayers = null;
-    int index = -1;
+    private int index = -1;
 
     private Setting random = new Setting("Random message", this, true);
 
@@ -26,6 +26,11 @@ public class AutoEZ extends Module {
         super("AutoEZ", "", Category.CHAT);
 
         setmgr.rSetting(random);
+    }
+
+    public void onEnable() {
+        targetedPlayers = new ConcurrentHashMap();
+        Kisman.EVENT_BUS.subscribe(send);
     }
 
     public void update() {
@@ -105,10 +110,6 @@ public class AutoEZ extends Module {
             if (targetedPlayers == null) targetedPlayers = new ConcurrentHashMap();
             targetedPlayers.put(name, 20);
         }
-    }
-
-    public void onEnable() {
-        targetedPlayers = new ConcurrentHashMap();
     }
 
     public void onDisable() {

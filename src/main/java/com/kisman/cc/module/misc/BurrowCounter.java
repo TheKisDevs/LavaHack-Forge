@@ -1,7 +1,6 @@
 package com.kisman.cc.module.misc;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -21,7 +20,7 @@ public class BurrowCounter extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         for (EntityPlayer player : mc.world.playerEntities) {
             if (anti_spam.contains(player)) continue;

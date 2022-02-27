@@ -27,22 +27,18 @@ public class MixinItemRenderer {
             boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
             boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && KillAura.instance.isToggled() && KillAura.instance.target != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
-            if (isSwing) {
+            if (isSwingMain) {
                 switch (SwingAnimation.instance.strongMode.getValString()) {
                     case "Blockhit1": {
-                        if(hand == EnumHandSide.RIGHT) {
-                            rotateMainX = 72;
-                            rotateMainY = 180;
-                            rotateMainZ = 240;
-                        }
+                        rotateMainX = 72;
+                        rotateMainY = 180;
+                        rotateMainZ = 240;
                         break;
                     }
                     case "Blockhit2": {
-                        if (hand == EnumHandSide.RIGHT) {
-                            rotateMainX = 344;
-                            rotateMainY = 225;
-                            rotateMainZ = 0;
-                        }
+                        rotateMainX = 344;
+                        rotateMainY = 225;
+                        rotateMainZ = 0;
                         break;
                     }
                 }

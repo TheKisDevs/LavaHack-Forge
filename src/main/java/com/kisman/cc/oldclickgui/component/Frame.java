@@ -98,7 +98,7 @@ public class Frame {
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
 		String str = this.hudCategory.name();
-		if(Config.instance.guiRenderSIze.getValBoolean()) {
+		if(Config.instance.guiRenderSize.getValBoolean()) {
 			str += " [" + components.size() + "]";
 		}
 

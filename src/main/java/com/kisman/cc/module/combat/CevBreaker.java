@@ -109,7 +109,7 @@ public class CevBreaker extends Module {
         } else {
             BlockPos pos = PlayerUtil.getPlayerPos(target).up(2);
             if(!BlockUtil.canBlockBeBroken(pos)) {
-                ChatUtils.error("block for cevbreaker cant be broken :( shutdonw!");
+                ChatUtils.error("block for break cant be broken :( shutdown!");
                 super.setToggled(false);
                 return;
             }

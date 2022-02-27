@@ -74,6 +74,8 @@ public class Slider extends Component {
         return HalqGui.height;
     }
 
+    public boolean visible() {return setting.isVisible();}
+
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }

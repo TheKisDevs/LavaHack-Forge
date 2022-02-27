@@ -1,11 +1,10 @@
 package com.kisman.cc.module.misc;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
@@ -24,10 +23,12 @@ public class TeamRusherLag extends Module {
     }
 
     public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(listener);
         lastPacket = 0L;
     }
 
     public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
         lastPacket = 0L;
     }
 

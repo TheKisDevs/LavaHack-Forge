@@ -47,6 +47,11 @@ public class BindButton extends Component {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) changing = !changing;
+        if(isMouseOnButton(mouseX, mouseY) && button == 1) {
+            changing = false;
+            if(module != null) module.setKey(Keyboard.KEY_NONE);
+            else setting.setKey(Keyboard.KEY_NONE);
+        }
     }
 
     @Override
@@ -74,6 +79,8 @@ public class BindButton extends Component {
     public int getHeight() {
         return HalqGui.height;
     }
+
+    public boolean visible() {return setting == null || setting.isVisible();}
 
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;

@@ -25,6 +25,7 @@ public class ModeButton extends Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        this.index = setting.getSelectedIndex();
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, getHeight(), HalqGui.backgroundColor.getRGB());
             Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), HalqGui.primaryColor));
@@ -77,6 +78,8 @@ public class ModeButton extends Component {
     public int getHeight() {
         return HalqGui.height + (open ? (values.length - 1) * HalqGui.height : 0);
     }
+
+    public boolean visible() {return setting.isVisible();}
 
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;

@@ -4,8 +4,10 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.client.HalqGuiModule;
 import com.kisman.cc.oldclickgui.halq.component.Component;
+import com.kisman.cc.oldclickgui.particle.ParticleSystem;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.awt.Color;
@@ -32,7 +34,11 @@ public class HalqGui extends GuiScreen {
     //frames list
     private final ArrayList<Frame> frames = new ArrayList<>();
 
+    //particles
+    private final ParticleSystem particleSystem;
+
     public HalqGui() {
+        this.particleSystem = new ParticleSystem(300);
         int offsetX = 5 + headerOffset;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 10));
@@ -58,6 +64,12 @@ public class HalqGui extends GuiScreen {
             }
             frame.renderPost();
             frame.refresh();
+        }
+
+        if(Config.instance.guiParticles.getValBoolean()) {
+            particleSystem.tick(10);
+            particleSystem.render();
+            particleSystem.onUpdate();
         }
     }
 
@@ -91,6 +103,14 @@ public class HalqGui extends GuiScreen {
     }
 
     @Override
+    public void onGuiClosed() {
+        try {
+            mc.entityRenderer.getShaderGroup().deleteShaderGroup();
+        } catch (Exception ignored) {}
+        super.onGuiClosed();
+    }
+
+    @Override
     public boolean doesGuiPauseGame() {
         return true;
     }
@@ -112,8 +132,14 @@ public class HalqGui extends GuiScreen {
 
     private void scrollWheelCheck() {
         int dWheel = Mouse.getDWheel();
-        if(dWheel < 0) for(Frame frame : frames) frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
-        else if(dWheel > 0) for(Frame frame : frames) frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
+        if(dWheel < 0) for(Frame frame : frames) {
+            if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x - (int) Config.instance.scrollSpeed.getValDouble();
+            else frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
+        }
+        else if(dWheel > 0) for(Frame frame : frames) {
+            if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
+            else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
+        }
     }
 
     public enum LocateMode {

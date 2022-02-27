@@ -94,11 +94,8 @@ public class NoSlow extends Module {
         if (mc.player.isHandActive() && !mc.player.isRiding()) {
             if (mc.player.ticksExisted % 2 == 0) {
                 if (mc.player.onGround) {
-                    if (!mc.player.isSprinting()) {
-                        MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
-                    } else {
-                        MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.21);
-                    }
+                    if (!mc.player.isSprinting()) MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
+                    else MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.21);
                 } else {
                     mc.player.motionX *= 0.9f;
                     mc.player.motionZ *= 0.9f;
@@ -158,5 +155,5 @@ public class NoSlow extends Module {
 
     @EventHandler private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {if(event.getPacket() instanceof CPacketPlayer) if(ncpStrict.getValBoolean()) if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));});
 
-    public enum Mode {None, Bypass, Sunrise}
+    public enum Mode {None, Sunrise}
 }

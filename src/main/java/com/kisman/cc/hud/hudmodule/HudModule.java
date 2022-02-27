@@ -9,7 +9,7 @@ public class HudModule {
 	private String name, description;
 	private int key;
 	private HudCategory category;
-	private boolean toggled;
+	private static boolean toggled = false;
 	public boolean visible = true;
 	public boolean drag = false;
 	private double x = 0, y = 0, w = 0, h = 0;
@@ -19,7 +19,6 @@ public class HudModule {
 		this.description = description;
 		this.key = 0;
 		this.category = category;
-		this.toggled = false;
 		this.drag = false;
 	}
 
@@ -33,14 +32,14 @@ public class HudModule {
 	}
 
 	public void setToggled(boolean toggled) {
-		this.toggled = toggled;
-		if (this.toggled) this.onEnable();
+		toggled = !toggled;
+		if (toggled) this.onEnable();
 		else this.onDisable();
 	}
 
 	public void toggle() {
-		this.toggled = !this.toggled;
-		if (this.toggled) this.onEnable();
+		toggled = !toggled;
+		if (toggled) this.onEnable();
 		else this.onDisable();
 	}
 
@@ -48,7 +47,7 @@ public class HudModule {
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}
 	public void setKey(int key) {this.key = key;}
-	public boolean isToggled() {return toggled;}
+	public static boolean isToggled() {return toggled;}
 	public void onEnable() {MinecraftForge.EVENT_BUS.register(this);}
 	public void onDisable() {MinecraftForge.EVENT_BUS.unregister(this);}
 	public String getName() {return this.name;}

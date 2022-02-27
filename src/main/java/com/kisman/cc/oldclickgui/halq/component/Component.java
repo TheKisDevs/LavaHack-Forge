@@ -8,4 +8,5 @@ public class Component {
     public void keyTyped(char typedChar, int key) {}
     public void setOff(int newOff) {}
     public int getHeight() {return 0;}
+    public boolean visible() {return true;}
 }

@@ -14,9 +14,7 @@ public class MurderFinder extends Module {
         if(mc.player == null && mc.world == null) return;
 
         mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityPlayer).filter(entity -> entity == mc.player).forEach(entity -> {
-            if(isMurderer((EntityPlayer) entity)) {
-                entity.setGlowing(true);
-            }
+            if(isMurderer((EntityPlayer) entity)) entity.setGlowing(true);
         });
     }
 

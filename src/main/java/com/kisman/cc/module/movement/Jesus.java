@@ -84,9 +84,7 @@ public class Jesus extends Module {
                 mc.player.motionZ = 0;
             }
         } else {
-            if (EntityUtil.isFluid(-0.1))
-                MovementUtil.strafe(speedPixel.getValInt());
-
+            if (EntityUtil.isFluid(-0.1)) MovementUtil.strafe(speedPixel.getValInt());
             if (EntityUtil.isFluid(0.0000001)) {
                 mc.player.fallDistance = 0.0f;
                 mc.player.motionX = 0.0;

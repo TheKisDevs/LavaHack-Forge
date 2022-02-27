@@ -13,6 +13,8 @@ public class TotemPopCounter extends Module {
     private Setting target = new Setting("Target", this, TargetMode.Both);
     public TotemPopCounter() {
         super("TotemPopCounter", "totem pops count!", Category.CHAT);
+
+        setmgr.rSetting(target);
     }
 
     @SubscribeEvent

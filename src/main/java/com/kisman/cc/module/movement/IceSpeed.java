@@ -14,16 +14,11 @@ public class IceSpeed extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Speed", this, 0.4f, 0.2f, 1.5f, false));
     }
 
-    public void onEnable() {
+    public void update() {
         this.speed = Kisman.instance.settingsManager.getSettingByName(this, "Speed").getValDouble();
-
         Blocks.ICE.slipperiness = (float) this.speed;
         Blocks.PACKED_ICE.slipperiness = (float) this.speed;
         Blocks.FROSTED_ICE.slipperiness = (float) this.speed;
-    }
-
-    public void update() {
-        this.speed = Kisman.instance.settingsManager.getSettingByName(this, "Speed").getValDouble();
     }
 
     public void onDisable() {

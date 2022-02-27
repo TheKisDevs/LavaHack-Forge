@@ -22,13 +22,13 @@ public class HUD extends Module {
 	public Setting background = new Setting("Background", this, false);
 	public Setting bgAlpha = new Setting("Bg Alpha", this, 255, 0, 255, true);
 
-	private final Setting arrLine = new Setting("ArrLine", this, "ArrayList");
-	public Setting arrMode = new Setting("ArrayList Mode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT")));
-	public Setting arrY = new Setting("ArrayList Y", this, 150, 0, mc.displayHeight, true);
-	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new float[] {3f, 0.03f, 0.33f, 1f}, false);
-	public Setting arrGradient = new Setting("Array Gradient", this, Gradient.None);
-	public Setting arrGradientDiff = new Setting("Array Gradient Diff", this, 200, 0, 1000, Slider.NumberType.TIME);
-	public Setting arrGlowBackground = new Setting("Array Glow Background", this, false);
+	private final Setting arrLine = new Setting("ArrLine", this, "ArrayList").setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
+	public Setting arrMode = new Setting("ArrayList Mode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT"))).setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
+	public Setting arrY = new Setting("ArrayList Y", this, 150, 0, mc.displayHeight, true).setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
+	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new float[] {3f, 0.03f, 0.33f, 1f}, false).setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
+	public Setting arrGradient = new Setting("Array Gradient", this, Gradient.None).setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
+	public Setting arrGradientDiff = new Setting("Array Gradient Diff", this, 200, 0, 1000, Slider.NumberType.TIME).setVisible(() -> com.kisman.cc.hud.hudmodule.render.ArrayList.isToggled() && !arrGradient.getValString().equalsIgnoreCase(Gradient.None.name()));
+	public Setting arrGlowBackground = new Setting("Array Glow Background", this, false).setVisible(com.kisman.cc.hud.hudmodule.render.ArrayList::isToggled);
 
 	private final Setting welLine = new Setting("WelLine", this, "Welcomer");
 	public Setting welColor = new Setting("WelColor", this, "WelcomerColor", new float[] {3f, 0.03f, 0.33f, 1f}, false);

@@ -3,6 +3,7 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import net.minecraft.util.ResourceLocation;
 
 public class HalqGuiModule extends Module {
     public final Setting background = new Setting("Background", this, true);
@@ -23,5 +24,6 @@ public class HalqGuiModule extends Module {
     public void onEnable() {
         mc.displayGuiScreen(Kisman.instance.halqGui);
         super.setToggled(false);
+        if(Config.instance.guiBlur.getValBoolean()) mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
     }
 }

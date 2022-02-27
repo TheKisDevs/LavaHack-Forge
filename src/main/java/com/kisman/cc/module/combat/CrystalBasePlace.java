@@ -21,12 +21,25 @@ public class CrystalBasePlace extends Module {
     private final Setting minDmg = new Setting("Min DMG", this, 15, 0, 37, true);
     private final Setting packet = new Setting("Packet", this, false);
 
+    public static CrystalBasePlace instance;
+
     private final TimerUtils delayTimer = new TimerUtils();
     private EntityPlayer target;
     private BlockPos pos;
 
     public CrystalBasePlace() {
         super("CrystalBasePlace", Category.COMBAT);
+
+        instance = this;
+
+        setmgr.rSetting(delay);
+        setmgr.rSetting(placeRange);
+        setmgr.rSetting(targetRange);
+        setmgr.rSetting(useAutoRerTarget);
+        setmgr.rSetting(switchMode);
+        setmgr.rSetting(ignoreY);
+        setmgr.rSetting(minDmg);
+        setmgr.rSetting(packet);
     }
 
     public void onEnable() {
@@ -36,15 +49,19 @@ public class CrystalBasePlace extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
 
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+        target = useAutoRerTarget.getValBoolean() ? AutoRer.currentTarget : EntityUtil.getTarget(targetRange.getValFloat());
         if(target == null) return;
         else super.setDisplayInfo("[" + target.getName() + "]");
         pos = getAbsBlockWithMaxDamageForTarget();
         if(pos == null) return;
         if(delayTimer.passedMillis(delay.getValLong())) {
-            delayTimer.reset();
+            int obbySlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9), oldSlot = mc.player.inventory.currentItem;
 
+            if(switchMode.getValString().equalsIgnoreCase(SwitchMode.None.name()) && obbySlot == -1) return;
+            else if(!switchMode.getValString().equalsIgnoreCase(SwitchMode.None.name())) InventoryUtil.switchToSlot(obbySlot, switchMode.getValString().equalsIgnoreCase(SwitchMode.Silent.name()));
             BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean());
+            if(switchMode.getValString().equalsIgnoreCase(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+            delayTimer.reset();
         }
     }
 

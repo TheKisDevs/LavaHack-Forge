@@ -14,7 +14,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import java.util.*;
 
 public class AntiBot extends Module {
-    private Setting mode = new Setting("Mode", this, "WellMore", Arrays.asList("WellMore", "Matrix 6.3", "Classic"));
+    private Setting mode = new Setting("Mode", this, "WellMore", Arrays.asList("Matrix 6.3", "Classic", "Vanish"));
 
     private List<EntityPlayer> bots = new ArrayList<>();
 
@@ -34,14 +34,11 @@ public class AntiBot extends Module {
                     if(!bots.contains(entity) && !tabList.contains(entity)) bots.add(entity);
                     else if(bots.contains(entity) && tabList.contains(entity)) bots.remove(entity);
                 } else {
-                    if (mode.getValString().equalsIgnoreCase("WellMore")) {
-                        if (entity.isInvisible()) entity.isDead = true;
-                        if (entity.getName().length() != 8 || mc.player.getDistance(entity) > 5.0f || Math.round(entity.posY) != Math.round(mc.player.posY + 2.0)) continue;
-                    } else {
+                    if(mode.getValString().equalsIgnoreCase("Matrix 6.3")) {
                         final boolean contains = RotationUtils.isInFOV(entity, mc.player, 100.0) && AntiBot.mc.player.getDistance(entity) <= 6.5 && entity.canEntityBeSeen(mc.player);
                         final boolean speedAnalysis = entity.getActivePotionEffect(MobEffects.SPEED) == null && entity.getActivePotionEffect(MobEffects.JUMP_BOOST) == null && entity.getActivePotionEffect(MobEffects.LEVITATION) == null && !entity.isInWater() && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA && EntityUtil.getSpeedBPS(entity) >= 11.9;
                         if (!contains || !speedAnalysis || entity.isDead) continue;
-                    }
+                    } else if(!entity.isInvisible()) continue;
                     entity.isDead = true;
                     ChatUtils.complete(entity.getName() + " was been deleted!");
                 }

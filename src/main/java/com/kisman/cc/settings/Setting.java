@@ -371,7 +371,7 @@ public class Setting {
 
 	public int getSelectedIndex() {
 		String[] modes = getStringValues();
-		int object = -1;
+		int object = 0;
 
 		for(int i = 0; i < modes.length; i++) {
 			String mode = modes[i];

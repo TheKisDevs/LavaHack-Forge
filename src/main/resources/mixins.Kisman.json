@@ -11,6 +11,7 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinGuiBossOverlay",
     "MixinGuiMainMenu",
     "MixinGuiMultiplayer",
     "MixinItemRenderer",

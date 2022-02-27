@@ -18,6 +18,8 @@ public class NoRender extends Module {
     public Setting guiOverlay = new Setting("Gui Overlay", this, false);
     public Setting book = new Setting("Book", this, false);
     public Setting chatBackground = new Setting("Chat Background", this, false);
+    public Setting bossBar = new Setting("Boss Bar", this, false);
+    public Setting scoreboard = new Setting("Scoreboard", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -31,6 +33,8 @@ public class NoRender extends Module {
         setmgr.rSetting(guiOverlay);
         setmgr.rSetting(book);
         setmgr.rSetting(chatBackground);
+        setmgr.rSetting(bossBar);
+        setmgr.rSetting(scoreboard);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));
