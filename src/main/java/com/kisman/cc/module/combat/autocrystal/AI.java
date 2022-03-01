@@ -10,8 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.TreeMap;
+
 /**
  * @author Halq
+ * @apiNote skidded from aurora client
  * @since 28/02/2022 20:32PM
  */
 
@@ -20,29 +23,58 @@ public class AI {
     public static final Minecraft mc = Minecraft.getMinecraft();
 
 
-    BlockPos blockPos;
 
-    public static BlockPos placeCalculate(float range, float minDmg, float maxDmg) {
+
+    static BlockPos placePos;
+
+    EntityPlayer targetPlayer;
+
+    static HalqPos bestCrystalPos = new HalqPos(BlockPos.ORIGIN, 0);
+
+
+    static class HalqPos {
+        BlockPos blockPos;
+        float targetDamage;
+
+        public HalqPos(BlockPos blockPos, float targetDamage) {
+            this.blockPos = blockPos;
+            this.targetDamage = targetDamage;
+        }
+
+        public float getTargetDamage() {
+            return targetDamage;
+        }
+
+        public BlockPos getBlockPos() {
+            return blockPos;
+        }
+    }
+
+
+    public static HalqPos placeCalculateAI() {
 
         EntityPlayer targetPlayer = null;
 
-        for (BlockPos pos : CrystalUtils.getSphere(range, true, false)) {
+        TreeMap<Float, HalqPos> posList = new TreeMap<>();
+        for (BlockPos pos : AIutils.getSphere(AutoCrystal.instance.placeRange.getValFloat())) {
+            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, targetPlayer, true);
+            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
 
-            float targetDamage = EntityUtil.calculate(pos.getX(), pos.getY(), pos.getZ(), targetPlayer);
-            float selfDamage = EntityUtil.calculate(pos.getX(), pos.getY(), pos.getZ(), mc.player);
+            if (CrystalUtils.canPlaceCrystal(pos, true, true, false)) {
 
-            if (CrystalUtils.canPlaceCrystal(pos)) {
-
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(range))
+                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(AutoCrystal.instance.placeRange.getValFloat()))
                     continue;
 
-                if (selfDamage > maxDmg)
+                if (selfDamage > AutoCrystal.instance.maxSelfDMG.getValFloat())
                     continue;
 
-                if (targetDamage < minDmg) ;
+                if (targetDamage < AutoCrystal.instance.minDMG.getValFloat()) ;
+                posList.put(targetDamage, new HalqPos(pos, targetDamage));
             }
         }
-
+        if (!posList.isEmpty()) {
+            return posList.lastEntry().getValue();
+        }
         return null;
     }
 
