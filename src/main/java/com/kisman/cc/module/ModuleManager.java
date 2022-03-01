@@ -153,6 +153,7 @@ public class ModuleManager {
 		//player
 		modules.add(new AntiKnokBack());
 		modules.add(new FastBreak());
+		modules.add(new FastLadder());
 		modules.add(new FastPlace());
 		modules.add(new FreeCam());
 		modules.add(new NoInteract());
