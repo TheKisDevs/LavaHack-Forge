@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.module.exploit.*;
 import com.kisman.cc.module.misc.*;
 import com.kisman.cc.module.movement.*;
@@ -31,6 +32,7 @@ public class ModuleManager {
 		modules.clear();
 
 		//combat
+		modules.add(new AutoCrystal());
 		modules.add(new AimAssist());
 		modules.add(new AimBot());
 		modules.add(new AntiBot());
