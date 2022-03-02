@@ -75,6 +75,8 @@ public class AutoCrystal extends Module {
 
     public AutoCrystal() {
         super("AutoCrystal", Category.COMBAT);
+        
+        instance = this;
 
         setmgr.rSetting(placeRange);
         setmgr.rSetting(packetPlace);
