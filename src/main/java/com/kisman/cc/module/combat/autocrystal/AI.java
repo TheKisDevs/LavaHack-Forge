@@ -58,7 +58,6 @@ public class AI {
 
         EntityPlayer targetPlayer = null;
 
-        TreeMap<Float, HalqPos> posList = new TreeMap<>();
         for (BlockPos pos : AIutils.getSphere(AutoCrystal.instance.placeRange.getValFloat())) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, targetPlayer, true);
             float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
@@ -72,11 +71,7 @@ public class AI {
                     continue;
 
                 if (targetDamage < AutoCrystal.instance.minDMG.getValFloat()) ;
-                posList.put(targetDamage, new HalqPos(pos, targetDamage));
             }
-        }
-        if (!posList.isEmpty()) {
-            return posList.lastEntry().getValue();
         }
         return null;
     }
