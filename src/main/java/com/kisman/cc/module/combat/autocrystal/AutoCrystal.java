@@ -90,6 +90,7 @@ public class AutoCrystal extends Module {
     EntityPlayer targetPlayer;
 
     public void update() {
+        if(mc.player == null || mc.world == null) return;
         doPlace();
     }
 
