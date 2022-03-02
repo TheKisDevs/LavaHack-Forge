@@ -15,9 +15,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.Comparator;
 
-public class ArrayList extends HudModule{
-    public ArrayList() {
+public class ArrayListModule extends HudModule{
+    public static boolean toggle = false;
+    public static ArrayListModule instance;
+
+    public ArrayListModule() {
         super("ArrayList", "arrList", HudCategory.RENDER);
+
+        instance = this;
     }
 
     @SubscribeEvent

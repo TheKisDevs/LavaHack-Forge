@@ -8,8 +8,7 @@ import java.util.List;
 
 import static com.kisman.cc.module.combat.autocrystal.AI.mc;
 
-public class AIutils {
-
+public class AIUtils {
     public static List<BlockPos> getSphere(double radius) {
         ArrayList<BlockPos> posList = new ArrayList<>();
         BlockPos pos = new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));

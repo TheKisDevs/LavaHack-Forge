@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.file.SaveConfig;
+import com.kisman.cc.hud.hudmodule.render.ArrayListModule;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
@@ -84,6 +85,7 @@ public class EventProcessor {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         Kisman.EVENT_BUS.post(this);
+        ArrayListModule.toggle = ArrayListModule.instance != null && ArrayListModule.instance.isToggled();
     }
 
     @SubscribeEvent
