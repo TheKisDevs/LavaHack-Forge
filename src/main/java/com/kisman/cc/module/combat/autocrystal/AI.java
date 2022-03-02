@@ -22,6 +22,9 @@ public class AI {
 
     public static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static AI instance = new AI();
+
+
 
 
 
@@ -51,7 +54,7 @@ public class AI {
     }
 
 
-    public static HalqPos placeCalculateAI() {
+    public HalqPos placeCalculateAI() {
 
         EntityPlayer targetPlayer = null;
 
