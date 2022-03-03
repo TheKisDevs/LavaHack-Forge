@@ -1,14 +1,18 @@
 package com.kisman.cc.module.combat.autocrystal;
 
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.kisman.cc.module.combat.autocrystal.AI.mc;
 
 public class AIUtils {
+
     public static List<BlockPos> getSphere(double radius) {
         ArrayList<BlockPos> posList = new ArrayList<>();
         BlockPos pos = new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
@@ -25,4 +29,14 @@ public class AIUtils {
         }
         return posList;
     }
+
+    public static BlockPos crystalPos(){
+        EntityEnderCrystal crystal = null;
+
+        crystal.getPosition().getX();
+        crystal.getPosition().getY();
+        crystal.getPosition().getX();
+        return null;
+    }
+
 }

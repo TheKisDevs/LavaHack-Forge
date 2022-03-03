@@ -3,6 +3,8 @@ package com.kisman.cc.module.combat.autocrystal;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.MathUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -11,16 +13,13 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * @author Halq
- * @apiNote skidded from aurora client
+ * @apiNote this is not AI
  * @since 28/02/2022 20:32PM
  */
 
 public class AI {
     public static final Minecraft mc = Minecraft.getMinecraft();
     public static AI instance = new AI();
-    static BlockPos placePos;
-    EntityPlayer targetPlayer;
-    static HalqPos bestCrystalPos = new HalqPos(BlockPos.ORIGIN, 0);
 
     static class HalqPos {
         BlockPos blockPos;
@@ -40,29 +39,6 @@ public class AI {
         }
     }
 
-
-    public HalqPos placeCalculateAI() {
-
-        EntityPlayer targetPlayer = null;
-
-        for (BlockPos pos : AIUtils.getSphere(AutoCrystal.instance.placeRange.getValFloat())) {
-            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, targetPlayer, true);
-            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
-
-            if (CrystalUtils.canPlaceCrystal(pos, true, true, false)) {
-
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(AutoCrystal.instance.placeRange.getValFloat()))
-                    continue;
-
-                if (selfDamage > AutoCrystal.instance.maxSelfDMG.getValFloat())
-                    continue;
-
-                if (targetDamage < AutoCrystal.instance.minDMG.getValFloat()) ;
-            }
-        }
-        return null;
-    }
-
     public static EnumFacing getEnumFacing(boolean rayTrace, BlockPos placePosition) {
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(placePosition.getX() + 0.5, placePosition.getY() - 0.5, placePosition.getZ() + 0.5));
 
@@ -75,4 +51,5 @@ public class AI {
 
         return EnumFacing.UP;
     }
+
 }
