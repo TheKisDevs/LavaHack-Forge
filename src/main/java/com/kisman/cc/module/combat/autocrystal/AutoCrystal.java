@@ -13,6 +13,7 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketSoundEffect;
@@ -118,10 +119,10 @@ public class AutoCrystal extends Module {
             return;
         }
         super.setDisplayInfo("[" + target.getName() + "]");
-        if (logic.equals("BreakPlace")) {
+        if (logic.getValString().equals("BreakPlace")) {
             doBreak();
             doPlace();
-        } else if (logic.equals("PlaceBreak")) {
+        } else if (logic.getValString().equals("PlaceBreak")) {
             doPlace();
             doBreak();
         }
@@ -132,23 +133,11 @@ public class AutoCrystal extends Module {
         for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
             float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
-
             if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean())) {
-
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat()))
-                    continue;
-
-                if (selfDamage > maxSelfDMG.getValFloat())
-                    continue;
-
-                if (targetDamage < minDMG.getValFloat())
-                    continue;
-
-                if (antiSuicide.getValBoolean()) {
-                    if (selfDamage < 2F)
-                        continue;
-                }
-
+                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
+                if (selfDamage > maxSelfDMG.getValFloat()) continue;
+                if (targetDamage < minDMG.getValFloat()) continue;
+                if (antiSuicide.getValBoolean()) if (selfDamage < 2F) continue;
                 if (targetDamage > posToReturn.getTargetDamage()) posToReturn = new AI.HalqPos(pos, targetDamage);
             }
         }
@@ -192,8 +181,9 @@ public class AutoCrystal extends Module {
                         }
                         breakTimer.reset();
                     }
-                    if (hand.equals("MainHand")) mc.player.swingArm(EnumHand.MAIN_HAND);
-                    else if (hand.equals("OffHand")) mc.player.swingArm(EnumHand.OFF_HAND);
+                    if (hand.getValString().equals("MainHand")) mc.player.swingArm(EnumHand.MAIN_HAND);
+                    else if (hand.getValString().equals("OffHand")) mc.player.swingArm(EnumHand.OFF_HAND);
+                    else mc.player.connection.sendPacket(new CPacketAnimation());
                 }
                 breakTimer.reset();
             }
@@ -203,5 +193,5 @@ public class AutoCrystal extends Module {
 
     public enum SwitchMode {None, Normal, Silent}
     public enum CaLogic {BreakPlace, PlaceBreak}
-    public enum Hand {MainHand, OffHand}
+    public enum Hand {MainHand, OffHand, PacketSwing}
 }
