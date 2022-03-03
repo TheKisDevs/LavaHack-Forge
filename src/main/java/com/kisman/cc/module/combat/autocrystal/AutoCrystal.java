@@ -1,79 +1,100 @@
 package com.kisman.cc.module.combat.autocrystal;
 
-import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.module.Category;
+import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import com.kisman.cc.util.Timer;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.Comparator;
 
 /**
  * @author Halq
+ * @apiNote bababoi
  * @since 28/02/22 20:32PM
  */
 
 public class AutoCrystal extends Module {
     public static AutoCrystal instance = new AutoCrystal();
 
+    public final Setting logic = new Setting("CaLogic", this, CaLogic.BreakPlace);
     public final Setting placeRange = new Setting("PlaceRange", this, 4, 1, 6, true);
     public final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
-    public final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
-    public final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
+    public final Setting hand = new Setting("BreakHand", this, Hand.OffHand);
+    public final Setting breakRange = new Setting("BreakRange", this, 4, 1, 6, true);
     public final Setting targetRange = new Setting("Target Range", this, 15, 1, 20, true);
+    public final Setting packetBreak = new Setting("PacketBreak", this, false);
     public final Setting packetPlace = new Setting("PacketPlace", this, true);
     public final Setting minDMG = new Setting("MinDmg", this, 6, 0, 37, true);
     public final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 18, 0, 80, true);
+    public final Setting antiSuicide = new Setting("AntiSuicide", this, false);
+    public final Setting multiPlace = new Setting("MultiPlace", this, false);
+    public final Setting raytrace = new Setting("Raytrace", this, true);
+    public final Setting check = new Setting("CheckPlacements", this, true);
     public final Setting placeDelay = new Setting("PlaceDelay", this, 4, 0, 80, true);
     public final Setting breakDelay = new Setting("Break Delay", this, 4, 0, 80, true);
     public final Setting lethalMult = new Setting("Lethal Mult", this, 0, 0, 6, false);
-    public final Setting clientSide = new Setting("Client Side", this, false);
-    public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
     public final Setting switchMode = new Setting("Switch Mode", this, SwitchMode.None);
-
-    static AI.HalqPos bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
-
-    public AI.HalqPos placeCalculateAI() {
-        AI.HalqPos posToReturn = new AI.HalqPos(BlockPos.ORIGIN, 0.5f);
-        for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
-            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
-            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
-
-            if (CrystalUtils.canPlaceCrystal(pos, true, true, false)) {
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
-                if (selfDamage > maxSelfDMG.getValFloat()) continue;
-                if (targetDamage < minDMG.getValFloat()) continue;
-                if(targetDamage > posToReturn.getTargetDamage()) posToReturn = new AI.HalqPos(pos, targetDamage);
+    public final Setting render = new Setting("CoolRender", this, true);
+    private final Setting colorVal = new Setting("Color", this, "Color", new Colour(0, 0, 255));
+    @EventHandler
+    private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
+        if (event.getPacket() instanceof SPacketSoundEffect) {
+            final SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
+            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                for (Entity e : Minecraft.getMinecraft().world.loadedEntityList) {
+                    if (e instanceof EntityEnderCrystal) {
+                        if (e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) {
+                            e.setDead();
+                        }
+                    }
+                }
             }
         }
-        return posToReturn;
-    }
+    });
+
+    static AI.HalqPos bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
+    private final float[] color = new float[]{0, 0, 1f, 1f};
 
     public AutoCrystal() {
-        super("AutoCrystal", Category.COMBAT);
-        
+        super("AutoHalq", Category.COMBAT);
+
         instance = this;
 
+        setmgr.rSetting(logic);
         setmgr.rSetting(placeRange);
         setmgr.rSetting(placeWallRange);
+        setmgr.rSetting(hand);
         setmgr.rSetting(breakRange);
-        setmgr.rSetting(breakWallRange);
         setmgr.rSetting(targetRange);
+        setmgr.rSetting(packetBreak);
         setmgr.rSetting(packetPlace);
         setmgr.rSetting(minDMG);
         setmgr.rSetting(maxSelfDMG);
+        setmgr.rSetting(antiSuicide);
+        setmgr.rSetting(multiPlace);
+        setmgr.rSetting(check);
         setmgr.rSetting(placeDelay);
         setmgr.rSetting(breakDelay);
         setmgr.rSetting(lethalMult);
-        setmgr.rSetting(clientSide);
-        setmgr.rSetting(armorBreaker);
         setmgr.rSetting(switchMode);
+        setmgr.rSetting(render);
+        setmgr.rSetting(colorVal);
     }
 
     private final Timer placeTimer = new Timer(), breakTimer = new Timer();
@@ -89,70 +110,122 @@ public class AutoCrystal extends Module {
         super.setDisplayInfo("");
     }
 
+    public AI.HalqPos placeCalculateAI() {
+        AI.HalqPos posToReturn = new AI.HalqPos(BlockPos.ORIGIN, 0.5f);
+        for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
+            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
+            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
+
+            if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean())) {
+
+                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat()))
+                    continue;
+
+                if (selfDamage > maxSelfDMG.getValFloat())
+                    continue;
+
+                if (targetDamage < minDMG.getValFloat())
+                    continue;
+
+                if (antiSuicide.getValBoolean()) {
+                    if (selfDamage < 2F)
+                        continue;
+                }
+
+                if (targetDamage > posToReturn.getTargetDamage()) posToReturn = new AI.HalqPos(pos, targetDamage);
+            }
+        }
+        return posToReturn;
+    }
+
     public void update() {
-        if(mc.player == null || mc.world == null) return;
+        if (mc.player == null || mc.world == null)
+            return;
         target = EntityUtil.getTarget(targetRange.getValFloat());
-        if(target == null) {
+        if (target == null) {
             super.setDisplayInfo("");
             return;
         }
         super.setDisplayInfo("[" + target.getName() + "]");
-        doPlace();
-        doBreak();
+        if (logic.equals("BreakPlace")) {
+            doBreak();
+            doPlace();
+        } else if (logic.equals("PlaceBreak")) {
+            doPlace();
+            doBreak();
+        }
     }
 
     public void doPlace() {
         bestCrystalPos = placeCalculateAI();
-            if (bestCrystalPos.getBlockPos() != BlockPos.ORIGIN) {
-                if (placeTimer.passedDms(placeDelay.getValDouble())) {
-                    int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), oldSlot = mc.player.inventory.currentItem;
-                    boolean canSwitch = true, offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
-                    if(crystalSlot != mc.player.inventory.currentItem && switchMode.getValString().equalsIgnoreCase("None") && !offhand) return;
-                    if(crystalSlot == mc.player.inventory.currentItem || offhand) canSwitch = false;
-                    if(canSwitch) InventoryUtil.switchToSlot(crystalSlot, switchMode.getValString().equalsIgnoreCase("Silent"));
-                    if (packetPlace.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), EnumFacing.UP, mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
-                    else mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), EnumFacing.UP, new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+        if (bestCrystalPos.getBlockPos() != BlockPos.ORIGIN) {
+
+            if (placeTimer.passedDms(placeDelay.getValLong())) {
+
+                int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), oldSlot = mc.player.inventory.currentItem;
+
+                boolean canSwitch = true, offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
+
+                if (crystalSlot != mc.player.inventory.currentItem && switchMode.getValString().equalsIgnoreCase("None") && !offhand)
+                    return;
+
+                if (crystalSlot == mc.player.inventory.currentItem || offhand) canSwitch = false;
+
+                if (canSwitch)
+                    InventoryUtil.switchToSlot(crystalSlot, switchMode.getValString().equalsIgnoreCase("Silent"));
+
+                if (placeTimer.passedMs(placeDelay.getValLong())) {
+                    if (packetPlace.getValBoolean()) {
+                        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
+                    } else {
+                        mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+                    }
                     placeTimer.reset();
-                    if(switchMode.getValString().equalsIgnoreCase("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
-                    //place end
                 }
+                placeTimer.reset();
+                if (switchMode.getValString().equalsIgnoreCase("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
             }
+        }
     }
 
     public void doBreak() {
-        if(!breakTimer.passedDms(breakDelay.getValFloat())) return;
-        Entity crystal = getCrystalWithMaxDamage();
-        if(crystal == null) return;
-        mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);} catch (Exception ignored) {}
-        breakTimer.reset();
-    }
-
-    private Entity getCrystalWithMaxDamage() {
-        Entity crystal = null;
-        double maxDamage = 0.5;
-
-        for(int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
-            Entity entity = mc.world.loadedEntityList.get(i);
-
-            if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
-                double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, target, true);
-
-                if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > target.getHealth() + target.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(target, armorBreaker.getValInt())) {
-                    double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, true);
-
-                    if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
-                        if(maxDamage <= targetDamage) {
-                            maxDamage = targetDamage;
-                            crystal = entity;
+        final EntityEnderCrystal crystal = (EntityEnderCrystal) AutoCrystal.mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
+        for (final Entity entities : mc.world.loadedEntityList) {
+            if (entities instanceof EntityEnderCrystal) {
+                float breakCalculateAI = AutoCrystal.instance.breakRange.getValFloat();
+                if (breakTimer.passedDms(breakDelay.getValDouble())) {
+                    if (mc.player.getDistance(crystal) < breakCalculateAI) {
+                        if (breakTimer.passedMs(breakDelay.getValLong())) {
+                            if (packetBreak.getValBoolean()) {
+                                mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+                                CPacketUseEntity packet = new CPacketUseEntity();
+                                packet.entityId = crystal.entityId;
+                                packet.action = CPacketUseEntity.Action.ATTACK;
+                                mc.player.connection.sendPacket(packet);
+                            } else {
+                                mc.playerController.attackEntity(mc.player, crystal);
+                            }
+                            breakTimer.reset();
                         }
+                        breakTimer.reset();
                     }
+                    if (hand.equals("MainHand")) {
+                        mc.player.swingArm(EnumHand.MAIN_HAND);
+                    } else if (hand.equals("OffHand")) {
+                        mc.player.swingArm(EnumHand.OFF_HAND);
+                    }
+                    mc.playerController.updateController();
+                    breakTimer.reset();
                 }
+                breakTimer.reset();
             }
         }
-
-        return crystal;
+        mc.playerController.updateController();
     }
 
     public enum SwitchMode {None, Normal, Silent}
+
+    public enum CaLogic {BreakPlace, PlaceBreak}
+
+    public enum Hand {MainHand, OffHand}
 }
