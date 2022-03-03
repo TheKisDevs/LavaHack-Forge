@@ -20,6 +20,8 @@ public class NoRender extends Module {
     public Setting chatBackground = new Setting("Chat Background", this, false);
     public Setting bossBar = new Setting("Boss Bar", this, false);
     public Setting scoreboard = new Setting("Scoreboard", this, false);
+    public Setting particle = new Setting("Particle", this, ParticleMode.None);
+    public Setting portal = new Setting("Portal", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -35,6 +37,8 @@ public class NoRender extends Module {
         setmgr.rSetting(chatBackground);
         setmgr.rSetting(bossBar);
         setmgr.rSetting(scoreboard);
+        setmgr.rSetting(particle);
+        setmgr.rSetting(portal);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));
@@ -71,4 +75,6 @@ public class NoRender extends Module {
             if(lava && event.getBlockForOverlay().getBlock().equals(Blocks.LAVA)) event.setCanceled(true);
         }
     }
+
+    public enum ParticleMode {None, All, AllButIgnorePops}
 }

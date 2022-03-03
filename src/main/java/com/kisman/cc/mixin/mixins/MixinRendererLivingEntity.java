@@ -2,7 +2,8 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
-import com.kisman.cc.module.combat.AutoRer;
+import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.module.render.Charms;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
@@ -62,7 +63,7 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
                 if(Charms.instance.customColor.getValBoolean()) {
                     final Setting color = Charms.instance.color;
                     if(Charms.instance.targetRender.getValBoolean()) {
-                        if(AutoRer.currentTarget == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getA());
+                        if(AutoRer.currentTarget == p_renderModel_1_ || KillAura.instance.target == p_renderModel_1_ || AutoCrystal.instance.target == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getA());
                         else GL11.glColor4f(color.getR() / 255f, color.getG() / 255f, color.getB() / 255f, color.getA() / 255f);
                     } else GL11.glColor4f(color.getR() / 255f, color.getG() / 255f, color.getB() / 255f, color.getA() / 255f);
                 }

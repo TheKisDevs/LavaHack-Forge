@@ -28,9 +28,9 @@ buildscript {
     }
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -73,6 +73,9 @@ repositories {
         name = 'lukflug'
         url = 'https://lukflug.github.io/maven'
     }
+    maven {
+        url = 'https://repo.viaversion.com'
+    }
     mavenCentral()
     jcenter()
 }
@@ -108,6 +111,8 @@ dependencies {
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     compile group: 'org.json', name: 'json', version: '20210307'
     compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+    compile group: 'com.viaversion', name: 'viaversion', version: '4.1.2-SNAPSHOT'
+    compile group: 'com.viaversion', name: 'viabackwards', version: '4.1.2-SNAPSHOT'
 }
 
 processResources {
@@ -166,6 +171,8 @@ shadowJar {
         include(dependency('org.apache.httpcomponents:httpmime'))
         include(dependency('org.json:json'))
         include(dependency('com.mashape.unirest:unirest-java'))
+        include(dependency('com.viaversion:viaversion'))
+        include(dependency('com.viaversion:viabackwards'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

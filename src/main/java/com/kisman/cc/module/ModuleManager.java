@@ -64,6 +64,7 @@ public class ModuleManager {
 		modules.add(new Console());
 		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
+		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPC());
 		modules.add(new HalqGuiModule());
 		modules.add(new HUD());
@@ -201,6 +202,7 @@ public class ModuleManager {
 		modules.add(new Optimizer());
 		modules.add(new PigPOV());
 		modules.add(new SelfDamage());
+		modules.add(new SkylightFix());
 		modules.add(new TeamRusherLag());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());

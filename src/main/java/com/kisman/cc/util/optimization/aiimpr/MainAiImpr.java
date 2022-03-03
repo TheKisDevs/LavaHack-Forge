@@ -28,11 +28,8 @@ public class MainAiImpr {
                     final Object obj = it.next();
                     if (obj instanceof EntityAITasks.EntityAITaskEntry) {
                         final EntityAITasks.EntityAITaskEntry task = (EntityAITasks.EntityAITaskEntry)obj;
-                        if (REMOVE_LOOK_AI && task.action instanceof EntityAIWatchClosest) it.remove();
-                        else {
-                            if (!REMOVE_LOOK_IDLE || !(task.action instanceof EntityAILookIdle)) continue;
-                            it.remove();
-                        }
+                        if(!(REMOVE_LOOK_AI && task.action instanceof EntityAIWatchClosest)) if (!REMOVE_LOOK_IDLE || !(task.action instanceof EntityAILookIdle)) continue;
+                        it.remove();
                     }
                 }
             }

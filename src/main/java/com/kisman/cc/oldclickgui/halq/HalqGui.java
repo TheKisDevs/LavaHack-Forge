@@ -104,9 +104,7 @@ public class HalqGui extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        try {
-            mc.entityRenderer.getShaderGroup().deleteShaderGroup();
-        } catch (Exception ignored) {}
+        try {mc.entityRenderer.getShaderGroup().deleteShaderGroup();} catch (Exception ignored) {}
         super.onGuiClosed();
     }
 
@@ -135,8 +133,7 @@ public class HalqGui extends GuiScreen {
         if(dWheel < 0) for(Frame frame : frames) {
             if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x - (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
-        }
-        else if(dWheel > 0) for(Frame frame : frames) {
+        } else if(dWheel > 0) for(Frame frame : frames) {
             if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
         }

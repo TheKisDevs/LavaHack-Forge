@@ -31,7 +31,8 @@
     "accessor.AccessorPlayerControllerMP",
     "accessor.ICPacketPlayer",
     "accessor.IEntityPlayerSP",
-    "accessor.ISession"
+    "accessor.ISession",
+    "viaforge.MixinNetworkManagerChInit"
   ],
   "client": [
     "MixinGuiContainer",
@@ -40,6 +41,12 @@
     "MixinGuiScreen",
     "MixinItemBlock",
     "MixinModelBook",
-    "MixinPlayerControllerMP"
+    "MixinParticleManager",
+    "MixinPlayerControllerMP",
+    "MixinVisGraph",
+    "viaforge.MixinGuiConnecting",
+    "viaforge.MixinGuiDisconnected",
+    "viaforge.MixinGuiScreenAddServer",
+    "viaforge.MixinGuiScreenServerList"
   ]
 }

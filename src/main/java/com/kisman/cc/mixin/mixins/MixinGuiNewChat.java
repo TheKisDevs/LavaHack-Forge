@@ -92,11 +92,6 @@ public class MixinGuiNewChat {
         return original;
     }
 
-    @ModifyVariable(method = "getChatComponent", at = @At(value = "STORE", ordinal = 0), ordinal = 3)
-    private int modifyX(int original) {
-        return original - 0;
-    }
-
     @ModifyVariable(method = "getChatComponent", at = @At(value = "STORE", ordinal = 0), ordinal = 4)
     private int modifyY(int original) {
         return original + 1;

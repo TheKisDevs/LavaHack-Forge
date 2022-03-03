@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
+import com.kisman.cc.module.misc.SkylightFix;
 import com.kisman.cc.module.render.*;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
@@ -58,6 +59,8 @@ public class MixinEntityRenderer {
                 this.lightmapColors[ i ] = 0xFF000000 | red << 16 | green << 8 | blue;
             }
         }
+
+        if(SkylightFix.instance.isToggled()) ci.cancel();
     }
 
     private int[] toRGBAArray(int colorBuffer) {

@@ -36,14 +36,17 @@ public class AutoCrystal extends Module {
     public final Setting clientSide = new Setting("Client Side", this, false);
     public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
     public final Setting switchMode = new Setting("Switch Mode", this, SwitchMode.None);
+    public final Setting terrain = new Setting("Terrain", this, false);
+    public final Setting place = new Setting("Place", this, true);
+    public final Setting break_ = new Setting("Break", this, true);
 
     static AI.HalqPos bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
 
     public AI.HalqPos placeCalculateAI() {
         AI.HalqPos posToReturn = new AI.HalqPos(BlockPos.ORIGIN, 0.5f);
         for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
-            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
-            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
+            float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, terrain.getValBoolean());
+            float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean());
 
             if (CrystalUtils.canPlaceCrystal(pos, true, true, false)) {
                 if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
@@ -81,6 +84,7 @@ public class AutoCrystal extends Module {
 
     public void onEnable() {
         placeTimer.reset();
+        breakTimer.reset();
         bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
     }
 
@@ -97,8 +101,8 @@ public class AutoCrystal extends Module {
             return;
         }
         super.setDisplayInfo("[" + target.getName() + "]");
-        doPlace();
-        doBreak();
+        if(place.getValBoolean()) doPlace();
+        if(break_.getValBoolean()) doBreak();
     }
 
     public void doPlace() {
@@ -136,10 +140,10 @@ public class AutoCrystal extends Module {
             Entity entity = mc.world.loadedEntityList.get(i);
 
             if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
-                double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, target, true);
+                double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, target, terrain.getValBoolean());
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > target.getHealth() + target.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(target, armorBreaker.getValInt())) {
-                    double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, true);
+                    double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
 
                     if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
                         if(maxDamage <= targetDamage) {

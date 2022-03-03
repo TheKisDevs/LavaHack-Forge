@@ -15,12 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = AbstractClientPlayer.class, priority = 10000)
 public class MixinAbstractClientPlayer extends EntityPlayer {
-    Minecraft mc = Minecraft.getMinecraft();
-    String str1 = "cape-";
-    String str2 = ".png";
-    int count = 0;
-    TimerUtils timer = new TimerUtils();
     @Shadow public NetworkPlayerInfo playerInfo;
+    private int count = 0;
+    private TimerUtils timer = new TimerUtils();
 
     public MixinAbstractClientPlayer(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
@@ -29,7 +26,7 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
-        if(Cape.instance.isToggled() && playerInfo == mc.player.getPlayerInfo()) {
+        if(Cape.instance.isToggled() && playerInfo == Minecraft.getMinecraft().player.getPlayerInfo()) {
             switch(Cape.instance.mode.getValString()) {
                 case "Gif":
                     cir.setReturnValue(getCape());
@@ -50,7 +47,7 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
     private ResourceLocation getCape() {
         if(count > 34) count = 0;
 
-        final ResourceLocation cape = new ResourceLocation("kismancc:cape/rainbow/" + str1 + count + str2);
+        final ResourceLocation cape = new ResourceLocation("kismancc:cape/rainbow/cape-" + count + ".png");
 
         if(timer.passedMillis(85)) {
             count++;

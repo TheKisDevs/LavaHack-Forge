@@ -9,13 +9,13 @@ import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hud.hudmodule.render.ArrayListModule;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.oldclickgui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 import com.kisman.cc.util.manager.Managers;
 
-import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
+import com.kisman.cc.util.modules.CustomMainMenu;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
@@ -27,8 +27,6 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.*;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -47,6 +45,7 @@ public class EventProcessor {
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
+        Kisman.EVENT_BUS.subscribe(send);
     }
 
     @SubscribeEvent
@@ -54,7 +53,7 @@ public class EventProcessor {
         if(Kisman.instance.aiImpr != null) Kisman.instance.aiImpr.onEntityJoinWorld(event);
     }
 
-    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui) event.setCanceled(true);}
+    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.allowToConfiguredAnotherClients) event.setCanceled(true);}
 
     public void onInit() {
         mc.displayGuiScreen(new AuthGui());
@@ -86,6 +85,7 @@ public class EventProcessor {
     public void onTick(TickEvent.ClientTickEvent event) {
         Kisman.EVENT_BUS.post(this);
         ArrayListModule.toggle = ArrayListModule.instance != null && ArrayListModule.instance.isToggled();
+        if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
     }
 
     @SubscribeEvent

@@ -36,6 +36,11 @@ public class MixinGuiIngame extends Gui {
     @Shadow protected void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack) {}
     @Shadow public FontRenderer getFontRenderer() {return null;}
 
+    @Inject(method = "renderPortal", at = @At("HEAD"), cancellable = true)
+    protected void antiPortal(float timeInPortal, ScaledResolution scaledRes, CallbackInfo ci) {
+        if(NoRender.instance.isToggled() && NoRender.instance.portal.getValBoolean()) ci.cancel();
+    }
+
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     protected void renderPumpkinOverlayHook(ScaledResolution scaledRes, CallbackInfo callbackInfo) {
         if (NoRender.instance.isToggled() && NoRender.instance.overlay.getValBoolean()) callbackInfo.cancel();

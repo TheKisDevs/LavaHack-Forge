@@ -1,6 +1,5 @@
 package com.kisman.cc;
 
-import com.kisman.cc.app.MainWindow;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.EventProcessor;
@@ -28,7 +27,6 @@ import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.*;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -48,7 +46,6 @@ public class Kisman {
     public static final String MODID = "kisman";
     public static final String VERSION = "b0.1.6.1";
     public static final String HWIDS_LIST = "https://pastebin.com/raw/yM7s0G4u";
-    public static final String HWID_LOGS = "https://" + MainWindow.d1 + "/" + MainWindow.d2 + "/905166844967673928/LgJFUe6o45hBx7e1xE5OxqwD7M5DdzIsg3s9-dd6d5jDJ6k7KaUf1Vettd5mf9LQz8aW";
     public static final String fileName = "kisman.cc/";
     public static final String moduleName = "Modules/";
     public static final String mainName = "Main/";
@@ -134,8 +131,8 @@ public class Kisman {
         hudEditorGui = new HudEditorGui();
         gui = new Gui();
         halqGui = new HalqGui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", 0 , 18), true, true);
-        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", 0, 15), true, true);
+        customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
+        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
@@ -188,6 +185,7 @@ public class Kisman {
                 case "kismancc": return NAME;
                 case "LavaHack": return "LavaHack";
                 case "TheKisDevs": return "TheKisDevs";
+                case "kidman": return "kisman.club";
                 case "custom": return Config.instance.customName.getValString();
             }
         }

@@ -19,7 +19,7 @@ public class FastTrig {
         }
     }
     
-    public static final float atan2(double y, double x) {
+    public static float atan2(double y, double x) {
         float mul;
         float add;
         if (x < 0.0) {
@@ -39,7 +39,7 @@ public class FastTrig {
             } else mul = 1.0f;
             add = 0.0f;
         }
-        final double invDiv = 1.0 / (((x < y) ? y : x) * FastTrig.INV_ATAN2_DIM_MINUS_1);
+        final double invDiv = 1.0 / ((Math.max(x, y)) * FastTrig.INV_ATAN2_DIM_MINUS_1);
         final int xi = (int)(x * invDiv);
         final int yi = (int)(y * invDiv);
         return (FastTrig.atan2[yi * FastTrig.ATAN2_DIM + xi] + add) * mul;

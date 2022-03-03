@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 public class VegaGui extends Module {
     public static VegaGui instance;
 
-    private Setting particles_color = new Setting("Particles Color", this, "Particles Color", new float[] {0, 1, 0, 1}, false);
     public Setting test = new Setting("Test Gui Update", this, false);
 
     public VegaGui() {
@@ -16,7 +15,6 @@ public class VegaGui extends Module {
 
         instance = this;
 
-        setmgr.rSetting(particles_color);
         setmgr.rSetting(test);
     }
 

@@ -19,7 +19,7 @@ public class Config extends Module {
     public Setting customName = new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true).setVisible(() -> nameMode.getValBoolean());
     public Setting scrollSpeed = new Setting("Scroll Speed", this, 15, 0, 100, Slider.NumberType.PERCENT);
     public Setting horizontalScroll = new Setting("Horizontal Scroll", this, false);
-    public Setting keyForHorizontalScroll = new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_NONE).setVisible(() -> horizontalScroll.getValBoolean());
+    public Setting keyForHorizontalScroll = new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_LSHIFT).setVisible(() -> horizontalScroll.getValBoolean());
     public Setting guiGlow = new Setting("Gui Glow", this, false);
     public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true).setVisible(() -> guiGlow.getValBoolean());
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true).setVisible(() -> guiGlow.getValBoolean());
@@ -55,7 +55,7 @@ public class Config extends Module {
         super("Config", Category.CLIENT, false);
 
         instance = this;
-        setmgr.rSetting(guiBetterCheckBox);
+
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
@@ -106,6 +106,6 @@ public class Config extends Module {
         }
     }
 
-    public enum NameMode {kismancc, LavaHack, TheKisDevs, custom}
+    public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, custom}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
 }
