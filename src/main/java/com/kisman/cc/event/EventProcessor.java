@@ -11,6 +11,7 @@ import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
+import com.kisman.cc.module.player.ElytraEquip;
 import com.kisman.cc.oldclickgui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 import com.kisman.cc.util.manager.Managers;
@@ -86,6 +87,7 @@ public class EventProcessor {
         Kisman.EVENT_BUS.post(this);
         ArrayListModule.toggle = ArrayListModule.instance != null && ArrayListModule.instance.isToggled();
         if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
+        if(ElytraEquip.instance != null) ElytraEquip.instance.updateState();
     }
 
     @SubscribeEvent

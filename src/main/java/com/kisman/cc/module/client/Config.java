@@ -1,5 +1,6 @@
 package com.kisman.cc.module.client;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.components.Slider;
@@ -39,6 +40,7 @@ public class Config extends Module {
     public Setting saveConfig = new Setting("Save Config", this, false);
     public Setting loadConfig = new Setting("Load Config", this, false);
     public Setting configurate = new Setting("Configurate", this, true);
+    public Setting notifications = new Setting("Notifications", this, false);
     public Setting particlesColor = new Setting("Particles Color", this, "Particles Dots Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean());
 
     public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None).setVisible(() -> guiParticles.getValBoolean());
@@ -81,6 +83,7 @@ public class Config extends Module {
         setmgr.rSetting(saveConfig);
         setmgr.rSetting(loadConfig);
         setmgr.rSetting(configurate);
+        setmgr.rSetting(notifications);
         setmgr.rSetting(particlesColor);
         setmgr.rSetting(particlesGradientMode);
         setmgr.rSetting(particlesGStartColor);
@@ -104,6 +107,8 @@ public class Config extends Module {
             ChatUtils.complete("Config loaded");
             loadConfig.setValBoolean(false);
         }
+
+        if(notifications.getValBoolean() && Kisman.instance.notificationsManager != null) Kisman.instance.notificationsManager.draw();
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, custom}

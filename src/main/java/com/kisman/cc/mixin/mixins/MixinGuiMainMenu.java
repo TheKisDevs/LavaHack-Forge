@@ -31,8 +31,10 @@ public class MixinGuiMainMenu extends GuiScreen {
     @Inject(method = "drawScreen", at = @At("HEAD"))
     public void drawText(int mouseX, int mouseY, float partialTicks, CallbackInfo ci){
         //text
-        CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + Kisman.getName() + " " + TextFormatting.GRAY + Kisman.getVersion(), 1, 1, -1);
-        CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + "made by " + TextFormatting.GRAY + "_kisman_#5039", 1,CustomFontUtil.getFontHeight() + 2, -1);
+        if(CustomMainMenu.WATERMARK) {
+            CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + Kisman.getName() + " " + TextFormatting.GRAY + Kisman.getVersion(), 1, 1, -1);
+            CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + "made by " + TextFormatting.GRAY + "_kisman_#5039", 1, CustomFontUtil.getFontHeight() + 2, -1);
+        }
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))

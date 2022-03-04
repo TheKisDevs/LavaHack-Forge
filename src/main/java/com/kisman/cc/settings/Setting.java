@@ -306,6 +306,10 @@ public class Setting {
 		return super.toString();
 	}
 
+	public boolean checkValString(String str) {
+		return sval.equalsIgnoreCase(str);
+	}
+
 	public void fromJson(JsonElement element) {
 		String parse = element.getAsString();
 
@@ -349,8 +353,9 @@ public class Setting {
 		return this;
 	}
 
-	public void setVisible(boolean visible) {
+	public Setting setVisible(boolean visible) {
 		visibleSuppliner = () -> visible;
+		return this;
 	}
 
 	public String[] getStringValues() {

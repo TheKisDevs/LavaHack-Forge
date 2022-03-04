@@ -82,9 +82,10 @@ public class AutoRer extends Module {
 
     private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
     private final Setting threadMode = new Setting("Thread Mode", this, ThreadMode.None);
-    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 0, 1000, Slider.NumberType.TIME);
-    private final Setting threadSyns = new Setting("Thread Syns", this, true);
-    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME);
+    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 0, 1000, Slider.NumberType.TIME).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -190,6 +191,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(threadDelay);
         setmgr.rSetting(threadSyns);
         setmgr.rSetting(threadSynsValue);
+        setmgr.rSetting(threadPacketRots);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
@@ -301,8 +303,8 @@ public class AutoRer extends Module {
                 calcTimer.reset();
             }
 
-            if (multiplication.getValInt() == 1) doAutoRerLogic(null);
-            else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null);
+            if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
+            else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
         } else processMultiThreading();
     }
 
@@ -314,8 +316,8 @@ public class AutoRer extends Module {
             calcTimer.reset();
         }
 
-        if(multiplication.getValInt() == 1) doAutoRerLogic(null);
-        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null);
+        if(multiplication.getValInt() == 1) doAutoRerLogic(null, true);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, true);
     }
 
     private void manualBreaker() {
@@ -341,17 +343,17 @@ public class AutoRer extends Module {
             doCalculatePlace();
             calcTimer.reset();
         }
-        if(multiplication.getValInt() == 1) doAutoRerLogic(event);
-        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(event);
+        if(multiplication.getValInt() == 1) doAutoRerLogic(event, false);
+        else for(int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(event, false);
     });
 
-    private void doAutoRerLogic(EventPlayerMotionUpdate event) {
+    private void doAutoRerLogic(EventPlayerMotionUpdate event, boolean thread) {
         if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
-            doPlace(event);
+            doPlace(event, thread);
             doBreak();
         } else {
             doBreak();
-            doPlace(event);
+            doPlace(event, thread);
         }
     }
 
@@ -476,7 +478,7 @@ public class AutoRer extends Module {
         return mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= (EntityUtil.canSee(pos) ?  placeRange.getValDouble() : placeWallRange.getValDouble());
     }
 
-    private void doPlace(EventPlayerMotionUpdate event) {
+    private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
 
         if(!fastCalc.getValBoolean()) {
@@ -511,13 +513,15 @@ public class AutoRer extends Module {
 
         if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
             float[] rots = RotationUtils.getRotation(currentTarget);
-            if(!motionCrystal.getValBoolean()) {
-                mc.player.rotationYaw = rots[0];
-                mc.player.rotationPitch = rots[1];
-            } else if(event != null) {
-                event.setYaw(rots[0]);
-                event.setPitch(rots[1]);
-            }
+            if(!thread) {
+                if (!motionCrystal.getValBoolean()) {
+                    mc.player.rotationYaw = rots[0];
+                    mc.player.rotationPitch = rots[1];
+                } else if (event != null) {
+                    event.setYaw(rots[0]);
+                    event.setPitch(rots[1]);
+                }
+            } else mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
         }
 
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));

@@ -1,5 +1,6 @@
 package com.kisman.cc.module.combat.autocrystal;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
@@ -21,6 +22,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Comparator;
 
@@ -53,22 +56,16 @@ public class AutoCrystal extends Module {
     public final Setting switchMode = new Setting("Switch Mode", this, SwitchMode.None);
     public final Setting render = new Setting("CoolRender", this, true);
     private final Setting colorVal = new Setting("Color", this, "Color", new Colour(0, 0, 255));
+    private final Setting sound = new Setting("Sound", this, false);
+    private final Setting clientSide = new Setting("Client Side", this, false);
 
     static AI.HalqPos bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
 
     @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
-        if (event.getPacket() instanceof SPacketSoundEffect) {
+        if (event.getPacket() instanceof SPacketSoundEffect && sound.getValBoolean()) {
             final SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
-            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
-                for (Entity e : Minecraft.getMinecraft().world.loadedEntityList) {
-                    if (e instanceof EntityEnderCrystal) {
-                        if (e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) {
-                            e.setDead();
-                        }
-                    }
-                }
-            }
+            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) for (Entity e : Minecraft.getMinecraft().world.loadedEntityList) if (e instanceof EntityEnderCrystal && e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) e.setDead();
         }
     });
 
@@ -96,17 +93,21 @@ public class AutoCrystal extends Module {
         setmgr.rSetting(switchMode);
         setmgr.rSetting(render);
         setmgr.rSetting(colorVal);
+        setmgr.rSetting(sound);
+        setmgr.rSetting(clientSide);
     }
 
     private final Timer placeTimer = new Timer(), breakTimer = new Timer();
     public EntityPlayer target;
 
     public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(listener);
         placeTimer.reset();
         bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
     }
 
     public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
         target = null;
         super.setDisplayInfo("");
     }
@@ -126,6 +127,11 @@ public class AutoCrystal extends Module {
             doPlace();
             doBreak();
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(render.getValBoolean() && !bestCrystalPos.getBlockPos().equals(BlockPos.ORIGIN)) RenderUtil.drawBlockESP(bestCrystalPos.getBlockPos(), colorVal.getColour().r1, colorVal.getColour().g1, colorVal.getColour().b1);
     }
 
     public AI.HalqPos placeCalculateAI() {
@@ -164,31 +170,31 @@ public class AutoCrystal extends Module {
     }
 
     public void doBreak() {
-        final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).map(entity -> entity).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
-        for (final Entity entities : mc.world.loadedEntityList) {
-            if (entities instanceof EntityEnderCrystal) {
-                float breakCalculateAI = AutoCrystal.instance.breakRange.getValFloat();
-                if (breakTimer.passedDms(breakDelay.getValDouble())) {
-                    if (mc.player.getDistance(crystal) < breakCalculateAI) {
-                        if (breakTimer.passedMs(breakDelay.getValLong())) {
-                            if (packetBreak.getValBoolean()) {
-                                mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-                                CPacketUseEntity packet = new CPacketUseEntity();
-                                packet.entityId = crystal.entityId;
-                                packet.action = CPacketUseEntity.Action.ATTACK;
-                                mc.player.connection.sendPacket(packet);
-                            } else mc.playerController.attackEntity(mc.player, crystal);
-                        }
-                        breakTimer.reset();
-                    }
-                    if (hand.getValString().equals("MainHand")) mc.player.swingArm(EnumHand.MAIN_HAND);
-                    else if (hand.getValString().equals("OffHand")) mc.player.swingArm(EnumHand.OFF_HAND);
-                    else mc.player.connection.sendPacket(new CPacketAnimation());
-                }
-                breakTimer.reset();
-            }
-        }
+        final EntityEnderCrystal crystal = (EntityEnderCrystal) mc.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityEnderCrystal).min(Comparator.comparing(c -> mc.player.getDistance(c))).orElse(null);
+        if(crystal == null) return;
+        breakProcess(crystal);
         mc.playerController.updateController();
+    }
+
+    private void breakProcess(Entity entity) {
+        if (breakTimer.passedDms(breakDelay.getValDouble())) {
+            if (mc.player.getDistance(entity) < breakRange.getValDouble()) {
+                if (breakTimer.passedMs(breakDelay.getValLong())) {
+                    if (packetBreak.getValBoolean()) {
+                        mc.player.connection.sendPacket(new CPacketUseEntity(entity));
+                        CPacketUseEntity packet = new CPacketUseEntity();
+                        packet.entityId = entity.entityId;
+                        packet.action = CPacketUseEntity.Action.ATTACK;
+                        mc.player.connection.sendPacket(packet);
+                    } else mc.playerController.attackEntity(mc.player, entity);
+                    try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(entity.entityId);} catch(Exception ignored) {}
+                }
+            }
+            if (hand.getValString().equals("MainHand")) mc.player.swingArm(EnumHand.MAIN_HAND);
+            else if (hand.getValString().equals("OffHand")) mc.player.swingArm(EnumHand.OFF_HAND);
+            else mc.player.connection.sendPacket(new CPacketAnimation());
+            breakTimer.reset();
+        }
     }
 
     public enum SwitchMode {None, Normal, Silent}

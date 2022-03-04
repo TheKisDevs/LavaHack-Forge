@@ -13,7 +13,6 @@ import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class PlayerControllerUtils {
-	
 	public static void setReach(Entity entity, double range) {
 		class RangePlayerController extends PlayerControllerMP {
 			private float range = (float) Wrapper.INSTANCE.player().getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
@@ -51,7 +50,7 @@ public class PlayerControllerUtils {
     		Field field = PlayerControllerMP.class.getDeclaredField(Mapping.isHittingBlock);
     		field.setAccessible(true);
     		field.setBoolean(Wrapper.INSTANCE.controller(), isHittingBlock);
-    	} catch (Exception ex) {}
+    	} catch (Exception ignored) {}
 	}
 	
 	public static void setBlockHitDelay(final int blockHitDelay) {
@@ -59,7 +58,7 @@ public class PlayerControllerUtils {
     		Field field = PlayerControllerMP.class.getDeclaredField(Mapping.blockHitDelay);
         	field.setAccessible(true);
         	field.setInt(Wrapper.INSTANCE.controller(), blockHitDelay);
-    	} catch (Exception ex) {}
+    	} catch (Exception ignored) {}
     }
 	
 	public static float getCurBlockDamageMP() {
@@ -68,9 +67,7 @@ public class PlayerControllerUtils {
 			Field field = PlayerControllerMP.class.getDeclaredField(Mapping.curBlockDamageMP);
 			field.setAccessible(true);
 			getCurBlockDamageMP =  field.getFloat(Wrapper.INSTANCE.controller());	
-		} catch (Exception ex) {}
+		} catch (Exception ignored) {}
 		return getCurBlockDamageMP;
 	}
-	
-	
 }

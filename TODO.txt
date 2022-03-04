@@ -15,13 +15,15 @@ fix rangevisualisator
 fix draggable hudeditor
 add colorpicker & lines in halqgui
 test antispammer
-add portal overlay in no render
+upd portal overlay in no render
+add lagtime to fastfall in anchor
+add gui snow from salhack
 
 For b0.2
 
 Add CustomHotbar(check "todo" folder) - _kisman_
 Add second glow for more hud
 add nr glow
-add new logo theme(ft halqgui)
+add new logo and other hud modules theme(ft halqgui)
 add animations in halqgui
 add shader storage esp

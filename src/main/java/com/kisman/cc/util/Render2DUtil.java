@@ -28,6 +28,40 @@ public class Render2DUtil extends GuiScreen {
 
     public double getZLevel() {return this.zLevel;}
 
+    public static void disableGL2D() {
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+        GL11.glDisable(2848);
+        GL11.glHint(3154, 4352);
+        GL11.glHint(3155, 4352);
+    }
+
+    public static void drawSmoothRect(float left, float top, float right, float bottom, int color) {
+        GL11.glEnable(3042);
+        GL11.glEnable(2848);
+        drawRect(left, top, right, bottom, color);
+        GL11.glScalef(0.5f, 0.5f, 0.5f);
+        drawRect(left * 2.0f - 1.0f, top * 2.0f, left * 2.0f, bottom * 2.0f - 1.0f, color);
+        drawRect(left * 2.0f, top * 2.0f - 1.0f, right * 2.0f, top * 2.0f, color);
+        drawRect(right * 2.0f, top * 2.0f, right * 2.0f + 1.0f, bottom * 2.0f - 1.0f, color);
+        GL11.glDisable(3042);
+        GL11.glScalef(2.0f, 2.0f, 2.0f);
+    }
+
+    public static void drawModalRectWithCustomSizedTexture(double x, double y, float u, float v, double width, double height, double textureWidth, double textureHeight) {
+        float f = 1.0F / (float) textureWidth;
+        float f1 = 1.0F / (float) textureHeight;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(x, (y + height), 0.0D).tex((u * f), ((v + (float)height) * f1)).endVertex();
+        bufferbuilder.pos((x + width), (y + height), 0.0D).tex(((u + (float)width) * f), ((v + (float)height) * f1)).endVertex();
+        bufferbuilder.pos((x + width), y, 0.0D).tex(((u + (float)width) * f), (v * f1)).endVertex();
+        bufferbuilder.pos(x, y, 0.0D).tex((u * f), (v * f1)).endVertex();
+        tessellator.draw();
+    }
+
     public static void drawAbstract(AbstractObject drawing) {
         if(drawing != null) drawing.render();
     }

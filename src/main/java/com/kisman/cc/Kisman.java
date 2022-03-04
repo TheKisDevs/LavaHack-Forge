@@ -14,6 +14,7 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
 import com.kisman.cc.oldclickgui.halq.HalqGui;
 import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
+import com.kisman.cc.oldclickgui.notification.NotificationsManager;
 import com.kisman.cc.oldclickgui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
@@ -93,6 +94,7 @@ public class Kisman {
     public Shaders shaders;
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
+    public NotificationsManager notificationsManager;
 
     public MainAiImpr aiImpr;
 
@@ -139,6 +141,7 @@ public class Kisman {
         serverManager = new ServerManager();
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();
+        notificationsManager = new NotificationsManager();
 
         //load configs
         LoadConfig.init();

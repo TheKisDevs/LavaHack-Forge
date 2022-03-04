@@ -134,19 +134,23 @@ public class ViewModel extends Module {
         if(hands.getValBoolean()) {
             switch (event.getHand()) {
                 case MAIN_HAND: {
-                    glTranslated(handRightX.getValDouble(), handRightY.getValDouble(), handRightZ.getValDouble());
-                    glRotated(handRightRotateX.getValDouble(), 1, 0, 0);
-                    glRotated(handRightRotateY.getValDouble(), 0, 1, 0);
-                    glRotated(handRightRotateZ.getValDouble(), 0, 0, 1);
-                    glScaled(handRightScaleX.getValDouble(), handRightScaleY.getValDouble(), handRightScaleZ.getValDouble());
+                    {
+                        glTranslated(handRightX.getValDouble(), handRightY.getValDouble(), handRightZ.getValDouble());
+                        glRotated(handRightRotateX.getValDouble(), 1, 0, 0);
+                        glRotated(handRightRotateY.getValDouble(), 0, 1, 0);
+                        glRotated(handRightRotateZ.getValDouble(), 0, 0, 1);
+                        glScaled(handRightScaleX.getValDouble(), handRightScaleY.getValDouble(), handRightScaleZ.getValDouble());
+                    }
                     break;
                 }
                 case OFF_HAND: {
-                    glTranslated(handLeftX.getValDouble(), handLeftY.getValDouble(), handLeftZ.getValDouble());
-                    glRotated(handLeftRotateX.getValDouble(), 1, 0, 0);
-                    glRotated(handLeftRotateY.getValDouble(), 0, 1, 0);
-                    glRotated(handLeftRotateZ.getValDouble(), 0, 0, 1);
-                    glScaled(handLeftScaleX.getValDouble(), handLeftScaleY.getValDouble(), handLeftScaleZ.getValDouble());
+                    {
+                        glTranslated(handLeftX.getValDouble(), handLeftY.getValDouble(), handLeftZ.getValDouble());
+                        glRotated(handLeftRotateX.getValDouble(), 1, 0, 0);
+                        glRotated(handLeftRotateY.getValDouble(), 0, 1, 0);
+                        glRotated(handLeftRotateZ.getValDouble(), 0, 0, 1);
+                        glScaled(handLeftScaleX.getValDouble(), handLeftScaleY.getValDouble(), handLeftScaleZ.getValDouble());
+                    }
                     break;
                 }
             }

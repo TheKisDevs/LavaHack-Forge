@@ -153,6 +153,7 @@ public class ModuleManager {
 		modules.add(new TargetStrafe());
 		//player
 		modules.add(new AntiKnokBack());
+		modules.add(new ElytraEquip());
 		modules.add(new FastBreak());
 		modules.add(new FastLadder());
 		modules.add(new FastPlace());

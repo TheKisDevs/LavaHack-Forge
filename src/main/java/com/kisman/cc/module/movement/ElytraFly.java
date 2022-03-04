@@ -30,11 +30,14 @@ public class ElytraFly extends Module {
     private Setting equipElytra = new Setting("EquipElytra", this, true);
     private Setting pitchSpoof = new Setting("PitchSpoof", this, false);
 
-    private TimerUtils instantFlyTimer = new TimerUtils();
+    private final TimerUtils instantFlyTimer = new TimerUtils();
+    public static ElytraFly instance;
     private int elytraSlot = -1;
 
     public ElytraFly() {
         super("ElytraFly", "ElytraFly", Category.MOVEMENT);
+
+        instance = this;
 
         setmgr.rSetting(mode);
 

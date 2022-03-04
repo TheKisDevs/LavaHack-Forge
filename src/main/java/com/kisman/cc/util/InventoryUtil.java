@@ -154,6 +154,15 @@ public class InventoryUtil {
         return -1;
     }
 
+    public static int findChestplate(int min, int max) {
+        for(int i = min; i <= max; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            if (stack.getItem() == Items.CHAINMAIL_CHESTPLATE && stack.getItem() == Items.DIAMOND_CHESTPLATE && stack.getItem() == Items.IRON_CHESTPLATE && stack.getItem() == Items.GOLDEN_CHESTPLATE && stack.getItem() == Items.LEATHER_CHESTPLATE) return i;
+        }
+
+        return -1;
+    }
+
     public static int findAntiWeaknessTool() {
         return findAntiWeaknessTool(0, 9);
     }
