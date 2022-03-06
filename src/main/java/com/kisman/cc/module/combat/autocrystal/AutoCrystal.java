@@ -78,7 +78,7 @@ public class AutoCrystal extends Module {
 
     public AutoCrystal() {
         super("AutoHalq", Category.COMBAT);
-        
+
         instance = this;
 
         setmgr.rSetting(logic);
@@ -123,9 +123,9 @@ public class AutoCrystal extends Module {
     }
 
     public void update() {
-        if(mc.player == null || mc.world == null) return;
+        if (mc.player == null || mc.world == null) return;
         target = EntityUtil.getTarget(targetRange.getValFloat());
-        if(target == null) {
+        if (target == null) {
             super.setDisplayInfo("");
             return;
         }
@@ -137,11 +137,13 @@ public class AutoCrystal extends Module {
             doPlace();
             doBreak();
         }
+        ThreadCa.instance.run();
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(render.getValBoolean() && !bestCrystalPos.getBlockPos().equals(BlockPos.ORIGIN)) RenderUtil.drawBlockESP(bestCrystalPos.getBlockPos(), colorVal.getColour().r1, colorVal.getColour().g1, colorVal.getColour().b1);
+        if (render.getValBoolean() && !bestCrystalPos.getBlockPos().equals(BlockPos.ORIGIN))
+            RenderUtil.drawBlockESP(bestCrystalPos.getBlockPos(), colorVal.getColour().r1, colorVal.getColour().g1, colorVal.getColour().b1);
     }
 
     public AI.HalqPos placeCalculateAI() {
@@ -150,7 +152,8 @@ public class AutoCrystal extends Module {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
             float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
             if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean())) {
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
+                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat()))
+                    continue;
                 if (selfDamage > maxSelfDMG.getValFloat()) continue;
                 if (targetDamage < minDMG.getValFloat()) continue;
                 if (antiSuicide.getValBoolean()) if (selfDamage < 2F) continue;
@@ -196,7 +199,7 @@ public class AutoCrystal extends Module {
         bestCrystalPos = placeCalculateAI();
         float[] rot = RotationUtils.getRotationToPos(bestCrystalPos.getBlockPos());
         Packet packet = event.getPacket();
-        if (packet instanceof CPacketPlayer && rotateMode.equals("Spoof")){
+        if (packet instanceof CPacketPlayer && rotateMode.equals("Spoof")) {
             ((CPacketPlayer) packet).yaw = rot[0];
             ((CPacketPlayer) packet).pitch = rot[1];
         }
@@ -208,13 +211,15 @@ public class AutoCrystal extends Module {
                 if (breakTimer.passedMs(breakDelay.getValLong())) {
                     float[] rot = RotationUtils.getRotationToPos(entity.getPosition());
                     newRotate(rot[1], rot[0]);
-                    if (packetBreak.getValBoolean()) {
-                        mc.player.connection.sendPacket(new CPacketUseEntity(entity));
-                        CPacketUseEntity packet = new CPacketUseEntity();
-                        packet.entityId = entity.entityId;
-                        packet.action = CPacketUseEntity.Action.ATTACK;
-                        mc.player.connection.sendPacket(packet);
-                    } else mc.playerController.attackEntity(mc.player, entity);
+                    for (int i = 0; i <= 1; i++) {
+                        if (packetBreak.getValBoolean()) {
+                            mc.player.connection.sendPacket(new CPacketUseEntity(entity));
+                            CPacketUseEntity packet = new CPacketUseEntity();
+                            packet.entityId = entity.entityId;
+                            packet.action = CPacketUseEntity.Action.ATTACK;
+                            mc.player.connection.sendPacket(packet);
+                        } else mc.playerController.attackEntity(mc.player, entity);
+                    }
                     try {
                         if (clientSide.getValBoolean()) mc.world.removeEntityFromWorld(entity.entityId);
                     } catch (Exception ignored) {
@@ -266,4 +271,32 @@ public class AutoCrystal extends Module {
     public enum Hand {MainHand, OffHand, PacketSwing}
 
     public enum Rotate {Packet, Normal, Spoof}
+
+    Thread thread = new Thread(AutoCrystal.ThreadCa.get(this));
+
+
+    public void newThread() {
+        for (int i = 0; i <= 2;) {
+            thread.run();
+        }
+    }
+    //paste for autorer
+    public static class ThreadCa implements Runnable {
+        private static ThreadCa instance;
+        private AutoCrystal autoCrystal;
+
+        public static AutoCrystal.ThreadCa get(AutoCrystal autoCrystal) {
+            if (instance == null) {
+                instance = new ThreadCa();
+                instance.autoCrystal = autoCrystal;
+            }
+            return instance;
+        }
+        //paste for autorer
+
+        @Override
+        public void run() {
+                   AutoCrystal.instance.newThread();
+        }
+    }
 }
