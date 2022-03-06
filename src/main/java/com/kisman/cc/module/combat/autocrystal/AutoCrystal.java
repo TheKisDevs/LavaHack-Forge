@@ -14,6 +14,7 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -110,6 +111,7 @@ public class AutoCrystal extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
+        Kisman.EVENT_BUS.unsubscribe(listener1);
         placeTimer.reset();
         bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
     }
@@ -189,6 +191,17 @@ public class AutoCrystal extends Module {
         }
     }
 
+    @EventHandler
+    private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
+        bestCrystalPos = placeCalculateAI();
+        float[] rot = RotationUtils.getRotationToPos(bestCrystalPos.getBlockPos());
+        Packet packet = event.getPacket();
+        if (packet instanceof CPacketPlayer && rotateMode.equals("Spoof")){
+            ((CPacketPlayer) packet).yaw = rot[0];
+            ((CPacketPlayer) packet).pitch = rot[1];
+        }
+    });
+
     private void breakProcess(Entity entity) {
         if (breakTimer.passedDms(breakDelay.getValDouble())) {
             if (mc.player.getDistance(entity) < breakRange.getValDouble()) {
@@ -206,13 +219,16 @@ public class AutoCrystal extends Module {
                         if (clientSide.getValBoolean()) mc.world.removeEntityFromWorld(entity.entityId);
                     } catch (Exception ignored) {
                     }
+                    breakTimer.reset();
                 }
+                breakTimer.reset();
             }
             if (hand.getValString().equals("MainHand")) mc.player.swingArm(EnumHand.MAIN_HAND);
             else if (hand.getValString().equals("OffHand")) mc.player.swingArm(EnumHand.OFF_HAND);
             else mc.player.connection.sendPacket(new CPacketAnimation());
             breakTimer.reset();
         }
+        breakTimer.reset();
     }
 
     public void doPlace() {
@@ -233,10 +249,12 @@ public class AutoCrystal extends Module {
                         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
                     else
                         mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+                    placeTimer.reset();
                 }
                 placeTimer.reset();
                 if (switchMode.getValString().equalsIgnoreCase("Silent")) InventoryUtil.switchToSlot(oldSlot, true);
             }
+            placeTimer.reset();
         }
         oldRotate(old[1], old[0]);
     }
@@ -247,5 +265,5 @@ public class AutoCrystal extends Module {
 
     public enum Hand {MainHand, OffHand, PacketSwing}
 
-    public enum Rotate {Packet, Normal}
+    public enum Rotate {Packet, Normal, Spoof}
 }
