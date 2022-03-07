@@ -35,7 +35,7 @@ import java.util.Comparator;
  * @since 28/02/22 20:32PM
  */
 
-public class AutoCrystal extends Module {
+public class AutoCrystal extends Module implements Runnable {
     public static AutoCrystal instance = new AutoCrystal();
 
     public final Setting logic = new Setting("CaLogic", this, CaLogic.BreakPlace);
@@ -62,6 +62,10 @@ public class AutoCrystal extends Module {
     private final Setting clientSide = new Setting("Client Side", this, false);
     private final Setting rotate = new Setting("Rotate", this, true);
     private final Setting rotateMode = new Setting("RotateMode", this, Rotate.Packet);
+    private final Setting MultiThread = new Setting("MultiThread", this, true);
+    private final Setting MultiThreadValue = new Setting("MultiThreadValue", this, 2, 1, 4, true);
+    private final Setting MultiThreadDelay = new Setting("MultiThreadDelay", this, 0, 0, 60, true);
+
 
     static AI.HalqPos bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
 
@@ -75,6 +79,25 @@ public class AutoCrystal extends Module {
                         e.setDead();
         }
     });
+    private final Timer threadDelay = new Timer();
+
+    private final Timer placeTimer = new Timer(), breakTimer = new Timer();
+    public EntityPlayer target;
+    Thread thread;
+    private AutoCrystal autoCrystal;
+
+    public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(listener);
+        Kisman.EVENT_BUS.unsubscribe(listener1);
+        placeTimer.reset();
+        bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
+    }
+
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
+        target = null;
+        super.setDisplayInfo("");
+    }
 
     public AutoCrystal() {
         super("AutoHalq", Category.COMBAT);
@@ -104,40 +127,9 @@ public class AutoCrystal extends Module {
         setmgr.rSetting(clientSide);
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateMode);
-    }
-
-    private final Timer placeTimer = new Timer(), breakTimer = new Timer();
-    public EntityPlayer target;
-
-    public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(listener);
-        Kisman.EVENT_BUS.unsubscribe(listener1);
-        placeTimer.reset();
-        bestCrystalPos = new AI.HalqPos(BlockPos.ORIGIN, 0);
-    }
-
-    public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(listener);
-        target = null;
-        super.setDisplayInfo("");
-    }
-
-    public void update() {
-        if (mc.player == null || mc.world == null) return;
-        target = EntityUtil.getTarget(targetRange.getValFloat());
-        if (target == null) {
-            super.setDisplayInfo("");
-            return;
-        }
-        super.setDisplayInfo("[" + target.getName() + "]");
-        if (logic.getValString().equals("BreakPlace")) {
-            doBreak();
-            doPlace();
-        } else if (logic.getValString().equals("PlaceBreak")) {
-            doPlace();
-            doBreak();
-        }
-        ThreadCa.instance.run();
+        setmgr.rSetting(MultiThread);
+        setmgr.rSetting(MultiThreadValue);
+        setmgr.rSetting(MultiThreadDelay);
     }
 
     @SubscribeEvent
@@ -264,6 +256,14 @@ public class AutoCrystal extends Module {
         oldRotate(old[1], old[0]);
     }
 
+    public static AutoCrystal get(AutoCrystal autoCrystal) {
+        if (instance == null) {
+            instance = new AutoCrystal();
+            instance.autoCrystal = autoCrystal;
+        }
+        return instance;
+    }
+
     public enum SwitchMode {None, Normal, Silent}
 
     public enum CaLogic {BreakPlace, PlaceBreak}
@@ -272,31 +272,45 @@ public class AutoCrystal extends Module {
 
     public enum Rotate {Packet, Normal, Spoof}
 
-    Thread thread = new Thread(AutoCrystal.ThreadCa.get(this));
+    public void update() {
+        if (mc.player == null || mc.world == null) return;
+        target = EntityUtil.getTarget(targetRange.getValFloat());
+        if (target == null) {
+            super.setDisplayInfo("");
+            return;
+        }
+        super.setDisplayInfo("[" + target.getName() + "]");
+        if (logic.getValString().equals("BreakPlace")) {
+            doBreak();
+            doPlace();
+        } else if (logic.getValString().equals("PlaceBreak")) {
+            doPlace();
+            doBreak();
+        }
+            newThread();
+    }
 
+    @Override
+    public void run() {
+            newThread();
+    }
 
     public void newThread() {
-        for (int i = 0; i <= 2;) {
-            thread.run();
-        }
-    }
-    //paste for autorer
-    public static class ThreadCa implements Runnable {
-        private static ThreadCa instance;
-        private AutoCrystal autoCrystal;
-
-        public static AutoCrystal.ThreadCa get(AutoCrystal autoCrystal) {
-            if (instance == null) {
-                instance = new ThreadCa();
-                instance.autoCrystal = autoCrystal;
+        for (int i = 0; i <= MultiThreadValue.getValInt(); i++) {
+            if (threadDelay.passedMs(MultiThreadDelay.getValLong())) {
+                if (thread == null)
+                    thread = new Thread(AutoCrystal.get(this));
+                if (thread != null && (thread.isInterrupted() || thread.isAlive()))
+                    thread = new Thread(AutoCrystal.get(this));
+                if (thread != null && thread.getState().equals(Thread.State.NEW)) {
+                    try {
+                        thread.start();
+                    } catch (Exception ignored) {
+                    }
+                }
+                threadDelay.reset();
             }
-            return instance;
-        }
-        //paste for autorer
-
-        @Override
-        public void run() {
-                   AutoCrystal.instance.newThread();
+            threadDelay.reset();
         }
     }
 }
