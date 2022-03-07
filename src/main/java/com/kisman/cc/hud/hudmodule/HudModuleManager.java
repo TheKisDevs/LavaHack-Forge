@@ -32,7 +32,7 @@ public class HudModuleManager {
 		modules.add(new Speed());
 
 		//render
-        modules.add(new ArrayListModule());
+        modules.add(ArrayListModule.instance);
 		modules.add(new Coord());
 		modules.add(new Fps());
 		modules.add(new Logo());

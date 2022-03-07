@@ -1,13 +1,16 @@
 package com.kisman.cc.hud.hudmodule.combat;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -18,12 +21,15 @@ import org.lwjgl.opengl.GL11;
 public class TargetHUD extends HudModule {
     private EntityPlayer target = null;
     private TimerUtils timer = new TimerUtils();
+    private ScaledResolution sr;
     private double hpBarWidth;
     private double cdBarWidth;
+    private double[] circleProgressBarDegreeses = new double[] {0, 0, 0, 0, 0, 0, 0};
     private double borderOffset = 5;
 
     public TargetHUD() {
         super("TargetHud", "TargetInfo", HudCategory.COMBAT);
+        sr = new ScaledResolution(mc);
     }
 
     public void update() {
@@ -42,6 +48,115 @@ public class TargetHUD extends HudModule {
             case "Rewrite":
                 drawRewrite();
                 break;
+            case "Circle":
+                drawCircle();
+                break;
+            case "NoRules":
+                drawNoRules(500, 300, 150, 45);
+                break;
+        }
+    }
+    
+    private void drawCircle() {
+        boolean isMatrix = false;
+        try {
+            double x = 503;
+            double y = 317;
+            double radius = 12;
+            double width = 12 + borderOffset * 9 + radius * 7;
+            double height = borderOffset * 4 + CustomFontUtil.getFontHeight() + 27;
+            //img height: borderOffset * 3 + CustomFontUtil.getFontHeight() + 27
+            //img width: borderOffset + 27
+
+            //draw background
+            Render2DUtil.drawRect(x + 3, y + 3, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
+            Render2DUtil.drawRect(x + 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
+            Render2DUtil.drawRect(x + 2, y + 2, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
+            Render2DUtil.drawRect(x + 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
+            Render2DUtil.drawRect(x + 1, y + 1, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
+            Render2DUtil.drawRect(x + 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
+            Render2DUtil.drawRect(x - 3, y - 8, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
+            Render2DUtil.drawRect(x - 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
+            Render2DUtil.drawRect(x - 2, y - 7, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
+            Render2DUtil.drawRect(x - 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
+            Render2DUtil.drawRect(x - 1, y - 6, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
+            Render2DUtil.drawRect(x - 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
+            Render2DUtil.drawRect(x, y - 5, x + width, y + height, (ColorUtils.astolfoColors(100, 100)));
+            Render2DUtil.drawRect(x - 3, y - 1, x + width + 3, y + height + 3, (ColorUtils.getColor(33, 33, 42)));
+            Render2DUtil.drawRect(x - 2, y - 2, x + width + 2, y + height + 2, (ColorUtils.getColor(45, 45, 55)));
+            Render2DUtil.drawRect(x - 1, y - 3, x + width + 1, y + height + 1, (ColorUtils.getColor(60, 60, 70)));
+            Render2DUtil.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
+
+            //draw target's name
+            CustomFontUtil.drawCenteredStringWithShadow(target.getName(), x + width / 2, y + borderOffset, ColorUtils.astolfoColors(100, 100));
+
+            //draw face background
+            Render2DUtil.drawRect(x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight(), (x + borderOffset + radius), borderOffset * 3 + CustomFontUtil.getFontHeight() + radius, ColorUtils.astolfoColors(100, 100));
+
+            //draw face texture
+            GL11.glPushMatrix();
+            isMatrix = true;
+            mc.getTextureManager().bindTexture(mc.player.connection.getPlayerInfo(target.getName()).getLocationSkin());
+            GL11.glColor4f(1, 1, 1, 1);
+            Gui.drawScaledCustomSizeModalRect((int) (x + borderOffset + 1), (int) (y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 1), 8.0F, 8, 8, 8, 10, 10, 64.0F, 64.0F);
+            GL11.glPopMatrix();
+
+            //draw health circle
+            double healthX = x + borderOffset * 2 + 12 + radius, healthY = y + borderOffset * 3 + CustomFontUtil.getFontHeight() + radius, circleOffset = 3, healthDegrees = 360 * (target.getMaxHealth() / target.getHealth());
+            Render2DUtil.drawProgressCircle2(healthX, healthY, radius, ColorUtils.astolfoColors(100, 100), healthDegrees, 1);
+            double[] circleCentre = MathUtil.getCircleCentre(new double[] {healthX, healthY}, radius);
+            String text = String.valueOf((int) target.getHealth());
+            CustomFontUtil.drawCenteredStringWithShadow(text, circleCentre[0], circleCentre[1] - CustomFontUtil.getFontHeight() / 2, ColorUtils.astolfoColors(100, 100));
+
+            //draw armor and items in hands
+            double posX = healthX;
+            for (final ItemStack item : target.getArmorInventoryList()) {
+                if(item.isEmpty) continue;
+                GL11.glPushMatrix();
+                GL11.glTranslated(posX, healthY + circleOffset, 0);
+                GL11.glScaled(0.8, 0.8, 0.8);
+                RenderUtil.renderItemOverlayIntoGUI(CustomFontUtil.comfortaab18, item, 0, 0, null, false);
+                GL11.glPopMatrix();
+                double[] centre = MathUtil.getCircleCentre(new double[] {posX, healthY + circleOffset}, radius);
+                Render2DUtil.drawProgressCircle2(centre[0], centre[1], radius, ColorUtils.astolfoColors(100, 100), InventoryUtil.getDamageInFloat(item), 1);
+                posX += 16;
+            }
+            if(!target.getHeldItemMainhand().isEmpty) {
+                GL11.glPushMatrix();
+                GL11.glTranslated(posX, healthY + circleOffset, 0);
+                GL11.glScaled(0.8, 0.8, 0.8);
+                RenderUtil.renderItemOverlayIntoGUI(CustomFontUtil.comfortaab18, target.getHeldItemMainhand(), 0, 0, null, false);
+                GL11.glPopMatrix();
+                double[] centre = MathUtil.getCircleCentre(new double[] {posX, healthY + circleOffset}, radius);
+                Render2DUtil.drawProgressCircle2(centre[0], centre[1], radius, ColorUtils.astolfoColors(100, 100), InventoryUtil.getDamageInFloat(target.getHeldItemMainhand()), 1);
+                posX += 16;
+            }
+            if(!target.getHeldItemOffhand().isEmpty){
+                GL11.glPushMatrix();
+                GL11.glTranslated(posX, healthY + circleOffset, 0);
+                GL11.glScaled(0.8, 0.8, 0.8);
+                RenderUtil.renderItemOverlayIntoGUI(CustomFontUtil.comfortaab18, target.getHeldItemOffhand(), 0, 0, null, false);
+                GL11.glPopMatrix();
+                double[] centre = MathUtil.getCircleCentre(new double[] {posX, healthY + circleOffset}, radius);
+                Render2DUtil.drawProgressCircle2(centre[0], centre[1], radius, ColorUtils.astolfoColors(100, 100), InventoryUtil.getDamageInFloat(target.getHeldItemOffhand()), 1);
+            }
+        } catch (Exception e) {if(isMatrix) GL11.glPopMatrix();}
+    }
+
+    private void drawNoRules(double x, double y, double w, double h) {
+        double healthOffset = ((target.getHealth() + target.getAbsorptionAmount()) - 0) / (target.getMaxHealth() - 0);
+        hpBarWidth += (healthOffset - hpBarWidth) / 4;
+        Render2DUtil.drawRoundedRect2(x, y, w, h, 6, new Colour(20, 20, 20, 210).getRGB());
+        Render2DUtil.drawRoundedRect2(x + 2, y + (h / 2 - 34 / 2) - 3, 40, 40, 6, 0x40575656);
+        Render2DUtil.drawRoundedRect2(x + 45, y + 4, w - 49, 30, 6, 0x40575656);
+        if (target != null) {
+            CustomFontUtil.drawStringWithShadow("Name: " + ChatFormatting.GRAY + target.getName(), x + 47, y + 4, -1);
+            CustomFontUtil.drawStringWithShadow("Distance: " + ChatFormatting.GRAY + MathUtil.round(mc.player.getDistance(target), 2), x + 47, y + 13, -1);
+            CustomFontUtil.drawStringWithShadow("Ping: " + ChatFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms", x + 47, y + 22.5, -1);
+            Render2DUtil.drawRoundedRect2(x + 45, y + h - 16, w - 49, 10, 6, 0x40575656);
+            Render2DUtil.drawRoundedRect2(x + 47, y + h - 12, 95 * hpBarWidth, 3, 4, ColorUtils.healthColor(target.getHealth() + target.getAbsorptionAmount(), target.getMaxHealth()).getRGB());
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            try {GuiInventory.drawEntityOnScreen((int) x + 21, (int) (y + 44), 18, -30, -target.rotationPitch, target);} catch (Exception ignored) {}
         }
     }
 
@@ -95,7 +210,7 @@ public class TargetHUD extends HudModule {
             CustomFontUtil.drawString("Distance: " + (int) mc.player.getDistance(target), x + borderOffset + 27 + 4, y + borderOffset * 3 + CustomFontUtil.getFontHeight() * 2 + 2, ColorUtils.astolfoColors(100, 100));
             CustomFontUtil.drawString("On Ground: " + target.onGround, x + borderOffset + 27 + 4, y + borderOffset * 3 + CustomFontUtil.getFontHeight() * 3 + 4, ColorUtils.astolfoColors(100, 100));
 
-            //draw armor and item in hands
+            //draw armor and items in hands
             double posX = x + borderOffset;
             for (final ItemStack item : target.getArmorInventoryList()) {
                 if(item.isEmpty) continue;

@@ -18,6 +18,8 @@ test antispammer
 upd portal overlay in no render
 add lagtime to fastfall in anchor
 add gui snow from salhack
+add use for new notify
+add use for new progress circle
 
 For b0.2
 

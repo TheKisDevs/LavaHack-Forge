@@ -5,7 +5,7 @@ import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
@@ -360,7 +360,7 @@ public class AutoRer extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(placePos != null){
-            if(!render.getValString().equalsIgnoreCase("None")) {
+            if(render.getValString().equalsIgnoreCase("Default")) {
                 RenderUtil.drawBlockESP(placePos, 1, 1, 1);
             }
             // if (render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());

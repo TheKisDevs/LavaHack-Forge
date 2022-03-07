@@ -29,7 +29,7 @@ import org.lwjgl.util.glu.*;
 import javax.annotation.Nullable;
 
 public class RenderUtil {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static final Frustum frustrum = new Frustum();
 	
 	private static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
@@ -55,6 +55,9 @@ public class RenderUtil {
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
             GlStateManager.disableDepth();
+            GL11.glDisable(GL11.GL_CULL_FACE);
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            glDisable(GL11.GL_LIGHTING);
             GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
             GlStateManager.disableTexture2D();
             GlStateManager.depthMask(false);
@@ -64,6 +67,9 @@ public class RenderUtil {
             if (box) RenderGlobal.renderFilledBox(bb, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, boxAlpha / 255.0f);
             if (outline) RenderGlobal.drawBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, line.getRed() / 255.0f, line.getGreen() / 255.0f, line.getBlue() / 255.0f, outlineAlpha / 255.0f);
             GL11.glDisable(2848);
+            glEnable(GL11.GL_LIGHTING);
+            GL11.glEnable(GL11.GL_CULL_FACE);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
             GlStateManager.depthMask(true);
             GlStateManager.enableDepth();
             GlStateManager.enableTexture2D();
@@ -1581,6 +1587,54 @@ public class RenderUtil {
 
     public static void renderItemOverlays(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
         renderItemOverlayIntoGUI(cfr, stack, xPosition, yPosition, null);
+    }
+
+    public static void renderItemOverlayIntoGUI(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, boolean showDurBar) {
+        if (!stack.isEmpty()) {
+            if (stack.getCount() != 1 || text != null) {
+                String s = text == null ? String.valueOf(stack.getCount()) : text;
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableBlend();
+                cfr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - cfr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+                GlStateManager.enableBlend();
+            }
+            if (stack.getItem().showDurabilityBar(stack) && showDurBar) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableTexture2D();
+                GlStateManager.disableAlpha();
+                GlStateManager.disableBlend();
+                Tessellator tessellator = Tessellator.getInstance();
+                BufferBuilder bufferbuilder = tessellator.getBuffer();
+                double health = stack.getItem().getDurabilityForDisplay(stack);
+                int rgbfordisplay = stack.getItem().getRGBDurabilityForDisplay(stack);
+                int i = Math.round(13.0F - (float)health * 13.0F);
+                draw(bufferbuilder, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
+                draw(bufferbuilder, xPosition + 2, yPosition + 13, i, 1, rgbfordisplay >> 16 & 255, rgbfordisplay >> 8 & 255, rgbfordisplay & 255, 255);
+                GlStateManager.enableBlend();
+                GlStateManager.enableAlpha();
+                GlStateManager.enableTexture2D();
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+            }
+
+            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
+            if (f3 > 0.0F) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                GlStateManager.disableTexture2D();
+                Tessellator tessellator1 = Tessellator.getInstance();
+                BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
+                draw(bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
+                GlStateManager.enableTexture2D();
+                GlStateManager.enableLighting();
+                GlStateManager.enableDepth();
+            }
+        }
     }
 
     public static void renderItemOverlayIntoGUI(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {

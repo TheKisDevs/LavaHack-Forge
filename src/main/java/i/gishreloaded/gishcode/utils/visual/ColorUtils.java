@@ -13,6 +13,30 @@ public class ColorUtils {
         return Colour.fromHSB(new float[] {new Random().nextFloat(), 1, 1}, 255);
     }
 
+    public static Colour twoColorEffect(final Colour color, final Colour color2, double delay) {
+        if (delay > 1.0) {
+            final double n2 = delay % 1.0;
+            delay = (((int)delay % 2 == 0) ? n2 : (1.0 - n2));
+        }
+        final double n3 = 1.0 - delay;
+        return new Colour((color.r * n3 + color2.r * delay),  (color.g * n3 + color2.g * delay), (color.b * n3 + color2.b * delay), (color.a * n3 + color2.a * delay));
+    }
+
+    public static Colour healthColor(float hp, float maxHP) {
+        int pct = (int) ((hp / maxHP) * 255F);
+        return new Colour(Math.max(Math.min(255 - pct, 255), 0), Math.max(Math.min(pct, 255), 0), 0, 255);
+    }
+
+    public static int getAstolfoRainbow(int offset) {
+        float speed = 2900F;
+        float hue = (float) (System.currentTimeMillis() % (int)speed) + ((1000 - offset) * 9);
+        while (hue > speed) hue -= speed;
+        hue /= speed;
+        if (hue > 0.5) hue = 0.5F - (hue - 0.5f);
+        hue += 0.5F;
+        return Color.HSBtoRGB(hue, 0.65f, 1f);
+    }
+
 	public static Color rainbow() {
 		long offset = 999999999999L;
         float hue = (float) (System.nanoTime() + offset) / 1.0E10f % 1.0f;

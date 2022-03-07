@@ -3,7 +3,7 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
@@ -15,6 +15,7 @@ import org.lwjgl.input.Keyboard;
 public class Config extends Module {
     public static Config instance;
 
+    public Setting astolfoColorMode = new Setting("Astolfo Color Mode", this, AstolfoColorMode.Old);
     public Setting friends = new Setting("Friends", this, true);
     public Setting nameMode = new Setting("Name Mode", this, NameMode.kismancc);
     public Setting customName = new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true).setVisible(() -> nameMode.getValBoolean());
@@ -25,6 +26,8 @@ public class Config extends Module {
     public Setting glowOffset = new Setting("Glow Offset", this, 6, 1, 20, true).setVisible(() -> guiGlow.getValBoolean());
     public Setting glowRadius = new Setting("Glow Radius", this, 15, 0, 20, true).setVisible(() -> guiGlow.getValBoolean());
     public Setting glowBoxSize = new Setting("Glow Box Size", this, 0, 0, 20, true).setVisible(() -> guiGlow.getValBoolean());
+    public Setting guiGradient = new Setting("Gui Gradient", this, HUD.Gradient.None);
+    public Setting guiGradientDiff = new Setting("Gui Gradient Diff", this, 1, 0, 1000, Slider.NumberType.TIME);
     public Setting guiDesc = new Setting("Gui Desc", this, false);
     public Setting guiParticles = new Setting("Gui Particles", this, true);
     public Setting guiOutline = new Setting("Gui Outline", this, true);
@@ -58,6 +61,7 @@ public class Config extends Module {
 
         instance = this;
 
+        setmgr.rSetting(astolfoColorMode);
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
@@ -68,6 +72,8 @@ public class Config extends Module {
         setmgr.rSetting(glowOffset);
         setmgr.rSetting(glowRadius);
         setmgr.rSetting(glowBoxSize);
+        setmgr.rSetting(guiGradient);
+        setmgr.rSetting(guiGradientDiff);
         setmgr.rSetting(guiDesc);
         setmgr.rSetting(guiParticles);
         setmgr.rSetting(guiOutline);
@@ -113,4 +119,5 @@ public class Config extends Module {
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, custom}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
+    public enum AstolfoColorMode {Old, Impr}
 }

@@ -4,7 +4,7 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.module.render.shader.*;
 import com.kisman.cc.module.render.shader.shaders.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
 import com.kisman.cc.util.RenderUtil;

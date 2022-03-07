@@ -1,7 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.oldclickgui.particle.ParticleSystem;
+import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.modules.CustomMainMenu;
 import com.kisman.cc.viaforge.ViaForge;
@@ -28,17 +28,12 @@ public class MixinGuiMainMenu extends GuiScreen {
         if (p_actionPerformed_1_.id == 1337) mc.displayGuiScreen(new GuiProtocolSelector(this));
     }
 
-    @Inject(method = "drawScreen", at = @At("HEAD"))
-    public void drawText(int mouseX, int mouseY, float partialTicks, CallbackInfo ci){
-        //text
+    @Inject(method = "drawScreen", at = @At("RETURN"))
+    public void down(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if(CustomMainMenu.WATERMARK) {
             CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + Kisman.getName() + " " + TextFormatting.GRAY + Kisman.getVersion(), 1, 1, -1);
             CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + "made by " + TextFormatting.GRAY + "_kisman_#5039", 1, CustomFontUtil.getFontHeight() + 2, -1);
         }
-    }
-
-    @Inject(method = "drawScreen", at = @At("RETURN"))
-    public void down(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if(CustomMainMenu.PARTICLES) {
             particleSystem.tick(10);
             particleSystem.render();

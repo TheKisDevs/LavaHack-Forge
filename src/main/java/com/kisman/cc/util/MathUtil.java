@@ -12,6 +12,10 @@ import java.util.*;
 import java.util.List;
 
 public class MathUtil {
+    public static double[] getCircleCentre(double[] coord, double radius) {
+        return new double[] {coord[0] + radius, coord[1] + radius};
+    }
+
     public static double degToRad(double deg) {
         return deg * (float) (Math.PI / 180.0f);
     }
@@ -70,37 +74,24 @@ public class MathUtil {
         final Minecraft mc = Minecraft.getMinecraft();
         float forward = 1f;
 
-        if (mc.gameSettings.keyBindLeft.isPressed() || mc.gameSettings.keyBindRight.isPressed() || mc.gameSettings.keyBindBack.isPressed() || mc.gameSettings.keyBindForward.isPressed())
-            forward = mc.player.movementInput.moveForward;
-
+        if (mc.gameSettings.keyBindLeft.isPressed() || mc.gameSettings.keyBindRight.isPressed() || mc.gameSettings.keyBindBack.isPressed() || mc.gameSettings.keyBindForward.isPressed()) forward = mc.player.movementInput.moveForward;
         float side = mc.player.movementInput.moveStrafe;
-        float yaw = mc.player.prevRotationYaw
-                + (mc.player.rotationYaw - mc.player.prevRotationYaw) * mc.getRenderPartialTicks();
+        float yaw = mc.player.prevRotationYaw + (mc.player.rotationYaw - mc.player.prevRotationYaw) * mc.getRenderPartialTicks();
 
         if (forward != 0) {
-            if (side > 0) {
-                yaw += (forward > 0 ? -45 : 45);
-            } else if (side < 0) {
-                yaw += (forward > 0 ? 45 : -45);
-            }
+            if (side > 0) yaw += (forward > 0 ? -45 : 45);
+            else if (side < 0) yaw += (forward > 0 ? 45 : -45);
             side = 0;
-
             // forward = clamp(forward, 0, 1);
-            if (forward > 0) {
-                forward = 1;
-            } else if (forward < 0) {
-                forward = -1;
-            }
+            if (forward > 0) forward = 1;
+            else if (forward < 0) forward = -1;
         }
 
         final double sin = Math.sin(Math.toRadians(yaw + 90));
         final double cos = Math.cos(Math.toRadians(yaw + 90));
         final double posX = (forward * speed * cos + side * speed * sin);
         final double posZ = (forward * speed * sin - side * speed * cos);
-        return new double[]{
-                posX,
-                posZ
-        };
+        return new double[]{posX, posZ};
     }
 
     public static double roundDouble(double number, int scale) {
@@ -166,9 +157,7 @@ public class MathUtil {
     }
 
     public static double round(double value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
+        if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.FLOOR);
         return bd.doubleValue();
@@ -176,19 +165,13 @@ public class MathUtil {
 
     public static float wrap(float valI) {
         float val = valI % 360.0f;
-        if (val >= 180.0f) {
-            val -= 360.0f;
-        }
-        if (val < -180.0f) {
-            val += 360.0f;
-        }
+        if (val >= 180.0f) val -= 360.0f;
+        if (val < -180.0f) val += 360.0f;
         return val;
     }
 
     public static float round(float value, int places) {
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
+        if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.FLOOR);
         return bd.floatValue();
@@ -196,31 +179,20 @@ public class MathUtil {
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map, boolean descending) {
         LinkedList<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
-        if (descending) {
-            list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-        } else {
-            list.sort(Map.Entry.comparingByValue());
-        }
+        if (descending) list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        else list.sort(Map.Entry.comparingByValue());
         LinkedHashMap result = new LinkedHashMap();
-        for (Map.Entry entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
+        for (Map.Entry entry : list) result.put(entry.getKey(), entry.getValue());
         return result;
     }
 
     public static String getTimeOfDay() {
         Calendar c = Calendar.getInstance();
         int timeOfDay = c.get(11);
-        if (timeOfDay < 12) {
-            return "Good Morning ";
-        }
-        if (timeOfDay < 16) {
-            return "Good Afternoon ";
-        }
-        if (timeOfDay < 21) {
-            return "Good Evening ";
-        }
-        return "Good Night ";
+        if (timeOfDay < 12) return "Good Morning";
+        if (timeOfDay < 16) return "Good Afternoon";
+        if (timeOfDay < 21) return "Good Evening";
+        return "Good Night";
     }
 
     public static double radToDeg(double rad) {

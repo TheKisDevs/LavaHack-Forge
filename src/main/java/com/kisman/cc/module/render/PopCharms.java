@@ -78,9 +78,9 @@ public class PopCharms extends Module {
             if (duration < (long) (fadeSpeed.getValInt() * 10)) opacity = startAlpha - (float)duration / (float)(fadeSpeed.getValInt() * 10);
             if (duration < (long)(fadeSpeed.getValInt() * 10)) {
             GL11.glPushMatrix();
-            if (angle.getValBoolean()) GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), (float)((float)duration / (float)(angleSpeed.getValInt() * 10)), (float)Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
-            mc.renderManager.renderEntityStatic((Entity)player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
-            GlStateManager.translate((float)Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), (float)Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
+            if (angle.getValBoolean()) GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), ((float)duration / (float)(angleSpeed.getValInt() * 10)), Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
+            mc.renderManager.renderEntityStatic(player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
+            GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
             GL11.glPopMatrix();
         }
     }

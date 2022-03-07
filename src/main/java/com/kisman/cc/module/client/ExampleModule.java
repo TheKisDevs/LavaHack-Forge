@@ -6,11 +6,10 @@ import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.EventWorldRender;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.oldclickgui.ClickGui;
-//import com.kisman.cc.oldclickgui.component.components.sub.ColorPicker;
+import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
-import com.kisman.cc.oldclickgui.*;
+import com.kisman.cc.gui.*;
 
 /*import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.*;

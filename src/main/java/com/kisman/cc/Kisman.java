@@ -9,13 +9,13 @@ import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.oldclickgui.*;
+import com.kisman.cc.gui.*;
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.ClickGuiNew;
-import com.kisman.cc.oldclickgui.halq.HalqGui;
-import com.kisman.cc.oldclickgui.mainmenu.sandbox.SandBoxShaders;
-import com.kisman.cc.oldclickgui.notification.NotificationsManager;
-import com.kisman.cc.oldclickgui.vega.Gui;
+import com.kisman.cc.gui.csgo.ClickGuiNew;
+import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
+import com.kisman.cc.gui.notification.NotificationsManager;
+import com.kisman.cc.gui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
@@ -62,6 +62,7 @@ public class Kisman {
     public static final boolean allowToConfiguredAnotherClients;
     public static boolean isOpenAuthGui;
     public static boolean autoUpdate;
+    public static boolean canUseImprAstolfo = false;
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");

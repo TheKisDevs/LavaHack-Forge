@@ -4,8 +4,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import com.kisman.cc.oldclickgui.ClickGui;
-import com.kisman.cc.oldclickgui.ColorPicker;
+import com.kisman.cc.gui.ClickGui;
+import com.kisman.cc.gui.ColorPicker;
 import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.util.text.TextFormatting;

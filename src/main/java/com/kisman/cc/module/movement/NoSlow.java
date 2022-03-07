@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.ClickGui;
+import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import me.zero.alpine.listener.*;

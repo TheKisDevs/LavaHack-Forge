@@ -1,7 +1,7 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import com.kisman.cc.oldclickgui.misc.PreviewGui;
+import com.kisman.cc.gui.misc.PreviewGui;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiScreen;

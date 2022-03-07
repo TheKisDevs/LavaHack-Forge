@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.tileentity.*;
 
 public class StorageESP extends Module{
-    private Setting distance = new Setting("Distance", this, 100, 10, 100, true);
+    private final Setting distance = new Setting("Distance(Squared)", this, 4000, 10, 4000, true);
 
     boolean chest = true;
     boolean eChest = true;
@@ -34,7 +34,8 @@ public class StorageESP extends Module{
         Kisman.instance.settingsManager.rSetting(new Setting("Dropper", this, true));
     }
 
-    public void update() {
+    @SubscribeEvent
+    public void onRenderWorldLast(RenderWorldLastEvent event) {
         chest = Kisman.instance.settingsManager.getSettingByName(this, "Chest").getValBoolean();
         eChest = Kisman.instance.settingsManager.getSettingByName(this, "EChest").getValBoolean();
         shulkerBox = Kisman.instance.settingsManager.getSettingByName(this, "ShulkerBox").getValBoolean();
@@ -42,10 +43,7 @@ public class StorageESP extends Module{
         furnace = Kisman.instance.settingsManager.getSettingByName(this, "Furnace").getValBoolean();
         hopper = Kisman.instance.settingsManager.getSettingByName(this, "Hopper").getValBoolean();
         dropper = Kisman.instance.settingsManager.getSettingByName(this, "Dropper").getValBoolean();
-    }
 
-    @SubscribeEvent
-    public void onRenderWorldLast(RenderWorldLastEvent event) {
         mc.world.loadedTileEntityList.stream()
             .filter(tileEntity -> tileEntity.getDistanceSq(mc.player.posX, mc.player.posY, mc.player.posZ) <= distance.getValDouble())
             .forEach(tileEntity -> {

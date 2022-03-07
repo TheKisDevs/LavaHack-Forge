@@ -7,6 +7,16 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 
 public class Colour {
+    public static final int COLOR_RAINBOW;
+    public static final int COLOR_ASTOLFO;
+    public static final int COLOR_PRIMARY;
+
+    static {
+        COLOR_RAINBOW = 0;
+        COLOR_ASTOLFO = 1;
+        COLOR_PRIMARY = 2;
+    }
+
     public int r, g, b, a;
     public float r1, g1, b1, a1;
 
@@ -14,7 +24,11 @@ public class Colour {
 
     public Colour(float[] hsb) {
         this(Color.getHSBColor(hsb[0], hsb[1], hsb[2]));
-    } 
+    }
+
+    public Colour() {
+        this(Color.RED);
+    }
 
     public Colour(int r, int g, int b, int a) {
         this.r = r;
@@ -26,6 +40,10 @@ public class Colour {
         this.b1 = b / 255f;
         this.a1 = a / 255f;
         fixColorRange();
+    }
+
+    public Colour(double r, double g, double b, double a) {
+        this((int) r, (int) g, (int) b, (int) a);
     }
 
     public Colour(int r, int g, int b) {
@@ -105,6 +123,32 @@ public class Colour {
         rainbowState %= 360.0;
         hsb[0] = (float) (rainbowState / 360.0);
         setColour(Colour.fromHSB(hsb, a));
+    }
+
+    public static ColourEnum getEnumByInt(int mode) {
+        for(ColourEnum colorEnum : ColourEnum.values()) if(colorEnum.mode == mode) return colorEnum;
+        return ColourEnum.Static;
+    }
+
+    public static Colour getColourByMode(int mode) {
+        return getEnumByInt(mode).getColour();
+    }
+
+    public void syns(Colour color) {
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.a = color.a;
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
+        fixColorRange();
+    }
+
+    public Colour setBrightness(float brightness) {
+        float[] hsb = RGBtoHSB();
+        return new Colour(new float[] {hsb[0], hsb[1], brightness});
     }
 
     private void setColour(Colour color) {

@@ -1,6 +1,6 @@
 package com.kisman.cc.hud.hudgui;
 
-import com.kisman.cc.oldclickgui.component.*;
+import com.kisman.cc.gui.component.*;
 import net.minecraft.client.gui.GuiScreen;
 import com.kisman.cc.hud.hudmodule.HudCategory;
 

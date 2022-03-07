@@ -1,7 +1,6 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 
 public class Spin extends Module {
     public static Spin instance;

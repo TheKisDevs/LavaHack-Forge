@@ -13,21 +13,21 @@ public class Credits extends Module {
     public void onEnable() {
         msg = "\nCredits:\n";
 
-        add("StupidDog", "Guide of client base");
+        add("StupitDog", "Guide of the client base");
         add("CatClient base", "First ClickGui");
         add("HeroCode", "Settings system");
-        add("Vega33", "BowExploitRewrite & shader gui design & Jesus(Matrix, Solid)");
+        add("Vega33", "BowExploitRewrite & Shadow gui design & Jesus(Matrix, Solid)");
         add("TheRealDiOnFire", "agogus?");
         add("kshk", "Charms");
-        add("salam4ik", "TeleportBack & glow shader");
+        add("salam4ik", "TeleportBack & glow  & JumpCircle");
         add("fendy", "BowExploit");
         add("Neko+", "First ColorPicker");
         add("NekoPvP", "ItemFOV");
-        add("cum stealer", "Simple mode from SwingAnimation");
-        add("kqllqk", "CustomFont renderer");
+        add("cum stealer", "Simple mode in SwingAnimation");
+        add("kqllqk", "Custom font");
         add("NoRules", "New CustomFont renderer from .ttf");
-        add("SalHack", "First CA & Scaffold & more utilities files");
-        add("sedza", "New logo of client");
+        add("SalHack", "First CA & Scaffold & more utility files");
+        add("sedza", "New logo of the client");
         add("superblauberee27", "New CSGO gui");
         add("Phobos 1.3.1", "more .frag files");
         add("Phobos 1.9.0", "RangeVisualisator");
@@ -37,6 +37,8 @@ public class Credits extends Module {
         add("Wild 1.0", "The ideas about HotbarModifier and gradient checkbox");
         add("FamilyFunPack", "PigPOV");
         add("jewtricks", "TeamRusherLag");
+        add("KamiBlue", "EyeFinder");
+        add("GishReloaded", "Box1 in EntityESP");
         add("Some contributors", "some modules");
 
         ChatUtils.simpleMessage(msg);

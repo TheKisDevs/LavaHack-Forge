@@ -17,6 +17,7 @@ import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
 @Mixin(value = EntityRenderer.class, priority = 10000)
 public class MixinEntityRenderer {
     @Shadow @Final public int[] lightmapColors;
@@ -40,7 +41,12 @@ public class MixinEntityRenderer {
         if(NoRender.instance.isToggled() && NoRender.instance.hurtCam.getValBoolean()) ci.cancel();
     }
 
-    @Inject( method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ) )
+    @Inject(method = "updateLightmap", at = @At("HEAD"), cancellable = true)
+    private void skylightFix(float partialTicks, CallbackInfo ci) {
+        if(SkylightFix.instance.isToggled()) ci.cancel();
+    }
+
+    @Inject(method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ))
     private void updateTextureHook(float partialTicks, CallbackInfo ci) {
         Ambience ambience = Ambience.instance;
         if (ambience.isToggled()) {
@@ -59,8 +65,6 @@ public class MixinEntityRenderer {
                 this.lightmapColors[ i ] = 0xFF000000 | red << 16 | green << 8 | blue;
             }
         }
-
-        if(SkylightFix.instance.isToggled()) ci.cancel();
     }
 
     private int[] toRGBAArray(int colorBuffer) {

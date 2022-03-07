@@ -1,7 +1,7 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider.NumberType;
+import com.kisman.cc.gui.csgo.components.Slider.NumberType;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.process.*;

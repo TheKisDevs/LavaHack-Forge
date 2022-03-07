@@ -1,7 +1,7 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
-import com.kisman.cc.oldclickgui.csgo.components.Slider;
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.shaders.*;
 import net.minecraft.client.renderer.GlStateManager;

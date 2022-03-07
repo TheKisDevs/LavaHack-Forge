@@ -1,7 +1,7 @@
 package com.kisman.cc.util.protect.autoupdate;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.oldclickgui.autoupdate.UpdateGui;
+import com.kisman.cc.gui.autoupdate.UpdateGui;
 import com.kisman.cc.util.Globals;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;

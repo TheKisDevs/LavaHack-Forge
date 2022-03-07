@@ -15,16 +15,19 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
 /**
 * @author _kisman_
-* @credits github.com/TheKisDevs/loader
+* @credits github.com/TheKisDevs/loader & NoneCode Free
 */
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
     private static final Minecraft mc = Minecraft.getMinecraft();
+    private static HashMap<Integer, Integer> shadowCache = new HashMap<Integer, Integer>();
 
     public double getZLevel() {return this.zLevel;}
 
@@ -35,6 +38,30 @@ public class Render2DUtil extends GuiScreen {
         GL11.glDisable(2848);
         GL11.glHint(3154, 4352);
         GL11.glHint(3155, 4352);
+    }
+
+    public static void drawProgressCircle2(double x, double y, double radius, int color, double degrees, double modificator) {
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float f1 = (float)(color >> 16 & 255) / 255.0F;
+        float f2 = (float)(color >> 8 & 255) / 255.0F;
+        float f3 = (float)(color & 255) / 255.0F;
+        boolean flag = GL11.glIsEnabled(GL11.GL_BLEND);
+        boolean flag1 = GL11.glIsEnabled(GL11.GL_LINE_SMOOTH);
+        boolean flag2 = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
+        if (!flag) GL11.glEnable(GL11.GL_BLEND);
+        if (!flag1) GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        if (flag2) GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glLineWidth(2.5F);
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        for (double i = 0; i <= degrees; i += modificator) GL11.glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * radius, y + Math.cos(i * Math.PI / 180.0D) * radius);
+        GL11.glEnd();
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        if (flag2) GL11.glEnable(GL11.GL_TEXTURE_2D);
+        if (!flag1) GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        if (!flag) GL11.glDisable(GL11.GL_BLEND);
     }
 
     public static void drawSmoothRect(float left, float top, float right, float bottom, int color) {
@@ -323,6 +350,39 @@ public class Render2DUtil extends GuiScreen {
 
     public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color) {
         drawRoundedRect(startX, startY, endX, endY, color, Config.instance.glowRadius.getValFloat());
+    }
+
+    public static void drawRoundedRect2(double x, double y, double width, double height, double radius, int color) {
+        double x1 = x + width;
+        double y1 = y + height;
+        float f = (color >> 24 & 0xFF) / 255.0F;
+        float f1 = (color >> 16 & 0xFF) / 255.0F;
+        float f2 = (color >> 8 & 0xFF) / 255.0F;
+        float f3 = (color & 0xFF) / 255.0F;
+        GL11.glPushAttrib(0);
+        GL11.glScaled(0.5D, 0.5D, 0.5D);
+        GlStateManager.enableBlend();
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glDisable(3553);
+        GL11.glEnable(2848);
+        GL11.glBegin(9);
+        int i;
+        for (i = 0; i <= 90; i += 3) GL11.glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        for (i = 90; i <= 180; i += 3) GL11.glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        for (i = 0; i <= 90; i += 3) GL11.glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        for (i = 90; i <= 180; i += 3) GL11.glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        GL11.glEnd();
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glEnable(3553);
+        GlStateManager.disableBlend();
+        GL11.glScaled(2.0D, 2.0D, 2.0D);
+        GL11.glPopAttrib();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static void drawRoundedRect(double startX, double startY, double endX, double endY, Color color) {

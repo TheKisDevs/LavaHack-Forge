@@ -144,6 +144,10 @@ public class InventoryUtil {
         return ( float ) (100 - ( int ) (red * 100.0f));
     }
 
+    public static float getDamageInFloat(ItemStack stack) {
+        return 1 - ((stack.getMaxDamage() - ( float ) stack.getItemDamage()) / stack.getMaxDamage());
+    }
+
     public static int findItem(Item item, int min, int max) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);

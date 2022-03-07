@@ -15,14 +15,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.Comparator;
 
-public class ArrayListModule extends HudModule{
-    public static boolean toggle = false;
-    public static ArrayListModule instance;
+public class ArrayListModule extends HudModule {
+    public static ArrayListModule instance = new ArrayListModule();
 
     public ArrayListModule() {
         super("ArrayList", "arrList", HudCategory.RENDER);
-
-        instance = this;
     }
 
     @SubscribeEvent
@@ -74,7 +71,7 @@ public class ArrayListModule extends HudModule{
                         }
                         break;
                     }
-                    case "Simple": {
+                    case "Rainbow": {
                         if(HUD.instance.background.getValBoolean()) {
                             double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
                             drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
@@ -93,6 +90,50 @@ public class ArrayListModule extends HudModule{
                                 double offset1 = HUD.instance.offsets.getValDouble() / 2 + 1;
                                 Render2DUtil.drawRoundedRect((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) - offset1 - HUD.instance.glowRadius.getValInt(), (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + HUD.instance.glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), HUD.instance.glowAlpha.getValInt()).getRGB(), HUD.instance.glowOffset.getValInt());
                             } else Render2DUtil.drawGlow((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) - offset, ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * HUD.instance.arrGradientDiff.getValInt(), hsb[1], 1f), HUD.instance.glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Astolfo": {
+                        if(HUD.instance.background.getValBoolean()) {
+                            double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(HUD.instance.arrGlowBackground.getValBoolean()) {
+                            double offset1 = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) - offset1 - HUD.instance.glowRadius.getValInt(), (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + HUD.instance.glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, HUD.instance.bgAlpha.getValInt()).getRGB(), HUD.instance.glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * HUD.instance.arrGradientDiff.getValInt()), 255).getRGB());
+
+                        if(HUD.instance.glow.getValBoolean()) {
+                            double offset = HUD.instance.glowOffset.getValDouble() + HUD.instance.offsets.getValDouble() / 2;
+                            if(HUD.instance.glowV2.getValBoolean()) {
+                                double offset1 = HUD.instance.offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) - offset1 - HUD.instance.glowRadius.getValInt(), (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + HUD.instance.glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * HUD.instance.arrGradientDiff.getValInt()), HUD.instance.glowAlpha.getValInt()).getRGB(), HUD.instance.glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) - offset, ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * HUD.instance.arrGradientDiff.getValInt()), HUD.instance.glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Pulsive": {
+                        if(HUD.instance.background.getValBoolean()) {
+                            double offset = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            drawBackground((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, HUD.instance.arrY.getValDouble() + (heigth * count) - offset, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(HUD.instance.arrGlowBackground.getValBoolean()) {
+                            double offset1 = HUD.instance.offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) - offset1 - HUD.instance.glowRadius.getValInt(), (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + HUD.instance.glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, HUD.instance.bgAlpha.getValInt()).getRGB(), HUD.instance.glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), HUD.instance.arrY.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(HUD.instance.arrColor.getColour(), HUD.instance.arrColor.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * HUD.instance.arrGradientDiff.getValFloat()) / 60.0).getColor(), 255).getRGB());
+
+                        if(HUD.instance.glow.getValBoolean()) {
+                            double offset = HUD.instance.glowOffset.getValDouble() + HUD.instance.offsets.getValDouble() / 2;
+                            if(HUD.instance.glowV2.getValBoolean()) {
+                                double offset1 = HUD.instance.offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) - offset1 - HUD.instance.glowRadius.getValInt(), (HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + HUD.instance.glowRadius.getValInt(), HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + HUD.instance.glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(HUD.instance.arrColor.getColour(), HUD.instance.arrColor.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * HUD.instance.arrGradientDiff.getValFloat()) / 60.0).getColor(), HUD.instance.glowAlpha.getValInt()).getRGB(), HUD.instance.glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), HUD.instance.arrY.getValDouble() + (heigth * count) - offset, ((HUD.instance.arrMode.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + HUD.instance.arrY.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(HUD.instance.arrColor.getColour(), HUD.instance.arrColor.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * HUD.instance.arrGradientDiff.getValFloat()) / 60.0).getColor(), HUD.instance.glowAlpha.getValInt()).getRGB());
                         }
                         break;
                     }
