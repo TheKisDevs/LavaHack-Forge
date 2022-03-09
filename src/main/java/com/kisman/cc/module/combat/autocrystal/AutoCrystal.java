@@ -305,6 +305,7 @@ public class AutoCrystal extends Module implements Runnable {
                 if (thread != null && thread.getState().equals(Thread.State.NEW)) {
                     try {
                         thread.start();
+                        thread.run();
                     } catch (Exception ignored) {
                     }
                 }
