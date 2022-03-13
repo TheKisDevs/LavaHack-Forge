@@ -16,9 +16,9 @@ public class RPC {
         discordRichPresence.startTimestamp = System.currentTimeMillis() / 1000L;
 
         discordRichPresence.largeImageKey = "logo";
-        discordRichPresence.largeImageText = "join in discord: https://discord.gg/NNn7WXfkNB";
+        discordRichPresence.largeImageText = "join discord now: https://discord.gg/NNn7WXfkNB";
 
-        discordRichPresence.smallImageKey = "small";
+        discordRichPresence.smallImageKey = "plus";
         discordRichPresence.smallImageText = Kisman.NAME;
 
         discordRichPresence.details = Kisman.NAME + " | " + Kisman.VERSION;
@@ -32,6 +32,7 @@ public class RPC {
 
     public static void updateRPC() {
         discordRichPresence.details = Kisman.getName() + " | " + Kisman.getVersion();
+        discordRPC.Discord_UpdatePresence(discordRichPresence);
     }
 
     public static void stopRPC() {

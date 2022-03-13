@@ -41,6 +41,11 @@ public class MixinItemRenderer {
                         rotateMainZ = 0;
                         break;
                     }
+                    case "Knife": {
+                        rotateMainX = 43;
+                        rotateMainY = 130;
+                        rotateMainZ = 230;
+                    }
                 }
             } else if (mc.player.swingProgress == 0) {
                 rotateMainX = 0;

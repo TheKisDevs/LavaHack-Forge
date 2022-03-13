@@ -34,9 +34,10 @@ public class Jesus extends Module {
     }
 
     public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
         EntityUtil.resetTimer();
+        if(mc.player == null || mc.world == null) return;
         mc.player.jumpMovementFactor = 0.02f;
-        Kisman.EVENT_BUS.subscribe(listener);
     }
 
     public void update() {

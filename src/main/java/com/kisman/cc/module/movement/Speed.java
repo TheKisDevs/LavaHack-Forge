@@ -25,31 +25,34 @@ public class Speed extends Module {
 
     private float yPortSpeed;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2")));
 
     private Setting useTimer = new Setting("Use Timer", this, false);
 
-    private Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New");
-    private Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false);
-    private Setting slow = new Setting("Slow", this, false);
-    private Setting cap = new Setting("Cap", this, 10, 0, 10, false);
-    private Setting scaleCap = new Setting("Scale Cap", this, false);
-    private Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, Slider.NumberType.TIME);
+    private Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, true).setVisible(() -> speedMode.checkValString("Strafe2"));
+    private Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, true).setVisible(() -> speedMode.checkValString("Strafe2"));
 
-    private Setting yPortLine = new Setting("YPortLine", this, "YPort");
-    private Setting yWater = new Setting("Water", this, false);
-    private Setting yLava = new Setting("Lava", this, false);
+    private Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New").setVisible(() -> speedMode.checkValString("Strafe New"));
+    private Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New"));
+    private Setting slow = new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
+    private Setting cap = new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New"));
+    private Setting scaleCap = new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
+    private Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, Slider.NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
 
-    private Setting stiLine = new Setting("StiLine", this, "Sti");
-    private Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true);
+    private Setting yPortLine = new Setting("YPortLine", this, "YPort").setVisible(() -> speedMode.checkValString("YPort"));
+    private Setting yWater = new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort"));
+    private Setting yLava = new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort"));
 
-    private Setting bhopLine = new Setting("BhopLine", this, "Bhop");
-    private Setting useMotion = new Setting("Use Motion", this, false);
-    private Setting useMotionInAir = new Setting("Use Motion In Air", this, false);
-    private Setting jumpMovementFactorSpeed = new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false);
-    private Setting jumpMovementFactor = new Setting("Jump Movement Factor", this, false);
-    private Setting boostSpeed = new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false);
-    private Setting boostFactor = new Setting("Boost Factor", this, false);
+    private Setting stiLine = new Setting("StiLine", this, "Sti").setVisible(() -> speedMode.checkValString("Sti"));
+    private Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true).setVisible(() -> speedMode.checkValString("Sti"));
+
+    private Setting bhopLine = new Setting("BhopLine", this, "Bhop").setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting useMotion = new Setting("Use Motion", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting useMotionInAir = new Setting("Use Motion In Air", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting jumpMovementFactorSpeed = new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting jumpMovementFactor = new Setting("Jump Movement Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting boostSpeed = new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    private Setting boostFactor = new Setting("Boost Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
 
     private int stage;
     private double speed;
@@ -68,6 +71,9 @@ public class Speed extends Module {
         setmgr.rSetting(speedMode);
 
         setmgr.rSetting(useTimer);
+
+        setmgr.rSetting(motionXmodifier);
+        setmgr.rSetting(motionZmodifier);
 
         setmgr.rSetting(strafeNewLine);
         setmgr.rSetting(strafeSpeed);
@@ -96,6 +102,7 @@ public class Speed extends Module {
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
+        if(mc.player == null || mc.world == null) return;
         stage = 4;
         dist = MovementUtil.getDistance2D();
         speed = MovementUtil.getSpeed();
@@ -106,8 +113,6 @@ public class Speed extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener1);
 
         EntityUtil.resetTimer();
-
-        mc.timer.tickLength = 50;
     }
 
     public void update() {
@@ -194,6 +199,14 @@ public class Speed extends Module {
                 mc.player.motionZ = 0.0;
             }
         } else if(speedMode.getValString().equalsIgnoreCase("Bhop")) doBhop();
+        else if(speedMode.getValString().equalsIgnoreCase("Strafe2") && MovementUtil.isMoving()) {
+            if(mc.player.onGround) mc.player.jump();
+            else {
+                double yaw = MovementUtil.getDirection();
+                mc.player.motionX = -Math.sin(yaw) * motionXmodifier.getValFloat();
+                mc.player.motionZ = Math.cos(yaw) * motionZmodifier.getValFloat();
+            }
+        }
     }
 
     private void doYPortSpeed() {

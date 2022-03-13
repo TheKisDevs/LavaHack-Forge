@@ -148,14 +148,35 @@ public class Colour {
 
     public Colour setBrightness(float brightness) {
         float[] hsb = RGBtoHSB();
-        return new Colour(new float[] {hsb[0], hsb[1], brightness});
+        setColour(new Colour(new float[] {hsb[0], hsb[1], brightness}));
+        return this;
+
+    }
+
+    public Colour setAlpha(float alpha) {
+        a = (int) (alpha * 255f);
+        a1 = alpha;
+        fixColorRange();
+        return this;
+    }
+
+    public Colour setHue(float hue) {
+        float[] hsb = RGBtoHSB();
+        setColour(new Colour(new float[] {hue, hsb[1], hsb[2]}));
+        return this;
+    }
+
+    public Colour setSaturation(float saturation) {
+        float[] hsb = RGBtoHSB();
+        setColour(new Colour(new float[] {hsb[0], saturation, hsb[2]}));
+        return this;
     }
 
     private void setColour(Colour color) {
-        this.r = ColorUtils.getRed(color.r);
-        this.g = ColorUtils.getGreen(color.g);
-        this.b = ColorUtils.getBlue(color.b);
-        this.a = ColorUtils.getAlpha(color.a);
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.a = color.a;
         this.r1 = r / 255f;
         this.g1 = g / 255f;
         this.b1 = b / 255f;

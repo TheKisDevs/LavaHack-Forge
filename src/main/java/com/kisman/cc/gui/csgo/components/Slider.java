@@ -25,6 +25,8 @@ public class Slider extends AbstractComponent {
     private ValueChangeListener<Number> listener;
 
     private boolean changing = false;
+    private boolean open = false;
+    private final String values[] = new String[] {"Change", "Reset"};
 
     public Slider(IRenderer renderer, double value, double minValue, double maxValue, NumberType numberType, int preferredWidth, int preferredHeight) {
         super(renderer);
@@ -61,7 +63,7 @@ public class Slider extends AbstractComponent {
         renderer.drawString(x + getWidth() / 2 - renderer.getStringWidth(text) / 2, y + getHeight() / 2 - renderer.getStringHeight(text) / 2, text, Window.FOREGROUND);
     }
 
-    @Override public void postRender() { }
+    @Override public void postRender() {}
 
     @Override
     public boolean mouseMove(int x, int y, boolean offscreen) {

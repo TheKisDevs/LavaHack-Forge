@@ -306,6 +306,8 @@ public class Setting {
 		return super.toString();
 	}
 
+	public boolean isNoneKey() {return key == Keyboard.KEY_NONE;}
+
 	public boolean checkValString(String str) {
 		return sval.equalsIgnoreCase(str);
 	}

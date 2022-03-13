@@ -27,6 +27,7 @@ import com.kisman.cc.util.glow.ShaderShell;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
@@ -39,6 +40,7 @@ import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.*;
 import java.nio.file.*;
 import java.util.HashMap;
 
@@ -58,6 +60,8 @@ public class Kisman {
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
+
+    public static EntityPlayer target_by_click = null;
 
     public static final boolean allowToConfiguredAnotherClients;
     public static boolean isOpenAuthGui;
@@ -164,12 +168,13 @@ public class Kisman {
                     	if (m.getKey() == keyCode) {
                             m.toggle();
                             if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
+                            notificationsManager.addNotifications(m.getName(), (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled"), true);
                     	}
                     }
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }
-        } catch (Exception q) { q.printStackTrace(); }
+        } catch (Exception ignored) {}
     }
 
     private void onRelease(int key) {
@@ -178,6 +183,7 @@ public class Kisman {
                 if(m.hold) {
                     m.toggle();
                     if (moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
+                    notificationsManager.addNotifications(m.getName(), (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled"), true);
                 }
             }
         }
@@ -189,7 +195,7 @@ public class Kisman {
                 case "kismancc": return NAME;
                 case "LavaHack": return "LavaHack";
                 case "TheKisDevs": return "TheKisDevs";
-                case "kidman": return "kisman.club";
+                case "kidman": return "kidman.club";
                 case "custom": return Config.instance.customName.getValString();
             }
         }
@@ -225,5 +231,12 @@ public class Kisman {
             Files.createDirectories(Paths.get(fileName + pluginName));
             LOGGER.info("Plugins dir created");
         }
+    }
+
+    public static void openLink(String link) {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) desktop.browse(new URI(link));
+        } catch (IOException | URISyntaxException e) {e.printStackTrace();}
     }
 }

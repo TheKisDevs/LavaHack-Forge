@@ -25,7 +25,7 @@ public class ChatUtils {
 	}
 
 	public static void complete(Object message) {
-		component(new TextComponentTranslation(TextFormatting.BLACK + "[" + TextFormatting.GREEN + Kisman.getName() + TextFormatting.GRAY + "] " + message));
+		component(new TextComponentTranslation(TextFormatting.GRAY + "[" + TextFormatting.LIGHT_PURPLE + Kisman.getName() + TextFormatting.GRAY + "] " + message));
 	}
 	
 	public static void warning(Object message) {

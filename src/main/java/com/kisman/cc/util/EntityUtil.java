@@ -1,6 +1,8 @@
 package com.kisman.cc.util;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.module.combat.AntiBot;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -87,6 +89,7 @@ public class EntityUtil {
         EntityPlayer currentTarget = null;
         for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
             final EntityPlayer player = mc.world.playerEntities.get(i);
+            if(!antibotCheck(player) && AntiBot.instance.isToggled() && AntiBot.instance.mode.checkValString("Zamorozka")) continue;
             if (!isntValid(player, range, wallRange)) {
                 if (currentTarget == null) currentTarget = player;
                 else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
@@ -99,8 +102,30 @@ public class EntityUtil {
         return getTarget(range, range);
     }
 
-    public static boolean isntValid(final EntityPlayer entity, final double range, double wallRange) {
-        return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity);
+    public static Entity getTarget(float range, float wallRange, boolean players, boolean animals, boolean monsters) {
+        Entity currentTarget = null;
+        for (Entity entity1 : mc.world.loadedEntityList) {
+            if(!(entity1 instanceof EntityLivingBase)) continue;
+            EntityLivingBase entity = (EntityLivingBase) entity1;
+            if(!antibotCheck(entity) && AntiBot.instance.isToggled() && AntiBot.instance.mode.checkValString("Zamorozka")) continue;
+            if (!isntValid(entity, range, wallRange) && !isntValid2(entity, players, animals, monsters)) {
+                if (currentTarget == null) currentTarget = entity;
+                else if (mc.player.getDistanceSq(entity) < mc.player.getDistanceSq(currentTarget)) currentTarget = entity;
+            }
+        }
+        return currentTarget;
+    }
+
+    public static boolean isntValid(final EntityLivingBase entity, final double range, double wallRange) {
+        return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.getName());
+    }
+
+    public static boolean antibotCheck(EntityLivingBase entity) {
+        return (Kisman.target_by_click != null && Kisman.target_by_click.equals(entity));
+    }
+
+    public static boolean isntValid2(final EntityLivingBase entity, boolean players, boolean animals, boolean monsters) {
+        return (players && entity instanceof EntityPlayer) || (animals && isPassive(entity)) || (monsters && isMobAggressive(entity));
     }
 
     public static boolean isPassive(Entity e) {

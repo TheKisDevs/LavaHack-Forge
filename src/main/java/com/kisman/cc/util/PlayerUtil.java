@@ -34,6 +34,14 @@ public class PlayerUtil {
         }
     }
 
+    public static void fakeJump(int packets) {
+        if (packets > 0 && packets != 5) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY, mc.player.posZ, true));
+        if (packets > 1) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + .419999986887, mc.player.posZ, true));
+        if (packets > 2) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + .7531999805212, mc.player.posZ, true));
+        if (packets > 3) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.0013359791121, mc.player.posZ, true));
+        if (packets > 4) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.1661092609382, mc.player.posZ, true));
+    }
+
     public static BlockPos getPlayerPos() {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));
     }

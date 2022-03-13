@@ -3,6 +3,7 @@ package com.kisman.cc.command.commands;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 
+import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Slider extends Command{
@@ -12,8 +13,8 @@ public class Slider extends Command{
 
     @Override
     public void runCommand(String s, String[] args) {
-        String module = "";
-        String name = "";
+        String module;
+        String name;
         double value;
 
         try {
@@ -34,26 +35,36 @@ public class Slider extends Command{
         try {
             Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name).getValDouble();
         } catch(Exception e) {
-            ChatUtils.error("Setting " + name + " in module " + module + " does not exist!");
-            return;
+            String oldName = name;
+            for(Setting set : Kisman.instance.settingsManager.getSettingsByMod(Kisman.instance.moduleManager.getModule(module))) {
+                String updString = set.getName().replace(" ", "");
+                if(updString.equalsIgnoreCase(name)) {
+                    name = updString;
+                    break;
+                }
+            }
+            if(!oldName.equalsIgnoreCase(name)) {
+                ChatUtils.error("Setting " + name + " in module " + module + " does not exist!");
+                return;
+            }
         }
 
         try {
             value = Double.parseDouble(args[2]);
         } catch(Exception e) {
-            ChatUtils.error("Value error! <value> not double!");
+            ChatUtils.error("Value error! <value> isnt double!");
             return;
         }
 
         try {
             if(Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name) != null){
                 Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name).setValDouble(value);
-                ChatUtils.message("Slider " + name + " changed value to " + value);
+                ChatUtils.message("Value " + name + " changed to " + value);
             } else {
                 String parsedName = name.replace('_', ' ');
                 if(Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), parsedName) != null){
                     Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), parsedName).setValDouble(value);
-                    ChatUtils.message("Slider " + parsedName + " changed value to " + value);
+                    ChatUtils.message("Value " + parsedName + " changed to " + value);
                 }
             }
         } catch(Exception e) {ChatUtils.error("Usage: " + getSyntax());}

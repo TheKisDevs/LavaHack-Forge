@@ -11,7 +11,7 @@ import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 public class ModeButton extends Component {
     private final Setting setting;
     private int x, y, offset, index, count;
-    private boolean open;
+    public boolean open;
     private String[] values;
 
     public ModeButton(Setting setting, int x, int y, int offset, int count) {

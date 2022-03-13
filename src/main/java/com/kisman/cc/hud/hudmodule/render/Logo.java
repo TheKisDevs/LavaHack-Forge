@@ -6,6 +6,7 @@ import com.kisman.cc.module.client.*;
 import com.kisman.cc.util.Render2DUtil;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.objects.Icons;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -72,7 +73,7 @@ public class Logo extends HudModule {
             Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
 
             CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, ColorUtils.astolfoColors(100, 100));
-        }
+        } else Icons.LOGO.render(0, 0, 50, 50);
     }
 
     public int getHeight() {

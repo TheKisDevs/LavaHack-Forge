@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudeditor.component.Component;
-import com.kisman.cc.hud.hudeditor.component.components.Dragable;
+import com.kisman.cc.hud.hudeditor.component.components.Draggable;
 import com.kisman.cc.hud.hudmodule.HudModule;
 
 import net.minecraft.client.gui.GuiScreen;
@@ -13,7 +13,7 @@ public class HudEditorGui extends GuiScreen {
     private ArrayList<Component> components = new ArrayList<>();
 
     public HudEditorGui() {
-        for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod.drag) components.add(new Dragable(mod));
+        for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod.drag) components.add(new Draggable(mod));
     }
 
     @Override

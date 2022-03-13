@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.render.KonasRenderer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -13,25 +14,30 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HoleESP extends Module {
+    private Setting mode = new Setting("Mode", this, "Air", new ArrayList<>(Arrays.asList("Air", "Ground", "Flat", "Slab", "Double", "Konas")));
+    private Setting konasMode = new Setting("Konas Mode", this, KonasMode.FULL).setVisible(() -> mode.checkValString("Konas"));
+    private Setting konasLine = new Setting("Konas Line", this, KonasLines.BOTTOM).setVisible(() -> mode.checkValString("Konas"));
     private Setting radius = new Setting("Radius", this, 8, 0, 32, true);
     private Setting ignoreOwnHole = new Setting("IgnoreOwnHole", this, false);
-    private Setting flatOwn = new Setting("FlatOwn", this, false);
-    private Setting slabHeight = new Setting("SlabHeight", this, 0.5, 0.1, 1.5, false);
+    private Setting flatOwn = new Setting("FlatOwn", this, false).setVisible(() -> !mode.checkValString("Konas"));
+    private Setting height = new Setting("Height", this, 0.5, 0.1, 2, false);
     private Setting width = new Setting("Width", this, 1, 1, 10, true);
-    private Setting type = new Setting("Type", this, "Both", new ArrayList<>(Arrays.asList("Outline", "Fill", "Both")));
-    private Setting mode = new Setting("Mode", this, "Air", new ArrayList<>(Arrays.asList("Air", "Ground", "Flat", "Slab", "Double")));
+    private Setting type = new Setting("Type", this, "Both", new ArrayList<>(Arrays.asList("Outline", "Fill", "Both"))).setVisible(() -> !mode.checkValString("Konas"));
     private Setting ufoAlpha = new Setting("UFOAlpha", this, 255, 0, 255, true);
 
-    private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
+    private Setting depth = new Setting("Depth", this, true).setVisible(() -> mode.checkValString("Konas"));
+    private Setting noLineDepth = new Setting("No Line", this, true).setVisible(() -> mode.checkValString("Konas") && konasMode.checkValString("FADE") && depth.getValBoolean());
+    private Setting notSelf = new Setting("Not Self", this, true).setVisible(() -> mode.checkValString("Konas") && konasMode.checkValString("FADE"));
+    private Setting sides = new Setting("Sides", this, false).setVisible(() -> mode.checkValString("Konas") && (konasMode.checkValString("FULL") || konasMode.checkValString("FADE")));
 
+    private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
     private Setting obbyHoles = new Setting("ObsidianHoles", this, true);
-    private Setting obbyColor = new Setting("ObbyColor", this, "ObbyColor", new Colour(255, 0, 0));
+    private Setting obbyColor = new Setting("ObbyColor", this, "ObbyColor", new Colour(255, 0, 0)).setVisible(obbyHoles::getValBoolean);
 
 
     private Setting bedrock = new Setting("_BedrockHoles", this, "BedrockHoles");
-
     private Setting bedrockHoles = new Setting("BedrockHoles", this, true);
-    private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new Colour(0, 255, 0));
+    private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new Colour(0, 255, 0)).setVisible(bedrockHoles::getValBoolean);
 
 
     private Setting custom = new Setting("Custom", this, "CustomHoles");
@@ -42,14 +48,21 @@ public class HoleESP extends Module {
     public HoleESP() {
         super("HoleESP", "HoleESP", Category.RENDER);
 
+        setmgr.rSetting(mode);
+        setmgr.rSetting(konasMode);
+        setmgr.rSetting(konasLine);
         setmgr.rSetting(radius);
         setmgr.rSetting(ignoreOwnHole);
         setmgr.rSetting(flatOwn);
-        setmgr.rSetting(slabHeight);
+        setmgr.rSetting(height);
         setmgr.rSetting(width);
         setmgr.rSetting(type);
-        setmgr.rSetting(mode);
         setmgr.rSetting(ufoAlpha);
+
+        setmgr.rSetting(depth);
+        setmgr.rSetting(noLineDepth);
+        setmgr.rSetting(notSelf);
+        setmgr.rSetting(sides);
 
         setmgr.rSetting(obby);
         setmgr.rSetting(obbyHoles);
@@ -110,18 +123,20 @@ public class HoleESP extends Module {
     }
 
     private void renderHoles(AxisAlignedBB hole, Colour color) {
-        switch (type.getValString()) {
-            case "Outline":
-                renderOutline(hole, color);
-                break;
-            case "Fill":
-                renderFill(hole, color);
-                break;
-            case "Both":
-                renderOutline(hole, color);
-                renderFill(hole, color);
-                break;
-
+        if(mode.checkValString("Konas")) KonasRenderer.drawHole(hole, konasMode.getValString(), konasLine.getValString(), height.getValDouble(), color, color, notSelf.getValBoolean(), ufoAlpha.getValInt(), sides.getValBoolean(), noLineDepth.getValBoolean(), depth.getValBoolean(), width.getValFloat());
+        else {
+            switch (type.getValString()) {
+                case "Outline":
+                    renderOutline(hole, color);
+                    break;
+                case "Fill":
+                    renderFill(hole, color);
+                    break;
+                case "Both":
+                    renderOutline(hole, color);
+                    renderFill(hole, color);
+                    break;
+            }
         }
     }
 
@@ -143,7 +158,7 @@ public class HoleESP extends Module {
                 break;
             case "Slab":
                 if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
-                else RenderUtil.drawBox(hole, false, slabHeight.getValDouble(), fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
+                else RenderUtil.drawBox(hole, false, height.getValDouble(), fillColor, ufoAlpha, GeometryMasks.Quad.ALL);
                 break;
             case "Double":
                 if (flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBox(hole, true, 1, fillColor, ufoAlpha, GeometryMasks.Quad.DOWN);
@@ -169,7 +184,7 @@ public class HoleESP extends Module {
                 break;
             case "Slab":
                 if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
-                else RenderUtil.drawBoundingBox(hole.setMaxY(hole.minY + slabHeight.getValDouble()), width.getValInt(), outlineColor, ufoAlpha.getValInt());
+                else RenderUtil.drawBoundingBox(hole.setMaxY(hole.minY + height.getValDouble()), width.getValInt(), outlineColor, ufoAlpha.getValInt());
                 break;
             case "Double": {
                 if (this.flatOwn.getValBoolean() && hole.intersects(mc.player.getEntityBoundingBox())) RenderUtil.drawBoundingBoxWithSides(hole, width.getValInt(), outlineColor, ufoAlpha.getValInt(), GeometryMasks.Quad.DOWN);
@@ -178,4 +193,7 @@ public class HoleESP extends Module {
             }
         }
     }
+
+    private enum KonasLines {FULL, BOTTOM, TOP}
+    private enum KonasMode {OUTLINE, FULL, WIREFRAME, FADE}
 }

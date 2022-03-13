@@ -9,6 +9,7 @@ import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
@@ -19,6 +20,7 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -82,10 +84,10 @@ public class AutoRer extends Module {
 
     private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
     private final Setting threadMode = new Setting("Thread Mode", this, ThreadMode.None);
-    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 0, 1000, Slider.NumberType.TIME).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(!threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
+    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 0, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
+    private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -360,10 +362,7 @@ public class AutoRer extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(placePos != null){
-            if(render.getValString().equalsIgnoreCase("Default")) {
                 RenderUtil.drawBlockESP(placePos, 1, 1, 1);
-            }
-            // if (render.getValString().equalsIgnoreCase("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
             // else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
             // if (text.getValBoolean()) {
                 // float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
@@ -447,9 +446,14 @@ public class AutoRer extends Module {
         double maxDamage = 0.5;
         BlockPos placePos = null;
         List<BlockPos> sphere = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
+
         if(calcDistSort.getValBoolean()) {
-            sphere.sort(Comparator.comparingDouble(pos -> currentTarget.getDistanceSq(pos)));
-            sphere.sort(Comparator.comparingDouble(pos -> mc.player.getDistanceSq(pos)));
+            Comparator<BlockPos> comparator = (first, second) -> {
+                double firstDist = mc.player.getDistanceSq(first), secondDist = mc.player.getDistanceSq(second);
+                return (int) (secondDist - firstDist);
+            };
+
+            sphere.sort(comparator);
         }
 
         for(int size = sphere.size(), i = 0; i < size; ++i) {
@@ -521,7 +525,7 @@ public class AutoRer extends Module {
                     event.setYaw(rots[0]);
                     event.setPitch(rots[1]);
                 }
-            } else mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+            } else if(threadPacketRots.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
         }
 
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
@@ -613,11 +617,12 @@ public class AutoRer extends Module {
     private void doBreak() {
         if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
 
-        Entity crystal = null;
+        Entity crystal, crystalWithMaxDamage = getCrystalWithMaxDamage();
         
-        if(breakPriority.getValString().equals("Damage")) crystal = getCrystalWithMaxDamage();
+        if(breakPriority.getValString().equals("Damage")) crystal = crystalWithMaxDamage;
         else crystal = getCrystalForAntiCevBreaker();
 
+        if(crystal == null) crystal = crystalWithMaxDamage;
         if(crystal == null) return;
 
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};

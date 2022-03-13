@@ -9,7 +9,7 @@ public class HudModule {
 	private String name, description;
 	private int key;
 	private HudCategory category;
-	private boolean toggled = false;
+	public boolean toggled = false;
 	public boolean visible = true;
 	public boolean drag = false;
 	private double x = 0, y = 0, w = 0, h = 0;

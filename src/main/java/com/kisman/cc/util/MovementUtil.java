@@ -1,6 +1,8 @@
 package com.kisman.cc.util;
 
+import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -35,6 +37,40 @@ public class MovementUtil {
             mc.player.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F));
             mc.player.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F));
         }
+    }
+
+    public static float getDirection2() {
+        float var1 = mc.player.rotationYaw;
+        if (mc.player.moveForward < 0.0F) var1 += 180.0F;
+        float forward = 1.0F;
+        if (mc.player.moveForward < 0.0F) forward = -0.5F;
+        else if (mc.player.moveForward > 0.0F) forward = 0.5F;
+        if (mc.player.moveStrafing > 0.0F) var1 -= 90.0F * forward;
+        if (mc.player.moveStrafing < 0.0F) var1 += 90.0F * forward;
+        var1 *= 0.017453292F;
+        return var1;
+    }
+
+    public static double getMotion(EntityPlayer entity) {
+        return Math.abs(entity.motionX) + Math.abs(entity.motionZ);
+    }
+
+    public static double[] forward(final double speed) {
+        float forward = Minecraft.getMinecraft().player.movementInput.moveForward;
+        float side = Minecraft.getMinecraft().player.movementInput.moveStrafe;
+        float yaw = Minecraft.getMinecraft().player.prevRotationYaw + (Minecraft.getMinecraft().player.rotationYaw - Minecraft.getMinecraft().player.prevRotationYaw) * Minecraft.getMinecraft().getRenderPartialTicks();
+        if (forward != 0.0f) {
+            if (side > 0.0f) yaw += ((forward > 0.0f) ? -45 : 45);
+            else if (side < 0.0f) yaw += ((forward > 0.0f) ? 45 : -45);
+            side = 0.0f;
+            if (forward > 0.0f) forward = 1.0f;
+            else if (forward < 0.0f) forward = -1.0f;
+        }
+        final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+        final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+        final double posX = forward * speed * cos + side * speed * sin;
+        final double posZ = forward * speed * sin - side * speed * cos;
+        return new double[]{posX, posZ};
     }
 
     public static boolean isBlockAboveHead() {

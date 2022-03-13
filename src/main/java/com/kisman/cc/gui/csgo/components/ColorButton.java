@@ -192,7 +192,6 @@ public class ColorButton extends AbstractComponent {
             }
             if(opened) {
                 pickingColor = !offscreen && check(pickerX, pickerY, pickerX + pickerWidth, pickerY + pickerHeight, x / 2, y / 2);
-                System.out.println(pickerX + " | " + pickerY + " | " + pickerWidth + " | " + pickerHeight + " | " + x + " | " + y);
                 pickingHue = !offscreen && check(hueSliderX, hueSliderY, hueSliderX + hueSliderWidth, hueSliderY + hueSliderHeight, x / 2, y / 2);
                 pickingAlpha = !offscreen && check(alphaSliderX, alphaSliderY, alphaSliderX + alphaSliderWidth, alphaSliderY + alphaSliderHeight, x / 2, y / 2);
                 if(pickingAlpha || pickingColor || pickingHue) updateValue(x / 2, y / 2);

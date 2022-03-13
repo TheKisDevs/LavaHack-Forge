@@ -6,16 +6,16 @@ import com.kisman.cc.util.Render2DUtil;
 
 import java.awt.Color;
 
-public class Dragable extends Component {
+public class Draggable extends Component {
     private HudModule mod;
     private boolean drag;
     private double dragX, dragY;
 
-    public Dragable(HudModule mod) {
+    public Draggable(HudModule mod) {
         this.mod = mod;
     }
 
-    public void drawSrceen(int mouseX, int mouseY) {
+    public void drawScreen(int mouseX, int mouseY) {
         if(drag) {
             mod.setX(mouseX - dragX);
             mod.setY(mouseY - dragY);

@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class FreeCam extends Module {
+public class FreeCamBypass extends Module {
     private final Setting speed = new Setting("Speed", this, 1, 0, 10, false);
     private final Setting cancelPackets = new Setting("Cancel Packets", this, true);
     private final Setting mode = new Setting("Mode", this, Mode.Normal);
@@ -24,8 +24,8 @@ public class FreeCam extends Module {
     private Vec3d position;
     private float yaw, pitch;
 
-    public FreeCam() {
-        super("FreeCam", Category.PLAYER);
+    public FreeCamBypass() {
+        super("FreeCamBypass", Category.PLAYER);
 
         setmgr.rSetting(speed);
         setmgr.rSetting(cancelPackets);

@@ -67,9 +67,7 @@ public class TimerUtils {
 	public boolean passedMicro(long time) { return passedNano(convertMicroToNano(time)); }
 	public boolean passedMillis(long time) { return passedNano(convertMillisToNano(time)); }
 	public boolean passedSec(long time) { return passedNano(convertSecToNano(time)); }
-    public boolean hasReached(float f){
-		return (float) (getCurrentMS() - this.lastMS) >= f; 
-	}
+    public boolean hasReached(float f){return (float) (getCurrentMS() - this.lastMS) >= f;}
 
     public void reset(){
 		this.lastMS = getCurrentMS();

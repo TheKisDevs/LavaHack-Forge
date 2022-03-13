@@ -128,7 +128,7 @@ public class HUD extends Module {
 		super.setToggled(false);
 	}
 
-	public enum LogoMode {Simple, CSGO}
+	public enum LogoMode {Simple, CSGO, Image}
 	public enum Gradient {None, Rainbow, Astolfo, Pulsive}
 	public enum IndicatorsThemeMode {Default, Rewrite}
 	public enum TargetHudThemeMode {Vega, Rewrite, Circle, NoRules}

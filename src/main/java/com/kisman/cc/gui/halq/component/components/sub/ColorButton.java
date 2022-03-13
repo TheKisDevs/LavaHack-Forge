@@ -9,17 +9,20 @@ import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.Gui;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
 import static com.kisman.cc.util.Render2DUtil.drawGradientRect;
+import static com.kisman.cc.util.Render2DUtil.drawLeftGradientRect;
 
 public class ColorButton extends Component {
     private final Setting setting;
     private Colour color;
     private int x, y, offset, pickerWidth, height, count;
-    private boolean open = false, dragHue, dragAlpha, dragColor;
+    public boolean open = false;
+    private boolean baseHover, hueHover, alphaHover, pickingBase, pickingHue, pickingAlpha;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count) {
         this.setting = setting;
@@ -43,34 +46,60 @@ public class ColorButton extends Component {
 
         if(open) {
             int offsetY = HalqGui.height + 5;
-            drawPickerBase(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, pickerWidth, color.r1, color.g1, color.b1, color.a1);
+            drawPickerBase(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, pickerWidth, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             offsetY += pickerWidth + 5;
-            drawHueSlider(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.getHue());
+            drawHueSlider(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.getHue(), mouseX, mouseY);
             offsetY += HalqGui.height - 3 + 5;
-            drawAlphaSlider(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.r1, color.g1, color.b1, color.a1);
+            drawAlphaSlider(x + HalqGui.height / 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             height = offsetY + HalqGui.height - 3 + 5;
+
+            updateValue(mouseX, mouseY, x + HalqGui.height / 2, y + offset + HalqGui.height + 5);
+
+            {
+                final int cursorX = (int) (x + HalqGui.height / 2 + color.RGBtoHSB()[1]*pickerWidth);
+                final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
+                Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+            }
+        }
+    }
+
+    private void updateValue(int mouseX, int mouseY, int x, int y) {
+        if (pickingBase) {
+            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
+            float restrictedY = (float) Math.min(Math.max(y, mouseY), y + pickerWidth);
+            color.setSaturation((restrictedX - (float) x) / pickerWidth);
+            this.color.setBrightness(1 - (restrictedY - (float) y) / pickerWidth);
+        }
+        if (pickingHue) {
+            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
+            this.color.setHue((restrictedX - (float) x) / pickerWidth);
+            System.out.println((restrictedX - (float) x) / pickerWidth);
+        }
+        if (pickingAlpha) {
+            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
+            this.color.setAlpha(1 - (restrictedX - (float) x) / pickerWidth);
         }
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) open = !open;
+        if(button == 0) {
+            if(isMouseOnButton(mouseX, mouseY)) open = !open;
+            pickingBase = baseHover;
+            pickingHue = hueHover;
+            pickingAlpha = alphaHover;
+        }
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
-        super.mouseReleased(mouseX, mouseY, mouseButton);
+        pickingBase = pickingAlpha = pickingHue = false;
     }
 
     @Override
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    @Override
-    public void keyTyped(char typedChar, int key) {
-        super.keyTyped(typedChar, key);
     }
 
     @Override
@@ -95,10 +124,11 @@ public class ColorButton extends Component {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
-    private void drawHueSlider(int x, int y, int width, int height, float hue) {
+    private void drawHueSlider(int x, int y, int width, int height, float hue, int mouseX, int mouseY) {
+        hueHover = mouseX > x && mouseX < x + width && mouseY > y && mouseY <  y + height;
         int step = 0;
         if (height > width) {
-            Gui.drawRect(x, y, x + width, y + 4, 0xFFFF0000);
+            Gui.drawRect(x, y, x + width, y + 4, -1);
             y += 4;
             for (int colorIndex = 0; colorIndex < 6; colorIndex++) {
                 int previousStep = Color.HSBtoRGB((float) step/6, 1.0f, 1.0f);
@@ -120,28 +150,34 @@ public class ColorButton extends Component {
         }
     }
 
-    private void drawAlphaSlider(int x, int y, int width, int height, float red, float green, float blue, float alpha) {
-        boolean left = false;
-        int checkerBoardSquareSize = width/2;
-        for (int squareIndex = -checkerBoardSquareSize; squareIndex < height; squareIndex += checkerBoardSquareSize) {
+    public void drawAlphaSlider(int x, int y, int width, int height, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
+        alphaHover = mouseX > x && mouseX < x + width && mouseY > y && mouseY <  y + height;
+        boolean left = true;
+        int checkerBoardSquareSize = height / 2;
+
+        for (int squareIndex = -checkerBoardSquareSize; squareIndex < width; squareIndex += checkerBoardSquareSize) {
             if (!left) {
-                Gui.drawRect(x, y + squareIndex, x + width, y + squareIndex + checkerBoardSquareSize, 0xFFFFFFFF);
-                Gui.drawRect(x + checkerBoardSquareSize, y + squareIndex, x + width, y + squareIndex + checkerBoardSquareSize, 0xFF909090);
-                if (squareIndex < height - checkerBoardSquareSize) {
-                    int minY = y + squareIndex + checkerBoardSquareSize;
-                    int maxY = Math.min(y + height, y + squareIndex + checkerBoardSquareSize*2);
-                    Gui.drawRect(x, minY, x + width, maxY, 0xFF909090);
-                    Gui.drawRect(x + checkerBoardSquareSize, minY, x + width, maxY, 0xFFFFFFFF);
+                Render2DUtil.drawRect(x + squareIndex, y, x + squareIndex + checkerBoardSquareSize, y + height, 0xFFFFFFFF);
+                Render2DUtil.drawRect(x + squareIndex, y + checkerBoardSquareSize, x + squareIndex + checkerBoardSquareSize, y + height, 0xFF909090);
+
+                if (squareIndex < width - checkerBoardSquareSize) {
+                    int minX = x + squareIndex + checkerBoardSquareSize;
+                    int maxX = Math.min(x + width, x + squareIndex + checkerBoardSquareSize * 2);
+                    Render2DUtil.drawRect(minX, y, maxX, y + height, 0xFF909090);
+                    Render2DUtil.drawRect(minX, y + checkerBoardSquareSize, maxX, y + height, 0xFFFFFFFF);
                 }
             }
+
             left = !left;
         }
-        this.gradient(x, y, x + width, y + height, new Color(red, green, blue, alpha).getRGB(), 0, left);
-        final int sliderMinY = (int) (y + height - (height * alpha));
-        Gui.drawRect(x, sliderMinY - 1, x+width, sliderMinY + 1, -1);
+
+        drawLeftGradientRect(x, y, x + width, y + height, new Color(red, green, blue, 1).getRGB(), 0);
+        int sliderMinX = (int) (x + width - (width * alpha));
+        Render2DUtil.drawRect(sliderMinX - 1, y, sliderMinX + 1, y + height, -1);
     }
 
-    private void drawPickerBase(int pickerX, int pickerY, int pickerWidth, int pickerHeight, float red, float green, float blue, float alpha) {
+    private void drawPickerBase(int pickerX, int pickerY, int pickerWidth, int pickerHeight, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
+        baseHover = mouseX > pickerX && mouseX < pickerX + pickerWidth && mouseY > pickerY && mouseY <  pickerY + pickerHeight;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -186,6 +222,7 @@ public class ColorButton extends Component {
             final float endG = (endColor >> 8 & 0xFF) / 255.0f;
             final float endB = (endColor & 0xFF) / 255.0f;
 
+            GL11.glPushMatrix();
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -203,6 +240,7 @@ public class ColorButton extends Component {
             GL11.glShadeModel(GL11.GL_FLAT);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glDisable(GL11.GL_BLEND);
+            GL11.glPopMatrix();
         } else drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
 }

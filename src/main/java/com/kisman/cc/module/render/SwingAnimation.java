@@ -1,8 +1,7 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -74,6 +73,7 @@ public class SwingAnimation extends Module {
 
     public enum StrongMode {
         Blockhit1,
-        Blockhit2
+        Blockhit2,
+        Knife
     }
 }

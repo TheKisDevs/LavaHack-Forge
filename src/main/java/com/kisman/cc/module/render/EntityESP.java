@@ -68,10 +68,10 @@ public class EntityESP extends Module{
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         mc.world.loadedEntityList.stream().filter(this::isValid).forEach(entity -> {
-            if(entity instanceof EntityPlayer) render(entity, players.getValString(), players.getR() / 255f, players.getG()/ 255f, players.getB() / 255f, event.getPartialTicks());
-            if(entity instanceof EntityMob) render(entity, monsters.getValString(), monsters.getR() / 255f, monsters.getG() / 255f, monsters.getB() / 255f, event.getPartialTicks());
-            if(entity instanceof EntityAnimal) render(entity, passive.getValString(), passive.getR() / 255f, passive.getG() / 255f, passive.getB() / 255f, event.getPartialTicks());
-            if(entity instanceof EntityItem) render(entity, items.getValString(), items.getR() / 255f, items.getG() / 255f, items.getB() / 255f, event.getPartialTicks());
+            if(entity instanceof EntityPlayer) render(entity, players.getValString(), playerColor.getColour().r1, playerColor.getColour().g1, playerColor.getColour().b1, event.getPartialTicks());
+            if(entity instanceof EntityMob) render(entity, monsters.getValString(), monstersColor.getColour().r1, monstersColor.getColour().g1, monstersColor.getColour().b1, event.getPartialTicks());
+            if(entity instanceof EntityAnimal) render(entity, passive.getValString(), passiveColor.getColour().r1, passiveColor.getColour().g1, passiveColor.getColour().b1, event.getPartialTicks());
+            if(entity instanceof EntityItem) render(entity, items.getValString(), itemsColor.getColour().r1, itemsColor.getColour().g1, itemsColor.getColour().b1, event.getPartialTicks());
         });
     }
 

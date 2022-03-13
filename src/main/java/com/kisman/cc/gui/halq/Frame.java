@@ -1,6 +1,8 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.halq.component.components.sub.ColorButton;
+import com.kisman.cc.gui.halq.component.components.sub.ModeButton;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
@@ -60,8 +62,9 @@ public class Frame {
                 Render2DUtil.drawRectWH(x + HalqGui.width - 1, startY, 1, HalqGui.height, HalqGui.getGradientColour(button.getCount()).getRGB());
                 startY += HalqGui.height;
                 if(button.open) for(Component comp1 : button.comps) if(comp1.visible()) {
-                    Render2DUtil.drawRectWH(x, startY, 1, comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
-                    Render2DUtil.drawRectWH(x + HalqGui.width - 1, startY, 1, comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
+                    boolean open = (comp1 instanceof ModeButton && ((ModeButton) comp1).open) || (comp1 instanceof ColorButton && ((ColorButton) comp1).open);
+                    Render2DUtil.drawRectWH(x, startY, 1.5 + (open ? 0.5 : 0), comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
+                    Render2DUtil.drawRectWH(x + HalqGui.width - 1.5 - (open ? 0.5 : 0), startY, 1.5 + (open ? 0.5 : 0), comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
                     startY += comp1.getHeight();
                 }
             }

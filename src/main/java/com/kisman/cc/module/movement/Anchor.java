@@ -1,24 +1,27 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 
+import com.kisman.cc.util.manager.Managers;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.*;
 
 public class Anchor extends Module {
-    private final Setting mode = new Setting("Mode", this, Mode.MovementStop);
+    private final Setting mode = new Setting("Mode", this, Mode.Motion);
+    private final Setting movementStop = new Setting("Movement Stop", this, false).setVisible(!mode.checkValString(Mode.Teleport.name()));
     private final Setting timer = new Setting("Timer", this, false);
-    private final Setting timerValue = new Setting("Timer Value", this, 5, 0.1f, 20, false);
+    private final Setting timerValue = new Setting("Timer Value", this, 5, 0.1f, 20, false).setVisible(timer::getValBoolean);
     private final Setting disableAfterComplete = new Setting("Disable After Complete", this, false);
     private final Setting fastFall = new Setting("Fast Fall", this, false);
-    private final Setting fastFallMotion = new Setting("Fast Fall Motion", this, 10, 1, 10, false);
-    private final Setting cancelMovement = new Setting("Cancel Movement", this, false);
-    private final Setting usePitchInCM = new Setting("Use Pitch in CancelMove", this, true);
+    private final Setting fastFallMotion = new Setting("Fast Fall Motion", this, 10, 1, 10, false).setVisible(fastFall::getValBoolean);
+    private final Setting useLagTime = new Setting("Use Fast Fall Lag Time", this, false);
+    private final Setting lagTime = new Setting("Fast Fall Lag Time", this, 500, 0, 1000, Slider.NumberType.TIME);
 
     private boolean using = false;
     private double[] oneblockPositions = new double[] { 0.42, 0.75 };
@@ -29,13 +32,12 @@ public class Anchor extends Module {
         super("Anchor", "help with holes", Category.MOVEMENT);
 
         setmgr.rSetting(mode);
+        setmgr.rSetting(movementStop);
         setmgr.rSetting(timer);
         setmgr.rSetting(timerValue);
         setmgr.rSetting(disableAfterComplete);
         setmgr.rSetting(fastFall);
         setmgr.rSetting(fastFallMotion);
-        setmgr.rSetting(cancelMovement);
-        setmgr.rSetting(usePitchInCM);
         Kisman.instance.settingsManager.rSetting(new Setting("Pitch", this, 60, 0, 90, false));
     }
 
@@ -76,14 +78,7 @@ public class Anchor extends Module {
 
         if (mc.player.rotationPitch >= pitch) {
             if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) || isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
-                if (mode.getValString().equals(Mode.MovementStop.name())) {
-                    mc.player.motionX = 0.0;
-                    mc.player.motionZ = 0.0;
-                    mc.player.movementInput.moveForward = 0;
-                    mc.player.movementInput.moveStrafe = 0;
-                    if(fastFall.getValBoolean()) mc.player.motionY = -10;
-                    using = true;
-                } else if(mode.getValString().equals(Mode.Motion.name())) {
+                if(mode.getValString().equals(Mode.Motion.name())) {
                     center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
 
                     double xDiff = Math.abs(center.x - mc.player.posX);
@@ -97,11 +92,10 @@ public class Anchor extends Module {
                         mc.player.motionX = motionX / 2;
                         mc.player.motionZ = motionZ / 2;
                     }
-                    if(fastFall.getValBoolean()) mc.player.motionY = -fastFallMotion.getValDouble();
+                    if(fastFall.getValBoolean() && !lagTimeCheck()) mc.player.motionY = -fastFallMotion.getValDouble();
                     using = true;
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
-                    if (!mc.player.onGround) if (mc.gameSettings.keyBindJump.isKeyDown()) this.jumped = true;
-                    else this.jumped = false;
+                    if (!mc.player.onGround) this.jumped = mc.gameSettings.keyBindJump.isKeyDown();
         
                     if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 1.125 && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid()) {
                         if (!mc.player.onGround) ++this.packets;
@@ -113,12 +107,10 @@ public class Anchor extends Module {
                         }
                     }
 
-                    if(fastFall.getValBoolean()) mc.player.motionY = -fastFallMotion.getValDouble();
+                    if(fastFall.getValBoolean() && !lagTimeCheck()) mc.player.motionY = -fastFallMotion.getValDouble();
                 }
             } else using = false;
         }
-
-        doCancelMovement(pitch);        
 
         if(isBlockHole(PlayerUtil.getPlayerPos())) using = false;
 
@@ -131,13 +123,8 @@ public class Anchor extends Module {
         }
     }
 
-    private void doCancelMovement(double pitch) {
-        if(!cancelMovement.getValBoolean() || (usePitchInCM.getValBoolean() && mc.player.rotationPitch > pitch) || !isBlockHole(PlayerUtil.getPlayerPos())) return;
-
-        mc.player.motionX = 0.0;
-        mc.player.motionZ = 0.0;
-        mc.player.movementInput.moveForward = 0;
-        mc.player.movementInput.moveStrafe = 0;
+    private boolean lagTimeCheck() {
+        return useLagTime.getValBoolean() && Managers.instance.passed(lagTime.getValInt());
     }
 
     public enum Mode {MovementStop, Motion, Teleport}

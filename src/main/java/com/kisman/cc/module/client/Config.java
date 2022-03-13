@@ -2,11 +2,14 @@ package com.kisman.cc.module.client;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
+import com.kisman.cc.gui.notification.Notifications;
+import com.kisman.cc.gui.notification.NotificationsManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -46,14 +49,19 @@ public class Config extends Module {
     public Setting notifications = new Setting("Notifications", this, false);
     public Setting particlesColor = new Setting("Particles Color", this, "Particles Dots Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean());
 
-    public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None).setVisible(() -> guiParticles.getValBoolean());
+    public Setting particlesRenderLine = new Setting("Particles Render Lines", this, true);
 
-    public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()));
-    public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()));
+    public Setting particlesGradientMode = new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean());
 
-    public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false).setVisible(() -> guiParticles.getValBoolean());
+    public Setting particlesGStartColor = new Setting("Particles Gradient StartColor", this, "Particles Gradient StartColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean());
+    public Setting particlesGEndColor = new Setting("Particles Gradient EndColor", this, "Particles Gradient EndColor", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean());
 
-    public Setting particleTest = new Setting("Particle Test", this, true).setVisible(() -> guiParticles.getValBoolean());
+    public Setting particlesWidth = new Setting("Particles Width", this, 0.5, 0.0, 5, false).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean());
+
+    public Setting particleTest = new Setting("Particle Test", this, true).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean());
+
+    public Setting slowRender = new Setting("Slow Render", this, false);
+    public Setting depthFix = new Setting("Depth Fix", this, true);
 
 
     public Config() {
@@ -61,7 +69,7 @@ public class Config extends Module {
 
         instance = this;
 
-        setmgr.rSetting(astolfoColorMode);
+//        setmgr.rSetting(astolfoColorMode);
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
@@ -96,6 +104,8 @@ public class Config extends Module {
         setmgr.rSetting(particlesGEndColor);
         setmgr.rSetting(particlesWidth);
         setmgr.rSetting(particleTest);
+        setmgr.rSetting(slowRender);
+        setmgr.rSetting(depthFix);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -115,6 +125,14 @@ public class Config extends Module {
         }
 
         if(notifications.getValBoolean() && Kisman.instance.notificationsManager != null) Kisman.instance.notificationsManager.draw();
+    }
+
+    @SubscribeEvent
+    public void onRender(RenderGameOverlayEvent.Text event) {
+        if(notifications.getValBoolean()) for(Notifications notifications : Kisman.instance.notificationsManager.notifications) {
+            int count = 0;
+            Kisman.instance.notificationsManager.drawNotification(notifications, count++);
+        }
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, custom}

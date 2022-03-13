@@ -7,19 +7,13 @@ import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
-import com.kisman.cc.util.RenderUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEnderChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.item.EntityEnderPearl;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.*;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -60,8 +54,13 @@ public class ShaderCharms extends Module {
     private Setting numOctavesOutline = new Setting("Num Octaves", this, 5, 1, 30, true);
     private Setting speedOutline = new Setting("Speed", this, 0.1, 0.001, 0.1, false);
 
+    public static ShaderCharms instance;
+
     public ShaderCharms() {
         super("ShaderCharms", Category.RENDER);
+
+        instance = this;
+
         setmgr.rSetting(mode);
         setmgr.rSetting(crystals);
         setmgr.rSetting(players);
@@ -104,7 +103,7 @@ public class ShaderCharms extends Module {
         try {
             {
                 FramebufferShader framebufferShader = null;
-                boolean itemglow = false, gradient = false;
+                boolean itemglow = false, gradient = false, glow = false, outline = false;
 
                 switch (mode.getValString()) {
                     case "AQUA":
@@ -133,6 +132,14 @@ public class ShaderCharms extends Module {
                     case "UNU":
                         framebufferShader = UnuShader.UNU_SHADER;
                         break;
+                    case "GLOW":
+                        framebufferShader = GlowShader.GLOW_SHADER;
+                        glow = true;
+                        break;
+                    case "OUTLINE":
+                        framebufferShader = OutlineShader.OUTLINE_SHADER;
+                        outline = true;
+                        break;
                 }
 
                 if (framebufferShader == null) return;
@@ -145,7 +152,7 @@ public class ShaderCharms extends Module {
                     ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
                     ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
                     ((ItemShader) framebufferShader).radius = radius.getValFloat();
-                    ((ItemShader) framebufferShader).quality = 1;
+                    ((ItemShader) framebufferShader).quality = quality.getValFloat();
                     ((ItemShader) framebufferShader).blur = blur.getValBoolean();
                     ((ItemShader) framebufferShader).mix = mix.getValFloat();
                     ((ItemShader) framebufferShader).alpha = 1f;
@@ -161,6 +168,18 @@ public class ShaderCharms extends Module {
                     ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
                     ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
                     ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+                } else if(glow) {
+                    ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((GlowShader) framebufferShader).radius = radius.getValFloat();
+                    ((GlowShader) framebufferShader).quality = quality.getValFloat();
+                } else if(outline) {
+                    ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((OutlineShader) framebufferShader).radius = radius.getValFloat();
+                    ((OutlineShader) framebufferShader).quality = quality.getValFloat();
                 }
                 framebufferShader.startDraw(event.getPartialTicks());
                 for (Entity entity : mc.world.loadedEntityList) {
@@ -186,7 +205,7 @@ public class ShaderCharms extends Module {
 
             if (items.getValBoolean()) {
                 FramebufferShader framebufferShader = null;
-                boolean itemglow = false, gradient = false;
+                boolean itemglow = false, gradient = false, glow = false, outline = false;
                 switch (mode.getValString()) {
                     case "AQUA":
                         framebufferShader = AquaShader.AQUA_SHADER;
@@ -210,6 +229,14 @@ public class ShaderCharms extends Module {
                     case "GRADIENT":
                         framebufferShader = GradientOutlineShader.INSTANCE;
                         gradient = true;
+                        break;
+                    case "GLOW":
+                        framebufferShader = GlowShader.GLOW_SHADER;
+                        glow = true;
+                        break;
+                    case "OUTLINE":
+                        framebufferShader = OutlineShader.OUTLINE_SHADER;
+                        outline = true;
                         break;
                 }
 
@@ -242,6 +269,18 @@ public class ShaderCharms extends Module {
                     ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
                     ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
                     ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+                }else if(glow) {
+                    ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((GlowShader) framebufferShader).radius = radius.getValFloat();
+                    ((GlowShader) framebufferShader).quality = quality.getValFloat();
+                } else if(outline) {
+                    ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
+                    ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
+                    ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                    ((OutlineShader) framebufferShader).radius = radius.getValFloat();
+                    ((OutlineShader) framebufferShader).quality = quality.getValFloat();
                 }
                 framebufferShader.startDraw(event.getPartialTicks());
                 mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
@@ -261,6 +300,6 @@ public class ShaderCharms extends Module {
     }
 
     public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT, UNU
+        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT, UNU, GLOW, OUTLINE
     }
 }

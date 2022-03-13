@@ -6,7 +6,7 @@ import com.kisman.cc.util.Render2DUtil;
 
 public class Button extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;
-    private static final int PREFERRED_HEIGHT = 22;
+    public static final int PREFERRED_HEIGHT = 22;
 
     public String title;
     private int preferredWidth;

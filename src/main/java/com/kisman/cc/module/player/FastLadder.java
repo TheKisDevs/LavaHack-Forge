@@ -3,6 +3,7 @@ package com.kisman.cc.module.player;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
+import com.kisman.cc.util.MovementUtil;
 import me.zero.alpine.listener.*;
 import net.minecraft.network.play.client.CPacketPlayer;
 
@@ -26,6 +27,6 @@ public class FastLadder extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
-        if(event.getPacket() instanceof CPacketPlayer && mc.player.isOnLadder()) ((CPacketPlayer) event.getPacket()).onGround = true;
+        if(event.getPacket() instanceof CPacketPlayer && mc.player.isOnLadder() && MovementUtil.isMoving()) ((CPacketPlayer) event.getPacket()).onGround = true;
     });
 }

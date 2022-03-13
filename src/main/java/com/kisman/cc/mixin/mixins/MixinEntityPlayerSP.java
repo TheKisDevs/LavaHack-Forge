@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.module.movement.NoSlowSneak;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.MoverType;
@@ -19,6 +20,14 @@ public class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
     @Shadow protected boolean isCurrentViewEntity() {return true;}
+
+    @Inject(method = "isSneaking", at = @At("HEAD"), cancellable = true)
+    private void sneak(CallbackInfoReturnable<Boolean> cir) {
+        if(NoSlowSneak.instance.isToggled() && NoSlowSneak.instance.mode.checkValString(NoSlowSneak.Mode.Cancel.name())) {
+            cir.setReturnValue(false);
+            cir.cancel();
+        }
+    }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MoverType type, double x, double y, double z, CallbackInfo ci) {

@@ -29,6 +29,10 @@ public class NotificationsManager {
 
 
     public void addNotifications(String message, String title, Colour color){
-        notifications.add(new Notifications(title, message, color));
+        notifications.add(new Notifications(title, message, color, false));
+    }
+
+    public void addNotifications(String message, String title, boolean astolfo) {
+        notifications.add(new Notifications(title, message, null, astolfo));
     }
 }

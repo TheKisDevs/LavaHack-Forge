@@ -128,6 +128,7 @@ public class ModuleManager {
 		modules.add(new Anchor());
 		modules.add(new AutoJump());
 		modules.add(new AutoWalk());
+		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
 		modules.add(new FastSwim());
 		modules.add(new Fly());
@@ -157,7 +158,8 @@ public class ModuleManager {
 		modules.add(new FastBreak());
 		modules.add(new FastLadder());
 		modules.add(new FastPlace());
-		modules.add(new FreeCam());
+		modules.add(new ForgeBypass());
+		modules.add(new FreeCamBypass());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
@@ -198,6 +200,7 @@ public class ModuleManager {
 		modules.add(new BurrowCounter());
 		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
+		modules.add(new FreeLook());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());

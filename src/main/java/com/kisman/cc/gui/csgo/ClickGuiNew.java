@@ -299,6 +299,8 @@ public class ClickGuiNew extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
+
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 
         window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSize.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));

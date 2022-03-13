@@ -21,6 +21,8 @@ import org.apache.commons.lang3.RandomUtils;
 import java.util.List;
 import java.util.Random;
 
+import static com.kisman.cc.util.BlockUtil.getEyesPos;
+
 @SideOnly(Side.CLIENT)
 public class RotationUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
@@ -45,6 +47,17 @@ public class RotationUtils {
         if (this.random.nextGaussian() > 0.8) this.x = Math.random();
         if (this.random.nextGaussian() > 0.8) this.y = Math.random();
         if (this.random.nextGaussian() > 0.8) this.z = Math.random();
+    }
+
+    public static float[] getNeededRotations2(Vec3d vec) {
+        Vec3d eyesPos = getEyesPos();
+        double diffX = vec.x - eyesPos.x;
+        double diffY = vec.y - eyesPos.y;
+        double diffZ = vec.z - eyesPos.z;
+        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+        float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
+        float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
+        return new float[]{mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw), mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch)};
     }
 
     public static float[] lookAtRandomed(Entity entityIn) {

@@ -2,24 +2,20 @@ package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
-import com.kisman.cc.module.client.Config;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,20 +24,22 @@ public class KillAura extends Module {
 
     public EntityPlayer target;
 
-    private Setting mode = new Setting("Mode", this, "Sword", Arrays.asList("Single", "Multi"));
-    private Setting attackCooldown = new Setting("Attack Cooldown", this, 1, 0, 1, false);
+    private Setting mode = new Setting("Mode", this, "HvH", Arrays.asList("HvH", "Default"));
 
     private Setting hitLine = new Setting("HitLine", this, "Hit");
     private Setting useFallDist = new Setting("Use Fall Dist", this, false);
-    private Setting fallDistance = new Setting("Fall Distance", this, 0.25, 0, 1, false);
+    private Setting fallDistance = new Setting("Fall Distance", this, 0.25, 0, 1, false).setVisible(useFallDist::getValBoolean);
     private Setting shieldBreaker = new Setting("Shield Breaker", this, true);
     private Setting packetAttack = new Setting("Packet Attack", this, false);
     private Setting rotations = new Setting("Rotations", this, RotateMode.Silent);
-    private Setting betterRots = new Setting("Better Rotations", this, false);
-    private Setting packetRots = new Setting("Packet Rotations", this, false);
-    private Setting preRots = new Setting("Pre Rots", this, true);
-    private Setting onlyCrits = new Setting("Only Crits", this, true);
+    private Setting betterRots = new Setting("Better Rotations", this, false).setVisible(() -> !rotations.checkValString(RotateMode.None.name()));
+    private Setting packetRots = new Setting("Packet Rotations", this, false).setVisible(() -> !rotations.checkValString(RotateMode.None.name()));
+    private Setting preRots = new Setting("Pre Rots", this, true).setVisible(() -> !rotations.checkValString(RotateMode.None.name()));
+    private final Setting cooldownCheck = new Setting("Cooldown Check", this, false);
+    private Setting attackCooldown = new Setting("Attack Cooldown", this, 1, 0, 1, false).setVisible(cooldownCheck::getValBoolean);
+    private Setting onlyCrits = new Setting("Only Crits", this, false).setVisible(cooldownCheck::getValBoolean);
     private Setting resetCd = new Setting("Reset Cooldown", this, false);
+    private final Setting packetSwing = new Setting("Packet Swing", this, false);
 
     private Setting weapon = new Setting("Weapon", this, "Sword", new ArrayList<>(Arrays.asList("Sword", "Axe", "Both", "None")));
 
@@ -50,10 +48,11 @@ public class KillAura extends Module {
     private Setting renderLine = new Setting("RenderLine", this, "Render");
     private Setting targetEsp = new Setting("Target ESP", this, true);
 
+    private final Setting targetRange = new Setting("Target Range", this, 6, 1, 20, true);
     private Setting wallDistance = new Setting("Wall Distance", this, 3, 0, 5, false);
 
     private Setting switchMode = new Setting("Switch Mode", this, "None", new ArrayList<>(Arrays.asList("None", "Normal", "Silent")));
-    private Setting packetSwitch = new Setting("Packet Switch", this, true);
+    private Setting packetSwitch = new Setting("Packet Switch", this, true).setVisible(!switchMode.checkValString("None"));
 
     public KillAura() {
         super("KillAura", "8", Category.COMBAT);
@@ -61,7 +60,6 @@ public class KillAura extends Module {
         instance = this;
 
         setmgr.rSetting(mode);
-        setmgr.rSetting(attackCooldown);
 
         setmgr.rSetting(hitLine);
         setmgr.rSetting(useFallDist);
@@ -73,8 +71,11 @@ public class KillAura extends Module {
         setmgr.rSetting(betterRots);
         setmgr.rSetting(packetRots);
         setmgr.rSetting(preRots);
+        setmgr.rSetting(cooldownCheck);
+        setmgr.rSetting(attackCooldown);
         setmgr.rSetting(onlyCrits);
         setmgr.rSetting(resetCd);
+        setmgr.rSetting(packetSwing);
 
         setmgr.rSetting(new Setting("WeaponLine", this, "Weapon"));
         setmgr.rSetting(weapon);
@@ -87,6 +88,7 @@ public class KillAura extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("DistanceLine", this, "Distance"));
 
+        setmgr.rSetting(targetRange);
         Kisman.instance.settingsManager.rSetting(new Setting("Distance", this, 4.25f, 0, 6, false));
         setmgr.rSetting(wallDistance);
 
@@ -101,7 +103,7 @@ public class KillAura extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
         if(mc.player.isDead) return;
-        if(mc.player.getCooledAttackStrength(0) <= (onlyCrits.getValBoolean() ? 0.95f : attackCooldown.getValFloat())) return;
+        if(mc.player.getCooledAttackStrength(0) <= (onlyCrits.getValBoolean() ? 0.95f : attackCooldown.getValFloat()) && cooldownCheck.getValBoolean()) return;
 
         boolean player = Kisman.instance.settingsManager.getSettingByName(this, "Player").getValBoolean();
         boolean monster = Kisman.instance.settingsManager.getSettingByName(this, "Monster").getValBoolean();
@@ -111,23 +113,23 @@ public class KillAura extends Module {
 
         float distance = Kisman.instance.settingsManager.getSettingByName(this, "Distance").getValFloat();
 
-        if(mode.getValString().equalsIgnoreCase("Multi")) {
-            for (int i = 0; i < mc.world.loadedEntityList.size(); i++) {
-                if (mc.world.loadedEntityList.get(i) != null && ((mc.world.loadedEntityList.get(i) instanceof EntityPlayer && player) || (mc.world.loadedEntityList.get(i) instanceof EntityMob && monster) || (mc.world.loadedEntityList.get(i) instanceof EntityAnimal && passive))) {
-                    Entity entity = mc.world.loadedEntityList.get(i);
-                    if (Config.instance.friends.getValBoolean() && entity instanceof EntityPlayer && Kisman.instance.friendManager.isFriend((EntityPlayer) entity))  continue;
-                    if(!weaponCheck()) return;
-                    if(!fallCheck() && useFallDist.getValBoolean()) return;
-                    doKillAura(entity, hitsound, false);
-                }
-            }
-        } else if(mode.getValString().equalsIgnoreCase("Single")) {
-           target = EntityUtil.getTarget(distance);
-
-           if(target == null) return;
-           if(!weaponCheck()) return;
+        if(mode.getValString().equalsIgnoreCase("Default")) {
+            Entity target1 = EntityUtil.getTarget(distance, distance, player, passive, monster);
+            target = null;
+            if(target1 == null) return;
+            super.setDisplayInfo("[" + target1.getName() + "]");
+            if(preRots.getValBoolean()) doRots(target1);
+            if(!weaponCheck()) return;
             if(!fallCheck() && useFallDist.getValBoolean()) return;
-           doKillAura(target, hitsound, true);
+            doKillAura(target1, distance, hitsound, true);
+        } else if(mode.getValString().equalsIgnoreCase("HvH")) {
+           target = EntityUtil.getTarget(distance);
+           if(target == null) return;
+           super.setDisplayInfo("[" + target.getName() + "]");
+           if(preRots.getValBoolean()) doRots(target);
+           if(!weaponCheck()) return;
+           if(!fallCheck() && useFallDist.getValBoolean()) return;
+           doKillAura(target, distance, hitsound, true);
         }
     }
 
@@ -135,13 +137,13 @@ public class KillAura extends Module {
         return mc.player.fallDistance > fallDistance.getValFloat();
     }
 
-    private void doKillAura(Entity entity, boolean hitsound, boolean single) {
-        if(mc.player.getDistance(entity) <= 4.15 && entity.ticksExisted % 20 == 0 && mc.player != entity) {
-            if(preRots.getValBoolean()) doRots(target);
+
+    private void doKillAura(Entity entity, double distance, boolean hitsound, boolean single) {
+        if(mc.player.getDistance(entity) <= distance && entity.ticksExisted % 20 == 0 && mc.player != entity) {
 
             boolean isShieldActive = false;
 
-            if(shieldBreaker.getValBoolean() && single) if (target.getHeldItemMainhand().getItem() instanceof ItemShield || target.getHeldItemOffhand().getItem() instanceof ItemShield) if (target.isHandActive()) isShieldActive = true;
+            if(shieldBreaker.getValBoolean() && single && entity instanceof EntityPlayer) if (((EntityPlayer) entity).getHeldItemMainhand().getItem() instanceof ItemShield || ((EntityPlayer) entity).getHeldItemOffhand().getItem() instanceof ItemShield) if (((EntityPlayer) entity).isHandActive()) isShieldActive = true;
 
             int oldSlot = mc.player.inventory.currentItem;
             int weaponSlot = InventoryUtil.findWeaponSlot(0, 9, isShieldActive);
@@ -177,7 +179,8 @@ public class KillAura extends Module {
         if(packetAttack.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(entity));
         else mc.playerController.attackEntity(mc.player, entity);
 
-        mc.player.swingArm(EnumHand.MAIN_HAND);
+        if(packetSwing.getValBoolean()) mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+        else mc.player.swingArm(EnumHand.MAIN_HAND);
         if(resetCd.getValBoolean()) mc.player.resetCooldown();
 
         if(rotations.getValString().equals("Silent")) {
@@ -193,34 +196,8 @@ public class KillAura extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(!targetEsp.getValBoolean() || target == null) return;
-        if (target.getHealth() > 0.0f) {
-            GL11.glPushMatrix();
-            int color = target.hurtResistantTime > 15 ? ColorUtils.getColor(255,100,100) : ColorUtils.rainbow(1,10);
-            double x =  target.lastTickPosX + (target.posX -target.lastTickPosX) * (double) mc.timer.renderPartialTicks - mc.renderManager.renderPosX;
-            double y = target.lastTickPosY + (target.posY - target.lastTickPosY) * (double) mc.timer.renderPartialTicks - mc.renderManager.renderPosY;
-            double z = target.lastTickPosZ + (target.posZ -target.lastTickPosZ) * (double) mc.timer.renderPartialTicks - mc.renderManager.renderPosZ;
-            double d = (double) target.getEyeHeight() + 0.15;
-            double d2 = target.isSneaking() ? 0.25 : 0.0;
-            double mid = 0.5;
-            GL11.glEnable(3042);
-            GL11.glBlendFunc(770, 771);
-            GL11.glTranslated((x -= 0.5) + mid, (y += d - d2) + mid, (z -= 0.5) + mid);
-            GL11.glRotated(-target.rotationYaw % 360.0f, 0.0, 1.0, 0.0);
-            GL11.glTranslated(-(x + mid), -(y + mid), -(z + mid));
-            GL11.glDisable(3553);
-            GL11.glEnable(2848);
-            GL11.glDisable(2929);
-            GL11.glDepthMask(false);
-            GLUtils.glColor(color);
-            RenderUtil.drawBoundingBox(new AxisAlignedBB(x, y, z, x + 1.0, y + 0.05, z + 1.0));
-            GL11.glDisable(2848);
-            GL11.glEnable(3553);
-            GL11.glEnable(2929);
-            GL11.glDepthMask(true);
-            GL11.glDisable(3042);
-            GL11.glPopMatrix();
-        }
+        if(target == null) return;
+            RenderUtil2.drawFadeESP(target, new Colour(Color.GREEN), new Colour(ColorUtils.injectAlpha(Color.GREEN, 0)));
     }
 
     private void doRots(Entity entityToRotate) {

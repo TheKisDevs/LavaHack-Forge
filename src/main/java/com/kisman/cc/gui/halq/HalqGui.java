@@ -2,7 +2,6 @@ package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.module.client.HalqGuiModule;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
@@ -41,6 +40,16 @@ public class HalqGui extends GuiScreen {
     //particles
     private final ParticleSystem particleSystem;
 
+    /**
+     *@link {com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
+     */
+    private GuiScreen lastGui = null;
+
+    public HalqGui(GuiScreen lastGui) {
+        this();
+        this.lastGui = lastGui;
+    }
+
     public HalqGui() {
         this.particleSystem = new ParticleSystem(300);
         int offsetX = 5 + headerOffset;
@@ -59,6 +68,8 @@ public class HalqGui extends GuiScreen {
 
         if(!background) backgroundColor = new Color(0, 0, 0, 0);
         else backgroundColor = new Color(30, 30, 30, 121);
+
+        drawDefaultBackground();
 
         scrollWheelCheck();
         for(Frame frame : frames) {
@@ -80,7 +91,7 @@ public class HalqGui extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if(keyCode == 1) mc.displayGuiScreen(null);
+        if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
         for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty()) for(Component b : frame.mods) b.keyTyped(typedChar, keyCode);
     }
 
@@ -109,7 +120,7 @@ public class HalqGui extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        try {mc.entityRenderer.getShaderGroup().deleteShaderGroup();} catch (Exception ignored) {}
+        try {if(mc.player != null && mc.world != null) mc.entityRenderer.getShaderGroup().deleteShaderGroup();} catch (Exception ignored) {}
         super.onGuiClosed();
     }
 
