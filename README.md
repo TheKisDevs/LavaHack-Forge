@@ -19,9 +19,6 @@
 
 `Hacker op`noob
 - discord - `Hacker op#1350`
-###### Setup:
-Windows:
 
-`gradlew setupdecompworkspace`
-
-`gradlew build`
+`Halq`
+- discord - `Halq#0101`
