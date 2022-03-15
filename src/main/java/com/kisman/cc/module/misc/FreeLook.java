@@ -22,15 +22,15 @@ public class FreeLook extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
+        dYaw = dPitch = 0;
 
         if(mc.player == null || mc.world == null) return;
-
-        dYaw = dPitch = 0;
         if (autoThirdPerson.getValBoolean()) mc.gameSettings.thirdPersonView = 1;
     }
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
+        if(mc.player == null || mc.world == null) return;
         if (autoThirdPerson.getValBoolean()) mc.gameSettings.thirdPersonView = 0;
     }
 

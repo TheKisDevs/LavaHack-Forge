@@ -203,7 +203,7 @@ public class ShaderCharms extends Module {
                 GlStateManager.popMatrix();
             }
 
-            if (items.getValBoolean()) {
+            if (items.getValBoolean() && mc.gameSettings.thirdPersonView == 0) {
                 FramebufferShader framebufferShader = null;
                 boolean itemglow = false, gradient = false, glow = false, outline = false;
                 switch (mode.getValString()) {

@@ -32,6 +32,7 @@ public class CommandManager {
 		commands.add(new FriendCommand());
 		commands.add(new Help());
 		commands.add(new LoadConfigCommand());
+		commands.add(new LuaCommand());
         commands.add(new Slider());
         commands.add(new OpenDir());
 		commands.add(new Peek());

@@ -5,6 +5,7 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "MixinAbstractClientPlayer",
+    "MixinC00Handshake",
     "MixinEntity",
     "MixinEntityEnderCrystal",
     "MixinEntityLivingBase",

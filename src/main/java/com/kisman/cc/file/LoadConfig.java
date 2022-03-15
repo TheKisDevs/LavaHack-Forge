@@ -23,7 +23,7 @@ public class LoadConfig {
             loadEnabledHudModules();
             loadBindModes();
             loadFriends();
-        } catch (IOException | JsonSyntaxException e) {e.printStackTrace();}
+        } catch (IOException | JsonSyntaxException ignored) {}
     }
 
     private static void loadFriends() throws IOException {

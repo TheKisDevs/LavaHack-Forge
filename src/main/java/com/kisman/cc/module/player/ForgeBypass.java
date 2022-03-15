@@ -9,8 +9,12 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
 
 public class ForgeBypass extends Module {
+    public static ForgeBypass instance;
+
     public ForgeBypass() {
         super("ForgeBypass", Category.PLAYER);
+
+        instance = this;
     }
 
     public void onEnable() {

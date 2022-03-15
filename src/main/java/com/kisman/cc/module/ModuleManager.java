@@ -65,7 +65,7 @@ public class ModuleManager {
 		modules.add(new CSGOGui());
 		modules.add(new CustomFont());
 		modules.add(new CustomMainMenuModule());
-		modules.add(new DiscordRPC());
+		modules.add(new DiscordRPCModule());
 		modules.add(new HalqGuiModule());
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
@@ -73,6 +73,7 @@ public class ModuleManager {
 		modules.add(new ExampleModule());
 		modules.add(new SandBox());
 		modules.add(new Test());
+		modules.add(new ToolTip());
 		modules.add(new VegaGui());
 		//chat
 		modules.add(new AntiSpamBypass());
@@ -263,5 +264,15 @@ public class ModuleManager {
 			mod.key(key);
 			mod.key(typedChar, key);
 		}
+	}
+
+	public String[] getCategories() {
+		String[] cats = new String[Category.values().length];
+		int i = 0;
+		for(Category cat : Category.values()) {
+			cats[i] = cat.name();
+			i++;
+		}
+		return cats;
 	}
 }

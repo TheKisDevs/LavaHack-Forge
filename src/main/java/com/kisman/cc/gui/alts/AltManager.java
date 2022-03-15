@@ -6,18 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.mixin.mixins.accessor.IMinecraft;
 import com.mojang.authlib.Agent;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import com.mojang.authlib.yggdrasil.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 
 public class AltManager {
 	private static final List<AltEntry> alts = new ArrayList<>();
-
-	private static Minecraft mc = Minecraft.getMinecraft();
 
 	public static YggdrasilUserAuthentication logIn(String email, String password, boolean setSession) {
 		YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(Proxy.NO_PROXY, "").createUserAuthentication(Agent.MINECRAFT);
@@ -27,12 +23,7 @@ public class AltManager {
 		new Thread(() -> {
 			try {
 				auth.logIn();
-				if(setSession) {
-					Session session = new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang");
-					if (session != null) {
-						setSession(session);
-					}
-				}
+				if(setSession) setSession(new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang"));
 			} catch (Exception exception) {
 				exception.printStackTrace();
 			}
@@ -49,18 +40,13 @@ public class AltManager {
 		Class<? extends Minecraft> mc = Minecraft.getMinecraft().getClass();
         try {
             Field session = null;
-
             for (Field field : mc.getDeclaredFields()) {
                 if (field.getType().isInstance(newSession)) {
                     session = field;
                     Kisman.LOGGER.info("Attempting Injection into Session.");
                 }
             }
-
-            if (session == null) {
-                throw new IllegalStateException("No field of type " + Session.class.getCanonicalName() + " declared.");
-            }
-
+            if (session == null) throw new IllegalStateException("No field of type " + Session.class.getCanonicalName() + " declared.");
             session.setAccessible(true);
             session.set(Minecraft.getMinecraft(), newSession);
             session.setAccessible(false);

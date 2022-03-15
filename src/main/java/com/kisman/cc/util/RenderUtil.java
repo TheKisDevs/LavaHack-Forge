@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.text.*;
 import java.util.*;
 
+import com.kisman.cc.catlua.lua.utils.LuaBox;
 import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.customfont.norules.CFontRenderer;

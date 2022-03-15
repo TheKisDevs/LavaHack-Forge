@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.kisman.cc.gui.alts.microsoft.MSAuthScreen;
 import com.kisman.cc.mixin.mixins.accessor.ISession;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiListExtended;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.*;
+import org.lwjgl.opengl.GL11;
 
-public class AltManagerGUI extends GuiScreen
-{
+public class AltManagerGUI extends GuiScreen {
 	private GuiButton delete;
 	private GuiScreen lastGui;
 	private AltSlotList altList;
@@ -29,6 +29,7 @@ public class AltManagerGUI extends GuiScreen
 	public void initGui() {
 		super.initGui();
 		this.crackedNameField = new GuiTextField(69, mc.fontRenderer, 4, 20, 95, 15);
+		buttonList.add(new GuiButton(4, 4 + 4 + 95, 20, "Microsoft"));
 		this.crackedNameField.setText(mc.getSession().getUsername());
 		this.crackedNameField.setMaxStringLength(16);
 		this.altList = new AltSlotList(this, this.mc, this.width, this.height, 40, this.height - 60, 36);
@@ -41,14 +42,15 @@ public class AltManagerGUI extends GuiScreen
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.altList.drawScreen(mouseX, mouseY, partialTicks);
-		this.drawCenteredString(mc.fontRenderer, "kisman.cc Alt Manager", this.width / 2, 15, -1);
+		GL11.glPushMatrix();
+		GL11.glScalef(2.0F, 2.0F, 2.0F);
+		CustomFontUtil.drawCenteredStringWithShadow("Alts", width / 4, 6, ColorUtils.astolfoColors(100, 100));
+		GL11.glPopMatrix();
 		String s = "Signed in as ";
 		this.drawString(mc.fontRenderer, s, 4, 6, 0xFFAAAAAA);
 		this.drawString(mc.fontRenderer, mc.getSession().getUsername(), mc.fontRenderer.getStringWidth(s) + 3, 6, -1);
 		this.crackedNameField.drawTextBox();
-		if(!this.crackedNameField.isFocused()) {
-			this.crackedNameField.setText(mc.getSession().getUsername());
-		}
+		if(!this.crackedNameField.isFocused()) this.crackedNameField.setText(mc.getSession().getUsername());
 		delete.enabled = this.altList.getVisibility().get();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
@@ -75,7 +77,6 @@ public class AltManagerGUI extends GuiScreen
 		this.crackedNameField.textboxKeyTyped(typedChar, keyCode);
 		if(keyCode == Keyboard.KEY_RETURN) {
 			((ISession) mc.getSession()).setUsername(this.crackedNameField.getText());
-			
 			this.crackedNameField.setFocused(false);
 		}
 		super.keyTyped(typedChar, keyCode);
@@ -102,12 +103,14 @@ public class AltManagerGUI extends GuiScreen
 				mc.displayGuiScreen(this.lastGui);
 				break;
 			}
+			case 4:
+				mc.displayGuiScreen(new MSAuthScreen(this));
+				break;
 			default : break;
 		}
 	}
 	
-	private static class AltSlotList extends GuiListExtended
-	{
+	private static class AltSlotList extends GuiListExtended {
 		private final List<AltEntry> alts = new ArrayList<>();
 		private int selectedId = -1;
 		

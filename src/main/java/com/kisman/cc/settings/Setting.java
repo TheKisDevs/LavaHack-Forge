@@ -25,6 +25,12 @@ import org.lwjgl.input.Keyboard;
  *  @author HeroCode
  */
 public class Setting {
+	public static Setting instance;
+
+	static {
+		instance = new Setting();
+	}
+
 	private Supplier<Boolean> visibleSuppliner = () -> true;
 	private ColorPicker colorPicker;
 	private Colour colour;
@@ -78,6 +84,8 @@ public class Setting {
 	private boolean onlyint = false;
 
 	private Slider.NumberType numberType = Slider.NumberType.DECIMAL;
+
+	public Setting() {}
 
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
@@ -361,11 +369,8 @@ public class Setting {
 	}
 
 	public String[] getStringValues() {
-		if(!enumCombo) {
-			return options.toArray(new String[options.size()]);
-		} else {
-			return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
-		}
+		if(!enumCombo) return options.toArray(new String[options.size()]);
+		else return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
 	}
 
 	public String getStringFromIndex(int index) {

@@ -160,6 +160,13 @@ public class Colour {
         return this;
     }
 
+    public Colour setAlpha(int alpha) {
+        a = alpha;
+        a1 = alpha / 255f;
+        fixColorRange();
+        return this;
+    }
+
     public Colour setHue(float hue) {
         float[] hsb = RGBtoHSB();
         setColour(new Colour(new float[] {hue, hsb[1], hsb[2]}));

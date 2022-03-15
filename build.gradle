@@ -113,6 +113,8 @@ dependencies {
     compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
     compile group: 'com.viaversion', name: 'viaversion', version: '4.1.2-SNAPSHOT'
     compile group: 'com.viaversion', name: 'viabackwards', version: '4.1.2-SNAPSHOT'
+    compile group: "com.sun.net.httpserver", name: "http", version: "20070405"
+    compile group: "org.apache.bcel", name: "bcel", version: "6.5.0"
 }
 
 processResources {
@@ -173,6 +175,8 @@ shadowJar {
         include(dependency('com.mashape.unirest:unirest-java'))
         include(dependency('com.viaversion:viaversion'))
         include(dependency('com.viaversion:viabackwards'))
+        include(dependency('com.sun.net.httpserver:http'))
+        include(dependency('org.apache.bcel:bcel:6.5.0'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

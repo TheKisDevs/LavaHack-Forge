@@ -35,7 +35,7 @@ public class HalqGui extends GuiScreen {
     public static final int width = 100;
 
     //frames list
-    private final ArrayList<Frame> frames = new ArrayList<>();
+    public final ArrayList<Frame> frames = new ArrayList<>();
 
     //particles
     private final ParticleSystem particleSystem;
@@ -73,6 +73,7 @@ public class HalqGui extends GuiScreen {
 
         scrollWheelCheck();
         for(Frame frame : frames) {
+            if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
             if(frame.open) for(Component comp : frame.mods) {
                 comp.updateComponent(frame.x, frame.y);
@@ -92,12 +93,13 @@ public class HalqGui extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
-        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty()) for(Component b : frame.mods) b.keyTyped(typedChar, keyCode);
+        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component b : frame.mods) b.keyTyped(typedChar, keyCode);
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         for(Frame frame : frames) {
+            if(frame.reloading) continue;
             if(frame.isMouseOnButton(mouseX, mouseY)) {
                 if(mouseButton == 0) {
                     frame.dragging = true;
@@ -113,6 +115,7 @@ public class HalqGui extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         for(Frame frame : frames) {
+            if(frame.reloading) continue;
             frame.dragging = false;
             if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) mod.mouseReleased(mouseX, mouseY, state);
         }
@@ -157,9 +160,11 @@ public class HalqGui extends GuiScreen {
     private void scrollWheelCheck() {
         int dWheel = Mouse.getDWheel();
         if(dWheel < 0) for(Frame frame : frames) {
+            if(frame.reloading) continue;
             if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x - (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
         } else if(dWheel > 0) for(Frame frame : frames) {
+            if(frame.reloading) continue;
             if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
         }

@@ -1,10 +1,14 @@
 package com.kisman.cc;
 
+import com.kisman.cc.catlua.ScriptManager;
+import com.kisman.cc.catlua.lua.utils.LuaRotation;
+import com.kisman.cc.catlua.mapping.Remapper3000;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
-import com.kisman.cc.event.EventProcessor;
+import com.kisman.cc.event.*;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
@@ -53,6 +57,8 @@ public class Kisman {
     public static final String moduleName = "Modules/";
     public static final String mainName = "Main/";
     public static final String miscName = "Misc/";
+    public static final String luaName = "Lua/";
+    public static final String mappingName = "Mapping/";
     public static final String sandboxName = "SandBox/";
     public static final String pluginName = "Plugins/";
 
@@ -63,18 +69,27 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static final boolean allowToConfiguredAnotherClients;
+    public static final boolean allowToConfiguredAnotherClients, remapped;
     public static boolean isOpenAuthGui;
     public static boolean autoUpdate;
     public static boolean canUseImprAstolfo = false;
 
     static {
+        boolean remapped1;
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
+
+        try {
+            Minecraft.class.getDeclaredField("player");
+            remapped1 = false;
+        } catch(NoSuchFieldException e) {
+            remapped1 = true;
+        }
+        remapped = remapped1;
     }
 
     public boolean init = false;
 
-    private Minecraft mc;
+    private static Minecraft mc;
 
     public ModuleManager moduleManager;
     public FriendManager friendManager;
@@ -102,6 +117,12 @@ public class Kisman {
     public NotificationsManager notificationsManager;
 
     public MainAiImpr aiImpr;
+
+    //catlua
+    public EventProcessorLua eventProcessorLua;
+    public Remapper3000 remapper3000;
+    public LuaRotation luaRotation;
+    public ScriptManager scriptManager;
 
     public Kisman() {
         instance = this;
@@ -134,10 +155,6 @@ public class Kisman {
         guiConsole = new GuiConsole();
         colorPicker = new ColorPicker();
         colorUtil = new ColorUtil();
-    	hudGui = new HudGui();
-        hudEditorGui = new HudEditorGui();
-        gui = new Gui();
-        halqGui = new HalqGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);
         commandManager = new CommandManager();
@@ -152,6 +169,21 @@ public class Kisman {
         LoadConfig.init();
         //load glow shader
         ShaderShell.init();
+
+
+        //catlua
+        eventProcessorLua = new EventProcessorLua();
+        remapper3000 = new Remapper3000();
+        remapper3000.init();
+        luaRotation = new LuaRotation();
+        scriptManager = new ScriptManager();
+
+        //gui's
+        clickGuiNew = new ClickGuiNew();
+        hudGui = new HudGui();
+        hudEditorGui = new HudEditorGui();
+        gui = new Gui();
+        halqGui = new HalqGui();
 
         init = true;
     }
@@ -223,13 +255,13 @@ public class Kisman {
             Files.createDirectories(Paths.get(fileName + miscName));
             LOGGER.info("Misc dir created");
         }
-        if(!Files.exists(Paths.get(fileName + sandboxName))) {
-            Files.createDirectories(Paths.get(fileName + sandboxName));
-            LOGGER.info("Sandboxes dir created");
+        if (!Files.exists(Paths.get(fileName + luaName))) {
+            Files.createDirectories(Paths.get(fileName + luaName));
+            LOGGER.info("Lua dir created");
         }
-        if(!Files.exists(Paths.get(fileName + pluginName))) {
-            Files.createDirectories(Paths.get(fileName + pluginName));
-            LOGGER.info("Plugins dir created");
+        if (!Files.exists(Paths.get(fileName + mappingName))) {
+            Files.createDirectories(Paths.get(fileName + mappingName));
+            LOGGER.info("Mapping dir created");
         }
     }
 
@@ -238,5 +270,11 @@ public class Kisman {
             Desktop desktop = Desktop.getDesktop();
             if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) desktop.browse(new URI(link));
         } catch (IOException | URISyntaxException e) {e.printStackTrace();}
+    }
+
+    public static void reloadGUIs() {
+        if(mc.player != null && mc.world != null) mc.displayGuiScreen(null);
+        instance.halqGui.frames.stream().filter(frame -> frame.cat.equals(Category.LUA)).forEach(Frame::reload);
+        instance.clickGuiNew = new ClickGuiNew();
     }
 }

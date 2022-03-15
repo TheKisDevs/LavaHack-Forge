@@ -18,8 +18,9 @@ import java.util.ArrayList;
 public class Frame {
     //vars
     public final ArrayList<Component> mods = new ArrayList<>();
-    private final Category cat;
+    public final Category cat;
     public int x, y, count = 0;
+    public boolean reloading = false;
 
     //logic vars
     public boolean dragging, open = true;
@@ -29,14 +30,44 @@ public class Frame {
         int offsetY = HalqGui.height;
         int count1 = 0;
 
-        for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-            mods.add(new Button(mod, x, y, offsetY, count1++));
-            offsetY += HalqGui.height;
+        if(!cat.equals(Category.LUA)) {
+            for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+                mods.add(new Button(mod, x, y, offsetY, count1++));
+                offsetY += HalqGui.height;
+            }
+        } else {
+            if(!Kisman.instance.scriptManager.scripts.isEmpty()) {
+                for (Module script : Kisman.instance.scriptManager.scripts) {
+                    mods.add(new Button(script, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+            }
         }
 
         this.cat = cat;
         this.x = x;
         this.y = y;
+    }
+
+    public void reload() {
+        reloading = true;
+        mods.clear();
+
+        int offsetY = HalqGui.height;
+        int count1 = 0;
+
+        if(!cat.equals(Category.LUA)) {
+            for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+                mods.add(new Button(mod, x, y, offsetY, count1++));
+                offsetY += HalqGui.height;
+            }
+        } else {
+            for(Module script : Kisman.instance.scriptManager.scripts) {
+                mods.add(new Button(script, x, y, offsetY, count1++));
+                offsetY += HalqGui.height;
+            }
+        }
+        reloading = false;
     }
 
     public void render(int mouseX, int mouseY) {
@@ -49,7 +80,7 @@ public class Frame {
         if(HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x - HalqGui.headerOffset, y}, new double[] {x, y}, new double[] {x, y + HalqGui.height}, new double[] {x - HalqGui.headerOffset, y + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0), HalqGui.getGradientColour(count).getColor()));
         if(HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width, y}, new double[] {x + HalqGui.width + HalqGui.headerOffset, y}, new double[] {x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[] {x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0)));
 
-        HalqGui.drawString(cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + Kisman.instance.moduleManager.getModulesInCategory(cat).size() + "]": ""), x, y, HalqGui.width, HalqGui.height);
+        HalqGui.drawString(cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size()) + "]": ""), x, y, HalqGui.width, HalqGui.height);
     }
 
     public void renderPost() {

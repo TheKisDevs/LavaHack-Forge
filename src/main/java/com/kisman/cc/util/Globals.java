@@ -1,16 +1,16 @@
 package com.kisman.cc.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 
 import java.util.Random;
 
 public interface Globals {
     Minecraft mc = Minecraft.getMinecraft();
     Random random = new Random();
-    char SECTIONSIGN = '\u00A7';
+    ScaledResolution sr = new ScaledResolution(mc);
 
-    default public boolean nullCheck(){
+    default boolean nullCheck(){
         return mc.player == null || mc.world == null;
     }
-
 }

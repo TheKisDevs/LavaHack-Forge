@@ -22,7 +22,7 @@ public class SaveConfig {
             saveEnabledHudModules();
             saveBindModes();
             saveFriends();
-        } catch (IOException e) {e.printStackTrace();}
+        } catch (IOException ignored) {}
         Kisman.LOGGER.info("Saved Config!");
     }
 

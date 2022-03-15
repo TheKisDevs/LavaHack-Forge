@@ -1,8 +1,10 @@
 package com.kisman.cc;
 
 import club.minnced.discord.rpc.*;
+import com.kisman.cc.module.client.DiscordRPCModule;
+import com.kisman.cc.util.Globals;
 
-public class RPC {
+public class RPC implements Globals {
     private static final DiscordRichPresence discordRichPresence = new DiscordRichPresence();
     private static final DiscordRPC discordRPC = DiscordRPC.INSTANCE;
 
@@ -28,11 +30,28 @@ public class RPC {
         discordRichPresence.partyMax = 10;
         discordRichPresence.joinSecret = "join";
         discordRPC.Discord_UpdatePresence(discordRichPresence);
-    }
-
-    public static void updateRPC() {
-        discordRichPresence.details = Kisman.getName() + " | " + Kisman.getVersion();
-        discordRPC.Discord_UpdatePresence(discordRichPresence);
+        new Thread(() -> {
+            if(DiscordRPCModule.instance.impr.getValBoolean()) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        String details, state;
+                        discordRPC.Discord_RunCallbacks();
+                        if (mc.isIntegratedServerRunning() || mc.world == null) details = Kisman.getVersion();
+                        else details = Kisman.getVersion() + " - Playing Multiplayer";
+                        state = "";
+                        if (mc.isIntegratedServerRunning()) state = Kisman.getName() + " on tope!";
+                        else if (mc.getCurrentServerData() != null) if (!mc.getCurrentServerData().serverIP.equals("")) state = "Playing on " + mc.getCurrentServerData().serverIP;
+                        else state = "Main Menu";
+                        discordRichPresence.details = details;
+                        discordRichPresence.state = state;
+                        discordRPC.Discord_UpdatePresence(discordRichPresence);
+                    } catch (Exception e2) {e2.printStackTrace();}
+                    try {
+                        Thread.sleep(5000L);
+                    } catch (InterruptedException e3) {e3.printStackTrace();}
+                }
+            }
+        }, "Discord-RPC-Callback-Handler").start();
     }
 
     public static void stopRPC() {

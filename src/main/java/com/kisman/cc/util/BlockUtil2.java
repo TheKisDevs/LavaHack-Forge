@@ -28,16 +28,17 @@ public class BlockUtil2 {
         return true;
     }
 
-    public static void placeBlock(BlockPos position, EnumHand hand, boolean packet) {
-        if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return;
-        if (getPlaceableSide(position) == null) return;
+    public static boolean placeBlock(BlockPos position, EnumHand hand, boolean packet) {
+        if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
+        if (getPlaceableSide(position) == null) return false;
         clickBlock(position, getPlaceableSide(position), hand, packet);
         mc.player.connection.sendPacket(new CPacketAnimation(hand));
+        return true;
     }
 
     public static void clickBlock(BlockPos position, EnumFacing side, EnumHand hand, boolean packet) {
         if (packet) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(position.offset(side), side.getOpposite(), hand, Float.intBitsToFloat(Float.floatToIntBits(17.735476f) ^ 0x7E8DE241), Float.intBitsToFloat(Float.floatToIntBits(26.882437f) ^ 0x7ED70F3B), Float.intBitsToFloat(Float.floatToIntBits(3.0780227f) ^ 0x7F44FE53)));
-        else mc.playerController.processRightClickBlock(mc.player, mc.world, position.offset(side), side.getOpposite(), new Vec3d((Vec3i)position), hand);
+        else mc.playerController.processRightClickBlock(mc.player, mc.world, position.offset(side), side.getOpposite(), new Vec3d(position), hand);
     }
 
     public static boolean isPositionPlaceable(BlockPos position, boolean sideCheck, boolean entityCheck, boolean ignoreCrystals) {

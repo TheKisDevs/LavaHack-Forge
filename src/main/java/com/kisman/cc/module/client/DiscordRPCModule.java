@@ -4,21 +4,20 @@ import com.kisman.cc.RPC;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
-public class DiscordRPC extends Module {
-    public static DiscordRPC instance;
+public class DiscordRPCModule extends Module {
+    public static DiscordRPCModule instance;
 
-    public Setting showModules = new Setting("Show Enabled Modules", this, true);
+    public Setting impr = new Setting("Impr RPC", this, true);
 
-    public DiscordRPC() {
+    public DiscordRPCModule() {
         super("DiscordRPC", "", Category.CLIENT);
         instance = this;
 
-        setmgr.rSetting(showModules);
+        setmgr.rSetting(impr);
 
         super.setToggled(true);
     }
 
     public void onEnable() {RPC.startRPC();}
     public void onDisable() {RPC.stopRPC();}
-    public void update() {RPC.updateRPC();}
 }

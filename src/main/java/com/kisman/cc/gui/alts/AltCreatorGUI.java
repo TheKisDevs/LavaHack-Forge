@@ -32,12 +32,8 @@ public class AltCreatorGUI extends GuiScreen
 		this.drawCenteredString(mc.fontRenderer, "Add Alt Account", this.width / 2, 10, -1);
 		this.emailField.drawTextBox();
 		this.passField.drawTextBox();
-		if(this.emailField.getText().equals("") && !this.emailField.isFocused()) {
-			this.fontRenderer.drawStringWithShadow("Email", this.width / 2 - 97, this.height / 2 - 96, 0xFF999999);
-		}
-		if(this.passField.getText().equals("") && !this.passField.isFocused()) {
-			this.fontRenderer.drawStringWithShadow("Password", this.width/2 - 97, this.height/2 - 76, 0xFF999999);
-		}
+		if(this.emailField.getText().equals("") && !this.emailField.isFocused()) this.fontRenderer.drawStringWithShadow("Email", this.width / 2 - 97, this.height / 2 - 96, 0xFF999999);
+		if(this.passField.getText().equals("") && !this.passField.isFocused()) this.fontRenderer.drawStringWithShadow("Password", this.width/2 - 97, this.height/2 - 76, 0xFF999999);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	
