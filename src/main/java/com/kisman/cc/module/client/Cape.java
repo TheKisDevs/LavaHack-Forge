@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class Cape extends Module {
     public static Cape instance;
 
-    public Setting mode = new Setting("Cape Mode", this, "Gif", Arrays.asList("Gif", "Xulu+", "GentleManMC", "Kuro"));
+    public Setting mode = new Setting("Cape Mode", this, "Gif", Arrays.asList("Gif", "Xulu+", "GentleManMC", "Kuro", "Putin"));
 
     public Cape() {
         super("Cape", "Custom cape", Category.CLIENT);

@@ -1,6 +1,8 @@
 package com.kisman.cc.event;
 
 import me.zero.alpine.event.type.Cancellable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 public class Event extends Cancellable {
     private Era era;
@@ -14,4 +16,10 @@ public class Event extends Cancellable {
         POST,
         PERI
     }
+
+    public LuaValue toLua() {return CoerceJavaToLua.coerce(this);}
+    public String getName() {return "other_event";}
+    public boolean isPre() {return era.equals(Era.PRE);}
+    public boolean isPost() {return era.equals(Era.POST);}
+    public String getEraString() {return era.name();}
 }

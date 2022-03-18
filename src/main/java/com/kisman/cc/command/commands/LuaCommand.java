@@ -41,34 +41,36 @@ public class LuaCommand extends Command {
                         if(args[3].equalsIgnoreCase("true")) state = true;
                         else if(args[3].equalsIgnoreCase("false")) state = false;
                         else {
-                            ChatUtils.error("[Lua] State " + args[3] + "doesn't convert to boolean type!");
+                            ChatUtils.error("[Lua] State " + args[3] + " doesn't convert to boolean type!");
                             return;
                         }
                         ModuleLua script = Kisman.instance.scriptManager.get(args[1]).get(args[4]);
                         if(script != null) {
                             script.setToggled(state);
-                            ChatUtils.message(TextFormatting.GRAY + "Script " + (state ? TextFormatting.GREEN : TextFormatting.RED) + args[4] + TextFormatting.GRAY + " has been " + (state ? "enabled" : "disabled") + "!");
-                        } else ChatUtils.error("[Lua] Module " + args[4] + " in script " + args[2] + " doesn't exists!");
+                            ChatUtils.message(TextFormatting.GRAY + "[Lua] Module " + (state ? TextFormatting.GREEN : TextFormatting.RED) + args[4] + TextFormatting.GRAY + " has been " + (state ? "enabled" : "disabled") + "!");
+                        } else ChatUtils.error("[Lua] Module " + args[4] + " in script " + args[1] + " doesn't exists!");
                     } else if(args[2].equalsIgnoreCase("action")) {
                         Action action;
                         if(args[3].equalsIgnoreCase("unload")) action = Action.UNLOAD;
                         else if(args[3].equalsIgnoreCase("reload")) action = Action.RELOAD;
                         else {
-                            ChatUtils.error("[Lua] Action " + args[3] +  "doesn't exists!");
+                            ChatUtils.error("[Lua] Action " + args[3] +  " doesn't exists!");
                             return;
                         }
-                        ModuleScript script = Kisman.instance.scriptManager.get(args[4]);
+                        ModuleScript script = Kisman.instance.scriptManager.get(args[1]);
                         if(script != null) {
                             switch(action) {
                                 case UNLOAD:
                                     script.unload(true);
+                                    ChatUtils.complete("[Lua] Script " + script.getName() + " has been unloaded!");
                                     break;
                                 case RELOAD:
                                     script.reload();
+                                    ChatUtils.complete("[Lua] Script " + script.getName() + " has been reloaded!");
                                     break;
                             }
                         } else ChatUtils.error("[Lua] Script " + args[4] + " doesn't exists!");
-                    }
+                    } else ChatUtils.error("Usage: " + getSyntax());
                 } else ChatUtils.error("[Lua] Script " + args[1] + " doesn't exists!");
             }
         } catch (Exception e) {
@@ -83,7 +85,11 @@ public class LuaCommand extends Command {
 
     @Override
     public String getSyntax() {
-        return "lua <info> or lua <load/unload> <script name> or lua <get> <state/action> <state/unload/reload> <script name>";
+        return "\n" +
+                "lua info\n" +
+                "lua load <script name>\n" +
+                "lua get <script name> <action> <unload/reload>\n" +
+                "lua get <script name> <state> <true/false> <module from script name>";
     }
 
     public enum Action {

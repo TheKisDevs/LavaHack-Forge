@@ -234,6 +234,20 @@ public class Kisman {
         return NAME;
     }
 
+    //lua
+    public String name() {
+        if(init) {
+            switch (Config.instance.nameMode.getValString()) {
+                case "kismancc": return NAME;
+                case "LavaHack": return "LavaHack";
+                case "TheKisDevs": return "TheKisDevs";
+                case "kidman": return "kidman.club";
+                case "custom": return Config.instance.customName.getValString();
+            }
+        }
+        return NAME;
+    }
+
     public static String getVersion() {
         return VERSION;
     }
@@ -274,7 +288,7 @@ public class Kisman {
 
     public static void reloadGUIs() {
         if(mc.player != null && mc.world != null) mc.displayGuiScreen(null);
-        instance.halqGui.frames.stream().filter(frame -> frame.cat.equals(Category.LUA)).forEach(Frame::reload);
+        instance.halqGui.frames.forEach(Frame::reload);
         instance.clickGuiNew = new ClickGuiNew();
     }
 }

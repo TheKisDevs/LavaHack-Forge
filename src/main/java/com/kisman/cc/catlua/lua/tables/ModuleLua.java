@@ -3,14 +3,10 @@ package com.kisman.cc.catlua.lua.tables;
 import com.kisman.cc.catlua.lua.LuaCallback;
 import com.kisman.cc.catlua.lua.utils.LuaUtils;
 import com.kisman.cc.catlua.module.ModuleScript;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
-import org.luaj.vm2.LuaClosure;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import com.kisman.cc.module.*;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.CoerceLuaToJava;
+import org.luaj.vm2.lib.jse.*;
 
 public class ModuleLua extends Module {
 
@@ -23,11 +19,13 @@ public class ModuleLua extends Module {
     public ModuleLua(String name, String desc, Category category, ModuleScript script) {
         super(name, desc, category);
         this.script = script;
+        super.subscribes = false;
     }
 
     public ModuleLua(String name, String desc, String category, ModuleScript script) {
         super(name, desc, Category.valueOf(category));
         this.script = script;
+        super.subscribes = false;
     }
 
     public ModuleScript getScript() {
@@ -51,7 +49,7 @@ public class ModuleLua extends Module {
     }
 
     public void register() {
-        script.modulesLua.add(this);
+        script.addModule(this);
     }
 
     public void onEnable(LuaClosure closure) {
@@ -63,10 +61,12 @@ public class ModuleLua extends Module {
     }
 
     @Override public void onEnable() {
+        if(!script.isToggled()) return;
         LuaUtils.safeCall(onEnable);
     }
 
     @Override public void onDisable() {
+        if(!script.isToggled()) return;
         LuaUtils.safeCall(onDisable);
     }
 
@@ -89,14 +89,9 @@ public class ModuleLua extends Module {
     }
 
     static class New extends LibFunction {
-
         public LuaValue call(LuaValue name, LuaValue description, LuaValue category, LuaValue script) {
             if(!name.isstring() || !description.isstring() || !category.isstring()) throw new IllegalArgumentException("Invalid arguments.");
-            return CoerceJavaToLua.coerce(
-                    new ModuleLua(name.tojstring(), description.tojstring(), Category.valueOf(category.tojstring()), ( ModuleScript ) CoerceLuaToJava.coerce(script, ModuleScript.class))
-            );
+            return CoerceJavaToLua.coerce(new ModuleLua(name.tojstring(), description.tojstring(), Category.valueOf(category.tojstring()), ( ModuleScript ) CoerceLuaToJava.coerce(script, ModuleScript.class)));
         }
-
     }
-
 }

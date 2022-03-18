@@ -4,15 +4,12 @@ import com.google.gson.JsonObject;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.LuaCallback;
 import com.kisman.cc.catlua.lua.functions.*;
+import com.kisman.cc.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.catlua.lua.tables.ColorTable;
 import com.kisman.cc.catlua.lua.tables.GuiBuilder;
 import com.kisman.cc.catlua.lua.tables.ModuleLua;
-import com.kisman.cc.catlua.lua.utils.LuaFiles;
-import com.kisman.cc.catlua.lua.utils.LuaGlobals;
-import com.kisman.cc.catlua.lua.utils.LuaInteractions;
-import com.kisman.cc.catlua.lua.utils.LuaRenderer;
+import com.kisman.cc.catlua.lua.utils.*;
 import com.kisman.cc.module.*;
-import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.LuaClosure;
@@ -51,11 +48,6 @@ public class ModuleScript extends Module {
         ScriptEngineManager factory = new ScriptEngineManager();
         ScriptEngine engine = factory.getEngineByName("lua");
 
-        if(engine == null) {
-            ChatUtils.error("!!!");
-            return;
-        }
-
         try {
             applyEngine(engine);
 
@@ -63,11 +55,8 @@ public class ModuleScript extends Module {
             engine.eval("main()");
         } catch (Exception e) {
             ChatUtils.error(e.getMessage());
-            e.printStackTrace();
         }
-        if (cache.has("__toggled")) {
-            setToggled(cache.get("__toggled").getAsBoolean());
-        }
+        if (cache.has("__toggled")) setToggled(cache.get("__toggled").getAsBoolean());
         cache = new JsonObject();
         loaded = true;
     }
@@ -76,7 +65,12 @@ public class ModuleScript extends Module {
         loaded = false;
         if (remove) {
             Kisman.instance.scriptManager.scripts.remove(this);
+            Kisman.instance.remapper3000.fieldsCache.clear();
+            Kisman.instance.remapper3000.methodsCache.clear();
+            Kisman.instance.moduleManager.modules.removeAll(modulesLua);
+            Kisman.reloadGUIs();
         }
+        for (ModuleLua lua : modulesLua) Kisman.instance.settingsManager.getSettings().removeIf(setting -> setting.getParentMod().equals(lua) || setting.getParentMod() == null || setting.getParentMod().equals(this));
         Kisman.instance.moduleManager.modules.removeAll(modulesLua);
         modulesLua.clear();
         callbacks.clear();
@@ -97,6 +91,7 @@ public class ModuleScript extends Module {
         engine.put("mc", Minecraft.instance);
         engine.put("this", this);
         engine.put("textOf", new TextOfFunction());
+        engine.put("box", new BoxFunction());
         engine.put("vec2d", new Vec2dFunction());
         engine.put("vec3d", new Vec3dFunction());
         engine.put("color", new ColorFunction());
@@ -111,7 +106,7 @@ public class ModuleScript extends Module {
         engine.put("GuiBuilder", GuiBuilder.getLua());
         engine.put("rotations", Kisman.instance.luaRotation);
 
-        engine.put("Setting", Setting.instance);
+        engine.put("Builder", new LuaSetting.LuaBuilder());
         engine.put("SettingManager", Kisman.instance.settingsManager);
     }
 
@@ -125,9 +120,7 @@ public class ModuleScript extends Module {
         if (callbacks == null || callbacks.isEmpty()) return;
         for (int i = 0; i < callbacks.size(); i++) {
             final LuaCallback c = callbacks.get(i);
-            if (c.name.equalsIgnoreCase(name)) {
-                c.run(arg);
-            }
+            if (c.name.equalsIgnoreCase(name)) c.run(arg);
         }
     }
 

@@ -223,7 +223,7 @@ public class ModuleManager {
 	public ArrayList<Module> getModuleList() {
 		return modules;
 	}
-	
+
 	public ArrayList<Module> getModulesInCategory(Category c) {
 		ArrayList<Module> mods = new ArrayList<>();
 		for (Module m : this.modules) if (m.getCategory() == c) mods.add(m);

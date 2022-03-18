@@ -14,8 +14,8 @@ public class Module {
 	private int key;
 	private int priority;
 	private final Category category;
-	private boolean toggled;
-	private final boolean subscribes;
+	public boolean toggled;
+	public boolean subscribes;
 	public boolean visible = true;
 	public boolean hold = false;
 	public boolean block = false;
@@ -67,6 +67,7 @@ public class Module {
 	public void onDisable() {if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);}
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}
+	public String getCategoryName() {return this.category.name();} //lua
 	public String getDisplayInfo() {return this.displayInfo;}
 	public void setDisplayInfo(String displayInfo) {this.displayInfo = displayInfo;}
 	public void update(){}

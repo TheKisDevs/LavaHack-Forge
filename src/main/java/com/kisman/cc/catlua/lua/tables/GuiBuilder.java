@@ -18,6 +18,7 @@ public class GuiBuilder implements Globals {
     private final String title;
 
     private boolean prepareImGui;
+    private LuaClosure init;
     private LuaClosure render;
     private LuaClosure keyPressed;
     private LuaClosure keyReleased;
@@ -34,6 +35,11 @@ public class GuiBuilder implements Globals {
 
     public GuiBuilder setRender(LuaClosure render) {
         this.render = render;
+        return this;
+    }
+
+    public GuiBuilder setInit(LuaClosure init) {
+        this.init = init;
         return this;
     }
 
@@ -75,9 +81,12 @@ public class GuiBuilder implements Globals {
 
     public GuiScreen build() {
         return new GuiScreen() {
+            @Override public void initGui() {
+                LuaUtils.safeCall(init);
+            }
+
             @Override public void drawScreen(int mouseX, int mouseY, float delta) {
                 drawDefaultBackground();
-                super.drawScreen(mouseX, mouseY, delta);
                 LuaUtils.safeCall(render,
                         CoerceJavaToLua.coerce(new Vec2d(mouseX, mouseY))
                 );

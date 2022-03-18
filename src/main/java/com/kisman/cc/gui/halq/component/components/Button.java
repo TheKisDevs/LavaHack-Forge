@@ -1,6 +1,8 @@
 package com.kisman.cc.gui.halq.component.components;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.catlua.module.ModuleScript;
+import com.kisman.cc.gui.halq.component.components.sub.lua.ActionButton;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -31,30 +33,36 @@ public class Button extends Component {
         int offsetY = offset + HalqGui.height;
         int count1 = 0;
 
-        comps.add(new BindButton(mod, x, y, offsetY, count1++));
-        offsetY += HalqGui.height;
+        if(mod instanceof ModuleScript) {
+            comps.add(new ActionButton((ModuleScript) mod, ActionButton.Action.RELOAD, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+            comps.add(new ActionButton((ModuleScript) mod, ActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+        } else {
+            comps.add(new BindButton(mod, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
 
-        if(Kisman.instance.settingsManager.getSettingsByMod(mod) == null) return;
-        for(Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
-            if(set.isSlider()) {
-                comps.add(new Slider(set, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
-            }
-            if(set.isCheck()) {
-                comps.add(new CheckBox(set, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
-            }
-            if(set.isBind()) {
-                comps.add(new BindButton(set, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
-            }
-            if(set.isCombo()) {
-                comps.add(new ModeButton(set, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
-            }
-            if(set.isColorPicker()) {
-                comps.add(new ColorButton(set, x, y, offsetY, count1++));
-                offset += HalqGui.height;
+            if (Kisman.instance.settingsManager.getSettingsByMod(mod) == null) return;
+            for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
+                if (set.isSlider()) {
+                    comps.add(new Slider(set, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+                if (set.isCheck()) {
+                    comps.add(new CheckBox(set, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+                if (set.isBind()) {
+                    comps.add(new BindButton(set, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+                if (set.isCombo()) {
+                    comps.add(new ModeButton(set, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+                if (set.isColorPicker()) {
+                    comps.add(new ColorButton(set, x, y, offsetY, count1++));
+                    offset += HalqGui.height;
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ public class Cancellable implements ICancellable {
     /**
      * Cancelled state
      */
-    private boolean cancelled;
+    public boolean cancelled;
 
     @Override
     public void cancel() {

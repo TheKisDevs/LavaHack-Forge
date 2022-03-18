@@ -40,6 +40,10 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
                 case "GentleManMC":
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/gentlemanmc/GentlemanMC.png"));
                     break;
+                case "Putin":
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/putin/putin.png"));
+
+                    break;
             }
         }
     }

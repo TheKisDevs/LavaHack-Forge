@@ -75,7 +75,7 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
-            if(frame.open) for(Component comp : frame.mods) {
+            if(frame.open) for(Component comp : frame.mods) if(!frame.reloading) {
                 comp.updateComponent(frame.x, frame.y);
                 comp.drawScreen(mouseX, mouseY);
             }
@@ -93,7 +93,7 @@ public class HalqGui extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
-        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component b : frame.mods) b.keyTyped(typedChar, keyCode);
+        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component b : frame.mods) if(!frame.reloading)b.keyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class HalqGui extends GuiScreen {
                 }
                 else if(mouseButton == 1) frame.open = !frame.open;
             }
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) mod.mouseClicked(mouseX, mouseY, mouseButton);
+            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(!frame.reloading) mod.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
@@ -117,7 +117,7 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.dragging = false;
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) mod.mouseReleased(mouseX, mouseY, state);
+            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(!frame.reloading)mod.mouseReleased(mouseX, mouseY, state);
         }
     }
 

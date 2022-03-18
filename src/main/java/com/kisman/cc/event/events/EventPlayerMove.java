@@ -13,4 +13,8 @@ public class EventPlayerMove extends Event {
         this.y = y;
         this.z = z;
     }
+
+    public String getName() {
+        return "player_move";
+    }
 }

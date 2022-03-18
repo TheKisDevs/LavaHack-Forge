@@ -4,9 +4,10 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
+import com.kisman.cc.Kisman;
+import com.kisman.cc.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.gui.ColorPicker;
@@ -25,12 +26,6 @@ import org.lwjgl.input.Keyboard;
  *  @author HeroCode
  */
 public class Setting {
-	public static Setting instance;
-
-	static {
-		instance = new Setting();
-	}
-
 	private Supplier<Boolean> visibleSuppliner = () -> true;
 	private ColorPicker colorPicker;
 	private Colour colour;
@@ -85,7 +80,7 @@ public class Setting {
 
 	private Slider.NumberType numberType = Slider.NumberType.DECIMAL;
 
-	public Setting() {}
+	public Setting(String type) {mode = type;}
 
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
@@ -374,11 +369,8 @@ public class Setting {
 	}
 
 	public String getStringFromIndex(int index) {
-		if(index != -1) {
-			return getStringValues()[index];
-		} else {
-			return "";
-		}
+		if(index != -1) return getStringValues()[index];
+		else return "";
 	}
 
 	public int getSelectedIndex() {
@@ -637,6 +629,11 @@ public class Setting {
 	public String getName(){
 		return name;
 	}
+
+	public Setting setName(String name) {
+		this.name = name;
+		return this;
+	}
 	
 	public Module getParentMod(){
 		return parent;
@@ -646,20 +643,37 @@ public class Setting {
 		return this.sval;
 	}
 	
-	public void setValString(String in){
+	public Setting setValString(String in){
 		this.sval = in;
+		return this;
 	}
 	
 	public ArrayList<String> getOptions(){
 		return this.options;
+	}
+
+	public Setting setOptions(String... options) {
+		this.options = new ArrayList<>(Arrays.asList(options));
+		return this;
+	}
+
+	public Setting setOptions(List<String> options) {
+		this.options = new ArrayList<>(options);
+		return this;
+	}
+
+	public Setting build(Module module) {
+		Kisman.instance.settingsManager.rSetting(this);
+		return this;
 	}
 	
 	public boolean getValBoolean(){
 		return this.bval;
 	}
 	
-	public void setValBoolean(boolean in){
+	public Setting setValBoolean(boolean in){
 		this.bval = in;
+		return this;
 	}
 	
 	public double getValDouble(){
@@ -685,8 +699,9 @@ public class Setting {
 		return (long) dval;
 	}
 
-	public void setValDouble(double in){
+	public Setting setValDouble(double in){
 		this.dval = in;
+		return this;
 	}
 	
 	public double getMin(){
@@ -695,6 +710,21 @@ public class Setting {
 	
 	public double getMax(){
 		return this.max;
+	}
+
+	public Setting setMin(double min) {
+		this.min = min;
+		return this;
+	}
+
+	public Setting setMax(double max) {
+		this.max = max;
+		return this;
+	}
+
+	public Setting setType(String type) {
+		numberType = LuaSetting.getNumberTypeByName(type);
+		return this;
 	}
 
 	public int getR() {

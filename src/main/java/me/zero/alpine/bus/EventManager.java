@@ -1,9 +1,10 @@
 package me.zero.alpine.bus;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.Event;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listenable;
 import me.zero.alpine.listener.Listener;
-import me.zero.alpine.event.EventPriority;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -74,9 +75,9 @@ public class EventManager implements EventBus {
     @SuppressWarnings("unchecked")
     @Override
     public void post(Object event) {
+        if(event instanceof Event) Kisman.instance.scriptManager.runCallback("events", (( Event ) event).toLua());
         List<Listener> listeners = SUBSCRIPTION_MAP.get(event.getClass());
-        if (listeners != null)
-            listeners.forEach(listener -> listener.invoke(event));
+        if (listeners != null) listeners.forEach(listener -> listener.invoke(event));
     }
 
     /**

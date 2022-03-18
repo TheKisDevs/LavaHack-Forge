@@ -97,4 +97,8 @@ public class EventPlayerMotionUpdate extends Event {
     public boolean getOnGround() {
         return this.onGround;
     }
+
+    public String getName() {
+        return "player_motion";
+    }
 }

@@ -1,5 +1,7 @@
 package com.kisman.cc.event.events;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.catlua.util.PacketUtil;
 import com.kisman.cc.event.Event;
 import net.minecraft.network.Packet;
 
@@ -18,15 +20,32 @@ public class PacketEvent extends Event {
 	}
  
 	public static class Receive extends PacketEvent {
- 
 		public Receive(Packet packet) {
 			super(packet);
+		}
+
+		public String getName() {
+			return "packet_receive";
+		}
+
+		public boolean is(String packet) {
+			if(Kisman.remapped) return PacketUtil.cache.containsKey(packet) && PacketUtil.cache.get(packet).getSimpleName().equalsIgnoreCase(getPacket().getClass().getSimpleName());
+			return getPacket().getClass().getSimpleName().equalsIgnoreCase(packet);
 		}
 	}
  
 	public static class Send extends PacketEvent {
 		public Send(Packet packet) {
 			super(packet);
+		}
+
+		public String getName() {
+			return "packet_send";
+		}
+
+		public boolean is(String packet) {
+			if(Kisman.remapped) return PacketUtil.cache.containsKey(packet) && PacketUtil.cache.get(packet).getSimpleName().equalsIgnoreCase(getPacket().getClass().getSimpleName());
+			return getPacket().getClass().getSimpleName().equalsIgnoreCase(packet);
 		}
 	}
  

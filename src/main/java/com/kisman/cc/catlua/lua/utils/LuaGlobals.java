@@ -1,9 +1,11 @@
 package com.kisman.cc.catlua.lua.utils;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.module.Category;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.Globals;
+import com.sun.javafx.geom.Vec2d;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
@@ -14,7 +16,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import scala.actors.threadpool.Arrays;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -140,4 +146,17 @@ public class LuaGlobals implements Globals {
         return instance;
     }
 
+    public String getKeyName(int key) {return Keyboard.getKeyName(key);}
+
+    public ArrayList<Category> getCategories() {
+        return new ArrayList<>(Arrays.asList(Category.values()));
+    }
+
+    public boolean hover(Vec2d point, Vec2d from, Vec2d to) {
+        return point.x > from.x && point.x < to.x && point.y > from.y && point.y < to.y;
+    }
+
+    public int getMouseWheel() {
+        return Mouse.getDWheel();
+    }
 }

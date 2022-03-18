@@ -1,6 +1,5 @@
 package com.kisman.cc.catlua.lua.utils;
 
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 public enum LuaDirection {
