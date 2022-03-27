@@ -83,7 +83,7 @@ public class Frame {
         HalqGui.drawString(cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size()) + "]": ""), x, y, HalqGui.width, HalqGui.height);
     }
 
-    public void renderPost() {
+    public void renderPost(int mouseX, int mouseY) {
         if(open) {
             if(!HalqGui.line || mods.isEmpty()) return;
             int startY = y + HalqGui.height;
@@ -100,6 +100,8 @@ public class Frame {
                 }
             }
         }
+
+        for(Component comp : mods) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY)) ((Button) comp).description.drawScreen(mouseX, mouseY);
     }
 
     public void refresh() {

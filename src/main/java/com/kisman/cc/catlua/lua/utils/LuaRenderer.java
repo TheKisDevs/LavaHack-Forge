@@ -2,7 +2,6 @@ package com.kisman.cc.catlua.lua.utils;
 
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
@@ -19,19 +18,19 @@ public class LuaRenderer implements Globals {
     LuaRenderer() {
     }
 
-    public void text(String text, Vec2d vec2d, Color color) {
+    public void text(String text, LuaVec2d vec2d, Color color) {
         CustomFontUtil.drawStringWithShadow(text, vec2d.x, vec2d.y, color.getRGB());
     }
 
-    public void rect(Vec2d from, Vec2d to, Color color) {
+    public void rect(LuaVec2d from, LuaVec2d to, Color color) {
         Render2DUtil.drawRect(from.x, from.y, to.x, to.y, color.getRGB());
     }
 
-    public void line(Vec2d from, Vec2d to, Color color) {
+    public void line(LuaVec2d from, LuaVec2d to, Color color) {
         line(from, to, color, 0.5f);
     }
 
-    public void line(Vec2d from, Vec2d to, Color color, float width) {
+    public void line(LuaVec2d from, LuaVec2d to, Color color, float width) {
         GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         GL11.glLineWidth(width);
         GL11.glBegin(1);

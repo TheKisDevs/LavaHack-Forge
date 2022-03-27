@@ -3,6 +3,7 @@ package com.kisman.cc.hud.hudmodule.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.*;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.Render2DUtil;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -15,26 +16,20 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Logo extends HudModule {
-    public static int height = 0;
     public static int x = 1;
     public static int y = 1;
     public static int x1 = x = CustomFontUtil.getStringWidth(Kisman.NAME + " " + Kisman.VERSION);
     public static int y1 = y + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
 
-    private String name = Kisman.NAME;
-    private String version = Kisman.VERSION;
-
     public Logo() {
         super("Logo", "lava-hack on top", HudCategory.RENDER);
     }
 
-    public void update() {
-        name = Kisman.getName();
-        version = Kisman.getVersion();
-    }
-
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
+        String name = Kisman.getName();
+        String version = Kisman.getVersion();
+
         if(HUD.instance.logoMode.getValString().equals("Simple")) {
             if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
                 int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
@@ -45,10 +40,9 @@ public class Logo extends HudModule {
                 }
 
                 CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
-                setHeight(1 + CustomFontUtil.getFontHeight() + 2);
             }
         } else if(HUD.instance.logoMode.getValString().equals("CSGO")) {
-            String text =((CustomFont.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   +  name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            String text =((CustomFont.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   + name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int x = 3;
             int y = 8;
             int width = 4 + CustomFontUtil.getStringWidth(text);
@@ -73,14 +67,9 @@ public class Logo extends HudModule {
             Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
 
             CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, ColorUtils.astolfoColors(100, 100));
-        } else Icons.LOGO.render(0, 0, 50, 50);
-    }
-
-    public int getHeight() {
-        return Logo.height;
-    }
-
-    public void setHeight(int height) {
-        Logo.height = height;
+        } else {
+            if(HUD.instance.logoImage.checkValString("Old")) Icons.LOGO.render(0, 0, 50, 50);
+            else if(HUD.instance.logoImage.checkValString("New")) Icons.LOGO_NEW.render(0, 0, 80, 80 , new Colour(ColorUtils.astolfoColors(100, 100)));
+        }
     }
 }

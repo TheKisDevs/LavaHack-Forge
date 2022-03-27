@@ -57,7 +57,7 @@ public class ModuleManager {
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
-		modules.add(new AutoConfig());
+//		modules.add(new AutoConfig());
 		modules.add(new AutoUpdate());
 		modules.add(new Cape());
 		modules.add(new Config());
@@ -70,9 +70,9 @@ public class ModuleManager {
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
 		modules.add(new NotEnoughCoinsModule());
-		modules.add(new ExampleModule());
+//		modules.add(new ExampleModule());
 		modules.add(new SandBox());
-		modules.add(new Test());
+//		modules.add(new Test());
 		modules.add(new ToolTip());
 		modules.add(new VegaGui());
 		//chat
@@ -101,11 +101,12 @@ public class ModuleManager {
 		modules.add(new CustomFov());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-		modules.add(new FramebufferTest());
+//		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 		modules.add(new JumpCircle());
+		modules.add(new LogoutSpots());
 		modules.add(new NameTags());
 		modules.add(new NoRender());
 		modules.add(new Particle());
@@ -119,7 +120,6 @@ public class ModuleManager {
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
-		modules.add(new TargetESP());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
@@ -164,6 +164,7 @@ public class ModuleManager {
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
+		modules.add(new Reach());
 		modules.add(new Refill());
 		modules.add(new RoofInteract());
 		modules.add(new Swing());
@@ -202,6 +203,7 @@ public class ModuleManager {
 		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
+		modules.add(new GlitchBlockFix());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());

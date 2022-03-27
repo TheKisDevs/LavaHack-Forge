@@ -21,8 +21,6 @@ public class MixinRenderEnderCrystal {
     @Final @Shadow private ModelBase modelEnderCrystal;
     @Final @Shadow private ModelBase modelEnderCrystalNoBase;
     @Final @Shadow private static ResourceLocation ENDER_CRYSTAL_TEXTURES;
-    private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    @Shadow public void doRender(EntityEnderCrystal entity, double x, double y, double z, float entityYaw, float partialTicks) {};
 
     @Redirect(method = "doRender(Lnet/minecraft/entity/item/EntityEnderCrystal;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelBase;render(Lnet/minecraft/entity/Entity;FFFFFF)V"))
     private void render1(ModelBase var1, Entity var2, float var3, float var4, float var5, float var6, float var7, float var8) {
@@ -67,7 +65,7 @@ public class MixinRenderEnderCrystal {
             if(CrystalModifier.instance.mode.getValString().equals(CrystalModifier.Modes.Wireframe.name())) GL11.glPolygonMode(1032, 6913);
 
             //other
-            mc.renderManager.renderEngine.bindTexture(ENDER_CRYSTAL_TEXTURES);
+            if(CrystalModifier.instance.texture.getValBoolean()) mc.renderManager.renderEngine.bindTexture(ENDER_CRYSTAL_TEXTURES);
 
             GL11.glDisable(3008);
             GL11.glDisable(3553);
@@ -106,12 +104,12 @@ public class MixinRenderEnderCrystal {
                     GL11.glDisable(2896);
                     GL11.glEnable(3042);
                     GL11.glBlendFunc(770, 771);
-                    GL11.glLineWidth((float) CrystalModifier.instance.lineWidth.getValDouble());
+                    GL11.glLineWidth(CrystalModifier.instance.lineWidth.getValFloat());
                     GL11.glEnable(2960);
                     GL11.glDisable(2929);
                     GL11.glDepthMask(false);
                     GL11.glEnable(10754);
-                    GL11.glColor4f(CrystalModifier.instance.color.getR() / 255f, CrystalModifier.instance.color.getG() / 255f, CrystalModifier.instance.color.getB() / 255f, 1.0f);
+                    GL11.glColor4f(CrystalModifier.instance.color.getColour().r1, CrystalModifier.instance.color.getColour().g1, CrystalModifier.instance.color.getColour().b1, 1.0f);
 
                     if(entity.shouldShowBottom()) modelEnderCrystal.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);
                     else modelEnderCrystalNoBase.render(entity, 0, var14 * spinSpeed, var15 * bounceSpeed, 0, 0, 0.0625f);

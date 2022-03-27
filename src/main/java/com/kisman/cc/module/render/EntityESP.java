@@ -2,7 +2,6 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.RenderUtil;
 
 import java.awt.*;
@@ -33,6 +32,8 @@ public class EntityESP extends Module{
     private Setting passiveColor = new Setting("PassiveColor", this, "PassiveColor", new float[] {0.11f, 0.51f, 0.92f, 1});
     private Setting entityColor = new Setting("EntityColor", this, "EntityColor", new float[] {0.92f, 0.57f, 0.11f, 1});
 
+    private final ArrayList<Entity> glowings = new ArrayList<>();
+
     public EntityESP() {
         super("EntityESP", "esp 1", Category.RENDER);
 
@@ -62,7 +63,11 @@ public class EntityESP extends Module{
     public void onDisable() {
         if(mc.player == null || mc.world == null) return;
 
-        mc.world.loadedEntityList.stream().filter(entity -> entity.glowing).forEach(entity -> entity.glowing = false);
+        glowings.forEach(entity -> entity.glowing = false);
+    }
+
+    public void onEnable() {
+        glowings.clear();
     }
 
     @SubscribeEvent
@@ -85,11 +90,12 @@ public class EntityESP extends Module{
                 entity.glowing = false;
                 break;
             case "Box2":
-                RenderUtil.drawBoxESP(entity.getEntityBoundingBox(), new Color(playerColor.getR(), playerColor.getG(), playerColor.getB()), 1f, true, true, 100, 255);
+                RenderUtil.drawBoxESP(entity.getEntityBoundingBox(), new Color(red, green, blue), 1f, true, true, 100, 255);
                 entity.glowing = false;
                 break;
             case "Glow":
                 entity.glowing = true;
+                if(!glowings.contains(entity)) glowings.add(entity);
                 break;
         }
     }

@@ -18,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinGuiMainMenu extends GuiScreen {
     private ParticleSystem particleSystem;
     private String customSplashSrt = "";
-    @Shadow private GuiButton realmsButton;
-    @Shadow private GuiButton modButton;
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo ci) {

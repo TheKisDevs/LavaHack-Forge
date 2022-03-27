@@ -11,6 +11,7 @@ import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -18,23 +19,27 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+import java.util.Objects;
+
 public class TargetHUD extends HudModule {
     private EntityPlayer target = null;
-    private TimerUtils timer = new TimerUtils();
-    private ScaledResolution sr;
+    private final TimerUtils timer = new TimerUtils();
     private double hpBarWidth;
     private double cdBarWidth;
     private double[] circleProgressBarDegreeses = new double[] {0, 0, 0, 0, 0, 0, 0};
     private double borderOffset = 5;
 
     public TargetHUD() {
-        super("TargetHud", "TargetInfo", HudCategory.COMBAT);
-        sr = new ScaledResolution(mc);
+        super("TargetHud", HudCategory.COMBAT, true);
+
+        setX(500);
+        setY(300);
     }
 
     public void update() {
-        if(AutoRer.currentTarget != null) target = AutoRer.currentTarget;
-        else if(target == null) if(KillAura.instance.target != null) target = KillAura.instance.target;
+        target = AutoRer.currentTarget;
+        if(target == null) target = KillAura.instance.target;
     }
 
     @SubscribeEvent
@@ -52,19 +57,81 @@ public class TargetHUD extends HudModule {
                 drawCircle();
                 break;
             case "NoRules":
-                drawNoRules(500, 300, 150, 45);
+                drawNoRules(getX(), getY(), 150, 45);
+                break;
+            case "Simple":
+                drawSimple();
+                break;
+            case "Astolfo":
+                drawAstolfo();
                 break;
         }
+    }
+
+    private void drawAstolfo() {
+        Color color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColorsToColorObj(100, 100) : new Color(255, 0, 89);
+
+        float x = (float) getX(), y = (float) getY();
+        setW(155);
+        setH(60);
+        double healthWid = (target.getHealth() / target.getMaxHealth() * 120);
+        healthWid = MathHelper.clamp(healthWid, 0.0D, 120.0D);
+        double check = target.getHealth() < 18 && target.getHealth() > 1 ? 8 : 0;
+        hpBarWidth = AnimationUtils.animate(healthWid, hpBarWidth, 0.05);
+        Render2DUtil.drawRectWH(x, y, 155, 60, new Color(20, 20, 20, 200).getRGB());
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, 1);
+        GlStateManager.scale(2.5f, 2.5f, 2.5f);
+        GlStateManager.translate(-x - 3, -y - 2, 1);
+        mc.fontRenderer.drawStringWithShadow(Math.round((target.getHealth() / 2.0f)) + " \u2764", x + 16, y + 10, color.getRGB());
+        GlStateManager.popMatrix();
+        GlStateManager.color(1, 1, 1, 1);
+
+        mc.getRenderItem().renderItemOverlays(mc.fontRenderer, target.getHeldItemOffhand(), (int) x + 137, (int) y + 7);
+        mc.getRenderItem().renderItemIntoGUI(target.getHeldItemOffhand(), (int) x + 137, (int) y + 1);
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GuiInventory.drawEntityOnScreen( (int) x + 16, (int) y + 55, 25, target.rotationYaw, -target.rotationPitch, target);
+        Render2DUtil.drawRectWH(x + 30, y + 48, 120, 8, color.darker().darker().darker().getRGB());
+        Render2DUtil.drawRectWH(x + 30, y + 48, (float) (hpBarWidth + check), 8, color.darker().getRGB());
+        Render2DUtil.drawRectWH(x + 30, y + 48, (float) healthWid, 8, color.getRGB());
+    }
+
+    private void drawSimple() {
+        int x = (int) getX();
+        int y = (int) getY();
+        setW(25 + borderOffset * 2 + CustomFontUtil.getStringWidth(target.getName()));
+        setH(25);
+        int width = (int) (getW());
+        int height = (int) getH();
+
+        Render2DUtil.drawRect(x, y, x + width, y + height, new Color(0, 0, 0, 170).getRGB());
+
+        try {
+            GL11.glPushMatrix();
+            mc.getTextureManager().bindTexture(Objects.requireNonNull(mc.player.connection.getPlayerInfo(target.getName())).getLocationSkin());
+            GL11.glColor4f(1, 1, 1, 1);
+            Gui.drawScaledCustomSizeModalRect(x, y, 8.0F, 8, 8, 8, 25, 25, 64.0F, 64.0F);
+            GL11.glPopMatrix();
+        } catch (Exception e) {
+            GL11.glPopMatrix();
+        }
+
+        CustomFontUtil.drawStringWithShadow(target.getName(), x + borderOffset + 25, y + borderOffset, -1);
+
+        Render2DUtil.drawRectWH(x + borderOffset + 25, y + height - borderOffset - 7, (target.getHealth() / target.getMaxHealth()) * CustomFontUtil.getStringWidth(target.getName()), 7, -1);
     }
     
     private void drawCircle() {
         boolean isMatrix = false;
         try {
-            double x = 503;
-            double y = 317;
+            double x = getX();
+            double y = getY();
             double radius = 12;
-            double width = 12 + borderOffset * 9 + radius * 7;
-            double height = borderOffset * 4 + CustomFontUtil.getFontHeight() + 27;
+            setW(12 + borderOffset * 9 + radius * 7);
+            setH(borderOffset * 4 + CustomFontUtil.getFontHeight() + 27);
+            double width = getW();
+            double height = getH();
             //img height: borderOffset * 3 + CustomFontUtil.getFontHeight() + 27
             //img width: borderOffset + 27
 
@@ -144,6 +211,8 @@ public class TargetHUD extends HudModule {
     }
 
     private void drawNoRules(double x, double y, double w, double h) {
+        setW(w);
+        setH(h);
         double healthOffset = ((target.getHealth() + target.getAbsorptionAmount()) - 0) / (target.getMaxHealth() - 0);
         hpBarWidth += (healthOffset - hpBarWidth) / 4;
         Render2DUtil.drawRoundedRect2(x, y, w, h, 6, new Colour(20, 20, 20, 210).getRGB());
@@ -163,12 +232,14 @@ public class TargetHUD extends HudModule {
     private void drawRewrite() {
         boolean isMatrix = false;
         try {
-            double x = 503;
-            double y = 317;
-            double width = 120;
+            double x = getX();
+            double y = getY();
+            setW(120);
+            double width = getW();
             double maxSlidersWidth = width - borderOffset * 2;
             double offset = 4 + CustomFontUtil.getFontHeight() * 2;
-            double height = borderOffset * 4 + CustomFontUtil.getFontHeight() + offset * 2 + 12 + 27;
+            setH(borderOffset * 4 + CustomFontUtil.getFontHeight() + offset * 2 + 12 + 27);
+            double height = getH();
 
             int count = 0;
 
@@ -262,9 +333,11 @@ public class TargetHUD extends HudModule {
     private void drawVega() {
         try {
             final ScaledResolution scaledResolution = new ScaledResolution(mc);
-            double renderX = 503;
-            double renderY = 317;
+            double renderX = getX();
+            double renderY = getY();
             float maxX = Math.max(40, CustomFontUtil.getStringWidth("HP: " + (int) target.getHealth() + " | Dist: " + mc.player.getDistance(target)) + 70);
+            setW(maxX);
+            setH(49);
             if(timer.passedMillis(15)) {
                 hpBarWidth = AnimationUtils.animate((target.getHealth() / target.getMaxHealth()) * maxX, hpBarWidth, 0.05);
                 timer.reset();

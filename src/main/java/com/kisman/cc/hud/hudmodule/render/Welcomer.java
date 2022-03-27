@@ -13,7 +13,12 @@ import java.awt.*;
 
 public class Welcomer extends HudModule {
     public Welcomer() {
-        super("Welcomer", "", HudCategory.RENDER);
+        super("Welcomer", HudCategory.RENDER, true);
+    }
+
+    public void onEnable() {
+        setX(100);
+        setY(2);
     }
 
     @SubscribeEvent
@@ -21,6 +26,6 @@ public class Welcomer extends HudModule {
         ScaledResolution sr = new ScaledResolution(mc);
         int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : new Color(HUD.instance.welColor.getR(), HUD.instance.welColor.getG(), HUD.instance.welColor.getB(), HUD.instance.welColor.getA()).getRGB();
 
-        CustomFontUtil.drawCenteredStringWithShadow("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!", sr.getScaledWidth() / 2, 2, color);
+        CustomFontUtil.drawCenteredStringWithShadow("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!", getX(), getY(), color);
     }
 }

@@ -151,9 +151,8 @@ public class AuthSys {
         final JsonObject jo = (JsonObject)AuthSys.gson.fromJson(gr.body(), (Class)JsonObject.class);
         final String name = jo.get("name").getAsString();
         final String uuid = jo.get("id").getAsString();
-        final Minecraft mc = Minecraft.getMinecraft();
         final Minecraft minecraft = Minecraft.getMinecraft();
-        mc.addScheduledTask(() -> {
+        minecraft.addScheduledTask(() -> {
             if (minecraft.currentScreen == gui) {
                 try {AltManager.setSession(new Session(name, uuid, token, "mojang"));} catch (Exception e) {e.printStackTrace();}
                 minecraft.displayGuiScreen(null);

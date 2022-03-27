@@ -25,6 +25,7 @@ package org.luaj.vm2.lib.jse;
 import java.lang.reflect.*;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.catlua.mapping.ForgeMappings;
 import fuck.you.yarnparser.V1Parser;
 import fuck.you.yarnparser.entry.ClassEntry;
 import fuck.you.yarnparser.entry.FieldEntry;
@@ -180,21 +181,20 @@ public class LuajavaLib extends VarArgFunction {
 	}
 
 	// load classes using app loader to allow luaj to be used as an extension
-	protected Class classForName(String name) throws ClassNotFoundException {
-		//because forge haven't class mapping
-/*		if(Kisman.remapped) {
-			if(mappings().getClassCache().containsKey(name)) {
-				return mappings().getClassCache().get(name);
-			} else {
-				ClassEntry classEntry = mappings().getParser().findClass(name.replace(".", "/"), V1Parser.ClassFindType.NAMED);
+	protected Class<?> classForName(String name) throws ClassNotFoundException {
+		if(Kisman.remapped) {
+			if(Kisman.instance.remapper3000.classCache.containsKey(name)) return Kisman.instance.remapper3000.classCache.get(name);
+			else {
+				ClassEntry classEntry = Kisman.instance.forgeMappings.findClass(name.replace(".", "/"), ForgeMappings.ClassFindType.NAMED);
 				if(classEntry != null) {
-					Class c = Class.forName(classEntry.intermediary.replace("/", "."), true, Minecraft.class.getClassLoader());
-					mappings().getClassCache().put(name, c);
+					Class<?> c = Class.forName(classEntry.named.replace("/", "."), true, Minecraft.class.getClassLoader());
+					Kisman.instance.remapper3000.classCache.put(name, c);
+					System.out.println("Class: " + c.getName());
 					return c;
 				}
 			}
-			mappings( ).getClassCache( ).put( name,  Class.forName(name, true, Minecraft.class.getClassLoader()));
-		}*/
+			Kisman.instance.remapper3000.classCache.put( name,  Class.forName(name, true, Minecraft.class.getClassLoader()));
+		}
 		return Class.forName(name, true, Minecraft.class.getClassLoader());
 	}
 	

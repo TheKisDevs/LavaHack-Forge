@@ -6,9 +6,10 @@ import net.minecraftforge.common.MinecraftForge;
 public class HudModule {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
-	private String name, description;
+	private final String name;
+	private String description;
 	private int key;
-	private HudCategory category;
+	private final HudCategory category;
 	public boolean toggled = false;
 	public boolean visible = true;
 	public boolean drag = false;
@@ -19,7 +20,11 @@ public class HudModule {
 		this.description = description;
 		this.key = 0;
 		this.category = category;
-		this.drag = false;
+	}
+
+	public HudModule(String name, String description, HudCategory category, boolean drag) {
+		this(name, description, category);
+		this.drag = drag;
 	}
 
 	public HudModule(String name, HudCategory category) {

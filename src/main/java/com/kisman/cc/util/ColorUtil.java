@@ -4,8 +4,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import com.kisman.cc.gui.ClickGui;
-import com.kisman.cc.gui.ColorPicker;
 import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.util.text.TextFormatting;
@@ -24,8 +22,6 @@ public class ColorUtil {
     public int a;
 
     public int color;
-
-    public ColorPicker colorPicker;
 
     public int getColor() {
         float hue = (System.currentTimeMillis() % (int)(seconds * 1000)) / (float)(seconds * 1000);
@@ -56,41 +52,6 @@ public class ColorUtil {
         int bluePart = (int) (one.getBlue() * inverse_percent + two.getBlue() * offset);
 
         return new Color(redPart, greenPart, bluePart, alpha);
-    }
-
-    public void  getColorPickerRainBow(ColorPicker colorPicker) {
-        this.colorPicker = colorPicker;
-        if(colorPicker.isRainbowState()) {
-            double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
-            rainbowState %= 360.0;
-            colorPicker.setColor(0, (float) (rainbowState / 360.0)); 
-        }
-    }
-
-    public void rainbowLine() {
-        if(colorPicker.isRainbowState()) {
-            double rainbowState = Math.ceil((System.currentTimeMillis() + 200) / 20.0);
-            rainbowState %= 360.0;
-            setLineColor((float) (rainbowState / 360.0), colorPicker.getColor(3));
-        }
-    }
-
-    public void setLineColor(float hue, float alpha) {
-        alpha(
-            new Color(
-                Color.HSBtoRGB(
-                    hue, 
-                    colorPicker.getColor(1), 
-                    colorPicker.getColor(2)
-                )
-            ),
-            alpha
-        );
-
-        ClickGui.setRLine(r);
-        ClickGui.setGLine(g);
-        ClickGui.setBLine(b);
-        ClickGui.setALine(a);
     }
 
     public int alpha(Color color, float alpha) {

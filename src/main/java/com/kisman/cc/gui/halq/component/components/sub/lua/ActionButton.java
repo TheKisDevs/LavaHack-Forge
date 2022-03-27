@@ -4,13 +4,12 @@ import com.kisman.cc.catlua.module.ModuleScript;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.util.Render2DUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
+import com.kisman.cc.util.render.objects.*;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
 public class ActionButton extends Component {
-    private ModuleScript script;
-    private Action action;
+    private final ModuleScript script;
+    private final Action action;
     private int x, y, count, offset;
 
     public ActionButton(ModuleScript script, Action action, int x, int y, int offset, int count) {

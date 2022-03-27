@@ -14,17 +14,23 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Radar extends HudModule {
     private int maxRange = HUD.instance.radarDist.getValInt();
-    private int x = 0, y = HUD.instance.radarY.getValInt();
+    private int x = 0, y = 0;
     private final String[] directions = new String[] {"X+", "Z+", "X-", "Z-"};
 
     public Radar() {
-        super("Radar", "Radar", HudCategory.RENDER);
+        super("Radar", HudCategory.RENDER, true);
+
+        setX(0);
+        setY(0);
+        setW(150);
+        setH(150);
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
+        x = (int) getX();
+        y = (int) getY();
         maxRange = HUD.instance.radarDist.getValInt();
-        y = HUD.instance.radarY.getValInt();
 
         int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
 

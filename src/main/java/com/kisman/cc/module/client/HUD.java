@@ -6,8 +6,6 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 
-import com.kisman.cc.util.customfont.CustomFontUtil;
-
 import java.util.*;
 
 public class HUD extends Module {
@@ -43,18 +41,17 @@ public class HUD extends Module {
 
 	private final Setting radarLine = new Setting("RadarLine", this, "Radar");
 	public Setting radarDist = new Setting("Max Distance", this, 50, 10, 50, true);
-	public Setting radarY = new Setting("Radar Y", this, 3 + (CustomFontUtil.getFontHeight() * 2), 0, mc.displayHeight, true);
 
 	private final Setting speedLine = new Setting("SpeedLine", this, "Speed");
 	public Setting speedMode = new Setting("Speed Mode", this, "km/h", new ArrayList<>(Arrays.asList("b/s", "km/h")));
 
 	private final Setting logoLine = new Setting("LogoLine", this, "Logo");
 	public Setting logoMode = new Setting("Logo Mode", this, LogoMode.Simple);
+	public Setting logoImage = new Setting("Logo Image", this, LogoImage.New).setVisible(() -> logoMode.checkValString("Image"));
 	public Setting logoGlow = new Setting("Glow", this, false);
 	public Setting logoBold = new Setting("Name Bold", this, false);
 
 	private Setting indicLine = new Setting("IndicLine", this, "Indicators");
-	public Setting indicY = new Setting("Indicators Y", this, 20, 0, mc.displayHeight, true);
 	public Setting indicThemeMode = new Setting("Indicators Theme", this, IndicatorsThemeMode.Default);
 	public Setting indicShadowSliders = new Setting("Indicators Shadow Sliders", this, false);
 
@@ -100,18 +97,17 @@ public class HUD extends Module {
 
 		setmgr.rSetting(radarLine);
 		setmgr.rSetting(radarDist);
-		setmgr.rSetting(radarY);
 
 		setmgr.rSetting(speedLine);
 		setmgr.rSetting(speedMode);
 
 		setmgr.rSetting(logoLine);
 		setmgr.rSetting(logoMode);
+		setmgr.rSetting(logoImage);
 		setmgr.rSetting(logoGlow);
 		setmgr.rSetting(logoBold);
 
 		setmgr.rSetting(indicLine);
-		setmgr.rSetting(indicY);
 		setmgr.rSetting(indicThemeMode);
 		setmgr.rSetting(indicShadowSliders);
 
@@ -129,7 +125,8 @@ public class HUD extends Module {
 	}
 
 	public enum LogoMode {Simple, CSGO, Image}
+	public enum LogoImage {Old, New}
 	public enum Gradient {None, Rainbow, Astolfo, Pulsive}
 	public enum IndicatorsThemeMode {Default, Rewrite}
-	public enum TargetHudThemeMode {Vega, Rewrite, Circle, NoRules}
+	public enum TargetHudThemeMode {Vega, Rewrite, Circle, NoRules, Simple, Astolfo}
 }

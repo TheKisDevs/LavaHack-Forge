@@ -33,6 +33,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventProcessor {
     private final Minecraft mc = Minecraft.getMinecraft();
@@ -40,12 +41,16 @@ public class EventProcessor {
     //NEC vars
     public boolean hasRan = false;
 
+    public AtomicBoolean ongoing;
+
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
         Kisman.EVENT_BUS.subscribe(send);
+
+        ongoing = new AtomicBoolean(false);
     }
 
     @SubscribeEvent

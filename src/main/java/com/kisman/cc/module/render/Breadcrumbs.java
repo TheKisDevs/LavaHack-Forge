@@ -32,7 +32,7 @@ public class Breadcrumbs extends Module {
     public void onDisable() {positions.clear();}
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         if(PlayerUtil.isMoving(mc.player)) positions.add(new Helper(mc.player.getPositionVector()));
     }

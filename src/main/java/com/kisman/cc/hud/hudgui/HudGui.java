@@ -11,7 +11,7 @@ public class HudGui extends GuiScreen {
     public static ArrayList<Frame> frames;
 
     public HudGui() {
-		this.frames = new ArrayList<Frame>();
+		frames = new ArrayList<>();
 		int frameX = 5;
 		for(HudCategory category : HudCategory.values()) {
 			Frame frame = new Frame(category);
@@ -30,9 +30,7 @@ public class HudGui extends GuiScreen {
 		for(Frame frame : frames) {
 			frame.renderFrame(this.fontRenderer);
 			frame.updatePosition(mouseX, mouseY);
-			for(Component comp : frame.getComponents()) {
-				comp.updateComponent(mouseX, mouseY);
-			}
+			for(Component comp : frame.getComponents()) comp.updateComponent(mouseX, mouseY);
 		}
 	}
 
@@ -44,50 +42,22 @@ public class HudGui extends GuiScreen {
 				frame.dragX = mouseX - frame.getX();
 				frame.dragY = mouseY - frame.getY();
 			}
-			if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 1) {
-				frame.setOpen(!frame.isOpen());
-			}
-			if(frame.isOpen()) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.mouseClicked(mouseX, mouseY, mouseButton);
-					}
-				}
-			}
+			if(frame.isWithinHeader(mouseX, mouseY) && mouseButton == 1) frame.setOpen(!frame.isOpen());
+			if(frame.isOpen()) if(!frame.getComponents().isEmpty()) for(Component component : frame.getComponents()) component.mouseClicked(mouseX, mouseY, mouseButton);
 		}
 	}
 
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) {
-		for(Frame frame : frames) {
-			if(frame.isOpen() && keyCode != 1) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.keyTyped(typedChar, keyCode);
-					}
-				}
-			}
-		}
-		if (keyCode == 1) {
-            this.mc.displayGuiScreen(null);
-        }
+		for(Frame frame : frames) if(frame.isOpen() && keyCode != 1) if(!frame.getComponents().isEmpty()) for(Component component : frame.getComponents()) component.keyTyped(typedChar, keyCode);
+		if (keyCode == 1) this.mc.displayGuiScreen(null);
 	}
 
 
 	@Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-		for(Frame frame : frames) {
-			frame.setDrag(false);
-		}
-		for(Frame frame : frames) {
-			if(frame.isOpen()) {
-				if(!frame.getComponents().isEmpty()) {
-					for(Component component : frame.getComponents()) {
-						component.mouseReleased(mouseX, mouseY, state);
-					}
-				}
-			}
-		}
+		for(Frame frame : frames) frame.setDrag(false);
+		for(Frame frame : frames) if(frame.isOpen()) if(!frame.getComponents().isEmpty()) for(Component component : frame.getComponents()) component.mouseReleased(mouseX, mouseY, state);
 	}
 
 	@Override

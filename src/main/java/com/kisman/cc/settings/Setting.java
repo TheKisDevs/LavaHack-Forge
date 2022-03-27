@@ -10,7 +10,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.gui.ColorPicker;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.util.*;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
@@ -27,7 +26,6 @@ import org.lwjgl.input.Keyboard;
  */
 public class Setting {
 	private Supplier<Boolean> visibleSuppliner = () -> true;
-	private ColorPicker colorPicker;
 	private Colour colour;
 
 	private Entity entity;
@@ -35,7 +33,6 @@ public class Setting {
 	private int index = 0;
 	private int color;
 	private int key = Keyboard.KEY_NONE;
-	private int selected = -1;
 	
 	private String name;
 	private Module parent;
@@ -784,10 +781,6 @@ public class Setting {
 		this.color = color;
 	}
 
-	public ColorPicker getColorPicker() {
-		return this.colorPicker;
-	}
-
 	public float getColor(int index) {
 		return this.colorHSB[index];
 	}
@@ -802,10 +795,6 @@ public class Setting {
 
 	public void setColor(float[] color) {
 		this.colorHSB = color;
-	}
-
-	public void setColorPicker(ColorPicker colorPicker) {
-		this.colorPicker = colorPicker;
 	}
 
 	public boolean isItems() { return mode.equalsIgnoreCase("Items"); }
@@ -849,16 +838,6 @@ public class Setting {
 	public boolean isColorPickerSimple() {
 		return this.mode.equalsIgnoreCase("ColorPickerSimple");
 	}
-
-	public boolean isColorPickerHud() {
-		return this.mode.equalsIgnoreCase("ColorPickerHud");
-	}
-
-	public boolean isDrawHud() {
-		return this.mode.equalsIgnoreCase("DrawHud");
-	}
-
-	public boolean isExampleColor() { return mode.equalsIgnoreCase("ExampleColor"); }
 
 	public boolean onlyInt(){
 		return this.onlyint;

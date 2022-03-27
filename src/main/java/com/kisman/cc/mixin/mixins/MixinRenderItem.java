@@ -23,6 +23,7 @@ public class MixinRenderItem {
 
     /**
      * @author _kisman_
+     * @reason ShaderCharms -> Items
      */
     @Overwrite
     public void renderItem(ItemStack stack, IBakedModel model) {

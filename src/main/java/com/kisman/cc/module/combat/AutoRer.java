@@ -9,7 +9,6 @@ import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
-import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
@@ -20,22 +19,22 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoRer extends Module {
-    public final Setting lagProtect = new Setting("Lag Protect", this, true);
+    public final Setting lagProtect = new Setting("Lag Protect", this, false);
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
     private final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
     private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
-    private final Setting targetRange = new Setting("Target Range", this, 9, 0, 16, false);
+    private final Setting targetRange = new Setting("Target Range", this, 9, 0, 20, false);
     private final Setting logic = new Setting("Logic", this, LogicMode.PlaceBreak);
     public final Setting terrain = new Setting("Terrain", this, false);
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
@@ -47,6 +46,7 @@ public class AutoRer extends Module {
     private final Setting instantCalc = new Setting("Instant Calc", this, true);
     private final Setting instantRotate = new Setting("Instant Rotate", this, true);
     private final Setting inhibit = new Setting("Inhibit", this, true);
+    private final Setting sound = new Setting("Sound", this, true);
     public final Setting syns = new Setting("Syns", this, true);
     private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
     private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent);
@@ -59,6 +59,8 @@ public class AutoRer extends Module {
     private final Setting thirdCheck = new Setting("Third Check", this, false);
     public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
     private final Setting multiPlace = new Setting("Multi Place", this, false);
+    private final Setting firePlace = new Setting("Fire Place", this, false);
+    private final Setting liquidPlace = new Setting("Liquid Place", this, false);
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
@@ -88,6 +90,7 @@ public class AutoRer extends Module {
     private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
+    private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -126,7 +129,7 @@ public class AutoRer extends Module {
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
     public static EntityPlayer currentTarget;
     private Thread thread;
-    private BlockPos placePos;
+    private BlockPos placePos, renderPos;
     private Entity lastHitEntity = null;
     public boolean rotating;
 
@@ -153,6 +156,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(instantCalc);
         setmgr.rSetting(instantRotate);
         setmgr.rSetting(inhibit);
+        setmgr.rSetting(sound);
         setmgr.rSetting(syns);
         setmgr.rSetting(rotate);
         setmgr.rSetting(rotateMode);
@@ -165,6 +169,8 @@ public class AutoRer extends Module {
         setmgr.rSetting(thirdCheck);
         setmgr.rSetting(armorBreaker);
         setmgr.rSetting(multiPlace);
+        setmgr.rSetting(firePlace);
+        setmgr.rSetting(liquidPlace);
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
@@ -194,6 +200,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(threadSyns);
         setmgr.rSetting(threadSynsValue);
         setmgr.rSetting(threadPacketRots);
+        setmgr.rSetting(threadSoundPlayer);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
@@ -224,6 +231,7 @@ public class AutoRer extends Module {
         manualTimer.reset();
         currentTarget = null;
         rotating = false;
+        renderPos = null;
 
         if(!threadMode.getValString().equalsIgnoreCase("None")) processMultiThreading();
 
@@ -247,11 +255,12 @@ public class AutoRer extends Module {
         manualTimer.reset();
         currentTarget = null;
         rotating = false;
+        renderPos = null;
     }
 
     private void processMultiThreading() {
         if(threadMode.getValString().equalsIgnoreCase("While")) handleWhile();
-        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool();
+        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool(false);
     }
 
     private ScheduledExecutorService getExecutor() {
@@ -276,8 +285,8 @@ public class AutoRer extends Module {
         }
     }
 
-    private void handlePool() {
-        if(executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
+    private void handlePool(boolean justDoIt) {
+        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
             if(executor != null) executor.shutdown();
             executor = getExecutor();
             synsTimer.reset();
@@ -290,6 +299,7 @@ public class AutoRer extends Module {
         if(renderTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
             renderTimer.reset();
+            renderPos = null;
         }
 
         currentTarget = EntityUtil.getTarget(targetRange.getValFloat());
@@ -361,13 +371,13 @@ public class AutoRer extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(placePos != null){
-                RenderUtil.drawBlockESP(placePos, 1, 1, 1);
-            // else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-            // if (text.getValBoolean()) {
-                // float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                // RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
-            // }
+        if(renderPos != null){
+            if(render.checkValString("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
+            if (text.getValBoolean()) {
+                 float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                 RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
+            }
         }
     }
 
@@ -420,9 +430,10 @@ public class AutoRer extends Module {
             }
         }
 
-        if (event.getPacket() instanceof SPacketSoundEffect && inhibit.getValBoolean() && lastHitEntity != null) {
+        if (event.getPacket() instanceof SPacketSoundEffect && ((inhibit.getValBoolean() && lastHitEntity != null) || (sound.getValBoolean()))) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
             if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) lastHitEntity.setDead();
+            if(threadMode.checkValString(ThreadMode.Sound.name()) && isRightThread() && mc.player != null && mc.player.getDistanceSq(new BlockPos(packet.getX(), packet.getY(), packet.getZ())) < MathUtil.square(threadSoundPlayer.getValInt())) handlePool(true);
         }
     });
 
@@ -437,6 +448,10 @@ public class AutoRer extends Module {
             }
         }
     });
+
+    private boolean isRightThread() {
+        return mc.isCallingFromMinecraftThread() || (!this.threadOngoing.get());
+    }
 
     private void doCalculatePlace() {
         try {calculatePlace();} catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
@@ -460,7 +475,7 @@ public class AutoRer extends Module {
             BlockPos pos = sphere.get(i);
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
-            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean())) {
+            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean(), firePlace.getValBoolean(), liquidPlace.getValBoolean())) {
                 float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
@@ -531,8 +546,10 @@ public class AutoRer extends Module {
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
-        mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+        if(!swing.checkValString(SwingMode.None.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         placeTimer.reset();
+
+        renderPos = placePos;
 
         if(ai.getValBoolean()) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
@@ -651,6 +668,7 @@ public class AutoRer extends Module {
     }
 
     private void swing() {
+        if(swing.checkValString(SwingMode.None.name())) return;
         if(swing.getValString().equals(SwingMode.PacketSwing.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         else mc.player.swingArm(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
     }
@@ -686,7 +704,7 @@ public class AutoRer extends Module {
     public enum Rotate {Off, Place, Break, All}
     public enum Raytrace {None, Place, Break, Both}
     public enum SwitchMode {None, Normal, Silent, SilentBypass}
-    public enum SwingMode {MainHand, OffHand, PacketSwing}
+    public enum SwingMode {MainHand, OffHand, PacketSwing, None}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}
     public enum RotateMode {Normal, Silent}

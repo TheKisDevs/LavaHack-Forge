@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.module.player.Reach;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = PlayerControllerMP.class, priority = 10000)
 public class MixinPlayerControllerMP {
+    @Inject(method = "getBlockReachDistance", at = @At("HEAD"), cancellable = true)
+    public void getBlockReachDistance(CallbackInfoReturnable<Float> callback) {
+        if (Reach.instance.isToggled()) {
+            callback.setReturnValue(Reach.instance.distance.getValFloat());
+            callback.cancel();
+        }
+    }
+
     @Inject(method = "clickBlock", at = @At("HEAD"), cancellable = true)
     private void clickBlock(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir) {
         EventDamageBlock event = new EventDamageBlock(posBlock, directionFacing);
@@ -23,10 +32,6 @@ public class MixinPlayerControllerMP {
         }
     }
 
-    /**
-     * target = {@link Block#removedByPlayer(IBlockState,
-     * World, BlockPos, EntityPlayer, boolean)}
-     */
     @Dynamic
     @Inject(
         method = "onPlayerDestroyBlock",
@@ -48,17 +53,5 @@ public class MixinPlayerControllerMP {
         {
             info.setReturnValue(false);
         }
-    }
-
-    @Inject(
-        method = "onPlayerDestroyBlock",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/block/Block;onPlayerDestroy(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)V",
-            shift = At.Shift.BEFORE))
-    private void onPlayerDestroyHook(BlockPos pos,
-                                     CallbackInfoReturnable<Boolean> cir)
-    {
-        Kisman.EVENT_BUS.post(new DestroyBlockEvent(Event.Era.POST, pos));
     }
 }

@@ -79,7 +79,7 @@ public class HalqGui extends GuiScreen {
                 comp.updateComponent(frame.x, frame.y);
                 comp.drawScreen(mouseX, mouseY);
             }
-            frame.renderPost();
+            frame.renderPost(mouseX, mouseY);
             frame.refresh();
         }
 
@@ -108,7 +108,7 @@ public class HalqGui extends GuiScreen {
                 }
                 else if(mouseButton == 1) frame.open = !frame.open;
             }
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(!frame.reloading) mod.mouseClicked(mouseX, mouseY, mouseButton);
+            if(frame.open && !frame.mods.isEmpty()) if(!frame.reloading) for(Component mod : frame.mods) if(!frame.reloading) mod.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 

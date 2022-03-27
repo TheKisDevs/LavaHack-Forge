@@ -23,7 +23,7 @@ public class LoadConfig {
             loadEnabledHudModules();
             loadBindModes();
             loadFriends();
-        } catch (IOException | JsonSyntaxException ignored) {}
+        } catch (Exception ignored) {}
     }
 
     private static void loadFriends() throws IOException {
@@ -170,6 +170,27 @@ public class LoadConfig {
 
             if(dataObject != null && dataObject.isJsonPrimitive()) try {module.hold = (dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
         }
+
+        inputStream.close();
+    }
+
+    private static void loadHud() throws IOException {
+        for(HudModule module : Kisman.instance.hudModuleManager.modules) loadHudDirect(module);
+    }
+
+    private static void loadHudDirect(HudModule module) throws IOException {
+        if (!Files.exists(Paths.get(Kisman.fileName + Kisman.hudName + module.getName() + ".json"))) return;
+
+        InputStream inputStream = Files.newInputStream(Paths.get(Kisman.fileName + Kisman.hudName + module.getName() + ".json"));
+        JsonObject moduleObject;
+
+        try {moduleObject = new JsonParser().parse(new InputStreamReader(inputStream)).getAsJsonObject();} catch (java.lang.IllegalStateException e) {return;}
+
+        if (moduleObject.get("Pos") == null) return;
+
+        JsonObject posObject = moduleObject.get("Pos").getAsJsonObject();
+        module.setX(posObject.get("x").getAsDouble());
+        module.setY(posObject.get("y").getAsDouble());
 
         inputStream.close();
     }

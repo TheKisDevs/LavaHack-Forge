@@ -1,5 +1,4 @@
 import com.kisman.cc.Kisman;
-import com.kisman.cc.util.protect.AntiDump;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.*;
 

@@ -1,22 +1,15 @@
 For b0.1.6.1:
 
-Add More color customization for hud - _kisman_
 Fix AutoRer render
 Fix AutoEZ
 Fix Alpha in color picker - _kisman_
 fix dynamic protect surround
-Fix vegagui slider dragging
-Add round to sliders from vegagui
-Cast sliders from vegagui bg to default
 добавить что бы в слайдер можно было задавать любое значение
 add search field in gui(for rastishka) ft rusherhack
 write rules if keyauth server arent working
 fix rangevisualisator
-fix draggable hudeditor
-add colorpicker & lines in halqgui
 test antispammer
 upd portal overlay in no render
-add lagtime to fastfall in anchor
 add gui snow from salhack
 add use for new notify
 add use for new progress circle

@@ -14,7 +14,7 @@ public class FastSwim extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         if((mc.player.isInLava() || mc.player.isInWater()) && PlayerUtil.isMoving(mc.player)) {
             mc.player.setSprinting(true);

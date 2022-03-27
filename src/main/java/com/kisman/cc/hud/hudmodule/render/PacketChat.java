@@ -32,7 +32,7 @@ public class PacketChat extends HudModule {
 
     public void update() {
         setX(3);
-        setY(HUD.instance.indicY.getValInt() + 8);
+        setY(8);
         setW(width + 4);
         setH(borderOffset * 7 + CustomFontUtil.getFontHeight() * 5);
     }

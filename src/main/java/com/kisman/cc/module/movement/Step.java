@@ -22,6 +22,6 @@ public class Step extends Module {
     }
 
     public void onDisable() {
-        if(mc.player != null || mc.world != null) mc.player.stepHeight = 0.5f;
+        if(mc.player != null && mc.world != null) mc.player.stepHeight = 0.5f;
     }
 }

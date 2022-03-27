@@ -73,10 +73,7 @@ public class AutoCrystal extends Module implements Runnable {
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
         if (event.getPacket() instanceof SPacketSoundEffect && sound.getValBoolean()) {
             final SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
-            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE)
-                for (Entity e : Minecraft.getMinecraft().world.loadedEntityList)
-                    if (e instanceof EntityEnderCrystal && e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f)
-                        e.setDead();
+            if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) for (Entity e : Minecraft.getMinecraft().world.loadedEntityList) if (e instanceof EntityEnderCrystal && e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) e.setDead();
         }
     });
     private final Timer threadDelay = new Timer();
@@ -143,9 +140,8 @@ public class AutoCrystal extends Module implements Runnable {
         for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
             float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
-            if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean())) {
-                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat()))
-                    continue;
+            if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean(), false, false)) {
+                if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
                 if (selfDamage > maxSelfDMG.getValFloat()) continue;
                 if (targetDamage < minDMG.getValFloat()) continue;
                 if (antiSuicide.getValBoolean()) if (selfDamage < 2F) continue;
@@ -162,26 +158,26 @@ public class AutoCrystal extends Module implements Runnable {
         mc.playerController.updateController();
     }
 
-    public void oldRotate(float oldrotate1, float oldrotate0) {
+    public void oldRotate(float pitch, float yaw) {
         if (rotate.getValBoolean()) {
-            if (rotateMode.equals("Normal")) {
-                mc.player.rotationYaw = oldrotate0;
-                mc.player.rotationPitch = oldrotate1;
-            } else if (rotateMode.equals("Packet")) {
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, oldrotate0, mc.player.onGround));
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationPitch, oldrotate1, mc.player.onGround));
+            if (rotateMode.checkValString("Normal")) {
+                mc.player.rotationYaw = yaw;
+                mc.player.rotationPitch = pitch;
+            } else if (rotateMode.checkValString("Packet")) {
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, yaw, mc.player.onGround));
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationPitch, pitch, mc.player.onGround));
             }
         }
     }
 
-    public void newRotate(float rotate1, float rotate0) {
+    public void newRotate(float pitch, float yaw) {
         if (rotate.getValBoolean()) {
-            if (rotateMode.equals("Normal")) {
-                mc.player.rotationYaw = rotate0;
-                mc.player.rotationPitch = rotate1;
-            } else if (rotateMode.equals("Packet")) {
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, rotate0, mc.player.onGround));
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationPitch, rotate1, mc.player.onGround));
+            if (rotateMode.checkValString("Normal")) {
+                mc.player.rotationYaw = yaw;
+                mc.player.rotationPitch = pitch;
+            } else if (rotateMode.checkValString("Packet")) {
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, yaw, mc.player.onGround));
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationPitch, pitch, mc.player.onGround));
             }
         }
     }
@@ -191,7 +187,7 @@ public class AutoCrystal extends Module implements Runnable {
         bestCrystalPos = placeCalculateAI();
         float[] rot = RotationUtils.getRotationToPos(bestCrystalPos.getBlockPos());
         Packet packet = event.getPacket();
-        if (packet instanceof CPacketPlayer && rotateMode.equals("Spoof")) {
+        if (packet instanceof CPacketPlayer && rotateMode.checkValString("Spoof")) {
             ((CPacketPlayer) packet).yaw = rot[0];
             ((CPacketPlayer) packet).pitch = rot[1];
         }
@@ -212,10 +208,7 @@ public class AutoCrystal extends Module implements Runnable {
                             mc.player.connection.sendPacket(packet);
                         } else mc.playerController.attackEntity(mc.player, entity);
                     }
-                    try {
-                        if (clientSide.getValBoolean()) mc.world.removeEntityFromWorld(entity.entityId);
-                    } catch (Exception ignored) {
-                    }
+                    try {if (clientSide.getValBoolean()) mc.world.removeEntityFromWorld(entity.entityId);} catch (Exception ignored) {}
                     breakTimer.reset();
                 }
                 breakTimer.reset();
@@ -236,16 +229,12 @@ public class AutoCrystal extends Module implements Runnable {
             if (placeTimer.passedDms(placeDelay.getValLong())) {
                 int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), oldSlot = mc.player.inventory.currentItem;
                 boolean canSwitch = true, offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
-                if (crystalSlot != mc.player.inventory.currentItem && switchMode.getValString().equalsIgnoreCase("None") && !offhand)
-                    return;
+                if (crystalSlot != mc.player.inventory.currentItem && switchMode.getValString().equalsIgnoreCase("None") && !offhand) return;
                 if (crystalSlot == mc.player.inventory.currentItem || offhand) canSwitch = false;
-                if (canSwitch)
-                    InventoryUtil.switchToSlot(crystalSlot, switchMode.getValString().equalsIgnoreCase("Silent"));
+                if (canSwitch) InventoryUtil.switchToSlot(crystalSlot, switchMode.getValString().equalsIgnoreCase("Silent"));
                 if (placeTimer.passedMs(placeDelay.getValLong())) {
-                    if (packetPlace.getValBoolean())
-                        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
-                    else
-                        mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
+                    if (packetPlace.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
+                    else mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
                     placeTimer.reset();
                 }
                 placeTimer.reset();
@@ -287,12 +276,12 @@ public class AutoCrystal extends Module implements Runnable {
             doPlace();
             doBreak();
         }
-            newThread();
+        if(MultiThread.getValBoolean()) newThread();
     }
 
     @Override
     public void run() {
-            newThread();
+        if(MultiThread.getValBoolean()) newThread();
     }
 
     public void newThread() {
@@ -306,8 +295,7 @@ public class AutoCrystal extends Module implements Runnable {
                     try {
                         thread.start();
                         thread.run();
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) {}
                 }
                 threadDelay.reset();
             }

@@ -21,7 +21,7 @@ public class ViewModel extends Module {
 
     //item FOV
     public Setting itemFOV = new Setting("ItemFOV", this, false);
-    public Setting fov = new Setting("FOV", this, 130, 70, 200, true);
+    public Setting fov = new Setting("FOV", this, 130, 70, 200, true).setVisible(itemFOV::getValBoolean);
 
     //scale
     public Setting scaleRightX = new Setting("ScaleRigthX", this, 1, -2, 2, false);
@@ -40,31 +40,31 @@ public class ViewModel extends Module {
     public Setting autoRotateLeftZ = new Setting("AutoRotateLeftZ", this, false);
 
     //hand pos modifier
-    private Setting handLine = new Setting("HandLine", this, "Hand");
+    private final Setting handLine = new Setting("HandLine", this, "Hand");
     public Setting hands = new Setting("Hands", this, false);
-    public Setting handRightX = new Setting("HandRightX", this, 0, -4, 4, false);
-    public Setting handRightY = new Setting("HandRightY", this, 0, -4, 4, false);
-    public Setting handRightZ = new Setting("HandRightZ", this, 0, -4, 4, false);
-    public Setting handRightRotateX = new Setting("HandRotateRightX", this, 0, 0, 360, false);
-    public Setting handRightRotateY = new Setting("HandRotateRightY", this, 0, 0, 360, false);
-    public Setting handRightRotateZ = new Setting("HandRotateRightZ", this, 0, 0, 360, false);
-    public Setting handRightScaleX = new Setting("HandScaleRightX", this, 0, -2, 2, false);
-    public Setting handRightScaleY = new Setting("HandScaleRightY", this, 0, -2, 2, false);
-    public Setting handRightScaleZ = new Setting("HandScaleRightZ", this, 0, -2, 2, false);
-    public Setting handLeftX = new Setting("HandLeftX", this, 0, -4, 4, false);
-    public Setting handLeftY = new Setting("HandLeftY", this, 0, -4, 4, false);
-    public Setting handLeftZ = new Setting("HandLeftZ", this, 0, -4, 4, false);
-    public Setting handLeftRotateX = new Setting("HandRotateLeftX", this, 0, 0, 360, false);
-    public Setting handLeftRotateY = new Setting("HandRotateLeftY", this, 0, 0, 360, false);
-    public Setting handLeftRotateZ = new Setting("HandRotateLeftZ", this, 0, 0, 360, false);
-    public Setting handLeftScaleX = new Setting("HandScaleLeftX", this, 0, -2, 2, false);
-    public Setting handLeftScaleY = new Setting("HandScaleLeftY", this, 0, -2, 2, false);
-    public Setting handLeftScaleZ = new Setting("HandScaleLeftZ", this, 0, -2, 2, false);
+    public Setting handRightX = new Setting("HandRightX", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handRightY = new Setting("HandRightY", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handRightZ = new Setting("HandRightZ", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handRightRotateX = new Setting("HandRotateRightX", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handRightRotateY = new Setting("HandRotateRightY", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handRightRotateZ = new Setting("HandRotateRightZ", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handRightScaleX = new Setting("HandScaleRightX", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
+    public Setting handRightScaleY = new Setting("HandScaleRightY", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
+    public Setting handRightScaleZ = new Setting("HandScaleRightZ", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
+    public Setting handLeftX = new Setting("HandLeftX", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handLeftY = new Setting("HandLeftY", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handLeftZ = new Setting("HandLeftZ", this, 0, -4, 4, false).setVisible(hands::getValBoolean);
+    public Setting handLeftRotateX = new Setting("HandRotateLeftX", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handLeftRotateY = new Setting("HandRotateLeftY", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handLeftRotateZ = new Setting("HandRotateLeftZ", this, 0, 0, 360, false).setVisible(hands::getValBoolean);
+    public Setting handLeftScaleX = new Setting("HandScaleLeftX", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
+    public Setting handLeftScaleY = new Setting("HandScaleLeftY", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
+    public Setting handLeftScaleZ = new Setting("HandScaleLeftZ", this, 0, -2, 2, false).setVisible(hands::getValBoolean);
 
     //custom items alpha
-    private Setting itemLine = new Setting("ItemLine", this, "Item");
+    private final Setting itemLine = new Setting("ItemLine", this, "Item");
     public Setting useAlpha = new Setting("Use Custom Alpha", this, false);
-    public Setting alpha = new Setting("Alpha", this, 255, 0, 255, true);
+    public Setting alpha = new Setting("Alpha", this, 255, 0, 255, true).setVisible(useAlpha::getValBoolean);
 
 
     public ViewModel() {
@@ -77,9 +77,9 @@ public class ViewModel extends Module {
         setmgr.rSetting(itemFOV);
         setmgr.rSetting(fov);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("RightX", this, 0, -2, 2, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("RightY", this, 0, -2, 2, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("RightZ", this, 0, -2, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("RightX", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
+        Kisman.instance.settingsManager.rSetting(new Setting("RightY", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
+        Kisman.instance.settingsManager.rSetting(new Setting("RightZ", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightX", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightY", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateRightZ", this, 0, 0, 360, false));
@@ -90,9 +90,9 @@ public class ViewModel extends Module {
         setmgr.rSetting(scaleRightY);
         setmgr.rSetting(scaleRightZ);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("LeftX", this, 0, -2, 2, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("LeftY", this, 0, -2, 2, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("LeftZ", this, 0, -2, 2, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftX", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftY", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
+        Kisman.instance.settingsManager.rSetting(new Setting("LeftZ", this, 0, -2, 2, false).setVisible(translate::getValBoolean));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftX", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftY", this, 0, 0, 360, false));
         Kisman.instance.settingsManager.rSetting(new Setting("RotateLeftZ", this, 0, 0, 360, false));
@@ -129,7 +129,7 @@ public class ViewModel extends Module {
         setmgr.rSetting(alpha);
     }
 
-    @SubscribeEvent public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {if (itemFOV.getValBoolean()) event.setFOV((float) fov.getValDouble());}
+    @SubscribeEvent public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {if (itemFOV.getValBoolean()) event.setFOV(fov.getValFloat());}
     @SubscribeEvent public void onRenderArms(RenderSpecificHandEvent event) {
         if(hands.getValBoolean()) {
             switch (event.getHand()) {

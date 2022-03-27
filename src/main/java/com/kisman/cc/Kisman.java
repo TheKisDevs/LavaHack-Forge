@@ -2,6 +2,7 @@ package com.kisman.cc;
 
 import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.catlua.lua.utils.LuaRotation;
+import com.kisman.cc.catlua.mapping.ForgeMappings;
 import com.kisman.cc.catlua.mapping.Remapper3000;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
@@ -55,6 +56,7 @@ public class Kisman {
     public static final String HWIDS_LIST = "https://pastebin.com/raw/yM7s0G4u";
     public static final String fileName = "kisman.cc/";
     public static final String moduleName = "Modules/";
+    public static final String hudName = "Hud/";
     public static final String mainName = "Main/";
     public static final String miscName = "Misc/";
     public static final String luaName = "Lua/";
@@ -69,37 +71,27 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static final boolean allowToConfiguredAnotherClients, remapped;
+    public static boolean allowToConfiguredAnotherClients, remapped = false;
     public static boolean isOpenAuthGui;
     public static boolean autoUpdate;
     public static boolean canUseImprAstolfo = false;
 
     static {
-        boolean remapped1;
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
-
-        try {
-            Minecraft.class.getDeclaredField("player");
-            remapped1 = false;
-        } catch(NoSuchFieldException e) {
-            remapped1 = true;
-        }
-        remapped = remapped1;
     }
 
     public boolean init = false;
 
     private static Minecraft mc;
 
+    public VectorUtils vectorUtils;
+
     public ModuleManager moduleManager;
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
-    public BlockGui blockGui;
     public GuiConsole guiConsole;
-    public ColorPicker colorPicker;
-    public ColorUtil colorUtil;
     public HudGui hudGui;
     public HudEditorGui hudEditorGui;
     public Gui gui;
@@ -121,6 +113,7 @@ public class Kisman {
     //catlua
     public EventProcessorLua eventProcessorLua;
     public Remapper3000 remapper3000;
+    public ForgeMappings forgeMappings;
     public LuaRotation luaRotation;
     public ScriptManager scriptManager;
 
@@ -130,6 +123,12 @@ public class Kisman {
 
     public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
         AntiDump.check();
+
+        try {
+            Minecraft.class.getDeclaredField("player");
+        } catch(Exception e) {
+            remapped = true;
+        }
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -146,15 +145,14 @@ public class Kisman {
         managers = new Managers();
         managers.init();
 
+        vectorUtils = new VectorUtils();
+
         friendManager = new FriendManager();
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
-    	blockGui = new BlockGui();
         guiConsole = new GuiConsole();
-        colorPicker = new ColorPicker();
-        colorUtil = new ColorUtil();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);
         commandManager = new CommandManager();
@@ -260,6 +258,10 @@ public class Kisman {
         if (!Files.exists(Paths.get(fileName + moduleName))) {
             Files.createDirectories(Paths.get(fileName + moduleName));
             LOGGER.info("Module dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + hudName))) {
+            Files.createDirectories(Paths.get(fileName + hudName));
+            LOGGER.info("Hud dir created");
         }
         if (!Files.exists(Paths.get(fileName + mainName))) {
             Files.createDirectories(Paths.get(fileName + mainName));

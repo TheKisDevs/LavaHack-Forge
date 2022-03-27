@@ -25,12 +25,12 @@ public class Indicators extends HudModule {
 
     public Indicators() {
         super("Indicators", HudCategory.PLAYER, true);
+
+        setX(3);
+        setY(8);
     }
 
     public void update() {
-        setX(3);
-        setY(HUD.instance.indicY.getValInt() + 8);
-
         switch (HUD.instance.indicThemeMode.getValString()) {
             case "Default": {
                 setW(sliderWidth + 4);

@@ -20,10 +20,10 @@ public class Frame {
 	public boolean hud;
 	public ColorUtil colorUtil = new ColorUtil();
 	private boolean open;
-	private int width;
+	private final int width;
 	private int y;
 	private int x;
-	private int barHeight;
+	private final int barHeight;
 	private boolean isDragging;
 	public int dragX;
 	public int dragY;
@@ -83,9 +83,8 @@ public class Frame {
 		Gui.drawRect(this.x, this.y, this.x + this.width, this.y + this.barHeight, ClickGui.isRainbowBackground() ? colorUtil.getColor() : new Color(ClickGui.getRBackground(), ClickGui.getGBackground(), ClickGui.getBBackground(), ClickGui.getABackground()).getRGB());
 
 		if(ClickGui.isLine()) {
-			if(ClickGui.getLineMode() == LineMode.LEFT) {
-				Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
-			} else if(ClickGui.getLineMode() == LineMode.LEFTONTOP) {
+			if(ClickGui.getLineMode() == LineMode.LEFT) Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
+			else if(ClickGui.getLineMode() == LineMode.LEFTONTOP) {
 				Gui.drawRect(this.x, this.y, this.x + 1, this.y + this.barHeight, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 				Gui.drawRect(this.x, this.y, this.x + this.width, this.y + 1, new Color(ClickGui.getRLine(), ClickGui.getGLine(), ClickGui.getBLine(), ClickGui.getALine()).getRGB());
 			} else {
@@ -98,39 +97,13 @@ public class Frame {
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
 		String str = this.hudCategory.name();
-		if(Config.instance.guiRenderSize.getValBoolean()) {
-			str += " [" + components.size() + "]";
-		}
+		if(Config.instance.guiRenderSize.getValBoolean()) str += " [" + components.size() + "]";
 
 		fontRenderer.drawStringWithShadow(TextFormatting.BOLD +  str, (this.x + 2) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 		fontRenderer.drawStringWithShadow(this.open ? "-" : "+", (this.x + this.width - 10) * 2 + 5, (this.y + 2.5f) * 2 + 5, new Color(ClickGui.getRText(), ClickGui.getGText(), ClickGui.getBText(), ClickGui.getAText()).getRGB());
 
 		GL11.glPopMatrix();
-		if(this.open) {
-			if(!this.components.isEmpty()) {
-				for(Component component : components) {
-					component.renderComponent();
-				}
-			}
-		}
-	}
-	
-	public void refresh() {
-		int off = this.barHeight;
-		for(Component comp : components) {
-			comp.setOff(off);
-			off += comp.getHeight();
-			this.offset = off;
-		}
-	}
-
-	public void refreshPosition() {
-		int off = barHeight;
-
-		for(Component comp : components) {
-			comp.setOff(off);
-			off += 12;
-		}
+		if(this.open) if(!this.components.isEmpty()) for(Component component : components) component.renderComponent();
 	}
 	
 	public int getX() {
@@ -153,7 +126,6 @@ public class Frame {
 	}
 	
 	public boolean isWithinHeader(int x, int y) {
-		if(x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.barHeight) return true;
-		return false;
+		return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.barHeight;
 	}
 }

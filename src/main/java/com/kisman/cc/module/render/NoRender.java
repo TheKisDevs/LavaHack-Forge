@@ -22,6 +22,7 @@ public class NoRender extends Module {
     public Setting scoreboard = new Setting("Scoreboard", this, false);
     public Setting particle = new Setting("Particle", this, ParticleMode.None);
     public Setting portal = new Setting("Portal", this, false);
+    public Setting items = new Setting("Items", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -39,6 +40,7 @@ public class NoRender extends Module {
         setmgr.rSetting(scoreboard);
         setmgr.rSetting(particle);
         setmgr.rSetting(portal);
+        setmgr.rSetting(items);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));

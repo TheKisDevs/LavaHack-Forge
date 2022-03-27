@@ -43,6 +43,7 @@ public class ModuleScript extends Module {
     }
 
     public void load() {
+        Kisman.instance.remapper3000.classCache.clear();
         Kisman.instance.remapper3000.fieldsCache.clear();
         Kisman.instance.remapper3000.methodsCache.clear();
         ScriptEngineManager factory = new ScriptEngineManager();
@@ -65,6 +66,7 @@ public class ModuleScript extends Module {
         loaded = false;
         if (remove) {
             Kisman.instance.scriptManager.scripts.remove(this);
+            Kisman.instance.remapper3000.classCache.clear();
             Kisman.instance.remapper3000.fieldsCache.clear();
             Kisman.instance.remapper3000.methodsCache.clear();
             Kisman.instance.moduleManager.modules.removeAll(modulesLua);

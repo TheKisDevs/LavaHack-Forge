@@ -11,14 +11,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Fps extends HudModule {
     public Fps() {
-        super("Fps", "fuck you", HudCategory.RENDER);
+        super("Fps", HudCategory.RENDER, true);
+
+        setX(1);
+        setY(1);
+    }
+
+    public void update() {
+        setW(CustomFontUtil.getStringWidth("Fps: " + Minecraft.getDebugFPS()));
+        setH(CustomFontUtil.getFontHeight());
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
         if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
             int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
-            CustomFontUtil.drawStringWithShadow("Fps: " + TextFormatting.GRAY + Minecraft.getDebugFPS(), 1, 2 + CustomFontUtil.getFontHeight(), color);
+            CustomFontUtil.drawStringWithShadow("Fps: " + TextFormatting.GRAY + Minecraft.getDebugFPS(), getX(), getY(), color);
         }
     }
 }

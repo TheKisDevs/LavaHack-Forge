@@ -21,22 +21,13 @@
  ******************************************************************************/
 package org.luaj.vm2.lib.jse;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.Map.Entry;
 
 import com.kisman.cc.Kisman;
-import fuck.you.yarnparser.V1Parser;
-import fuck.you.yarnparser.entry.FieldEntry;
-import fuck.you.yarnparser.entry.MethodEntry;
+import com.kisman.cc.catlua.mapping.ForgeMappings;
+import fuck.you.yarnparser.entry.*;
 import org.luaj.vm2.LuaValue;
 
 /**
@@ -62,8 +53,7 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 
 	static JavaClass forClass(Class c) {
 		JavaClass j = (JavaClass) classes.get(c);
-		if ( j == null )
-			classes.put( c, j = new JavaClass(c) );
+		if ( j == null ) classes.put( c, j = new JavaClass(c) );
 		return j;
 	}
 
@@ -75,11 +65,6 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 	public LuaValue coerce(Object javaValue) {
 		return this;
 	}
-
-	//because i wrote custom parser(See com.kisman.cc.catlua.parser.MappingParser)
-//	V1Parser parser() {
-//		return Ferret.getDefault().getMappingManager().getParser();
-//	}
 
 	Field getField(LuaValue key) {
 		if ( fields == null ) {
@@ -100,21 +85,18 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 		if(Kisman.remapped) {
 			Class superclass = ((Class) m_instance);
 			String name = superclass.getName() + key.tojstring();
-			if(Kisman.instance.remapper3000.fieldsCache.containsKey(key.tojstring())) return Kisman.instance.remapper3000.fieldsCache.get(key.tojstring());
+			if(Kisman.instance.remapper3000.fieldsCache.containsKey(name)) return Kisman.instance.remapper3000.fieldsCache.get(name);
 
 			while (superclass != null) {
-//				FieldEntry fieldEntry = parser().findField(superclass.getName().replace(".", "/"), key.tojstring(), V1Parser.NormalFindType.NAMED);
-				FieldEntry fieldEntry = Kisman.instance.remapper3000.parser.findField(key.tojstring(), true);
+//				System.out.println("FindField: superclass " + superclass.getName() + ", name " + key.tojstring());
+				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.NAMED);
 				if(fieldEntry != null) {
-					Kisman.instance.remapper3000.fieldsCache.put(key.tojstring(), (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
+					Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
 					return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));
 				}
 				superclass = superclass.getSuperclass();
 			}
 
-			// since luaj is retarded and for some reason it starts looking
-			// for both fields and methods with the same name (e.g. getBlockX)
-			// we need to do this if we couldnt find a field/method
 			Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
 		}
 
@@ -130,17 +112,14 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 				if ( Modifier.isPublic( mi.getModifiers()) ) {
 					String name = mi.getName();
 					List list = (List) namedlists.get(name);
-					if ( list == null )
-						namedlists.put(name, list = new ArrayList());
+					if ( list == null ) namedlists.put(name, list = new ArrayList());
 					list.add( JavaMethod.forMethod(mi) );
 				}
 			}
 			Map map = new HashMap();
 			Constructor[] c = ((Class)m_instance).getConstructors();
 			List list = new ArrayList();
-			for ( int i=0; i<c.length; i++ )
-				if ( Modifier.isPublic(c[i].getModifiers()) )
-					list.add( JavaConstructor.forConstructor(c[i]) );
+			for ( int i=0; i<c.length; i++ ) if ( Modifier.isPublic(c[i].getModifiers()) ) list.add( JavaConstructor.forConstructor(c[i]) );
 			switch ( list.size() ) {
 				case 0: break;
 				case 1: map.put(NEW, list.get(0)); break;
@@ -151,32 +130,27 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 				Entry e = (Entry) it.next();
 				String name = (String) e.getKey();
 				List methods = (List) e.getValue();
-				map.put( LuaValue.valueOf(name),
-						methods.size()==1?
-								methods.get(0):
-								JavaMethod.forMethods( (JavaMethod[])methods.toArray(new JavaMethod[methods.size()])) );
+				map.put( LuaValue.valueOf(name), methods.size()==1? methods.get(0): JavaMethod.forMethods( (JavaMethod[])methods.toArray(new JavaMethod[methods.size()])) );
 			}
 			methods = map;
 		}
 
 		if(Kisman.remapped) {
 			Class superclass = ((Class) m_instance);
-			if(Kisman.instance.remapper3000.methodsCache.containsKey(key.tojstring())) Kisman.instance.remapper3000.methodsCache.get(key.tojstring());
+			String name = superclass.getName() + key.tojstring();
+			if(Kisman.instance.remapper3000.methodsCache.containsKey(name)) Kisman.instance.remapper3000.methodsCache.get(name);
 
 			while(superclass != null) {
-//				MethodEntry methodEntry1 = parser().findMethod(superclass.getName().replace(".", "/"), key.tojstring(), V1Parser.NormalFindType.NAMED, -1, null);
-				MethodEntry methodEntry = Kisman.instance.remapper3000.parser.findMethod(key.tojstring(), true);
+//				System.out.println("FindMethod: superclass " + superclass.getName() + ", name " + key.tojstring());
+				MethodEntry methodEntry = Kisman.instance.forgeMappings.findMethod(superclass.getName().replace(",", "/"), key.tojstring(), ForgeMappings.NormalFindType.NAMED, -1, null);
 				if(methodEntry != null) {
-					Kisman.instance.remapper3000.methodsCache.put(key.tojstring(), (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary)));
+					Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary)));
 					return (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary));
 				}
 				superclass = superclass.getSuperclass();
 			}
 
-			// since luaj is retarded and for some reason it starts looking
-			// for both fields and methods with the same name (e.g. getBlockX)
-			// we need to do this if we couldnt find a field/method
-			Kisman.instance.remapper3000.methodsCache.put(key.tojstring(), (LuaValue) methods.get(key)); // <- probably null
+			Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(key)); // <- probably null
 		}
 
 		return (LuaValue) methods.get(key);

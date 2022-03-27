@@ -20,11 +20,13 @@ import java.util.ArrayList;
 public class Button extends Component {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
+    public final Description description;
     public int x, y, offset, count;
     public boolean open = false;
 
     public Button(Module mod, int x, int y, int offset, int count) {
         this.mod = mod;
+        this.description = new Description(mod.getDescription(), count);
         this.x = x;
         this.y = y;
         this.offset = offset;
@@ -128,7 +130,11 @@ public class Button extends Component {
         return HalqGui.height + getSize() * HalqGui.height;
     }
 
-    public void setCount(int count) {this.count = count;}
+    public void setCount(int count) {
+        this.count = count;
+        description.setCount(count);
+    }
+
     public int getCount() {return count;}
 
     public int getSize() {
@@ -137,7 +143,7 @@ public class Button extends Component {
         return i;
     }
 
-    private boolean isMouseOnButton(int x, int y) {
+    public boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + HalqGui.height + offset;
     }
 }

@@ -11,7 +11,6 @@ public class CrystalModifier extends Module {
     public Setting mode = new Setting("Mode", this, Modes.Fill);
     public Setting preview = new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world));
 
-
     private Setting scaleLine = new Setting("ScaleLine", this, "Scale");
 
     public Setting scaleX = new Setting("ScaleX", this, 0, -2, 2, false);

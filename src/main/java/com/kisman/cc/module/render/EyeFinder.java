@@ -14,8 +14,8 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 
 public class EyeFinder extends Module {
-    private Setting color = new Setting("Color", this, "Color", new Colour(Color.CYAN));
-    private Setting range = new Setting("Range", this, 50, 20, 50, true);
+    private final Setting color = new Setting("Color", this, "Color", new Colour(Color.CYAN));
+    private final Setting range = new Setting("Range", this, 50, 20, 50, true);
 
     public EyeFinder() {
         super("EyeFinder", Category.RENDER);
@@ -43,7 +43,7 @@ public class EyeFinder extends Module {
         final double posX2 = result.hitVec.x - mc.getRenderManager().renderPosX;
         final double posY2 = result.hitVec.y - mc.getRenderManager().renderPosY;
         final double posZ2 = result.hitVec.z - mc.getRenderManager().renderPosZ;
-        GL11.glColor4f(0.2f, 0.1f, 0.3f, 0.8f);
+        color.getColour().glColor();
         GlStateManager.glLineWidth(1.5f);
         GL11.glBegin(1);
         GL11.glVertex3d(posX, posY, posZ);
@@ -51,7 +51,7 @@ public class EyeFinder extends Module {
         GL11.glVertex3d(posX2, posY2, posZ2);
         GL11.glVertex3d(posX2, posY2, posZ2);
         GL11.glEnd();
-        if (result.typeOfHit == RayTraceResult.Type.BLOCK) RenderUtil.drawBlockESP(result.getBlockPos(), 51 / 255f, 25 / 255f, 73 / 255f);
+        if (result.typeOfHit == RayTraceResult.Type.BLOCK) RenderUtil.drawBlockESP(result.getBlockPos(), color.getColour().r1, color.getColour().g1, color.getColour().b1);
         GlStateManager.enableTexture2D();
         GlStateManager.enableLighting();
         GL11.glPopMatrix();

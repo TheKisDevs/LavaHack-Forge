@@ -29,8 +29,8 @@ public class Speed extends Module {
 
     private Setting useTimer = new Setting("Use Timer", this, false);
 
-    private Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, true).setVisible(() -> speedMode.checkValString("Strafe2"));
-    private Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, true).setVisible(() -> speedMode.checkValString("Strafe2"));
+    private Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
+    private Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
 
     private Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New").setVisible(() -> speedMode.checkValString("Strafe New"));
     private Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New"));
@@ -83,7 +83,7 @@ public class Speed extends Module {
         setmgr.rSetting(lagTime);
 
         setmgr.rSetting(yPortLine);
-        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false));
+        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort")));
         setmgr.rSetting(yWater);
         setmgr.rSetting(yLava);
 

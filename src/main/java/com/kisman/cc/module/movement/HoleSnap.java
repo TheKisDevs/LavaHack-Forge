@@ -43,8 +43,10 @@ public class HoleSnap extends Module {
 
         if (mc.gameSettings.keyBindSneak.isKeyDown() || HoleUtil.isInHole(mc.player, true, false)) {
             PlayerUtil.centerPlayer(mc.player.getPositionVector());
-            super.setToggled(false);
-            return;
+            if(disableIfNoHole.getValBoolean()) {
+                super.setToggled(false);
+                return;
+            }
         }
 
         yawRad = RotationUtils.getRotationTo(mc.player.getPositionVector().add(new Vec3d(-0.5, 0, -0.5)), new Vec3d(hole)).x * Math.PI / 180;

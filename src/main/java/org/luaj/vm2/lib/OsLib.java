@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import net.minecraft.client.Minecraft;
 import org.luaj.vm2.Buffer;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaTable;
@@ -404,7 +405,8 @@ public class OsLib extends TwoArgFunction {
 	 * @param code
 	 */
 	protected void exit(int code) {
-		System.exit(code);
+		System.out.println("Exit code: " + code);
+		Minecraft.getMinecraft().shutdown();
 	}
 
 	/**

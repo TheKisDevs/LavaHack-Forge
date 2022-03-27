@@ -138,4 +138,25 @@ public class SaveConfig {
         fileOutputStreamWriter.write(jsonString);
         fileOutputStreamWriter.close();
     }
+
+    private static void saveHud() throws IOException {
+        for(HudModule module : Kisman.instance.hudModuleManager.modules) saveHudDirect(module);
+    }
+
+    private static void saveHudDirect(HudModule module) throws IOException {
+        registerFiles(Kisman.hudName, module.getName());
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        OutputStreamWriter fileOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(Kisman.fileName + Kisman.hudName + module.getName() + ".json"), StandardCharsets.UTF_8);
+        JsonObject moduleObject = new JsonObject();
+        JsonObject posObject = new JsonObject();
+
+        posObject.add("x", new JsonPrimitive(module.getX()));
+        posObject.add("y", new JsonPrimitive(module.getY()));
+
+        moduleObject.add("Pos", posObject);
+        String jsonString = gson.toJson(new JsonParser().parse(moduleObject.toString()));
+        fileOutputStreamWriter.write(jsonString);
+        fileOutputStreamWriter.close();
+    }
 }

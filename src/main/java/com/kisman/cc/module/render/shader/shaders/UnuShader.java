@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL20;
 public class UnuShader extends FramebufferShader {
     public static UnuShader UNU_SHADER;
     public float time;
+    public float timeMult = 0.05f;
 
     public UnuShader() {
         super("unu.frag");
@@ -23,7 +24,7 @@ public class UnuShader extends FramebufferShader {
     public void updateUniforms() {
         GL20.glUniform2f(this.getUniform("resolution"), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth(), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight());
         GL20.glUniform1f(this.getUniform("time"), this.time);
-        this.time += Float.intBitsToFloat(Float.floatToIntBits(1015.0615f) ^ 0x7F395856);
+        time += timeMult * animationSpeed;
     }
 
     static {

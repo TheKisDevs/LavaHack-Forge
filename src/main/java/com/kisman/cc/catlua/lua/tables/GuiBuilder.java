@@ -1,8 +1,8 @@
 package com.kisman.cc.catlua.lua.tables;
 
 import com.kisman.cc.catlua.lua.utils.LuaUtils;
+import com.kisman.cc.catlua.lua.utils.LuaVec2d;
 import com.kisman.cc.util.Globals;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.client.gui.GuiScreen;
 import org.luaj.vm2.LuaClosure;
 import org.luaj.vm2.LuaTable;
@@ -88,7 +88,7 @@ public class GuiBuilder implements Globals {
             @Override public void drawScreen(int mouseX, int mouseY, float delta) {
                 drawDefaultBackground();
                 LuaUtils.safeCall(render,
-                        CoerceJavaToLua.coerce(new Vec2d(mouseX, mouseY))
+                        CoerceJavaToLua.coerce(new LuaVec2d(mouseX, mouseY))
                 );
             }
 
@@ -98,7 +98,7 @@ public class GuiBuilder implements Globals {
 
             @Override public void mouseClicked(int mouseX, int mouseY, int button) {
                 LuaUtils.safeCall(mouseClicked,
-                        CoerceJavaToLua.coerce(new Vec2d(mouseX, mouseY)),
+                        CoerceJavaToLua.coerce(new LuaVec2d(mouseX, mouseY)),
                         LuaValue.valueOf(button)
                 );
                 try {super.mouseClicked(mouseX, mouseY, button);} catch (IOException ignored) {}
@@ -106,7 +106,7 @@ public class GuiBuilder implements Globals {
 
             @Override public void mouseReleased(int mouseX, int mouseY, int button) {
                 LuaUtils.safeCall(mouseReleased,
-                        CoerceJavaToLua.coerce(new Vec2d(mouseX, mouseY)),
+                        CoerceJavaToLua.coerce(new LuaVec2d(mouseX, mouseY)),
                         LuaValue.valueOf(button)
                 );
                 super.mouseReleased(mouseX, mouseY, button);

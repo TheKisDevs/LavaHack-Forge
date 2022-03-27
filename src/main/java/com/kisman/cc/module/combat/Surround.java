@@ -34,6 +34,7 @@ public class Surround extends Module {
     private Setting raytrace = new Setting("RayTrace", this, false);
     private Setting packet = new Setting("Packet", this, false);
     private Setting confirm = new Setting("Confirm", this, false);
+    private final Setting noInteract = new Setting("No Interact", this, false);
     private Setting rewrite = new Setting("Rewrite", this, false);
     private Setting dynamic = new Setting("Rewrite Dynamic", this, false);
     private Setting support = new Setting("Rewrite Support", this, SupportModes.None);
@@ -75,6 +76,7 @@ public class Surround extends Module {
         setmgr.rSetting(raytrace);
         setmgr.rSetting(packet);
         setmgr.rSetting(confirm);
+        setmgr.rSetting(noInteract);
         setmgr.rSetting(rewrite);
         setmgr.rSetting(dynamic);
         setmgr.rSetting(support);
@@ -205,7 +207,10 @@ public class Surround extends Module {
                         }
                     }
 
+                    boolean sneak = mc.player.isSneaking();
+                    if(noInteract.getValBoolean()) mc.player.setSneaking(true);
                     BlockUtil.placeBlock(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ))), packet.getValBoolean(), confirm.getValBoolean());
+                    if(noInteract.getValBoolean()) mc.player.setSneaking(sneak);
                     PlayerUtil.swingArm((PlayerUtil.Hand) hand.getValEnum());
                     surroundPlaced++;
                 }
@@ -272,7 +277,10 @@ public class Surround extends Module {
 
     private void place(BlockPos posToPlace) {
         if(placement < blocksPerTick.getValInt()) {
+            boolean sneak = mc.player.isSneaking();
+            if(noInteract.getValBoolean()) mc.player.setSneaking(true);
             BlockUtil2.placeBlock(posToPlace, EnumHand.MAIN_HAND, packet.getValBoolean());
+            if(noInteract.getValBoolean()) mc.player.setSneaking(sneak);
             placement++;
         }
     }

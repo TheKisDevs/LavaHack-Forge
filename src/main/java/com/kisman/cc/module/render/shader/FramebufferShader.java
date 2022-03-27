@@ -10,6 +10,7 @@ public abstract class FramebufferShader extends Shader {
     public Minecraft mc;
     public static Framebuffer framebuffer;
     public boolean entityShadows;
+    public int animationSpeed;
 
     public FramebufferShader(final String fragmentShader) {
         super(fragmentShader);

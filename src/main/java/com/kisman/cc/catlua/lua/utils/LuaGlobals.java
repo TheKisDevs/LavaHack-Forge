@@ -5,7 +5,6 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.Globals;
-import com.sun.javafx.geom.Vec2d;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
@@ -152,7 +151,7 @@ public class LuaGlobals implements Globals {
         return new ArrayList<>(Arrays.asList(Category.values()));
     }
 
-    public boolean hover(Vec2d point, Vec2d from, Vec2d to) {
+    public boolean hover(LuaVec2d point, LuaVec2d from, LuaVec2d to) {
         return point.x > from.x && point.x < to.x && point.y > from.y && point.y < to.y;
     }
 
