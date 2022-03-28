@@ -19,6 +19,8 @@ public class PvpResources extends HudModule {
 
         setX(100);
         setY(100);
+        setW(20);
+        setH(20 * 4);
     }
 
     public static int getItemCount(Item item) {

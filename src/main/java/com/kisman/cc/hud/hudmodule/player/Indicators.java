@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Indicators extends HudModule {
     private final  TimerUtils timer = new TimerUtils();
-    private int sliderWidth = 51;
-    private int sliderHeight = 2;
+    private final int sliderWidth = 51;
+    private final int sliderHeight = 2;
 
     private final String header = "Indicators";
     private final String stringWithMaxLength = "Cooldown";
@@ -21,7 +21,7 @@ public class Indicators extends HudModule {
     private double hurttimeBarWidth = 0;
     private double speedBarWidth = 0;
     private double healthBarWidth = 0;
-    private double borderOffset = 5;
+    private final double borderOffset = 5;
 
     public Indicators() {
         super("Indicators", HudCategory.PLAYER, true);

@@ -22,11 +22,8 @@ public class HudGui extends GuiScreen {
 	}
 
 	@Override
-	public void initGui() {
-	}
-
-	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		drawDefaultBackground();
 		for(Frame frame : frames) {
 			frame.renderFrame(this.fontRenderer);
 			frame.updatePosition(mouseX, mouseY);
@@ -52,7 +49,6 @@ public class HudGui extends GuiScreen {
 		for(Frame frame : frames) if(frame.isOpen() && keyCode != 1) if(!frame.getComponents().isEmpty()) for(Component component : frame.getComponents()) component.keyTyped(typedChar, keyCode);
 		if (keyCode == 1) this.mc.displayGuiScreen(null);
 	}
-
 
 	@Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {

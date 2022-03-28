@@ -23,8 +23,10 @@ public class NotificationsManager {
     }
 
     public void draw(){
-        for(int i = 0; i < notifications.size() - 1; i++) if(notifications.get(i).getTime() >= 5000) notifications.remove(i);
-        for(int i = 0; i < notifications.size() - 1; i++) drawNotification(notifications.get(i), i);
+        for(int i = 0; i < notifications.size() - 1; i++) {
+            if(notifications.get(i).getTime() >= 5000) notifications.remove(i);
+            drawNotification(notifications.get(i), i);
+        }
     }
 
 

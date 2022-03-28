@@ -9,7 +9,7 @@ import com.kisman.cc.util.render.objects.Vec4d;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
 public class Description extends Component {
-    private final String title;
+    public final String title;
     private int count;
     private final int width;
 

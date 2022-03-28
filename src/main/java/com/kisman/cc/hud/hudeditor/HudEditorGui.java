@@ -18,6 +18,7 @@ public class HudEditorGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float particalTicks) {
+        drawDefaultBackground();
         for(Component comp : components) comp.drawScreen(mouseX, mouseY);
     }
 

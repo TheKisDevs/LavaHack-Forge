@@ -57,7 +57,6 @@ public class ModuleManager {
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
-//		modules.add(new AutoConfig());
 		modules.add(new AutoUpdate());
 		modules.add(new Cape());
 		modules.add(new Config());
@@ -71,7 +70,6 @@ public class ModuleManager {
 		modules.add(new HudEditorTest());
 		modules.add(new NotEnoughCoinsModule());
 //		modules.add(new ExampleModule());
-		modules.add(new SandBox());
 //		modules.add(new Test());
 		modules.add(new ToolTip());
 		modules.add(new VegaGui());

@@ -3,7 +3,6 @@ package com.kisman.cc.gui.notification;
 import com.kisman.cc.util.Colour;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
-import java.awt.*;
 
 public class Notifications {
     private final String title;

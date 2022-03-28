@@ -3,6 +3,8 @@ package com.kisman.cc.gui.halq.component.components;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.module.ModuleScript;
 import com.kisman.cc.gui.halq.component.components.sub.lua.ActionButton;
+import com.kisman.cc.gui.halq.component.components.sub.modules.BindModeButton;
+import com.kisman.cc.gui.halq.component.components.sub.modules.VisibleBox;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -41,6 +43,10 @@ public class Button extends Component {
             comps.add(new ActionButton((ModuleScript) mod, ActionButton.Action.UNLOAD, x, y, offsetY, count1++));
         } else {
             comps.add(new BindButton(mod, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+            comps.add(new VisibleBox(mod, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+            comps.add(new BindModeButton(mod, x, y, offsetY, count1++));
             offsetY += HalqGui.height;
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) == null) return;

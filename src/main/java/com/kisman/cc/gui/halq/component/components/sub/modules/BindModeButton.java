@@ -1,39 +1,38 @@
-package com.kisman.cc.gui.halq.component.components.sub;
+package com.kisman.cc.gui.halq.component.components.sub.modules;
 
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
-import com.kisman.cc.settings.Setting;
+import com.kisman.cc.module.Module;
 import com.kisman.cc.util.Render2DUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
+import com.kisman.cc.util.render.objects.*;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 
-public class ModeButton extends Component {
-    private final Setting setting;
-    private int x, y, offset, index, count;
-    public boolean open;
+public class BindModeButton extends Component {
+    private final Module module;
+    private int x, y, offset, count, index;
     private final String[] values;
+    private boolean open = false;
 
-    public ModeButton(Setting setting, int x, int y, int offset, int count) {
-        this.setting = setting;
+    public BindModeButton(Module module, int x, int y, int offset, int count) {
+        this.module = module;
         this.x = x;
         this.y = y;
         this.offset = offset;
-        this.values = setting.getStringValues();
-        this.index = setting.getSelectedIndex();
         this.count = count;
+        this.values = new String[] {"Toggle", "Hold"};
+        this.index = module.hold ? 1 : 0;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        this.index = setting.getSelectedIndex();
+        this.index = module.hold ? 1 : 0;
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, getHeight(), HalqGui.backgroundColor.getRGB());
             Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), HalqGui.getGradientColour(count).getColor()));
             Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width, y + offset}, new double[] {x + HalqGui.width, y + offset + HalqGui.height}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1)));
         } else Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, getHeight(), HalqGui.getGradientColour(count).getRGB());
 
-        HalqGui.drawString(setting.getName() + ": " + values[index], x, y + offset, HalqGui.width, HalqGui.height);
+        HalqGui.drawString("Bind Mode: " + values[index], x, y + offset, HalqGui.width, HalqGui.height);
 
         if(open) {
             int offsetY = offset + HalqGui.height;
@@ -56,7 +55,7 @@ public class ModeButton extends Component {
                 if(mouseY >= offsetY && mouseY <= offsetY + HalqGui.height) {
                     index = i;
                     open = false;
-                    setting.setValString(values[i]);
+                    module.hold = values[i].equals(values[1]);
                     break;
                 }
                 offsetY += HalqGui.height;
@@ -76,14 +75,24 @@ public class ModeButton extends Component {
     }
 
     @Override
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    @Override
     public int getHeight() {
         return HalqGui.height + (open ? (values.length - 1) * HalqGui.height : 0);
     }
 
-    public boolean visible() {return setting.isVisible();}
+    @Override
+    public int getCount() {
+        return count;
+    }
 
-    public void setCount(int count) {this.count = count;}
-    public int getCount() {return count;}
+    @Override
+    public boolean visible() {
+        return true;
+    }
 
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;

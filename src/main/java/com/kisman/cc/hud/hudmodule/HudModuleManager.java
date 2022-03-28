@@ -8,8 +8,7 @@ import com.kisman.cc.hud.hudmodule.render.*;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.*;
 
 public class HudModuleManager {
     public java.util.ArrayList<HudModule> modules;
@@ -36,6 +35,7 @@ public class HudModuleManager {
 		modules.add(new Coord());
 		modules.add(new Fps());
 		modules.add(new Logo());
+		modules.add(new NotificationsModule());
 		modules.add(new Radar());
 		modules.add(new Welcomer());
 		modules.add(new PacketChat());
@@ -53,7 +53,7 @@ public class HudModuleManager {
 	}
 
 	public java.util.ArrayList<HudModule> getModulesInCategory(HudCategory c) {
-		java.util.ArrayList<HudModule> mods = new java.util.ArrayList<HudModule>();
+		java.util.ArrayList<HudModule> mods = new java.util.ArrayList<>();
 		for (HudModule m : this.modules) if (m.getCategory() == c) mods.add(m);
 		return mods;
 	}
