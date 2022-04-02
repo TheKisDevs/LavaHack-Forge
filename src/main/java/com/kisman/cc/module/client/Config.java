@@ -3,7 +3,6 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
 import com.kisman.cc.gui.notification.Notifications;
-import com.kisman.cc.gui.notification.NotificationsManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
@@ -62,6 +61,7 @@ public class Config extends Module {
 
     public Setting slowRender = new Setting("Slow Render", this, false);
     public Setting depthFix = new Setting("Depth Fix", this, true);
+    public Setting antiOpenGLCrash = new Setting("Anti OpenGL Crash", this, false);
 
 
     public Config() {
@@ -106,6 +106,7 @@ public class Config extends Module {
         setmgr.rSetting(particleTest);
         setmgr.rSetting(slowRender);
         setmgr.rSetting(depthFix);
+        setmgr.rSetting(antiOpenGLCrash);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

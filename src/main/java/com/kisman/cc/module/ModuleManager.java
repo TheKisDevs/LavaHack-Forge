@@ -54,6 +54,7 @@ public class ModuleManager {
 		modules.add(new KillAura());
 		modules.add(new NoFriendDamage());
 		modules.add(new OffHand());
+		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		//client
@@ -201,7 +202,6 @@ public class ModuleManager {
 		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
-		modules.add(new GlitchBlockFix());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());

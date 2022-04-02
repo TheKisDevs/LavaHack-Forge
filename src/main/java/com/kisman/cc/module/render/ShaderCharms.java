@@ -2,11 +2,14 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.render.shader.*;
 import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.enums.ShaderModes;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -382,14 +385,15 @@ public class ShaderCharms extends Module {
                 GlStateManager.popAttrib();
                 GlStateManager.popMatrix();
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+            if(Config.instance.antiOpenGLCrash.getValBoolean()) {
+                super.setToggled(false);
+                ChatUtils.error("[ShaderCharms] Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
+            }
+        }
     }
 
     private Color getColor() {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
-    }
-
-    public enum ShaderModes {
-        AQUA, RED, SMOKE, FLOW, ITEMGLOW, PURPLE, GRADIENT, UNU, GLOW, OUTLINE, BlueFlames, CodeX, Crazy, Golden, HideF, HotShit, Kfc, Sheldon, Smoky, SNOW, Techno
     }
 }

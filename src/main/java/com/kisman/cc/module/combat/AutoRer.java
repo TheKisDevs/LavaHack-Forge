@@ -3,14 +3,21 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
+import com.kisman.cc.module.client.Config;
+import com.kisman.cc.module.render.shader.FramebufferShader;
+import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
+import com.kisman.cc.util.enums.ShaderModes;
 import i.gishreloaded.gishcode.utils.TimerUtils;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,10 +26,7 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -31,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AutoRer extends Module {
     public final Setting lagProtect = new Setting("Lag Protect", this, false);
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
+    private final Setting recalcPlaceRange = new Setting("Recalc Place Range", this, 4, 0, 6, false);
     private final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
     private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
     private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
@@ -39,17 +44,18 @@ public class AutoRer extends Module {
     public final Setting terrain = new Setting("Terrain", this, false);
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
     private final Setting fastCalc = new Setting("Fast Calc", this, true);
+    private final Setting recalc = new Setting("ReCalc", this, false);
     private final Setting motionCrystal = new Setting("Motion Crystal", this, false);
-    private final Setting motionCalc = new Setting("Motion Calc", this, false);
+    private final Setting motionCalc = new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean);
     private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
     private final Setting instant = new Setting("Instant", this, true);
-    private final Setting instantCalc = new Setting("Instant Calc", this, true);
-    private final Setting instantRotate = new Setting("Instant Rotate", this, true);
+    private final Setting instantCalc = new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean);
+    private final Setting instantRotate = new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean);
     private final Setting inhibit = new Setting("Inhibit", this, true);
     private final Setting sound = new Setting("Sound", this, true);
     public final Setting syns = new Setting("Syns", this, true);
     private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
-    private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent);
+    private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent).setVisible(() -> !rotate.checkValString("None"));
     private final Setting ai = new Setting("AI", this, false);
     private final Setting calcDistSort = new Setting("Calc Dist Sort", this, false);
 
@@ -60,7 +66,6 @@ public class AutoRer extends Module {
     public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
     private final Setting multiPlace = new Setting("Multi Place", this, false);
     private final Setting firePlace = new Setting("Fire Place", this, false);
-    private final Setting liquidPlace = new Setting("Liquid Place", this, false);
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
     private final Setting break_ = new Setting("Break", this, true);
@@ -90,29 +95,43 @@ public class AutoRer extends Module {
     private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
-    private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true);
+    private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"));
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
     private final Setting text = new Setting("Text", this, true);
-    private final Setting infoMode = new Setting("InfoMode", this, InfoMode.Target);
 
     private final Setting red = new Setting("Red", this, 1, 0, 1, false);
     private final Setting green = new Setting("Green", this, 0, 0, 1, false);
     private final Setting blue = new Setting("Blue", this, 0, 0, 1, false);
-    private final Setting alpha = new Setting("Blue", this, 1, 0, 1, false);
+
+    private final Setting textColor = new Setting("Text Color", this, "TextColor", new Colour(255, 0, 0));
 
     private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced Render");
 
-    private final Setting startRed = new Setting("Start Red", this, 0, 0, 1, false);
-    private final Setting startGreen = new Setting("Start Green", this, 0, 0, 1, false);
-    private final Setting startBlue = new Setting("Start Blue", this, 0, 0, 1, false);
-    private final Setting startAlpha = new Setting("Start Alpha", this, 0, 0, 1, false);
+    private final Setting startColor = new Setting("Start Color", this, "Start Color", new Colour(0, 0, 0));
+    private final Setting endColor = new Setting("End Color", this, "End Color", new Colour(255, 0, 0, 170));
 
-    private final Setting endRed = new Setting("End Red", this, 1, 0, 1, false);
-    private final Setting endGreen = new Setting("End Green", this, 0, 0, 1, false);
-    private final Setting endBlue = new Setting("End Blue", this, 0, 0, 1, false);
-    private final Setting endAlpha = new Setting("End Alpha", this, 1, 0, 1, false);
+    private final Setting targetCharmsLine = new Setting("Target Charms", this, "Target Shader Charms");
+    private final Setting targetCharms = new Setting("Target Charms", this, false);
+    private final Setting targetCharmsShader = new Setting("TC Shader", this, ShaderModes.SMOKE);
+
+    private final Setting targetCharmsAnimationSpeed = new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+
+    private final Setting targetCharmsBlur = new Setting("Blur", this, true).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean());
+    private final Setting targetCharmsRadius = new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE") || targetCharmsShader.checkValString("GRADIENT")) && targetCharms.getValBoolean());
+    private final Setting targetCharmsMix = new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean());
+    private final Setting targetCharmsColor = new Setting("TC Color", this, "TC Color", new Colour(255, 255, 255)).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean());
+
+    private final Setting targetCharmsQuality = new Setting("Quality", this, 1, 0, 20, false).setVisible(() -> (targetCharmsShader.checkValString("GRADIENT") || targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean());
+    private final Setting targetCharmsGradientAlpha = new Setting("Gradient Alpha", this, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsAlphaGradient = new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsDuplicateOutline = new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsMoreGradientOutline = new Setting("More Gradient", this, 1, 0, 10, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsCreepyOutline = new Setting("Creepy", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsAlpha = new Setting("Alpha", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsNumOctavesOutline = new Setting("Num Octaves", this, 5, 1, 30, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsSpeedOutline = new Setting("Speed", this, 0.1, 0.001, 0.1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
 
     public static AutoRer instance;
 
@@ -141,6 +160,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(lagProtect);
 
         setmgr.rSetting(placeRange);
+        setmgr.rSetting(recalcPlaceRange.setVisible(recalc::getValBoolean));
         setmgr.rSetting(placeWallRange);
         setmgr.rSetting(breakRange);
         setmgr.rSetting(breakWallRange);
@@ -149,6 +169,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(terrain);
         setmgr.rSetting(switch_);
         setmgr.rSetting(fastCalc);
+        setmgr.rSetting(recalc);
         setmgr.rSetting(motionCrystal);
         setmgr.rSetting(motionCalc);
         setmgr.rSetting(swing);
@@ -165,25 +186,24 @@ public class AutoRer extends Module {
 
         setmgr.rSetting(placeLine);
         setmgr.rSetting(place);
-        setmgr.rSetting(secondCheck);
-        setmgr.rSetting(thirdCheck);
-        setmgr.rSetting(armorBreaker);
-        setmgr.rSetting(multiPlace);
-        setmgr.rSetting(firePlace);
-        setmgr.rSetting(liquidPlace);
+        setmgr.rSetting(secondCheck.setVisible(place::getValBoolean));
+        setmgr.rSetting(thirdCheck.setVisible(place::getValBoolean));
+        setmgr.rSetting(armorBreaker.setVisible(place::getValBoolean));
+        setmgr.rSetting(multiPlace.setVisible(place::getValBoolean));
+        setmgr.rSetting(firePlace.setVisible(place::getValBoolean));
 
         setmgr.rSetting(breakLine);
         setmgr.rSetting(break_);
-        setmgr.rSetting(breakPriority);
-        setmgr.rSetting(friend_);
-        setmgr.rSetting(clientSide);
-        setmgr.rSetting(manualBreaker);
-        setmgr.rSetting(removeAfterAttack);
-        setmgr.rSetting(antiCevBreakerMode);
+        setmgr.rSetting(breakPriority.setVisible(break_::getValBoolean));
+        setmgr.rSetting(friend_.setVisible(break_::getValBoolean));
+        setmgr.rSetting(clientSide.setVisible(break_::getValBoolean));
+        setmgr.rSetting(manualBreaker.setVisible(break_::getValBoolean));
+        setmgr.rSetting(removeAfterAttack.setVisible(break_::getValBoolean));
+        setmgr.rSetting(antiCevBreakerMode.setVisible(break_::getValBoolean));
 
         setmgr.rSetting(delayLine);
-        setmgr.rSetting(placeDelay);
-        setmgr.rSetting(breakDelay);
+        setmgr.rSetting(placeDelay.setVisible(place::getValBoolean));
+        setmgr.rSetting(breakDelay.setVisible(break_::getValBoolean));
         setmgr.rSetting(calcDelay);
         setmgr.rSetting(clearDelay);
         setmgr.rSetting(multiplication);
@@ -205,21 +225,33 @@ public class AutoRer extends Module {
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
         setmgr.rSetting(text);
-        setmgr.rSetting(infoMode);
-        setmgr.rSetting(red);
-        setmgr.rSetting(green);
-        setmgr.rSetting(blue);
-        setmgr.rSetting(alpha);
+        setmgr.rSetting(red.setVisible(() -> render.checkValString("Default")));
+        setmgr.rSetting(green.setVisible(() -> render.checkValString("Default")));
+        setmgr.rSetting(blue.setVisible(() -> render.checkValString("Default")));
+
+        setmgr.rSetting(textColor.setVisible(text::getValBoolean));
 
         setmgr.rSetting(advancedRenderLine);
-        setmgr.rSetting(startRed);
-        setmgr.rSetting(startGreen);
-        setmgr.rSetting(startBlue);
-        setmgr.rSetting(startAlpha);
-        setmgr.rSetting(endRed);
-        setmgr.rSetting(endGreen);
-        setmgr.rSetting(endBlue);
-        setmgr.rSetting(endAlpha);
+        setmgr.rSetting(startColor);
+        setmgr.rSetting(endColor);
+
+        setmgr.rSetting(targetCharmsLine);
+        setmgr.rSetting(targetCharms);
+        setmgr.rSetting(targetCharmsShader);
+        setmgr.rSetting(targetCharmsAnimationSpeed);
+        setmgr.rSetting(targetCharmsBlur);
+        setmgr.rSetting(targetCharmsRadius);
+        setmgr.rSetting(targetCharmsMix);
+        setmgr.rSetting(targetCharmsColor);
+        setmgr.rSetting(targetCharmsQuality);
+        setmgr.rSetting(targetCharmsGradientAlpha);
+        setmgr.rSetting(targetCharmsAlphaGradient);
+        setmgr.rSetting(targetCharmsDuplicateOutline);
+        setmgr.rSetting(targetCharmsMoreGradientOutline);
+        setmgr.rSetting(targetCharmsCreepyOutline);
+        setmgr.rSetting(targetCharmsAlpha);
+        setmgr.rSetting(targetCharmsNumOctavesOutline);
+        setmgr.rSetting(targetCharmsSpeedOutline);
     }
 
     public void onEnable() {
@@ -238,12 +270,14 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
+        Kisman.EVENT_BUS.subscribe(render3d);
     }
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener1);
         Kisman.EVENT_BUS.unsubscribe(motion);
+        Kisman.EVENT_BUS.unsubscribe(render3d);
 
         if(thread != null) shouldInterrupt.set(false);
         if(executor != null) executor.shutdown();
@@ -294,7 +328,7 @@ public class AutoRer extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null || mc.isGamePaused) return;
 
         if(renderTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
@@ -320,7 +354,7 @@ public class AutoRer extends Module {
         } else processMultiThreading();
     }
 
-    public void doAutoRerForThread() {
+    public synchronized void doAutoRerForThread() {
         if(mc.player == null || mc.world == null) return;
         if(manualBreaker.getValBoolean()) manualBreaker();
         if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
@@ -369,17 +403,162 @@ public class AutoRer extends Module {
         }
     }
 
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
-        if(renderPos != null){
-            if(render.checkValString("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, new Color(startRed.getValFloat(), startGreen.getValFloat(), startBlue.getValFloat(), startAlpha.getValFloat()), new Color(endRed.getValFloat(), endGreen.getValFloat(), endBlue.getValFloat(), endAlpha.getValFloat()));
-            if (text.getValBoolean()) {
-                 float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                 RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)));
+    @EventHandler
+    private final Listener<EventRender3D> render3d = new Listener<>(event -> {
+        if(targetCharms.getValBoolean()) {
+            if(currentTarget != null) {
+                try {
+                    {
+                        FramebufferShader framebufferShader = null;
+                        boolean itemglow = false, gradient = false, glow = false, outline = false;
+
+                        switch (targetCharmsShader.getValString()) {
+                            case "AQUA":
+                                framebufferShader = AquaShader.AQUA_SHADER;
+                                break;
+                            case "RED":
+                                framebufferShader = RedShader.RED_SHADER;
+                                break;
+                            case "SMOKE":
+                                framebufferShader = SmokeShader.SMOKE_SHADER;
+                                break;
+                            case "FLOW":
+                                framebufferShader = FlowShader.FLOW_SHADER;
+                                break;
+                            case "ITEMGLOW":
+                                framebufferShader = ItemShader.ITEM_SHADER;
+                                itemglow = true;
+                                break;
+                            case "PURPLE":
+                                framebufferShader = PurpleShader.PURPLE_SHADER;
+                                break;
+                            case "GRADIENT":
+                                framebufferShader = GradientOutlineShader.INSTANCE;
+                                gradient = true;
+                                break;
+                            case "UNU":
+                                framebufferShader = UnuShader.UNU_SHADER;
+                                break;
+                            case "GLOW":
+                                framebufferShader = GlowShader.GLOW_SHADER;
+                                glow = true;
+                                break;
+                            case "OUTLINE":
+                                framebufferShader = OutlineShader.OUTLINE_SHADER;
+                                outline = true;
+                                break;
+                            case "BlueFlames":
+                                framebufferShader = BlueFlamesShader.BlueFlames_SHADER;
+                                break;
+                            case "CodeX":
+                                framebufferShader = CodeXShader.CodeX_SHADER;
+                                break;
+                            case "Crazy":
+                                framebufferShader = CrazyShader.CRAZY_SHADER;
+                                break;
+                            case "Golden":
+                                framebufferShader = GoldenShader.GOLDEN_SHADER;
+                                break;
+                            case "HideF":
+                                framebufferShader = HideFShader.HideF_SHADER;
+                                break;
+                            case "HolyFuck":
+                                framebufferShader = HolyFuckShader.HolyFuckF_SHADER;
+                                break;
+                            case "HotShit":
+                                framebufferShader = HotShitShader.HotShit_SHADER;
+                                break;
+                            case "Kfc":
+                                framebufferShader = KfcShader.KFC_SHADER;
+                                break;
+                            case "Sheldon":
+                                framebufferShader = SheldonShader.SHELDON_SHADER;
+                                break;
+                            case "Smoky":
+                                framebufferShader = SmokyShader.SMOKY_SHADER;
+                                break;
+                            case "SNOW":
+                                framebufferShader = SnowShader.SNOW_SHADER;
+                                break;
+                            case "Techno":
+                                framebufferShader = TechnoShader.TECHNO_SHADER;
+                                break;
+                        }
+
+                        if (framebufferShader == null) return;
+
+                        framebufferShader.animationSpeed = targetCharmsAnimationSpeed.getValInt();
+
+                        GlStateManager.matrixMode(5889);
+                        GlStateManager.pushMatrix();
+                        GlStateManager.matrixMode(5888);
+                        GlStateManager.pushMatrix();
+                        if (itemglow) {
+                            ((ItemShader) framebufferShader).red = targetCharmsColor.getColour().r1;
+                            ((ItemShader) framebufferShader).green = targetCharmsColor.getColour().g1;
+                            ((ItemShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
+                            ((ItemShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
+                            ((ItemShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
+                            ((ItemShader) framebufferShader).blur = targetCharmsBlur.getValBoolean();
+                            ((ItemShader) framebufferShader).mix = targetCharmsMix.getValFloat();
+                            ((ItemShader) framebufferShader).alpha = 1f;
+                            ((ItemShader) framebufferShader).useImage = false;
+                        } else if (gradient) {
+                            ((GradientOutlineShader) framebufferShader).color = targetCharmsColor.getColour().getColor();
+                            ((GradientOutlineShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).gradientAlpha = targetCharmsGradientAlpha.getValBoolean();
+                            ((GradientOutlineShader) framebufferShader).alphaOutline = targetCharmsAlphaGradient.getValInt();
+                            ((GradientOutlineShader) framebufferShader).duplicate = targetCharmsDuplicateOutline.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).moreGradient = targetCharmsMoreGradientOutline.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).creepy = targetCharmsCreepyOutline.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).alpha = targetCharmsAlpha.getValFloat();
+                            ((GradientOutlineShader) framebufferShader).numOctaves = targetCharmsNumOctavesOutline.getValInt();
+                        } else if(glow) {
+                            ((GlowShader) framebufferShader).red = targetCharmsColor.getColour().r1;
+                            ((GlowShader) framebufferShader).green = targetCharmsColor.getColour().g1;
+                            ((GlowShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
+                            ((GlowShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
+                            ((GlowShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
+                        } else if(outline) {
+                            ((OutlineShader) framebufferShader).red = targetCharmsColor.getColour().r1;
+                            ((OutlineShader) framebufferShader).green = targetCharmsColor.getColour().g1;
+                            ((OutlineShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
+                            ((OutlineShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
+                            ((OutlineShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
+                        }
+                        framebufferShader.startDraw(event.particalTicks);
+                        for (Entity entity : mc.world.loadedEntityList) {
+                            if (entity == mc.player || entity == mc.getRenderViewEntity() || !entity.equals(currentTarget)) continue;
+                            Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.particalTicks);
+                            Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.particalTicks);
+                        }
+                        framebufferShader.stopDraw();
+                        if (gradient) ((GradientOutlineShader) framebufferShader).update(targetCharmsSpeedOutline.getValDouble());
+                        GlStateManager.color(1f, 1f, 1f);
+                        GlStateManager.matrixMode(5889);
+                        GlStateManager.popMatrix();
+                        GlStateManager.matrixMode(5888);
+                        GlStateManager.popMatrix();
+                    }
+                } catch (Exception ignored) {
+                    if(Config.instance.antiOpenGLCrash.getValBoolean() || lagProtect.getValBoolean()) {
+                        super.setToggled(false);
+                        ChatUtils.error("[AutoRer] Error, Config -> AntiOpenGLCrash disabled AutoRer");
+                    }
+                }
             }
         }
-    }
+
+        if(renderPos != null){
+            if(render.checkValString("Default")) RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, startColor.getColour().getColor(), endColor.getColour().getColor());
+            if (text.getValBoolean()) {
+                float targetDamage = CrystalUtils.calculateDamage(mc.world, renderPos.getX() + 0.5, renderPos.getY() + 1, renderPos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
+            }
+        }
+    });
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
         if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
@@ -454,7 +633,36 @@ public class AutoRer extends Module {
     }
 
     private void doCalculatePlace() {
-        try {calculatePlace();} catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
+        try {
+            calculatePlace();
+            if(recalc.getValBoolean() && placePos == null) recalculatePlace();
+        } catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
+    }
+
+    private void recalculatePlace() {
+        List<BlockPos> sphere = CrystalUtils.getSphere(recalcPlaceRange.getValFloat(), true, false);
+        List<BlockPos> validPos = new ArrayList<>();
+
+        sphere.stream()
+                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) > minDMG.getValInt() || CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt()))
+                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) <= maxSelfDMG.getValInt())
+                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount())
+                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) < CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()))
+                .forEach(validPos::add);
+
+        validPos.sort((first, second) -> (int) (mc.player.getDistanceSqToCenter(first) - mc.player.getDistanceSqToCenter(second)));
+
+        final double[] maxDamage = {0.5};
+        final BlockPos[] placePos = {null};
+
+        validPos.forEach(pos -> {
+            if(CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) > maxDamage[0]) {
+                maxDamage[0] = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                placePos[0] = pos;
+            }
+        });
+
+        this.placePos = placePos[0];
     }
 
     private void calculatePlace() {
@@ -463,19 +671,15 @@ public class AutoRer extends Module {
         List<BlockPos> sphere = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
 
         if(calcDistSort.getValBoolean()) {
-            Comparator<BlockPos> comparator = (first, second) -> {
-                double firstDist = mc.player.getDistanceSq(first), secondDist = mc.player.getDistanceSq(second);
-                return (int) (secondDist - firstDist);
-            };
-
-            sphere.sort(comparator);
+            Collections.sort(sphere);
+            Collections.reverse(sphere);
         }
 
         for(int size = sphere.size(), i = 0; i < size; ++i) {
             BlockPos pos = sphere.get(i);
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
-            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean(), firePlace.getValBoolean(), liquidPlace.getValBoolean())) {
+            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean(), firePlace.getValBoolean())) {
                 float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
 
                 if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
@@ -531,16 +735,19 @@ public class AutoRer extends Module {
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
 
         if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
-            float[] rots = RotationUtils.getRotation(currentTarget);
-            if(!thread) {
-                if (!motionCrystal.getValBoolean()) {
-                    mc.player.rotationYaw = rots[0];
-                    mc.player.rotationPitch = rots[1];
-                } else if (event != null) {
-                    event.setYaw(rots[0]);
-                    event.setPitch(rots[1]);
-                }
-            } else if(threadPacketRots.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+            try {
+                float[] rots = RotationUtils.getRotation(currentTarget);
+                if (!thread) {
+                    if (!motionCrystal.getValBoolean()) {
+                        mc.player.rotationYaw = rots[0];
+                        mc.player.rotationPitch = rots[1];
+                    } else if (event != null) {
+                        event.setYaw(rots[0]);
+                        event.setPitch(rots[1]);
+                    }
+                } else if (threadPacketRots.getValBoolean())
+                    mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+            } catch (Exception ignored) {}
         }
 
         RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
@@ -603,6 +810,7 @@ public class AutoRer extends Module {
 
         for(int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
             Entity entity = mc.world.loadedEntityList.get(i);
+            if(entity == null) continue;
 
             if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
                 Friend friend = getNearFriendWithMaxDamage(entity);
@@ -700,7 +908,6 @@ public class AutoRer extends Module {
 
     public enum ThreadMode {None, Pool, Sound, While}
     public enum Render {None, Default, Advanced}
-    public enum InfoMode {Target, Damage, Both}
     public enum Rotate {Off, Place, Break, All}
     public enum Raytrace {None, Place, Break, Both}
     public enum SwitchMode {None, Normal, Silent, SilentBypass}
@@ -712,7 +919,7 @@ public class AutoRer extends Module {
     public enum BreakPriority {Damage, CevBreaker}
 
     public enum AntiCevBreakerVectors {
-        Cev(Arrays.asList(new Vec3i(0, 2, 0))),
+        Cev(Collections.singletonList(new Vec3i(0, 2, 0))),
         Civ(Arrays.asList(new Vec3i(1, 2, 0), new Vec3i(-1, 2, 0), new Vec3i(0, 2, 1), new Vec3i(0, 2, -1), new Vec3i(1, 2, 1), new Vec3i(-1, 2, -1), new Vec3i(1, 2, -1), new Vec3i(-1, 2, 1)));
 
         public final List<Vec3i> vectors;

@@ -165,7 +165,8 @@ public class TargetHUD extends HudModule {
             mc.getTextureManager().bindTexture(mc.player.connection.getPlayerInfo(target.getName()).getLocationSkin());
             GL11.glColor4f(1, 1, 1, 1);
             Gui.drawScaledCustomSizeModalRect((int) (x + borderOffset + 1), (int) (y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 1), 8.0F, 8, 8, 8, 10, 10, 64.0F, 64.0F);
-        } finally {
+            GL11.glPopMatrix();
+        } catch (Exception e) {
             GL11.glPopMatrix();
         }
 
@@ -273,7 +274,8 @@ public class TargetHUD extends HudModule {
             mc.getTextureManager().bindTexture(mc.getConnection().getPlayerInfo(target.getName()).getLocationSkin());
             GL11.glColor4f(1, 1, 1, 1);
             Gui.drawScaledCustomSizeModalRect((int) (x + borderOffset + 1), (int) (y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 1), 8.0F, 8, 8, 8, 25, 25, 64.0F, 64.0F);
-        } finally {
+            GL11.glPopMatrix();
+        } catch (Exception e){
             GL11.glPopMatrix();
         }
 

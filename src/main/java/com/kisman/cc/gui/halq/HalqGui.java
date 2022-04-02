@@ -80,6 +80,7 @@ public class HalqGui extends GuiScreen {
                 comp.drawScreen(mouseX, mouseY);
             }
             frame.renderPost(mouseX, mouseY);
+            frame.veryRenderPost(mouseX, mouseY);
             frame.refresh();
         }
 

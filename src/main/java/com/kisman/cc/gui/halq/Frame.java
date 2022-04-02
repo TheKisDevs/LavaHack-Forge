@@ -100,7 +100,9 @@ public class Frame {
                 }
             }
         }
+    }
 
+    public void veryRenderPost(int mouseX, int mouseY) {
         if(open) for(Component comp : mods) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
     }
 

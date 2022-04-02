@@ -140,7 +140,7 @@ public class AutoCrystal extends Module implements Runnable {
         for (BlockPos pos : AIUtils.getSphere(placeRange.getValFloat())) {
             float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, target, true);
             float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, true);
-            if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean(), false, false)) {
+            if (CrystalUtils.canPlaceCrystal(pos, check.getValBoolean(), true, multiPlace.getValBoolean(), false)) {
                 if (mc.player.getDistance(pos.getX() + 0.5f, pos.getY() + 1.0f, pos.getZ() + 0.5f) > MathUtil.square(placeRange.getValFloat())) continue;
                 if (selfDamage > maxSelfDMG.getValFloat()) continue;
                 if (targetDamage < minDMG.getValFloat()) continue;

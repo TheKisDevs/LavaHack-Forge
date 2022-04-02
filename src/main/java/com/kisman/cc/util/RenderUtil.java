@@ -1494,13 +1494,13 @@ public class RenderUtil {
         GlStateManager.scale(scaleDistance, scaleDistance, scaleDistance);
     }
 
-    public static void drawText(final BlockPos pos, final String text) {
+    public static void drawText(final BlockPos pos, final String text, int color) {
         if (pos == null || text == null) return;
         GlStateManager.pushMatrix();
         glBillboardDistanceScaled(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, mc.player, 1.0f);
         GlStateManager.disableDepth();
         GlStateManager.translate(-(CustomFontUtil.getStringWidth(text) / 2.0), 0.0, 0.0);
-        CustomFontUtil.drawStringWithShadow(text, 0.0f, 0.0f, -5592406);
+        CustomFontUtil.drawStringWithShadow(text, 0.0f, 0.0f, color);
         GlStateManager.popMatrix();
     }
 

@@ -15,35 +15,36 @@ import java.util.*;
 
 public class AutoTrap extends Module {
     public static AutoTrap instance;
-    private Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
-    private Setting disableOnComplete = new Setting("Disable On Complete", this, false);
-    private Setting placeDelay = new Setting("Delay", this, 50, 0, 100, true);
-    private Setting rotate = new Setting("Rotate", this, true);
-    private Setting blocksPerTick = new Setting("Blocks Per Tick", this, 8, 1, 30, true);
-    private Setting antiScaffold = new Setting("Anti Scaffold", this, false);
-    private Setting antiStep = new Setting("Anti Step", this, false);
-    private Setting surroundPlacing = new Setting("Surround Placing", this, true);
-    private Setting range = new Setting("Range", this, 4, 1, 5, false);
-    private Setting raytrace = new Setting("RayTrace", this, false);
-    private Setting packet = new Setting("Packet Place", this, true);
-    private Setting rewrite = new Setting("Rewrite", this, false);
-    private Setting dynamic = new Setting("Rewrite Dynamic", this, false);
-    private Setting supportBlocks = new Setting("Rewrite Support Blocks", this, RewriteSupportModes.Dynamic);
-    private Setting rewriteRetries = new Setting("Rewrite Retries", this, 0, 0, 20, true);
-    private Setting switch_ = new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent);
-    private Setting rotateMode = new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent);
+    protected final Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
+    protected final Setting disableOnComplete = new Setting("Disable On Complete", this, false);
+    protected final Setting placeDelay = new Setting("Delay", this, 50, 0, 100, true);
+    protected final Setting rotate = new Setting("Rotate", this, true);
+    protected final Setting blocksPerTick = new Setting("Blocks Per Tick", this, 8, 1, 30, true);
+    protected final Setting antiScaffold = new Setting("Anti Scaffold", this, false);
+    protected final Setting antiStep = new Setting("Anti Step", this, false);
+    protected final Setting surroundPlacing = new Setting("Surround Placing", this, true);
+    protected final Setting range = new Setting("Range", this, 4, 1, 5, false);
+    protected final Setting raytrace = new Setting("RayTrace", this, false);
+    protected final Setting packet = new Setting("Packet Place", this, true);
+    protected final Setting rewrite = new Setting("Rewrite", this, false);
+    protected final Setting dynamic = new Setting("Rewrite Dynamic", this, false);
+    protected final Setting supportBlocks = new Setting("Rewrite Support Blocks", this, RewriteSupportModes.Dynamic);
+    protected final Setting rewriteRetries = new Setting("Rewrite Retries", this, 0, 0, 20, true);
+    protected final Setting switch_ = new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent);
+    protected final Setting rotateMode = new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent);
 
-    private TimerUtils timer = new TimerUtils();
-    private Map<BlockPos, Integer> retries = new HashMap<>();
-    private int tries;
-    private TimerUtils retryTimer = new TimerUtils();
+    protected TimerUtils timer = new TimerUtils();
+    protected Map<BlockPos, Integer> retries = new HashMap<>();
+    protected int tries;
+    protected TimerUtils retryTimer = new TimerUtils();
     public EntityPlayer target;
-    private boolean didPlace = false;
-    private boolean isSneaking;
-    private int oldSlot;
-    private int placements = 0, rewrPlacements = 0;
+    protected boolean didPlace = false;
+    protected boolean isSneaking;
+    protected int oldSlot;
+    protected int placements = 0;
+    protected int rewrPlacements = 0;
     private boolean smartRotate = false;
-    private BlockPos startPos = null;
+    protected BlockPos startPos = null;
 
     public AutoTrap() {
         super("AutoTrap", "trapping all players", Category.COMBAT);
@@ -69,6 +70,13 @@ public class AutoTrap extends Module {
         setmgr.rSetting(rotateMode);
     }
 
+    /**
+     * see <code>com.kisman.cc.module.combat.SelfTrap
+     */
+    public AutoTrap(String name, Category category) {
+        super(name, category);
+    }
+
     public void onEnable() {
         if(mc.player == null || mc.world == null) return;
 
@@ -86,7 +94,7 @@ public class AutoTrap extends Module {
         } else doRewriteTrap();
     }
 
-    private void doRewriteTrap() {
+    protected void doRewriteTrap() {
         target = EntityUtil.getTarget(targetRange.getValFloat());
 
         if(target == null) return;
@@ -110,7 +118,7 @@ public class AutoTrap extends Module {
         if(disableOnComplete.getValBoolean()) setToggled(false);
     }
 
-    private ArrayList<BlockPos> getPosList() {
+    protected ArrayList<BlockPos> getPosList() {
         List<BlockPos> startPosList = getUnsafeBlocks();
         ArrayList<BlockPos> finalPosList = new ArrayList<>();
 
@@ -132,7 +140,7 @@ public class AutoTrap extends Module {
         return  finalPosList;
     }
 
-    private void place(BlockPos posToPlace) {
+    protected void place(BlockPos posToPlace) {
         if(rewrPlacements < blocksPerTick.getValInt()) {
             float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
             if(!rotateMode.getValString().equalsIgnoreCase(RewriteRotateModes.None.name())) {
@@ -177,7 +185,7 @@ public class AutoTrap extends Module {
         }
     }
 
-    private boolean check() {
+    protected boolean check() {
         if(mc.player == null || startPos == null) return false;
 
         didPlace = false;
