@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.module.misc.Optimizer;
 import com.kisman.cc.module.render.BlockOutline;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;

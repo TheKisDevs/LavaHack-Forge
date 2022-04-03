@@ -156,6 +156,14 @@ public class RotationUtils {
         return new float[]{(float) MathHelper.wrapDegrees ( Math.toDegrees (Math.atan2(difZ, difX)) - 90.0)};
     }
 
+    public static float[] calcAngle(final Vec3d from, final Vec3d to) {
+        final double difX = to.x - from.x;
+        final double difY = (to.y - from.y) * -1.0;
+        final double difZ = to.z - from.z;
+        final double dist = MathHelper.sqrt(difX * difX + difZ * difZ);
+        return new float[] { (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difZ, difX)) - 90.0), (float)MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(difY, dist))) };
+    }
+
     public static Vec2f getRotationTo(AxisAlignedBB box) {
         EntityPlayerSP player = mc.player;
         if (player == null) return Vec2f.ZERO;

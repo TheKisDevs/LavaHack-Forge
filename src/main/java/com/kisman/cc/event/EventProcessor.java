@@ -67,8 +67,8 @@ public class EventProcessor {
 
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
-        AutoTrap.instance.setToggled(false);
         if(AutoRer.instance.lagProtect.getValBoolean()) disableCa();
+        AutoRer.instance.placePos = null;
         SaveConfig.init();
     }
 

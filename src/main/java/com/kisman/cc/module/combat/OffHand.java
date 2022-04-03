@@ -13,9 +13,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
+import org.lwjgl.input.Mouse;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class OffHand extends Module {
     public static OffHand instance;
@@ -27,6 +27,7 @@ public class OffHand extends Module {
     private final Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
     private final Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
     private final Setting offhandGapOnSword = new Setting("GapOnSword", this, true);
+    private final Setting rightClickGap = new Setting("Right Click Gap", this, false);
     private final Setting hotbarFirst = new Setting("HotbarFirst", this, false);
     private final Setting useUpdateController = new Setting("Use UpdateController", this, true);
     private final Setting antiTotemFail = new Setting("Anti Totem Fail", this, true);
@@ -71,6 +72,11 @@ public class OffHand extends Module {
             switchOffHandIfNeed("Totem");
             return;
         }
+
+        if(rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && !mc.player.getHeldItemMainhand().getItem().equals(Items.GOLDEN_APPLE) && !mc.player.getHeldItemOffhand().getItem().equals(Items.GOLDEN_APPLE)) {
+            switchOffHandIfNeed("Gap");
+            return;
+        }
         switchOffHandIfNeed(mode.getValString());
     }
 
@@ -85,7 +91,8 @@ public class OffHand extends Module {
                     }
                 }
             }
-        } finally {return false;}
+        } catch (Exception ignored) {}
+        return false;
     }
 
     private void switchOffHandIfNeed(String mode) {

@@ -158,4 +158,14 @@ public class LuaGlobals implements Globals {
     public int getMouseWheel() {
         return Mouse.getDWheel();
     }
+
+    public boolean instanceOf(Object o, String clazz) {
+        Class<?> clazz1 = o.getClass();
+        //TODO: remap
+        while(clazz1 != null) {
+            if(clazz1.getName().equals(clazz)) return true;
+            clazz1 = clazz1.getSuperclass();
+        }
+        return false;
+    }
 }

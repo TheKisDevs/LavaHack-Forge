@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class AutoRer extends Module {
     public final Setting lagProtect = new Setting("Lag Protect", this, false);
@@ -148,9 +149,10 @@ public class AutoRer extends Module {
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
     public static EntityPlayer currentTarget;
     private Thread thread;
-    private BlockPos placePos, renderPos;
+    public BlockPos placePos, renderPos;
     private Entity lastHitEntity = null;
     public boolean rotating;
+    private String lastThreadMode = threadMode.getValString();
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
@@ -338,14 +340,21 @@ public class AutoRer extends Module {
 
         currentTarget = EntityUtil.getTarget(targetRange.getValFloat());
 
+        if(!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
+            if (this.executor != null) this.executor.shutdown();
+            if (this.thread != null) this.shouldInterrupt.set(true);
+            lastThreadMode = threadMode.getValString();
+        }
+
         if(currentTarget == null) return;
-        else super.setDisplayInfo("[" + currentTarget.getName() + "]");
+        else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + " ]");
         if(threadMode.getValString().equalsIgnoreCase("None")) {
             if (manualBreaker.getValBoolean()) manualBreaker();
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
                 doCalculatePlace();
+                if(placePos != null) if(!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK)) placePos = null;
                 calcTimer.reset();
             }
 
@@ -550,11 +559,11 @@ public class AutoRer extends Module {
             }
         }
 
-        if(renderPos != null){
-            if(render.checkValString("Default")) RenderUtil.drawBlockESP(renderPos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+        if(placePos != null){
+            if(render.checkValString("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
             else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, startColor.getColour().getColor(), endColor.getColour().getColor());
-            if (text.getValBoolean()) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, renderPos.getX() + 0.5, renderPos.getY() + 1, renderPos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+            if (text.getValBoolean() && currentTarget != null) {
+                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
                 RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
             }
         }
@@ -562,7 +571,8 @@ public class AutoRer extends Module {
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
         if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
-            float[] rots = RotationUtils.getRotationToPos(pos);
+//            float[] rots = RotationUtils.getRotationToPos(pos);
+            float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
             mc.player.rotationYaw = rots[0];
             mc.player.rotationPitch = rots[1];
         }
@@ -707,7 +717,7 @@ public class AutoRer extends Module {
         if(!fastCalc.getValBoolean()) {
             doCalculatePlace();
 
-            if(placePos == null) return;
+            if(placePos == null || (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK))) return;
         }
 
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
@@ -736,7 +746,8 @@ public class AutoRer extends Module {
 
         if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
             try {
-                float[] rots = RotationUtils.getRotation(currentTarget);
+//                float[] rots = RotationUtils.getRotation(currentTarget);
+                float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getX() + 0.5f), (placePos.getY() - 0.5f), (placePos.getZ() + 0.5f)));
                 if (!thread) {
                     if (!motionCrystal.getValBoolean()) {
                         mc.player.rotationYaw = rots[0];
@@ -946,6 +957,41 @@ public class AutoRer extends Module {
             this.damage = damage;
             if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
             this.isTotemPopped = isTotemPopped;
+        }
+    }
+
+    /**
+     * @author XuluPlus
+     */
+    public static class Util {
+        public static List<BlockPos> possiblePlacePositions(float placeRange, boolean secondCheck, boolean thirdCheck, boolean multiPlace, boolean firePlace) {
+            NonNullList list = NonNullList.create();
+            list.addAll(getSphere(mc.player.getPosition(), placeRange, (int) placeRange, false, true, 0).stream().filter(pos -> CrystalUtils.canPlaceCrystal(pos, secondCheck, thirdCheck, multiPlace, firePlace)).collect(Collectors.toList()));
+            return ((List<BlockPos>) list);
+        }
+
+        public static List<BlockPos> getSphere(BlockPos pos, float r, int h, boolean hollow, boolean sphere, int plus_y) {
+            final ArrayList<BlockPos> circleblocks = new ArrayList<>();
+            final int cx = pos.getX();
+            final int cy = pos.getY();
+            final int cz = pos.getZ();
+            for (int x = cx - (int)r; x <= cx + r; ++x) {
+                for (int z = cz - (int)r; z <= cz + r; ++z) {
+                    int y = sphere ? (cy - (int)r) : cy;
+                    while (true) {
+                        final float f = (float)y;
+                        final float f2 = sphere ? (cy + r) : ((float)(cy + h));
+                        if (f >= f2) break;
+                        final double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? ((cy - y) * (cy - y)) : 0);
+                        if (dist < r * r && (!hollow || dist >= (r - 1.0f) * (r - 1.0f))) {
+                            final BlockPos l = new BlockPos(x, y + plus_y, z);
+                            circleblocks.add(l);
+                        }
+                        ++y;
+                    }
+                }
+            }
+            return circleblocks;
         }
     }
 

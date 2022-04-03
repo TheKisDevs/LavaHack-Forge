@@ -45,7 +45,6 @@ public class AntiBow extends Module {
 
                 if(oldSlot != -1) InventoryUtil.switchToSlot(oldSlot, true);
 
-                target = null;
                 bool = false;
             }
         } else {

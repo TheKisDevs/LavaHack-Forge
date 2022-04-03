@@ -91,8 +91,8 @@ public class AimBot extends Module {
             double posXDifference = mc.player.posX - mc.player.lastReportedPosX;
             double posYDifference = axisalignedbb.minY - mc.player.lastReportedPosY;
             double posZDifference = mc.player.posZ - mc.player.lastReportedPosZ;
-            double yawDifference = (double)(yaw - mc.player.lastReportedYaw);
-            double rotationDifference = (double)(pitch - mc.player.lastReportedPitch);
+            double yawDifference = (yaw - mc.player.lastReportedYaw);
+            double rotationDifference = (pitch - mc.player.lastReportedPitch);
             ++mc.player.positionUpdateTicks;
             boolean movedXYZ = posXDifference * posXDifference + posYDifference * posYDifference + posZDifference * posZDifference > 9.0E-4D || mc.player.positionUpdateTicks >= 20;
             boolean movedRotation = yawDifference != 0.0D || rotationDifference != 0.0D;

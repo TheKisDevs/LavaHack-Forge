@@ -70,7 +70,7 @@ public class SelfTrap extends AutoTrap {
             retryTimer.reset();
         }
         if (obbySlot3 == -1) {
-            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
+            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, SelfTrap disabling...");
             setToggled(false);
             return true;
         }
