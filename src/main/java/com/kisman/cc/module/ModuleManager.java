@@ -33,7 +33,7 @@ public class ModuleManager {
 
 		//combat
 		modules.add(new AutoCrystal());
-		modules.add(new AimAssist());
+//		modules.add(new AimAssist());
 		modules.add(new AimBot());
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
@@ -98,9 +98,9 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
+		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-//		modules.add(new FramebufferTest());
 		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());

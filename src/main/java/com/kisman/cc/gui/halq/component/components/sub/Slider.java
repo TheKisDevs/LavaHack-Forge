@@ -1,5 +1,7 @@
 package com.kisman.cc.gui.halq.component.components.sub;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.settings.Setting;
@@ -52,6 +54,7 @@ public class Slider extends Component {
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         dragging = false;
+        Kisman.EVENT_BUS.post(new EventSettingChange.NumberSetting(setting));
     }
 
     @Override

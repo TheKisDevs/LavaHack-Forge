@@ -136,7 +136,7 @@ public class Config extends Module {
         }
     }
 
-    public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, custom}
+    public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, custom}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
     public enum AstolfoColorMode {Old, Impr}
 }

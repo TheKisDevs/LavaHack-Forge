@@ -97,6 +97,7 @@ public class AutoRer extends Module {
     private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
     private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"));
+    private final Setting threadCalc = new Setting("Thread Calc", this, true);
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
@@ -223,6 +224,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(threadSynsValue);
         setmgr.rSetting(threadPacketRots);
         setmgr.rSetting(threadSoundPlayer);
+        setmgr.rSetting(threadCalc);
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
@@ -347,17 +349,21 @@ public class AutoRer extends Module {
         }
 
         if(currentTarget == null) return;
-        else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + " ]");
+        else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + "]");
+
+        calc: {
+            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong()) && !threadCalc.getValBoolean()) {
+                if (threadCalc.getValBoolean() && !threadMode.getValString().equalsIgnoreCase("None")) break calc;
+                doCalculatePlace();
+                if (placePos != null) if (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK)) placePos = null;
+                calcTimer.reset();
+            }
+        }
+
         if(threadMode.getValString().equalsIgnoreCase("None")) {
             if (manualBreaker.getValBoolean()) manualBreaker();
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
-            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-                doCalculatePlace();
-                if(placePos != null) if(!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK)) placePos = null;
-                calcTimer.reset();
-            }
-
             if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
             else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
         } else processMultiThreading();
@@ -713,13 +719,8 @@ public class AutoRer extends Module {
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
-
-        if(!fastCalc.getValBoolean()) {
-            doCalculatePlace();
-
-            if(placePos == null || (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK))) return;
-        }
-
+        if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
+        if(placePos == null || (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK))) return;
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
 
         SilentSwitchBypass bypass = new SilentSwitchBypass(Items.END_CRYSTAL);
@@ -819,31 +820,36 @@ public class AutoRer extends Module {
         Entity crystal = null;
         double maxDamage = 0.5;
 
-        for(int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
-            Entity entity = mc.world.loadedEntityList.get(i);
-            if(entity == null) continue;
+        try {
+            for (int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
+                Entity entity = mc.world.loadedEntityList.get(i);
+                if (entity == null) continue;
 
-            if(entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
-                Friend friend = getNearFriendWithMaxDamage(entity);
-                double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                if (entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
+                    Friend friend = getNearFriendWithMaxDamage(entity);
+                    double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
-                if(friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
-                    if(friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
-                    else if(friend.isTotemFailed) return null;
-                    if(friend.damage >= maxFriendDMG.getValInt()) return null;
-                }
+                    if (friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
+                        if (friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped)
+                            return null;
+                        else if (friend.isTotemFailed) return null;
+                        if (friend.damage >= maxFriendDMG.getValInt()) return null;
+                    }
 
-                if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
-                    double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
+                    if (targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
+                        double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
 
-                    if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
-                        if(maxDamage <= targetDamage) {
-                            maxDamage = targetDamage;
-                            crystal = entity;
+                        if (selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
+                            if (maxDamage <= targetDamage) {
+                                maxDamage = targetDamage;
+                                crystal = entity;
+                            }
                         }
                     }
                 }
             }
+        } catch(NullPointerException ignored) {
+            super.setToggled(false);
         }
 
         return crystal;

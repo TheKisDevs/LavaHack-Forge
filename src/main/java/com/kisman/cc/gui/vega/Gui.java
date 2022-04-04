@@ -39,6 +39,7 @@ public class Gui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
         if(Config.instance.guiParticles.getValBoolean()) {
             particleSystem.tick(10);
             particleSystem.render();

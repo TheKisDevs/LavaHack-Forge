@@ -9,6 +9,7 @@ public class Console extends Module{
     }
 
     public void onEnable() {
+        if(mc.world == null) return;
         mc.displayGuiScreen(Kisman.instance.guiConsole);
         this.setToggled(false);
     }

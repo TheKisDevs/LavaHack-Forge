@@ -128,5 +128,5 @@ public class HUD extends Module {
 	public enum LogoImage {Old, New}
 	public enum Gradient {None, Rainbow, Astolfo, Pulsive}
 	public enum IndicatorsThemeMode {Default, Rewrite}
-	public enum TargetHudThemeMode {Vega, Rewrite, Circle, NoRules, Simple, Astolfo}
+	public enum TargetHudThemeMode {Vega, Rewrite, NoRules, Simple, Astolfo}
 }

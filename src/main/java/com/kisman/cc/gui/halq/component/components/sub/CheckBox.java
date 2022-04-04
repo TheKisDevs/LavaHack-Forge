@@ -1,5 +1,7 @@
 package com.kisman.cc.gui.halq.component.components.sub;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.settings.Setting;
@@ -32,7 +34,10 @@ public class CheckBox extends Component {
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) setting.setValBoolean(!setting.getValBoolean());
+        if(isMouseOnButton(mouseX, mouseY) && button == 0) {
+            setting.setValBoolean(!setting.getValBoolean());
+            Kisman.EVENT_BUS.post(new EventSettingChange.BooleanSetting(setting));
+        }
     }
 
     @Override

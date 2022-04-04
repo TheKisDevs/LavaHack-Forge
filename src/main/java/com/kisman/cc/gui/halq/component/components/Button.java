@@ -51,6 +51,7 @@ public class Button extends Component {
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) == null) return;
             for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
+                if(set == null) continue;
                 if (set.isSlider()) {
                     comps.add(new Slider(set, x, y, offsetY, count1++));
                     offsetY += HalqGui.height;
