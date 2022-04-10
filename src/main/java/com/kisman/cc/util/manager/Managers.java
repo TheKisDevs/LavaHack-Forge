@@ -41,6 +41,7 @@ public class Managers {
     public void onUpdate(TickEvent.ClientTickEvent event) {
         colorManager.update();
         crystalManager.update();
+        timerManager.onUpdate();
     }
 
     @EventHandler private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {if(event.getPacket() instanceof SPacketPlayerPosLook) lagTimer.set(System.currentTimeMillis());});
