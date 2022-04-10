@@ -6,6 +6,7 @@ import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.Globals;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -167,5 +168,9 @@ public class LuaGlobals implements Globals {
             clazz1 = clazz1.getSuperclass();
         }
         return false;
+    }
+
+    public void openGui(GuiScreen gui) {
+        mc.displayGuiScreen(gui);
     }
 }

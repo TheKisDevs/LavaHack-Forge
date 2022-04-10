@@ -28,37 +28,33 @@ public class ForgeMappings {
                 ClassEntry classEntry = new ClassEntry();
                 classEntry.official = split[0];
                 classEntry.named = split[1];
+                classEntry.intermediary = classEntry.named;
                 classes.add(classEntry);
-                System.out.println("Class: official " + classEntry.official + ", named " + classEntry.named);
+                System.out.println("Class: official " + classEntry.official + ", named/intermediary " + classEntry.named);
             }
             if(line.startsWith("FD")) {
-                String[] split = line.split(" ");
-                if(!split[split.length - 1].equals("#C")) {
+                if(!line.contains("#C")) {
+                    String[] split = line.replaceAll("FD: ", "").split(" ");
                     FieldEntry fieldEntry = new FieldEntry();
-                    fieldEntry.official = split[1];
-                    ClassEntry classEntry = findClass(split[1].split("/")[0], ClassFindType.OFFICIAL);
-                    if (classEntry != null) fieldEntry.official = classEntry.named;
-                    fieldEntry.intermediary = split[2].split("/")[split[2].split("/").length - 1];
-                    fieldEntry.named = Kisman.instance.remapper3000.fieldsMappingReverse.get(split[2].split("/")[split[2].split("/").length - 1]);
-                    fieldEntry.clazz = split[1].split("/")[0];
+                    fieldEntry.official = split[0].split("/")[1];
+                    fieldEntry.type = "";
+                    fieldEntry.intermediary = split[1].split("/")[split[1].split("/").length - 1];
+                    fieldEntry.named = Kisman.instance.remapper3000.remappingField(fieldEntry.intermediary);
+                    fieldEntry.classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
                     fields.add(fieldEntry);
                     System.out.println("Field: official " + fieldEntry.official + ", named " + fieldEntry.named + ", intermediary " + fieldEntry.intermediary);
                 }
             }
             if(line.startsWith("MD")) {
                 String[] split = line.replace("MD: ", "").split(" ");
-                if(!split[split.length - 1].equals("#C")) {
-                    MethodEntry methodEntry = new MethodEntry();
-                    methodEntry.official = split[0].split("/")[1];
-                    ClassEntry classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
-                    if (classEntry != null) methodEntry.official = classEntry.named;
-                    methodEntry.intermediary = split[2].split("/")[split[2].split("/").length - 1];
-                    methodEntry.named = Kisman.instance.remapper3000.methodsMappingReverse.get(split[2].split("/")[split[2].split("/").length - 1]);
-                    methodEntry.path = split[0];
-                    methodEntry.clazz = split[0].split("/")[0];
-                    methods.add(methodEntry);
-                    System.out.println("Method: official " + methodEntry.official + ", named " + methodEntry.named + ", intermediary " + methodEntry.intermediary);
-                }
+                MethodEntry methodEntry = new MethodEntry();
+                methodEntry.official = split[0].split("/")[1];
+                methodEntry.type = split[1];
+                methodEntry.intermediary = split[2].split("/")[split[2].split("/").length - 1];
+                methodEntry.named = Kisman.instance.remapper3000.remappingMethod(methodEntry.intermediary);
+                methodEntry.classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
+                methods.add(methodEntry);
+                System.out.println("Method: official " + methodEntry.official + ", named " + methodEntry.named + ", intermediary " + methodEntry.intermediary);
             }
         }
     }
@@ -83,13 +79,16 @@ public class ForgeMappings {
     public FieldEntry findField( String classname, String fieldname, NormalFindType findtype ) {
         for( FieldEntry entry : fields ) {
             if(entry.named == null) continue;
-            if( classname != null && !entry.official.equals( classname ) ) continue;
+            if( classname != null && !entry.classEntry.official.equals( classname ) ) continue;
             switch( findtype ) {
                 case INTERMEDIARY:
                     if( entry.intermediary.equals( fieldname ) ) return entry;
                     break;
                 case NAMED:
                     if( entry.named.equals( fieldname ) ) return entry;
+                    break;
+                case OFFICIAL:
+                    if(entry.official.equals(fieldname)) return entry;
                     break;
             }
         }
@@ -118,5 +117,5 @@ public class ForgeMappings {
     public List< FieldEntry > getFields( ) {return fields;}
     public List< MethodEntry > getMethods( ) {return methods;}
     public enum ClassFindType {OFFICIAL, INTERMEDIARY, NAMED}
-    public enum NormalFindType {INTERMEDIARY, NAMED}
+    public enum NormalFindType {INTERMEDIARY, NAMED, OFFICIAL}
 }

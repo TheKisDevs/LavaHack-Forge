@@ -1,25 +1,19 @@
 package com.kisman.cc.hud.hudmodule;
 
+import com.kisman.cc.module.Category;
+import com.kisman.cc.module.Module;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.common.MinecraftForge;
 
-public class HudModule {
+public class HudModule extends Module {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
-	private final String name;
-	private String description;
-	private int key;
-	private final HudCategory category;
-	public boolean toggled = false;
-	public boolean visible = true;
+	private final HudCategory categoryHud;
 	public boolean drag = false;
 	private double x = 0, y = 0, w = 0, h = 0;
 
 	public HudModule(String name, String description, HudCategory category) {
-		this.name = name;
-		this.description = description;
-		this.key = 0;
-		this.category = category;
+		super(name, description, Category.RENDER);
+		this.categoryHud = category;
 	}
 
 	public HudModule(String name, String description, HudCategory category, boolean drag) {
@@ -36,29 +30,7 @@ public class HudModule {
 		this.drag = drag;
 	}
 
-	public void setToggled(boolean toggled) {
-		toggled = !toggled;
-		if (toggled) this.onEnable();
-		else this.onDisable();
-	}
-
-	public void toggle() {
-		toggled = !toggled;
-		if (toggled) this.onEnable();
-		else this.onDisable();
-	}
-
-	public String getDescription() {return description;}
-	public void setDescription(String description) {this.description = description;}
-	public int getKey() {return key;}
-	public void setKey(int key) {this.key = key;}
-	public boolean isToggled() {return toggled;}
-	public void onEnable() {MinecraftForge.EVENT_BUS.register(this);}
-	public void onDisable() {MinecraftForge.EVENT_BUS.unregister(this);}
-	public String getName() {return this.name;}
-	public HudCategory getCategory() {return this.category;}
-	public void update(){}
-	public void render(){}
+	public HudCategory getCategoryHud() {return categoryHud;}
 	public double getX() {return x;}
 	public void setX(double x) {this.x = x;}
 	public double getY() {return y;}

@@ -72,6 +72,7 @@ public class Anchor extends Module {
 
     public void update() {
         if (mc.world == null && mc.player == null) return;
+        super.setDisplayInfo("[" + mode.getValString() + "]");
         if (mc.player.posY < 0) return;
 
         double pitch = Kisman.instance.settingsManager.getSettingByName(this, "Pitch").getValDouble();

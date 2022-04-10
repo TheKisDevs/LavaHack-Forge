@@ -45,6 +45,7 @@ public class ModuleManager {
 		modules.add(new AutoRer());
 		modules.add(new AutoTotem());
 		modules.add(new AutoTrap());
+		modules.add(new AntiTrapDoorBurrow());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
 		modules.add(new BreakAlert());
@@ -57,6 +58,7 @@ public class ModuleManager {
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
+//		modules.add(new TrapDoorBurrow());
 		//client
 		modules.add(new AutoUpdate());
 		modules.add(new Cape());
@@ -198,6 +200,7 @@ public class ModuleManager {
 		modules.add(new WebLeave());
 		//misc
 		modules.add(new AutoLog());
+		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
 		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());

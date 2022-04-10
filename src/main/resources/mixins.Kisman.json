@@ -46,6 +46,7 @@
     "MixinParticleManager",
     "MixinPlayerControllerMP",
     "MixinRenderEntityItem",
+    "MixinScreenShotHelper",
     "MixinVisGraph",
     "viaforge.MixinGuiConnecting",
     "viaforge.MixinGuiDisconnected",

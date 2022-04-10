@@ -34,6 +34,7 @@ public class BoatFly extends Module {
 
     public void update() {
         if(mc.player == null || mc.world == null || mc.player.ridingEntity == null) return;
+        super.setDisplayInfo("[" + speed.getValInt() + "]");
         Entity e = mc.player.ridingEntity;
         if (mc.gameSettings.keyBindJump.isKeyDown()) e.motionY = verticalSpeed.getValDouble();
         else if (!downKey.isNoneKey() && Keyboard.isKeyDown(downKey.getKey())) e.motionY = -verticalSpeed.getValDouble();

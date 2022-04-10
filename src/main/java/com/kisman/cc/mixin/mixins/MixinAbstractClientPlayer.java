@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.Cape;
 import com.mojang.authlib.GameProfile;
 import i.gishreloaded.gishcode.utils.TimerUtils;
@@ -17,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinAbstractClientPlayer extends EntityPlayer {
     @Shadow public NetworkPlayerInfo playerInfo;
     private int count = 0;
-    private TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = new TimerUtils();
 
     public MixinAbstractClientPlayer(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
@@ -26,7 +27,7 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
-        if(Cape.instance.isToggled() && playerInfo == Minecraft.getMinecraft().player.getPlayerInfo()) {
+        if(Cape.instance.isToggled() && playerInfo == Minecraft.getMinecraft().player.getPlayerInfo() || Kisman.instance.capeAPI.is(playerInfo.getGameProfile().getId())) {
             switch(Cape.instance.mode.getValString()) {
                 case "Gif":
                     cir.setReturnValue(getCape());
@@ -42,6 +43,9 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
                     break;
                 case "Putin":
                     cir.setReturnValue(new ResourceLocation("kismancc:cape/putin/putin.png"));
+                    break;
+                case "Gradient":
+                    cir.setReturnValue(new ResourceLocation("kismancc:cape/gradient/gradient.png"));
                     break;
             }
         }

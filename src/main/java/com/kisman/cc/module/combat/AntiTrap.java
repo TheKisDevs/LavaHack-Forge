@@ -62,6 +62,7 @@ public class AntiTrap extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
+        super.setDisplayInfo("[" + mode.getValString() + "]");
         if(mode.getValString().equalsIgnoreCase("ClientTick")) doAntiTrap();
     }
 

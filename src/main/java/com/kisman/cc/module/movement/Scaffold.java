@@ -63,6 +63,7 @@ public class Scaffold extends Module {
 
     public void update() {
         if(mc.player == null || mc.world == null) return;
+        super.setDisplayInfo("[" + placeLogic.getValString() + "]");
         if(mc.player.onGround) timer = 0;
         else timer++;
         if (timer == jumpDelay.getValInt() && mc.gameSettings.keyBindJump.isKeyDown() && !cancelTimer.hasReached(1200)) {

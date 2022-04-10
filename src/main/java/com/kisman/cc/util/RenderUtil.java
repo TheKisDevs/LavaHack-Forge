@@ -10,6 +10,7 @@ import com.kisman.cc.catlua.lua.utils.LuaBox;
 import com.kisman.cc.module.render.NameTags;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.customfont.norules.CFontRenderer;
+import com.kisman.cc.util.render.objects.Vec3dSimple;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.*;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -485,6 +486,38 @@ public class RenderUtil {
 
         glTranslated(-renderPosX, -renderPosY, -renderPosZ);
         glTranslated(pos.getX(), pos.getY(), pos.getZ());
+
+        glColor4f(red, green, blue, 0.30F);
+        drawSolidBox();
+        glColor4f(red, green, blue, 0.7F);
+        drawOutlinedBox();
+
+        glColor4f(1, 1, 1, 1);
+
+        glEnable(GL11.GL_LIGHTING);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
+    public static void drawBlockESP(Vec3dSimple pos, float red, float green, float blue) {
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL11.GL_LIGHTING);
+        double renderPosX = Minecraft.getMinecraft().getRenderManager().viewerPosX;
+        double renderPosY = Minecraft.getMinecraft().getRenderManager().viewerPosY;
+        double renderPosZ = Minecraft.getMinecraft().getRenderManager().viewerPosZ;
+
+        glTranslated(-renderPosX, -renderPosY, -renderPosZ);
+        glTranslated(pos.x, pos.y, pos.z);
 
         glColor4f(red, green, blue, 0.30F);
         drawSolidBox();

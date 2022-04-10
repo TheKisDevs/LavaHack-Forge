@@ -25,6 +25,8 @@ public class ColorButton extends Component {
     private int x, y, offset, pickerWidth, height, count;
     public boolean open = false;
     private boolean baseHover, hueHover, alphaHover, pickingBase, pickingHue, pickingAlpha;
+    private int width = HalqGui.width;
+    private int layer;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count) {
         this.setting = setting;
@@ -32,19 +34,19 @@ public class ColorButton extends Component {
         this.y = y;
         this.offset = offset;
         this.color = setting.getColour();
-        this.pickerWidth = HalqGui.width - HalqGui.height;
+        this.pickerWidth = width - HalqGui.height;
         this.count = count;
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         if(HalqGui.shadowCheckBox) {
-            Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, getHeight(), HalqGui.backgroundColor.getRGB());
-            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), color.getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1)));
-            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width, y + offset}, new double[] {x + HalqGui.width, y + offset + HalqGui.height}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), color.getColor()));
-        } else Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, getHeight(), color.getRGB());
+            Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
+            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width / 2, y + offset}, new double[] {x + width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), color.getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1)));
+            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + width / 2, y + offset}, new double[] {x + width, y + offset}, new double[] {x + width, y + offset + HalqGui.height}, new double[] {x + width / 2, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), color.getColor()));
+        } else Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), color.getRGB());
 
-        HalqGui.drawString(setting.getName(), x, y + offset, HalqGui.width, HalqGui.height);
+        HalqGui.drawString(setting.getName(), x, y + offset, width, HalqGui.height);
 
         if(open) {
             int offsetY = HalqGui.height + 5;
@@ -123,9 +125,14 @@ public class ColorButton extends Component {
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}
+    public void setWidth(int width) {this.width = width;}
+    public void setX(int x) {this.x = x;}
+    public int getX() {return x;}
+    public void setLayer(int layer) {this.layer = layer;}
+    public int getLayer() {return layer;}
 
     private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;
+        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
     private void drawHueSlider(int x, int y, int width, int height, float hue, int mouseX, int mouseY) {

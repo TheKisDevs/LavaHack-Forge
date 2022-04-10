@@ -130,6 +130,7 @@ public class Surround extends Module {
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
+        super.setDisplayInfo("[" + (rewrite.getValBoolean() ? (dynamic.getValBoolean() ? "Dynamic" : "Rewrite") : surroundVec.getValString()) + "]");
 
         surroundPlaced = 0;
 

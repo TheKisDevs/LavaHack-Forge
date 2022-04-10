@@ -37,6 +37,7 @@
 
      public void update() {
          if(mc.player == null || mc.world == null) return;
+         super.setDisplayInfo("[" + delay.getValInt() + "]");
          if(!timer.passedMillis(delay.getValLong())) return; else timer.reset();
          if (mc.player.ticksExisted % 2 == 0) return;
          if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;

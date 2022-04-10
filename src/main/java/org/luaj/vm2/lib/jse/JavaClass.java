@@ -89,7 +89,8 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 
 			while (superclass != null) {
 //				System.out.println("FindField: superclass " + superclass.getName() + ", name " + key.tojstring());
-				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.NAMED);
+				System.out.println("Class:" + superclass.getName());
+				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.OFFICIAL);
 				if(fieldEntry != null) {
 					Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
 					return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));

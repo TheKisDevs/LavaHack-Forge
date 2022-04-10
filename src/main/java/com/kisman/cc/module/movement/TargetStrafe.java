@@ -41,8 +41,10 @@ public class TargetStrafe extends Module {
 
         target = EntityUtil.getTarget(6);
 
-        if(target == null) return;
-        else super.setDisplayInfo("[" + target.getName() + TextFormatting.GRAY + "]");
+        if(target == null) {
+            super.setDisplayInfo("[Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
+            return;
+        } else super.setDisplayInfo("[" + target.getName() + " | Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
 
         if(mc.player.collidedHorizontally) {
             timer.reset();

@@ -1,5 +1,6 @@
 package com.kisman.cc;
 
+import com.kisman.cc.api.cape.CapeAPI;
 import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.catlua.mapping.ForgeMappings;
@@ -107,6 +108,7 @@ public class Kisman {
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
     public NotificationsManager notificationsManager;
+    public CapeAPI capeAPI;
 
     public MainAiImpr aiImpr;
 
@@ -162,12 +164,12 @@ public class Kisman {
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();
         notificationsManager = new NotificationsManager();
+        capeAPI = new CapeAPI();
 
         //load configs
         LoadConfig.init();
         //load glow shader
         ShaderShell.init();
-
 
         //catlua
         eventProcessorLua = new EventProcessorLua();
@@ -220,19 +222,9 @@ public class Kisman {
     }
 
     public static String getName() {
-        if(instance.init) {
-            switch (Config.instance.nameMode.getValString()) {
-                case "kismancc": return NAME;
-                case "LavaHack": return "LavaHack";
-                case "TheKisDevs": return "TheKisDevs";
-                case "kidman": return "kidman.club";
-                case "custom": return Config.instance.customName.getValString();
-            }
-        }
-        return NAME;
+        return instance.name();
     }
 
-    //lua
     public String name() {
         if(init) {
             switch (Config.instance.nameMode.getValString()) {
@@ -290,9 +282,17 @@ public class Kisman {
         } catch (IOException | URISyntaxException e) {e.printStackTrace();}
     }
 
+    //lua
     public static void reloadGUIs() {
-        if(mc.player != null && mc.world != null) mc.displayGuiScreen(null);
+        if(mc.player != null || mc.world != null) mc.displayGuiScreen(null);
         instance.halqGui.frames.forEach(Frame::reload);
         instance.clickGuiNew = new ClickGuiNew();
+    }
+
+    //lua
+    public static void reloadHudGUIs() {
+        if(mc.player != null || mc.world != null) mc.displayGuiScreen(null);
+        instance.hudGui = new HudGui();
+        instance.hudEditorGui = new HudEditorGui();
     }
 }

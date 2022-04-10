@@ -13,9 +13,9 @@ public class CrystalModifier extends Module {
 
     private Setting scaleLine = new Setting("ScaleLine", this, "Scale");
 
-    public Setting scaleX = new Setting("ScaleX", this, 0, -2, 2, false);
-    public Setting scaleY = new Setting("ScaleY", this, 0, -2, 2, false);
-    public Setting scaleZ = new Setting("ScaleZ", this, 0, -2, 2, false);
+    public Setting scaleX = new Setting("ScaleX", this, 1, 0, 2, false);
+    public Setting scaleY = new Setting("ScaleY", this, 1, 0, 2, false);
+    public Setting scaleZ = new Setting("ScaleZ", this, 1, 0, 2, false);
 
     private Setting translateLine = new Setting("TranslateLine", this, "Translate");
 

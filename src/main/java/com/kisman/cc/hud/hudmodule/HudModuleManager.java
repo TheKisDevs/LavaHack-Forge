@@ -54,7 +54,7 @@ public class HudModuleManager {
 
 	public java.util.ArrayList<HudModule> getModulesInCategory(HudCategory c) {
 		java.util.ArrayList<HudModule> mods = new java.util.ArrayList<>();
-		for (HudModule m : this.modules) if (m.getCategory() == c) mods.add(m);
+		for (HudModule m : this.modules) if (m.getCategoryHud() == c) mods.add(m);
 		return mods;
 	}
 

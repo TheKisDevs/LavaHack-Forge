@@ -5,6 +5,7 @@ import com.kisman.cc.catlua.module.ModuleScript;
 import com.kisman.cc.gui.halq.component.components.sub.lua.ActionButton;
 import com.kisman.cc.gui.halq.component.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.component.components.sub.modules.VisibleBox;
+import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -73,6 +74,10 @@ public class Button extends Component {
                     offset += HalqGui.height;
                 }
             }
+            for(Component comp : comps) {
+                comp.setLayer(1);
+                comp.setWidth(90);
+            }
         }
     }
 
@@ -119,7 +124,7 @@ public class Button extends Component {
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
-        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x, y);
+        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x + LayerMap.getLayer(comp.getLayer()).modifier, y);
     }
 
     @Override

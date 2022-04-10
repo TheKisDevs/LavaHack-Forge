@@ -38,6 +38,7 @@ public class HoleSnap extends Module {
 
     public void update() {
         if(mc.player == null || mc.world == null) return;
+        super.setDisplayInfo("[" + speedValue.getValInt() + "]");
         hole = findHoles();
         if(hole == null) return;
 

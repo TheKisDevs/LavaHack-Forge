@@ -5,22 +5,16 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.LuaCallback;
 import com.kisman.cc.catlua.lua.functions.*;
 import com.kisman.cc.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.catlua.lua.tables.ColorTable;
-import com.kisman.cc.catlua.lua.tables.GuiBuilder;
-import com.kisman.cc.catlua.lua.tables.ModuleLua;
+import com.kisman.cc.catlua.lua.tables.*;
 import com.kisman.cc.catlua.lua.utils.*;
 import com.kisman.cc.module.*;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.client.Minecraft;
-import org.luaj.vm2.LuaClosure;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import javax.script.*;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +25,7 @@ public class ModuleScript extends Module {
     private boolean loaded;
     public transient final List<LuaCallback> callbacks = new ArrayList<>();
     public transient final List<ModuleLua> modulesLua = new ArrayList<>();
+    public transient final List<HudModuleLua> hudModulesLua = new ArrayList<>();
 
     public ModuleScript(String name, String desc) throws IOException {
         super(name, desc, Category.LUA);
@@ -74,7 +69,9 @@ public class ModuleScript extends Module {
         }
         for (ModuleLua lua : modulesLua) Kisman.instance.settingsManager.getSettings().removeIf(setting -> setting.getParentMod().equals(lua) || setting.getParentMod() == null || setting.getParentMod().equals(this));
         Kisman.instance.moduleManager.modules.removeAll(modulesLua);
+        Kisman.instance.hudModuleManager.modules.removeAll(hudModulesLua);
         modulesLua.clear();
+        hudModulesLua.clear();
         callbacks.clear();
     }
 
@@ -105,6 +102,7 @@ public class ModuleScript extends Module {
         engine.put("interactions", LuaInteractions.getDefault());
         engine.put("files", LuaFiles.getDefault());
         engine.put("Module", ModuleLua.getLua());
+        engine.put("HudModule", HudModuleLua.getLua());
         engine.put("GuiBuilder", GuiBuilder.getLua());
         engine.put("rotations", Kisman.instance.luaRotation);
 
@@ -134,6 +132,12 @@ public class ModuleScript extends Module {
         modulesLua.add(lua);
         Kisman.instance.moduleManager.modules.add(lua);
         Kisman.reloadGUIs();
+    }
+
+    public void addHudModule(HudModuleLua lua) {
+        hudModulesLua.add(lua);
+        Kisman.instance.hudModuleManager.modules.add(lua);
+        Kisman.reloadHudGUIs();
     }
 
     public List<LuaCallback> getCallbacks() {

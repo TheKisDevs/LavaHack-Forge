@@ -17,6 +17,8 @@ public class Slider extends Component {
     private final Setting setting;
     private int x, y, offset, count;
     private boolean dragging;
+    private int width = HalqGui.width;
+    private int layer;
 
     public Slider(Setting setting, int x, int y, int offset,  int count) {
         this.setting = setting;
@@ -28,22 +30,22 @@ public class Slider extends Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        double diff = Math.min(HalqGui.width, Math.max(0, mouseX - this.x));
+        double diff = Math.min(width, Math.max(0, mouseX - this.x));
         double min = setting.getMin();
         double max = setting.getMax();
 
         if (dragging) {
             if (diff == 0) setting.setValDouble(setting.getMin());
-            else setting.setValDouble(roundToPlace(((diff / HalqGui.width) * (max - min) + min), 2));
+            else setting.setValDouble(roundToPlace(((diff / width) * (max - min) + min), 2));
         }
 
-        Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
-        int width = (int) (HalqGui.width * (setting.getValDouble() - min) / (max - min));
+        int width = (int) (this.width * (setting.getValDouble() - min) / (max - min));
         if(HalqGui.shadowCheckBox) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width, y + offset}, new double[] {x + width, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor, 4)));
         else Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
 
-        HalqGui.drawString(setting.getName() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble()), x, y + offset, HalqGui.width, HalqGui.height);
+        HalqGui.drawString(setting.getName() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble()), x, y + offset, width, HalqGui.height);
     }
 
     @Override
@@ -69,9 +71,14 @@ public class Slider extends Component {
     public boolean visible() {return setting.isVisible();}
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}
+    public void setWidth(int width) {this.width = width;}
+    public void setX(int x) {this.x = x;}
+    public int getX() {return x;}
+    public void setLayer(int layer) {this.layer = layer;}
+    public int getLayer() {return layer;}
 
     private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + offset + HalqGui.height;
+        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
     private static double roundToPlace(double value, int places) {

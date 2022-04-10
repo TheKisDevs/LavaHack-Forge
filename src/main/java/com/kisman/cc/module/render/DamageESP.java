@@ -1,14 +1,15 @@
 package com.kisman.cc.module.render;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.lua.EventRender2D;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import me.zero.alpine.listener.*;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -41,8 +42,13 @@ public class DamageESP extends Module {
     }
 
     public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(listener);
         entityHealthMap.clear();
         damages.clear();
+    }
+
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(listener);
     }
 
     public void update() {
@@ -77,18 +83,19 @@ public class DamageESP extends Module {
         }
     }
 
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
+    @EventHandler
+    private final Listener<EventRender2D> listener = new Listener<>(event -> {
         if(damages.isEmpty()) return;
         for(Damage damage : damages) {
+            if(mc.player.getDistance(damage.entity) > range.getValInt()) continue;
             if(System.currentTimeMillis() - damage.startTime >= timeToRemove.getValInt() * 1000L) {
                 damages.remove(damage);
                 return;
             }
             if(mc.player.getDistance(damage.entity) > range.getValInt()) continue;
-            final double x = damage.getEntity().getPosition().getX() + (damage.getEntity().getPosition().getX() - damage.getEntity().getPosition().getX()) * event.getPartialTicks() - mc.getRenderManager().viewerPosX;
-            final double y = damage.getEntity().getPosition().getY() + (damage.getEntity().getPosition().getY() - damage.getEntity().getPosition().getY()) * event.getPartialTicks() - mc.getRenderManager().viewerPosY + damage.getEntity().getEyeHeight() + 0.5;
-            final double z = damage.getEntity().getPosition().getZ() + (damage.getEntity().getPosition().getZ() - damage.getEntity().getPosition().getZ()) * event.getPartialTicks() - mc.getRenderManager().viewerPosZ;
+            final double x = damage.getEntity().getPosition().getX() + (damage.getEntity().getPosition().getX() - damage.getEntity().getPosition().getX()) * event.particalTicks - mc.getRenderManager().viewerPosX;
+            final double y = damage.getEntity().getPosition().getY() + (damage.getEntity().getPosition().getY() - damage.getEntity().getPosition().getY()) * event.particalTicks - mc.getRenderManager().viewerPosY + damage.getEntity().getEyeHeight() + 0.5;
+            final double z = damage.getEntity().getPosition().getZ() + (damage.getEntity().getPosition().getZ() - damage.getEntity().getPosition().getZ()) * event.particalTicks - mc.getRenderManager().viewerPosZ;
             final float var10001 = (mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f;
             GL11.glPushMatrix();
             GL11.glEnable(3042);
@@ -97,7 +104,7 @@ public class DamageESP extends Module {
             GL11.glEnable(2848);
             GL11.glDisable(3553);
             GL11.glDisable(2929);
-            mc.entityRenderer.setupCameraTransform(event.getPartialTicks(), 0);
+            mc.entityRenderer.setupCameraTransform(event.particalTicks, 0);
             GL11.glTranslated(x, y, z);
             GL11.glNormal3f(0.0f, 1.0f, 0.0f);
             GL11.glRotatef(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
@@ -133,7 +140,7 @@ public class DamageESP extends Module {
             GlStateManager.color(1.0f, 1.0f, 1.0f);
             GlStateManager.popMatrix();
         }
-    }
+    });
 
     public static class Damage {
         public Damage(Entity entity, long startTime, float damage, int stage) {

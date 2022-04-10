@@ -14,6 +14,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
 import com.kisman.cc.util.enums.ShaderModes;
+import com.kisman.cc.util.render.objects.Vec3dSimple;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
@@ -97,17 +98,20 @@ public class AutoRer extends Module {
     private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
     private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
     private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"));
-    private final Setting threadCalc = new Setting("Thread Calc", this, true);
+    private final Setting threadCalc = new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"));
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
     private final Setting render = new Setting("Render", this, Render.Default);
     private final Setting text = new Setting("Text", this, true);
 
-    private final Setting red = new Setting("Red", this, 1, 0, 1, false);
-    private final Setting green = new Setting("Green", this, 0, 0, 1, false);
-    private final Setting blue = new Setting("Blue", this, 0, 0, 1, false);
+    private final Setting red = new Setting("Red", this, 1, 0, 1, false).setVisible(() -> render.checkValString("Default"));
+    private final Setting green = new Setting("Green", this, 0, 0, 1, false).setVisible(() -> render.checkValString("Default"));
+    private final Setting blue = new Setting("Blue", this, 0, 0, 1, false).setVisible(() -> render.checkValString("Default"));
 
-    private final Setting textColor = new Setting("Text Color", this, "TextColor", new Colour(255, 0, 0));
+    private final Setting renderAnimation = new Setting("Render Animation", this, false).setVisible(() -> render.checkValString("Default"));
+    private final Setting renderAnimationSpeed = new Setting("Render Animation Speed", this, 0.05f, 0.01f, 0.8f, false).setVisible(() -> render.checkValString("Default") && renderAnimation.getValBoolean());
+
+    private final Setting textColor = new Setting("Text Color", this, "TextColor", new Colour(255, 0, 0)).setVisible(text::getValBoolean);
 
     private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced Render");
 
@@ -151,9 +155,12 @@ public class AutoRer extends Module {
     public static EntityPlayer currentTarget;
     private Thread thread;
     public BlockPos placePos, renderPos;
+    private final Vec3dSimple renderPosVec = new Vec3dSimple(0, 0, 0);
+    private Vec3dSimple lastRenderPosVec = new Vec3dSimple(0, 0, 0);
     private Entity lastHitEntity = null;
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
+    private boolean subscribed = false, moving = false;
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
@@ -232,6 +239,8 @@ public class AutoRer extends Module {
         setmgr.rSetting(red.setVisible(() -> render.checkValString("Default")));
         setmgr.rSetting(green.setVisible(() -> render.checkValString("Default")));
         setmgr.rSetting(blue.setVisible(() -> render.checkValString("Default")));
+        setmgr.rSetting(renderAnimation);
+        setmgr.rSetting(renderAnimationSpeed);
 
         setmgr.rSetting(textColor.setVisible(text::getValBoolean));
 
@@ -275,13 +284,17 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
         Kisman.EVENT_BUS.subscribe(render3d);
+
+        subscribed = moving = true;
     }
 
     public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(listener);
-        Kisman.EVENT_BUS.unsubscribe(listener1);
-        Kisman.EVENT_BUS.unsubscribe(motion);
-        Kisman.EVENT_BUS.unsubscribe(render3d);
+        if(subscribed) {
+            Kisman.EVENT_BUS.unsubscribe(listener);
+            Kisman.EVENT_BUS.unsubscribe(listener1);
+            Kisman.EVENT_BUS.unsubscribe(motion);
+            Kisman.EVENT_BUS.unsubscribe(render3d);
+        }
 
         if(thread != null) shouldInterrupt.set(false);
         if(executor != null) executor.shutdown();
@@ -352,7 +365,7 @@ public class AutoRer extends Module {
         else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + "]");
 
         calc: {
-            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong()) && !threadCalc.getValBoolean()) {
+            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
                 if (threadCalc.getValBoolean() && !threadMode.getValString().equalsIgnoreCase("None")) break calc;
                 doCalculatePlace();
                 if (placePos != null) if (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK)) placePos = null;
@@ -565,13 +578,18 @@ public class AutoRer extends Module {
             }
         }
 
-        if(placePos != null){
-            if(render.checkValString("Default")) RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+        if(placePos != null) {
+            if(render.checkValString("Default")) {
+                if(moving) RenderUtil.drawBlockESP(renderPosVec, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+                else RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+            }
             else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, startColor.getColour().getColor(), endColor.getColour().getColor());
             if (text.getValBoolean() && currentTarget != null) {
                 float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
                 RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
             }
+
+            lastRenderPosVec = renderPosVec;
         }
     });
 
@@ -679,6 +697,13 @@ public class AutoRer extends Module {
         });
 
         this.placePos = placePos[0];
+        if(placePos[0] != null) {
+            if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
+            if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
+            if(renderPosVec.z != lastRenderPosVec.z) renderPosVec.z = AnimationUtils.animate(renderPosVec.z, lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
+            moving = !renderPosVec.equals(lastRenderPosVec);
+            if(!moving) renderPosVec.round();
+        }
     }
 
     private void calculatePlace() {
@@ -711,6 +736,11 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = placePos;
+        if(placePos != null) {
+            renderPosVec.x = AnimationUtils.animate(placePos.getX(), lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
+            renderPosVec.y = AnimationUtils.animate(placePos.getY(), lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
+            renderPosVec.z = AnimationUtils.animate(placePos.getZ(), lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
+        }
     }
 
     private boolean isPosValid(BlockPos pos) {
@@ -747,7 +777,6 @@ public class AutoRer extends Module {
 
         if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
             try {
-//                float[] rots = RotationUtils.getRotation(currentTarget);
                 float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getX() + 0.5f), (placePos.getY() - 0.5f), (placePos.getZ() + 0.5f)));
                 if (!thread) {
                     if (!motionCrystal.getValBoolean()) {
@@ -757,8 +786,7 @@ public class AutoRer extends Module {
                         event.setYaw(rots[0]);
                         event.setPitch(rots[1]);
                     }
-                } else if (threadPacketRots.getValBoolean())
-                    mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+                } else if (threadPacketRots.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
             } catch (Exception ignored) {}
         }
 
@@ -781,9 +809,8 @@ public class AutoRer extends Module {
             mc.player.rotationPitch = oldRots[1];
         }
         if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1 && !silentBypass) {
-            if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
-        } else if(silentBypass) bypass.doSwitch();
+        if(oldSlot != -1 && !silentBypass) if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+        else if(silentBypass) bypass.doSwitch();
     }
 
     private Entity getCrystalForAntiCevBreaker() {
@@ -830,8 +857,7 @@ public class AutoRer extends Module {
                     double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
                     if (friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
-                        if (friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped)
-                            return null;
+                        if (friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
                         else if (friend.isTotemFailed) return null;
                         if (friend.damage >= maxFriendDMG.getValInt()) return null;
                     }
@@ -849,12 +875,11 @@ public class AutoRer extends Module {
                 }
             }
         } catch(NullPointerException ignored) {
-            super.setToggled(false);
+            if(lagProtect.getValBoolean()) super.setToggled(false);
         }
 
         return crystal;
     }
-
 
     private void doBreak() {
         if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
@@ -989,10 +1014,7 @@ public class AutoRer extends Module {
                         final float f2 = sphere ? (cy + r) : ((float)(cy + h));
                         if (f >= f2) break;
                         final double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? ((cy - y) * (cy - y)) : 0);
-                        if (dist < r * r && (!hollow || dist >= (r - 1.0f) * (r - 1.0f))) {
-                            final BlockPos l = new BlockPos(x, y + plus_y, z);
-                            circleblocks.add(l);
-                        }
+                        if (dist < r * r && (!hollow || dist >= (r - 1.0f) * (r - 1.0f))) circleblocks.add(new BlockPos(x, y + plus_y, z));
                         ++y;
                     }
                 }

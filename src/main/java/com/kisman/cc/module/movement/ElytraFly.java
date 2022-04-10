@@ -75,6 +75,10 @@ public class ElytraFly extends Module {
         }
     }
 
+    public void update() {
+        super.setDisplayInfo("[" + speed.getValInt() + "]");
+    }
+
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
 

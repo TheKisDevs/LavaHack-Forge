@@ -10,5 +10,10 @@ public class Component {
     public void setCount(int count) {}
     public int getHeight() {return 0;}
     public int getCount() {return 0;}
+    public void setWidth(int width) {}
+    public void setX(int x) {}
+    public int getX() {return 0;}
+    public void setLayer(int layer) {}
+    public int getLayer() {return 0;}
     public boolean visible() {return true;}
 }

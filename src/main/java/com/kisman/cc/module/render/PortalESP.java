@@ -11,7 +11,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 
 public class PortalESP extends Module {
-    private Setting range = new Setting("Range", this, 50, 0, 100, false);
+    private final Setting range = new Setting("Range", this, 50, 0, 100, false);
+
+    private final ArrayList<BlockPos> blocks = new ArrayList<>();
 
     public PortalESP() {
         super("PortalESP", "esp on portal blocks", Category.RENDER);
@@ -19,11 +21,14 @@ public class PortalESP extends Module {
         setmgr.rSetting(range);
     }
 
+    public void update() {
+        if(mc.player == null || mc.world == null) return;
+        blocks.clear();
+        for(BlockPos pos : CrystalUtils.getSphere(range.getValFloat(), true, false)) if(mc.world.getBlockState(pos).getBlock() == Blocks.PORTAL) blocks.add(pos);
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-
-        for(BlockPos pos : CrystalUtils.getSphere(range.getValFloat(), true, false)) if(mc.world.getBlockState(pos).getBlock() == Blocks.PORTAL) blocks.add(pos);
         for(BlockPos pos : blocks) RenderUtil.drawBlockESP(pos, 0.67f, 0, 1);
     }
 }

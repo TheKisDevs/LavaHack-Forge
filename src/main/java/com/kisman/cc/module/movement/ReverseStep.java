@@ -5,6 +5,8 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 
+import java.util.Locale;
+
 public class ReverseStep extends Module {
     public static ReverseStep instance;
 
@@ -31,6 +33,7 @@ public class ReverseStep extends Module {
 
     public void update() {
         if (mc.world == null || mc.player == null || mc.player.isInWater() || mc.player.isInLava() || mc.player.isOnLadder() || mc.gameSettings.keyBindJump.isKeyDown()) return;
+        super.setDisplayInfo("[" + String.format(Locale.ENGLISH, "%.4f", height.getValDouble()) + "]");
         if (mc.player.onGround && !mc.player.isInWater() && !mc.player.isOnLadder()) {
             if(lagTimer.passedMillis(lagTime.getValBoolean() ? lagTimeValue.getValLong() : 500L)) {
                 lagTimer.reset();
