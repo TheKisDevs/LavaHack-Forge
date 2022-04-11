@@ -71,6 +71,7 @@ public class ModuleManager {
 		modules.add(new HalqGuiModule());
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
+		modules.add(new KotlinTest());
 		modules.add(new NotEnoughCoinsModule());
 //		modules.add(new ExampleModule());
 //		modules.add(new Test());
