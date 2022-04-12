@@ -325,4 +325,8 @@ public class MathUtil {
 
         return coord;
     }
+    
+    public static double lerp(double from, double to, double delta) {
+        return from + (to - from) * delta;
+    }
 }

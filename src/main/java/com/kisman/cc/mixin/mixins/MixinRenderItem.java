@@ -37,7 +37,7 @@ public class MixinRenderItem {
                 stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
             } else {
                 renderModel(model, ViewModel.instance.isToggled() && ViewModel.instance.useAlpha.getValBoolean() ? new Color(255, 255, 255, ViewModel.instance.alpha.getValInt()).getRGB() : -1, stack);
-                if (stack.hasEffect() && !ShaderCharms.instance.isToggled())renderEffect(model);
+                if (stack.hasEffect() && !ShaderCharms.instance.isToggled() && !ShaderCharms.instance.items.getValBoolean())renderEffect(model);
             }
 
             GlStateManager.popMatrix();

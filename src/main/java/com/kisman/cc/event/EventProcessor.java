@@ -43,6 +43,8 @@ public class EventProcessor {
 
     public AtomicBoolean ongoing;
 
+    public int oldWidth = -1, oldHeight = -1;
+
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
@@ -91,6 +93,11 @@ public class EventProcessor {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         Kisman.EVENT_BUS.post(this);
+        if(oldWidth != mc.displayWidth || oldHeight != mc.displayHeight) {
+            oldWidth = mc.displayWidth;
+            oldHeight = mc.displayHeight;
+            new EventResolutionUpdate(oldWidth, oldHeight).post();
+        }
         if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
         if(ElytraEquip.instance != null) ElytraEquip.instance.updateState();
         if(Config.instance != null) Kisman.canUseImprAstolfo = Config.instance.astolfoColorMode.checkValString(Config.AstolfoColorMode.Impr.name());

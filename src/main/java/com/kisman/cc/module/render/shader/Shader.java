@@ -54,9 +54,8 @@ public abstract class Shader {
         GL11.glPopMatrix();
     }
 
-    public abstract void setupUniforms();
-
-    public abstract void updateUniforms();
+    public void setupUniforms() {}
+    public void updateUniforms() {}
 
     public int createShader(final String shaderSource, final int shaderType) {
         int shader = 0;

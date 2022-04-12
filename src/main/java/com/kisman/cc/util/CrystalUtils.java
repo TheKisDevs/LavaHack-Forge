@@ -10,6 +10,7 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,6 +26,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CrystalUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
@@ -405,5 +408,9 @@ public class CrystalUtils {
 
     public static float calculateDamage(World world, BlockPos pos, Entity entity) {
         return calculateDamage(world, pos.getX(), pos.getY(), pos.getZ(), entity, 0);
+    }
+
+    public static float calculateDamage(@Nullable WorldClient world, float fl, int i, double d, @NotNull Entity target, boolean terrain, boolean kotlin) {
+        return calculateDamage(world, fl, i, d, target, terrain);
     }
 }

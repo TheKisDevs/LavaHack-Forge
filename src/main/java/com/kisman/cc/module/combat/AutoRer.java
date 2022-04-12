@@ -8,6 +8,8 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.client.Config;
+import com.kisman.cc.module.combat.autorer.AutoRerUtil;
+import com.kisman.cc.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.module.render.shader.FramebufferShader;
 import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
@@ -34,6 +36,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+/**
+ * I made PlaceInfo class for next release(b0.2) for new render
+ */
 public class AutoRer extends Module {
     public final Setting lagProtect = new Setting("Lag Protect", this, false);
     public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
@@ -141,7 +146,7 @@ public class AutoRer extends Module {
 
     public static AutoRer instance;
 
-    public final List<BlockPos> placedList = new ArrayList<>();
+    public final List<PlaceInfo> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
     private final TimerUtils breakTimer = new TimerUtils();
     private final TimerUtils calcTimer = new TimerUtils();
@@ -154,7 +159,7 @@ public class AutoRer extends Module {
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
     public static EntityPlayer currentTarget;
     private Thread thread;
-    public BlockPos placePos, renderPos;
+    public PlaceInfo placePos, renderPos;
     private final Vec3dSimple renderPosVec = new Vec3dSimple(0, 0, 0);
     private Vec3dSimple lastRenderPosVec = new Vec3dSimple(0, 0, 0);
     private Entity lastHitEntity = null;
@@ -368,7 +373,7 @@ public class AutoRer extends Module {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
                 if (threadCalc.getValBoolean() && !threadMode.getValString().equalsIgnoreCase("None")) break calc;
                 doCalculatePlace();
-                if (placePos != null) if (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK)) placePos = null;
+                if (placePos != null) if (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos = null;
                 calcTimer.reset();
             }
         }
@@ -424,7 +429,7 @@ public class AutoRer extends Module {
     private void doAutoRerLogic(EventPlayerMotionUpdate event, boolean thread) {
         if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
             doPlace(event, thread);
-            doBreak();
+            if(placePos != null) doBreak();
         } else {
             doBreak();
             doPlace(event, thread);
@@ -581,12 +586,12 @@ public class AutoRer extends Module {
         if(placePos != null) {
             if(render.checkValString("Default")) {
                 if(moving) RenderUtil.drawBlockESP(renderPosVec, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-                else RenderUtil.drawBlockESP(placePos, red.getValFloat(), green.getValFloat(), blue.getValFloat());
+                else RenderUtil.drawBlockESP(placePos.getBlockPos(), red.getValFloat(), green.getValFloat(), blue.getValFloat());
             }
-            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos, startColor.getColour().getColor(), endColor.getColour().getColor());
+            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos.getBlockPos(), startColor.getColour().getColor(), endColor.getColour().getColor());
             if (text.getValBoolean() && currentTarget != null) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                RenderUtil.drawText(placePos, ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
+                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getBlockPos().getX() + 0.5, placePos.getBlockPos().getY() + 1, placePos.getBlockPos().getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                RenderUtil.drawText(placePos.getBlockPos(), ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
             }
 
             lastRenderPosVec = renderPosVec;
@@ -615,7 +620,8 @@ public class AutoRer extends Module {
             if (packet.getType() == 51) {
                 if(!(mc.world.getEntityByID(packet.getEntityID()) instanceof EntityEnderCrystal)) return;
                 BlockPos toRemove = null;
-                for (BlockPos pos : placedList) {
+                for (PlaceInfo placeInfo : placedList) {
+                    BlockPos pos = placeInfo.getBlockPos();
                     boolean canSee = EntityUtil.canSee(pos);
                     if (mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) >= (canSee ? breakRange.getValDouble() : breakWallRange.getValDouble())) break;
 
@@ -652,7 +658,10 @@ public class AutoRer extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
-        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) try {placedList.add(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos());} catch (Exception ignored) {}
+        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) try {
+            PlaceInfo info = AutoRerUtil.Companion.getPlaceInfo(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos(), currentTarget, terrain.getValBoolean());
+            placedList.add(info);
+        } catch (Exception ignored) {}
         if(removeAfterAttack.getValBoolean() && event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && packet.getEntityFromWorld(mc.world) instanceof EntityEnderCrystal) {
@@ -696,8 +705,8 @@ public class AutoRer extends Module {
             }
         });
 
-        this.placePos = placePos[0];
-        if(placePos[0] != null) {
+        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
+        if(this.placePos != null) {
             if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
             if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
             if(renderPosVec.z != lastRenderPosVec.z) renderPosVec.z = AnimationUtils.animate(renderPosVec.z, lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
@@ -735,11 +744,13 @@ public class AutoRer extends Module {
                 }
             }
         }
-        this.placePos = placePos;
-        if(placePos != null) {
-            renderPosVec.x = AnimationUtils.animate(placePos.getX(), lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
-            renderPosVec.y = AnimationUtils.animate(placePos.getY(), lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
-            renderPosVec.z = AnimationUtils.animate(placePos.getZ(), lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
+        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos, currentTarget, terrain.getValBoolean());
+        if(this.placePos != null) {
+            if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
+            if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
+            if(renderPosVec.z != lastRenderPosVec.z) renderPosVec.z = AnimationUtils.animate(renderPosVec.z, lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
+            moving = !renderPosVec.equals(lastRenderPosVec);
+            if(!moving) renderPosVec.round();
         }
     }
 
@@ -750,7 +761,7 @@ public class AutoRer extends Module {
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
-        if(placePos == null || (!mc.world.getBlockState(placePos).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos).getBlock().equals(Blocks.BEDROCK))) return;
+        if(placePos == null || (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK))) return;
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
 
         SilentSwitchBypass bypass = new SilentSwitchBypass(Items.END_CRYSTAL);
@@ -777,7 +788,7 @@ public class AutoRer extends Module {
 
         if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
             try {
-                float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getX() + 0.5f), (placePos.getY() - 0.5f), (placePos.getZ() + 0.5f)));
+                float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
                 if (!thread) {
                     if (!motionCrystal.getValBoolean()) {
                         mc.player.rotationYaw = rots[0];
@@ -790,18 +801,18 @@ public class AutoRer extends Module {
             } catch (Exception ignored) {}
         }
 
-        RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getX() + 0.5, ( double ) placePos.getY() - 0.5, ( double ) placePos.getZ() + 0.5));
+        RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
-        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
+        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
         if(!swing.checkValString(SwingMode.None.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
         placeTimer.reset();
 
         renderPos = placePos;
 
         if(ai.getValBoolean()) {
-            float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-            float selfDamage = CrystalUtils.calculateDamage(mc.world, placePos.getX() + 0.5, placePos.getY() + 1, placePos.getZ() + 0.5, mc.player, terrain.getValBoolean());
-            AutoRerAI.collect(placePos, targetDamage, selfDamage);
+            float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getBlockPos().getX() + 0.5, placePos.getBlockPos().getY() + 1, placePos.getBlockPos().getZ() + 0.5, currentTarget, terrain.getValBoolean());
+            float selfDamage = CrystalUtils.calculateDamage(mc.world, placePos.getBlockPos().getX() + 0.5, placePos.getBlockPos().getY() + 1, placePos.getBlockPos().getZ() + 0.5, mc.player, terrain.getValBoolean());
+            AutoRerAI.collect(placePos.getBlockPos(), targetDamage, selfDamage);
         }
 
         if((rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
@@ -913,7 +924,10 @@ public class AutoRer extends Module {
 
         BlockPos toRemove = null;
 
-        if(syns.getValBoolean()) for(BlockPos pos : placedList) if(crystal.getDistance(pos.getX(), pos.getY(), pos.getZ()) <= 3) toRemove = pos;
+        if(syns.getValBoolean()) for(PlaceInfo info : placedList) {
+            BlockPos pos = info.getBlockPos();
+            if(crystal.getDistance(pos.getX(), pos.getY(), pos.getZ()) <= 3) toRemove = pos;
+        }
         if(toRemove != null) placedList.remove(toRemove);
     }
 

@@ -61,6 +61,7 @@ public class HalqGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        primaryColor = HalqGuiModule.instance.primaryColor.getColour().getColor();
         background = HalqGuiModule.instance.background.getValBoolean();
         shadowCheckBox = HalqGuiModule.instance.shadow.getValBoolean();
         test = HalqGuiModule.instance.test.getValBoolean();
