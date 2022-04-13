@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = NetworkManager.class, priority = 10000)
-public abstract class MixinNetworkManager {
-    @Shadow public abstract boolean isChannelOpen();
+public class MixinNetworkManager {
+    @Shadow public boolean isChannelOpen() {return false;}
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void onSendPacket(Packet<?> p_Packet, CallbackInfo callbackInfo) {
