@@ -5,6 +5,7 @@ import com.kisman.cc.settings.Setting;
 
 public class ContainerModifier extends Module {
     public Setting containerShadow = new Setting("Container Shadow", this, false);
+    public Setting itemESP = new Setting("Item ESP", this, false);
 
     public static ContainerModifier instance;
 
@@ -14,5 +15,6 @@ public class ContainerModifier extends Module {
         instance = this;
 
         setmgr.rSetting(containerShadow);
+        setmgr.rSetting(itemESP);
     }
 }

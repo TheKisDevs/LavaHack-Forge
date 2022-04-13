@@ -13,9 +13,7 @@ import com.kisman.cc.module.render.shader.shaders.troll.ShaderHelper;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
 import com.kisman.cc.util.enums.ShaderModes;
-import com.kisman.cc.util.render.GlStateUtils;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import i.gishreloaded.gishcode.utils.visual.*;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,6 +43,7 @@ public class ShaderCharms extends Module {
     private final Setting itemsEntity = new Setting("Items(Entity)", this, false);
     public final Setting items = new Setting("Items", this, true);
     private final Setting itemsFix = new Setting("Items Fix", this, false).setVisible(items::getValBoolean);
+    private final Setting rerenderingItems = new Setting("Rerendering Items", this, false).setVisible(items::getValBoolean);
 //    private Setting storages = new Setting("Storages(cfg from StorageEsp)", this, false);
 
     private final Setting animationSpeed = new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !mode.checkValString("GRADIENT"));
@@ -100,6 +99,7 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(itemsEntity);
         setmgr.rSetting(items);
         setmgr.rSetting(itemsFix);
+        setmgr.rSetting(rerenderingItems);
 //        setmgr.rSetting(storages);
 
         setmgr.rSetting(animationSpeed);
@@ -175,7 +175,6 @@ public class ShaderCharms extends Module {
 
     private void outline2Shader(float particalTicks) {
         if(frameBufferFinal == null) return;
-//        GlStateUtils.INSTANCE.useProgramForce(0);
         Outline2Shader.INSTANCE.setupUniforms(outlineAlpha.getValFloat(), filledAlpha.getValFloat(), width.getValFloat(), (float) ((width.getAlpha() - 1.0f) * (Math.pow(ratio.getValFloat(), 3)) + 1.0f));
         Outline2Shader.INSTANCE.updateUniforms(shaderHelper);
         ShaderUtil.Companion.clearFrameBuffer(frameBufferFinal);
@@ -186,9 +185,8 @@ public class ShaderCharms extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         try {
-            if(mode.checkValString("Outline2")) {
-                outline2Shader(event.getPartialTicks());
-            } else {
+            if(mode.checkValString("Outline2")) outline2Shader(event.getPartialTicks());
+            else {
                 FramebufferShader framebufferShader = null;
                 boolean itemglow = false, gradient = false, glow = false, outline = false;
 
@@ -446,7 +444,7 @@ public class ShaderCharms extends Module {
                     }
                     criticalSection = true;
                     framebufferShader.startDraw(event.getPartialTicks());
-                    mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
+                    mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
                     framebufferShader.stopDraw();
                     criticalSection = false;
                     if (gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
@@ -456,6 +454,7 @@ public class ShaderCharms extends Module {
                     GlStateManager.popAttrib();
                     GlStateManager.popMatrix();
             }
+            if(items.getValBoolean() && rerenderingItems.getValBoolean()) mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {
                 super.setToggled(false);
