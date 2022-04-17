@@ -36,6 +36,7 @@ public class ElytraFly extends Module {
 
     public ElytraFly() {
         super("ElytraFly", "ElytraFly", Category.MOVEMENT);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "|" + speed.getValInt() + "]");
 
         instance = this;
 
@@ -73,10 +74,6 @@ public class ElytraFly extends Module {
                 if(armorOnChest) mc.playerController.windowClick(mc.player.inventoryContainer.windowId, elytraSlot, 0, ClickType.PICKUP, mc.player);
             }
         }
-    }
-
-    public void update() {
-        super.setDisplayInfo("[" + speed.getValInt() + "]");
     }
 
     public void onDisable() {

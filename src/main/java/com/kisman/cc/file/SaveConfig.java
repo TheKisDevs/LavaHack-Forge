@@ -6,6 +6,7 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.ColourUtilKt;
 import org.lwjgl.input.Keyboard;
 
 import java.io.*;
@@ -63,7 +64,7 @@ public class SaveConfig {
                         if (setting.isCheck()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValBoolean()));
                         if (setting.isCombo()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValString()));
                         if (setting.isSlider()) settingObject.add(setting.getName(), new JsonPrimitive(setting.getValDouble()));
-                        if(setting.isColorPicker()) settingObject.add(setting.getName(), new JsonPrimitive(setting.toString()));
+                        if(setting.isColorPicker()) settingObject.add(setting.getName(), new JsonPrimitive(ColourUtilKt.Companion.toConfig(setting.getColour())));
                     }
                 }
             }

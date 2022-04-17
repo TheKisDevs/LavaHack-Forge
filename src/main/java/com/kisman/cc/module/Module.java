@@ -6,6 +6,8 @@ import com.kisman.cc.settings.*;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.function.Supplier;
+
 public class Module {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
@@ -19,6 +21,7 @@ public class Module {
 	public boolean visible = true;
 	public boolean hold = false;
 	public boolean block = false;
+	private Supplier<String> fun = null;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -68,8 +71,9 @@ public class Module {
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}
 	public String getCategoryName() {return this.category.name();} //lua
-	public String getDisplayInfo() {return this.displayInfo;}
+	public String getDisplayInfo() {return fun == null ? displayInfo : fun.get();}
 	public void setDisplayInfo(String displayInfo) {this.displayInfo = displayInfo;}
+	public void setDisplayInfo(Supplier<String> fun) {this.fun = fun;}
 	public void update(){}
 	public void render(){}
 	public void key() {}

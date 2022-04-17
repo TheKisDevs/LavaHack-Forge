@@ -30,6 +30,7 @@ public class Anchor extends Module {
 
     public Anchor() {
         super("Anchor", "help with holes", Category.MOVEMENT);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
 
         setmgr.rSetting(mode);
         setmgr.rSetting(movementStop);

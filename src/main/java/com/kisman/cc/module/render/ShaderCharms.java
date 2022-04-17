@@ -454,7 +454,7 @@ public class ShaderCharms extends Module {
                     GlStateManager.popAttrib();
                     GlStateManager.popMatrix();
             }
-            if(items.getValBoolean() && rerenderingItems.getValBoolean()) mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
+            if(items.getValBoolean() && rerenderingItems.getValBoolean()) mc.entityRenderer.renderHand(event.getPartialTicks(), 0);
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {
                 super.setToggled(false);

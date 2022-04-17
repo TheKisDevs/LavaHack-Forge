@@ -44,6 +44,8 @@ public class SwingAnimation extends Module {
         setmgr.rSetting(strongMode);
         setmgr.rSetting(ignoreEating);
         setmgr.rSetting(ifKillAura);
+
+        super.setDisplayInfo(() -> "[" + (mode.getValString().equalsIgnoreCase("Hand") ? Kisman.instance.settingsManager.getSettingByName(this, "SwingMode").getValString() : strongMode.getValString()) + "]");
     }
 
     public void update() {

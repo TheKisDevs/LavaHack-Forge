@@ -10,6 +10,7 @@ public class Sprint extends Module {
 
 	public Sprint() {
 		super("Sprint", "i like sprinting", Category.MOVEMENT);
+		super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
 
 		instance = this;
 

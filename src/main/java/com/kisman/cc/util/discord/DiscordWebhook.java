@@ -1,8 +1,8 @@
 package com.kisman.cc.util.discord;
 
-import javafx.scene.paint.Color;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
@@ -77,12 +77,7 @@ public class DiscordWebhook {
                 jsonEmbed.put("url", embed.getUrl());
 
                 if (embed.getColor() != null) {
-                    /*Color color = embed.getColor();
-                    int rgb = color.getRed();
-                    rgb = (rgb << 8) + color.getGreen();
-                    rgb = (rgb << 8) + color.getBlue();*/
-
-                    jsonEmbed.put("color", -1);
+                    jsonEmbed.put("color", embed.color.getRGB());
                 }
 
                 EmbedObject.Footer footer = embed.getFooter();

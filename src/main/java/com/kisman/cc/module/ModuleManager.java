@@ -65,7 +65,7 @@ public class ModuleManager {
 		modules.add(new Config());
 		modules.add(new Console());
 		modules.add(new CSGOGui());
-		modules.add(new CustomFont());
+		modules.add(new CustomFontModule());
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
 		modules.add(new HalqGuiModule());
@@ -93,6 +93,7 @@ public class ModuleManager {
 		//render
 		modules.add(new Ambience());
 		modules.add(new Animation());
+		modules.add(new BlockHighlight());
 		modules.add(new BlockOutline());
 		modules.add(new CameraClip());
 		modules.add(new Charms());
@@ -119,6 +120,7 @@ public class ModuleManager {
 		modules.add(new ScoreboardModifier());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
+		modules.add(new SpawnsESP());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
@@ -216,6 +218,7 @@ public class ModuleManager {
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
+		modules.add(new WebhookSpammer());
 		modules.add(new XCarry());
 	}
 	

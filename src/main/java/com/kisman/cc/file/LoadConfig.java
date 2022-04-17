@@ -7,6 +7,7 @@ import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.player.TeleportBack;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.ColourUtilKt;
 import org.lwjgl.input.Keyboard;
 
 import java.io.*;
@@ -73,7 +74,7 @@ public class LoadConfig {
                         if (setting.isCheck()) setting.setValBoolean(dataObject.getAsBoolean());
                         if (setting.isCombo()) setting.setValString(dataObject.getAsString());
                         if (setting.isSlider()) setting.setValDouble(dataObject.getAsDouble());
-                        if(setting.isColorPicker()) setting.fromJson(dataObject);
+                        if(setting.isColorPicker()) setting.setColour(ColourUtilKt.Companion.fromConfig(dataObject.getAsString(), setting.getColour()));
                         if(setting.isBind()) setting.setKey(dataObject.getAsInt());
                     }
                 } catch (NumberFormatException e) {

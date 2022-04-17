@@ -178,7 +178,7 @@ public class TessellatorUtil implements Globals {
         bufferbuilder.pos(x-mc.getRenderManager().viewerPosX,y-mc.getRenderManager().viewerPosY,z-mc.getRenderManager().viewerPosZ).endVertex();
     }
 
-    private static void colorVertex(double x, double y, double z, Colour color, int alpha, BufferBuilder bufferbuilder) {
+    public static void colorVertex(double x, double y, double z, Colour color, int alpha, BufferBuilder bufferbuilder) {
         bufferbuilder.pos(x-mc.getRenderManager().viewerPosX,y-mc.getRenderManager().viewerPosY,z-mc.getRenderManager().viewerPosZ).color(color.r, color.g, color.b, alpha).endVertex();
     }
 
@@ -189,7 +189,7 @@ public class TessellatorUtil implements Globals {
         return new AxisAlignedBB(x,y,z,x+width,y+height,z+depth);
     }
 
-    private static void doVerticies(AxisAlignedBB axisAlignedBB, Colour color, int alpha, BufferBuilder bufferbuilder, int sides, boolean five) {
+    public static void doVerticies(AxisAlignedBB axisAlignedBB, Colour color, int alpha, BufferBuilder bufferbuilder, int sides, boolean five) {
         if ((sides & FaceMasks.Quad.EAST) != 0) {
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);

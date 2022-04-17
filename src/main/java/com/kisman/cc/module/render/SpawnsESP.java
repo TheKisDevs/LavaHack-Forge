@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class SpawnsESP extends Module {
     private Setting crystals = new Setting("Crystals", this, true);
     private Setting players = new Setting("Players", this, false);
@@ -36,48 +38,65 @@ public class SpawnsESP extends Module {
     public ConcurrentHashMap<BlockPos, Long> blocks = new ConcurrentHashMap();
 
     public SpawnsESP() {
-        super("SpawnsESP", "        super(\"SpawnsESP\", )\n", Category.RENDER);
+        super("SpawnsESP", "        super(\"SpawnsESP\", )", Category.RENDER);
+
+        setmgr.rSetting(crystals);
+        setmgr.rSetting(players);
+        setmgr.rSetting(mobs);
+        setmgr.rSetting(boats);
+        setmgr.rSetting(duration);
+        setmgr.rSetting(width);
     }
 
     public void onEnable() {
+        super.onEnable();
         Kisman.EVENT_BUS.subscribe(listener);
     }
 
     public void onDisable() {
+        super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(listener);
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        for (VecCircle class442 : circles) {
-            int n;
-            if ((float)(System.currentTimeMillis() - VecCircle.Method722(class442)) > 1000.0f * duration.getValDouble()) {
-                this.circles.remove(class442);
+        for (VecCircle circle : circles) {
+            if ((float)(System.currentTimeMillis() - VecCircle.Method722(circle)) > 1000.0f * duration.getValDouble()) {
+                this.circles.remove(circle);
                 continue;
             }
-            GlStateManager.pushMatrix();
+            glPushMatrix();
+            GL11.glDisable(GL11.GL_CULL_FACE);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+            glDisable(GL11.GL_LIGHTING);
+            /*GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
             GlStateManager.disableTexture2D();
             GlStateManager.disableDepth();
-            GlStateManager.disableLighting();
+            GlStateManager.disableLighting();*/
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             float[] fArray = Color.RGBtoHSB(1, 1, 1, null);
             float f = (float)(System.currentTimeMillis() % 7200L) / 7200.0f;
             int n2 = Color.getHSBColor(f, fArray[1], fArray[2]).getRGB();
             ArrayList<Vec3d> arrayList = new ArrayList<>();
-            double d = VecCircle.Method719(class442).x - mc.getRenderManager().renderPosX;
-            double d2 = VecCircle.Method719(class442).y - mc.getRenderManager().renderPosY;
-            double d3 = VecCircle.Method719(class442).z - mc.getRenderManager().renderPosZ;
+            double d = VecCircle.Method719(circle).x - mc.getRenderManager().renderPosX;
+            double d2 = VecCircle.Method719(circle).y - mc.getRenderManager().renderPosY;
+            double d3 = VecCircle.Method719(circle).z - mc.getRenderManager().renderPosZ;
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
             GL11.glLineWidth((float) width.getValDouble());
             GL11.glEnable(2848);
             GL11.glHint(3154, 4354);
             GL11.glBegin(1);
-            for (n = 0; n <= 360; ++n) {
-                Vec3d vec3d = new Vec3d(d + Math.sin((double)n * Math.PI / 180.0) * (double)VecCircle.Method720(class442), d2 + (double)(VecCircle.Method721(class442) * ((float)(System.currentTimeMillis() - VecCircle.Method722(class442)) / (1000.0f * duration.getValDouble()))), d3 + Math.cos((double)n * Math.PI / 180.0) * (double)VecCircle.Method720(class442));
+            for (int n = 0; n <= 360; ++n) {
+                Vec3d vec3d = new Vec3d(d + Math.sin((double)n * Math.PI / 180.0) * (double)VecCircle.Method720(circle), d2 + (double)(VecCircle.Method721(circle) * ((float)(System.currentTimeMillis() - VecCircle.Method722(circle)) / (1000.0f * duration.getValDouble()))), d3 + Math.cos((double)n * Math.PI / 180.0) * (double)VecCircle.Method720(circle));
                 arrayList.add(vec3d);
             }
-            for (n = 0; n < arrayList.size() - 1; ++n) {
+            for (int n = 0; n < arrayList.size() - 1; ++n) {
                 int n3 = n2 >> 24 & 0xFF;
                 int n4 = n2 >> 16 & 0xFF;
                 int n5 = n2 >> 8 & 0xFF;
@@ -89,13 +108,22 @@ public class SpawnsESP extends Module {
                 n2 = Color.getHSBColor(f += 0.0027777778f, fArray[1], fArray[2]).getRGB();
             }
             GL11.glEnd();
-            GL11.glDisable(2848);
+/*            GL11.glDisable(2848);
             GlStateManager.enableLighting();
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
             GlStateManager.enableDepth();
             GlStateManager.enableTexture2D();
             GlStateManager.disableBlend();
-            GlStateManager.popMatrix();
+            GlStateManager.popMatrix();*/
+            glEnable(GL11.GL_LIGHTING);
+
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glShadeModel(GL11.GL_FLAT);
+            GL11.glEnable(GL11.GL_CULL_FACE);
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glPopMatrix();
         }
     }
 

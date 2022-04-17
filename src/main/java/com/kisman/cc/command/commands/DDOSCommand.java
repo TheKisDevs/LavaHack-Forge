@@ -13,7 +13,7 @@ public class DDOSCommand extends Command {
     public void runCommand(String s, String[] args) {
         try {
             if(args[0].equalsIgnoreCase("ip")) {
-                DDOSModule.instance.customIp = args[1];
+                DDOSModule.customIp = args[1];
             }
         } catch (Exception e) {
             ChatUtils.error("ddos command gave error");
@@ -22,7 +22,7 @@ public class DDOSCommand extends Command {
 
     @Override
     public String getDescription() {
-        return "Set custom ip for DDOS module";
+        return "Set custom ip for DDOS module or WebhookSpammer";
     }
 
     @Override

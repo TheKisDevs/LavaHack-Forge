@@ -22,7 +22,7 @@ public class DDOSModule extends Module {
 
     public static DDOSModule instance;
     private ScheduledExecutorService threadPool;
-    public String customIp = "";
+    public static String customIp = "";
 
     public DDOSModule() {
         super("DDOSModule", Category.MISC);

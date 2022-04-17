@@ -61,12 +61,14 @@ public class EntityESP extends Module{
     }
 
     public void onDisable() {
+        super.onDisable();
         if(mc.player == null || mc.world == null) return;
 
         glowings.forEach(entity -> entity.glowing = false);
     }
 
     public void onEnable() {
+        super.onEnable();
         glowings.clear();
     }
 

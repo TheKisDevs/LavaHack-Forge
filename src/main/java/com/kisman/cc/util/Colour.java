@@ -260,4 +260,8 @@ public class Colour {
     public void glColor() {
         GlStateManager.color(r1, g1, b1, a1);
     }
+
+    public Colour withAlpha(int alpha) {
+        return new Colour(this, alpha);
+    }
 }

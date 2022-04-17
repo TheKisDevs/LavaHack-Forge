@@ -44,7 +44,7 @@ apply plugin: 'maven-publish'
 //    srcDirs += 'src/main/kotlin'
 //}
 
-version = 'b0.1.6.3-plus'
+version = 'b0.1.6.4-plus'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 

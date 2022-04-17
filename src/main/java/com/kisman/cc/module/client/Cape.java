@@ -19,6 +19,6 @@ public class Cape extends Module {
     }
 
     public void update() {
-        super.setDisplayInfo("[" + mode.getValBoolean() + "]");
+        super.setDisplayInfo("[" + mode.getValString() + "]");
     }
 }

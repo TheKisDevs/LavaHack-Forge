@@ -12,8 +12,6 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
-import net.minecraft.util.math.MathHelper
-import org.apache.http.util.EntityUtils
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.pow
 
@@ -54,8 +52,8 @@ object Outline2Shader {
         // Revert states
         GlStateUtils.blend(true)
         GlStateUtils.depth(true)
-        GlStateUtils.texture2d(false)
-        GlStateManager.depthMask(false)
+//        GlStateUtils.texture2d(false)
+//        GlStateManager.depthMask(false)
 
         // Revert matrix
         GlStateUtils.popMatrixAll()

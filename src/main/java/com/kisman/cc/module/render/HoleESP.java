@@ -47,6 +47,7 @@ public class HoleESP extends Module {
 
     public HoleESP() {
         super("HoleESP", "HoleESP", Category.RENDER);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
 
         setmgr.rSetting(mode);
         setmgr.rSetting(konasMode);
@@ -104,8 +105,8 @@ public class HoleESP extends Module {
 
                 Colour colour;
 
-                if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) colour = new Colour(bedrockColor.getR(), bedrockColor.getG(), bedrockColor.getB(), 255);
-                else colour = new Colour(obbyColor.getR(), obbyColor.getG(), obbyColor.getB(), 255);
+                if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) colour =bedrockColor.getColour();
+                else colour = obbyColor.getColour();
                 if (holeType == HoleUtil.HoleType.CUSTOM) colour = new Colour(255, 255, 255, 255);
 
                 String mode = customMode.getValString();

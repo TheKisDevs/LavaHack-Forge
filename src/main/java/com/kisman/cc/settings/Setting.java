@@ -528,7 +528,7 @@ public class Setting {
 	}
 
 	public Enum getValEnum() {
-		return svalEnum;
+		return optionEnum.valueOf(optionEnum.getClass(), sval);
 	}
 
 	public void setValEnum(Enum svalEnum) {

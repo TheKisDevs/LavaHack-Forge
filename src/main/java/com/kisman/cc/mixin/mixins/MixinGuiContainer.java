@@ -22,7 +22,7 @@ import java.awt.*;
 import java.util.Set;
 
 @Mixin(value = GuiContainer.class, priority = 10000)
-public abstract class MixinGuiContainer extends GuiScreen {
+public class MixinGuiContainer extends GuiScreen {
     @Shadow protected int guiLeft, guiTop, xSize, ySize;
     @Shadow public Container inventorySlots;
     @Shadow private ItemStack draggedStack;
@@ -30,16 +30,11 @@ public abstract class MixinGuiContainer extends GuiScreen {
     @Shadow private boolean isRightMouseClick;
     @Shadow protected boolean dragSplitting;
     @Shadow @Final protected Set<Slot> dragSplittingSlots;
-
-    @Shadow protected abstract void updateDragSplitting();
-
+    @Shadow private void updateDragSplitting() {}
     @Shadow private int dragSplittingLimit;
-
-    @Shadow protected abstract boolean checkHotbarKeys(int keyCode);
-
+    @Shadow protected boolean checkHotbarKeys(int keyCode) {return false;}
     @Shadow private Slot hoveredSlot;
-
-    @Shadow protected abstract void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type);
+    @Shadow protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {}
 
     public ItemESP itemESP = new ItemESP();
 

@@ -137,16 +137,16 @@ public class HalqGui extends GuiScreen {
     public static void drawString(String text, int x, int y, int width, int height) {
         switch (stringLocateMode) {
             case Center:
-                CustomFontUtil.drawCenteredStringWithShadow(text, x + width / 2, y + height / 2 - CustomFontUtil.getFontHeight() / 2, -1);
+                CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
             case Left:
-                CustomFontUtil.drawStringWithShadow(text, x + 5, y + height / 2 - CustomFontUtil.getFontHeight() / 2, -1);
+                CustomFontUtil.drawStringWithShadow(text, x + 5, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
         }
     }
 
     public static void drawCenteredString(String text, int x, int y, int width, int height) {
-        CustomFontUtil.drawCenteredStringWithShadow(text, x + width / 2, y + height / 2 - CustomFontUtil.getFontHeight() / 2, -1);
+        CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
     }
 
     public static Colour getGradientColour(int count) {

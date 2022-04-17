@@ -48,6 +48,7 @@ public class CrystalModifier extends Module {
 
     public CrystalModifier() {
         super("CrystalCharms", "r", Category.RENDER);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
 
         instance = this;
 

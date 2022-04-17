@@ -53,7 +53,7 @@ import java.util.HashMap;
 public class Kisman {
     public static final String NAME = "kisman.cc+";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.6.3";
+    public static final String VERSION = "b0.1.6.4";
     public static final String HWIDS_LIST = "https://pastebin.com/raw/yM7s0G4u";
     public static final String fileName = "kisman.cc/";
     public static final String moduleName = "Modules/";

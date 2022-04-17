@@ -42,11 +42,13 @@ public class LogoutSpots extends Module {
     }
 
     public void onEnable() {
+        super.onEnable();
         spots.clear();
         Kisman.EVENT_BUS.subscribe(packetevent);
     }
 
     public void onDisable() {
+        super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(packetevent);
         spots.clear();
     }
