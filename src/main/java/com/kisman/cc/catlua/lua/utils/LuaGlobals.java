@@ -5,6 +5,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.Globals;
+import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -172,5 +173,13 @@ public class LuaGlobals implements Globals {
 
     public void openGui(GuiScreen gui) {
         mc.displayGuiScreen(gui);
+    }
+
+    public void sendLocalMessage(String message) {
+        ChatUtils.message(message);
+    }
+
+    public void sendGlobalMessage(String message) {
+        mc.player.sendChatMessage(message);
     }
 }

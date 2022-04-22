@@ -45,7 +45,7 @@ public class SaveConfig {
     }
 
     private static void saveModules() throws IOException {
-        for (Module module : Kisman.instance.moduleManager.getModuleList()) try {saveModuleDirect(module, Kisman.instance.settingsManager.getSettingsByMod(module) != null && !Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty());} catch (IOException e) {e.printStackTrace();}
+        for (Module module : Kisman.instance.moduleManager.getModuleList()) try {saveModuleDirect(module, Kisman.instance.settingsManager.getSettingsByMod(module) != null && !Kisman.instance.settingsManager.getSettingsByMod(module).isEmpty());} catch (IOException ignored) {}
     }
 
     private static void saveModuleDirect(Module module, boolean settings) throws IOException {

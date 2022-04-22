@@ -16,7 +16,7 @@ public class DDOSCommand extends Command {
                 DDOSModule.customIp = args[1];
             }
         } catch (Exception e) {
-            ChatUtils.error("ddos command gave error");
+            error("ddos command get error");
         }
     }
 

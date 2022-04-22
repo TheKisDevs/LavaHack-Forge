@@ -21,31 +21,31 @@ public class Bind extends Command{
             String isList = args[0];
 
             if(args.length == 1 && !isList.equalsIgnoreCase("list")) {
-                ChatUtils.error("Usage: " + getSyntax());
+                error("Usage: " + getSyntax());
                 return;
             }
 
             if(args.length > 2 && isList.equalsIgnoreCase("list")) {
-                ChatUtils.error("Usage: " + getSyntax());
+                error("Usage: " + getSyntax());
                 return;
             }
 
             if(args.length == 1 && isList.equalsIgnoreCase("list")) {
-                ChatUtils.message("----------------------------------");
-                ChatUtils.message("Bind List:");
-                for(Module mod : Kisman.instance.moduleManager.modules) if(Keyboard.KEY_NONE != mod.getKey()) ChatUtils.message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
-                ChatUtils.message("----------------------------------");
+                message("----------------------------------");
+                message("Bind List:");
+                for(Module mod : Kisman.instance.moduleManager.modules) if(Keyboard.KEY_NONE != mod.getKey()) message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
+                message("----------------------------------");
                 return;
             }
 
             for(Module mod : Kisman.instance.moduleManager.modules) {
                 if(mod.getName().equalsIgnoreCase(args[1])) {
                     mod.setKey(Keyboard.getKeyIndex((key.toUpperCase())));
-                    ChatUtils.message(mod.getName() + " binned to " + Keyboard.getKeyName(mod.getKey()));
+                    message(mod.getName() + " binned to " + Keyboard.getKeyName(mod.getKey()));
                     SaveConfig.init();
                 }
             }
-        } catch(Exception e) {ChatUtils.error("Usage: " + getSyntax());}
+        } catch(Exception e) {error("Usage: " + getSyntax());}
     }
 
     @Override

@@ -68,6 +68,7 @@ public class CustomFontUtil {
 
     public static void drawString(String text, double x, double y, int color, boolean gui) {
         if (customFont()) {
+            y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName(), gui);
             if(font instanceof CFontRenderer) ((CFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
             else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
@@ -76,6 +77,7 @@ public class CustomFontUtil {
 
     public static int drawString(String text, double x, double y, int color) {
         if (customFont()) {
+            y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
             if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
             else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
@@ -85,6 +87,7 @@ public class CustomFontUtil {
 
     public static int drawStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
+            y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
             if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
             else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
@@ -94,6 +97,7 @@ public class CustomFontUtil {
 
     public static void drawCenteredStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
+            y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
             if(font instanceof CFontRenderer) ((CFontRenderer) font).drawCenteredStringWithShadow(getStringModofiers() + text, x, y - 1, color);
             else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawCenteredStringWithShadow(getStringModofiers() + text, (float) x, (float) y - 1, color);

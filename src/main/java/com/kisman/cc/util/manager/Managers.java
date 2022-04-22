@@ -19,6 +19,7 @@ public class Managers {
     public TimerManager timerManager;
     public ColorManager colorManager;
     public CrystalManager crystalManager;
+    public CPSManager cpsManager;
 
     public AtomicLong lagTimer = new AtomicLong();
 
@@ -32,6 +33,7 @@ public class Managers {
         timerManager = new TimerManager();
         colorManager = new ColorManager();
         crystalManager = new CrystalManager();
+        cpsManager = new CPSManager();
 
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(listener);

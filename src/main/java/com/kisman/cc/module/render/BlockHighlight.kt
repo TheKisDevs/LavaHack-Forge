@@ -17,6 +17,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     private val entities = Setting("Entities", this, false)
     private val hitSideOnly = Setting("Hit Side Only", this, false)
     private val depth = Setting("Depth", this, false)
+    private val alpha = Setting("Alpha", this, true)
     private val color = Setting("Color", this, "Color", Colour(255, 255, 255))
     private val width = Setting("Width", this, 2.0, 0.25, 5.0, false)
     private val offset = Setting("Offset", this, 0.002, 0.002, 0.2, false)
@@ -26,6 +27,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         setmgr.rSetting(entities)
         setmgr.rSetting(hitSideOnly)
         setmgr.rSetting(depth)
+        setmgr.rSetting(alpha)
         setmgr.rSetting(color)
         setmgr.rSetting(width)
         setmgr.rSetting(offset)
@@ -67,7 +69,8 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             color.colour,
             mode.valEnum as BoxRenderModes,
             width.valFloat,
-            depth.valBoolean
+            depth.valBoolean,
+            alpha.valBoolean
         ).draw(event.partialTicks)
     }
 }

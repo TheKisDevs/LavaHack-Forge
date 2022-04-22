@@ -18,7 +18,7 @@ public class OpenDir extends Command {
             File file = new File(Minecraft.getMinecraft().mcDataDir + "kisman.cc/");
             Desktop.getDesktop().open(file);
         } catch (Exception e) {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
         }
     }
 

@@ -17,19 +17,19 @@ public class Toggle extends Command{
         try {
             module = args[0];
         } catch(Exception e) {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
             return;
         }
 
         try {
             Kisman.instance.moduleManager.getModule(module);
         } catch(Exception e) {
-            ChatUtils.error("Module " + module + " does not exist!");
+            error("Module " + module + " does not exist!");
             return;
         }
 
         if(args.length > 1) {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
             return;
         }
 
@@ -37,9 +37,9 @@ public class Toggle extends Command{
             Kisman.instance.moduleManager.getModule(module).setToggled(
                 !Kisman.instance.moduleManager.getModule(module).isToggled()
             );
-            ChatUtils.complete("Module " + module + " has been toggled!");
+            complete("Module " + module + " has been toggled!");
         } catch(Exception e) {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
         }
     }
 

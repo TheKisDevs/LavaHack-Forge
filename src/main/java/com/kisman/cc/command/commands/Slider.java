@@ -21,14 +21,14 @@ public class Slider extends Command{
             module = args[0];
             name = args[1];
         } catch(Exception e) {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
             return;
         }
 
         try {
             Kisman.instance.moduleManager.getModule(module);
         } catch(Exception e) {
-            ChatUtils.error("Module " + module + " does not exist!");
+            error("Module " + module + " does not exist!");
             return;
         }
 
@@ -44,7 +44,7 @@ public class Slider extends Command{
                 }
             }
             if(!oldName.equalsIgnoreCase(name)) {
-                ChatUtils.error("Setting " + name + " in module " + module + " does not exist!");
+                error("Setting " + name + " in module " + module + " does not exist!");
                 return;
             }
         }
@@ -52,22 +52,22 @@ public class Slider extends Command{
         try {
             value = Double.parseDouble(args[2]);
         } catch(Exception e) {
-            ChatUtils.error("Value error! <value> isnt double!");
+            error("Value error! <value> isnt double!");
             return;
         }
 
         try {
             if(Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name) != null){
                 Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), name).setValDouble(value);
-                ChatUtils.message("Value " + name + " changed to " + value);
+                message("Value " + name + " changed to " + value);
             } else {
                 String parsedName = name.replace('_', ' ');
                 if(Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), parsedName) != null){
                     Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule(module), parsedName).setValDouble(value);
-                    ChatUtils.message("Value " + parsedName + " changed to " + value);
+                    message("Value " + parsedName + " changed to " + value);
                 }
             }
-        } catch(Exception e) {ChatUtils.error("Usage: " + getSyntax());}
+        } catch(Exception e) {error("Usage: " + getSyntax());}
     }
 
     @Override

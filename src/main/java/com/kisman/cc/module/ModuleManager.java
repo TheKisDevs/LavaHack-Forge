@@ -102,12 +102,13 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
 		modules.add(new CustomFov());
-		modules.add(new DamageESP());
+//		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
 		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
+//		modules.add(new ItemESP());
 		modules.add(new JumpCircle());
 		modules.add(new LogoutSpots());
 		modules.add(new NameTags());

@@ -75,7 +75,7 @@ public class Flip extends Command {
         timer.purge();
         timer = new Timer();
         if (ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "Flip").equals("true")) {
-            ChatUtils.message(
+            message(
                     TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
                             TextFormatting.GREEN + " Flipper alerts enabled"
             );
@@ -95,7 +95,7 @@ public class Flip extends Command {
                             try {
                                 ApiHandler.updatePurseCoins(ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "ApiKey"), mc.player.getName());
                             } catch (Exception e) {
-                                ChatUtils.error(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + "Could not load purse.");
+                                error(TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" + "Could not load purse.");
                             }
 
                             String name = sender.getName();
@@ -103,7 +103,7 @@ public class Flip extends Command {
                             try {
                                 ApiHandler.updatePurseCoins(id, name);
                             } catch (Exception e) {
-                                ChatUtils.error(
+                                error(
                                         TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
                                                 TextFormatting.RED + "Could not load purse."
                                 );
@@ -128,7 +128,7 @@ public class Flip extends Command {
 
                                 for (Map.Entry<String, Double> entry : namedDataset.entrySet()) {
                                     long profit = Math.abs(entry.getValue().longValue());
-                                    ChatUtils.complete(
+                                    complete(
                                             TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "] " +
                                                     TextFormatting.YELLOW + entry.getKey() + " " +
                                                     (profit > 200_000 || purse / 5 < 100_000 ?
@@ -163,7 +163,7 @@ public class Flip extends Command {
                                 ApiHandler.getBins(initialDataset);
                                 ApiHandler.itemIdsToNames(initialDataset);
                             } catch (Exception e) {
-                                ChatUtils.error(
+                                error(
                                         TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
                                                 TextFormatting.RED + " Could not load BINs."
                                 );
@@ -173,7 +173,7 @@ public class Flip extends Command {
                     60000,
                     60000);
         } else {
-            ChatUtils.message(
+            message(
                     TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
                             TextFormatting.RED + " Flipper alerts disabled"
             );

@@ -16,18 +16,18 @@ public class FriendCommand extends Command {
             if(args[0] != null && args[1] != null) {
                 if(args[0].equalsIgnoreCase(subCommands[0])) {
                     Kisman.instance.friendManager.addFriend(args[1]);
-                    ChatUtils.complete(args[1] + " added in friends!");
+                    complete(args[1] + " added in friends!");
                 } else if(args[0].equalsIgnoreCase(subCommands[1])) {
                     Kisman.instance.friendManager.removeFriend(args[1]);
-                    ChatUtils.complete(args[1] + " removed from friends :(");
-                } else ChatUtils.error("Usage: " + getSyntax());
-            } else if(args[0].equalsIgnoreCase(subCommands[2])) {
-                ChatUtils.simpleMessage("----------------------------------");
-                ChatUtils.simpleMessage("Friends:");
-                ChatUtils.simpleMessage(Kisman.instance.friendManager.getFriendsNames());
-                ChatUtils.simpleMessage("----------------------------------");
+                    complete(args[1] + " removed from friends :(");
+                } else error("Usage: " + getSyntax());
+            } else if(subCommands[2].equalsIgnoreCase(args[0])) {
+                print("----------------------------------");
+                print("Friends:");
+                print(Kisman.instance.friendManager.getFriendsNames());
+                print("----------------------------------");
             }
-        } catch (Exception e) {ChatUtils.error("Usage: " + getSyntax());}
+        } catch (Exception e) {error("Usage: " + getSyntax());}
     }
 
     public String getDescription() {return "friend's command";}

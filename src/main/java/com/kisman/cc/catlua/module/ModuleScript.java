@@ -105,6 +105,7 @@ public class ModuleScript extends Module {
         engine.put("HudModule", HudModuleLua.getLua());
         engine.put("GuiBuilder", GuiBuilder.getLua());
         engine.put("rotations", Kisman.instance.luaRotation);
+        engine.put("net", LuaNet.Companion.getDefault());
 
         engine.put("Builder", new LuaSetting.LuaBuilder());
         engine.put("SettingManager", Kisman.instance.settingsManager);

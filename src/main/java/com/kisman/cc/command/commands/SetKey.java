@@ -14,12 +14,12 @@ public class SetKey extends Command {
     public void runCommand(String s, String[] args) {
         if (args.length > 0) {
             ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL, "APIKey", args[0]);
-            ChatUtils.complete(
+            complete(
                     TextFormatting.GRAY + "[" + TextFormatting.GOLD + "NEC for 1.12.2 by _kisman_" + TextFormatting.GRAY + "]" +
                             TextFormatting.GRAY + " API Key set to " + TextFormatting.GREEN + args[0]
             );
         } else {
-            ChatUtils.error("Usage: " + getSyntax());
+            error("Usage: " + getSyntax());
         }
     }
 

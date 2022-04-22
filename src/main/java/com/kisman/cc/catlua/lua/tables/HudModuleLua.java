@@ -79,12 +79,12 @@ public class HudModuleLua extends HudModule {
 
     public static LuaValue getLua() {
         if(value == null) {
-            LuaValue moduleLua = CoerceJavaToLua.coerce(HudModuleLua.class);
+            LuaValue hudModuleLua = CoerceJavaToLua.coerce(HudModuleLua.class);
             LuaTable table = new LuaTable();
             table.set("new", new HudModuleLua.New());
             table.set("__index", table);
-            moduleLua.setmetatable(table);
-            value = moduleLua;
+            hudModuleLua.setmetatable(table);
+            value = hudModuleLua;
         }
         return value;
     }

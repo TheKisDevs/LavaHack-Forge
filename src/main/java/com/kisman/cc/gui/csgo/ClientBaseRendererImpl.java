@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL41.glClearDepthf;
 
 public class ClientBaseRendererImpl implements IRenderer {
-    @Override public void drawRect(double x, double y, double w, double h, Color c) {GLUtil.drawRect(GL_QUADS, (int) x / 2, (int) y / 2, (int) x / 2 + (int)  w / 2, (int) y / 2 + (int) h / 2, ColorUtils.getColor(c));}
+    @Override public void drawRect(double x, double y, double w, double h, Color c) {GLUtil.drawRect(GL_QUADS, (int) x / 2, (int) y / 2, (int) x / 2 + (int)  w / 2, (int) y / 2 + (int) h / 2, c.getRGB());}
 
 @Override
 public  void drawCheckMark(float x, float y, int width, int color) {

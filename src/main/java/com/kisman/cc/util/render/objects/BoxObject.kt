@@ -6,12 +6,12 @@ import com.kisman.cc.util.enums.Object3dTypes
 import com.kisman.cc.util.render.konas.TessellatorUtil
 import net.minecraft.client.renderer.GlStateManager
 
-class BoxObject(val box: Box , override val color: Colour, val mode: BoxRenderModes, val width: Float, val depth: Boolean) : Abstract3dObject() {
+class BoxObject(val box: Box , override val color: Colour, val mode: BoxRenderModes, val width: Float, val depth: Boolean, val alpha: Boolean) : Abstract3dObject() {
     override val type: Object3dTypes = Object3dTypes.Box
 
     override fun draw(ticks: Float) {
         GlStateManager.pushMatrix();
-        prepare(depth)
+        prepare(depth,alpha)
 
         if (depth) {
             GlStateManager.enableDepth();
@@ -23,7 +23,7 @@ class BoxObject(val box: Box , override val color: Colour, val mode: BoxRenderMo
 
         GlStateManager.color(1F, 1F, 1F, 1F);
 
-        release()
+        release(alpha)
         GlStateManager.popMatrix();
     }
 }

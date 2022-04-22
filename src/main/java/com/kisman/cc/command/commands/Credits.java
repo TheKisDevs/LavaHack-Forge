@@ -38,8 +38,8 @@ public class Credits extends Command {
             add("Aurora", "ChatTTF");
             add("Some contributors", "some modules");
 
-            ChatUtils.simpleMessage(msg);
-        } else ChatUtils.error("Usage: " + getDescription());
+            print(msg);
+        } else error("Usage: " + getDescription());
     }
 
     public String getDescription() {return "Show credits list";}

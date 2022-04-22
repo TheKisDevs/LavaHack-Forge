@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.VecCircle;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -27,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static org.lwjgl.opengl.GL11.*;
 
 public class SpawnsESP extends Module {
+    private final Setting color = new Setting("Color", this, "Color", new Colour(255, 255, 255, 255));
     private Setting crystals = new Setting("Crystals", this, true);
     private Setting players = new Setting("Players", this, false);
     private Setting mobs = new Setting("Mobs", this, false);
@@ -40,6 +42,7 @@ public class SpawnsESP extends Module {
     public SpawnsESP() {
         super("SpawnsESP", "        super(\"SpawnsESP\", )", Category.RENDER);
 
+        setmgr.rSetting(color);
         setmgr.rSetting(crystals);
         setmgr.rSetting(players);
         setmgr.rSetting(mobs);
@@ -82,12 +85,12 @@ public class SpawnsESP extends Module {
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             float[] fArray = Color.RGBtoHSB(1, 1, 1, null);
             float f = (float)(System.currentTimeMillis() % 7200L) / 7200.0f;
-            int n2 = Color.getHSBColor(f, fArray[1], fArray[2]).getRGB();
+            int n2 = color.getColour().getRGB();
             ArrayList<Vec3d> arrayList = new ArrayList<>();
             double d = VecCircle.Method719(circle).x - mc.getRenderManager().renderPosX;
             double d2 = VecCircle.Method719(circle).y - mc.getRenderManager().renderPosY;
             double d3 = VecCircle.Method719(circle).z - mc.getRenderManager().renderPosZ;
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            color.getColour().glColor();
             GL11.glLineWidth((float) width.getValDouble());
             GL11.glEnable(2848);
             GL11.glHint(3154, 4354);

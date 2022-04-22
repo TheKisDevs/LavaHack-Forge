@@ -35,7 +35,6 @@ public class CustomFont {
     }
 
     protected BufferedImage generateFontImage(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars){
-        getClass();
         int imgSize = 512;
         BufferedImage bufferedImage = new BufferedImage(imgSize, imgSize, 2);
         Graphics2D g = (Graphics2D)bufferedImage.getGraphics();

@@ -50,6 +50,7 @@ public class Remapper3000 {
         else {
             fieldsMapping = methodsMapping = fieldsMappingReverse = methodsMappingReverse = new HashMap<>();
 
+            if(!Kisman.canInitializateCatLua) return;
 
             //fields
             {

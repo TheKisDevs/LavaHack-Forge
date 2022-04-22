@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.mapping.ForgeMappings;
+import com.kisman.cc.catlua.mapping.RemapperUtil;
 import fuck.you.yarnparser.entry.*;
 import org.luaj.vm2.LuaValue;
 
@@ -83,24 +84,28 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 		}
 
 		if(Kisman.remapped) {
-			Class superclass = ((Class) m_instance);
+			Class<?> superclass = m_instance.getClass();
 			String name = superclass.getName() + key.tojstring();
 			if(Kisman.instance.remapper3000.fieldsCache.containsKey(name)) return Kisman.instance.remapper3000.fieldsCache.get(name);
 
-			while (superclass != null) {
+			if(RemapperUtil.Companion.canBeRemapped(superclass.getName())) {
+				while (superclass != null) {
 //				System.out.println("FindField: superclass " + superclass.getName() + ", name " + key.tojstring());
-				System.out.println("Class:" + superclass.getName());
-				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.OFFICIAL);
-				if(fieldEntry != null) {
-					Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
-					return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));
+					System.out.println("Class:" + superclass.getName());
+					FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.OFFICIAL);
+					if (fieldEntry != null) {
+						Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
+						System.out.println(fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
+						return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));
+					}
+					superclass = superclass.getSuperclass();
 				}
-				superclass = superclass.getSuperclass();
-			}
 
-			Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
+				Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
+			}
 		}
 
+		System.out.println(fields.get(key));
 		return (Field) fields.get(key);
 	}
 

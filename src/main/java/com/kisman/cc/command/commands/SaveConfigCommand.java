@@ -13,15 +13,15 @@ public class SaveConfigCommand extends Command {
     public void runCommand(String s, String[] args) {
         try {
             if(args.length > 0) {
-                ChatUtils.error("Usage: " + getSyntax());
+                error("Usage: " + getSyntax());
                 return;
             }
 
-            ChatUtils.warning("Start saving configs!");
+            warning("Start saving configs!");
             SaveConfig.init();
-            ChatUtils.message("Saved Config!");
+            message("Saved Config!");
         } catch (Exception e) {
-            ChatUtils.error("Saving config is failed!");
+            error("Saving config is failed!");
             e.printStackTrace();
         }
     }

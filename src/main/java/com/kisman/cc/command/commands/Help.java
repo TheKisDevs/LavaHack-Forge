@@ -9,22 +9,22 @@ public class Help extends Command {
     }
 
     public void runCommand(String s, String[] args) {
-        ChatUtils.message("Commands:");
-        ChatUtils.message("bind <key> <module>");
-        ChatUtils.message("bind list");
-        ChatUtils.message("credits");
-        ChatUtils.message("flip - this command only for Hypixel Skyblock");
-        ChatUtils.message("friend <add/remove> <player's name>");
-        ChatUtils.message("friend list");
-        ChatUtils.message("help");
-        ChatUtils.message("loadconfig");
-        ChatUtils.message("opendir");
-        ChatUtils.message("saveconfig");
-        ChatUtils.message("setkey - this command only for Hypixel Skyblock");
-        ChatUtils.message("slider <module> <slider's name> <value>");
-        ChatUtils.message("toggle <module>");
-        ChatUtils.message("tp <x> <y> <z>");
-        ChatUtils.message("tp <player's nickname>");
+        message("Commands:");
+        message("bind <key> <module>");
+        message("bind list");
+        message("credits");
+        message("flip - this command only for Hypixel Skyblock");
+        message("friend <add/remove> <player's name>");
+        message("friend list");
+        message("help");
+        message("loadconfig");
+        message("opendir");
+        message("saveconfig");
+        message("setkey - this command only for Hypixel Skyblock");
+        message("slider <module> <slider's name> <value>");
+        message("toggle <module>");
+        message("tp <x> <y> <z>");
+        message("tp <player's nickname>");
     }
 
     public String getDescription() {

@@ -10,9 +10,9 @@ import java.io.*;
 import java.util.List;
 
 public class ForgeMappings {
-    private ObjectList<ClassEntry> classes;
-    private ObjectList<MethodEntry> methods;
-    private ObjectList<FieldEntry> fields;
+    public ObjectList<ClassEntry> classes;
+    public ObjectList<MethodEntry> methods;
+    public ObjectList<FieldEntry> fields;
 
     public void init(InputStream is) throws IOException {
         this.classes = new ObjectArrayList<>();

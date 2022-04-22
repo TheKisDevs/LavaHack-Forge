@@ -13,15 +13,15 @@ public class LoadConfigCommand extends Command {
     public void runCommand(String s, String[] args) {
         try {
             if(args.length > 0) {
-                ChatUtils.error("Usage: " + getSyntax());
+                error("Usage: " + getSyntax());
                 return;
             }
 
-            ChatUtils.warning("Start loading configs!");
+            warning("Start loading configs!");
             LoadConfig.init();
-            ChatUtils.message("Loaded Config!");
+            message("Loaded Config!");
         } catch (Exception e) {
-            ChatUtils.error("Loaded config is failed!");
+            error("Loaded config is failed!");
             e.printStackTrace();
         }
     }

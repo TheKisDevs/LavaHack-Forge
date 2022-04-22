@@ -11,7 +11,7 @@ abstract class Abstract3dObject {
     abstract val color: Colour
     abstract fun draw(ticks: Float)
 
-    fun prepare(depth: Boolean) {
+    fun prepare(depth: Boolean, alpha: Boolean) {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE)
@@ -22,15 +22,15 @@ abstract class Abstract3dObject {
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
-        GlStateManager.enableAlpha()
+        if(alpha) GlStateManager.enableAlpha()
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glEnable(GL32.GL_DEPTH_CLAMP)
     }
 
-    fun release() {
+    fun release(alpha: Boolean) {
         GL11.glDisable(GL32.GL_DEPTH_CLAMP)
         GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        GlStateManager.enableAlpha()
+        if(alpha) GlStateManager.enableAlpha()
         GlStateManager.enableCull()
         GlStateManager.enableLighting()
         GlStateManager.enableTexture2D()

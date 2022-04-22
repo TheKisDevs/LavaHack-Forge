@@ -38,9 +38,7 @@
     "accessor.ICPacketPlayer",
     "accessor.IEntityPlayerSP",
     "accessor.ISession",
-    "viaforge.MixinNetworkManagerChInit"
-  ],
-  "client": [
+    "viaforge.MixinNetworkManagerChInit",
     "MixinGuiContainer",
     "MixinGuiIngame",
     "MixinGuiNewChat",

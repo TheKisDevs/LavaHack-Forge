@@ -1,11 +1,8 @@
 package com.kisman.cc.module.client;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtilKt;
-import me.zero.alpine.listener.*;
 
 import java.util.*;
 
@@ -34,21 +31,13 @@ public class CustomFontModule extends Module {
         setmgr.rSetting(italic);
     }
 
-    @EventHandler
-    private final Listener<EventSettingChange.BooleanSetting> change = new Listener<>(event -> {
-        if(event.action.equals(EventSettingChange.Action.Default)) if(event.setting.equals(antiAlias) || event.setting.equals(fractionMetrics)) CustomFontUtilKt.Companion.setAntiAliasAndFractionalMetrics(antiAlias.getValBoolean(), fractionMetrics.getValBoolean());
-    });
-
     public void update() {
         turnOn = true;
-    }
-    public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(change);
+
+        if(CustomFontUtilKt.Companion.getAntiAlias() != antiAlias.getValBoolean()) CustomFontUtilKt.Companion.setAntiAlias(antiAlias.getValBoolean());
+        if(CustomFontUtilKt.Companion.getFractionMetrics() != fractionMetrics.getValBoolean()) CustomFontUtilKt.Companion.setFractionalMetrics(fractionMetrics.getValBoolean());
     }
     public void onDisable(){
         turnOn = false;
-        try {
-            Kisman.EVENT_BUS.unsubscribe(change);
-        } catch (Exception ignored) {}
     }
 }

@@ -3,10 +3,10 @@ package com.kisman.cc;
 import com.kisman.cc.api.cape.CapeAPI;
 import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.catlua.lua.utils.LuaRotation;
-import com.kisman.cc.catlua.mapping.ForgeMappings;
-import com.kisman.cc.catlua.mapping.Remapper3000;
+import com.kisman.cc.catlua.mapping.*;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
+import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.*;
 import com.kisman.cc.file.LoadConfig;
 import com.kisman.cc.friend.FriendManager;
@@ -15,7 +15,6 @@ import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.gui.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -76,6 +75,7 @@ public class Kisman {
     public static boolean isOpenAuthGui;
     public static boolean autoUpdate;
     public static boolean canUseImprAstolfo = false;
+    public static boolean canInitializateCatLua = true;
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
@@ -93,6 +93,7 @@ public class Kisman {
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
     public GuiConsole guiConsole;
+    public ConsoleGui consoleGui;
     public HudGui hudGui;
     public HudEditorGui hudEditorGui;
     public Gui gui;
@@ -114,6 +115,7 @@ public class Kisman {
 
     //catlua
     public EventProcessorLua eventProcessorLua;
+    public ExcludedList excludedList;
     public Remapper3000 remapper3000;
     public ForgeMappings forgeMappings;
     public LuaRotation luaRotation;
@@ -155,6 +157,7 @@ public class Kisman {
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
         guiConsole = new GuiConsole();
+        consoleGui = new ConsoleGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);
         commandManager = new CommandManager();
@@ -172,11 +175,14 @@ public class Kisman {
         ShaderShell.init();
 
         //catlua
-        eventProcessorLua = new EventProcessorLua();
-        remapper3000 = new Remapper3000();
-        remapper3000.init();
-        luaRotation = new LuaRotation();
-        scriptManager = new ScriptManager();
+        catlua: {
+            eventProcessorLua = new EventProcessorLua();
+            excludedList = new ExcludedList();
+            remapper3000 = new Remapper3000();
+            remapper3000.init();
+            luaRotation = new LuaRotation();
+            scriptManager = new ScriptManager();
+        }
 
         //gui's
         clickGuiNew = new ClickGuiNew();

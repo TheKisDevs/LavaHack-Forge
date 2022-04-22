@@ -104,7 +104,7 @@ public class LoadConfig {
         for(Module module : Kisman.instance.moduleManager.modules) {
             JsonElement dataObject = settingObject.get(module.getName());
 
-            if(dataObject != null && dataObject.isJsonPrimitive()) try {if(!(module instanceof TeleportBack)) module.setToggled(dataObject.getAsBoolean());} catch (NullPointerException e) {e.printStackTrace();}
+            if(dataObject != null && dataObject.isJsonPrimitive()) try {if(!(module instanceof TeleportBack)) module.setToggled(dataObject.getAsBoolean());} catch (NullPointerException ignored) {}
         }
 
         inputStream.close();

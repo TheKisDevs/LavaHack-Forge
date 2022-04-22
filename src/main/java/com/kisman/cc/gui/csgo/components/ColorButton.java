@@ -121,7 +121,7 @@ public class ColorButton extends AbstractComponent {
             this.drawPickerBase(pickerX, pickerY, pickerWidth, pickerHeight, selectedRed, selectedGreen, selectedBlue, this.color[3]);
             this.drawHueSlider(hueSliderX, hueSliderY, hueSliderWidth, hueSliderHeight, this.color[0]);
             this.drawAlphaSlider(alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight, selectedRed, selectedGreen, selectedBlue, this.color[3]);
-            this.drawButton(rainbowX, rainbowY, rainbowWidth, rainbowHeight, value2, "Rainbow");
+//            this.drawButton(rainbowX, rainbowY, rainbowWidth, rainbowHeight, value2, "Rainbow");
             //final int
             this.selectedColorFinal = alpha(new Color(Color.HSBtoRGB(this.color[0], this.color[1], this.color[2])), this.color[3]);
             Gui.drawRect(selectedX, selectedY, selectedX + selectedWidth, selectedY + selectedHeight, this.selectedColorFinal);

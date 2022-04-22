@@ -1,7 +1,7 @@
 package com.kisman.cc.api.cape;
 
 import com.kisman.cc.api.util.PasteBinAPI;
-import com.kisman.cc.util.process.web.util.HttpTools;
+import com.kisman.cc.api.util.exception.PasteBinBufferedReaderException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +15,10 @@ public class CapeAPI {
     public static final String URL = "https://pastebin.com/raw/Mjhz9nxW";
 
     public CapeAPI() {
-        if(!HttpTools.ping(URL)) return;
-        pasteBinAPI = new PasteBinAPI(URL);
-        uuids.addAll(pasteBinAPI.get());
+        try {
+            pasteBinAPI = new PasteBinAPI(URL);
+            uuids.addAll(pasteBinAPI.get());
+        } catch (PasteBinBufferedReaderException ignored) {}
     }
 
     public boolean is(UUID uuid) {

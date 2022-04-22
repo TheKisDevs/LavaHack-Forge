@@ -3,33 +3,28 @@ package com.kisman.cc.module.player;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RotationUtils;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.init.*;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
 
 public class FastPlace extends Module {
     public static FastPlace instance;
 
-    private Setting all = new Setting("All", this, false);
+    private final Setting all = new Setting("All", this, false);
 
-    private Setting obby = new Setting("Obby", this, false);
-    private Setting enderChest = new Setting("EnderChest", this, false);
-    private Setting crystal = new Setting("Crystal", this, true);
-    private Setting exp = new Setting("Exp", this, true);
-    private Setting minecart = new Setting("Minecart", this, false);
-    private Setting feetExp = new Setting("FeetExp", this, false);
-    private Setting fastCrystal = new Setting("PacketCrystal", this, false);
+    private final Setting obby = new Setting("Obby", this, false);
+    private final Setting enderChest = new Setting("EnderChest", this, false);
+    private final Setting crystal = new Setting("Crystal", this, true);
+    private final Setting exp = new Setting("Exp", this, true);
+    private final Setting minecart = new Setting("Minecart", this, false);
+    private final Setting feetExp = new Setting("FeetExp", this, false);
+    private final Setting fastCrystal = new Setting("PacketCrystal", this, false);
 
     private BlockPos mousePos = null;
 
@@ -59,24 +54,15 @@ public class FastPlace extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
 
-        if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.EXPERIENCE_BOTTLE) && this.exp.getValBoolean()) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
-        if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Blocks.OBSIDIAN) && this.obby.getValBoolean()) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
-        if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Blocks.ENDER_CHEST) && this.enderChest.getValBoolean()) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
-        if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.MINECART) && this.minecart.getValBoolean()) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
-        if (this.all.getValBoolean()) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
-        if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.END_CRYSTAL) && (this.crystal.getValBoolean() || this.all.getValBoolean())) {
-            FastPlace.mc.rightClickDelayTimer = 0;
-        }
+        try {
+            if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.EXPERIENCE_BOTTLE) && this.exp.getValBoolean()) mc.rightClickDelayTimer = 0;
+            if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Blocks.OBSIDIAN) && this.obby.getValBoolean()) mc.rightClickDelayTimer = 0;
+            if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Blocks.ENDER_CHEST) && this.enderChest.getValBoolean()) mc.rightClickDelayTimer = 0;
+            if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.MINECART) && this.minecart.getValBoolean()) mc.rightClickDelayTimer = 0;
+            if (this.all.getValBoolean()) mc.rightClickDelayTimer = 0;
+            if (mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem().equals(Items.END_CRYSTAL) && (this.crystal.getValBoolean() || this.all.getValBoolean())) mc.rightClickDelayTimer = 0;
+        } catch(ArrayIndexOutOfBoundsException ignored) {}
+
         if (this.fastCrystal.getValBoolean() && mc.gameSettings.keyBindUseItem.isKeyDown()) {
             final boolean offhand = (mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL);
             if (offhand || mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL) {
@@ -101,7 +87,7 @@ public class FastPlace extends Module {
                         if (!this.mousePos.equals(new BlockPos(entity.posX, entity.posY - 1.0, entity.posZ))) {
                             break;
                         }
-                        FastPlace.mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(this.mousePos, EnumFacing.DOWN, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
+                        mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(this.mousePos, EnumFacing.DOWN, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
                         break;
                     }
                 }

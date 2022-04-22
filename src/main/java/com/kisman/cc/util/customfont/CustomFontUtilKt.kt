@@ -51,5 +51,43 @@ class CustomFontUtilKt {
                 font.fractionalMetrics = fractionalMetrics
             }
         }
+
+        fun setAntiAlias(antiAlias: Boolean) {
+            val font = getCustomFont(CustomFontUtil.getCustomFontName());
+            if(font is CFontRenderer) {
+                font.setAntiAlias(antiAlias)
+            } else if (font is CustomFontRenderer) {
+                font.setAntiAlias(antiAlias)
+            }
+        }
+
+        fun setFractionalMetrics(fractionalMetrics: Boolean) {
+            val font = getCustomFont(CustomFontUtil.getCustomFontName());
+            if(font is CFontRenderer) {
+                font.fractionalMetrics = (fractionalMetrics)
+            } else if (font is CustomFontRenderer) {
+                font.fractionalMetrics = (fractionalMetrics)
+            }
+        }
+
+        fun getAntiAlias(): Boolean {
+            val font = getCustomFont(CustomFontUtil.getCustomFontName());
+            if(font is CFontRenderer) {
+                return font.antiAlias
+            } else if (font is CustomFontRenderer) {
+                return font.antiAlias
+            }
+            return false;
+        }
+
+        fun getFractionMetrics(): Boolean {
+            val font = getCustomFont(CustomFontUtil.getCustomFontName());
+            if(font is CFontRenderer) {
+                return font.fractionalMetrics
+            } else if (font is CustomFontRenderer) {
+                return font.fractionalMetrics
+            }
+            return false;
+        }
     }
 }
