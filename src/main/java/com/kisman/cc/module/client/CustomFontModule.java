@@ -35,7 +35,10 @@ public class CustomFontModule extends Module {
         turnOn = true;
 
         if(CustomFontUtilKt.Companion.getAntiAlias() != antiAlias.getValBoolean()) CustomFontUtilKt.Companion.setAntiAlias(antiAlias.getValBoolean());
-        if(CustomFontUtilKt.Companion.getFractionMetrics() != fractionMetrics.getValBoolean()) CustomFontUtilKt.Companion.setFractionalMetrics(fractionMetrics.getValBoolean());
+        if(CustomFontUtilKt.Companion.getFractionMetrics() != fractionMetrics.getValBoolean()) {
+            CustomFontUtilKt.Companion.setFractionalMetrics(fractionMetrics.getValBoolean());
+            CustomFontUtilKt.Companion.setAntiAlias(antiAlias.getValBoolean());
+        }
     }
     public void onDisable(){
         turnOn = false;

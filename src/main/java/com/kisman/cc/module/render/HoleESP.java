@@ -42,6 +42,7 @@ public class HoleESP extends Module {
 
     private Setting custom = new Setting("Custom", this, "CustomHoles");
     private Setting customMode = new Setting("CustomMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Double", "Custom")));
+    private final Setting customColor = new Setting("Custom Color", this, "Custom Color", new Colour(255, 255, 255, 255));
 
     private ConcurrentHashMap<AxisAlignedBB, Colour> holes;
 
@@ -75,6 +76,7 @@ public class HoleESP extends Module {
 
         setmgr.rSetting(custom);
         setmgr.rSetting(customMode);
+        setmgr.rSetting(customColor);
     }
 
     public void update() {
@@ -105,9 +107,9 @@ public class HoleESP extends Module {
 
                 Colour colour;
 
-                if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) colour =bedrockColor.getColour();
+                if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) colour = bedrockColor.getColour();
                 else colour = obbyColor.getColour();
-                if (holeType == HoleUtil.HoleType.CUSTOM) colour = new Colour(255, 255, 255, 255);
+                if (holeType == HoleUtil.HoleType.CUSTOM) colour = customColor.getColour();
 
                 String mode = customMode.getValString();
                 if (mode.equalsIgnoreCase("Custom") && (holeType == HoleUtil.HoleType.CUSTOM || holeType == HoleUtil.HoleType.DOUBLE)) holes.put(centerBlock, colour);
