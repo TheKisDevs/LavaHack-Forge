@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import com.kisman.cc.module.chat.*;
+import com.kisman.cc.module.Debug.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
@@ -19,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
 
+
 public class ModuleManager {
 	public ArrayList<Module> modules;
 	
@@ -31,6 +33,8 @@ public class ModuleManager {
 	public void init() {
 		modules.clear();
 
+		//debug
+		modules.add(new HelloWorld());
 		//combat
 		modules.add(new AutoCrystal());
 //		modules.add(new AimAssist());

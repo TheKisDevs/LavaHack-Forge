@@ -63,9 +63,10 @@ public class EventProcessor {
     @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.allowToConfiguredAnotherClients) event.setCanceled(true);}
 
     public void onInit() {
-        if(Kisman.allowToConfiguredAnotherClients) return;
-        mc.displayGuiScreen(new AuthGui());
-        Kisman.isOpenAuthGui = true;
+
+        // if(Kisman.allowToConfiguredAnotherClients) return;
+        // mc.displayGuiScreen(new AuthGui());
+        // Kisman.isOpenAuthGui = true;
     }
 
     @SubscribeEvent
