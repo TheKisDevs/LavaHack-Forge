@@ -12,6 +12,12 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 
+
+/**
+ * Test module, print "Hello, World" into the chat every 5 seconds
+ *
+ * @author lava_frai
+ */
 public class HelloWorld extends Module {
     public HelloWorld() {
         super("HelloWorld", "Test module, print \"Hello, World\" into the chat every 5 seconds", Category.DEBUG);
