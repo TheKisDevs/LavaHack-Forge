@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+import com.kisman.cc.module.Debug.HelloWorld;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -30,6 +31,9 @@ public class ModuleManager {
 
 	public void init() {
 		modules.clear();
+
+		//debug
+		modules.add(new HelloWorld());
 
 		//combat
 		modules.add(new AutoCrystal());
@@ -91,7 +95,7 @@ public class ModuleManager {
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
-		modules.add(new Ambience());
+//		modules.add(new Ambience());
 		modules.add(new Animation());
 		modules.add(new BlockHighlight());
 		modules.add(new BlockOutline());
@@ -101,11 +105,11 @@ public class ModuleManager {
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
-		modules.add(new CustomFov());
+//		modules.add(new CustomFov());
 //		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-		modules.add(new FullBright());
+//		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 //		modules.add(new ItemESP());
