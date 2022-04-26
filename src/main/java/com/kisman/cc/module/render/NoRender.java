@@ -23,6 +23,9 @@ public class NoRender extends Module {
     public Setting particle = new Setting("Particle", this, ParticleMode.None);
     public Setting portal = new Setting("Portal", this, false);
     public Setting items = new Setting("Items", this, false);
+    public Setting defaultBlockHighlight = new Setting("Default Block Highlight", this, false);
+    public Setting handItemsTex  = new Setting("Hand Items Texture", this, false);
+    public Setting enchantGlint = new Setting("Enchant Glint", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -41,6 +44,9 @@ public class NoRender extends Module {
         setmgr.rSetting(particle);
         setmgr.rSetting(portal);
         setmgr.rSetting(items);
+        setmgr.rSetting(defaultBlockHighlight);
+        setmgr.rSetting(handItemsTex);
+        setmgr.rSetting(enchantGlint);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));

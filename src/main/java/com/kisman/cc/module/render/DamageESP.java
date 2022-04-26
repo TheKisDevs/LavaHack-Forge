@@ -120,7 +120,6 @@ public class DamageESP extends Module {
                 sizePercentage = Math.min((System.currentTimeMillis() - damage.startTime) / 300.0f, 1.0f);
                 yPercentage = Math.min((System.currentTimeMillis() - damage.startTime) / 600.0f, 1.0f);
             }
-            GlStateManager.scale(0.8 * sizePercentage, 0.8 * sizePercentage, 0.8 * sizePercentage);
             Gui.drawRect(-100, -100, 100, 100, new Color(255, 0, 0, 0).getRGB());
             switch (damage.getStage()) {
                 case 2:

@@ -13,7 +13,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Radar extends HudModule {
-    private int maxRange = HUD.instance.radarDist.getValInt();
     private int x = 0, y = 0;
     private final String[] directions = new String[] {"X+", "Z+", "X-", "Z-"};
 
@@ -30,7 +29,6 @@ public class Radar extends HudModule {
     public void onRender(RenderGameOverlayEvent.Text event) {
         x = (int) getX();
         y = (int) getY();
-        maxRange = HUD.instance.radarDist.getValInt();
 
         int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
 
@@ -77,6 +75,7 @@ public class Radar extends HudModule {
         int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
         int distanceX = findDistance1D(mc.player.posX, entity.posX);
         int distanceY = findDistance1D(mc.player.posZ, entity.posZ);
+        int maxRange = HUD.instance.radarDist.getValInt();
 
         if (distanceX > maxRange || distanceY > maxRange || distanceX < -maxRange || distanceY < -maxRange) return;
 

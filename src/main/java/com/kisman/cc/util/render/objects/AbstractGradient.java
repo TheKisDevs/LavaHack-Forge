@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import static com.kisman.cc.util.RenderUtil.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 public class AbstractGradient extends Gui {
@@ -84,5 +85,57 @@ public class AbstractGradient extends Gui {
             GL11.glDisable(GL11.GL_BLEND);
         }
         GL11.glPopMatrix();
+    }
+
+    public static void drawGradientRect(final double startX, final double startY, final double endX, final double endY, final boolean sideways, final boolean reversed, final int startColor, final int endColor)
+    {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.shadeModel(GL_SMOOTH);
+
+        glBegin(GL_QUADS);
+
+        glColor(startColor);
+
+        if (sideways) {
+            if (reversed) {
+                glVertex2d(endX, endY);
+                glVertex2d(endX, startY);
+                glColor(endColor);
+                glVertex2d(startX, startY);
+                glVertex2d(startX, endY);
+            } else {
+                glVertex2d(startX, startY);
+                glVertex2d(startX, endY);
+                glColor(endColor);
+                glVertex2d(endX, endY);
+                glVertex2d(endX, startY);
+            }
+        } else {
+            if (reversed) {
+                glVertex2d(endX, endY);
+                glColor(endColor);
+                glVertex2d(endX, startY);
+                glVertex2d(startX, startY);
+                glColor(startColor);
+                glVertex2d(startX, endY);
+            } else {
+                glVertex2d(startX, startY);
+                glColor(endColor);
+                glVertex2d(startX, endY);
+                glVertex2d(endX, endY);
+                glColor(startColor);
+                glVertex2d(endX, startY);
+            }
+        }
+
+        glEnd();
+
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
+        GlStateManager.shadeModel(GL_FLAT);
     }
 }

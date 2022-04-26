@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
+import com.kisman.cc.module.client.Changer;
 import com.kisman.cc.module.misc.SkylightFix;
 import com.kisman.cc.module.render.*;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -48,10 +49,10 @@ public class MixinEntityRenderer {
 
     @Inject(method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ))
     private void updateTextureHook(float partialTicks, CallbackInfo ci) {
-        Ambience ambience = Ambience.instance;
-        if (ambience.isToggled()) {
+        Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
+        if (changer.isToggled() && changer.getAmbience().getValBoolean()) {
             for (int i = 0; i < this.lightmapColors.length; ++i) {
-                Color ambientColor = ambience.getColor();
+                Color ambientColor = changer.getAmbColor().getColour().getColor();
                 int alpha = ambientColor.getAlpha();
                 float modifier = ( float ) alpha / 255.0f;
                 int color = this.lightmapColors[ i ];

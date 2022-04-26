@@ -34,4 +34,6 @@ public class AimAssist extends Module {
             mc.player.rotationPitch = (float) AnimationUtils.animate(rotsToTarget[1], mc.player.rotationPitch, speed.getValFloat());
         }
     }
+
+    public boolean isVisible() {return false;}
 }

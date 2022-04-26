@@ -88,4 +88,6 @@ public class TrapDoorBurrow extends Module {
         mc.player.connection.sendPacket(new CPacketAnimation(hand));
         return true;
     }
+
+    public boolean isVisible() {return false;}
 }

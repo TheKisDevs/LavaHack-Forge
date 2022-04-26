@@ -129,7 +129,6 @@ public class TessellatorUtil implements Globals {
         GlStateManager.disableAlpha();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        color.getColor();
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         doVerticies(new AxisAlignedBB(x,y,z,x+w,y+h,z+d),color, alpha, bufferbuilder,sides,false);
         tessellator.draw();

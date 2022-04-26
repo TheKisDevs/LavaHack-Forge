@@ -3,9 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.module.render.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 
@@ -23,7 +21,7 @@ public class MixinRenderItem {
 
     /**
      * @author _kisman_
-     * @reason ShaderCharms -> Items
+     * @reason NoRender -> Enchant Glint
      */
     @Overwrite
     public void renderItem(ItemStack stack, IBakedModel model) {
@@ -37,7 +35,9 @@ public class MixinRenderItem {
                 stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
             } else {
                 renderModel(model, ViewModel.instance.isToggled() && ViewModel.instance.useAlpha.getValBoolean() ? new Color(255, 255, 255, ViewModel.instance.alpha.getValInt()).getRGB() : -1, stack);
-                if (stack.hasEffect() && !ShaderCharms.instance.isToggled() && !ShaderCharms.instance.items.getValBoolean())renderEffect(model);
+                if (stack.hasEffect()) {
+                    if(NoRender.instance.isToggled() && NoRender.instance.enchantGlint.getValBoolean()) {} else renderEffect(model);
+                }
             }
 
             GlStateManager.popMatrix();

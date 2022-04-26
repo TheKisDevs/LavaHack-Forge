@@ -30,4 +30,6 @@ public class Test extends Module {
     public void test() {
 
     }
+
+    public boolean isVisible() {return false;}
 }

@@ -705,7 +705,7 @@ public class AutoRer extends Module {
             }
         });
 
-        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
+        this.placePos = placePos[0] == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
         if(this.placePos != null) {
             if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
             if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());

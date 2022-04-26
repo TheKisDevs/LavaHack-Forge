@@ -2,6 +2,7 @@ package com.kisman.cc.module;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.kisman.cc.module.chat.*;
@@ -18,9 +19,10 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
+import org.cubic.loader.Loader;
 
 public class ModuleManager {
-	public ArrayList<Module> modules;
+	public List<Module> modules;
 	
 	public ModuleManager() {
 		modules = new ArrayList<>();
@@ -30,6 +32,11 @@ public class ModuleManager {
 
 	public void init() {
 		modules.clear();
+
+//		Loader<Module> loader = new Loader<>();
+//		loader.exclude("com.kisman.cc.module.Module");
+//		loader.filter(Module::isToggled);
+//		modules = loader.loadAllFromPackage("com.kisman.cc.module");
 
 		//combat
 		modules.add(new AutoCrystal());
@@ -62,6 +69,7 @@ public class ModuleManager {
 		//client
 		modules.add(new AutoUpdate());
 		modules.add(new Cape());
+		modules.add(new Changer());
 		modules.add(new Config());
 		modules.add(new Console());
 		modules.add(new CSGOGui());
@@ -91,7 +99,7 @@ public class ModuleManager {
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
-		modules.add(new Ambience());
+//		modules.add(new Ambience());
 		modules.add(new Animation());
 		modules.add(new BlockHighlight());
 		modules.add(new BlockOutline());
@@ -101,17 +109,18 @@ public class ModuleManager {
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
-		modules.add(new CustomFov());
-//		modules.add(new DamageESP());
+//		modules.add(new CustomFov());
+		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-		modules.add(new FullBright());
+//		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
-//		modules.add(new ItemESP());
+		modules.add(new ItemESP());
 		modules.add(new JumpCircle());
 		modules.add(new LogoutSpots());
 		modules.add(new NameTags());
+		modules.add(new NameTagsRewrite());
 		modules.add(new NoRender());
 		modules.add(new Particle());
 		modules.add(new PopCharms());
@@ -228,7 +237,7 @@ public class ModuleManager {
 		return null;
 	}
 	
-	public ArrayList<Module> getModuleList() {
+	public List<Module> getModuleList() {
 		return modules;
 	}
 
