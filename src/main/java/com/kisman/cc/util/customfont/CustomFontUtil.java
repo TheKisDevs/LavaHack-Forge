@@ -121,7 +121,7 @@ public class CustomFontUtil {
     }
 
     public static String getCustomFontName() {
-        return CustomFontModule.instance.mode.getValString();
+        return CustomFontModule.instance == null ? null : CustomFontModule.instance.mode.getValString();
     }
 
     private static String getStringModofiers() {

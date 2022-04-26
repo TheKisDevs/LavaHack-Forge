@@ -2,6 +2,7 @@ package com.kisman.cc.util.customfont
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.util.customfont.norules.CFontRenderer
+import net.minecraft.client.Minecraft
 
 class CustomFontUtilKt {
     companion object {
@@ -24,6 +25,7 @@ class CustomFontUtilKt {
         }
 
         fun getStringWidth(name: String, text: String, gui: Boolean): Int {
+            if(name == null) return Minecraft.getMinecraft().fontRenderer.getStringWidth(text)
             val font = getCustomFont(name, gui);
             return if(font is CFontRenderer) font.getStringWidth(text) else if (font is CustomFontRenderer) font.getStringWidth(text) else 0
         }
@@ -33,6 +35,7 @@ class CustomFontUtilKt {
         }
 
         fun getHeight(name: String, gui: Boolean): Int {
+            if(name == null) return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
             val font = getCustomFont(name, gui);
             return if(font is CFontRenderer) (font.fontHeight - 8) / 2 else if (font is CustomFontRenderer) font.fontHeight / 2 - 1 else 0
         }

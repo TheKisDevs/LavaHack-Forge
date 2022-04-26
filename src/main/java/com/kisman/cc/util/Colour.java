@@ -81,9 +81,11 @@ public class Colour {
         this.r1 = r;
         this.g1 = g;
         this.b1 = b;
+        this.a1 = 1f;
         this.r = ((int) r1 * 255);
         this.g = ((int) g1 * 255);
         this.b = ((int) b1 * 255);
+        this.a = 255;
         isInt = false;
         fixColorRange();
     }

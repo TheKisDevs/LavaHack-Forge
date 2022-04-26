@@ -20,8 +20,7 @@ public class Vec4d {
     }
 
     public ArrayList<double[]> toArray() {
-        ArrayList<double[]> vectors = new ArrayList<>(Arrays.asList(new double[] {x1, y1}, new double[] {x2, y2}, new double[] {x3, y3}, new double[] {x4, y4}));
-        return vectors;
+        return new ArrayList<>(Arrays.asList(new double[] {x1, y1}, new double[] {x2, y2}, new double[] {x3, y3}, new double[] {x4, y4}));
     }
 
     public float getMinX() {return (float) Math.min(x1, Math.min(x2, Math.min(x3, x4)));}

@@ -50,7 +50,6 @@ public class EventProcessor {
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
-        Kisman.EVENT_BUS.subscribe(send);
 
         ongoing = new AtomicBoolean(false);
     }
@@ -123,13 +122,6 @@ public class EventProcessor {
             } catch (Exception ignored) {}
         }
     }
-
-    @EventHandler
-    private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
-        if(event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
-            Managers.instance.crystalManager.place((CPacketPlayerTryUseItemOnBlock) event.getPacket(), System.currentTimeMillis());
-        }
-    });
 
     @EventHandler
     private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {

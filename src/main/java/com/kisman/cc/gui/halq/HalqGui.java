@@ -25,7 +25,7 @@ public class HalqGui extends GuiScreen {
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Color primaryColor = Color.RED;
     public static Color backgroundColor = new Color(30, 30, 30, 121);
-    public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true;
+    public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false;
     public static int diff = 0;
     public static float testLight; /**@range 0-1*/
 
@@ -65,6 +65,8 @@ public class HalqGui extends GuiScreen {
         background = HalqGuiModule.instance.background.getValBoolean();
         shadowCheckBox = HalqGuiModule.instance.shadow.getValBoolean();
         test = HalqGuiModule.instance.test.getValBoolean();
+        shadowRects = HalqGuiModule.instance.shadowRects.getValBoolean();
+        line = HalqGuiModule.instance.line.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
 
         if(!background) backgroundColor = new Color(0, 0, 0, 0);

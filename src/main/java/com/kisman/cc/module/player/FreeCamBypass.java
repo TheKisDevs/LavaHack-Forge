@@ -33,6 +33,7 @@ public class FreeCamBypass extends Module {
     }
 
     public void onEnable() {
+        super.onEnable();
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener2);
         Kisman.EVENT_BUS.subscribe(listener3);
@@ -72,6 +73,7 @@ public class FreeCamBypass extends Module {
     }
 
     public void onDisable() {
+        super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener2);
         Kisman.EVENT_BUS.unsubscribe(listener3);

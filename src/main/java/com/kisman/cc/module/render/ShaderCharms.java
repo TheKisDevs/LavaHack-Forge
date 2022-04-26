@@ -43,7 +43,6 @@ public class ShaderCharms extends Module {
     private final Setting itemsEntity = new Setting("Items(Entity)", this, false);
     public final Setting items = new Setting("Items", this, true);
     private final Setting itemsFix = new Setting("Items Fix", this, false).setVisible(items::getValBoolean);
-    private final Setting rerenderingItems = new Setting("Rerendering Items", this, false).setVisible(items::getValBoolean);
 //    private Setting storages = new Setting("Storages(cfg from StorageEsp)", this, false);
 
     private final Setting animationSpeed = new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !mode.checkValString("GRADIENT"));
@@ -99,7 +98,6 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(itemsEntity);
         setmgr.rSetting(items);
         setmgr.rSetting(itemsFix);
-        setmgr.rSetting(rerenderingItems);
 //        setmgr.rSetting(storages);
 
         setmgr.rSetting(animationSpeed);
@@ -454,7 +452,6 @@ public class ShaderCharms extends Module {
                     GlStateManager.popAttrib();
                     GlStateManager.popMatrix();
             }
-            if(items.getValBoolean() && rerenderingItems.getValBoolean()) mc.entityRenderer.renderHand(event.getPartialTicks(), 0);
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {
                 super.setToggled(false);

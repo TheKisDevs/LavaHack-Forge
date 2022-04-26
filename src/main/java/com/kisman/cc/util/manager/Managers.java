@@ -18,7 +18,6 @@ public class Managers {
     public PulseManager pulseManager;
     public TimerManager timerManager;
     public ColorManager colorManager;
-    public CrystalManager crystalManager;
     public CPSManager cpsManager;
 
     public AtomicLong lagTimer = new AtomicLong();
@@ -32,7 +31,6 @@ public class Managers {
         pulseManager = new PulseManager();
         timerManager = new TimerManager();
         colorManager = new ColorManager();
-        crystalManager = new CrystalManager();
         cpsManager = new CPSManager();
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -42,7 +40,6 @@ public class Managers {
     @SubscribeEvent
     public void onUpdate(TickEvent.ClientTickEvent event) {
         colorManager.update();
-        crystalManager.update();
         timerManager.onUpdate();
     }
 

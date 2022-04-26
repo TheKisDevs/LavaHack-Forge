@@ -11,6 +11,9 @@ public class HalqGuiModule extends Module {
     public final Setting background = new Setting("Background", this, true);
     public final Setting shadow = new Setting("Shadow", this, false);
     public final Setting test = new Setting("test", this, false);
+    public final Setting shadowRects = new Setting("Shadow Rects", this, false);
+    public final Setting line = new Setting("Line", this, true);
+
     public static HalqGuiModule instance;
 
     public HalqGuiModule() {
@@ -22,6 +25,8 @@ public class HalqGuiModule extends Module {
         setmgr.rSetting(background);
         setmgr.rSetting(shadow);
         setmgr.rSetting(test);
+        setmgr.rSetting(shadowRects);
+        setmgr.rSetting(line);
     }
 
     public void onEnable() {

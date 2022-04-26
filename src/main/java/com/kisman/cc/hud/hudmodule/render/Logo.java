@@ -16,11 +16,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Logo extends HudModule {
-    public static int x = 1;
-    public static int y = 1;
-    public static int x1 = x = CustomFontUtil.getStringWidth(Kisman.NAME + " " + Kisman.VERSION);
-    public static int y1 = y + Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
-
     public Logo() {
         super("Logo", "lava-hack on top", HudCategory.RENDER);
     }

@@ -62,4 +62,8 @@ class ItemESP : Module("ItemESP", "Renders a items name and quantity ft Dallas",
             }
         }
     }
+
+    override fun isVisible(): Boolean {
+        return false;
+    }
 }

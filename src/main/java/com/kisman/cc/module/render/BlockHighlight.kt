@@ -19,10 +19,16 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     private val depth = Setting("Depth", this, false)
     private val alpha = Setting("Alpha", this, true)
     private val color = Setting("Color", this, "Color", Colour(255, 255, 255))
-    private val width = Setting("Width", this, 2.0, 0.25, 5.0, false)
+    private val width = Setting("Width", this, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) }
     private val offset = Setting("Offset", this, 0.002, 0.002, 0.2, false)
 
+    companion object {
+        var instance : BlockHighlight? = null
+    }
+
     init {
+        instance = this
+
         setmgr.rSetting(mode)
         setmgr.rSetting(entities)
         setmgr.rSetting(hitSideOnly)

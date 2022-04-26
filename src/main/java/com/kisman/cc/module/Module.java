@@ -80,4 +80,5 @@ public class Module {
 	public void key(int key) {}
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
+	public boolean isVisible() {return true;}
 }

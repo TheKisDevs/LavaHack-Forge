@@ -117,4 +117,6 @@ public class ExampleModule extends Module {
                 "?"
         );
     }
+
+    public boolean isVisible() {return false;}
 }

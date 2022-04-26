@@ -21,7 +21,7 @@ jobs:
       - name: Build with Gradle
         run: |
           ./gradlew setupDecompWorkspace
-          ./gradlew build
+          ./gradlew build --warning-mode=all --stacktrace
       - name: List files
         run: ls
       - name: Upload a Build Artifact

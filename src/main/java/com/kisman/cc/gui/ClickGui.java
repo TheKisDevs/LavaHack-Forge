@@ -12,8 +12,6 @@ public class ClickGui extends GuiScreen {
 
 	public static LineMode lineMode = LineMode.LEFT;
 	public static LineMode setLineMode = LineMode.SETTINGDEFAULT;
-	public static TextMode textMode = TextMode.DEFAULT;
-	public static HoveredMode hoveredMode = HoveredMode.HOVERED;
 
 	public static int RLine = 255;
 	public static int GLine = 0;
@@ -105,14 +103,6 @@ public class ClickGui extends GuiScreen {
 
 	public static void setRainbowLine(boolean rainbowLine) {
 		ClickGui.rainbowLine = rainbowLine;
-	}
-
-	public static HoveredMode getHoveredMode() {
-		return hoveredMode;
-	}
-
-	public static void setHoveredMode(HoveredMode hoveredMode) {
-		ClickGui.hoveredMode = hoveredMode;
 	}
 
 	public static int getRHoveredModule() {
@@ -209,14 +199,6 @@ public class ClickGui extends GuiScreen {
 
 	public static void setAActiveText(int AActiveText) {
 		ClickGui.AActiveText = AActiveText;
-	}
-
-	public static TextMode getTextMode() {
-		return textMode;
-	}
-
-	public static void setTextMode(TextMode textMode) {
-		ClickGui.textMode = textMode;
 	}
 
 	public static int getRText() {

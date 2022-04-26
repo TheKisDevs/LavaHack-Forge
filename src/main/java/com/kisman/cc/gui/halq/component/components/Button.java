@@ -50,28 +50,29 @@ public class Button extends Component {
             comps.add(new BindModeButton(mod, x, y, offsetY, count1++));
             offsetY += HalqGui.height;
 
-            if (Kisman.instance.settingsManager.getSettingsByMod(mod) == null) return;
-            for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
-                if(set == null) continue;
-                if (set.isSlider()) {
-                    comps.add(new Slider(set, x, y, offsetY, count1++));
-                    offsetY += HalqGui.height;
-                }
-                if (set.isCheck()) {
-                    comps.add(new CheckBox(set, x, y, offsetY, count1++));
-                    offsetY += HalqGui.height;
-                }
-                if (set.isBind()) {
-                    comps.add(new BindButton(set, x, y, offsetY, count1++));
-                    offsetY += HalqGui.height;
-                }
-                if (set.isCombo()) {
-                    comps.add(new ModeButton(set, x, y, offsetY, count1++));
-                    offsetY += HalqGui.height;
-                }
-                if (set.isColorPicker()) {
-                    comps.add(new ColorButton(set, x, y, offsetY, count1++));
-                    offset += HalqGui.height;
+            if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
+                for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
+                    if (set == null) continue;
+                    if (set.isSlider()) {
+                        comps.add(new Slider(set, x, y, offsetY, count1++));
+                        offsetY += HalqGui.height;
+                    }
+                    if (set.isCheck()) {
+                        comps.add(new CheckBox(set, x, y, offsetY, count1++));
+                        offsetY += HalqGui.height;
+                    }
+                    if (set.isBind()) {
+                        comps.add(new BindButton(set, x, y, offsetY, count1++));
+                        offsetY += HalqGui.height;
+                    }
+                    if (set.isCombo()) {
+                        comps.add(new ModeButton(set, x, y, offsetY, count1++));
+                        offsetY += HalqGui.height;
+                    }
+                    if (set.isColorPicker()) {
+                        comps.add(new ColorButton(set, x, y, offsetY, count1++));
+                        offset += HalqGui.height;
+                    }
                 }
             }
             for(Component comp : comps) {
