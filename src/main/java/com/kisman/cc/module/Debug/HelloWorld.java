@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextComponentString;
+import com.kisman.cc.util.ChatLoggerUtil;
 import net.minecraftforge.common.MinecraftForge;
 
 
@@ -19,8 +20,11 @@ import net.minecraftforge.common.MinecraftForge;
  * @author lava_frai
  */
 public class HelloWorld extends Module {
+    private final ChatLoggerUtil Logger;
     public HelloWorld() {
         super("HelloWorld", "Test module, print \"Hello, World\" into the chat every 5 seconds", Category.DEBUG);
+
+        Logger = new ChatLoggerUtil(getName());
     }
 
     @Override
@@ -29,7 +33,7 @@ public class HelloWorld extends Module {
         super.onEnable();
 
         if(mc.player == null || mc.world == null) return;
-        mc.player.sendMessage(new TextComponentString("§2[" + getName() + "]:§f  " + "Debug module enabled"));
+        Logger.Log("Debug module enabled");
     }
 
     @Override
@@ -38,18 +42,16 @@ public class HelloWorld extends Module {
         super.onDisable();
 
         if(mc.player == null || mc.world == null) return;
-        mc.player.sendMessage(new TextComponentString("§2[" + getName() + "]:§f  " + "Debug module disabled"));
+        Logger.Error("Debug module disabled");
     }
 
     @Override
     public void update()
     {
-        if(mc.player == null || mc.world == null) return;
-
         counter++;
         if (counter > 20 * 5)
         {
-            mc.player.sendMessage(new TextComponentString("§2[" + getName() + "]:§f  " + "Hello, World!"));
+            Logger.LogLackluster("Hello, World!");
             counter = 0;
         }
     }
