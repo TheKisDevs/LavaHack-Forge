@@ -5,9 +5,6 @@ import com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.modules.CustomMainMenu;
-import com.kisman.cc.viaforge.ViaForge;
-import com.kisman.cc.viaforge.gui.GuiProtocolSelector;
-import com.kisman.cc.viaforge.protocol.ProtocolCollection;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.asm.mixin.*;
@@ -23,7 +20,7 @@ public class MixinGuiMainMenu extends GuiScreen {
     private void init(CallbackInfo ci) {
         int j = this.height / 4 + 48;
         buttonList.add(new GuiButton(893, width / 2 - 100, j + 72 + 12 + 24, "kisman.cc"));
-        particleSystem = new ParticleSystem(300);//4, this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.format("menu.quit", new Object[0]))
+        particleSystem = new ParticleSystem(300);
         customSplashSrt = CustomMainMenu.getRandomCustomSplash();
     }
 
