@@ -8,6 +8,7 @@ import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
 import net.minecraft.client.Minecraft
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 
 class BoxRendererPattern(val module: Module) {

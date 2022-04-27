@@ -329,4 +329,15 @@ public class MathUtil {
     public static double lerp(double from, double to, double delta) {
         return from + (to - from) * delta;
     }
+
+    public static double roundHalf(double a){
+        if(a != a) // a is NaN
+            return Double.NaN;
+        double x = a < 0.0 ? 0.0 - a : a; // abs
+        double c = (long) a; // casting to long truncates
+        if(x > 0x10000000000000L || c == a) // x is an integer or bigger than 1 << 52
+            return a; // so we just have to return a
+        c = c < 0.0 ? c - 1.0 :  c;
+        return c + 0.5; // after we floor, we add a half
+    }
 }

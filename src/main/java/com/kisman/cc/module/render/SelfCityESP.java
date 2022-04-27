@@ -1,20 +1,21 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.lua.EventRender3D;
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.BoxRendererPattern;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.RenderUtil;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
+import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.Rendering;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +30,12 @@ public class SelfCityESP extends Module {
 
     private final Setting smart = register(new Setting("Smart", this, false));
     private final Setting enemyCheck = register(new Setting("EnemyCheck", this, true));
-    private final Setting enemyRange = register(new Setting("EnemyRange", this, 1.0, 6.0, 15.0, false).setVisible(enemyCheck.getValBoolean()));
+    private final Setting enemyRange = register(new Setting("EnemyRange", this, 1.0, 6.0, 15.0, false).setVisible(enemyCheck::getValBoolean));
+    private final Setting ignoreFriends = register(new Setting("IgnoreFriends", this, true).setVisible(enemyCheck::getValBoolean));
     private final Setting surroundCheck = register(new Setting("SurroundCheck", this, false));
+    private final Setting terrain = register(new Setting("Terrain", this, false));
     private final Setting color = register(new Setting("Color", this, "Color", new Colour(255, 255, 255)));
+    private final Setting lineWidth = register(new Setting("LineWidth", this, 2.0, 1.0, 5.0, false));
 
     public SelfCityESP(){
         super("SelfCityESP", Category.RENDER);
@@ -45,13 +49,13 @@ public class SelfCityESP extends Module {
         if(mc.world == null || mc.player == null)
             return;
 
+        positions.clear();
+
         if(enemyCheck.getValBoolean() && !searchTarget())
             return;
 
         if(surroundCheck.getValBoolean() && !isSurrounded())
            return;
-
-        positions.clear();
 
         if(smart.getValBoolean()){
             checkSmart();
@@ -61,26 +65,25 @@ public class SelfCityESP extends Module {
         checkNormal();
     }
 
-    @Override
-    public void onEnable(){
-        Kisman.EVENT_BUS.subscribe(renderEvent);
-    }
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event){
+        if(mc.world == null || mc.player == null)
+            return;
 
-    @Override
-    public void onDisable(){
-        Kisman.EVENT_BUS.unsubscribe(renderEvent);
-    }
+        if(!isToggled())
+            return;
 
-    @EventHandler
-    private final Listener<EventRender3D> renderEvent = new Listener<>(event -> {
         for(BlockPos pos : positions){
-            RenderUtil.drawBlockESP(pos, color.getRed(), color.getGreen(), color.getBlue());
+            AxisAlignedBB axisAlignedBB = Rendering.correct(new AxisAlignedBB(pos));
+            Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), Rendering.DUMMY_COLOR, Rendering.Mode.BOTH);
         }
-    });
+    }
 
     public boolean searchTarget(){
-        double rangeSq = enemyRange.getValDouble() * enemyCheck.getValDouble();
+        double rangeSq = enemyRange.getValDouble() * enemyRange.getValDouble();
         for(EntityPlayer player : mc.world.playerEntities){
+            if(!ignoreFriends.getValBoolean() && FriendManager.instance.isFriend(player.getName()))
+                continue;
             if(player.getDistanceSq(mc.player) <= rangeSq)
                 return true;
         }
@@ -182,25 +185,32 @@ public class SelfCityESP extends Module {
 
         // north
         pos = playerPos.north();
-        if(blockState(pos).getBlock() == Blocks.OBSIDIAN || blockState(pos).getBlock() == Blocks.ENDER_CHEST)
+        if(surroundBlockCheck(pos))
             return false;
 
         // east
         pos = playerPos.east();
-        if(blockState(pos).getBlock() == Blocks.OBSIDIAN || blockState(pos).getBlock() == Blocks.ENDER_CHEST)
+        if(surroundBlockCheck(pos))
             return false;
 
         // south
         pos = playerPos.south();
-        if(blockState(pos).getBlock() == Blocks.OBSIDIAN || blockState(pos).getBlock() == Blocks.ENDER_CHEST)
+        if(surroundBlockCheck(pos))
             return false;
 
         // west
         pos = playerPos.west();
-        if(blockState(pos).getBlock() == Blocks.OBSIDIAN || blockState(pos).getBlock() == Blocks.ENDER_CHEST)
+        if(surroundBlockCheck(pos))
             return false;
 
         return true;
+    }
+
+    public boolean surroundBlockCheck(BlockPos pos){
+        if(terrain.getValBoolean()){
+            return blockState(pos).getBlock().isReplaceable(mc.world, pos);
+        }
+        return blockState(pos).getBlock() != Blocks.OBSIDIAN || blockState(pos).getBlock() != Blocks.ENDER_CHEST || blockState(pos).getBlock() != Blocks.BEDROCK;
     }
 
     public IBlockState blockState(BlockPos pos){
@@ -212,6 +222,7 @@ public class SelfCityESP extends Module {
     //}
 
     public void checkNormal(){
+        /*
         BlockPos playerPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
 
         BlockPos pos;
@@ -235,6 +246,61 @@ public class SelfCityESP extends Module {
         pos = playerPos.west();
         if(isPlayerNotInArea(pos))
             positions.add(pos);
+         */
+        double x = MathUtil.roundHalf(mc.player.posX);
+        double z = MathUtil.roundHalf(mc.player.posZ);
+
+        BlockPos playerPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+
+        BlockPos pos;
+
+        double diff;
+
+        pos = playerPos.north();
+        diff = diff(pos.getZ(), z);
+        if(diff > 1.0){
+            if(diff > 1.3)
+                positions.add(pos);
+        } else {
+            if(diff > 0.3)
+                positions.add(pos);
+        }
+
+        pos = playerPos.east();
+        diff = diff(pos.getX(), x);
+        if(diff > 1.0){
+            if(diff > 1.3)
+                positions.add(pos);
+        } else {
+            if(diff > 0.3)
+                positions.add(pos);
+        }
+
+        pos = playerPos.south();
+        diff = diff(pos.getZ(), z);
+        if(diff > 1.0){
+            if(diff > 1.3)
+                positions.add(pos);
+        } else {
+            if(diff > 0.3)
+                positions.add(pos);
+        }
+
+        pos = playerPos.west();
+        diff = diff(pos.getX(), x);
+        if(diff > 1.0){
+            if(diff > 1.3)
+                positions.add(pos);
+        } else {
+            if(diff > 0.3)
+                positions.add(pos);
+        }
+    }
+
+    public double diff(double a, double b){
+        double max = Math.max(a, b);
+        double min = Math.min(a, b);
+        return max - min;
     }
 
     public boolean isPlayerNotInArea(BlockPos pos){
