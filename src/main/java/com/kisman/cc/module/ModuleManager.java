@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kisman.cc.module.Debug.HelloWorld;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -37,6 +38,9 @@ public class ModuleManager {
 //		loader.exclude("com.kisman.cc.module.Module");
 //		loader.filter(Module::isToggled);
 //		modules = loader.loadAllFromPackage("com.kisman.cc.module");
+
+		//Debug
+		modules.add(new HelloWorld());
 
 		//combat
 		modules.add(new AutoCrystal());

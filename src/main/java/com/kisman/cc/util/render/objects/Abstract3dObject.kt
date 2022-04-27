@@ -12,9 +12,9 @@ abstract class Abstract3dObject {
     abstract fun draw(ticks: Float)
 
     fun prepare(depth: Boolean, alpha: Boolean) {
-//        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-//        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
-//        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE)
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE)
         GlStateManager.shadeModel(GL11.GL_SMOOTH)
         GlStateManager.depthMask(false)
         GlStateManager.enableBlend()
@@ -39,7 +39,7 @@ abstract class Abstract3dObject {
         GlStateManager.depthMask(true)
         GlStateManager.glLineWidth(1.0f)
         GlStateManager.shadeModel(GL11.GL_FLAT)
-//        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_DONT_CARE)
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_DONT_CARE)
         GL11.glPopAttrib()
     }
 }
