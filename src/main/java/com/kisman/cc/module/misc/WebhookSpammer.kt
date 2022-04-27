@@ -25,6 +25,8 @@ class WebhookSpammer : Module("WebhookSpammer", "Using discord webhook for spamm
         timer.reset()
     }
 
+    override fun isBeta() : Boolean {return true}
+
     override fun update() {
         if(mc.player == null || mc.world == null || !timer.passedMillis(delay.valLong)) return
         timer.reset()

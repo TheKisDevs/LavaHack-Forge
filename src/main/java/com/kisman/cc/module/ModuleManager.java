@@ -99,7 +99,6 @@ public class ModuleManager {
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
-//		modules.add(new Ambience());
 		modules.add(new Animation());
 		modules.add(new BlockHighlight());
 		modules.add(new BlockOutline());
@@ -109,11 +108,9 @@ public class ModuleManager {
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
 		modules.add(new CustomFog());
-//		modules.add(new CustomFov());
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
-//		modules.add(new FullBright());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESP());
@@ -127,13 +124,14 @@ public class ModuleManager {
 		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
 		modules.add(new Reverse());
-		modules.add(new ScoreboardModifier());
+		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
 		modules.add(new SpawnsESP());
 		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());

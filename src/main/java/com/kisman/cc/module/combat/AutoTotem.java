@@ -17,6 +17,8 @@ public class AutoTotem extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Health", this, 10, 1, 20, true));
     }
 
+    public boolean isBeta() {return true;}
+
     public void update() {
         if(mc.player == null && mc.world == null) return;
 

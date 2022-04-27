@@ -52,13 +52,18 @@ class ShadowRectObject(
 
 
         //renderer of the gradients
-        if(!excludedSides.contains(RectSides.Top)) AbstractGradient.drawGradientRect(x1, y1 - radius, x2, y1, false, true, color2.rgb, color2.withAlpha(0).rgb)
-        if(!excludedSides.contains(RectSides.Bottom)) AbstractGradient.drawGradientRect(x1, y2, x2, y2 + radius, false, false, color2.rgb, color2.withAlpha(0).rgb)
-        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftTop)) Render2DUtilKt.drawSector2(Vec2d(x1, y1), 0, 90, radius.toInt(), color2)
-        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightTop)) Render2DUtilKt.drawSector2(Vec2d(x2, y1), 90, 180, radius.toInt(), color2)
-        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightBottom)) Render2DUtilKt.drawSector2(Vec2d(x2, y2), 180, 270, radius.toInt(), color2)
-        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftBottom)) Render2DUtilKt.drawSector2(Vec2d(x1, y2), 270, 360, radius.toInt(), color2)
-        if(!excludedSides.contains(RectSides.Left)) AbstractGradient.drawGradientRect(x1 - radius, y1, x1, y2, true, true, color2.rgb, color2.withAlpha(0).rgb)
-        if(!excludedSides.contains(RectSides.Right)) AbstractGradient.drawGradientRect(x2, y1, x2 + radius, y2, true, false, color2.rgb, color2.withAlpha(0).rgb)
+        if(!excludedSides.contains(RectSides.Top)) AbstractGradient.drawGradientRect(x1, y1 - radius, x2, y1, false, true, color1.rgb, color2.rgb)
+        if(!excludedSides.contains(RectSides.Bottom)) AbstractGradient.drawGradientRect(x1, y2, x2, y2 + radius, false, false, color1.rgb, color2.rgb)
+        if(!excludedSides.contains(RectSides.Left)) AbstractGradient.drawGradientRect(x1 - radius, y1, x1, y2, true, true, color1.rgb, color2.rgb)
+        if(!excludedSides.contains(RectSides.Right)) AbstractGradient.drawGradientRect(x2, y1, x2 + radius, y2, true, false, color1.rgb, color2.rgb)
+        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftTop)) Render2DUtil.drawPolygonPart(x1, y1, radius.toInt(), 0, color1.rgb, color2.rgb);
+        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightTop)) Render2DUtil.drawPolygonPart(x2, y1, radius.toInt(), 1, color1.rgb, color2.rgb);
+        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftBottom)) Render2DUtil.drawPolygonPart(x1, y2, radius.toInt(), 2, color1.rgb, color2.rgb);
+        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightBottom)) Render2DUtil.drawPolygonPart(x2, y2, radius.toInt(), 3, color1.rgb, color2.rgb);
+
+//        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftTop)) Render2DUtilKt.drawSector2(Vec2d(x1, y1), 0, 90, radius.toInt(), color2)
+//        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightTop)) Render2DUtilKt.drawSector2(Vec2d(x2, y1), 90, 180, radius.toInt(), color2)
+//        if(!excludedSectorSides.contains(ShadowRectSectorSides.RightBottom)) Render2DUtilKt.drawSector2(Vec2d(x2, y2), 180, 270, radius.toInt(), color2)
+//        if(!excludedSectorSides.contains(ShadowRectSectorSides.LeftBottom)) Render2DUtilKt.drawSector2(Vec2d(x1, y2), 270, 360, radius.toInt(), color2)
     }
 }

@@ -23,6 +23,8 @@ public class Particle extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
     }
 
+    public boolean isBeta() {return true;}
+
     public void update() {
         if(mc.player == null && mc.world == null) return;
 

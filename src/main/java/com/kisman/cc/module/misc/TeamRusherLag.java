@@ -22,6 +22,8 @@ public class TeamRusherLag extends Module {
         setmgr.rSetting(text);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         super.onEnable();
         Kisman.EVENT_BUS.subscribe(listener);

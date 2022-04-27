@@ -6,7 +6,6 @@ import com.kisman.cc.util.modules.CustomMainMenu;
 
 public class CustomMainMenuModule extends Module {
     public Setting watermark = new Setting("WaterMark", this, true);
-    public Setting viaforge = new Setting("ViaForge Button", this, true);
     public Setting customSplashText = new Setting("Custom Splash Text", this, true);
     public Setting customSplashFont = new Setting("Custom Splash Font", this, true).setVisible(() -> customSplashText.getValBoolean());
     public Setting particles = new Setting("Particles", this, true);
@@ -19,7 +18,6 @@ public class CustomMainMenuModule extends Module {
         instance = this;
 
         setmgr.rSetting(watermark);
-        setmgr.rSetting(viaforge);
         setmgr.rSetting(customSplashText);
         setmgr.rSetting(customSplashFont);
         setmgr.rSetting(particles);

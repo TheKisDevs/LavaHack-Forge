@@ -20,6 +20,8 @@ public class AntiSpammer extends Module {
         instance = this;
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
     }

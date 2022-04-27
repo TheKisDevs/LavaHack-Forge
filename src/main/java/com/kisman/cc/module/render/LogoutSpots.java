@@ -41,6 +41,8 @@ public class LogoutSpots extends Module {
         setmgr.rSetting(scale);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         super.onEnable();
         spots.clear();

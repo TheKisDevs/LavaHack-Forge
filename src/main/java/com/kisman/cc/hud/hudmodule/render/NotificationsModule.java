@@ -12,6 +12,6 @@ public class NotificationsModule extends HudModule {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        Kisman.instance.notificationsManager.draw();
+//        Kisman.instance.notificationsManager.draw();
     }
 }

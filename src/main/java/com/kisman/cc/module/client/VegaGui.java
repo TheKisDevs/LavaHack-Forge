@@ -18,6 +18,8 @@ public class VegaGui extends Module {
         setmgr.rSetting(test);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         mc.displayGuiScreen(Kisman.instance.gui);
         this.setToggled(false);

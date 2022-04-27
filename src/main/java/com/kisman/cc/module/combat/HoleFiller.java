@@ -45,6 +45,8 @@ public class HoleFiller extends Module {
         setmgr.rSetting(smartWeb);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         target = null;
         targetHole = null;

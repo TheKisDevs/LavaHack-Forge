@@ -34,6 +34,8 @@ public class BreakAlert extends Module {
         setmgr.rSetting(displayShowDelay);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(receive);
         blocksBeginBroken.clear();

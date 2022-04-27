@@ -27,6 +27,8 @@ public class PacketLogger extends Module{
         setmgr.rSetting(values);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);

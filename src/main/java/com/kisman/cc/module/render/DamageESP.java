@@ -41,6 +41,8 @@ public class DamageESP extends Module {
         setmgr.rSetting(damageColor);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
         entityHealthMap.clear();

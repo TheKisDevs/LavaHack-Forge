@@ -62,6 +62,8 @@ public class CrystalFiller extends Module {
         setmgr.rSetting(render);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         target = null;
         targetHole = null;

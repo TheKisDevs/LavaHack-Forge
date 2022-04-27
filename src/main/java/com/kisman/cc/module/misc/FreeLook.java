@@ -20,6 +20,8 @@ public class FreeLook extends Module {
         setmgr.rSetting(autoThirdPerson);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
         dYaw = dPitch = 0;

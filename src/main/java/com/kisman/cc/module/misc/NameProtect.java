@@ -22,6 +22,8 @@ public class NameProtect extends Module {
         setmgr.rSetting(name);
     }
 
+    public boolean isBeta() {return true;}
+
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
     }

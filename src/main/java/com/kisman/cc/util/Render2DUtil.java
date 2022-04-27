@@ -196,7 +196,6 @@ public class Render2DUtil extends GuiScreen {
         final BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.pos(x, y, 0.0).color(red, green, blue, alpha).endVertex();
-        final double TWICE_PI = 6.283185307179586;
         for (int i = part * 90; i <= part * 90 + 90; ++i) {
             final double angle = 6.283185307179586 * i / 360.0 + Math.toRadians(180.0);
             bufferbuilder.pos(x + Math.sin(angle) * radius, y + Math.cos(angle) * radius, 0.0).color(red2, green2, blue2, alpha2).endVertex();

@@ -22,7 +22,6 @@ public class MixinGuiMainMenu extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         int j = this.height / 4 + 48;
-        buttonList.add(new GuiButton(1337, 1, 2 + CustomFontUtil.getFontHeight() * 2 + 1, 98, 20, ProtocolCollection.getProtocolById(ViaForge.getInstance().getVersion()).getName()));
         buttonList.add(new GuiButton(893, width / 2 - 100, j + 72 + 12 + 24, "kisman.cc"));
         particleSystem = new ParticleSystem(300);//4, this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.format("menu.quit", new Object[0]))
         customSplashSrt = CustomMainMenu.getRandomCustomSplash();
@@ -30,7 +29,6 @@ public class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(method = "actionPerformed", at = @At("RETURN"))
     public void injectActionPerformed(GuiButton p_actionPerformed_1_, CallbackInfo ci) {
-        if (p_actionPerformed_1_.id == 1337) mc.displayGuiScreen(new GuiProtocolSelector(this));
         if(p_actionPerformed_1_.id == 893) mc.displayGuiScreen(new KismanMainMenuGui(this));
     }
 

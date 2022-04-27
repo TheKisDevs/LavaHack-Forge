@@ -35,6 +35,8 @@ public class AutoPot extends Module {
         }
     }
 
+    public boolean isBeta() {return true;}
+
     private void throwPot(Potions potion) {
         int slot = getPotionSlot(potion);
         mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));

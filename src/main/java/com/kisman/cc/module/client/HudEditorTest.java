@@ -12,4 +12,6 @@ public class HudEditorTest extends Module {
         mc.displayGuiScreen(Kisman.instance.hudEditorGui);
         super.setToggled(false);
     }
+
+    public boolean isBeta() {return true;}
 }

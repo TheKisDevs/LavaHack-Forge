@@ -25,9 +25,9 @@ public class Speed extends Module {
 
     private float yPortSpeed;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix")));
 
-    private Setting useTimer = new Setting("Use Timer", this, false);
+    private Setting useTimer = new Setting("Use Timer", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe New"));
 
     private Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
     private Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
@@ -206,6 +206,9 @@ public class Speed extends Module {
                 mc.player.motionX = -Math.sin(yaw) * motionXmodifier.getValFloat();
                 mc.player.motionZ = Math.cos(yaw) * motionZmodifier.getValFloat();
             }
+        } else if(speedMode.getValString().equalsIgnoreCase("Matrix") && MovementUtil.isMoving() && mc.player.ticksExisted % 2 == 0) {
+            if(mc.player.onGround) mc.player.jump();
+            else MovementUtil.setMotion(MovementUtil.WALK_SPEED * 1.025);
         }
     }
 

@@ -13,11 +13,15 @@ import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.gui.halq.component.components.sub.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Button extends Component {
@@ -89,7 +93,16 @@ public class Button extends Component {
             if(mod.isToggled()) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width, y + offset}, new double[] {x + HalqGui.width, y + offset + HalqGui.height}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), HalqGui.getGradientColour(count).getColor()));
         } else Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(mod.getName() + (Config.instance.guiShowBinds.getValBoolean() && mod.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(mod.getKey()) + "]" : ""), x, y + offset, HalqGui.width, HalqGui.height);
+        String text = mod.getName() + (Config.instance.guiShowBinds.getValBoolean() && mod.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(mod.getKey()) + "]" : "");
+
+        HalqGui.drawString(text, x, y + offset, HalqGui.width, HalqGui.height);
+
+        if(mod.isBeta()) {
+            GL11.glPushMatrix();
+            GL11.glScaled(0.5, 0.5, 1);
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("beta", (x + CustomFontUtil.getStringWidth(text)) * 2, (y + offset) * 2, HalqGui.primaryColor.getRGB());
+            GL11.glPopMatrix();
+        }
 
          if(open && !comps.isEmpty()) {
              int height = 0;
