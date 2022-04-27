@@ -123,6 +123,7 @@ public class ModuleManager {
 		modules.add(new RangeVisualisator());
 		modules.add(new Reverse());
 		modules.add(new ScoreboardModifier());
+		//modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
 		modules.add(new SpawnsESP());
