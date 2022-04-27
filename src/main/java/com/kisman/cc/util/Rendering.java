@@ -34,7 +34,9 @@ public class Rendering {
         BOTH,
         GRADIENT,
         OUTLINE_GRADIENT,
-        BOTH_GRADIENT
+        BOTH_GRADIENT,
+        CUSTOM_OUTLINE,
+        GRADIENT_CUSTOM_OUTLINE
     }
 
     private static void setup(){
@@ -94,13 +96,24 @@ public class Rendering {
                 break;
             case OUTLINE_GRADIENT:
                 prepare();
-                drawGradientBlockOutline(axisAlignedBB, new Color(color.getRGB(), false), new Color(color1.getRGB(), false), lineWidth);
+                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRGB(), false), new Color(color.getRGB(), false), lineWidth);
                 restore();
                 break;
             case BOTH_GRADIENT:
                 prepare();
                 drawGradientFilledBox(axisAlignedBB, color, color1);
-                drawGradientBlockOutline(axisAlignedBB, new Color(color.getRGB(), false), new Color(color1.getRGB(), false), lineWidth);
+                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRGB(), false), new Color(color.getRGB(), false), lineWidth);
+                restore();
+                break;
+            case CUSTOM_OUTLINE:
+                prepare();
+                drawGradientBlockOutline(axisAlignedBB, color1, color, lineWidth);
+                restore();
+                break;
+            case GRADIENT_CUSTOM_OUTLINE:
+                prepare();
+                drawGradientFilledBox(axisAlignedBB, color, color1);
+                drawGradientBlockOutline(axisAlignedBB, color1, color, lineWidth);
                 restore();
                 break;
         }
