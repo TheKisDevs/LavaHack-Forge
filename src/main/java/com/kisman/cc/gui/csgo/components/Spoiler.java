@@ -52,11 +52,11 @@ public class Spoiler extends AbstractComponent {
 
     @Override
     public void postRender() {
-        if(Config.instance.guiDesc.getValBoolean() && hovered && mod != null) {
+        if(!mod.getDescription().isEmpty() && Config.instance.guiDesc.getValBoolean() && hovered && mod != null) {
             int offset = 10;
-            renderer.drawRect(mouseCoords[0] + offset, mouseCoords[1], 10 + renderer.getStringWidth(title), preferredHeight, Window.BACKGROUND);
-            renderer.drawOutline(mouseCoords[0] + offset, mouseCoords[1], 10 + renderer.getStringWidth(title), preferredHeight, 1.0f, Window.BACKGROUND);
-            renderer.drawString(mouseCoords[0] + offset + 5, mouseCoords[1] + preferredHeight / 2 - renderer.getStringHeight(title) / 2, mod.getDescription(), Window.FOREGROUND);
+            renderer.drawRect(mouseCoords[0] + offset, mouseCoords[1], 10 + renderer.getStringWidth(mod.getDescription()), preferredHeight, Window.BACKGROUND);
+            renderer.drawOutline(mouseCoords[0] + offset, mouseCoords[1], 10 + renderer.getStringWidth(mod.getDescription()), preferredHeight, 1.0f, Window.BACKGROUND);
+            renderer.drawString(mouseCoords[0] + offset + 5, mouseCoords[1] + preferredHeight / 2 - renderer.getStringHeight(mod.getDescription()) / 2, mod.getDescription(), Window.FOREGROUND);
         }
     }
 

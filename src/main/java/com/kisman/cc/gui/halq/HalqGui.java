@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class HalqGui extends GuiScreen {
     //variables for main gui settings
     public static LocateMode stringLocateMode = LocateMode.Left;
-    public static Color primaryColor = Color.RED;
+    public static Colour primaryColor = new Colour(Color.RED);
     public static Color backgroundColor = new Color(30, 30, 30, 121);
     public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false;
     public static int diff = 0;
@@ -61,7 +61,7 @@ public class HalqGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        primaryColor = HalqGuiModule.instance.primaryColor.getColour().getColor();
+        primaryColor = HalqGuiModule.instance.primaryColor.getColour();
         background = HalqGuiModule.instance.background.getValBoolean();
         shadowCheckBox = HalqGuiModule.instance.shadow.getValBoolean();
         test = HalqGuiModule.instance.test.getValBoolean();
@@ -153,12 +153,12 @@ public class HalqGui extends GuiScreen {
 
     public static Colour getGradientColour(int count) {
         switch(Config.instance.guiGradient.getValString()) {
-            case "None": return new Colour(primaryColor);
+            case "None": return primaryColor;
             case "Rainbow": return new Colour(ColorUtils.rainbow(count * diff, 1, 1));
             case "Astolfo": return new Colour(ColorUtils.getAstolfoRainbow(count * diff));
-            case "Pulsive": return ColorUtils.twoColorEffect(new Colour(primaryColor), (new Colour(primaryColor)).setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * diff) / 60.0);
+            case "Pulsive": return ColorUtils.twoColorEffect(primaryColor, primaryColor.setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * diff) / 60.0);
         }
-        return new Colour(primaryColor);
+        return primaryColor;
     }
 
     private void scrollWheelCheck() {
