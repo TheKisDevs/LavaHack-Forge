@@ -158,7 +158,13 @@ public final class Loader<E> {
     }
 
     public E loadFromClass(Class<?> cls){
-        return loadFromClass(cls.getName());
+        try {
+            Object o = instantiator.instantiate(cls);
+            if(typeClass.isAssignableFrom(o.getClass()))
+                return (E) o;
+        } catch (Exception ignored){
+        }
+        return null;
     }
 
     public E loadFromClass(String clsName){
