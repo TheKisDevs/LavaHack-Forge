@@ -104,10 +104,10 @@ public class Colour {
     }
 
     public Colour(int color) {
-        this.r = ColorUtils.getRed(color);
-        this.g = ColorUtils.getGreen(color);
-        this.b = ColorUtils.getBlue(color);
-        this.a = ColorUtils.getAlpha(color);
+        this.r = (color >> 16) & 0xff; // ColorUtils.getRed(color); // replace with (color >> 16) & 0xff
+        this.g = (color >> 8) & 0xff; // ColorUtils.getGreen(color); // replace with (color >> 8) & 0xff
+        this.b = color & 0xff; // ColorUtils.getBlue(color); // replace with color & 0xff
+        this.a = (color >> 24) & 0xff; // ColorUtils.getAlpha(color); // replace with (color >> 24) & 0xff
         this.r1 = r / 255f;
         this.g1 = g / 255f;
         this.b1 = b / 255f;

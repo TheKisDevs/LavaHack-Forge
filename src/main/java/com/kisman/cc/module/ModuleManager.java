@@ -52,6 +52,7 @@ public class ModuleManager {
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoFirework());
+		//modules.add(new AutoObsidian());
 		modules.add(new AutoPot());
 		modules.add(new AutoRer());
 		modules.add(new AutoTotem());
@@ -100,6 +101,7 @@ public class ModuleManager {
 		//render
 		modules.add(new Animation());
 		modules.add(new BlockHighlight());
+		//modules.add(new BlockLiner());
 		modules.add(new BlockOutline());
 		modules.add(new CameraClip());
 		modules.add(new Charms());
