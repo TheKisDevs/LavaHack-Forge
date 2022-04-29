@@ -16,11 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Velocity extends Module{
-    private String mode;
-
-    private boolean subscribing;
-
-    private final Setting packet = new Setting("Packet", this, "Packet");
     private final Setting exp = new Setting("Explosion", this, true);
     private final Setting bobbers = new Setting("Bobbers", this, true);
     private final Setting noPush = new Setting("NoPush", this, true);
@@ -31,9 +26,8 @@ public class Velocity extends Module{
     public Velocity() {
         super("Velocity", "akb", Category.PLAYER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix", "Matrix 6.4", "Vanilla"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "None", new ArrayList<>(Arrays.asList("None", "Matrix", "Matrix 6.4", "Vanilla"))));
 
-        setmgr.rSetting(packet);
         setmgr.rSetting(exp);
         setmgr.rSetting(bobbers);
         setmgr.rSetting(noPush);
@@ -43,63 +37,51 @@ public class Velocity extends Module{
     }
 
     public void onEnable() {
-        this.mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
-
-        if(this.mode.equalsIgnoreCase("Packet")) {
-            this.subscribing = true;
-            Kisman.EVENT_BUS.subscribe(receiveListener);
-            Kisman.EVENT_BUS.subscribe(listener);
-            Kisman.EVENT_BUS.subscribe(listener1);
-            Kisman.EVENT_BUS.subscribe(listener2);
-        }
+        Kisman.EVENT_BUS.subscribe(receiveListener);
+        Kisman.EVENT_BUS.subscribe(listener);
+        Kisman.EVENT_BUS.subscribe(listener1);
+        Kisman.EVENT_BUS.subscribe(listener2);
     }
 
     public void update() {
-        this.mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
-
+        if(mc.player == null || mc.world == null) return;
+        String mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
         super.setDisplayInfo("[" + mode + "]");
-        if(!this.subscribing && mc.player != null && mc.world != null) {
-            if(this.mode.equalsIgnoreCase("Matrix")) if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) if (mc.player.hurtTime > 0) mc.player.motionY = -0.2;
-             else if(mode.equalsIgnoreCase("Matrix 6.4")) if(mc.player.hurtTime > 8) mc.player.onGround = true;
-             else if(mode.equalsIgnoreCase("Vanilla") && mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
-                mc.player.motionX *= (double) horizontal.getValInt() / 100;
-                mc.player.motionY *= (double) vertical.getValInt() / 100;
-                mc.player.motionZ *= (double) horizontal.getValInt() / 100;
-            }
+
+        if(mode.equalsIgnoreCase("Matrix")) {
+            if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) if (mc.player.hurtTime > 0) mc.player.motionY = -0.2;
+        } else if(mode.equalsIgnoreCase("Matrix 6.4")) if(mc.player.hurtTime > 8) mc.player.onGround = true;
+        else if(mode.equalsIgnoreCase("Vanilla") && mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
+            mc.player.motionX *= (double) horizontal.getValInt() / 100;
+            mc.player.motionY *= (double) vertical.getValInt() / 100;
+            mc.player.motionZ *= (double) horizontal.getValInt() / 100;
         }
     }
 
     public void onDisable() {
-        if(subscribing) {
-            this.subscribing = false;
-            Kisman.EVENT_BUS.unsubscribe(receiveListener);
-            Kisman.EVENT_BUS.unsubscribe(listener);
-            Kisman.EVENT_BUS.unsubscribe(listener1);
-            Kisman.EVENT_BUS.unsubscribe(listener2);
-        }
+        Kisman.EVENT_BUS.unsubscribe(receiveListener);
+        Kisman.EVENT_BUS.unsubscribe(listener);
+        Kisman.EVENT_BUS.unsubscribe(listener1);
+        Kisman.EVENT_BUS.unsubscribe(listener2);
     }
 
     @EventHandler
     private final Listener<EventPlayerApplyCollision> listener = new Listener<>(event -> {
-        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<EventPlayerPushedByWater> listener1 = new Listener<>(event -> {
-        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<EventPlayerPushOutOfBlocks> listener2 = new Listener<>(event -> {
-        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<PacketEvent.Receive> receiveListener = new Listener<>(event -> {
-        if(!mode.equalsIgnoreCase("Packet")) return;
         if(event.getPacket() instanceof SPacketEntityVelocity) if(((SPacketEntityVelocity) event.getPacket()).getEntityID() == mc.player.getEntityId()) event.cancel();
         if(event.getPacket() instanceof SPacketExplosion && exp.getValBoolean()) event.cancel();
         if(event.getPacket() instanceof SPacketEntityStatus && bobbers.getValBoolean()) {
