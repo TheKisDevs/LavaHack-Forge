@@ -1,6 +1,5 @@
 package com.kisman.cc.module.client;
 
-import com.kisman.cc.command.commands.Flip;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
@@ -27,11 +26,8 @@ public class NotEnoughCoinsModule extends Module {
     }
 
     public void onEnable() {
-        if(mc.player == null && mc.world == null) return;
-        if(onlyHypixelWorking.getValBoolean() && (mc.getCurrentServerData() == null || mc.getCurrentServerData() == null ? true : !mc.getCurrentServerData().serverIP.equalsIgnoreCase("mc.hypixel.net"))) {
-            return;
-        }
-
+        if(mc.player == null || mc.world == null) return;
+        if(onlyHypixelWorking.getValBoolean() && (mc.getCurrentServerData() == null || !mc.getCurrentServerData().serverIP.equalsIgnoreCase("mc.hypixel.net"))) return;
         if(ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "Flip").equals("false")) {
             ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,
                     "Flip",
@@ -41,7 +37,7 @@ public class NotEnoughCoinsModule extends Module {
     }
 
     public void onDisable() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         if(ConfigHandler.getString(Configuration.CATEGORY_GENERAL, "Flip").equals("true")) {
             ConfigHandler.writeConfig(Configuration.CATEGORY_GENERAL,

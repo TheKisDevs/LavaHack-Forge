@@ -5,7 +5,6 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.settings.util.BoxRendererPattern;
 import com.kisman.cc.util.ColourUtilKt;
-import com.kisman.cc.util.RenderUtil;
 
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

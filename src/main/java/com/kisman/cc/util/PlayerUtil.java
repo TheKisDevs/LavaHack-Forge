@@ -251,11 +251,11 @@ public class PlayerUtil {
     }
 
     public static boolean IsEating() {
-        return mc.player != null && mc.player.getHeldItemMainhand().getItem() instanceof ItemFood && mc.player.isHandActive();
+        return mc.player != null && mc.player.getHeldItemMainhand().getItem() instanceof ItemFood && mc.player.isHandActive() && mc.player.getActiveHand().equals(EnumHand.MAIN_HAND);
     }
 
     public static boolean isEatingOffhand() {
-        return mc.player != null && mc.player.getHeldItemOffhand().getItem() instanceof ItemFood && mc.player.isHandActive();
+        return mc.player != null && mc.player.getHeldItemOffhand().getItem() instanceof ItemFood && mc.player.isHandActive() && mc.player.getActiveHand().equals(EnumHand.OFF_HAND);
     }
 
     public static boolean isCurrentViewEntity() {

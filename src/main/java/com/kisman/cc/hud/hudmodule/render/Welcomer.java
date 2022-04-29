@@ -22,7 +22,7 @@ public class Welcomer extends HudModule {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : new Color(HUD.instance.welColor.getR(), HUD.instance.welColor.getG(), HUD.instance.welColor.getB(), HUD.instance.welColor.getA()).getRGB();
+        int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : HUD.instance.welColor.getColour().getRGB();
 
         setW(CustomFontUtil.getStringWidth("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!"));
         setH(CustomFontUtil.getFontHeight());

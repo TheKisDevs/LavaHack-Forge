@@ -1,14 +1,11 @@
 package com.kisman.cc.module.client;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
-//import com.kisman.cc.gui.notification.Notifications;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -45,7 +42,6 @@ public class Config extends Module {
     public Setting saveConfig = new Setting("Save Config", this, false);
     public Setting loadConfig = new Setting("Load Config", this, false);
     public Setting configurate = new Setting("Configurate", this, true);
-//    public Setting notifications = new Setting("Notifications", this, false);
     public Setting particlesColor = new Setting("Particles Color", this, "Particles Dots Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean());
 
     public Setting particlesRenderLine = new Setting("Particles Render Lines", this, true);
@@ -97,7 +93,6 @@ public class Config extends Module {
         setmgr.rSetting(saveConfig);
         setmgr.rSetting(loadConfig);
         setmgr.rSetting(configurate);
-//        setmgr.rSetting(notifications);
         setmgr.rSetting(particlesColor);
         setmgr.rSetting(particlesGradientMode);
         setmgr.rSetting(particlesGStartColor);
@@ -125,14 +120,6 @@ public class Config extends Module {
             loadConfig.setValBoolean(false);
         }
     }
-
-//    @SubscribeEvent
-//    public void onRender(RenderGameOverlayEvent.Text event) {
-//        if(notifications.getValBoolean()) for(Notifications notifications : Kisman.instance.notificationsManager.notifications) {
-//            int count = 0;
-//            Kisman.instance.notificationsManager.drawNotification(notifications, count++);
-//        }
-//    }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, custom}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}

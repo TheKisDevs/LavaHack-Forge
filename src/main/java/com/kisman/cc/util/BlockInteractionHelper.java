@@ -40,40 +40,6 @@ public class BlockInteractionHelper
 
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    public static void placeBlockScaffold(BlockPos pos)
-    {
-        Vec3d eyesPos = new Vec3d(Minecraft.getMinecraft().player.posX, Minecraft.getMinecraft().player.posY + Minecraft.getMinecraft().player.getEyeHeight(), Minecraft.getMinecraft().player.posZ);
-
-        for (EnumFacing side : EnumFacing.values())
-        {
-            BlockPos neighbor = pos.offset(side);
-            EnumFacing side2 = side.getOpposite();
-
-            // check if neighbor can be right clicked
-            if (!canBeClicked(neighbor))
-            {
-                continue;
-            }
-
-            Vec3d hitVec = new Vec3d(neighbor).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(side2.getDirectionVec()).scale(0.5));
-
-            // check if hitVec is within range (4.25 blocks)
-            if (eyesPos.squareDistanceTo(hitVec) > 18.0625)
-            {
-                continue;
-            }
-
-            // place block
-            faceVectorPacketInstant(hitVec);
-            processRightClickBlock(neighbor, side2, hitVec);
-            Minecraft.getMinecraft().player.swingArm(EnumHand.MAIN_HAND);
-            mc.rightClickDelayTimer = 4;
-
-            return;
-        }
-
-    }
-
     public static float[] getLegitRotations(Vec3d vec)
     {
         Vec3d eyesPos = getEyesPos();

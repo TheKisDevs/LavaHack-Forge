@@ -209,7 +209,7 @@ public class RenderUtil {
     }
 
 	public static void drawBorderedRect(double x, double y, double x2, double y2, float l1, int col1, int col2) {
-        drawRect((int)x, (int)y, (int)x2, (int)y2, col2);
+        Render2DUtil.drawRect((int)x, (int)y, (int)x2, (int)y2, col2);
 
         float f = (float)(col1 >> 24 & 0xFF) / 255F;
         float f1 = (float)(col1 >> 16 & 0xFF) / 255F;
@@ -337,41 +337,6 @@ public class RenderUtil {
         	exception.printStackTrace();
         }
     }
-
-	public static void drawNukerBlocks(Iterable<BlockPos> blocks, float r, float g, float b, float ticks) {
-		glPushMatrix();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glLineWidth(1);
-        glDisable(GL_TEXTURE_2D);
-        glEnable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL11.GL_LIGHTING);
-
-        WorldClient world = Minecraft.getMinecraft().world;
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
-
-        for(BlockPos pos : blocks) {
-            IBlockState iblockstate = world.getBlockState(pos);
-
-            double x = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)ticks;
-            double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)ticks;
-            double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)ticks;
-
-            GLUtils.glColor(new Color(r, g, b, 1.0f));
-            
-            AxisAlignedBB boundingBox = iblockstate.getSelectedBoundingBox(world, pos).grow(0.0020000000949949026D).offset(-x, -y, -z);
-            drawSelectionBoundingBox(boundingBox);
-        }
-
-        glEnable(GL11.GL_LIGHTING);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        glPopMatrix();
-	}
 
     public static void drawBlockFlatESP(BlockPos pos, float red, float green, float blue) {
         glPushMatrix();
@@ -1019,55 +984,6 @@ public class RenderUtil {
         vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
         vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
         tessellator.draw();
-    }
-	
-	public static void drawTri(double x1, double y1, double x2, double y2, double x3, double y3, double width, Color c) {
-
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GLUtils.glColor(c);
-        GL11.glLineWidth((float) width);
-        GL11.glBegin(GL11.GL_LINE_STRIP);
-        GL11.glVertex2d(x1, y1);
-        GL11.glVertex2d(x2, y2);
-        GL11.glVertex2d(x3, y3);
-        GL11.glEnd();
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-    }
-
-    public static void drawRect(float left, float top, float right, float bottom, int color) {
-        float var5;
-
-        if (left < right) {
-            var5 = left;
-            left = right;
-            right = var5;
-        }
-
-        if (top < bottom) {
-            var5 = top;
-            top = bottom;
-            bottom = var5;
-        }
-
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glPushMatrix();
-        GLUtils.glColor(color);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex2d(left, bottom);
-        GL11.glVertex2d(right, bottom);
-        GL11.glVertex2d(right, top);
-        GL11.glVertex2d(left, top);
-        GL11.glEnd();
-        GL11.glPopMatrix();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
     }
 
     public static

@@ -68,7 +68,7 @@ public class OutlineUtils{
     }
 
     public static void setColor(Setting color) {
-        setColor(new Color(color.getR(), color.getG(), color.getB(), color.getA()));
+        color.getColour().glColor();
     }
 
     public static void checkSetupFBO() {

@@ -3,6 +3,7 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import net.minecraft.util.EnumHandSide;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -129,31 +130,30 @@ public class ViewModel extends Module {
         setmgr.rSetting(alpha);
     }
 
-    @SubscribeEvent public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {if (itemFOV.getValBoolean()) event.setFOV(fov.getValFloat());}
-    @SubscribeEvent public void onRenderArms(RenderSpecificHandEvent event) {
-        if(hands.getValBoolean()) {
-            switch (event.getHand()) {
-                case MAIN_HAND: {
-                    {
-                        glTranslated(handRightX.getValDouble(), handRightY.getValDouble(), handRightZ.getValDouble());
-                        glRotated(handRightRotateX.getValDouble(), 1, 0, 0);
-                        glRotated(handRightRotateY.getValDouble(), 0, 1, 0);
-                        glRotated(handRightRotateZ.getValDouble(), 0, 0, 1);
-                        glScaled(handRightScaleX.getValDouble(), handRightScaleY.getValDouble(), handRightScaleZ.getValDouble());
-                    }
-                    break;
+    public void hand(EnumHandSide side) {
+        switch (side) {
+            case RIGHT: {
+                {
+                    glTranslated(handRightX.getValDouble(), handRightY.getValDouble(), handRightZ.getValDouble());
+                    glRotated(handRightRotateX.getValDouble(), 1, 0, 0);
+                    glRotated(handRightRotateY.getValDouble(), 0, 1, 0);
+                    glRotated(handRightRotateZ.getValDouble(), 0, 0, 1);
+                    glScaled(handRightScaleX.getValDouble(), handRightScaleY.getValDouble(), handRightScaleZ.getValDouble());
                 }
-                case OFF_HAND: {
-                    {
-                        glTranslated(handLeftX.getValDouble(), handLeftY.getValDouble(), handLeftZ.getValDouble());
-                        glRotated(handLeftRotateX.getValDouble(), 1, 0, 0);
-                        glRotated(handLeftRotateY.getValDouble(), 0, 1, 0);
-                        glRotated(handLeftRotateZ.getValDouble(), 0, 0, 1);
-                        glScaled(handLeftScaleX.getValDouble(), handLeftScaleY.getValDouble(), handLeftScaleZ.getValDouble());
-                    }
-                    break;
+                break;
+            }
+            case LEFT: {
+                {
+                    glTranslated(handLeftX.getValDouble(), handLeftY.getValDouble(), handLeftZ.getValDouble());
+                    glRotated(handLeftRotateX.getValDouble(), 1, 0, 0);
+                    glRotated(handLeftRotateY.getValDouble(), 0, 1, 0);
+                    glRotated(handLeftRotateZ.getValDouble(), 0, 0, 1);
+                    glScaled(handLeftScaleX.getValDouble(), handLeftScaleY.getValDouble(), handLeftScaleZ.getValDouble());
                 }
+                break;
             }
         }
     }
+
+    @SubscribeEvent public void onItemFOV(EntityViewRenderEvent.FOVModifier event) {if (itemFOV.getValBoolean()) event.setFOV(fov.getValFloat());}
 }

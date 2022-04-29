@@ -7,5 +7,4 @@ class KotlinTest(
     name: String = "KotlinTest",
     desc: String = "katlin test!",
     category: Category = Category.CLIENT
-) : Module(name, desc, category) {
-}
+) : Module(name, desc, category)

@@ -5,14 +5,12 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.google.gson.JsonElement;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
@@ -40,14 +38,12 @@ public class Setting {
 	private HudModule hudParent;
 	private String mode;
 
-	private String string;
 	private String title;
 
 	private String sval;
 	private String dString;
 	private ArrayList<String> options;
 	private Enum optionEnum;
-	private Enum svalEnum;
 	
 	private boolean bval;
 	private boolean rainbow;
@@ -58,8 +54,7 @@ public class Setting {
 	private boolean onlyNumbers;
 	private boolean minus;
 	private boolean enumCombo = false;
-	private boolean visible = true;
-	
+
 	private double dval;
 	private double min;
 	private double max;
@@ -145,7 +140,6 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.sval = sval;
-		this.svalEnum = null;
 		this.options = options;
 		this.optionEnum = null;
 		this.mode = "Combo";
@@ -155,7 +149,6 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.sval = sval;
-		this.svalEnum = null;
 		this.options = new ArrayList<>(options);
 		this.optionEnum = null;
 		this.mode = "Combo";
@@ -165,7 +158,6 @@ public class Setting {
 		this.name = name;
 		this.parent = parent;
 		this.sval = options.name();
-		this.svalEnum = options;
 		this.options = null;
 		this.optionEnum = options;
 		this.enumCombo = true;
@@ -219,30 +211,6 @@ public class Setting {
 		this.numberType = onlyint ? Slider.NumberType.INTEGER : Slider.NumberType.DECIMAL;
 	}
 
-	public Setting(String name, Module parent, String title, float[] colorHSB, boolean simpleMode) {
-		this.name = name;
-		this.parent = parent;
-		this.title = title;
-		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
-		this.r = colour.r;
-		this.g = colour.g;
-		this.b = colour.b;
-		this.a = colour.a;
-		this.mode = simpleMode ? "ColorPickerSimple" : "ColorPicker";
-	}
-
-	public Setting(String name, Module parent, String title, float[] colorHSB) {
-		this.name = name;
-		this.parent = parent;
-		this.title = title;
-		this.colour= new Colour(ColorUtils.injectAlpha(Color.HSBtoRGB(colorHSB[0], colorHSB[1], colorHSB[2]), (int) colorHSB[3] * 255));
-		this.r = colour.r;
-		this.g = colour.g;
-		this.b = colour.b;
-		this.a = colour.a;
-		this.mode = "ColorPicker";
-	}
-
 	public Setting(String name, Module parent, String title, Colour colour) {
 		this.name = name;
 		this.parent = parent;
@@ -254,17 +222,6 @@ public class Setting {
 		this.b = colour.b;
 		this.a = colour.a;
 		this.mode = "ColorPicker";
-	}
-
-	public Setting(String name, HudModule parent, int x1, int y1, int x2, int y2) {
-		this.name = name;
-		this.hudParent = parent;
-		this.mode = "DrawHud";
-		this.hud = true;
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
 	}
 
 	public Setting(String name, Module parent, String title, Entity entity) {
@@ -312,39 +269,6 @@ public class Setting {
 		return sval.equalsIgnoreCase(str);
 	}
 
-	public void fromJson(JsonElement element) {
-		String parse = element.getAsString();
-
-		if (parse.contains("-")) {
-			final String[] values = parse.split("-");
-			if (values.length > 6) {
-				int color = 0;
-				try {color = (int) Long.parseLong(values[0], 16);} catch (Exception e) {e.printStackTrace();}
-				colour = new Colour(color);
-				r = colour.r;
-				g = colour.g;
-				b = colour.b;
-				a = colour.a;
-
-				boolean syncBuf = false;
-				try {syncBuf = Boolean.parseBoolean(values[1]);} catch (Exception e) {e.printStackTrace();}
-				syns = syncBuf;
-
-				boolean rainbowBuf = false;
-				try {rainbowBuf = Boolean.parseBoolean(values[2]);} catch (Exception e) {e.printStackTrace();}
-				rainbow = rainbowBuf;
-			}
-		} else {
-			int color = 0;
-			try {color = (int) Long.parseLong(parse, 16);} catch (Exception e) {e.printStackTrace();}
-			colour = new Colour(color);
-			r = colour.r;
-			g = colour.g;
-			b = colour.b;
-			a = colour.a;
-		}
-	}
-
 	public boolean isVisible() {
 		return visibleSuppliner.get();
 	}
@@ -387,9 +311,6 @@ public class Setting {
 		return onlyint;
 	}
 
-	public void setOnlyint(boolean onlyint) {
-		this.onlyint = onlyint;
-	}
 
 	public Slider.NumberType getNumberType() {
 		return numberType;
@@ -398,25 +319,6 @@ public class Setting {
 	public void setNumberType(Slider.NumberType numberType) {
 		this.numberType = numberType;
 	}
-
-	public Enum getNextModeEnum() {
-		if(optionEnum != null) {
-			Enum enumVal = optionEnum;
-			String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
-			index = index + 1 > values.length - 1 ? 0 : index + 1;
-			return Enum.valueOf(enumVal.getClass(), values[index]);
-		} else {
-			return null;
-		}
-	}
-
-	public void updateColor(float red, float green, float blue, float alpha) {
-		this.red = red;
-		this.green = green;
-		this.alpha = alpha;
-	}
-
-	public boolean isEnumCombo() {return enumCombo;}
 
 	public float getRed() {
 		return red;
@@ -450,17 +352,6 @@ public class Setting {
 		this.alpha = alpha;
 	}
 
-	public Enum getDoModeEnum() {
-		if(optionEnum != null) {
-			Enum enumVal = optionEnum;
-			String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
-			index = index-- < 0 ? values.length : index;
-			return Enum.valueOf(enumVal.getClass(), values[index]);
-		} else {
-			return null;
-		}
-	}
-
 	public boolean isOnlyNumbers() {
 		return onlyNumbers;
 	}
@@ -468,14 +359,6 @@ public class Setting {
 	public Setting setOnlyNumbers(boolean onlyNumbers) {
 		this.onlyNumbers = onlyNumbers;
 		return this;
-	}
-
-	public boolean isMinus() {
-		return minus;
-	}
-
-	public void setMinus(boolean minus) {
-		this.minus = minus;
 	}
 
 	public ItemStack[] getItems() {
@@ -496,18 +379,6 @@ public class Setting {
 
 	public boolean isOnlyOneWord() {
 		return onlyOneWord;
-	}
-
-	public void setOnlyOneWord(boolean onlyOneWord) {
-		this.onlyOneWord = onlyOneWord;
-	}
-
-	public boolean isSyns() {
-		return syns;
-	}
-
-	public void setSyns(boolean syns) {
-		this.syns = syns;
 	}
 
 	public int getKey() {
@@ -531,40 +402,12 @@ public class Setting {
 		return optionEnum.valueOf(optionEnum.getClass(), sval);
 	}
 
-	public void setValEnum(Enum svalEnum) {
-		this.svalEnum = svalEnum;
-	}
-
-	public Enum getOptionEnum() {
-		return optionEnum;
-	}
-
-	public void setOptionEnum(Enum optionEnum) {
-		this.optionEnum = optionEnum;
-	}
-
 	public Setting getSetparent() {
 		return setparent;
 	}
 
-	public void setSetparent(Setting setparent) {
-		this.setparent = setparent;
-	}
-
 	public String getdString() {
 		return dString;
-	}
-
-	public void setdString(String dString) {
-		this.dString = dString;
-	}
-
-	public boolean isOpening() {
-		return opening;
-	}
-
-	public void setOpening(boolean opening) {
-		this.opening = opening;
 	}
 
 	public int getX1() {
@@ -659,6 +502,8 @@ public class Setting {
 		return this;
 	}
 
+	//#Lua
+	//TODO: доделать
 	public Setting build(Module module) {
 		Kisman.instance.settingsManager.rSetting(this);
 		return this;
@@ -724,77 +569,12 @@ public class Setting {
 		return this;
 	}
 
-	public int getR() {
-		return r;
-	}
-
-	public int getG() {
-		return g;
-	}
-
-	public int getB() {
-		return b;
-	}
-
-	public int getA() {
-		return a;
-	}
-
-	public void setR(int r) {
-		this.r = r;
-	}
-
-	public void setG(int g) {
-		this.g = g;
-	}
-
-	public void setB(int b) {
-		this.b = b;
-	}
-
-	public void setA(int a) {
-		this.a = a;
-	}
-
 	public boolean isRainbow() {
 		return this.rainbow;
 	}
 
 	public void setRainbow(boolean rainbow) {
 		this.rainbow = rainbow;
-	}
-
-	public int getColor() {
-		return this.color;
-	}
-
-	public Color getColor(boolean colorPicker) {
-		return new Color(
-				getR(),
-				getG(),
-				getB(),
-				getA()
-		);
-	}
-
-	public void setColor(int color) {
-		this.color = color;
-	}
-
-	public float getColor(int index) {
-		return this.colorHSB[index];
-	}
-
-	public float[] getColorHSB() {
-		return this.colorHSB;
-	}
-
-	public void setColor(float color, int index) {
-		this.colorHSB[index] = color;
-	}
-
-	public void setColor(float[] color) {
-		this.colorHSB = color;
 	}
 
 	public boolean isItems() { return mode.equalsIgnoreCase("Items"); }
@@ -817,8 +597,6 @@ public class Setting {
 		return this.mode.equalsIgnoreCase("Check");
 	}
 
-	public boolean isCheckHud() { return this.mode.equalsIgnoreCase("CheckHud"); }
-	
 	public boolean isSlider(){
 		return this.mode.equalsIgnoreCase("Slider");
 	}
@@ -827,16 +605,8 @@ public class Setting {
 		return this.mode.equalsIgnoreCase("Line");
 	}
 
-	public boolean isCategoryLine() {
-		return this.mode.equalsIgnoreCase("CategoryLine");
-	}
-
 	public boolean isColorPicker() {
 		return this.mode.equalsIgnoreCase("ColorPicker");
-	}
-
-	public boolean isColorPickerSimple() {
-		return this.mode.equalsIgnoreCase("ColorPickerSimple");
 	}
 
 	public boolean onlyInt(){

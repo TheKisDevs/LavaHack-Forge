@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.render.NoRender;
 import com.kisman.cc.util.MathUtil;
@@ -36,24 +37,26 @@ public class MixinGuiNewChat {
 
     @Inject(method = "drawChat", at = @At("HEAD"))
     private void modifyChatRendering(CallbackInfo ci) {
-        if (ChatAnimation.instance != null) {
-            if(ChatAnimation.instance.isToggled()) {
-                final long current = System.currentTimeMillis();
-                final long diff = current - this.prevMillis;
-                this.prevMillis = current;
-                this.updatePercentage(diff);
-                float t = this.percentComplete;
-                this.animationPercent = (float) MathUtil.clamp(1.0f - --t * t * t * t, 0.0, 1.0);
-            }
+        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
+        if(chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
+            final long current = System.currentTimeMillis();
+            final long diff = current - this.prevMillis;
+            this.prevMillis = current;
+            this.updatePercentage(diff);
+            float t = this.percentComplete;
+            this.animationPercent = (float) MathUtil.clamp(1.0f - --t * t * t * t, 0.0, 1.0);
         }
     }
 
     @Inject(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
     private void translate(CallbackInfo ci) {
-        if (ChatAnimation.instance.isToggled()) {
+        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
+        if (chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
             float y = 1.0f;
             if (!this.isScrolled) y += (9.0f - 9.0f * this.animationPercent) * this.getChatScale();
-            GlStateManager.translate(0.0f, y, 0.0f);
+            int customY = 0;
+            if(chatModifier.getCustomY().getValBoolean()) customY = chatModifier.getCustomYVal().getValInt();
+            GlStateManager.translate(0.0f, y -customY, 0.0f);
         }
     }
 
@@ -77,7 +80,8 @@ public class MixinGuiNewChat {
             opacity *= (int)this.animationPercent;
             newY = ((int) y & 0xFFFFFF) | opacity << 24;
         }
-        if(ChatTTF.instance != null && ChatTTF.instance.isToggled()) return CustomFontUtil.drawStringWithShadow(text, x, newY, color);
+        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
+        if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, color);
         return fontRenderer.drawStringWithShadow(text, x, newY, color);
     }
 

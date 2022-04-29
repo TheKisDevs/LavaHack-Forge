@@ -24,15 +24,15 @@ public class MixinModelEnderCrystal {
         GlStateManager.rotate(limbSwingAmount, 0.0f, 1.0f, 0.0f);
         GlStateManager.translate(0.0f, (0.8f + ageInTicks), 0.0f);
         GlStateManager.rotate(60.0f, 0.7071f, 0.0f, 0.7071f);
-        if (CrystalModifier.instance.isToggled() && CrystalModifier.instance.outsideCube.getValBoolean()) glass.render(scale);
+        if (!CrystalModifier.instance.isToggled() || CrystalModifier.instance.outsideCube.getValBoolean()) glass.render(scale);
         GlStateManager.scale(0.875f, 0.875f, 0.875f);
         GlStateManager.rotate(60.0f, 0.7071f, 0.0f, 0.7071f);
         GlStateManager.rotate(limbSwingAmount, 0.0f, 1.0f, 0.0f);
-        if (CrystalModifier.instance.isToggled() && CrystalModifier.instance.outsideCube2.getValBoolean()) glass.render(scale);
+        if (!CrystalModifier.instance.isToggled() || CrystalModifier.instance.outsideCube2.getValBoolean()) glass.render(scale);
         GlStateManager.scale(0.875f, 0.875f, 0.875f);
         GlStateManager.rotate(60.0f, 0.7071f, 0.0f, 0.7071f);
         GlStateManager.rotate(limbSwingAmount, 0.0f, 1.0f, 0.0f);
-        if (CrystalModifier.instance.isToggled() && CrystalModifier.instance.insideCube.getValBoolean()) cube.render(scale);
+        if (!CrystalModifier.instance.isToggled() || CrystalModifier.instance.insideCube.getValBoolean()) cube.render(scale);
         GlStateManager.popMatrix();
     }
 }

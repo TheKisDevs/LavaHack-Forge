@@ -33,7 +33,7 @@ public class MixinRenderEnderCrystal {
 
             //scale
             if(entity.equals(CrystalModifier.instance.preview.getEntity())) GL11.glScalef(1, 1, 1);
-            else GL11.glScaled(CrystalModifier.instance.scaleX.getValDouble(), CrystalModifier.instance.scaleY.getValDouble(), CrystalModifier.instance.scaleZ.getValDouble());
+            else if(CrystalModifier.instance.scale.getValBoolean()) GL11.glScaled(CrystalModifier.instance.scaleVal.getValDouble(), -CrystalModifier.instance.scaleVal.getValDouble(), CrystalModifier.instance.scaleVal.getValDouble());
 
             //translate
             GL11.glTranslated(x + CrystalModifier.instance.translateX.getValDouble(), y + CrystalModifier.instance.translateY.getValDouble(), z + CrystalModifier.instance.translateZ.getValDouble());

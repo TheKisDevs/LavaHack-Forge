@@ -2,7 +2,7 @@ package com.kisman.cc.gui.alts;
 
 import java.util.Map;
 
-import com.kisman.cc.util.RenderUtil;
+import com.kisman.cc.util.Render2DUtil;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 
@@ -62,7 +62,7 @@ public class AltEntry implements IGuiListEntry {
 			GL11.glDisable(GL11.GL_BLEND);
 			if(isSelected) {
 				mc.getTextureManager().bindTexture(this.selected);
-				RenderUtil.drawRect(x, y, 32, 32, -1601138544);
+				Render2DUtil.drawRect(x, y, 32, 32, -1601138544);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				Gui.drawModalRectWithCustomSizedTexture(x - 6, y + 3, 32.0F, 3, 32, 32, 256.0F, 256.0F);
 			}
@@ -75,7 +75,7 @@ public class AltEntry implements IGuiListEntry {
 			GL11.glDisable(GL11.GL_BLEND);
 			if(isSelected) {
 				mc.getTextureManager().bindTexture(this.selected);
-				RenderUtil.drawRect(x, y, 32, 32, -1601138544);
+				Render2DUtil.drawRect(x, y, 32, 32, -1601138544);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				Gui.drawModalRectWithCustomSizedTexture(x - 6, y + 3, 32.0F, 3, 32, 32, 256.0F, 256.0F);
 			}

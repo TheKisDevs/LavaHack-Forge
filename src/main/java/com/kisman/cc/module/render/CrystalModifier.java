@@ -13,16 +13,14 @@ public class CrystalModifier extends Module {
 
     private Setting scaleLine = new Setting("ScaleLine", this, "Scale");
 
-    public Setting scaleX = new Setting("ScaleX", this, 1, 0, 2, false);
-    public Setting scaleY = new Setting("ScaleY", this, 1, 0, 2, false);
-    public Setting scaleZ = new Setting("ScaleZ", this, 1, 0, 2, false);
+    public Setting scale = new Setting("Scale", this,false);
+    public Setting scaleVal = new Setting("ScaleVal", this, 1, 0.1, 2, false);
 
     private Setting translateLine = new Setting("TranslateLine", this, "Translate");
 
     public Setting translateX = new Setting("TranslateX", this, 0, -2, 2, false);
     public Setting translateY = new Setting("TranslateY", this, 0, -2, 2, false);
     public Setting translateZ = new Setting("TranslateZ", this, 0, -2, 2, false);
-
 
     private Setting crystalSettingLine = new Setting("CrystalSettingLine", this, "CrystalSetting");
 
@@ -55,9 +53,8 @@ public class CrystalModifier extends Module {
         setmgr.rSetting(mode);
 
         setmgr.rSetting(scaleLine);
-        setmgr.rSetting(scaleX);
-        setmgr.rSetting(scaleY);
-        setmgr.rSetting(scaleZ);
+        setmgr.rSetting(scale);
+        setmgr.rSetting(scaleVal);
 
         setmgr.rSetting(translateLine);
         setmgr.rSetting(translateX);

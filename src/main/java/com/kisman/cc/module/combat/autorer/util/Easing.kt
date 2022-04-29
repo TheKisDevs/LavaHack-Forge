@@ -6,7 +6,7 @@ import com.kisman.cc.util.MathUtil
 enum class Easing {
     OUT_QUART {
         override val opposite: Easing
-            get() = Easing.OUT_QUART
+            get() = OUT_QUART
 
         override fun inc0(x: Float): Float {
             return (1.0f - MathUtilKt.quart(1.0f - x)).toFloat()
@@ -14,7 +14,7 @@ enum class Easing {
     },
     OUT_CUBIC {
         override val opposite: Easing
-            get() = Easing.IN_CUBIC
+            get() = IN_CUBIC
 
         override fun inc0(x: Float): Float {
             return (1.0f - MathUtilKt.cubic(1.0f - x)).toFloat()
@@ -22,7 +22,7 @@ enum class Easing {
     },
     IN_CUBIC {
         override val opposite: Easing
-            get() = Easing.OUT_CUBIC
+            get() = OUT_CUBIC
 
         override fun inc0(x: Float): Float {
             return MathUtilKt.cubic(x).toFloat()
@@ -136,7 +136,7 @@ enum class Easing {
 
     abstract val opposite: Easing;
 
-    protected abstract fun inc0(x: Float): Float;
+    protected abstract fun inc0(x: Float): Float
 
     private fun dec0(x: Float): Float {
         return 1.0f - inc0(x);

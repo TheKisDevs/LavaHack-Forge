@@ -2,7 +2,6 @@ package com.kisman.cc.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
-import org.luaj.vm2.ast.Str;
 
 
 /**
@@ -22,28 +21,28 @@ public class ChatLoggerUtil {
     public boolean Log(String text)
     {
         if(mc.player == null || mc.world == null) return false;
-        mc.player.sendMessage(new TextComponentString("§2[" + _moduleName + "]:§f  " + text));
+        mc.player.sendMessage(new TextComponentString("§2[" + _moduleName + "]:§f " + text));
         return true;
     }
 
     public boolean LogLackluster(String text)
     {
         if(mc.player == null || mc.world == null) return false;
-        mc.player.sendMessage(new TextComponentString("§7[" + _moduleName + "]:§7  " + text));
+        mc.player.sendMessage(new TextComponentString("§7[" + _moduleName + "]:§7 " + text));
         return true;
     }
 
     public boolean Error(String text)
     {
         if(mc.player == null || mc.world == null) return false;
-        mc.player.sendMessage(new TextComponentString("§c[" + _moduleName + "]:§f  " + text));
+        mc.player.sendMessage(new TextComponentString("§c[" + _moduleName + "]:§f " + text));
         return true;
     }
 
     public boolean Warning(String text)
     {
         if(mc.player == null || mc.world == null) return false;
-        mc.player.sendMessage(new TextComponentString("§e[" + _moduleName + "]:§f  " + text));
+        mc.player.sendMessage(new TextComponentString("§e[" + _moduleName + "]:§f " + text));
         return true;
     }
 }

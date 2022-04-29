@@ -162,10 +162,6 @@ public class ClickGuiNew extends GuiScreen {
                                     settingPane.addComponent(sb);
                                     sb.setListener(val -> {
                                         set.setColour(val);
-                                        set.setR(val.r);
-                                        set.setG(val.g);
-                                        set.setB(val.b);
-                                        set.setA(val.a);
                                         return true;
                                     });
 

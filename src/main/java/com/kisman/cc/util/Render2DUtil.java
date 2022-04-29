@@ -40,6 +40,39 @@ public class Render2DUtil extends GuiScreen {
         GL11.glHint(3155, 4352);
     }
 
+    public static void drawRect(int mode, int left, int top, int right, int bottom, int color) {
+        if (left < right) {
+            int i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom) {
+            int j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float) (color >> 24 & 255) / 255.0F;
+        float f = (float) (color >> 16 & 255) / 255.0F;
+        float f1 = (float) (color >> 8 & 255) / 255.0F;
+        float f2 = (float) (color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f, f1, f2, f3);
+        vertexbuffer.begin(mode, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(left, bottom, 0.0D).endVertex();
+        vertexbuffer.pos(right, bottom, 0.0D).endVertex();
+        vertexbuffer.pos(right, top, 0.0D).endVertex();
+        vertexbuffer.pos(left, top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
     public static void drawProgressCircle2(double x, double y, double radius, int color, double degrees, double modificator) {
         float f = (float)(color >> 24 & 255) / 255.0F;
         float f1 = (float)(color >> 16 & 255) / 255.0F;

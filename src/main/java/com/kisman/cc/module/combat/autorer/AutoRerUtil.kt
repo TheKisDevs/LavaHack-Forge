@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 
 class AutoRerUtil {
     companion object {
@@ -23,6 +24,10 @@ class AutoRerUtil {
 
         fun getPlaceInfo(placePos: BlockPos, target: EntityLivingBase, terrain: Boolean): PlaceInfo {
             return PlaceInfo(target, placePos, getSelfDamageByCrystal(terrain, placePos), getDamageByCrystal(target, terrain, placePos), null, null, null)
+        }
+
+        fun toVec3dCenter(pos : BlockPos) : Vec3d {
+            return Vec3d(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
         }
     }
 }

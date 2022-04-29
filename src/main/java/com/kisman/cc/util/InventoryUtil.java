@@ -287,6 +287,10 @@ public class InventoryUtil {
         return slot;
     }
 
+    public static int findPickInHotbar() {
+        return findItemInHotbar(ItemPickaxe.class);
+    }
+
     public static int findFirstItemSlot(Class<? extends Item> itemToFind, int lower, int upper) {
         int slot = -1;
         List<ItemStack> mainInventory = mc.player.inventory.mainInventory;

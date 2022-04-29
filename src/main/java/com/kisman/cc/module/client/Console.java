@@ -8,7 +8,7 @@ public class Console extends Module{
     private final Setting theme = new Setting("Theme", this, Mode.Old);
 
     public Console() {
-        super("Console", "da", Category.CLIENT);
+        super("Console", "Custom chat for custom client commands!", Category.CLIENT);
 
         setmgr.rSetting(theme);
     }

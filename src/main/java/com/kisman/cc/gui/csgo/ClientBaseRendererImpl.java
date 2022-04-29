@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.csgo;
 
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.util.GLUtil;
+import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;
 import org.lwjgl.opengl.GL11;
@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL41.glClearDepthf;
 
 public class ClientBaseRendererImpl implements IRenderer {
-    @Override public void drawRect(double x, double y, double w, double h, Color c) {GLUtil.drawRect(GL_QUADS, (int) x / 2, (int) y / 2, (int) x / 2 + (int)  w / 2, (int) y / 2 + (int) h / 2, c.getRGB());}
+    @Override public void drawRect(double x, double y, double w, double h, Color c) {Render2DUtil.drawRect(GL_QUADS, (int) x / 2, (int) y / 2, (int) x / 2 + (int)  w / 2, (int) y / 2 + (int) h / 2, c.getRGB());}
 
 @Override
 public  void drawCheckMark(float x, float y, int width, int color) {
@@ -50,7 +50,7 @@ public  void drawCheckMark(float x, float y, int width, int color) {
     public void drawOutline(double x, double y, double w, double h, float lineWidth, Color c) {
         if(!Config.instance.guiOutline.getValBoolean()) return;
         glLineWidth(lineWidth);
-        GLUtil.drawRect(GL_LINE_LOOP, (int) x / 2, (int) y / 2, (int) x / 2 + (int) w / 2, (int) y / 2 + (int) h / 2, ColorUtils.getColor(c));
+        Render2DUtil.drawRect(GL_LINE_LOOP, (int) x / 2, (int) y / 2, (int) x / 2 + (int) w / 2, (int) y / 2 + (int) h / 2, ColorUtils.getColor(c));
     }
 
     @Override public void setColor(Color c) {ColorUtils.glColor(c);}

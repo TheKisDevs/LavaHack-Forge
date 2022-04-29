@@ -58,8 +58,6 @@ public class AnimationUtils {
     }
 
     public static double animate(double target, double current, double speed) {
-        boolean larger;
-        boolean bl = larger = target > current;
         if (speed < 0.0) speed = 0.0;
         else if (speed > 1.0) speed = 1.0;
 
@@ -68,7 +66,7 @@ public class AnimationUtils {
         if (factor < 0.1) {
             factor = 0.1;
         }
-        return  larger ? (current += factor) : (current -= factor);
+        return  target > current ? current + factor : current - factor;
     }
 }
 

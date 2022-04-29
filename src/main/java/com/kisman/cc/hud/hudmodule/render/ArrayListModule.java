@@ -39,7 +39,7 @@ public class ArrayListModule extends HudModule {
         mods.sort(comparator);
 
         int count = 0;
-        int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : new Color(HUD.instance.arrColor.getR(), HUD.instance.arrColor.getG(), HUD.instance.arrColor.getB(), HUD.instance.arrColor.getA()).getRGB();
+        int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : HUD.instance.arrColor.getColour().getRGB();
         double heigth = CustomFontUtil.getFontHeight() + HUD.instance.offsets.getValDouble() + 1;
         float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), null);
 

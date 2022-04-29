@@ -20,20 +20,26 @@ public class Velocity extends Module{
 
     private boolean subscribing;
 
-    private Setting packet = new Setting("Packet", this, "Packet");
-    private Setting exp = new Setting("Explosion", this, true);
-    private Setting bobbers = new Setting("Bobbers", this, true);
-    private Setting noPush = new Setting("NoPush", this, true);
+    private final Setting packet = new Setting("Packet", this, "Packet");
+    private final Setting exp = new Setting("Explosion", this, true);
+    private final Setting bobbers = new Setting("Bobbers", this, true);
+    private final Setting noPush = new Setting("NoPush", this, true);
+
+    private final Setting horizontal = new Setting("Horizontal", this, 90, 0, 100, true);
+    private final Setting vertical = new Setting("Vertical", this, 100, 0, 100, true);
 
     public Velocity() {
         super("Velocity", "akb", Category.PLAYER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix", "Matrix 6.4"))));
+        Kisman.instance.settingsManager.rSetting(new Setting("Mode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Matrix", "Matrix 6.4", "Vanilla"))));
 
         setmgr.rSetting(packet);
         setmgr.rSetting(exp);
         setmgr.rSetting(bobbers);
         setmgr.rSetting(noPush);
+
+        setmgr.rSetting(horizontal);
+        setmgr.rSetting(vertical);
     }
 
     public void onEnable() {
@@ -51,11 +57,15 @@ public class Velocity extends Module{
     public void update() {
         this.mode = Kisman.instance.settingsManager.getSettingByName(this, "Mode").getValString();
 
-
         super.setDisplayInfo("[" + mode + "]");
         if(!this.subscribing && mc.player != null && mc.world != null) {
             if(this.mode.equalsIgnoreCase("Matrix")) if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) if (mc.player.hurtTime > 0) mc.player.motionY = -0.2;
              else if(mode.equalsIgnoreCase("Matrix 6.4")) if(mc.player.hurtTime > 8) mc.player.onGround = true;
+             else if(mode.equalsIgnoreCase("Vanilla") && mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
+                mc.player.motionX *= (double) horizontal.getValInt() / 100;
+                mc.player.motionY *= (double) vertical.getValInt() / 100;
+                mc.player.motionZ *= (double) horizontal.getValInt() / 100;
+            }
         }
     }
 
@@ -71,21 +81,25 @@ public class Velocity extends Module{
 
     @EventHandler
     private final Listener<EventPlayerApplyCollision> listener = new Listener<>(event -> {
+        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<EventPlayerPushedByWater> listener1 = new Listener<>(event -> {
+        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<EventPlayerPushOutOfBlocks> listener2 = new Listener<>(event -> {
+        if(!mode.equalsIgnoreCase("Packet")) return;
         if(noPush.getValBoolean()) event.cancel();
     });
 
     @EventHandler
     private final Listener<PacketEvent.Receive> receiveListener = new Listener<>(event -> {
+        if(!mode.equalsIgnoreCase("Packet")) return;
         if(event.getPacket() instanceof SPacketEntityVelocity) if(((SPacketEntityVelocity) event.getPacket()).getEntityID() == mc.player.getEntityId()) event.cancel();
         if(event.getPacket() instanceof SPacketExplosion && exp.getValBoolean()) event.cancel();
         if(event.getPacket() instanceof SPacketEntityStatus && bobbers.getValBoolean()) {

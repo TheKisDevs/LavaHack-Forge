@@ -2,6 +2,7 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.RenderUtil;
 
 import java.awt.*;
@@ -26,11 +27,11 @@ public class EntityESP extends Module{
     private Setting entities = new Setting("Entities", this, "None", new ArrayList<>(Arrays.asList("None", "Box1", "Box2", "Glow")));
 
     //colors
-    private Setting playerColor = new Setting("PlayerColor", this, "PlayerColor", new float[] {0.54f, 0.11f, 0.92f, 1});
-    private Setting monstersColor = new Setting("MonstersColor", this, "MonsterColor", new float[] {0.11f, 0.92f, 0.73f, 1});
-    private Setting itemsColor = new Setting("ItemsColor", this, "ItemsColor", new float[] {0.11f, 0.51f, 0.92f, 1});
-    private Setting passiveColor = new Setting("PassiveColor", this, "PassiveColor", new float[] {0.11f, 0.51f, 0.92f, 1});
-    private Setting entityColor = new Setting("EntityColor", this, "EntityColor", new float[] {0.92f, 0.57f, 0.11f, 1});
+    private Setting playerColor = new Setting("PlayerColor", this, "Players Color", new Colour(255, 255, 0, 255));
+    private Setting monstersColor = new Setting("MonstersColor", this, "Monsters Color", new Colour(255, 0, 255, 255));
+    private Setting itemsColor = new Setting("ItemsColor", this, "ItemsColor", new Colour(0, 0, 255, 255));
+    private Setting passiveColor = new Setting("PassiveColor", this, "Passives Color", new Colour(0, 255, 0, 255));
+    private Setting entityColor = new Setting("EntityColor", this, "Entities Color", new Colour(0, 255, 120, 255));
 
     private final ArrayList<Entity> glowings = new ArrayList<>();
 

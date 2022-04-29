@@ -71,7 +71,6 @@ public class ModuleManager {
 		modules.add(new Surround());
 //		modules.add(new TrapDoorBurrow());
 		//client
-		modules.add(new AutoUpdate());
 		modules.add(new Cape());
 		modules.add(new Changer());
 		modules.add(new Config());
@@ -90,13 +89,9 @@ public class ModuleManager {
 		modules.add(new ToolTip());
 		modules.add(new VegaGui());
 		//chat
-		modules.add(new AntiSpamBypass());
 		modules.add(new AntiSpammer());
 		modules.add(new AutoEZ());
-		modules.add(new AutoGlobal());
-		modules.add(new ChatAnimation());
-		modules.add(new ChatSuffix());
-		modules.add(new ChatTTF());
+		modules.add(new ChatModifier());
 		modules.add(new Credits());
 		modules.add(new Notification());
 		modules.add(new Spammer());
@@ -170,7 +165,6 @@ public class ModuleManager {
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
-		modules.add(new AntiKnokBack());
 		modules.add(new ElytraEquip());
 		modules.add(new FastBreak());
 		modules.add(new FastLadder());
@@ -214,6 +208,7 @@ public class ModuleManager {
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc
+		modules.add(new AntiRegear());
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
 
 public class Logo extends HudModule {
     public Logo() {
@@ -37,7 +38,7 @@ public class Logo extends HudModule {
                 CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
             }
         } else if(HUD.instance.logoMode.getValString().equals("CSGO")) {
-            String text =((CustomFontModule.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "")   + name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            String text = ((CustomFontModule.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "") + name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int x = 3;
             int y = 8;
             int width = 4 + CustomFontUtil.getStringWidth(text);
@@ -62,6 +63,18 @@ public class Logo extends HudModule {
             Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
 
             CustomFontUtil.drawStringWithShadow((HUD.instance.logoBold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, ColorUtils.astolfoColors(100, 100));
+        } else if(HUD.instance.logoMode.checkValString("GishCode")) {
+            int color = HUD.instance.astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
+
+            GL11.glPushMatrix();
+
+            GL11.glScaled(1.5, 1.5, 1.5);
+            mc.fontRenderer.drawStringWithShadow("LavaHack", 4, 4, color);
+            GL11.glScaled(0.6, 0.6, 0.6);
+            mc.fontRenderer.drawStringWithShadow(TextFormatting.GRAY + Kisman.getVersion(), 84, 4, -1);
+            mc.fontRenderer.drawStringWithShadow(TextFormatting.GRAY + "1.12.2", 84, 14, -1);
+
+            GL11.glPopMatrix();
         } else {
             if(HUD.instance.logoImage.checkValString("Old")) Icons.LOGO.render(0, 0, 50, 50);
             else if(HUD.instance.logoImage.checkValString("New")) Icons.LOGO_NEW.render(0, 0, 80, 80 , new Colour(ColorUtils.astolfoColors(100, 100)));

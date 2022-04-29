@@ -38,20 +38,20 @@ public class ExampleModule extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
 
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, "ExampleCategory", true));
-        Kisman.instance.settingsManager.rSubSetting(new Setting(
-                "ExampleCLine",
-                this,
-                Kisman.instance.settingsManager.getSettingByName(this, "ExampleCategory"),
-                "ExampleLine"
-                )
-        );
+//        Kisman.instance.settingsManager.rSubSetting(new Setting(
+//                "ExampleCLine",
+//                this,
+//                Kisman.instance.settingsManager.getSettingByName(this, "ExampleCategory"),
+//                "ExampleLine"
+//                )
+//        );
 
         Kisman.instance.settingsManager.rSetting(new Setting("ExampleString", this, "kisman", "kisman", true));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, 1, "ExampleCategory"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCCheckBox", this, 1, "ExampleCCheckBox", false));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory1", this, 2, "ExampleCategory1"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCLine1", this, "ExampleCLine1", 2));
-        Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, false));
+//        Kisman.instance.settingsManager.rSetting(new Setting("ExampleColorPicker", this, "ExampleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, false));
         //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleSimpleColorPicker", this, "ExampleSimpleColorPicker", new float[] {3f, 0.03f, 0.33f, 1f}, true));
 //        Kisman.instance.settingsManager.rSetting(new Setting(this));
 

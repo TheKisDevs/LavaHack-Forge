@@ -5,6 +5,7 @@ import com.kisman.cc.hud.hudmodule.render.ArrayListModule;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
 
 import java.util.*;
 
@@ -24,13 +25,13 @@ public class HUD extends Module {
 	private final Setting arrLine = new Setting("ArrLine", this, "ArrayList").setVisible(() -> ArrayListModule.instance.isToggled());
 	public Setting arrMode = new Setting("ArrayList Mode", this, "RIGHT", new ArrayList<>(Arrays.asList("LEFT", "RIGHT"))).setVisible(() -> ArrayListModule.instance.isToggled());
 	public Setting arrY = new Setting("ArrayList Y", this, 150, 0, mc.displayHeight, true).setVisible(() -> ArrayListModule.instance.isToggled());
-	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new float[] {3f, 0.03f, 0.33f, 1f}, false).setVisible(() -> ArrayListModule.instance.isToggled());
+	public Setting arrColor = new Setting("ArrayList Color", this, " ArrayList Color", new Colour(255, 0, 0, 255)).setVisible(() -> ArrayListModule.instance.isToggled());
 	public Setting arrGradient = new Setting("Array Gradient", this, Gradient.None).setVisible(() -> ArrayListModule.instance.isToggled());
 	public Setting arrGradientDiff = new Setting("Array Gradient Diff", this, 200, 0, 1000, Slider.NumberType.TIME).setVisible(() -> ArrayListModule.instance.isToggled() && !arrGradient.getValString().equalsIgnoreCase(Gradient.None.name()));
 	public Setting arrGlowBackground = new Setting("Array Glow Background", this, false).setVisible(() -> ArrayListModule.instance.isToggled());
 
 	private final Setting welLine = new Setting("WelLine", this, "Welcomer");
-	public Setting welColor = new Setting("WelColor", this, "WelcomerColor", new float[] {3f, 0.03f, 0.33f, 1f}, false);
+	public Setting welColor = new Setting("WelColor", this, "WelcomerColor", new Colour(255, 0, 0, 255));
 
 	private final Setting pvpLine = new Setting("PvpLine", this, "PvpInfo");
 	public Setting pvpY = new Setting("PvpInfo Y", this, 200, 0, mc.displayHeight, true);
@@ -124,7 +125,7 @@ public class HUD extends Module {
 		super.setToggled(false);
 	}
 
-	public enum LogoMode {Simple, CSGO, Image}
+	public enum LogoMode {Simple, CSGO, Image, GishCode}
 	public enum LogoImage {Old, New}
 	public enum Gradient {None, Rainbow, Astolfo, Pulsive}
 	public enum IndicatorsThemeMode {Default, Rewrite}

@@ -266,4 +266,8 @@ public class Colour {
     public Colour withAlpha(int alpha) {
         return new Colour(this, alpha);
     }
+
+    public int getRed() {return r;}
+    public int getBlue() {return g;}
+    public int getGreen() {return b;}
 }

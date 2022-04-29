@@ -6,15 +6,23 @@ import com.kisman.cc.module.render.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.*;
-import net.minecraft.util.EnumHandSide;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.*;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemRenderer.class, priority = 10000)
 public class MixinItemRenderer {
     private final Minecraft mc = Minecraft.getMinecraft();
     @Shadow private void transformSideFirstPerson(EnumHandSide hand, float p_187459_2_) {}
+
+    @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", shift = At.Shift.AFTER))
+    private void transformSideFirstPersonInvokePushMatrix(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
+        if(ViewModel.instance.hands.getValBoolean()) ViewModel.instance.hand(hand.equals(EnumHand.MAIN_HAND) ? player.getPrimaryHand() : player.getPrimaryHand().opposite());
+    }
 
     @Redirect(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformSideFirstPerson(Lnet/minecraft/util/EnumHandSide;F)V"))
     public void transformRedirect(ItemRenderer renderer, EnumHandSide hand, float y) {
@@ -54,7 +62,7 @@ public class MixinItemRenderer {
             }
 
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.RIGHT) {
-                if(isEating && ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
+                if(isEating && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
                 else {
                     if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
                     else this.transformSideFirstPerson(hand, y);
@@ -66,7 +74,7 @@ public class MixinItemRenderer {
             }
 
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.LEFT) {
-                if(PlayerUtil.isEatingOffhand() && ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
+                if(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
                 else {
                     if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
                     else this.transformSideFirstPerson(hand, y);

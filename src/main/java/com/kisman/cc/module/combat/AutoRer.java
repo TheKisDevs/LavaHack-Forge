@@ -3,16 +3,18 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.event.events.lua.EventRender2D;
 import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.combat.autorer.AutoRerUtil;
-import com.kisman.cc.module.combat.autorer.PlaceInfo;
+import com.kisman.cc.module.combat.autorer.*;
+import com.kisman.cc.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.module.render.shader.FramebufferShader;
 import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
 import com.kisman.cc.util.enums.ShaderModes;
@@ -37,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * I made PlaceInfo class for next release(b0.2) for new render
+ * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
 public class AutoRer extends Module {
     public final Setting lagProtect = new Setting("Lag Protect", this, false);
@@ -106,22 +108,11 @@ public class AutoRer extends Module {
     private final Setting threadCalc = new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"));
 
     private final Setting renderLine = new Setting("RenderLine", this, "Render");
-    private final Setting render = new Setting("Render", this, Render.Default);
+    private final Setting render = new Setting("Render", this, true);
+    private final Setting movingLength = new Setting("Moving Length", this, 400, 0, 1000, true).setVisible(render::getValBoolean);
+    private final Setting fadeLength = new Setting("Fade Length", this, 200, 0, 1000, true).setVisible(render::getValBoolean);
+
     private final Setting text = new Setting("Text", this, true);
-
-    private final Setting red = new Setting("Red", this, 1, 0, 1, false).setVisible(() -> render.checkValString("Default"));
-    private final Setting green = new Setting("Green", this, 0, 0, 1, false).setVisible(() -> render.checkValString("Default"));
-    private final Setting blue = new Setting("Blue", this, 0, 0, 1, false).setVisible(() -> render.checkValString("Default"));
-
-    private final Setting renderAnimation = new Setting("Render Animation", this, false).setVisible(() -> render.checkValString("Default"));
-    private final Setting renderAnimationSpeed = new Setting("Render Animation Speed", this, 0.05f, 0.01f, 0.8f, false).setVisible(() -> render.checkValString("Default") && renderAnimation.getValBoolean());
-
-    private final Setting textColor = new Setting("Text Color", this, "TextColor", new Colour(255, 0, 0)).setVisible(text::getValBoolean);
-
-    private final Setting advancedRenderLine = new Setting("AdvancedRenderLine", this, "Advanced Render");
-
-    private final Setting startColor = new Setting("Start Color", this, "Start Color", new Colour(0, 0, 0));
-    private final Setting endColor = new Setting("End Color", this, "End Color", new Colour(255, 0, 0, 170));
 
     private final Setting targetCharmsLine = new Setting("Target Charms", this, "Target Shader Charms");
     private final Setting targetCharms = new Setting("Target Charms", this, false);
@@ -166,6 +157,9 @@ public class AutoRer extends Module {
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
     private boolean subscribed = false, moving = false;
+
+    private final AutoRerRenderer renderer = new AutoRerRenderer();
+    private RenderingRewritePattern renderer_;
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
@@ -240,18 +234,12 @@ public class AutoRer extends Module {
 
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
+        //New renderer
+        renderer_ = new RenderingRewritePattern(this, render::getValBoolean);
+        renderer_.init();
+        setmgr.rSetting(movingLength);
+        setmgr.rSetting(fadeLength);
         setmgr.rSetting(text);
-        setmgr.rSetting(red.setVisible(() -> render.checkValString("Default")));
-        setmgr.rSetting(green.setVisible(() -> render.checkValString("Default")));
-        setmgr.rSetting(blue.setVisible(() -> render.checkValString("Default")));
-        setmgr.rSetting(renderAnimation);
-        setmgr.rSetting(renderAnimationSpeed);
-
-        setmgr.rSetting(textColor.setVisible(text::getValBoolean));
-
-        setmgr.rSetting(advancedRenderLine);
-        setmgr.rSetting(startColor);
-        setmgr.rSetting(endColor);
 
         setmgr.rSetting(targetCharmsLine);
         setmgr.rSetting(targetCharms);
@@ -273,6 +261,7 @@ public class AutoRer extends Module {
     }
 
     public void onEnable() {
+        renderer.reset();
         placedList.clear();
         breakTimer.reset();
         placeTimer.reset();
@@ -289,6 +278,7 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
         Kisman.EVENT_BUS.subscribe(render3d);
+        Kisman.EVENT_BUS.subscribe(render2d);
 
         subscribed = moving = true;
     }
@@ -299,6 +289,7 @@ public class AutoRer extends Module {
             Kisman.EVENT_BUS.unsubscribe(listener1);
             Kisman.EVENT_BUS.unsubscribe(motion);
             Kisman.EVENT_BUS.unsubscribe(render3d);
+            Kisman.EVENT_BUS.unsubscribe(render2d);
         }
 
         if(thread != null) shouldInterrupt.set(false);
@@ -312,6 +303,7 @@ public class AutoRer extends Module {
         currentTarget = null;
         rotating = false;
         renderPos = null;
+        renderer.reset();
     }
 
     private void processMultiThreading() {
@@ -435,6 +427,11 @@ public class AutoRer extends Module {
             doPlace(event, thread);
         }
     }
+
+    @EventHandler
+    private final Listener<EventRender2D> render2d = new Listener<>(event -> {
+        if(text.getValBoolean()) if(placePos != null) renderer.onRender();
+    });
 
     @EventHandler
     private final Listener<EventRender3D> render3d = new Listener<>(event -> {
@@ -583,24 +580,11 @@ public class AutoRer extends Module {
             }
         }
 
-        if(placePos != null) {
-            if(render.checkValString("Default")) {
-                if(moving) RenderUtil.drawBlockESP(renderPosVec, red.getValFloat(), green.getValFloat(), blue.getValFloat());
-                else RenderUtil.drawBlockESP(placePos.getBlockPos(), red.getValFloat(), green.getValFloat(), blue.getValFloat());
-            }
-            else if (render.getValString().equalsIgnoreCase("Advanced")) RenderUtil.drawGradientFilledBox(placePos.getBlockPos(), startColor.getColour().getColor(), endColor.getColour().getColor());
-            if (text.getValBoolean() && currentTarget != null) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, placePos.getBlockPos().getX() + 0.5, placePos.getBlockPos().getY() + 1, placePos.getBlockPos().getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                RenderUtil.drawText(placePos.getBlockPos(), ((Math.floor(targetDamage) == targetDamage) ? String.valueOf(Integer.valueOf((int) targetDamage)) : String.format("%.1f", targetDamage)), textColor.getColour().getRGB());
-            }
-
-            lastRenderPosVec = renderPosVec;
-        }
+        if(render.getValBoolean()) if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos);
     });
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
         if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
-//            float[] rots = RotationUtils.getRotationToPos(pos);
             float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
             mc.player.rotationYaw = rots[0];
             mc.player.rotationPitch = rots[1];
@@ -706,13 +690,6 @@ public class AutoRer extends Module {
         });
 
         this.placePos = placePos[0] == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
-        if(this.placePos != null) {
-            if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
-            if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
-            if(renderPosVec.z != lastRenderPosVec.z) renderPosVec.z = AnimationUtils.animate(renderPosVec.z, lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
-            moving = !renderPosVec.equals(lastRenderPosVec);
-            if(!moving) renderPosVec.round();
-        }
     }
 
     private void calculatePlace() {
@@ -745,13 +722,6 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos, currentTarget, terrain.getValBoolean());
-        if(this.placePos != null) {
-            if(renderPosVec.x != lastRenderPosVec.x) renderPosVec.x = AnimationUtils.animate(renderPosVec.x, lastRenderPosVec.x, renderAnimationSpeed.getValFloat());
-            if(renderPosVec.y != lastRenderPosVec.y) renderPosVec.y = AnimationUtils.animate(renderPosVec.y, lastRenderPosVec.y, renderAnimationSpeed.getValFloat());
-            if(renderPosVec.z != lastRenderPosVec.z) renderPosVec.z = AnimationUtils.animate(renderPosVec.z, lastRenderPosVec.z, renderAnimationSpeed.getValFloat());
-            moving = !renderPosVec.equals(lastRenderPosVec);
-            if(!moving) renderPosVec.round();
-        }
     }
 
     private boolean isPosValid(BlockPos pos) {

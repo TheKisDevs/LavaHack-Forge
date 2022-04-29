@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.SPacketTimeUpdate
 
 class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTime", Category.CLIENT) {
     private val gamma = Setting("Gamma", this, 100.0, 1.0, 100.0, true)
-    private  val fov = Setting("Fov", this, 120.0, 30.0, 150.0, true)
+    private val fov = Setting("Fov", this, 120.0, 30.0, 150.0, true)
     val ambience = Setting("Ambience", this, false)
 
     //Ambience settings
