@@ -199,7 +199,6 @@ public class ModuleManager {
 		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());
 		modules.add(new PacketEat());
-		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new Rubberband());
 		modules.add(new SilentClose());

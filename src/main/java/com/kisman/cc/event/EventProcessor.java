@@ -13,14 +13,11 @@ import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.player.ElytraEquip;
 import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
-import com.kisman.cc.util.manager.Managers;
 
 import com.kisman.cc.util.modules.CustomMainMenu;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Items;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.*;

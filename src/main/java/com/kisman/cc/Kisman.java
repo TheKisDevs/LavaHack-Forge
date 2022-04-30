@@ -19,7 +19,6 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
-//import com.kisman.cc.gui.notification.NotificationsManager;
 import com.kisman.cc.gui.vega.Gui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
@@ -108,7 +107,6 @@ public class Kisman {
     public Shaders shaders;
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
-//    public NotificationsManager notificationsManager;
     public CapeAPI capeAPI;
 
     public MainAiImpr aiImpr;
@@ -166,7 +164,6 @@ public class Kisman {
         serverManager = new ServerManager();
         shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();
-//        notificationsManager = new NotificationsManager();
         capeAPI = new CapeAPI();
 
         //load configs
@@ -205,8 +202,7 @@ public class Kisman {
                     for (Module m : moduleManager.modules) {
                     	if (m.getKey() == keyCode) {
                             m.toggle();
-                            if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-//                            notificationsManager.addNotifications(m.getName(), (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled"), true);
+//                            if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
                     	}
                     }
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
@@ -220,8 +216,7 @@ public class Kisman {
             if(m.getKey() == key) {
                 if(m.hold) {
                     m.toggle();
-                    if (moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-//                    notificationsManager.addNotifications(m.getName(), (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled"), true);
+//                    if (moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
                 }
             }
         }

@@ -28,8 +28,6 @@ class AntiRegear : Module(
     var oldSlot = -1
     private val breakQueue = ArrayList<BlockPos>()
 
-    override fun isBeta() : Boolean {return true}
-
     override fun update() {
         if(mc.player == null || mc.world == null) return
         if(breakQueue.isEmpty()) {

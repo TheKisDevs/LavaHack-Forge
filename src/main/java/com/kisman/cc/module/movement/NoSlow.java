@@ -2,6 +2,7 @@ package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.console.GuiConsole;
+import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.ClickGui;
@@ -21,19 +22,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
-    private Setting mode = new Setting("Mode", this, Mode.None);
+    private final Setting mode = new Setting("Mode", this, Mode.None);
 
-    private Setting defaultLine = new Setting("Default Line", this, "Another");
-    private Setting invMove = new Setting("InvMove", this, true);
-    private Setting items = new Setting("Items", this, true);
-    private Setting ncpStrict = new Setting("NCPStrict", this, true);
-    private Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
+    private final Setting invMove = new Setting("InvMove", this, true);
+    private final Setting items = new Setting("Items", this, true);
+    private final Setting ncpStrict = new Setting("NCPStrict", this, true);
+    private final Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
 
-    private Setting invLine = new Setting("InvLine", this, "InvMode");
-
-    private Setting ignoreChat = new Setting("IgnoreChat", this, true);
-    private Setting ignoreConsole = new Setting("IgnoreConsole", this, true);
-    private Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false);
+    private final Setting ignoreChat = new Setting("IgnoreChat", this, true).setVisible(invMove::getValBoolean);
+    private final Setting ignoreConsole = new Setting("IgnoreConsole", this, true).setVisible(invMove::getValBoolean);
+    private final Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false).setVisible(invMove::getValBoolean);
 
     public static NoSlow instance;
 
@@ -45,12 +43,10 @@ public class NoSlow extends Module {
         setmgr.rSetting(mode);
 
         setmgr.rSetting(invMove);
-        setmgr.rSetting(defaultLine);
         setmgr.rSetting(items);
         setmgr.rSetting(ncpStrict);
         setmgr.rSetting(slimeBlocks);
 
-        setmgr.rSetting(invLine);
         setmgr.rSetting(ignoreChat);
         setmgr.rSetting(ignoreConsole);
         setmgr.rSetting(ignoreClickGui);
@@ -109,7 +105,7 @@ public class NoSlow extends Module {
     private final Listener<EventPlayerUpdateMoveState> listener = new Listener<>(event -> {
         if (invMove.getValBoolean() && mc.currentScreen != null) {
             if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) return;
-            if(mc.currentScreen instanceof GuiConsole && ignoreConsole.getValBoolean()) return;
+            if((mc.currentScreen instanceof GuiConsole || mc.currentScreen instanceof ConsoleGui) && ignoreConsole.getValBoolean()) return;
             if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) return;
 
             mc.player.movementInput.moveStrafe = 0.0F;

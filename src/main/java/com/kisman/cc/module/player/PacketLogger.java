@@ -43,7 +43,7 @@ public class PacketLogger extends Module{
     private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {
         if(!client.getValBoolean()) return;
 
-        String message = "Cient -> " + event.getPacket().getClass().getName();
+        String message = "Client -> " + event.getPacket().getClass().getName();
 
         if(values.getValBoolean()) for(Field field : event.getPacket().getClass().getDeclaredFields()) message += " " + field.getName() + "[" + field.toString() + "]";
         

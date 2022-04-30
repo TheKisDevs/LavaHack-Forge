@@ -15,7 +15,7 @@ public class BoatFly extends Module {
     private final Setting downKey = new Setting("Down Key", this, Keyboard.KEY_LCONTROL).setVisible(verticalSpeed.getValInt() != 0);
     private final Setting glideSpeed = new Setting("Glide Speed", this, 0, -10, 10, true);
     private final Setting staticY = new Setting("Static Y", this, true);
-    private final Setting hover = new Setting("Hover", this, false).setVisible(!staticY.getValBoolean());
+    private final Setting hover = new Setting("Hover", this, false);
     private final Setting bypass = new Setting("Bypass", this, false);
     private final Setting extraCalc = new Setting("Extra Calc", this, false);
 
@@ -38,7 +38,8 @@ public class BoatFly extends Module {
         Entity e = mc.player.ridingEntity;
         if (mc.gameSettings.keyBindJump.isKeyDown()) e.motionY = verticalSpeed.getValDouble();
         else if (!downKey.isNoneKey() && Keyboard.isKeyDown(downKey.getKey())) e.motionY = -verticalSpeed.getValDouble();
-        else if(!staticY.getValBoolean()) e.motionY = hover.getValBoolean() && mc.player.ticksExisted % 2 == 0 ? glideSpeed.getValDouble() : -glideSpeed.getValDouble();
+        else if(staticY.getValBoolean()) e.motionY = 0;
+        else e.motionY = hover.getValBoolean() && mc.player.ticksExisted % 2 == 0 ? glideSpeed.getValDouble() : -glideSpeed.getValDouble();
         if (MovementUtil.isMoving()) {
             if(!extraCalc.getValBoolean()) {
                 double[] dir = MovementUtil.forward(speed.getValDouble());
