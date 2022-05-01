@@ -39,7 +39,7 @@ public class Rendering {
         GRADIENT_CUSTOM_OUTLINE
     }
 
-    private static void setup(){
+    public static void setup(){
         GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
         GlStateManager.disableDepth();
@@ -51,7 +51,7 @@ public class Rendering {
         glLineWidth(1.5f);
     }
 
-    private static void release(){
+    public static void release(){
         glDisable(GL_LINE_SMOOTH);
         GlStateManager.depthMask(true);
         GlStateManager.enableDepth();

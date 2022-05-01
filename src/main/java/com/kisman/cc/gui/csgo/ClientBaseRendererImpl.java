@@ -54,7 +54,7 @@ public  void drawCheckMark(float x, float y, int width, int color) {
     }
 
     @Override public void setColor(Color c) {ColorUtils.glColor(c);}
-    @Override public void drawString(int x, int y, String text, Color color) {CustomFontUtil.drawString(text, x / 2f, y / 2f + 1, ColorUtils.getColor(color), true);}
+    @Override public void drawString(int x, int y, String text, Color color) {CustomFontUtil.drawString(text, x / 2f, y / 2f, ColorUtils.getColor(color), true);}
     @Override public int getStringWidth(String str) {return CustomFontUtil.getStringWidth(str) * 2;}
     @Override public int getStringHeight(String str) {return CustomFontUtil.getFontHeight(true) * 2;}
     @Override public void drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3, Color color) {}

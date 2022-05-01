@@ -1,8 +1,10 @@
 package com.kisman.cc.gui.halq;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.HalqGuiModule;
+import com.kisman.cc.module.client.GuiModule;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 /**
  * @author made by _kisman_ for Halq with love <3
  */
-
 public class HalqGui extends GuiScreen {
     //variables for main gui settings
     public static LocateMode stringLocateMode = LocateMode.Left;
@@ -41,7 +42,7 @@ public class HalqGui extends GuiScreen {
     private final ParticleSystem particleSystem;
 
     /**
-     *@link {com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
+     * {@link com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
      */
     private GuiScreen lastGui = null;
 
@@ -55,22 +56,27 @@ public class HalqGui extends GuiScreen {
         int offsetX = 5 + headerOffset;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 10));
-            offsetX += headerOffset * 5 + 5 + width;
+            offsetX += headerOffset * 2 + 1 + width;
         }
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        primaryColor = HalqGuiModule.instance.primaryColor.getColour();
-        background = HalqGuiModule.instance.background.getValBoolean();
-        shadowCheckBox = HalqGuiModule.instance.shadow.getValBoolean();
-        test = HalqGuiModule.instance.test.getValBoolean();
-        shadowRects = HalqGuiModule.instance.shadowRects.getValBoolean();
-        line = HalqGuiModule.instance.line.getValBoolean();
+        primaryColor = GuiModule.instance.primaryColor.getColour();
+        background = GuiModule.instance.background.getValBoolean();
+        shadowCheckBox = GuiModule.instance.shadow.getValBoolean();
+        test = GuiModule.instance.test.getValBoolean();
+        shadowRects = GuiModule.instance.shadowRects.getValBoolean();
+        line = GuiModule.instance.line.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
 
         if(!background) backgroundColor = new Color(0, 0, 0, 0);
         else backgroundColor = new Color(30, 30, 30, 121);
+
+        if(Kisman.instance.selectionBar.getSelection() != MainGui.Guis.ClickGui) {
+            MainGui.Companion.openGui(Kisman.instance.selectionBar);
+            return;
+        }
 
         drawDefaultBackground();
 
@@ -92,16 +98,19 @@ public class HalqGui extends GuiScreen {
             particleSystem.render();
             particleSystem.onUpdate();
         }
+
+        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    public void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
         for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component b : frame.mods) if(!frame.reloading)b.keyTyped(typedChar, keyCode);
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             if(frame.isMouseOnButton(mouseX, mouseY)) {
@@ -117,7 +126,7 @@ public class HalqGui extends GuiScreen {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
+    public void mouseReleased(int mouseX, int mouseY, int state) {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.dragging = false;

@@ -3,7 +3,6 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.event.events.lua.EventRender2D;
 import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.*;
@@ -18,7 +17,6 @@ import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
 import com.kisman.cc.util.enums.ShaderModes;
-import com.kisman.cc.util.render.objects.Vec3dSimple;
 import i.gishreloaded.gishcode.utils.TimerUtils;
 import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.listener.*;
@@ -151,12 +149,10 @@ public class AutoRer extends Module {
     public static EntityPlayer currentTarget;
     private Thread thread;
     public PlaceInfo placePos, renderPos;
-    private final Vec3dSimple renderPosVec = new Vec3dSimple(0, 0, 0);
-    private Vec3dSimple lastRenderPosVec = new Vec3dSimple(0, 0, 0);
     private Entity lastHitEntity = null;
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
-    private boolean subscribed = false, moving = false;
+    private boolean subscribed = false;
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
     private RenderingRewritePattern renderer_;
@@ -278,9 +274,8 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
         Kisman.EVENT_BUS.subscribe(render3d);
-        Kisman.EVENT_BUS.subscribe(render2d);
 
-        subscribed = moving = true;
+        subscribed = true;
     }
 
     public void onDisable() {
@@ -289,7 +284,6 @@ public class AutoRer extends Module {
             Kisman.EVENT_BUS.unsubscribe(listener1);
             Kisman.EVENT_BUS.unsubscribe(motion);
             Kisman.EVENT_BUS.unsubscribe(render3d);
-            Kisman.EVENT_BUS.unsubscribe(render2d);
         }
 
         if(thread != null) shouldInterrupt.set(false);
@@ -427,11 +421,6 @@ public class AutoRer extends Module {
             doPlace(event, thread);
         }
     }
-
-    @EventHandler
-    private final Listener<EventRender2D> render2d = new Listener<>(event -> {
-        if(text.getValBoolean()) if(placePos != null) renderer.onRender();
-    });
 
     @EventHandler
     private final Listener<EventRender3D> render3d = new Listener<>(event -> {
@@ -580,7 +569,7 @@ public class AutoRer extends Module {
             }
         }
 
-        if(render.getValBoolean()) if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos);
+        if(render.getValBoolean()) if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
     });
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {

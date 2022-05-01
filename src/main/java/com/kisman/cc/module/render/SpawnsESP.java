@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.Rendering;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.play.server.*;
@@ -59,18 +60,9 @@ public class SpawnsESP extends Module {
                 this.circles.remove(circle);
                 continue;
             }
-            glPushMatrix();
-            GL11.glDisable(GL11.GL_CULL_FACE);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            Rendering.setup();
 
-            glDisable(GL11.GL_LIGHTING);
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            float f = (float)(System.currentTimeMillis() % 7200L) / 7200.0f;
-            ArrayList<Vec3d> arrayList = new ArrayList<>();
+            ArrayList<Vec3d> vertexes = new ArrayList<>();
             double deltaX = VecCircle.getVector(circle).x - mc.getRenderManager().renderPosX;
             double deltaY = VecCircle.getVector(circle).y - mc.getRenderManager().renderPosY;
             double deltaZ = VecCircle.getVector(circle).z - mc.getRenderManager().renderPosZ;
@@ -80,23 +72,16 @@ public class SpawnsESP extends Module {
             GL11.glBegin(1);
             for (int i = 0; i <= 360; ++i) {
                 Vec3d vec3d = new Vec3d(deltaX + Math.sin((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle), deltaY + (double)(VecCircle.getYaw(circle) * ((float)(System.currentTimeMillis() - VecCircle.getTime(circle)) / (1000.0f * duration.getValDouble()))), deltaZ + Math.cos((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle));
-                arrayList.add(vec3d);
+                vertexes.add(vec3d);
             }
-            for (int n = 0; n < arrayList.size() - 1; ++n) {
+            for (int n = 0; n < vertexes.size() - 1; ++n) {
                 color.getColour().glColor();
-                GL11.glVertex3d(arrayList.get(n).x, arrayList.get(n).y, arrayList.get(n).z);
-                GL11.glVertex3d(arrayList.get(n + 1).x, arrayList.get(n + 1).y, arrayList.get(n + 1).z);
+                GL11.glVertex3d(vertexes.get(n).x, vertexes.get(n).y, vertexes.get(n).z);
+                GL11.glVertex3d(vertexes.get(n + 1).x, vertexes.get(n + 1).y, vertexes.get(n + 1).z);
             }
             GL11.glEnd();
-            glEnable(GL11.GL_LIGHTING);
 
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glDisable(GL11.GL_BLEND);
-            GL11.glShadeModel(GL11.GL_FLAT);
-            GL11.glEnable(GL11.GL_CULL_FACE);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glEnable(GL11.GL_ALPHA_TEST);
-            GL11.glPopMatrix();
+            Rendering.release();
         }
     }
 

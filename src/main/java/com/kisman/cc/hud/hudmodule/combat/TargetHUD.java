@@ -92,7 +92,7 @@ public class TargetHUD extends HudModule {
         mc.getRenderItem().renderItemIntoGUI(target.getHeldItemOffhand(), (int) x + 137, (int) y + 1);
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GuiInventory.drawEntityOnScreen( (int) x + 16, (int) y + 55, 25, target.rotationYaw, -target.rotationPitch, target);
+        try {GuiInventory.drawEntityOnScreen( (int) x + 16, (int) y + 55, 25, target.rotationYaw, -target.rotationPitch, target);} catch (Exception ignored) {}
         Render2DUtil.drawRectWH(x + 30, y + 48, 120, 8, color.darker().darker().darker().getRGB());
         Render2DUtil.drawRectWH(x + 30, y + 48, (float) (hpBarWidth + check), 8, color.darker().getRGB());
         Render2DUtil.drawRectWH(x + 30, y + 48, (float) healthWid, 8, color.getRGB());

@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.kisman.cc.module.Debug.ChatPrint;
 import com.kisman.cc.module.Debug.HelloWorld;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
@@ -21,7 +20,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
-import org.cubic.loader.Loader;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -76,12 +74,10 @@ public class ModuleManager {
 		modules.add(new Cape());
 		modules.add(new Changer());
 		modules.add(new Config());
-		modules.add(new Console());
-		modules.add(new CSGOGui());
 		modules.add(new CustomFontModule());
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
-		modules.add(new HalqGuiModule());
+		modules.add(new GuiModule());
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
 		modules.add(new KotlinTest());

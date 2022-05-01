@@ -1,8 +1,7 @@
 package com.kisman.cc.command.commands;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
-import com.kisman.cc.file.SaveConfig;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class SaveConfigCommand extends Command {
     public SaveConfigCommand() {
@@ -18,7 +17,7 @@ public class SaveConfigCommand extends Command {
             }
 
             warning("Start saving configs!");
-            SaveConfig.init();
+            Kisman.instance.configManager.getSaver().init();
             message("Saved Config!");
         } catch (Exception e) {
             error("Saving config is failed!");

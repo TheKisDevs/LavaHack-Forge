@@ -1,5 +1,6 @@
 package com.kisman.cc.module.client;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.file.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
@@ -10,6 +11,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
+
+import java.io.IOException;
 
 public class Config extends Module {
     public static Config instance;
@@ -65,7 +68,6 @@ public class Config extends Module {
 
         instance = this;
 
-//        setmgr.rSetting(astolfoColorMode);
         setmgr.rSetting(friends);
         setmgr.rSetting(nameMode);
         setmgr.rSetting(customName);
@@ -109,15 +111,24 @@ public class Config extends Module {
     @SubscribeEvent
     public void onUpdate(TickEvent.ClientTickEvent event) {
         if(saveConfig.getValBoolean()) {
-            SaveConfig.init();
-            ChatUtils.complete("Config saved");
+            try {
+                Kisman.instance.configManager.getSaver().init();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             saveConfig.setValBoolean(false);
+            if(mc.player != null && mc.world != null) ChatUtils.complete("Config saved");
         }
 
         if(loadConfig.getValBoolean()) {
             LoadConfig.init();
-            ChatUtils.complete("Config loaded");
+            try {
+                Kisman.instance.configManager.getLoader().init();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             loadConfig.setValBoolean(false);
+            if(mc.player != null && mc.world != null) ChatUtils.complete("Config loaded");
         }
     }
 

@@ -7,6 +7,7 @@ import com.kisman.cc.module.combat.autorer.util.ProjectionUtils
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.customfont.CustomFontUtil
+import com.kisman.cc.util.render.objects.TextOnBlockObject
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -51,7 +52,7 @@ class AutoRerRenderer {
         lastTargetDamage = 0.0f
     }
 
-    fun onRenderWorld(movingLength: Float, fadeLength: Float, renderer : RenderingRewritePattern, placeInfo : PlaceInfo) {
+    fun onRenderWorld(movingLength: Float, fadeLength: Float, renderer : RenderingRewritePattern, placeInfo : PlaceInfo, text : Boolean) {
         update(placeInfo)
 
         prevPos?.let { prevPos ->
@@ -67,29 +68,22 @@ class AutoRerRenderer {
                 renderer.draw(toRenderBox(renderPos, scale))
 
                 lastRenderPos = renderPos
-            }
-        }
-    }
 
-    fun onRender() {
-        if (scale != 0.0f) {
-            lastRenderPos?.let {
-                val text = buildString {
-                    append("%.1f".format(lastTargetDamage))
-                    if (this.isNotEmpty()) append('/')
-                    append("%.1f".format(lastSelfDamage))
+
+                //Text
+                if(text && placeInfo != null) {
+                    val text_ = buildString {
+                        append("%.1f".format(lastTargetDamage))
+                        if (this.isNotEmpty()) append('/')
+                        append("%.1f".format(lastSelfDamage))
+                    }
+
+                    TextOnBlockObject(
+                            text_,
+                            placeInfo.blockPos,
+                            (if (scale == 1.0f) Colour(255, 255, 255) else Colour(255, 255, 255, (255.0f * scale).toInt()))
+                    )
                 }
-
-                val screenPos = ProjectionUtils.toAbsoluteScreenPos(it)
-                val alpha = (255.0f * scale).toInt()
-                val color = if (scale == 1.0f) Colour(255, 255, 255) else Colour(255, 255, 255, alpha)
-
-                CustomFontUtil.drawStringWithShadow(
-                        text,
-                        screenPos.x - CustomFontUtil.getStringWidth(text) * 0.5,
-                        screenPos.y - CustomFontUtil.getFontHeight() * 0.5,
-                        color.rgb
-                )
             }
         }
     }

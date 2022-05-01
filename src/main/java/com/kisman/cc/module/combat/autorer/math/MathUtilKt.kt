@@ -12,7 +12,6 @@ class MathUtilKt {
 
         fun cubic(number: Double): Double {
             return number * number * number
-//            return number.pow(1 / 3)
         }
 
         fun quart(number: Int): Double {
@@ -21,7 +20,6 @@ class MathUtilKt {
 
         fun quart(number: Float): Double {
             return (number * number).toDouble()
-//            return number.toDouble().pow(1 / 4)
         }
 
         fun quart(number: Double): Double {

@@ -11,7 +11,7 @@ import com.kisman.cc.util.chat.cubic.ChatUtility;
 public class ChatPrint extends Module {
 
     public ChatPrint(){
-        super("ChatPrint", Category.PLAYER);
+        super("ChatPrint", Category.DEBUG);
         // init chat utility
     }
 

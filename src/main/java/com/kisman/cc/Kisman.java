@@ -8,8 +8,9 @@ import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.*;
-import com.kisman.cc.file.LoadConfig;
+import com.kisman.cc.file.ConfigManager;
 import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
@@ -28,11 +29,9 @@ import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -60,8 +59,6 @@ public class Kisman {
     public static final String miscName = "Misc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
-    public static final String sandboxName = "SandBox/";
-    public static final String pluginName = "Plugins/";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -72,7 +69,6 @@ public class Kisman {
 
     public static boolean allowToConfiguredAnotherClients, remapped = false;
     public static boolean isOpenAuthGui;
-    public static boolean autoUpdate;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
 
@@ -97,6 +93,7 @@ public class Kisman {
     public HudEditorGui hudEditorGui;
     public Gui gui;
     public HalqGui halqGui;
+    public MainGui.SelectionBar selectionBar;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
     public CommandManager commandManager;
@@ -118,6 +115,9 @@ public class Kisman {
     public ForgeMappings forgeMappings;
     public LuaRotation luaRotation;
     public ScriptManager scriptManager;
+
+    //Config
+    public ConfigManager configManager;
 
     public Kisman() {
         instance = this;
@@ -166,8 +166,9 @@ public class Kisman {
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
 
-        //load configs
-        LoadConfig.init();
+        configManager = new ConfigManager("config");
+        configManager.getLoader().init();
+
         //load glow shader
         ShaderShell.init();
 
@@ -188,6 +189,8 @@ public class Kisman {
         gui = new Gui();
         halqGui = new HalqGui();
 
+        selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
+
         init = true;
     }
     
@@ -199,12 +202,7 @@ public class Kisman {
                 if (Keyboard.getEventKeyState()) {
                     int keyCode = Keyboard.getEventKey();
                     if (keyCode <= 1) return;
-                    for (Module m : moduleManager.modules) {
-                    	if (m.getKey() == keyCode) {
-                            m.toggle();
-//                            if(moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-                    	}
-                    }
+                    for (Module m : moduleManager.modules) if (m.getKey() == keyCode) m.toggle();
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }
@@ -212,14 +210,7 @@ public class Kisman {
     }
 
     private void onRelease(int key) {
-        for(Module m : moduleManager.modules) {
-            if(m.getKey() == key) {
-                if(m.hold) {
-                    m.toggle();
-//                    if (moduleManager.getModule("Notification").isToggled()) ChatUtils.message(TextFormatting.GRAY + "Module " + (m.isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + m.getName() + TextFormatting.GRAY + " has been " + (m.isToggled() ? "enabled" : "disabled") + "!");
-                }
-            }
-        }
+        for(Module m : moduleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
     }
 
     public static String getName() {
@@ -249,22 +240,6 @@ public class Kisman {
         if (!Files.exists(Paths.get(fileName))) {
             Files.createDirectories(Paths.get(fileName));
             LOGGER.info("Root dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + moduleName))) {
-            Files.createDirectories(Paths.get(fileName + moduleName));
-            LOGGER.info("Module dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + hudName))) {
-            Files.createDirectories(Paths.get(fileName + hudName));
-            LOGGER.info("Hud dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + mainName))) {
-            Files.createDirectories(Paths.get(fileName + mainName));
-            LOGGER.info("Main dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + miscName))) {
-            Files.createDirectories(Paths.get(fileName + miscName));
-            LOGGER.info("Misc dir created");
         }
         if (!Files.exists(Paths.get(fileName + luaName))) {
             Files.createDirectories(Paths.get(fileName + luaName));

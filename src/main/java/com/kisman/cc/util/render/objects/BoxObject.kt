@@ -10,13 +10,8 @@ class BoxObject(val box: Box , override val color: Colour, val mode: BoxRenderMo
     override val type: Object3dTypes = Object3dTypes.Box
 
     override fun draw(ticks: Float) {
-        GlStateManager.pushMatrix();
+        GlStateManager.pushMatrix()
         prepare(depth,alpha)
-
-//        if (depth) {
-//            GlStateManager.enableDepth();
-//            GlStateManager.depthMask(true);
-//        }
 
         if(mode != BoxRenderModes.Outline) TessellatorUtil.drawBox(box.toAABB(), color);
         if(mode != BoxRenderModes.Filled) TessellatorUtil.drawBoundingBox(box.toAABB(), width.toDouble(), color.withAlpha(255));
@@ -24,6 +19,6 @@ class BoxObject(val box: Box , override val color: Colour, val mode: BoxRenderMo
         GlStateManager.color(1F, 1F, 1F, 1F);
 
         release(alpha)
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix()
     }
 }

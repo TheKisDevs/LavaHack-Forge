@@ -2,12 +2,9 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
-import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.module.Module;
 
 import org.lwjgl.input.Keyboard;
-
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Bind extends Command{
     public Bind() {
@@ -42,7 +39,6 @@ public class Bind extends Command{
                 if(mod.getName().equalsIgnoreCase(args[1])) {
                     mod.setKey(Keyboard.getKeyIndex((key.toUpperCase())));
                     message(mod.getName() + " binned to " + Keyboard.getKeyName(mod.getKey()));
-                    SaveConfig.init();
                 }
             }
         } catch(Exception e) {error("Usage: " + getSyntax());}

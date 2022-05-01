@@ -4,6 +4,8 @@ import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
 import com.kisman.cc.module.combat.autorer.util.ProjectionUtils
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.util.Colour
+import com.kisman.cc.util.render.objects.TextOnEntityObject
 import i.gishreloaded.gishcode.utils.visual.ColorUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -30,7 +32,11 @@ class ItemESP : Module("ItemESP", "Renders a items name and quantity ft Dallas",
         for(entity in mc.world.loadedEntityList) {
             if(entity is EntityItem) {
                 if(entity.item.displayName.length > 50) continue
+                
+                val text = (if (count.valBoolean) if (entity.item.count == 1) "" else "x" + entity.item.count.toString() + " " else "") + entity.item.displayName
 
+                TextOnEntityObject(text, entity, Colour(255, 255, 255, 255)).draw(event.partialTicks)
+/*
                 val deltaX = MathHelper.clampedLerp(
                     entity.lastTickPosX, entity.posX,
                     event.partialTicks.toDouble()
@@ -58,12 +64,16 @@ class ItemESP : Module("ItemESP", "Renders a items name and quantity ft Dallas",
                     (-mc.fontRenderer.FONT_HEIGHT).toFloat(),
                     (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1)
                 )
-                GlStateManager.popMatrix()
+                GlStateManager.popMatrix()*/
             }
         }
     }
 
     override fun isVisible(): Boolean {
-        return false;
+        return false
+    }
+
+    override fun isBeta(): Boolean {
+        return true
     }
 }

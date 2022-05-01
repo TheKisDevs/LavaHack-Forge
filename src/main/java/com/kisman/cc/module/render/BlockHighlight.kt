@@ -2,12 +2,15 @@ package com.kisman.cc.module.render
 
 import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
+import com.kisman.cc.module.combat.autorer.AutoRerUtil
 import com.kisman.cc.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.EntityUtil
 import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
+import com.kisman.cc.util.render.objects.TextOnBlockObject
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -22,11 +25,19 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     private val width = Setting("Width", this, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) }
     private val offset = Setting("Offset", this, 0.002, 0.002, 0.2, false)
 
+    //Crystal info
+    private val crystalInfo = register(Setting("Crystal Info", this, false))
+    private val crystalInfoColor = register(Setting("Crystal Info Color", this, "Crystal Info Color", Colour(255, 255, 255, 255)).setVisible { crystalInfo.valBoolean })
+    private val crystalInfoTerrain = register(Setting("Crystal Info Terrain", this, false).setVisible { crystalInfo.valBoolean })
+    private val crystalInfoTargetRange = register(Setting("Crystal Info Target Range", this, 15.0, 0.0, 20.0, true).setVisible { crystalInfo.valBoolean })
+
     companion object {
         var instance : BlockHighlight? = null
     }
 
     init {
+        super.setDisplayInfo { "[${mode.valString}]" }
+
         instance = this
 
         setmgr.rSetting(mode)
@@ -40,7 +51,6 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     }
 
     @SubscribeEvent fun onRenderWorld(event: RenderWorldLastEvent) {
-        super.setDisplayInfo("[${mode.valString}]")
         if (mc.objectMouseOver == null) return
         val hitObject = mc.objectMouseOver
         var box: Box? = null
@@ -78,5 +88,21 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             depth.valBoolean,
             alpha.valBoolean
         ).draw(event.partialTicks)
+
+        if(crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
+            val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
+            val text = "${
+                String.format("%.1f", AutoRerUtil.getSelfDamageByCrystal(crystalInfoTerrain.valBoolean, hitObject.blockPos))
+            }/${
+                if(target != null) String.format("%.1f", AutoRerUtil.getDamageByCrystal(target, crystalInfoTerrain.valBoolean, hitObject.blockPos))
+                else "0.0"
+            }"
+
+            TextOnBlockObject(
+                    text,
+                    hitObject.blockPos,
+                    crystalInfoColor.colour
+            ).draw(event.partialTicks)
+        }
     }
 }

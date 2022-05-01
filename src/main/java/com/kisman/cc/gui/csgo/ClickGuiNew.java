@@ -2,6 +2,7 @@ package com.kisman.cc.gui.csgo;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.module.*;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.csgo.components.*;
@@ -298,6 +299,11 @@ public class ClickGuiNew extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if(Kisman.instance.selectionBar.getSelection() != MainGui.Guis.CSGOGui) {
+           MainGui.Companion.openGui(Kisman.instance.selectionBar);
+           return;
+        }
+
         drawDefaultBackground();
 
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
@@ -328,6 +334,8 @@ public class ClickGuiNew extends GuiScreen {
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
     }
 
     @Override
@@ -339,7 +347,8 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mousePressed(mouseButton, mouseX * 2, mouseY * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) {
@@ -351,7 +360,7 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
+    public void mouseReleased(int mouseX, int mouseY, int state) {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mouseReleased(state, mouseX * 2, mouseY * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) {
@@ -363,7 +372,7 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
         window.mouseMoved(mouseX * 2, mouseY * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) window2.mouseMoved(mouseX * 2, mouseY * 2);
         super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
@@ -379,7 +388,7 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    public void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode != -1) window.keyPressed(keyCode, typedChar);
         else mc.displayGuiScreen(null);
         super.keyTyped(typedChar, keyCode);

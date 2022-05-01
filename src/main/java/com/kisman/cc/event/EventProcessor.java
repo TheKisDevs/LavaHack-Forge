@@ -5,7 +5,6 @@ import com.kisman.cc.command.commands.Flip;
 import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
-import com.kisman.cc.file.SaveConfig;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.*;
@@ -69,7 +68,7 @@ public class EventProcessor {
         try {
             if (AutoRer.instance.lagProtect.getValBoolean()) disableCa();
             AutoRer.instance.placePos = null;
-            SaveConfig.init();
+            Kisman.instance.configManager.getSaver().init();
         } catch(Exception ignored) {}
     }
 

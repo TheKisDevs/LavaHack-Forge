@@ -2,6 +2,7 @@ package com.kisman.cc.console.rewrite
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
+import com.kisman.cc.gui.MainGui
 import com.kisman.cc.module.client.Config
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zero.alpine.listener.EventHandler
@@ -9,10 +10,8 @@ import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
@@ -40,6 +39,11 @@ class ConsoleGui() : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if(Kisman.instance.selectionBar.selection != MainGui.Guis.Console) {
+            MainGui.openGui(Kisman.instance.selectionBar)
+            return
+        }
+
         super.drawDefaultBackground()
 
         if(history.size >= 25) {
@@ -65,32 +69,25 @@ class ConsoleGui() : GuiScreen() {
 
         var yOffset = 0
 
-        //Messages
-//        GL11.glPushMatrix()
-//        GL11.glEnable(GL11.GL_SCISSOR_TEST)
-
-//        val sr = ScaledResolution(Minecraft.getMinecraft())
-
-//        val factor = 1//sr.scaleFactor
-//        val translateY = sr.scaledHeight - y
-
-//        GL11.glScissor(x * factor, translateY * factor, width1 * factor, height1 - Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT)
-
         for(string in history) {
             Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(string,
                 (x + 2).toFloat(), (y + 2 + yOffset).toFloat(), -1)
             yOffset += Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
         }
 
-//        GL11.glDisable(GL11.GL_SCISSOR_TEST)
-//        GL11.glPopMatrix()
-
         //Entry string
         fontRenderer.drawStringWithShadow(entryString + "_", (x + 2).toFloat(),
             (y + height1 - fontRenderer.FONT_HEIGHT).toFloat(), -1)
+
+        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY)
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int) {
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
+        super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    public override fun keyTyped(typedChar: Char, keyCode: Int) {
         if(keyCode == 1) {
             Minecraft.getMinecraft().displayGuiScreen(null)
             return

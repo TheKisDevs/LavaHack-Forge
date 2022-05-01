@@ -48,6 +48,7 @@ public class HelloWorld extends Module {
     @Override
     public void update()
     {
+        if(mc.player == null || mc.world == null) return;
         counter++;
         if (counter > 20 * 5)
         {
