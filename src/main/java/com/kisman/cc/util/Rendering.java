@@ -130,6 +130,17 @@ public class Rendering {
         return new BlockPos(abb.minX, abb.minY, abb.minZ);
     }
 
+    public static AxisAlignedBB scale(BlockPos pos, double scale){
+        double s = scale * 0.5;
+        double x1 = (pos.getX() + 0.5) - s;
+        double y1 = (pos.getY() + 0.5) - s;
+        double z1 = (pos.getZ() + 0.5) - s;
+        double x2 = (pos.getX() + 0.5) + s;
+        double y2 = (pos.getY() + 0.5) + s;
+        double z2 = (pos.getZ() + 0.5) + s;
+        return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+    }
+
     public static void drawSelectionBox(AxisAlignedBB axisAlignedBB, Color color) {
         bufferbuilder.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
         addChainedFilledBoxVertices(bufferbuilder, axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color);
