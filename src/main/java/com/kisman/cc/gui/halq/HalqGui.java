@@ -56,7 +56,7 @@ public class HalqGui extends GuiScreen {
         int offsetX = 5 + headerOffset;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 10));
-            offsetX += headerOffset * 2 + 1 + width;
+            offsetX += headerOffset * 2 + width;
         }
     }
 

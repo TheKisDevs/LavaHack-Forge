@@ -246,6 +246,7 @@ public class ClickGuiNew extends GuiScreen {
 
                                     cb.setListener(val -> {
                                         set.setValString(set.getStringFromIndex(val));
+                                        set.setIndex(val);
                                         Kisman.EVENT_BUS.post(new EventSettingChange.ModeSetting(set));
                                         return true;
                                     });

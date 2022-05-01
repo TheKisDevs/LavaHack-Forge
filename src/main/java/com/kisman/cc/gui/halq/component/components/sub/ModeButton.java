@@ -61,6 +61,7 @@ public class ModeButton extends Component {
                     index = i;
                     open = false;
                     setting.setValString(values[i]);
+                    setting.setIndex(i);
                     Kisman.EVENT_BUS.post(new EventSettingChange.ModeSetting(setting));
                     break;
                 }
