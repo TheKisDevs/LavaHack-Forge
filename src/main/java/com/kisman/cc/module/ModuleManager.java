@@ -133,6 +133,7 @@ public class ModuleManager {
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
+		//modules.add(new Weather());
 		modules.add(new XRay());
 		//movement
 		modules.add(new AirJump());
@@ -175,6 +176,7 @@ public class ModuleManager {
 		modules.add(new PacketLogger());
 		modules.add(new Reach());
 		modules.add(new Refill());
+		modules.add(new Replenish());
 		modules.add(new RoofInteract());
 		modules.add(new Swing());
 		modules.add(new TeleportBack());
