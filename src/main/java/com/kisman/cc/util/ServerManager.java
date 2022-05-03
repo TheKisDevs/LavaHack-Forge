@@ -2,7 +2,6 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import i.gishreloaded.gishcode.utils.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;

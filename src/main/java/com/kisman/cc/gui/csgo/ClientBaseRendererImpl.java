@@ -3,7 +3,7 @@ package com.kisman.cc.gui.csgo;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;

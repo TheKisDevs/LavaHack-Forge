@@ -11,7 +11,6 @@ import com.kisman.cc.settings.*;
 
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.manager.Managers;
-import i.gishreloaded.gishcode.utils.*;
 import me.zero.alpine.listener.*;
 import net.minecraft.block.Block;
 import net.minecraft.init.*;
@@ -126,14 +125,14 @@ public class Speed extends Module {
         if(mc.player.moveForward > 0 && mc.player.hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
             if(mc.player.onGround) {
                 mc.player.motionY = 0.405;
-                float f = Utils.getDirection();
+                float f = MovementUtil.getDirection();
 
                 mc.player.motionX -= (MathHelper.sin(f) * 0.2F);
                 mc.player.motionZ += (MathHelper.cos(f) * 0.2F);
             } else {
                 double currentSpeed = Math.sqrt(mc.player.motionX * mc.player.motionX + mc.player.motionZ * mc.player.motionZ);
                 double speed = Math.abs(mc.player.rotationYawHead - mc.player.rotationYaw) < 90 ? 1.0064 : 1.001;
-                double direction = Utils.getDirection();
+                double direction = MovementUtil.getDirection();
 
                 mc.player.motionX = -Math.sin(direction) * speed * currentSpeed;
                 mc.player.motionZ = Math.cos(direction) * speed * currentSpeed;

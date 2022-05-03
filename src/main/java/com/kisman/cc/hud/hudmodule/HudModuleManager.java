@@ -10,11 +10,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
 
+import java.util.ArrayList;
+
 public class HudModuleManager {
-    public java.util.ArrayList<HudModule> modules;
+    public ArrayList<HudModule> modules;
 	
 	public HudModuleManager() {
-		modules = new java.util.ArrayList<>();
+		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
 		init();
 	}
@@ -32,6 +34,7 @@ public class HudModuleManager {
 
 		//render
         modules.add(ArrayListModule.instance);
+		modules.add(new BindList());
 		modules.add(new Coord());
 		modules.add(new Fps());
 		modules.add(new Logo());
@@ -52,13 +55,9 @@ public class HudModuleManager {
 		return null;
 	}
 
-	public java.util.ArrayList<HudModule> getModulesInCategory(HudCategory c) {
-		java.util.ArrayList<HudModule> mods = new java.util.ArrayList<>();
+	public ArrayList<HudModule> getModulesInCategory(HudCategory c) {
+		ArrayList<HudModule> mods = new ArrayList<>();
 		for (HudModule m : this.modules) if (m.getCategoryHud() == c) mods.add(m);
 		return mods;
 	}
-
-	@SubscribeEvent public void onKey(InputEvent.KeyInputEvent event) {}
-	@SubscribeEvent public void onTick(TickEvent.ClientTickEvent event) {for(HudModule m : modules) if(m.isToggled()) m.update();}
-	@SubscribeEvent public void onRender(RenderGameOverlayEvent event) {for(HudModule m : modules) if(m.isToggled()) m.render();}
 }

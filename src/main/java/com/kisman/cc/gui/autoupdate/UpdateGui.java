@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.autoupdate;
 
 import com.kisman.cc.util.Render2DUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.GuiScreen;
 
 public class UpdateGui extends GuiScreen {

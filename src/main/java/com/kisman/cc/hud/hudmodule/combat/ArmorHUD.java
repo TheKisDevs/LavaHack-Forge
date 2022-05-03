@@ -3,8 +3,7 @@ package com.kisman.cc.hud.hudmodule.combat;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
-import i.gishreloaded.gishcode.wrappers.Wrapper;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
 import net.minecraft.item.*;
@@ -57,7 +56,7 @@ public class ArmorHUD extends HudModule {
 
             if (HUD.instance.armExtra.getValBoolean()) {
                 final ItemStack itemStack = mc.player.getHeldItemOffhand();
-                Item helfInOffHand = Wrapper.INSTANCE.player().getHeldItemOffhand().getItem();
+                Item helfInOffHand = mc.player.getHeldItemOffhand().getItem();
                 offHandHeldItemCount = getItemsOffHand(helfInOffHand);
                 GlStateManager.pushMatrix();
                 GlStateManager.disableAlpha();
@@ -68,7 +67,7 @@ public class ArmorHUD extends HudModule {
                 GlStateManager.disableDepth();
 
                 mc.getRenderItem().renderItemAndEffectIntoGUI(itemStack, 572, y);
-                itemRender.renderItemOverlayIntoGUI(Wrapper.INSTANCE.fontRenderer(), itemStack, 572, y, String.valueOf(offHandHeldItemCount));
+                itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, 572, y, String.valueOf(offHandHeldItemCount));
                 GlStateManager.enableDepth();
                 RenderHelper.disableStandardItemLighting();
                 GlStateManager.popAttrib();
@@ -81,8 +80,8 @@ public class ArmorHUD extends HudModule {
                 GlStateManager.popMatrix();
             }
             if (HUD.instance.armExtra.getValBoolean()) {
-                Item currentHeldItem = Wrapper.INSTANCE.inventory().getCurrentItem().getItem();
-                int currentHeldItemCount = Wrapper.INSTANCE.inventory().getCurrentItem().getCount();
+                Item currentHeldItem = mc.player.inventory.getCurrentItem().getItem();
+                int currentHeldItemCount = mc.player.inventory.getCurrentItem().getCount();
 
                 ItemStack stackHeld = new ItemStack(currentHeldItem, 1);
                 GlStateManager.pushMatrix();
@@ -92,9 +91,9 @@ public class ArmorHUD extends HudModule {
                 GlStateManager.pushAttrib();
                 RenderHelper.enableGUIStandardItemLighting();
                 GlStateManager.disableDepth();
-                Wrapper.INSTANCE.mc().getRenderItem().renderItemAndEffectIntoGUI(stackHeld, 556, y);
+                mc.getRenderItem().renderItemAndEffectIntoGUI(stackHeld, 556, y);
 
-                itemRender.renderItemOverlayIntoGUI(Wrapper.INSTANCE.fontRenderer(), stackHeld, 556, y, String.valueOf(currentHeldItemCount));
+                itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stackHeld, 556, y, String.valueOf(currentHeldItemCount));
 
                 GlStateManager.enableDepth();
                 RenderHelper.disableStandardItemLighting();
@@ -125,5 +124,5 @@ public class ArmorHUD extends HudModule {
         GlStateManager.disableLighting();
     }
 
-    private int getItemsOffHand(Item i) {return Wrapper.INSTANCE.inventory().offHandInventory.stream().filter(itemStack -> itemStack.getItem() == i).mapToInt(ItemStack::getCount).sum();}
+    private int getItemsOffHand(Item i) {return mc.player.inventory.offHandInventory.stream().filter(itemStack -> itemStack.getItem() == i).mapToInt(ItemStack::getCount).sum();}
 }

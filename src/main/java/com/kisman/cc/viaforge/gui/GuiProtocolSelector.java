@@ -3,7 +3,7 @@ package com.kisman.cc.viaforge.gui;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.viaforge.ViaForge;
 import com.kisman.cc.viaforge.protocol.ProtocolCollection;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import org.lwjgl.opengl.GL11;

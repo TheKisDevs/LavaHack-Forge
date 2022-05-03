@@ -26,9 +26,7 @@ import java.lang.reflect.*;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.mapping.ForgeMappings;
-import fuck.you.yarnparser.V1Parser;
-import fuck.you.yarnparser.entry.ClassEntry;
-import fuck.you.yarnparser.entry.FieldEntry;
+import com.kisman.cc.catlua.parser.entry.ClassEntry;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;

@@ -6,7 +6,7 @@ import com.kisman.cc.util.Colour;
 
 import org.lwjgl.opengl.GL11;
 
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;

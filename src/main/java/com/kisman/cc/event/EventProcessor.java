@@ -14,7 +14,7 @@ import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 
 import com.kisman.cc.util.modules.CustomMainMenu;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.*;

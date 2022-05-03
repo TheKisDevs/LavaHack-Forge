@@ -2,15 +2,13 @@ package com.kisman.cc.hypixel.skyblock.colf.network;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.hypixel.skyblock.colf.commands.Command;
 import com.kisman.cc.hypixel.skyblock.colf.minecraft_integration.CoflSessionManager;
 import com.neovisionaries.ws.client.WebSocketException;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
 
 

@@ -3,7 +3,7 @@ package com.kisman.cc.util.process;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.util.*;
 
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;

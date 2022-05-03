@@ -5,7 +5,7 @@ import com.kisman.cc.module.combat.autorer.util.Easing
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.Render2DUtil
 import com.kisman.cc.util.customfont.CustomFontUtil
-import i.gishreloaded.gishcode.utils.TimerUtils
+import com.kisman.cc.util.TimerUtils
 import org.lwjgl.opengl.GL11.glTranslatef
 import java.util.function.Supplier
 

@@ -4,16 +4,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
-import javax.net.ssl.SSLContext;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kisman.cc.hypixel.skyblock.colf.MainColf;
 import com.kisman.cc.hypixel.skyblock.colf.commands.Command;
 import com.kisman.cc.hypixel.skyblock.colf.commands.JsonStringCommand;
 import com.neovisionaries.ws.client.*;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import net.minecraft.client.Minecraft;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 public class WSClient extends WebSocketAdapter {
 	public static Gson gson;

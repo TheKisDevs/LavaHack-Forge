@@ -4,10 +4,9 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.module.combat.KillAura;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
 

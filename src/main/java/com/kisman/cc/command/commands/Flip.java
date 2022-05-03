@@ -1,18 +1,13 @@
 package com.kisman.cc.command.commands;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 import com.kisman.cc.hypixel.util.ApiHandler;
 import com.kisman.cc.hypixel.util.ConfigHandler;
 import com.kisman.cc.hypixel.util.Utils;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.common.config.Configuration;
 
-import java.lang.ref.Reference;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

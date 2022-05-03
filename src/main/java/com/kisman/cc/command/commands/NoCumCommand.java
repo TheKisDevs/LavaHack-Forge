@@ -1,7 +1,7 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 public class NoCumCommand extends Command {
     public NoCumCommand() {

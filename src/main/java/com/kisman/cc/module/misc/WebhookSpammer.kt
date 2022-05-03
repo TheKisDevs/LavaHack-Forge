@@ -6,7 +6,7 @@ import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.process.web.discord.DiscordWebhookSender
-import i.gishreloaded.gishcode.utils.TimerUtils
+import com.kisman.cc.util.TimerUtils
 
 class WebhookSpammer : Module("WebhookSpammer", "Using discord webhook for spamming", Category.MISC) {
     private val color = Setting("Color", this, "Embed Color", Colour(255, 0, 0))

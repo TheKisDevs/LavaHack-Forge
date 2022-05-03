@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.tables.ModuleLua;
 import com.kisman.cc.catlua.module.ModuleScript;
 import com.kisman.cc.command.Command;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;

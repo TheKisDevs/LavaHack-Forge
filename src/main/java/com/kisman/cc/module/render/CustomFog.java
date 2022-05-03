@@ -2,7 +2,7 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 

@@ -4,6 +4,7 @@ import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.csgo.Window;
 import com.kisman.cc.util.*;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 
 import com.kisman.cc.gui.csgo.IRenderer;
+import org.lwjgl.opengl.GL11;
 
 public class VisualPreviewWindow implements Globals {
     private String title;
@@ -30,6 +32,8 @@ public class VisualPreviewWindow implements Globals {
     }
 
     public void drawScreen(IRenderer renderer, int mouseX, int mouseY) {
+        if(Minecraft.getMinecraft().player == null) return;
+
         int fontHeight = renderer.getStringHeight(title);
         int headerFontOffset = fontHeight / 4;
 
@@ -42,6 +46,7 @@ public class VisualPreviewWindow implements Globals {
 
         renderer.drawString(x + width / 2 - renderer.getStringWidth(title) / 2, y + headerFontOffset, title, Config.instance.guiAstolfo.getValBoolean() ? renderer.astolfoColorToObj() : Window.FOREGROUND);
 
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
         drawEntityOnScreen((x + width / 2) / 2, (y + height - 10) / 2, 30, (float)((x + width / 2) / 2) - this.oldMouseX, (float)((y + height - 10) / 2) - this.oldMouseY, mc.player);
 
         oldMouseX = mouseX;

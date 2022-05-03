@@ -4,7 +4,7 @@ import com.kisman.cc.gui.other.container.ItemESP;
 import com.kisman.cc.module.render.ContainerModifier;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainer;

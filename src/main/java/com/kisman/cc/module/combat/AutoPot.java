@@ -1,7 +1,7 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.module.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.*;

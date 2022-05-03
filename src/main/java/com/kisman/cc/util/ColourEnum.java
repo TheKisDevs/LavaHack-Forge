@@ -1,7 +1,7 @@
 package com.kisman.cc.util;
 
 import com.kisman.cc.Kisman;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 
 import java.awt.*;
 

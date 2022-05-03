@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.List;
 
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.util.text.TextFormatting;
 
 public class ColorUtil {

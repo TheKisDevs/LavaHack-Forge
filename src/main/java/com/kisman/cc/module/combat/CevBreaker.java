@@ -7,8 +7,8 @@ import com.kisman.cc.util.*;
 import com.kisman.cc.util.process.*;
 import com.kisman.cc.util.process.DynamicTrapUtil.*;
 
-import i.gishreloaded.gishcode.utils.TimerUtils;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.*;

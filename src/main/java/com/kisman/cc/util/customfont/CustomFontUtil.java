@@ -41,6 +41,8 @@ public class CustomFontUtil {
 
     public static CFontRenderer lexendDeca18 = new CFontRenderer(getFontTTF("LexendDeca-Regular", 18), true, true);
 
+    public static CFontRenderer century18 = new CFontRenderer(getFontTTF("main", 18), true, true);
+
     public static CustomFontRenderer verdana18 = Kisman.instance.customFontRenderer;
     public static CustomFontRenderer verdana15 = Kisman.instance.customFontRenderer1;
 

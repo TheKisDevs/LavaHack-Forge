@@ -3,7 +3,6 @@ package com.kisman.cc.gui.csgo.components;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.csgo.*;
 import com.kisman.cc.util.Render2DUtil;
-import i.gishreloaded.gishcode.utils.Utils;
 
 import java.util.Locale;
 import java.util.function.Function;
@@ -135,7 +134,7 @@ public class Slider extends AbstractComponent {
 
     public enum NumberType {
         PERCENT(number -> String.format(Locale.ENGLISH, "%.1f%%", number.floatValue())),
-        TIME(number -> Utils.formatTime(number.longValue())),
+        TIME(number -> Utils.Companion.formatTime(number.longValue())),
         DECIMAL(number -> String.format(Locale.ENGLISH, "%.4f", number.floatValue())),
         INTEGER(number -> Long.toString(number.longValue()));
 

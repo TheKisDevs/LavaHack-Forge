@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.BlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -40,7 +39,7 @@ public class BlockOutline extends Module {
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         if(mc.objectMouseOver == null) return;
         if (mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
-            Block block = BlockUtils.getBlock(mc.objectMouseOver.getBlockPos());
+            Block block = mc.world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock();
             BlockPos blockPos = mc.objectMouseOver.getBlockPos();
 
             if (Block.getIdFromBlock(block) == 0) return;

@@ -5,7 +5,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.ModuleManager;
 import com.kisman.cc.util.CrystalUtils;
 import com.kisman.cc.util.Globals;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;

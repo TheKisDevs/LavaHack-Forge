@@ -1,7 +1,6 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.*;
@@ -105,7 +104,7 @@ public class NoSlow extends Module {
     private final Listener<EventPlayerUpdateMoveState> listener = new Listener<>(event -> {
         if (invMove.getValBoolean() && mc.currentScreen != null) {
             if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) return;
-            if((mc.currentScreen instanceof GuiConsole || mc.currentScreen instanceof ConsoleGui) && ignoreConsole.getValBoolean()) return;
+            if(mc.currentScreen instanceof ConsoleGui && ignoreConsole.getValBoolean()) return;
             if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) return;
 
             mc.player.movementInput.moveStrafe = 0.0F;

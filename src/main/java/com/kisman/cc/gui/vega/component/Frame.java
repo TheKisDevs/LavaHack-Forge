@@ -6,7 +6,7 @@ import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.vega.component.components.Button;
 import com.kisman.cc.util.Timer;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 
 import java.util.ArrayList;

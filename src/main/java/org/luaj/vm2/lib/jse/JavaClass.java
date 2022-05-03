@@ -28,7 +28,8 @@ import java.util.Map.Entry;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.mapping.ForgeMappings;
 import com.kisman.cc.catlua.mapping.RemapperUtil;
-import fuck.you.yarnparser.entry.*;
+import com.kisman.cc.catlua.parser.entry.FieldEntry;
+import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import org.luaj.vm2.LuaValue;
 
 /**

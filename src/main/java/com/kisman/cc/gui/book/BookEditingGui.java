@@ -22,11 +22,48 @@ public class BookEditingGui extends GuiScreenBook {
     private int x, y;
 
     private Field gettingSigned;
-    private Field bookTitle;
+    private Field book_title;
     private Method insert;
 
     public BookEditingGui(EntityPlayer player, ItemStack book) {
         super(player, book, true);
+
+        // Get access to bookGettingSigned field
+        Class<GuiScreenBook> screenBook = GuiScreenBook.class;
+        try {
+            this.gettingSigned = screenBook.getDeclaredField("field_146480_s");
+        } catch (NoSuchFieldException e) {
+            try {
+                this.gettingSigned = screenBook.getDeclaredField("bookGettingSigned");
+            } catch (NoSuchFieldException e2) {
+                throw new RuntimeException("FamilyFunPack error: no such field " + e2.getMessage() + " in class GuiScreenBook");
+            }
+        }
+        this.gettingSigned.setAccessible(true);
+
+        // Get access to bookTitle field
+        try {
+            this.book_title = screenBook.getDeclaredField("field_146482_z");
+        } catch (NoSuchFieldException e) {
+            try {
+                this.book_title = screenBook.getDeclaredField("bookTitle");
+            } catch (NoSuchFieldException e2) {
+                throw new RuntimeException("FamilyFunPack error: no such field " + e2.getMessage() + " in class GuiScreenBook");
+            }
+        }
+        this.book_title.setAccessible(true);
+
+        // Get access to pageInsertIntoCurrent method
+        try {
+            this.insert = screenBook.getDeclaredMethod("func_146459_b", String.class);
+        } catch(NoSuchMethodException e) {
+            try {
+                this.insert = screenBook.getDeclaredMethod("pageInsertIntoCurrent", String.class);
+            } catch(NoSuchMethodException e2) {
+                throw new RuntimeException("FamilyFunPack Error: no method pageInsertIntoCurrent in class GuiScreenBook");
+            }
+        }
+        this.insert.setAccessible(true);
     }
 
     public void initGui() {
@@ -84,14 +121,14 @@ public class BookEditingGui extends GuiScreenBook {
             boolean signing = (boolean) this.gettingSigned.get(this);
 
             if(signing) { // Modify signing behavior to enable 32 chars title
-                String title = (String) this.bookTitle.get(this);
+                String title = (String) this.book_title.get(this);
                 super.keyTyped(typedChat, keyCode);
                 if(keyCode != 14 && keyCode != 28 && keyCode != 156 && title.length() < 32) {
-                    this.bookTitle.set(this, title + Character.toString(typedChat));
+                    this.book_title.set(this, title + typedChat);
                 }
             } else super.keyTyped(typedChat, keyCode);
-        } catch (Exception e) {
-            throw new RuntimeException("FFP error: " + e.getMessage());
+        } catch (IllegalAccessException | IOException e) {
+            throw new RuntimeException("kisman.cc error: " + e.getMessage());
         }
     }
 
@@ -99,21 +136,26 @@ public class BookEditingGui extends GuiScreenBook {
         try {
             boolean signing = (boolean) this.gettingSigned.get(this);
             if(signing) { // title
-                String title = (String) this.bookTitle.get(this);
+                String title = (String) this.book_title.get(this);
                 if(format.length() + title.length() <= 32) {
-                    this.bookTitle.set(this, title + format);
+                    this.book_title.set(this, title + format);
                 }
             } else { // book
                 this.insert.invoke(this, format);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("FFP error: " + e.getMessage());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("kisman.cc error: " + e.getMessage());
         }
     }
 
     protected void actionPerformed(GuiButton button) {
         if(button instanceof ActionButton) {
             ((ActionButton) button).onClick(this);
+        }
+        try {
+            super.actionPerformed(button);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

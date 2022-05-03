@@ -2,7 +2,7 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
 import com.kisman.cc.gui.misc.PreviewGui;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;

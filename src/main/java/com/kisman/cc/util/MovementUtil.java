@@ -1,6 +1,5 @@
 package com.kisman.cc.util;
 
-import i.gishreloaded.gishcode.wrappers.Wrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;

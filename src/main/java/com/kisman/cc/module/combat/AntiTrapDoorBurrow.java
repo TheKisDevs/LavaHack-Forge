@@ -4,10 +4,11 @@ import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
@@ -59,7 +60,7 @@ public class AntiTrapDoorBurrow extends Module {
     }
 
     @SubscribeEvent
-    public void onRenderWorld() {
+    public void onRenderWorld(RenderWorldLastEvent event) {
         if(currentPos != null && render.getValBoolean()) {
             RenderUtil.drawBlockESP(currentPos, color.getColour().r1, color.getColour().g1, color.getColour().b1);
         }

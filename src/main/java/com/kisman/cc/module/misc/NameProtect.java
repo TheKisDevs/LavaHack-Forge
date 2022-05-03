@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.util.text.ChatType;

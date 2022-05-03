@@ -6,7 +6,7 @@
  import com.kisman.cc.util.InventoryUtil;
  import com.kisman.cc.settings.*;
 
- import i.gishreloaded.gishcode.utils.TimerUtils;
+ import com.kisman.cc.util.TimerUtils;
  import net.minecraft.client.gui.inventory.GuiContainer;
  import net.minecraft.client.renderer.InventoryEffectRenderer;
  import net.minecraft.enchantment.*;

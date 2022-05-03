@@ -3,7 +3,7 @@ package com.kisman.cc.module.movement;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 
 import java.util.Locale;
 

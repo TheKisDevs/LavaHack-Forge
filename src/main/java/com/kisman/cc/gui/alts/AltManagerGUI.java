@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import com.kisman.cc.gui.alts.microsoft.MSAuthScreen;
 import com.kisman.cc.mixin.mixins.accessor.ISession;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;

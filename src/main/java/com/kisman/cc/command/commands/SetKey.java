@@ -2,7 +2,6 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
 import com.kisman.cc.hypixel.util.ConfigHandler;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 

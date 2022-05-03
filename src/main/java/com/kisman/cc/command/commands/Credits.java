@@ -1,7 +1,6 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 import net.minecraft.util.text.TextFormatting;
 
 public class Credits extends Command {

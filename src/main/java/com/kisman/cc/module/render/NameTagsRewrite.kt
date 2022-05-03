@@ -8,13 +8,19 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.util.GlowRendererPattern
 import com.kisman.cc.util.*
 import com.kisman.cc.util.customfont.CustomFontUtil
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.DestFactor
+import net.minecraft.client.renderer.GlStateManager.SourceFactor
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
-import java.lang.Exception
 import java.util.function.Supplier
 
 class NameTagsRewrite : Module("NameTagsRewrite", "Renders info about players.", Category.RENDER) {
@@ -41,7 +47,77 @@ class NameTagsRewrite : Module("NameTagsRewrite", "Renders info about players.",
         glowSetting.init()
     }
 
-    @SubscribeEvent fun onRender(event: RenderGameOverlayEvent.Text) {
+    @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
+        val fontRendererIn = mc.fontRenderer
+
+        for(player in mc.world.playerEntities) {
+            if(player == mc.player) continue
+
+            val x = player.positionVector.x
+            var y = player.positionVector.y
+            val z = player.positionVector.z
+
+            val viewerYaw: Float = mc.renderManager.playerViewY
+            val viewerPitch: Float = mc.renderManager.playerViewX
+            val isThirdPersonFrontal = mc.renderManager.options.thirdPersonView == 2
+            val offset: Float = player.height + 0.5f - if (player.isSneaking) 0.25f else 0.0f
+            val verticalShift = if ("deadmau5" == player.name) -10 else 0
+
+            y += offset
+
+            val str = buildStr(player)
+
+            GlStateManager.pushMatrix()
+            GlStateManager.translate(x, y, z)
+            GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f)
+            GlStateManager.rotate(-viewerYaw, 0.0f, 1.0f, 0.0f)
+            GlStateManager.rotate((if (isThirdPersonFrontal) -1 else 1).toFloat() * viewerPitch, 1.0f, 0.0f, 0.0f)
+            GlStateManager.scale(-0.025f, -0.025f, 0.025f)
+            GlStateManager.disableLighting()
+            GlStateManager.depthMask(false)
+            GlStateManager.disableDepth()
+
+            GlStateManager.enableBlend()
+            GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO)
+            val i1: Int = fontRendererIn.getStringWidth(str) / 2
+            GlStateManager.disableTexture2D()
+            val tessellator = Tessellator.getInstance()
+            val bufferbuilder = tessellator.buffer
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR)
+            bufferbuilder.pos((-i1 - 1).toDouble(), (-1 + verticalShift).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, (backgroundAlpha.valInt / 255).coerceIn(0, 1).toFloat()).endVertex()
+            bufferbuilder.pos((-i1 - 1).toDouble(), (8 + verticalShift).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, (backgroundAlpha.valInt / 255).coerceIn(0, 1).toFloat()).endVertex()
+            bufferbuilder.pos((i1 + 1).toDouble(), (8 + verticalShift).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, (backgroundAlpha.valInt / 255).coerceIn(0, 1).toFloat()).endVertex()
+            bufferbuilder.pos((i1 + 1).toDouble(), (-1 + verticalShift).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, (backgroundAlpha.valInt / 255).coerceIn(0, 1).toFloat()).endVertex()
+            tessellator.draw()
+            GlStateManager.enableTexture2D()
+            GlStateManager.enableDepth()
+
+            GlStateManager.depthMask(true)
+            fontRendererIn.drawStringWithShadow(str, (-fontRendererIn.getStringWidth(str) / 2).toFloat(), verticalShift.toFloat(), -1)
+            GlStateManager.enableLighting()
+            GlStateManager.disableBlend()
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+            GlStateManager.popMatrix()
+        }
+    }
+
+    fun buildStr(player : EntityPlayer) : String {
+        var pingVal = -1
+        try {
+            pingVal = mc.player.connection.getPlayerInfo(player.uniqueID).responseTime
+        } catch (e : Exception) {}
+
+        return buildString {
+            append(player.displayName)
+            append(TextFormatting.RESET)
+            if(ping.valBoolean) append("${TextFormatting.GRAY}$pingVal ms")
+            append(TextFormatting.RESET)
+            append("${ColourUtilKt.healthColor(player)}${String.format("%.1f", player.health)}")
+        }
+    }
+
+//    @SubscribeEvent
+    fun onRender(event: RenderGameOverlayEvent.Text) {
         for(player in mc.world.playerEntities) {
             if(player == mc.player) continue
 

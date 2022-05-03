@@ -5,7 +5,6 @@ import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.catlua.mapping.*;
 import com.kisman.cc.command.CommandManager;
-import com.kisman.cc.console.GuiConsole;
 import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.*;
 import com.kisman.cc.file.ConfigManager;
@@ -67,7 +66,7 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean allowToConfiguredAnotherClients, remapped = false;
+    public static boolean allowToConfiguredAnotherClients = true, remapped = false;
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
@@ -87,7 +86,6 @@ public class Kisman {
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
-    public GuiConsole guiConsole;
     public ConsoleGui consoleGui;
     public HudGui hudGui;
     public HudEditorGui hudEditorGui;
@@ -154,7 +152,6 @@ public class Kisman {
     	moduleManager = new ModuleManager();
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
-        guiConsole = new GuiConsole();
         consoleGui = new ConsoleGui();
         customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
         customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);

@@ -5,7 +5,7 @@ import com.kisman.cc.event.events.EventPlayerTravel;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.*;

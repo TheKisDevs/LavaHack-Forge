@@ -3,7 +3,7 @@ package com.kisman.cc.hud.hudmodule.render;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.hud.hudmodule.*;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;

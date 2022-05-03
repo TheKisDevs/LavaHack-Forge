@@ -3,7 +3,7 @@ package com.kisman.cc.catlua.lua.utils;
 import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.Globals;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import org.luaj.vm2.LuaClosure;
 import org.luaj.vm2.LuaValue;
 

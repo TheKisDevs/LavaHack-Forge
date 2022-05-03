@@ -17,8 +17,8 @@ import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
 import com.kisman.cc.util.enums.ShaderModes;
-import i.gishreloaded.gishcode.utils.TimerUtils;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -52,6 +52,7 @@ public class AutoRer extends Module {
     private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
     private final Setting fastCalc = new Setting("Fast Calc", this, true);
     private final Setting recalc = new Setting("ReCalc", this, false);
+    private final Setting cubicCalc = new Setting("Cubic Calc", this, false);
     private final Setting motionCrystal = new Setting("Motion Crystal", this, false);
     private final Setting motionCalc = new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean);
     private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
@@ -175,6 +176,7 @@ public class AutoRer extends Module {
         setmgr.rSetting(switch_);
         setmgr.rSetting(fastCalc);
         setmgr.rSetting(recalc);
+        setmgr.rSetting(cubicCalc);
         setmgr.rSetting(motionCrystal);
         setmgr.rSetting(motionCalc);
         setmgr.rSetting(swing);
@@ -650,7 +652,24 @@ public class AutoRer extends Module {
 
     private void doCalculatePlace() {
         try {
-            calculatePlace();
+            if(cubicCalc.getValBoolean()) {
+                placePos = AutoRerUtil.Companion.getPlacePos(
+                        placeRange.getValFloat(),
+                        placeWallRange.getValFloat(),
+                        currentTarget,
+                        multiPlace.getValBoolean(),
+                        firePlace.getValBoolean(),
+                        secondCheck.getValBoolean(),
+                        thirdCheck.getValBoolean(),
+                        minDMG.getValInt(),
+                        maxSelfDMG.getValInt(),
+                        lethalMult.getValFloat(),
+                        terrain.getValBoolean(),
+                        armorBreaker.getValInt()
+                );
+            } else {
+                calculatePlace();
+            }
             if(recalc.getValBoolean() && placePos == null) recalculatePlace();
         } catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
     }
@@ -683,6 +702,7 @@ public class AutoRer extends Module {
 
     private void calculatePlace() {
         double maxDamage = 0.5;
+        double selfDamage_ = 0;
         BlockPos placePos = null;
         List<BlockPos> sphere = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
 
@@ -704,13 +724,15 @@ public class AutoRer extends Module {
                     if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
                         if(maxDamage <= targetDamage) {
                             maxDamage = targetDamage;
+                            selfDamage_ = selfDamage;
                             placePos = pos;
                         }
                     }
                 }
             }
         }
-        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos, currentTarget, terrain.getValBoolean());
+        this.placePos = placePos == null ? null : new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
+//        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos, currentTarget, terrain.getValBoolean());
     }
 
     private boolean isPosValid(BlockPos pos) {

@@ -26,7 +26,7 @@
 package com.kisman.cc.util.process.web;
 
 import com.kisman.cc.module.misc.DDOSModule;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

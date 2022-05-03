@@ -109,6 +109,7 @@ public class ModuleManager {
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESP());
+		modules.add(new EntityESPRewrite());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESP());
@@ -121,12 +122,10 @@ public class ModuleManager {
 		modules.add(new PopCharms());
 		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
-		modules.add(new Reverse());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new SkyColor());
 		modules.add(new SpawnsESP());
-		modules.add(new Spin());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new Trails());
@@ -185,6 +184,7 @@ public class ModuleManager {
 		modules.add(new AntiLogger());
 		modules.add(new AntiVanish());
 		modules.add(new AutoKick());
+		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new BowExploitRewrite());
 		modules.add(new CactusLeave());
@@ -219,8 +219,10 @@ public class ModuleManager {
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
 		modules.add(new PigPOV());
+		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkylightFix());
+		modules.add(new Spin());
 		modules.add(new TeamRusherLag());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());

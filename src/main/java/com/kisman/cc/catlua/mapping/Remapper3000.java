@@ -2,7 +2,9 @@ package com.kisman.cc.catlua.mapping;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.parser.MappingParser;
-import fuck.you.yarnparser.entry.*;
+import com.kisman.cc.catlua.parser.entry.ClassEntry;
+import com.kisman.cc.catlua.parser.entry.FieldEntry;
+import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import org.luaj.vm2.LuaValue;
 
 import java.io.*;

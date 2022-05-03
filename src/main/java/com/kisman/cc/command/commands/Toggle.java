@@ -3,8 +3,6 @@ package com.kisman.cc.command.commands;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
-
 public class Toggle extends Command{
     public Toggle() {
         super("toggle");

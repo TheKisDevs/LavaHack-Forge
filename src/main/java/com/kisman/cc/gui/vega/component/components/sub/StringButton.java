@@ -3,21 +3,16 @@ package com.kisman.cc.gui.vega.component.components.sub;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.StringEvent;
-import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.gui.vega.component.Component;
 import com.kisman.cc.gui.vega.component.components.Button;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.LineMode;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
-
-import java.awt.*;
 
 
 public class StringButton extends Component {

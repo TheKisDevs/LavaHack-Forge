@@ -2,7 +2,6 @@ package com.kisman.cc.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;
 import net.minecraft.network.play.client.*;
@@ -10,12 +9,15 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.kisman.cc.util.BlockUtil.getPlaceableSide;
 
 public class BlockUtil2 {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static float getHardness(BlockPos pos) {
+        return mc.world.getBlockState(pos).getPlayerRelativeBlockHardness(mc.player, mc.world, pos);
+    }
 
     public static boolean isPositionPlaceable(BlockPos position, boolean sideCheck, boolean entityCheck) {
         if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;

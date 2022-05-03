@@ -2,7 +2,6 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
 import com.kisman.cc.file.LoadConfig;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class LoadConfigCommand extends Command {
     public LoadConfigCommand() {

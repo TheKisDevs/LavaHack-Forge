@@ -3,7 +3,7 @@ package com.kisman.cc.module.combat;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.util.*;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.*;
 

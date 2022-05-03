@@ -6,7 +6,7 @@ import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;

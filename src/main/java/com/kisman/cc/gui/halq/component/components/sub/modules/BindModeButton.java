@@ -5,7 +5,7 @@ import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 
 public class BindModeButton extends Component {
     private final Module module;

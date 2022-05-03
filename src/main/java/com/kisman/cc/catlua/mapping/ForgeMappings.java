@@ -1,7 +1,9 @@
 package com.kisman.cc.catlua.mapping;
 
 import com.kisman.cc.Kisman;
-import fuck.you.yarnparser.entry.*;
+import com.kisman.cc.catlua.parser.entry.ClassEntry;
+import com.kisman.cc.catlua.parser.entry.FieldEntry;
+import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import it.unimi.dsi.fastutil.objects.*;
 import org.objectweb.asm.Type;
 

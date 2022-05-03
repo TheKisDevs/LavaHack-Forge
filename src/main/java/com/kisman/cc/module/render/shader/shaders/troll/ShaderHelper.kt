@@ -1,9 +1,6 @@
 package com.kisman.cc.module.render.shader.shaders.troll
 
-import com.kisman.cc.event.events.EventResolutionUpdate
-import i.gishreloaded.gishcode.utils.visual.ChatUtils
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.Listener
+import com.kisman.cc.util.chat.other.ChatUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.ShaderGroup

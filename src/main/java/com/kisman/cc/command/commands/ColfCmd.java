@@ -3,7 +3,7 @@ package com.kisman.cc.command.commands;
 import com.kisman.cc.command.Command;
 import com.kisman.cc.hypixel.skyblock.colf.MainColf;
 import com.kisman.cc.hypixel.skyblock.colf.minecraft_integration.CoflSessionManager;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 import java.util.Base64;
 

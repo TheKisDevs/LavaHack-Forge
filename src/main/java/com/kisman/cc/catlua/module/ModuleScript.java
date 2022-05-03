@@ -8,7 +8,7 @@ import com.kisman.cc.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.catlua.lua.tables.*;
 import com.kisman.cc.catlua.lua.utils.*;
 import com.kisman.cc.module.*;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.*;
 

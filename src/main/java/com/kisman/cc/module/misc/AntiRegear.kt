@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.BlockInteractionHelper
 import com.kisman.cc.util.InventoryUtil
 import com.kisman.cc.util.PlayerUtil
-import i.gishreloaded.gishcode.utils.visual.ChatUtils
+import com.kisman.cc.util.chat.other.ChatUtils
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.network.play.client.CPacketPlayerDigging

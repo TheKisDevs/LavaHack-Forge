@@ -2,7 +2,6 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
 import com.kisman.cc.module.misc.DDOSModule;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class DDOSCommand extends Command {
     public DDOSCommand() {

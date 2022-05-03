@@ -2,7 +2,6 @@ package com.kisman.cc.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class FriendCommand extends Command {
     public String[] subCommands = new String[] {"add", "remove", "list"};

@@ -9,7 +9,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.Rotation;
 import com.kisman.cc.util.Rotation.*;
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;

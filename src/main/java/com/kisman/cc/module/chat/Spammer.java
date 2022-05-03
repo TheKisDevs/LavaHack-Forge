@@ -5,7 +5,7 @@ import com.kisman.cc.module.*;
 
 import com.kisman.cc.settings.Setting;
 
-import i.gishreloaded.gishcode.utils.TimerUtils;
+import com.kisman.cc.util.TimerUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

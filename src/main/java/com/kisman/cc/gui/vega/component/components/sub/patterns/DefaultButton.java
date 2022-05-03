@@ -1,6 +1,6 @@
 package com.kisman.cc.gui.vega.component.components.sub.patterns;
 
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 
 public class DefaultButton {

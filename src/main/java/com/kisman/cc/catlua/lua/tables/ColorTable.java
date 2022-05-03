@@ -1,7 +1,7 @@
 package com.kisman.cc.catlua.lua.tables;
 
 import com.kisman.cc.util.Colour;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.LibFunction;

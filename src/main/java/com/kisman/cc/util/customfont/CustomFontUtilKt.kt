@@ -16,6 +16,7 @@ class CustomFontUtilKt {
                 "LexendDeca" -> CustomFontUtil.lexendDeca18
                 "Futura" -> CustomFontUtil.futura20
                 "SfUi" -> CustomFontUtil.sfui19
+                "Century" -> CustomFontUtil.century18
                 else -> null
             }
         }

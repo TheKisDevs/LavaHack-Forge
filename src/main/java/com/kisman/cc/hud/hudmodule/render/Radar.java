@@ -4,7 +4,7 @@ import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.client.HUD;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

@@ -8,7 +8,7 @@ import com.kisman.cc.util.Render2DUtil;
 
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.Icons;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.TextFormatting;

@@ -1,8 +1,8 @@
 package com.kisman.cc.catlua.parser;
 
-import fuck.you.yarnparser.entry.ClassEntry;
-import fuck.you.yarnparser.entry.FieldEntry;
-import fuck.you.yarnparser.entry.MethodEntry;
+import com.kisman.cc.catlua.parser.entry.ClassEntry;
+import com.kisman.cc.catlua.parser.entry.FieldEntry;
+import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 

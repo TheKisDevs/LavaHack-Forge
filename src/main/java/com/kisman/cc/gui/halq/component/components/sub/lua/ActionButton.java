@@ -5,7 +5,7 @@ import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 
 public class ActionButton extends Component {
     private final ModuleScript script;

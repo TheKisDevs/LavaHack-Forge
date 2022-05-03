@@ -2,9 +2,8 @@ package com.kisman.cc.gui.vega.component.components.sub;
 
 import com.kisman.cc.gui.vega.component.Component;
 import com.kisman.cc.gui.vega.component.components.Button;
-import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Keyboard;
 

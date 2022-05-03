@@ -1,7 +1,7 @@
 package com.kisman.cc.module.combat.autorer.util.buffer
 
 import com.kisman.cc.module.combat.autorer.math.MathUtilKt
-import i.gishreloaded.gishcode.utils.TimerUtils
+import com.kisman.cc.util.TimerUtils
 import net.minecraft.client.renderer.GLAllocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

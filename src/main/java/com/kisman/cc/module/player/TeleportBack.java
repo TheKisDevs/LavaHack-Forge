@@ -4,7 +4,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.movement.Sprint;
 import com.kisman.cc.util.CheckUtil;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 public class TeleportBack extends Module {
     private double x;

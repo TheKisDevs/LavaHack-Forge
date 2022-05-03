@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.command.Command;
 
 import com.kisman.cc.settings.Setting;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
 
 public class Slider extends Command{
     public Slider() {

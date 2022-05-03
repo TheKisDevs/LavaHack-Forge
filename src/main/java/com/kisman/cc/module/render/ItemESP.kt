@@ -2,15 +2,10 @@ package com.kisman.cc.module.render
 
 import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
-import com.kisman.cc.module.combat.autorer.util.ProjectionUtils
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.objects.TextOnEntityObject
-import i.gishreloaded.gishcode.utils.visual.ColorUtils
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

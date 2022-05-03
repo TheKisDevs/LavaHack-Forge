@@ -5,7 +5,7 @@ import com.kisman.cc.hud.hudmodule.render.packetchat.Message;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 
 import java.lang.reflect.Field;
 

@@ -12,8 +12,9 @@ import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.render.shader.shaders.troll.ShaderHelper;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MathUtil;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.enums.ShaderModes;
-import i.gishreloaded.gishcode.utils.visual.*;
+import com.kisman.cc.util.render.ColorUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.GlStateManager;
@@ -53,7 +54,7 @@ public class ShaderCharms extends Module {
     private final Setting red = new Setting("Red", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
     private final Setting green = new Setting("Green", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
     private final Setting blue = new Setting("Blue", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
-    private final Setting rainbow = new Setting("RainBow", this, true).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
+    private final Setting rainbow = new Setting("RainBow", this, true).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("Outline2"));
     private final Setting delay = new Setting("Delay", this, 100, 1, 2000, true);
     private final Setting saturation = new Setting("Saturation", this, 36, 0, 100, Slider.NumberType.PERCENT);
     private final Setting brightness = new Setting("Brightness", this, 100, 0, 100, Slider.NumberType.PERCENT);
@@ -73,6 +74,10 @@ public class ShaderCharms extends Module {
     private final Setting filledAlpha = new Setting("Filled Alpha", this, (63f / 255f), 0, 1, false).setVisible(() -> mode.checkValString("Outline2"));
     private final Setting width = new Setting("Width", this, 2, 1, 8, false).setVisible(() -> mode.checkValString("Outline2"));
     private final Setting ratio = new Setting("Ratio", this, 0.5, 0,1, false).setVisible(() -> mode.checkValString("Outline2"));
+
+    private final Setting rainbowSpeed = new Setting("Rainbow Speed", this, 0.4, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
+    private final Setting rainbowStrength = new Setting("Rainbow Strength", this, 0.3, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
+    private final Setting rainbowSaturation = new Setting("Rainbow Saturation", this, 0.5, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
 
     public static ShaderCharms instance;
 
@@ -128,6 +133,10 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(filledAlpha);
         setmgr.rSetting(width);
         setmgr.rSetting(ratio);
+
+        setmgr.rSetting(rainbowSpeed);
+        setmgr.rSetting(rainbowStrength);
+        setmgr.rSetting(rainbowSaturation);
     }
 
     public void onEnable() {
@@ -302,6 +311,9 @@ public class ShaderCharms extends Module {
                     ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
                     ((OutlineShader) framebufferShader).radius = radius.getValFloat();
                     ((OutlineShader) framebufferShader).quality = quality.getValFloat();
+                    ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
+                    ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
+                    ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
                 }
                 framebufferShader.startDraw(event.getPartialTicks());
                 for (Entity entity : mc.world.loadedEntityList) {

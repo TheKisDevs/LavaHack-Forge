@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.kisman.cc.util.customfont.CustomFont;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 

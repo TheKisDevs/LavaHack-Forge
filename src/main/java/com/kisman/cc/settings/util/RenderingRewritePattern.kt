@@ -13,16 +13,19 @@ import java.util.function.Supplier
 
 class RenderingRewritePattern(
     val module : Module,
-    val visible : Supplier<Boolean>
+    val visible : Supplier<Boolean>,
+    val prefix : String?
 ) {
-    val mode = Setting("Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
-    val lineWidth = Setting("Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
+    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
+
+    val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
+    val lineWidth = Setting((if(prefix != null) "$prefix " else "") + "Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
         visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
     }
 
     //Colors
-    val color1 = Setting("Render Color", module, "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
-    val color2 = Setting("Render Second Color", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible {
+    val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
+    val color2 = Setting((if(prefix != null) "$prefix " else "") + "Render Second Color", module, (if(prefix != null) "$prefix " else "") + "Render Second Color", Colour(0, 120, 255, 255)).setVisible {
         visible.get() && (
                 mode.valEnum == RenderingRewriteModes.FilledGradient ||
                         mode.valEnum == RenderingRewriteModes.OutlineGradient ||

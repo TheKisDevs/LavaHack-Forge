@@ -3,7 +3,7 @@ package com.kisman.cc.module;
 import com.kisman.cc.Kisman;
 
 import com.kisman.cc.settings.*;
-import i.gishreloaded.gishcode.utils.visual.ChatUtils;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;

@@ -9,7 +9,7 @@ import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -53,10 +53,10 @@ public class HalqGui extends GuiScreen {
 
     public HalqGui() {
         this.particleSystem = new ParticleSystem(300);
-        int offsetX = 5 + headerOffset;
+        int offsetX = headerOffset;
         for(Category cat : Category.values()) {
-            frames.add(new Frame(cat, offsetX, 10));
-            offsetX += headerOffset * 2 + width;
+            frames.add(new Frame(cat, offsetX, 15));
+            offsetX += headerOffset * 2 + width - 1;
         }
     }
 

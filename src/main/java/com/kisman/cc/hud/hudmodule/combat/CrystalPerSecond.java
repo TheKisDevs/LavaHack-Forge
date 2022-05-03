@@ -4,7 +4,7 @@ import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.manager.Managers;
 
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

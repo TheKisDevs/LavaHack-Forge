@@ -2,7 +2,7 @@ package com.kisman.cc.gui.particle;
 
 import org.lwjgl.util.vector.*;
 
-import i.gishreloaded.gishcode.utils.visual.ColorUtils;
+import com.kisman.cc.util.render.ColorUtils;
 
 import java.util.*;
 
