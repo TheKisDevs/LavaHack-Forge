@@ -32,6 +32,7 @@ import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import org.apache.logging.log4j.*;
+import org.cubic.eventsystem.EventBus;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
