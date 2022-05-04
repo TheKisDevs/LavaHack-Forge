@@ -1,5 +1,7 @@
 package org.cubic.eventsystem;
 
+import java.util.function.Predicate;
+
 public interface EventBus {
 
     void subscribe(Class<?> cls);
@@ -12,7 +14,15 @@ public interface EventBus {
 
     void post(Object event);
 
+    default <T> void post(T event, Predicate<T>... filters){
+        for(Predicate<T> filter : filters){
+            if(!filter.test(event))
+                return;
+        }
+        post(event);
+    }
+
     static EventBus getDefault(){
-        return new EventManager();
+        return new EventDispatcher();
     }
 }

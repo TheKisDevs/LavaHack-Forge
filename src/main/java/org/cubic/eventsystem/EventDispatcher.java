@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-class EventManager implements EventBus {
+class EventDispatcher implements EventBus {
 
     private final Map<Class<?>, List<Listener>> LISTENER;
 
     private final Map<MethodWrapper, Listener> CACHE;
 
-    public EventManager(){
+    public EventDispatcher(){
         LISTENER = new ConcurrentHashMap<>(128);
         CACHE = new ConcurrentHashMap<>(256);
     }

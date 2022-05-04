@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.kisman.cc.module.Debug.EventSystemTest;
 import com.kisman.cc.module.Debug.HelloWorld;
+import com.kisman.cc.module.Debug.NoMove;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
