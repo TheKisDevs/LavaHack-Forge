@@ -6,14 +6,10 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.render.objects.TextOnBoundingBox
-import com.kisman.cc.util.render.objects.TextOnEntityObject
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.abs
 
 class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
 
@@ -22,7 +18,7 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
     private val nameRenderDistance = register(Setting("NameRenderDistance", this, 8.0, 1.0, 30.0, false))
     private val render = register(Setting("Render", this, "Box", listOf("Box", "Glow")))
     private val renderDistance = register(Setting("RenderDistance", this, 8.0, 1.0, 100.0, false))
-    private val renderMode = register(Setting("Render", this, Rendering.Mode.BOTH))
+    private val renderMode = register(Setting("Render Mode", this, Rendering.Mode.BOTH))
     private val outlineWidth = register(Setting("OutlineWidth", this, 2.0, 1.0, 5.0, false))
     private val color = register(Setting("Color", this, "Color", Colour(255, 255, 255, 120)))
     private val color1 = register(Setting("SecondColor", this, "SecondColor", Colour(255, 255, 255, 120)))
@@ -37,13 +33,12 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
             return
         }
 
-        if(!isToggled){
-            return
-        }
+        //check Module class
+//        if(!isToggled){
+//            return
+//        }
 
-        var count = 0;
-
-        for(entity in mc.world.loadedEntityList){
+        for((count, entity) in mc.world.loadedEntityList.withIndex()){
             if(entity !is EntityItem){
                 continue
             }
@@ -52,9 +47,8 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
                 break
             }
 
-            val item : EntityItem = entity
-
-            if(item.getDistanceSq(mc.player) > renderDistance.valDouble){
+            //squared val != non-squared val
+            if(entity.getDistance(mc.player) > renderDistance.valDouble){
                 continue
             }
 
@@ -63,15 +57,10 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
                 entity.glowing = true
                 glowingEntities.add(entity)
 
-                if(itemName.valBoolean){
-                    if(item.getDistanceSq(mc.player) > nameRenderDistance.valDouble){
-                        continue
-                    }
-                    val text = TextOnEntityObject(item.name, entity, textColor.colour)
-                    text.draw(event.partialTicks)
-                }
-
             } else {
+                if(glowingEntities.contains(entity)) {
+                    glowingEntities.remove(entity)
+                }
 
                 var aabb = Rendering.correct(entity.boundingBox)
 
@@ -81,17 +70,15 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
                 }
 
                 Rendering.draw(aabb, outlineWidth.valFloat, color.colour, color1.colour, renderMode.valEnum as Rendering.Mode)
-
-                if(itemName.valBoolean){
-                    if(item.getDistanceSq(mc.player) > nameRenderDistance.valDouble){
-                        continue
-                    }
-                    val text = TextOnBoundingBox(item.name, aabb, textColor.colour)
-                    text.draw(event.partialTicks)
-                }
             }
 
-            count++;
+            if(itemName.valBoolean){
+                if(entity.getDistance(mc.player) > nameRenderDistance.valDouble){
+                    continue
+                }
+                //item.name like item.item.expBottle
+                TextOnBoundingBox(entity.item.displayName, entity.boundingBox, textColor.colour).draw(event.partialTicks)
+            }
         }
     }
 
@@ -102,6 +89,6 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
     }
 
     override fun isBeta() : Boolean {
-        return true;
+        return true
     }
 }

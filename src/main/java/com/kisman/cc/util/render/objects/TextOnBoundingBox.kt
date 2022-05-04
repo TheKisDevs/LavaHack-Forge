@@ -17,21 +17,20 @@ class TextOnBoundingBox (val text : String, val aabb : AxisAlignedBB, override v
         GL11.glPushMatrix()
 
         glBillboardDistanceScaled(
-            Box(aabb).center(),
+            aabb.center,
             Minecraft.getMinecraft().player,
-            1f
+            0.3f
         )
         GlStateManager.disableDepth()
         if(CustomFontModule.turnOn) GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
-        color.glColor()
         GL11.glTranslated(
             (-(CustomFontUtil.getStringWidth(text) / 2)).toDouble(),
             0.0,
             0.0
         )
 
-        CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, -1)
+        CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, color.rgb)
 
         GlStateManager.enableLighting()
         if(CustomFontModule.turnOn) GlStateManager.enableTexture2D()

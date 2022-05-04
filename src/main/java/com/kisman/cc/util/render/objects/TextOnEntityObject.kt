@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11
 
-//TODO: need to finish
+//TODO: done
 class TextOnEntityObject(
         val text : String,
         val entity : Entity,
@@ -18,29 +18,32 @@ class TextOnEntityObject(
     override val type: Object3dTypes = Object3dTypes.Text
 
     override fun draw(ticks: Float) {
-        GL11.glPushMatrix()
+//        GL11.glPushMatrix()
+
+        CubicRendering.setup(CustomFontModule.turnOn)
 
         glBillboardDistanceScaled(
-                Box(entity.entityBoundingBox).center(),
+                entity.entityBoundingBox.center,
                 Minecraft.getMinecraft().player,
                 1f
         )
-        GlStateManager.disableDepth()
-        if(CustomFontModule.turnOn) GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        color.glColor()
+//        GlStateManager.disableDepth()
+//        if(CustomFontModule.turnOn) GlStateManager.disableTexture2D()
+//        GlStateManager.disableLighting()
         GL11.glTranslated(
                 (-(CustomFontUtil.getStringWidth(text) / 2)).toDouble(),
                 0.0,
                 0.0
         )
 
-        CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, -1)
+        CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, color.rgb)
 
-        GlStateManager.enableLighting()
-        if(CustomFontModule.turnOn) GlStateManager.enableTexture2D()
-        GlStateManager.enableDepth()
+        CubicRendering.release(CustomFontModule.turnOn)
 
-        GL11.glPopMatrix()
+//        GlStateManager.enableLighting()
+//        if(CustomFontModule.turnOn) GlStateManager.enableTexture2D()
+//        GlStateManager.enableDepth()
+//
+//        GL11.glPopMatrix()
     }
 }

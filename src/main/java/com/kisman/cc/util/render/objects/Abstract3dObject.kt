@@ -86,7 +86,7 @@ abstract class Abstract3dObject {
                 GlStateManager.enableBlend()
                 GlStateManager.disableDepth()
                 GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ZERO, GL11.GL_ONE)
-                if(customFont) GlStateManager.enableTexture2D() else GlStateManager.disableTexture2D()
+                if(customFont) GlStateManager.enableTexture2D()
                 GlStateManager.depthMask(false)
                 GL11.glEnable(GL11.GL_LINE_SMOOTH)
                 GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
@@ -97,7 +97,7 @@ abstract class Abstract3dObject {
                 GL11.glDisable(GL11.GL_LINE_SMOOTH)
                 GlStateManager.depthMask(true)
                 GlStateManager.enableDepth()
-                if(customFont) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
+                if(customFont) GlStateManager.disableTexture2D()
                 GlStateManager.disableBlend()
                 GlStateManager.popMatrix()
             }
