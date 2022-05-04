@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
 import net.minecraft.entity.*;
 import net.minecraft.item.ItemStack;
@@ -31,7 +32,7 @@ public class MixinEntityLivingBase extends Entity {
     @Inject(method = "getArmSwingAnimationEnd", at = @At("HEAD"), cancellable = true)
     private void yesido(CallbackInfoReturnable<Integer> cir) {
         EventArmSwingAnimationEnd event = new EventArmSwingAnimationEnd();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) cir.setReturnValue(event.getArmSwindAnimationEnd());
     }
 }

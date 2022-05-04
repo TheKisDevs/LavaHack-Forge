@@ -26,7 +26,7 @@ public class MixinEntityRenderer {
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo ci) {
         EventSetupFog event = new EventSetupFog();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) ci.cancel();
     }
 
@@ -47,21 +47,21 @@ public class MixinEntityRenderer {
     @Inject(method = "updateLightmap", at = @At("HEAD"), cancellable = true)
     private void skylightFix(float partialTicks, CallbackInfo ci) {
         EventUpdateLightmap event = new EventUpdateLightmap.Pre();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ))
     private void updateTextureHook(float partialTicks, CallbackInfo ci) {
         EventUpdateLightmap.Post event = new EventUpdateLightmap.Post(lightmapColors);
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) lightmapColors = event.getLightmapColors();
     }
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"), expect = 0)
     private RayTraceResult rayTraceBlocks(WorldClient worldClient, Vec3d start, Vec3d end) {
         EventOrientCamera event = new EventOrientCamera();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         return event.isCancelled() ? null : worldClient.rayTraceBlocks(start, end);
     }
 }

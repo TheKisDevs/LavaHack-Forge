@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventIngameOverlay;
 import com.kisman.cc.module.render.*;
 import com.kisman.cc.util.Render2DUtil;
@@ -28,21 +29,21 @@ public class MixinGuiIngame extends Gui {
     @Inject(method = "renderPortal", at = @At("HEAD"), cancellable = true)
     protected void antiPortal(float timeInPortal, ScaledResolution scaledRes, CallbackInfo ci) {
         EventIngameOverlay.Portal event = new EventIngameOverlay.Portal();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     protected void renderPumpkinOverlayHook(ScaledResolution scaledRes, CallbackInfo ci) {
         EventIngameOverlay.Pumpkin event = new EventIngameOverlay.Pumpkin();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "renderPotionEffects", at = @At("HEAD"), cancellable = true)
     protected void renderPotionEffectsHook(ScaledResolution scaledRes, CallbackInfo ci) {
         EventIngameOverlay.Overlay event = new EventIngameOverlay.Overlay();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) ci.cancel();
     }
 
@@ -53,7 +54,7 @@ public class MixinGuiIngame extends Gui {
     @Overwrite
     protected void renderHotbar(ScaledResolution sr, float partialTicks) {
         EventIngameOverlay.Hotbar event = new EventIngameOverlay.Hotbar();
-        event.post();
+        Kisman.EVENT_BUS.post(event);
 
         if(event.isCancelled()) {
             Color backgroundColor = new Color(31, 31, 31, 152);

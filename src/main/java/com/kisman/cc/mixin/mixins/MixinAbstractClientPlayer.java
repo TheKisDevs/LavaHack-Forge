@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventCape;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -23,7 +24,7 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
         EventCape event = new EventCape(playerInfo);
-        event.post();
+        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) cir.setReturnValue(event.getResLoc());
     }
 }
