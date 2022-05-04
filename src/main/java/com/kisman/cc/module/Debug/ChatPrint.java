@@ -1,5 +1,6 @@
 package com.kisman.cc.module.Debug;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.util.Timer;

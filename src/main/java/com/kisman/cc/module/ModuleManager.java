@@ -117,6 +117,7 @@ public class ModuleManager {
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESP());
+		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());
 		modules.add(new LogoutSpots());
 		modules.add(new NameTags());
