@@ -1,14 +1,17 @@
 package com.kisman.cc.module.render;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventPlayerJump;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import org.lwjgl.opengl.GL11;
 
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,9 +40,23 @@ public class JumpCircle extends Module {
         setmgr.rSetting(color);
     }
 
+    public void onEnable() {
+        super.onEnable();
+        Kisman.EVENT_BUS.subscribe(jump);
+    }
+
+    public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(jump);
+    }
+
     public void update() {
         try{circles.removeIf(Circle::update);} catch(Exception ignored) {}
     }
+
+    @EventHandler private final Listener<EventPlayerJump> jump = new Listener<>(event -> {
+        circles.add(new Circle(event.entity.getPositionVector(), rainbow.getValBoolean() ? new Colour(ColorUtils.rainbow(1, 1)).toVec3d() : color.getColour().toVec3d()));
+    });
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
@@ -88,10 +105,6 @@ public class JumpCircle extends Module {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glPopMatrix();
-    }
-
-    public void handleEntityJump(Entity entity) {
-        circles.add(new Circle(entity.getPositionVector(), rainbow.getValBoolean() ? new Colour(ColorUtils.rainbow(1, 1)).toVec3d() : color.getColour().toVec3d()));
     }
 
     public class Circle {

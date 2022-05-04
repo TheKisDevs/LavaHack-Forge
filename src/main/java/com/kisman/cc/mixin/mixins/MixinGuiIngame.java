@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.event.events.EventIngameOverlay;
 import com.kisman.cc.module.render.*;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
@@ -26,17 +27,23 @@ public class MixinGuiIngame extends Gui {
 
     @Inject(method = "renderPortal", at = @At("HEAD"), cancellable = true)
     protected void antiPortal(float timeInPortal, ScaledResolution scaledRes, CallbackInfo ci) {
-        if(NoRender.instance.isToggled() && NoRender.instance.portal.getValBoolean()) ci.cancel();
+        EventIngameOverlay.Portal event = new EventIngameOverlay.Portal();
+        event.post();
+        if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
-    protected void renderPumpkinOverlayHook(ScaledResolution scaledRes, CallbackInfo callbackInfo) {
-        if (NoRender.instance.isToggled() && NoRender.instance.overlay.getValBoolean()) callbackInfo.cancel();
+    protected void renderPumpkinOverlayHook(ScaledResolution scaledRes, CallbackInfo ci) {
+        EventIngameOverlay.Pumpkin event = new EventIngameOverlay.Pumpkin();
+        event.post();
+        if(event.isCancelled()) ci.cancel();
     }
 
     @Inject(method = "renderPotionEffects", at = @At("HEAD"), cancellable = true)
-    protected void renderPotionEffectsHook(ScaledResolution scaledRes, CallbackInfo callbackInfo) {
-        if (NoRender.instance.isToggled() && NoRender.instance.overlay.getValBoolean()) callbackInfo.cancel();
+    protected void renderPotionEffectsHook(ScaledResolution scaledRes, CallbackInfo ci) {
+        EventIngameOverlay.Overlay event = new EventIngameOverlay.Overlay();
+        event.post();
+        if(event.isCancelled()) ci.cancel();
     }
 
     /**
@@ -45,7 +52,10 @@ public class MixinGuiIngame extends Gui {
      */
     @Overwrite
     protected void renderHotbar(ScaledResolution sr, float partialTicks) {
-        if(HotbarModifier.instance.isToggled()) {
+        EventIngameOverlay.Hotbar event = new EventIngameOverlay.Hotbar();
+        event.post();
+
+        if(event.isCancelled()) {
             Color backgroundColor = new Color(31, 31, 31, 152);
             if (this.mc.getRenderViewEntity() instanceof EntityPlayer) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

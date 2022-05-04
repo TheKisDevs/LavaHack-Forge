@@ -8,7 +8,6 @@
     "MixinAbstractClientPlayer",
     "MixinC00Handshake",
     "MixinEntity",
-    "MixinEntityEnderCrystal",
     "MixinEntityLivingBase",
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",

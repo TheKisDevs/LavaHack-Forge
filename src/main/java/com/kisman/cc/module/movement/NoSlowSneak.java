@@ -6,20 +6,16 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.MovementUtil;
 
 public class NoSlowSneak extends Module {
-    public Setting mode = new Setting("Mode", this, Mode.Motion);
-
     public static NoSlowSneak instance;
 
     public NoSlowSneak() {
         super("NoSlowSneak", "NoSlowSneak", Category.MOVEMENT);
 
         instance = this;
-
-        setmgr.rSetting(mode);
     }
 
     public void update() {
-        if(mc.player == null || mc.world == null || mode.checkValString(Mode.Cancel.name())) return;
+        if(mc.player == null || mc.world == null) return;
         if(mc.player.isSneaking()) {
             if(mc.gameSettings.keyBindForward.isKeyDown()) {
                 mc.player.jumpMovementFactor = 0.1f;
@@ -49,6 +45,4 @@ public class NoSlowSneak extends Module {
             ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.02f);
         }
     }
-
-    public enum Mode {Motion, Cancel}
 }

@@ -28,7 +28,7 @@ public class Render2DUtil extends GuiScreen {
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static HashMap<Integer, Integer> shadowCache = new HashMap<Integer, Integer>();
 
-    public double getZLevel() {return this.zLevel;}
+    public float getZLevel() {return this.zLevel;}
 
     public static void disableGL2D() {
         GL11.glEnable(3553);

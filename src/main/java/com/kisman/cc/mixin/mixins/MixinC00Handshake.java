@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.player.ForgeBypass;
+import com.kisman.cc.event.events.EventC00Handshake;
 import net.minecraft.network.*;
 import net.minecraft.network.handshake.client.C00Handshake;
 import org.spongepowered.asm.mixin.*;
@@ -16,7 +16,9 @@ public class MixinC00Handshake {
 
     @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
     public void writePacketData(PacketBuffer buf, CallbackInfo ci) {
-        if (ForgeBypass.instance.isToggled()) {
+        EventC00Handshake event = new EventC00Handshake(buf);
+        event.post();
+        if(event.isCancelled()) {
             ci.cancel();
             buf.writeVarInt(protocolVersion);
             buf.writeString(ip);

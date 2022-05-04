@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
@@ -15,12 +16,12 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
     public MixinEntityPlayer(World worldIn) {super(worldIn);}
 
     @Shadow protected void doWaterSplashEffect() {}
-    @Shadow public String getName() {return null;}
+    @Shadow public @NotNull String getName() {return "";}
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     private void onJump(CallbackInfo ci) {
         if(Minecraft.getMinecraft().player.getName().equals(getName())) {
-            EventPlayerJump event = new EventPlayerJump();
+            EventPlayerJump event = new EventPlayerJump(this);
             Kisman.EVENT_BUS.post(event);
             if(event.isCancelled()) ci.cancel();
         }

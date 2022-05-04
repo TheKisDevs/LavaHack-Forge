@@ -1,9 +1,11 @@
 package com.kisman.cc.module.player;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventC00Handshake;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
 import io.netty.buffer.Unpooled;
+import me.zero.alpine.event.type.Cancellable;
 import me.zero.alpine.listener.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
@@ -19,11 +21,15 @@ public class ForgeBypass extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(send);
+        Kisman.EVENT_BUS.subscribe(c00Handshake);
     }
 
     public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(c00Handshake);
         Kisman.EVENT_BUS.unsubscribe(send);
     }
+
+    @EventHandler Listener<EventC00Handshake> c00Handshake = new Listener<>(Cancellable::cancel);
 
     @EventHandler
     private final Listener<PacketEvent.Send> send = new Listener<>(event -> {

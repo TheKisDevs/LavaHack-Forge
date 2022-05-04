@@ -1,8 +1,12 @@
 package com.kisman.cc.module.render;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventIngameOverlay;
+import com.kisman.cc.event.events.EventSetupFog;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
@@ -52,6 +56,36 @@ public class NoRender extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Lava", this, false));
     }
+
+    public void onEnable() {
+        Kisman.EVENT_BUS.subscribe(setupFog);
+        Kisman.EVENT_BUS.subscribe(bossBar_);
+    }
+
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(bossBar_);
+        Kisman.EVENT_BUS.unsubscribe(setupFog);
+    }
+
+    @EventHandler private final Listener<EventIngameOverlay.BossBar> bossBar_ = new Listener<>(event -> {
+        if(bossBar.getValBoolean()) event.cancel();
+    });
+
+    @EventHandler private final Listener<EventSetupFog> setupFog = new Listener<>(event -> {
+        if(fog.getValBoolean()) event.cancel();
+    });
+
+    @EventHandler private final Listener<EventIngameOverlay.Pumpkin> pumpkin = new Listener<>(event -> {
+        if(overlay.getValBoolean()) event.cancel();
+    });
+
+    @EventHandler private final Listener<EventIngameOverlay.Portal> portal_ = new Listener<>(event -> {
+        if(portal.getValBoolean()) event.cancel();
+    });
+
+    @EventHandler private final Listener<EventIngameOverlay.Overlay> overlay_ = new Listener<>(event -> {
+        if(overlay.getValBoolean()) event.cancel();
+    });
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
