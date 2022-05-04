@@ -5,6 +5,7 @@ import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.RayTraceResult;
@@ -205,5 +206,12 @@ public class PredictUtil {
             this.nStairs = nStairs;
             this.speedActivationStairs = speedActivationStairs;
         }
+    }
+
+    public static Vec3d predictSimple(Entity entity, double ticks){
+        double mX = entity.motionX * ticks;
+        double mY = entity.motionY * ticks;
+        double mZ = entity.motionZ * ticks;
+        return new Vec3d(mX, mY, mZ);
     }
 }

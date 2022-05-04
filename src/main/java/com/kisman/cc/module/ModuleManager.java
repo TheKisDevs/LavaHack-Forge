@@ -5,7 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kisman.cc.module.Debug.EventSystemTest;
 import com.kisman.cc.module.Debug.HelloWorld;
+import com.kisman.cc.module.Debug.NoMove;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -20,6 +22,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
+import org.lwjgl.input.Keyboard;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -62,6 +65,7 @@ public class ModuleManager {
 		modules.add(new BreakAlert());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
+		//modules.add(new Flatten());
 		modules.add(new HoleFiller());
 		modules.add(new KillAura());
 		modules.add(new NoFriendDamage());
@@ -113,6 +117,7 @@ public class ModuleManager {
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESP());
+		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());
 		modules.add(new LogoutSpots());
 		modules.add(new NameTags());
@@ -132,7 +137,7 @@ public class ModuleManager {
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
-		//modules.add(new Weather());
+		modules.add(new Weather());
 		modules.add(new XRay());
 		//movement
 		modules.add(new AirJump());
@@ -215,6 +220,7 @@ public class ModuleManager {
 		modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
+		//modules.add(new GhostEnderPearl());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
