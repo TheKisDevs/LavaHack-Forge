@@ -53,7 +53,7 @@ abstract class Abstract3dObject {
     }
 
     fun glBillboard(vec : Vec3d) {
-        val scale = 0.2666667f
+        val scale = 0.02666667f
         val mc = Minecraft.getMinecraft()
         GL11.glTranslated(
                 vec.x - mc.renderManager.renderViewEntity.posX,

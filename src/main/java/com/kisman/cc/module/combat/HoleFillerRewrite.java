@@ -4,17 +4,16 @@ import com.google.common.collect.Sets;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.BlockUtil;
-import com.kisman.cc.util.InventoryUtil;
+import com.kisman.cc.util.*;
+import com.kisman.cc.util.Timer;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Work in progress
@@ -43,7 +42,177 @@ public class HoleFillerRewrite extends Module {
         super("HoleFillerRewrite", Category.COMBAT);
     }
 
-    private final Set<AxisAlignedBB> holes = Sets.newConcurrentHashSet();
+    private List<BlockPos> holes = new ArrayList<>();
+
+    private final Timer placeTimer = new Timer();
+
+    private final Set<BlockPos> placed = new HashSet<>(512);
+
+    @Override
+    public void update(){
+        if(mc.world == null || mc.player == null)
+            return;
+
+        Entity entity = placeMode.getValString().equals("All") ? mc.player : EntityUtil.getTarget(enemyRange.getValFloat());
+
+        if(entity == null)
+            return;
+
+        placeHoleBlocks(entity);
+    }
+
+    private void placeHoleBlocks(Entity entity){
+        int slot = getBlockSlot();
+        if(slot == -1)
+            return;
+        if(place.getValString().equals("Instant")){
+            holes.clear();
+            holes = getHoleBlocks(entity);
+            holes.forEach(blockPos -> place(blockPos, slot));
+            placeTimer.reset();
+            return;
+        }
+        if(place.getValString().equals("Tick")){
+            placeHoleBlocksChained(entity, slot);
+            placeTimer.reset();
+            return;
+        }
+        if(place.getValString().equals("Delay") && placeTimer.passedMs(delay.getValInt())){
+            placeHoleBlocksChained(entity, slot);
+            placeTimer.reset();
+        }
+    }
+
+    private void placeHoleBlocksChained(Entity entity, int slot){
+        holes = getHoleBlocks(entity);
+        boolean clear = true;
+        for(BlockPos pos : holes){
+            if(placed.contains(pos))
+                continue;
+            place(pos, slot);
+            placed.add(pos);
+            clear = false;
+        }
+        if(clear)
+            placed.clear();
+    }
+
+    private List<BlockPos> getHoleBlocks(Entity entity){
+        List<BlockPos> holes = new ArrayList<>(64);
+        float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
+        Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
+        int lim = 0;
+        if(singleHoles.getValBoolean())
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE, lim));
+        if(doubleHoles.getValBoolean())
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE, lim));
+        if(customHoles.getValBoolean())
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM, lim));
+        return holes;
+    }
+
+    private List<BlockPos> getHoleBlocksOfType(Set<BlockPos> possibleHoles, HoleUtil.HoleType type, int lim){
+        List<BlockPos> holes = new ArrayList<>(32);
+        for(BlockPos pos : possibleHoles){
+            if(limit.getValInt() != 0 && lim > limit.getValInt())
+                break;
+            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
+            HoleUtil.HoleType holeType = holeInfo.getType();
+            HoleUtil.BlockSafety safety = holeInfo.getSafety();
+            if(holeType != type)
+                continue;
+            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
+                continue;
+            if(!obsidianHoles.getValBoolean())
+                continue;
+            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
+            holes.addAll(blocks);
+            lim++;
+        }
+        return holes;
+    }
+
+    /*
+    private List<BlockPos> getSingleHoleBlocks(Set<BlockPos> possibleHoles){
+        List<BlockPos> holes = new ArrayList<>(32);
+        for(BlockPos pos : possibleHoles){
+            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
+            HoleUtil.HoleType holeType = holeInfo.getType();
+            HoleUtil.BlockSafety safety = holeInfo.getSafety();
+            if(holeType != HoleUtil.HoleType.SINGLE)
+                continue;
+            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
+                continue;
+            if(!obsidianHoles.getValBoolean())
+                continue;
+
+            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
+            holes.addAll(blocks);
+        }
+        return holes;
+    }
+
+    private List<BlockPos> getDoubleHoleBlocks(Set<BlockPos> possibleHoles){
+        List<BlockPos> holes = new ArrayList<>(32);
+        for(BlockPos pos : possibleHoles){
+            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
+            HoleUtil.HoleType holeType = holeInfo.getType();
+            HoleUtil.BlockSafety safety = holeInfo.getSafety();
+            if(holeType != HoleUtil.HoleType.DOUBLE)
+                continue;
+            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
+                continue;
+            if(!obsidianHoles.getValBoolean())
+                continue;
+
+            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
+            holes.addAll(blocks);
+        }
+        return holes;
+    }
+     */
+
+    private Set<BlockPos> getPossibleHoles(Entity entity, float range){
+        Set<BlockPos> possibleHoles = new HashSet<>();
+        List<BlockPos> blockPosList = EntityUtil.getSphere(getEntityPos(entity), range, (int) range, false, true, 0);
+        for (BlockPos pos : blockPosList) {
+            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR))
+                continue;
+            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR))
+                continue;
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR))
+                continue;
+            if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR))
+                possibleHoles.add(pos);
+        }
+        return possibleHoles;
+    }
+
+    private BlockPos getEntityPos(Entity entity){
+        return new BlockPos(entity.posX, entity.posY, entity.posZ);
+    }
+
+    private List<BlockPos> splitAABB(AxisAlignedBB aabb){
+        List<BlockPos> list = new ArrayList<>();
+        double xDiff = aabb.maxX - aabb.minX;
+        double zDiff = aabb.maxZ - aabb.minZ;
+        if(xDiff > 2.0 && zDiff > 2.0)
+            return list;
+        if(xDiff > zDiff){
+            int x = (int) aabb.minX;
+            int lim = (int) aabb.maxX;
+            for(; x < lim; x++){
+                list.add(new BlockPos(x, (int) aabb.minY, (int) aabb.minZ));
+            }
+        } else {
+            int z = (int) aabb.minZ;
+            int lim = (int) aabb.maxZ;
+            for(; z < lim; z++){
+                list.add(new BlockPos((int) aabb.minX, (int) aabb.minY, z));
+            }
+        }
+        return list;
+    }
 
     private int getBlockSlot(){
         if(blocks.getValString().equals("Obsidian")){
@@ -58,6 +227,7 @@ public class HoleFillerRewrite extends Module {
         doSwitch(slot, false);
         BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);
         doSwitch(oldSlot, true);
+        mc.playerController.updateController();
     }
 
     private void doSwitch(int slot, boolean swapBack){
@@ -81,4 +251,34 @@ public class HoleFillerRewrite extends Module {
                 break;
         }
     }
+
+    /*
+    private static class BlockPosBundle {
+
+        private BlockPos first;
+
+        private BlockPos second;
+
+        public BlockPosBundle(BlockPos first, BlockPos second){
+            this.first = first;
+            this.second = second;
+        }
+
+        public BlockPos getFirst() {
+            return first;
+        }
+
+        public void setFirst(BlockPos first) {
+            this.first = first;
+        }
+
+        public BlockPos getSecond() {
+            return second;
+        }
+
+        public void setSecond(BlockPos second) {
+            this.second = second;
+        }
+    }
+     */
 }

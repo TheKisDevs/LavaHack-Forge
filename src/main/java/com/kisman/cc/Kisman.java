@@ -73,7 +73,7 @@ public class Kisman {
     public static boolean canInitializateCatLua = true;
 
     static {
-        allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
+        allowToConfiguredAnotherClients = true; //HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b");
     }
 
     public boolean init = false;

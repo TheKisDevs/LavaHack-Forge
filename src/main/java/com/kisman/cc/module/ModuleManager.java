@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kisman.cc.module.Debug.BlockOverlay;
 import com.kisman.cc.module.Debug.EventSystemTest;
 import com.kisman.cc.module.Debug.HelloWorld;
 import com.kisman.cc.module.Debug.NoMove;
@@ -42,6 +43,7 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.module");
 
 		//Debug
+		//modules.add(new BlockOverlay());
 		modules.add(new HelloWorld());
 
 		//combat
@@ -67,6 +69,7 @@ public class ModuleManager {
 		modules.add(new CrystalFiller());
 		//modules.add(new Flatten());
 		modules.add(new HoleFiller());
+		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());
 		modules.add(new NoFriendDamage());
 		modules.add(new OffHand());
@@ -169,6 +172,7 @@ public class ModuleManager {
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
+		//modules.add(new ChorusDelay());
 		modules.add(new ElytraEquip());
 		modules.add(new FastBreak());
 		modules.add(new FastLadder());
