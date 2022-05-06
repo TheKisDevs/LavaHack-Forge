@@ -92,6 +92,7 @@ public class HoleFillerRewrite extends Module {
             place(pos, slot);
             placed.add(pos);
             clear = false;
+            break;
         }
         if(clear)
             placed.clear();
@@ -121,8 +122,12 @@ public class HoleFillerRewrite extends Module {
             HoleUtil.BlockSafety safety = holeInfo.getSafety();
             if(holeType != type)
                 continue;
-            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
+            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && bedrockHoles.getValBoolean()){
+                List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
+                holes.addAll(blocks);
+                lim++;
                 continue;
+            }
             if(!obsidianHoles.getValBoolean())
                 continue;
             List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
