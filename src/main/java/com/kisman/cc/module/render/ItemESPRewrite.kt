@@ -83,12 +83,9 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
     }
 
     override fun onDisable(){
+        super.onDisable()
         for(entity in glowingEntities){
             entity.glowing = false
         }
-    }
-
-    override fun isBeta() : Boolean {
-        return true
     }
 }

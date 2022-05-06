@@ -3,7 +3,6 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.module.movement.NoSlowSneak;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.MoverType;

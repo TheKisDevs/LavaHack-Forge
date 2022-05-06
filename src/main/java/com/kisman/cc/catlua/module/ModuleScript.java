@@ -87,7 +87,7 @@ public class ModuleScript extends Module {
 
     //TODO make that shit better lole
     private void applyEngine(ScriptEngine engine) {
-        engine.put("mc", Minecraft.instance);
+        engine.put("mc", Minecraft.getMinecraft());
         engine.put("this", this);
         engine.put("textOf", new TextOfFunction());
         engine.put("box", new BoxFunction());
@@ -102,13 +102,13 @@ public class ModuleScript extends Module {
         engine.put("interactions", LuaInteractions.getDefault());
         engine.put("files", LuaFiles.getDefault());
         engine.put("Module", ModuleLua.getLua());
-        engine.put("HudModule", HudModuleLua.getLua());
+//        engine.put("HudModule", HudModuleLua.getLua());
         engine.put("GuiBuilder", GuiBuilder.getLua());
         engine.put("rotations", Kisman.instance.luaRotation);
         engine.put("net", LuaNet.Companion.getDefault());
 
         engine.put("Builder", new LuaSetting.LuaBuilder());
-        engine.put("SettingManager", Kisman.instance.settingsManager);
+        engine.put("setmgr", Kisman.instance.settingsManager);
     }
 
     public LuaCallback registerCallback(String name, LuaClosure luaFunction) {

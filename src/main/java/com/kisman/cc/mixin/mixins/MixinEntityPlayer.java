@@ -23,7 +23,6 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
         if(Minecraft.getMinecraft().player.getName().equals(getName())) {
             EventPlayerJump event = new EventPlayerJump(this);
             Kisman.EVENT_BUS.post(event);
-            if(event.isCancelled()) ci.cancel();
         }
     }
 

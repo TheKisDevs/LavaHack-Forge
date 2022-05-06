@@ -1,7 +1,6 @@
 package com.kisman.cc.catlua.mapping;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.catlua.parser.MappingParser;
 import com.kisman.cc.catlua.parser.entry.ClassEntry;
 import com.kisman.cc.catlua.parser.entry.FieldEntry;
 import com.kisman.cc.catlua.parser.entry.MethodEntry;
@@ -19,17 +18,14 @@ public class Remapper3000 {
     public final Path mapping = Paths.get(Kisman.fileName + Kisman.mappingName + lzma);//lzma
 
     public HashMap<String, String> fieldsMapping, methodsMapping, fieldsMappingReverse, methodsMappingReverse;
-    public HashMap<String, LuaValue> methodsCache;
 
     public HashMap<String, FieldEntry> fieldsEntryCache;
     public HashMap<String, ClassEntry> classesEntryCache;
     public HashMap<String, MethodEntry> methodsEntryCache;
 
     public final HashMap<String, Field> fieldsCache = new HashMap<>();
-    public final HashMap<String, LuaValue> methodCache = new HashMap<>();
+    public final HashMap<String, LuaValue> methodsCache = new HashMap<>();
     public final HashMap<String, Class<?>> classCache = new HashMap<>();
-
-    public MappingParser parser;
 
     public String remappingField(String toRemap) {
         if(fieldsMapping.containsKey(toRemap)) return fieldsMapping.get(toRemap);
@@ -43,11 +39,8 @@ public class Remapper3000 {
 
     public void init() {
         Kisman.LOGGER.info("[Remapper3000] Start remapping!");
-        parser = new MappingParser();
-        parser.reset();
 
 
-        methodsCache = new HashMap<>();
         if(!Files.exists(mapping) || !Files.exists(fieldsPath) || !Files.exists(methodsPath)) Kisman.LOGGER.error("[Remapper3000] You haven't mapping files, if you want to use lua scripts, you should to put mapping files in .minecraft/kisman/cc/Mapping/ and relaunch the client!");
         else {
             fieldsMapping = methodsMapping = fieldsMappingReverse = methodsMappingReverse = new HashMap<>();
@@ -61,9 +54,7 @@ public class Remapper3000 {
                     String[] toOut = new String[] {"", ""};
                     while ((inputLine = br.readLine()) != null) {
                         String[] split = inputLine.split(",");
-                        fieldsMapping.put(split[1], split[0]);
-                        fieldsMappingReverse.put(split[0], split[1]);
-                        parser.parse(split[0], split[1], MappingParser.ForParsing.FIELD);
+                        fieldsMapping.put(split[0], split[1]);
                         toOut = new String[] {split[0], split[1]};
                     }
                     System.out.println("key - " + toOut[1] + "\nvalue - " + toOut[0]);
@@ -79,9 +70,7 @@ public class Remapper3000 {
                     String[] toOut = new String[] {"", ""};
                     while ((inputLine = br.readLine()) != null) {
                         String[] split = inputLine.split(",");
-                        methodsMapping.put(split[1], split[0]);
-                        methodsMappingReverse.put(split[0], split[1]);
-                        parser.parse(split[0], split[1], MappingParser.ForParsing.METHOD);
+                        methodsMapping.put(split[0], split[0]);
                         toOut = new String[] {split[0], split[1]};
                     }
                     System.out.println("key - " + toOut[1] + "\nvalue - " + toOut[0]);
@@ -95,7 +84,6 @@ public class Remapper3000 {
                 Kisman.instance.forgeMappings.init(new FileInputStream(mapping.toFile()));
             } catch (IOException e) {
                 Kisman.LOGGER.error("[ForgeMappings] You have error with lzma.txt mapping file, please, fix the problem and launch the client!(Maybe you will get crash if you dont fix the problem)");
-                return;
             }
         }
 

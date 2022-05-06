@@ -10,7 +10,7 @@ import java.util.Locale;
 public class ReverseStep extends Module {
     public static ReverseStep instance;
 
-    public Setting height = new Setting("Height", this, 1.0, 0.5, 4, false);
+    public Setting height = new Setting("Height", this, 2, 1, 4, true);
 
     private final Setting lagTime = new Setting("Lag Time", this, false);
     private final Setting lagTimeValue = new Setting("Lag Time Value", this, 500, 0, 2000, Slider.NumberType.TIME);
@@ -33,7 +33,7 @@ public class ReverseStep extends Module {
 
     public void update() {
         if (mc.world == null || mc.player == null || mc.player.isInWater() || mc.player.isInLava() || mc.player.isOnLadder() || mc.gameSettings.keyBindJump.isKeyDown()) return;
-        super.setDisplayInfo("[" + String.format(Locale.ENGLISH, "%.4f", height.getValDouble()) + "]");
+        super.setDisplayInfo("[" + height.getValInt() + "]");
         if (mc.player.onGround && !mc.player.isInWater() && !mc.player.isOnLadder()) {
             if(lagTimer.passedMillis(lagTime.getValBoolean() ? lagTimeValue.getValLong() : 500L)) {
                 lagTimer.reset();

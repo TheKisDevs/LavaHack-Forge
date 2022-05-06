@@ -109,7 +109,6 @@ public class Kisman {
 
     //catlua
     public EventProcessorLua eventProcessorLua;
-    public ExcludedList excludedList;
     public Remapper3000 remapper3000;
     public ForgeMappings forgeMappings;
     public LuaRotation luaRotation;
@@ -173,7 +172,6 @@ public class Kisman {
         //catlua
         catlua: {
             eventProcessorLua = new EventProcessorLua();
-            excludedList = new ExcludedList();
             remapper3000 = new Remapper3000();
             remapper3000.init();
             luaRotation = new LuaRotation();

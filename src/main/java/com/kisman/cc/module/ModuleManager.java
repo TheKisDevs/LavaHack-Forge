@@ -65,7 +65,7 @@ public class ModuleManager {
 		modules.add(new BreakAlert());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
-		//modules.add(new Flatten());
+		modules.add(new Flatten());
 		modules.add(new HoleFiller());
 		modules.add(new KillAura());
 		modules.add(new NoFriendDamage());
@@ -101,9 +101,9 @@ public class ModuleManager {
 		modules.add(new TraceTeleport());
 		//render
 		modules.add(new Animation());
+		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
-		modules.add(new BlockOutline());
 		modules.add(new CameraClip());
 		modules.add(new Charms());
 		modules.add(new CityESP());
@@ -112,11 +112,9 @@ public class ModuleManager {
 		modules.add(new CustomFog());
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
-		modules.add(new EntityESP());
 		modules.add(new EntityESPRewrite());
 		modules.add(new HoleESP());
 		modules.add(new HotbarModifier());
-		modules.add(new ItemESP());
 		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());
 		modules.add(new LogoutSpots());
@@ -133,7 +131,7 @@ public class ModuleManager {
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
-		modules.add(new Trails());
+//		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());

@@ -61,14 +61,6 @@ public class StorageESP extends Module{
                 if(tileEntity instanceof TileEntityFurnace && furnace) renderer.draw(event.getPartialTicks(), ColourUtilKt.BlockColors.Companion.getFurnaceColor(), tileEntity.getPos(), colorAlpha.getValInt());
                 if(tileEntity instanceof TileEntityHopper && hopper) renderer.draw(event.getPartialTicks(), ColourUtilKt.BlockColors.Companion.getHopperColor(), tileEntity.getPos(), colorAlpha.getValInt());
                 if(tileEntity instanceof TileEntityDropper && dropper) renderer.draw(event.getPartialTicks(), ColourUtilKt.BlockColors.Companion.getDropperColor(), tileEntity.getPos(), colorAlpha.getValInt());
-
-                /*if(tileEntity instanceof TileEntityChest && chest) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.94f, 0.60f, 0.11f);
-                if(tileEntity instanceof TileEntityEnderChest && eChest) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.53f, 0.11f, 0.94f);
-                if(tileEntity instanceof TileEntityShulkerBox && shulkerBox) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.8f, 0.08f, 0.93f);
-                if(tileEntity instanceof TileEntityDispenser && dispenser) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                if(tileEntity instanceof TileEntityFurnace && furnace) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                if(tileEntity instanceof TileEntityHopper && hopper) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);
-                if(tileEntity instanceof TileEntityDropper && dropper) RenderUtil.drawBlockESP(tileEntity.getPos(), 0.34f, 0.32f, 0.34f);*/
             }
         );
     }

@@ -14,8 +14,8 @@ public class Welcomer extends HudModule {
     }
 
     public void onEnable() {
-        setX(100);
-        setY(2);
+        setX(0);
+        setY(0);
     }
 
     @SubscribeEvent

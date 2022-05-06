@@ -53,10 +53,7 @@ public class MixinGuiIngame extends Gui {
      */
     @Overwrite
     protected void renderHotbar(ScaledResolution sr, float partialTicks) {
-        EventIngameOverlay.Hotbar event = new EventIngameOverlay.Hotbar();
-        Kisman.EVENT_BUS.post(event);
-
-        if(event.isCancelled()) {
+        if(HotbarModifier.instance.isToggled()) {
             Color backgroundColor = new Color(31, 31, 31, 152);
             if (this.mc.getRenderViewEntity() instanceof EntityPlayer) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

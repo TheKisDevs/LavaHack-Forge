@@ -33,6 +33,6 @@ public class MixinEntityLivingBase extends Entity {
     private void yesido(CallbackInfoReturnable<Integer> cir) {
         EventArmSwingAnimationEnd event = new EventArmSwingAnimationEnd();
         Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()) cir.setReturnValue(event.getArmSwindAnimationEnd());
+        if(event.isCancelled()) cir.setReturnValue(event.getArmSwingAnimationEnd());
     }
 }

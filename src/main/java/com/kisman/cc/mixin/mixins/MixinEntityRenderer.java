@@ -2,15 +2,14 @@ package com.kisman.cc.mixin.mixins;
 
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventOrientCamera;
-import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding;
-import com.kisman.cc.event.events.EventSetupFog;
-import com.kisman.cc.event.events.EventUpdateLightmap;
+import com.kisman.cc.event.events.*;
 import com.kisman.cc.module.render.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.*;
+import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -62,6 +61,28 @@ public class MixinEntityRenderer {
     private RayTraceResult rayTraceBlocks(WorldClient worldClient, Vec3d start, Vec3d end) {
         EventOrientCamera event = new EventOrientCamera();
         Kisman.EVENT_BUS.post(event);
-        return event.isCancelled() ? null : worldClient.rayTraceBlocks(start, end);
+        if(event.isCancelled()) return null;
+        else return worldClient.rayTraceBlocks(start, end);
+    }
+
+    @Redirect(method={"setupCameraTransform"}, at=@At(value="INVOKE", target="Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
+    private void onSetupCameraTransform(float fovy, float aspect, float zNear, float zFar) {
+        EventAspect event = new EventAspect((float) Minecraft.getMinecraft().displayWidth / Minecraft.getMinecraft().displayHeight);
+        Kisman.EVENT_BUS.post(event);
+        Project.gluPerspective(fovy, event.getAspect(), zNear, zFar);
+    }
+
+    @Redirect(method={"renderWorldPass"}, at=@At(value="INVOKE", target="Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
+    private void onRenderWorldPass(float fovy, float aspect, float zNear, float zFar) {
+        EventAspect event = new EventAspect((float) Minecraft.getMinecraft().displayWidth / Minecraft.getMinecraft().displayHeight);
+        Kisman.EVENT_BUS.post(event);
+        Project.gluPerspective(fovy, event.getAspect(), zNear, zFar);
+    }
+
+    @Redirect(method={"renderCloudsCheck"}, at=@At(value="INVOKE", target="Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
+    private void onRenderCloudsCheck(float fovy, float aspect, float zNear, float zFar) {
+        EventAspect event = new EventAspect((float) Minecraft.getMinecraft().displayWidth / Minecraft.getMinecraft().displayHeight);
+        Kisman.EVENT_BUS.post(event);
+        Project.gluPerspective(fovy, event.getAspect(), zNear, zFar);
     }
 }

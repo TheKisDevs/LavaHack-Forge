@@ -29,8 +29,7 @@ public class ForgeMappings {
                 String[] split = line.replace("CL: ", "").split(" ");
                 ClassEntry classEntry = new ClassEntry();
                 classEntry.official = split[0];
-                classEntry.named = split[1];
-                classEntry.intermediary = classEntry.named;
+                classEntry.named = classEntry.intermediary = split[1];
                 classes.add(classEntry);
                 System.out.println("Class: official " + classEntry.official + ", named/intermediary " + classEntry.named);
             }

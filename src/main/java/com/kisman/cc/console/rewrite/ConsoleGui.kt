@@ -105,6 +105,7 @@ class ConsoleGui() : GuiScreen() {
                             history += entryString
                         }
                         Kisman.instance.commandManager.runCommands("-${entryString}")
+                        entryString = ""
                     }
                 }
             Keyboard.KEY_V ->
@@ -149,7 +150,7 @@ class ConsoleGui() : GuiScreen() {
         for(string in strings) {
             if(Minecraft.getMinecraft().fontRenderer.getStringWidth(string) > max) max = Minecraft.getMinecraft().fontRenderer.getStringWidth(string)
         }
-        return max;
+        return max
     }
 
 }

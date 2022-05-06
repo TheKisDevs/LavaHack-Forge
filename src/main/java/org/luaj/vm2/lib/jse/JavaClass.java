@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.mapping.ForgeMappings;
-import com.kisman.cc.catlua.mapping.RemapperUtil;
 import com.kisman.cc.catlua.parser.entry.FieldEntry;
 import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import org.luaj.vm2.LuaValue;
@@ -84,29 +83,36 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			fields = m;
 		}
 
+		if(fields.get(key) != null) {
+			System.out.println(fields.get(key).toString());
+			return (Field) fields.get(key);
+		}
+
 		if(Kisman.remapped) {
 			Class<?> superclass = m_instance.getClass();
 			String name = superclass.getName() + key.tojstring();
 			if(Kisman.instance.remapper3000.fieldsCache.containsKey(name)) return Kisman.instance.remapper3000.fieldsCache.get(name);
 
-			if(RemapperUtil.Companion.canBeRemapped(superclass.getName())) {
-				while (superclass != null) {
-//				System.out.println("FindField: superclass " + superclass.getName() + ", name " + key.tojstring());
-					System.out.println("Class:" + superclass.getName());
-					FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.OFFICIAL);
-					if (fieldEntry != null) {
-						Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
-						System.out.println(fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
-						return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));
-					}
-					superclass = superclass.getSuperclass();
+			while (superclass != null) {
+				System.out.println("Class:" + superclass.getName());
+				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", "/"), key.tojstring(), ForgeMappings.NormalFindType.NAMED);
+				if (fieldEntry != null) {
+					Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.official)));
+					System.out.println(fields.get(LuaValue.valueOf(fieldEntry.official)));
+					return (Field) fields.get(LuaValue.valueOf(fieldEntry.official));
 				}
-
-				Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
+				try {
+					superclass = superclass.getSuperclass();
+				} catch (Exception e) {
+					System.out.println("meow!");
+					superclass = null;
+				}
 			}
+
+			if(fields.get(key) != null) Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
 		}
 
-		System.out.println(fields.get(key));
+		System.out.println("yes!");
 		return (Field) fields.get(key);
 	}
 
@@ -142,8 +148,10 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			methods = map;
 		}
 
+		if(methods.get(key) != null) return (LuaValue) methods.get(key);
+
 		if(Kisman.remapped) {
-			Class superclass = ((Class) m_instance);
+			Class<?> superclass = ((Class<?>) m_instance);
 			String name = superclass.getName() + key.tojstring();
 			if(Kisman.instance.remapper3000.methodsCache.containsKey(name)) Kisman.instance.remapper3000.methodsCache.get(name);
 
@@ -151,8 +159,8 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 //				System.out.println("FindMethod: superclass " + superclass.getName() + ", name " + key.tojstring());
 				MethodEntry methodEntry = Kisman.instance.forgeMappings.findMethod(superclass.getName().replace(",", "/"), key.tojstring(), ForgeMappings.NormalFindType.NAMED, -1, null);
 				if(methodEntry != null) {
-					Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary)));
-					return (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary));
+					Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(LuaValue.valueOf(methodEntry.official)));
+					return (LuaValue) methods.get(LuaValue.valueOf(methodEntry.official));
 				}
 				superclass = superclass.getSuperclass();
 			}
@@ -160,7 +168,7 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(key)); // <- probably null
 		}
 
-		return (LuaValue) methods.get(key);
+		return null;
 	}
 
 	Class getInnerClass(LuaValue key) {

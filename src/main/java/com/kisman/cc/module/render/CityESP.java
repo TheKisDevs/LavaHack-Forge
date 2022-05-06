@@ -38,7 +38,6 @@ public class CityESP extends Module {
 
 
     private final HashMap<EntityPlayer, List<BlockPos>> cityable = new HashMap<>();
-    private int oldSlot;
     private boolean packetMined = false;
     private BlockPos coordsPacketMined = new BlockPos(-1, -1, -1);
 
@@ -101,7 +100,6 @@ public class CityESP extends Module {
                             if (packetMined && coordsPacketMined == block) break;
 
                             if (mc.player.getHeldItemMainhand().getItem() != Items.DIAMOND_PICKAXE && switchPick.getValBoolean()) {
-                                oldSlot = mc.player.inventory.currentItem;
                                 int slot = InventoryUtil.findFirstItemSlot(ItemPickaxe.class, 0, 9);
                                 if (slot != 1) mc.player.inventory.currentItem = slot;
                             }

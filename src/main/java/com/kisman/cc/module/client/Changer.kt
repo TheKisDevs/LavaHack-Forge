@@ -1,6 +1,7 @@
 package com.kisman.cc.module.client
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.EventAspect
 import com.kisman.cc.event.events.EventUpdateLightmap
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.gui.csgo.components.Slider
@@ -11,10 +12,12 @@ import com.kisman.cc.util.Colour
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.network.play.server.SPacketTimeUpdate
+import net.minecraftforge.client.event.EntityViewRenderEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 import javax.vecmath.Vector3f
 
-class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTime", Category.CLIENT) {
+class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTime + Aspect + CustomFog", Category.CLIENT) {
     private val gamma = Setting("Gamma", this, 100.0, 1.0, 100.0, true)
     private val fov = Setting("Fov", this, 120.0, 30.0, 150.0, true)
     private val ambience = Setting("Ambience", this, false)
@@ -29,7 +32,16 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
     private val timeInfCircle = Setting("Time Infinity Circle", this, true).setVisible { time.valBoolean }
     private val timeSpeed = Setting("Time Speed", this, 100.0, 10.0, 1000.0, Slider.NumberType.TIME).setVisible { time.valBoolean }
 
-    var circle = 0
+    //Aspect settings
+    private val aspect = Setting("Aspect", this, false)
+    private val aspectWidth = Setting("Aspect Width", this, 4.0, 1.0, 10.0, true)
+    private val aspectHeight = Setting("Aspect Height", this, 3.0, 1.0, 10.0, true)
+
+    //CustomFog settings
+    private val customFog = Setting("Custom Fog", this, false)
+    private val customFogColor = Setting("Custom Fog Color", this, "Custom Fog Color", Colour(-1))
+
+    private var circle = 0
     private var oldFov = 0F
 
     init {
@@ -41,15 +53,20 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
         setmgr.rSetting(timeVal)
         setmgr.rSetting(timeInfCircle)
         setmgr.rSetting(timeSpeed)
+        setmgr.rSetting(aspect)
+        setmgr.rSetting(aspectWidth)
+        setmgr.rSetting(aspectHeight)
     }
 
     override fun onEnable() {
         Kisman.EVENT_BUS.subscribe(receive)
         Kisman.EVENT_BUS.subscribe(updateLightmap)
+        Kisman.EVENT_BUS.subscribe(aspectEvent)
         oldFov = mc.gameSettings.fovSetting
     }
 
     override fun onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(aspectEvent)
         Kisman.EVENT_BUS.unsubscribe(updateLightmap)
         Kisman.EVENT_BUS.unsubscribe(receive)
         mc.gameSettings.gammaSetting = 1F
@@ -68,6 +85,20 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
             if (circle >= 24000) circle = 0
         }
     }
+
+    @SubscribeEvent fun onFog(event : EntityViewRenderEvent.FogColors) {
+        if(customFog.valBoolean) {
+            event.red = customFogColor.colour.r1
+            event.green = customFogColor.colour.g1
+            event.blue = customFogColor.colour.b1
+        }
+    }
+
+    private val aspectEvent = Listener<EventAspect>(EventHook {
+        if(aspect.valBoolean) {
+            it.aspect = aspectWidth.valFloat / aspectHeight.valFloat
+        }
+    })
 
     val receive = Listener<PacketEvent.Receive>(EventHook {
         if(time.valBoolean && it.packet is SPacketTimeUpdate) {

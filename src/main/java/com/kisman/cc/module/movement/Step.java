@@ -8,7 +8,7 @@ import java.util.Locale;
 public class Step extends Module {
     public static Step instance;
 
-    public Setting height = new Setting("Height", this, 0.5f, 0.5f, 4, false);
+    public Setting height = new Setting("Height", this, 2, 1, 4, true);
 
     public Step() {
         super("Step", "setting your step", Category.MOVEMENT);
@@ -20,7 +20,7 @@ public class Step extends Module {
 
     public void update() {
         if(mc.player == null || mc.world == null) return;
-        super.setDisplayInfo("[" + String.format(Locale.ENGLISH, "%.4f", height.getValDouble()) + "]");
+        super.setDisplayInfo("[" + height.getValInt() + "]");
         mc.player.stepHeight = height.getValFloat();
     }
 

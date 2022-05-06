@@ -58,11 +58,19 @@ public class NoRender extends Module {
     }
 
     public void onEnable() {
+        super.onEnable();
         Kisman.EVENT_BUS.subscribe(setupFog);
         Kisman.EVENT_BUS.subscribe(bossBar_);
+        Kisman.EVENT_BUS.subscribe(pumpkin);
+        Kisman.EVENT_BUS.subscribe(portal_);
+        Kisman.EVENT_BUS.subscribe(overlay_);
     }
 
     public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(overlay_);
+        Kisman.EVENT_BUS.unsubscribe(portal_);
+        Kisman.EVENT_BUS.unsubscribe(pumpkin);
         Kisman.EVENT_BUS.unsubscribe(bossBar_);
         Kisman.EVENT_BUS.unsubscribe(setupFog);
     }

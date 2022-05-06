@@ -24,5 +24,7 @@ public class CameraClip extends Module {
         Kisman.EVENT_BUS.unsubscribe(orientCamera);
     }
 
-    @EventHandler private final Listener<EventOrientCamera> orientCamera = new Listener<>(Cancellable::cancel);
+    @EventHandler private final Listener<EventOrientCamera> orientCamera = new Listener<>(event -> {
+        event.cancel();
+    });
 }

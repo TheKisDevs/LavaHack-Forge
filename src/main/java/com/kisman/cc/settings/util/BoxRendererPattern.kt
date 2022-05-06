@@ -9,20 +9,59 @@ import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
+import java.util.function.Supplier
 
-class BoxRendererPattern(val module: Module) {
-    val mode = Setting("Mode", module, BoxRenderModes.Filled)
-    val depth = Setting("Depth", module, false)
-    val alpha = Setting("Alpha", module, true)
-    val width = Setting("Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) }
-    val offset = Setting("Offset", module, 0.002, 0.002, 0.2, false)
+class BoxRendererPattern(
+    val module: Module,
+    val visible : Supplier<Boolean>,
+    val prefix : String?,
+    val canColor : Boolean
+) {
+    constructor(
+            module : Module
+    ) : this(
+            module,
+            Supplier { true },
+            null,
+            false
+    )
 
-    fun init() {
+    constructor(
+            module : Module,
+            canColor : Boolean
+    ) : this(
+            module,
+            Supplier { true },
+            null,
+            canColor
+    )
+
+    val mode = Setting("${(if (prefix != null) "$prefix " else "")}Mode", module, BoxRenderModes.Filled)
+    val depth = Setting("${(if (prefix != null) "$prefix " else "")}Depth", module, false)
+    val alpha = Setting("${(if (prefix != null) "$prefix " else "")}Alpha", module, true)
+    val width = Setting("${(if (prefix != null) "$prefix " else "")}Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) }
+    val offset = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, 0.002, 0.002, 0.2, false)
+
+    val color = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, "${(if (prefix != null) "$prefix " else "")}Offset", Colour(255, 255, 255, 255))
+
+    fun init() : BoxRendererPattern {
         Kisman.instance.settingsManager.rSetting(mode)
         Kisman.instance.settingsManager.rSetting(depth)
         Kisman.instance.settingsManager.rSetting(alpha)
         Kisman.instance.settingsManager.rSetting(width)
         Kisman.instance.settingsManager.rSetting(offset)
+
+        if(canColor) Kisman.instance.settingsManager.rSetting(color)
+
+        return this
+    }
+
+    fun draw(ticks : Float, pos : BlockPos) {
+        draw(ticks, pos, color.colour.a)
+    }
+
+    fun draw(ticks : Float, pos : BlockPos, alphaVal : Int) {
+        draw(ticks, color.colour, pos, alphaVal)
     }
 
     fun draw(ticks: Float, color: Colour, pos: BlockPos, alphaVal: Int) {
