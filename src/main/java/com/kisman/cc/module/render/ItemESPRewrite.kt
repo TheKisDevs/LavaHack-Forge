@@ -4,10 +4,13 @@ import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.EntityUtil
 import com.kisman.cc.util.Rendering
+import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.render.objects.TextOnBoundingBox
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -24,6 +27,7 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
     private val color1 = register(Setting("SecondColor", this, "SecondColor", Colour(255, 255, 255, 120)))
     private val textColor = register(Setting("TextColor", this, "TextColor", Colour(255, 255, 255, 255)))
     private val correct = register(Setting("Correct", this, false))
+    private val interpolate = register(Setting("Interpolate", this, false))
 
     private val glowingEntities = HashSet<Entity>(64)
 
@@ -58,15 +62,31 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
                 glowingEntities.add(entity)
 
             } else {
+
                 if(glowingEntities.contains(entity)) {
                     glowingEntities.remove(entity)
                 }
 
-                var aabb = Rendering.correct(entity.boundingBox)
+                var aabb = entity.boundingBox
+
+                if(interpolate.valBoolean){
+                    val x = entity.lastTickPosX
+                    val y = entity.lastTickPosY
+                    val z = entity.lastTickPosZ
+                    val w = entity.width / 2.0;
+                    val h = entity.height
+                    val amount = EntityUtil.getInterpolatedAmount(entity, event.partialTicks.toDouble())
+                    val xA = amount.x
+                    val yA = amount.y
+                    val zA = amount.z
+                    aabb = AxisAlignedBB(x - w + xA, y + yA, z - w + zA, x + w + xA, y + h + yA, z + w + zA)
+                }
+
+                aabb = Rendering.correct(aabb)
 
                 if(correct.valBoolean){
                     aabb = aabb.grow(0.08)
-                    aabb = aabb.offset(0.0, 0.38, 0.0)
+                    aabb = aabb.offset(0.0, 0.24, 0.0)
                 }
 
                 Rendering.draw(aabb, outlineWidth.valFloat, color.colour, color1.colour, renderMode.valEnum as Rendering.Mode)
