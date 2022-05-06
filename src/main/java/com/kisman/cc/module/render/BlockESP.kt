@@ -8,6 +8,7 @@ import com.kisman.cc.util.CrystalUtils
 import net.minecraft.block.BlockEndPortal
 import net.minecraft.block.BlockPortal
 import net.minecraft.block.BlockWeb
+import net.minecraft.init.Blocks
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.function.Supplier
@@ -33,10 +34,10 @@ class BlockESP : Module(
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
         for(pos in CrystalUtils.getSphere(range.valFloat, true, false)) {
             val block = mc.world.getBlockState(pos)
-            if(block is BlockWeb && web.valBoolean) webRenderer.draw(event.partialTicks, pos)
-            if(block is BlockPortal && portal.valBoolean) portalRenderer.draw(event.partialTicks, pos)
-            if(block is BlockEndPortal && endPortal.valBoolean) endPortalRenderer.draw(event.partialTicks, pos)
-            if(burrow.valBoolean && mc.world.getEntitiesWithinAABBExcludingEntity(null, block.getSelectedBoundingBox(mc.world, pos)).isNotEmpty()) burrowRenderer.draw(event.partialTicks, pos)
+            if(block == Blocks.WEB && web.valBoolean) webRenderer.draw(event.partialTicks, pos)
+            if(block == Blocks.PORTAL && portal.valBoolean) portalRenderer.draw(event.partialTicks, pos)
+            if(block == Blocks.END_PORTAL && endPortal.valBoolean) endPortalRenderer.draw(event.partialTicks, pos)
+            if(burrow.valBoolean && mc.world.getEntitiesWithinAABBExcludingEntity(null, block.getSelectedBoundingBox(mc.world, pos)).isNotEmpty() && block != Blocks.AIR) burrowRenderer.draw(event.partialTicks, pos)
         }
     }
 }

@@ -89,6 +89,7 @@ public class HoleFillerRewrite extends Module {
         for(BlockPos pos : holes){
             if(placed.contains(pos))
                 continue;
+            if(!mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isEmpty()) continue;
             place(pos, slot);
             placed.add(pos);
             clear = false;
@@ -228,6 +229,7 @@ public class HoleFillerRewrite extends Module {
     }
 
     private void place(BlockPos pos, int slot){
+        if(mc.player == null || mc.player.inventory == null) return;
         int oldSlot = mc.player.inventory.currentItem;
         doSwitch(slot, false);
         BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);

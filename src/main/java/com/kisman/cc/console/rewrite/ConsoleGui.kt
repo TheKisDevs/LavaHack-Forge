@@ -17,7 +17,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.io.UnsupportedEncodingException
-import kotlin.collections.ArrayList
 
 /**@author Dallas/gerald0mc
  */
@@ -153,4 +152,12 @@ class ConsoleGui() : GuiScreen() {
         return max
     }
 
+    override fun onGuiClosed() {
+        try {
+            if (mc.player != null && mc.world != null) {
+                mc.entityRenderer.getShaderGroup().deleteShaderGroup()
+            }
+        } catch (ignored: Exception) { }
+        super.onGuiClosed()
+    }
 }

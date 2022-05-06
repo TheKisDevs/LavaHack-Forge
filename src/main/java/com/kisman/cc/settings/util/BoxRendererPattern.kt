@@ -36,13 +36,13 @@ class BoxRendererPattern(
             canColor
     )
 
-    val mode = Setting("${(if (prefix != null) "$prefix " else "")}Mode", module, BoxRenderModes.Filled)
-    val depth = Setting("${(if (prefix != null) "$prefix " else "")}Depth", module, false)
-    val alpha = Setting("${(if (prefix != null) "$prefix " else "")}Alpha", module, true)
-    val width = Setting("${(if (prefix != null) "$prefix " else "")}Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) }
-    val offset = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, 0.002, 0.002, 0.2, false)
+    val mode = Setting("${(if (prefix != null) "$prefix " else "")}Mode", module, BoxRenderModes.Filled).setVisible { visible.get() }
+    val depth = Setting("${(if (prefix != null) "$prefix " else "")}Depth", module, false).setVisible { visible.get() }
+    val alpha = Setting("${(if (prefix != null) "$prefix " else "")}Alpha", module, true).setVisible { visible.get() }
+    val width = Setting("${(if (prefix != null) "$prefix " else "")}Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) && visible.get() }
+    val offset = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, 0.002, 0.002, 0.2, false).setVisible { visible.get() }
 
-    val color = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, "${(if (prefix != null) "$prefix " else "")}Offset", Colour(255, 255, 255, 255))
+    val color = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, "${(if (prefix != null) "$prefix " else "")}Offset", Colour(255, 255, 255, 255)).setVisible { visible.get() }
 
     fun init() : BoxRendererPattern {
         Kisman.instance.settingsManager.rSetting(mode)
