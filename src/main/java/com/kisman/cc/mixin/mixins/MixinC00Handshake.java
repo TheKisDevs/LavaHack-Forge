@@ -1,7 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventC00Handshake;
+import com.kisman.cc.module.player.ForgeBypass;
 import net.minecraft.network.*;
 import net.minecraft.network.handshake.client.C00Handshake;
 import org.spongepowered.asm.mixin.*;
@@ -15,13 +14,14 @@ public class MixinC00Handshake {
     @Shadow private String ip;
     @Shadow private EnumConnectionState requestedState;
 
-    @Inject(method = "writePacketData", at = @At(value = "HEAD"))
+    @Inject(method = "writePacketData", at = @At(value = "HEAD"), cancellable = true)
     public void writePacketData(PacketBuffer buf, CallbackInfo ci) {
-        EventC00Handshake event = new EventC00Handshake(ip + "\u0000FML\u0000", ip);
-        Kisman.EVENT_BUS.post(event);
-        buf.writeVarInt(protocolVersion);
-        buf.writeString(event.getIp());
-        buf.writeShort(port);
-        buf.writeVarInt(requestedState.getId());
+        if (ForgeBypass.instance.isToggled()) {
+            ci.cancel();
+            buf.writeVarInt(protocolVersion);
+            buf.writeString(ip);
+            buf.writeShort(port);
+            buf.writeVarInt(requestedState.getId());
+        }
     }
 }

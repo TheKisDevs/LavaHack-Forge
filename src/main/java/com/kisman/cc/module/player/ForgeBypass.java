@@ -1,7 +1,6 @@
 package com.kisman.cc.module.player;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventC00Handshake;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
 import io.netty.buffer.Unpooled;
@@ -20,17 +19,11 @@ public class ForgeBypass extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(send);
-        Kisman.EVENT_BUS.subscribe(c00Handshake);
     }
 
     public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(c00Handshake);
         Kisman.EVENT_BUS.unsubscribe(send);
     }
-
-    @EventHandler Listener<EventC00Handshake> c00Handshake = new Listener<>(event -> {
-        event.setIp(event.getDefaultIp());
-    });
 
     @EventHandler
     private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
