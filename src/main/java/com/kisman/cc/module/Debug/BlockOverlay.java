@@ -34,6 +34,6 @@ public class BlockOverlay extends Module {
         if(pos == null)
             return;
 
-        Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2f, new Colour(RainbowUtil.rainbow2(0, 100, 50, 255, 1.0)), new Colour(RainbowUtil.rainbow2(50, 100, 50, 255, 1.0)), Rendering.Mode.GRADIENT);
+        Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2f, RainbowUtil.rainbow2(0, 100, 50, 255, 1.0), RainbowUtil.rainbow2(50, 100, 50, 255, 1.0), Rendering.Mode.GRADIENT);
     }
 }

@@ -9,6 +9,7 @@ import com.kisman.cc.util.enums.HandRewriteSlotMappings
 import net.minecraft.init.Items
 import net.minecraft.inventory.ClickType
 import net.minecraft.item.Item
+import org.lwjgl.input.Mouse
 
 class HandRewrite : Module(
         "HandRewrite",
@@ -17,10 +18,12 @@ class HandRewrite : Module(
     private val mainhandMode = register(Setting("Mainhand Mode", this, Modes.None))
     private val mainhandSlot = register(Setting("Mainhand Slot", this, 1.0, 1.0, 9.0, true))
     private val mainhandRightClickMode = register(Setting("Mainhand Right Click Mode", this, Modes.None))
+    private val mainhandLowHPMode = register(Setting("Mainhand Low HP Mode", this, Modes.None))
+    private val mainhandLowHPVal = register(Setting("Mainhand Low HP Val", this, 10.0, 1.0, 36.0, true))
     private val offhandMode = register(Setting("Offhand Mode", this, Modes.None))
     private val offhandRightClickMode = register(Setting("Offhand Right Click Mode", this, Modes.None))
-
-    private val hotbarFirst = register(Setting("Hotbar First", this, false))
+    private val offhandLowHPMode = register(Setting("Offhand Low HP Mode", this, Modes.None))
+    private val offhandLowHPVal = register(Setting("Offhand Low HP Val", this, 10.0, 1.0, 36.0, true))
 
     private val usageUpdateController = register(Setting("Usage UpdateController", this, true))
 
@@ -29,35 +32,45 @@ class HandRewrite : Module(
     override fun update() {
         if(mc.player == null || mc.world == null || mc.playerController == null) return
 
-        if(mainhandMode.valEnum != Modes.None) {
-            doHandRewrite(false)
-        }
-        if(offhandMode.valEnum != Modes.None) {
-            doHandRewrite(true)
+        if(mainhandMode.valEnum != Modes.None) doHandRewrite(
+                false,
+                right = Mouse.isButtonDown(1),
+                lowHP = (
+                        mc.player.health + mc.player.absorptionAmount < mainhandLowHPVal.valInt &&
+                                mainhandLowHPMode.valEnum != Modes.None
+                        )
+        )
+        if(offhandMode.valEnum != Modes.None) doHandRewrite(
+                true,
+                right = Mouse.isButtonDown(1),
+                lowHP = (
+                        mc.player.health + mc.player.absorptionAmount < offhandLowHPVal.valInt &&
+                                offhandLowHPMode.valEnum != Modes.None
+                        )
+        )
+    }
+
+    private fun doHandRewrite(offhand : Boolean, right : Boolean, lowHP : Boolean) {
+        if(itemCheck(offhand, right, lowHP)) {
+            doSwitch(offhand, right, lowHP)
         }
     }
 
-    private fun doHandRewrite(offhand : Boolean) {
-        if(itemCheck(offhand)) {
-            doSwitch(offhand)
-        }
-    }
-
-    private fun doSwitch(offhand : Boolean) {
+    private fun doSwitch(offhand : Boolean, right : Boolean, lowHP : Boolean) {
         if(offhand) {
-            switch(InventoryUtil.findItemInInventory((offhandMode.valEnum as Modes).item))
-            ChatUtility.complete().printClientModuleMessage("Offhand now has a ${offhandMode.valEnum.name}")
+            switch(InventoryUtil.findItemInInventory(((if(right) offhandRightClickMode.valEnum else if(lowHP) offhandLowHPMode.valEnum else offhandMode.valEnum) as Modes).item))
+            ChatUtility.complete().printClientModuleMessage("Offhand now has a ${if(right) offhandRightClickMode.valEnum.name else offhandMode.valEnum.name}")
         } else {
-            switch(InventoryUtil.findItemInInventory((offhandMode.valEnum as Modes).item), HandRewriteSlotMappings.get(mainhandSlot.valInt))
-            ChatUtility.complete().printClientModuleMessage("Mainhand now has a ${mainhandMode.valEnum.name}")
+            switch(InventoryUtil.findItemInInventory(((if(right) mainhandRightClickMode.valEnum else if(lowHP) mainhandLowHPMode.valEnum else mainhandMode.valEnum) as Modes).item), HandRewriteSlotMappings.get(mainhandSlot.valInt))
+            ChatUtility.complete().printClientModuleMessage("Mainhand now has a ${if(right) mainhandRightClickMode.valEnum.name else mainhandMode.valEnum.name}")
         }
     }
 
-    private fun itemCheck(offhand : Boolean) : Boolean {
+    private fun itemCheck(offhand : Boolean, right : Boolean, lowHP : Boolean) : Boolean {
         return if(offhand) {
-            mc.player.heldItemOffhand.item != (offhandMode.valEnum as Modes).item
+            mc.player.heldItemOffhand.item != ((if(right) offhandRightClickMode.valEnum else if(lowHP) offhandLowHPMode.valEnum else offhandMode.valEnum) as Modes).item
         } else {
-            mc.player.heldItemMainhand.item != (mainhandMode.valEnum as Modes).item
+            mc.player.heldItemMainhand.item != ((if(right) mainhandRightClickMode.valEnum else if(lowHP) offhandLowHPMode.valEnum else mainhandMode.valEnum) as Modes).item
         }
     }
 

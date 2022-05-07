@@ -68,6 +68,7 @@ public class ModuleManager {
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
 		modules.add(new Flatten());
+		modules.add(new HandRewrite());
 		modules.add(new HoleFiller());
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());

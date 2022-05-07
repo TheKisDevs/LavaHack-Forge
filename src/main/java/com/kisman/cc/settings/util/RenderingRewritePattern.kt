@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.client.Minecraft
@@ -23,6 +24,8 @@ class RenderingRewritePattern(
         visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
     }
 
+    val rainbow = Setting("Rainbow", module, false)
+
     //Colors
     val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
     val color2 = Setting((if(prefix != null) "$prefix " else "") + "Render Second Color", module, (if(prefix != null) "$prefix " else "") + "Render Second Color", Colour(0, 120, 255, 255)).setVisible {
@@ -38,6 +41,7 @@ class RenderingRewritePattern(
     fun init() {
         Kisman.instance.settingsManager.rSetting(mode)
         Kisman.instance.settingsManager.rSetting(lineWidth)
+        Kisman.instance.settingsManager.rSetting(rainbow)
         Kisman.instance.settingsManager.rSetting(color1)
         Kisman.instance.settingsManager.rSetting(color2)
     }
@@ -46,8 +50,8 @@ class RenderingRewritePattern(
         Rendering.draw(
             Rendering.correct(aabb),
             lineWidth.valFloat,
-            color1.colour,
-            color2.colour,
+            getColor1(),
+            getColor2(),
             (mode.valEnum as RenderingRewriteModes).mode
         )
     }
@@ -59,5 +63,21 @@ class RenderingRewritePattern(
                 pos
             )
         )
+    }
+
+    private fun getColor1() : Colour {
+        return if(rainbow.valBoolean) {
+            RainbowUtil.rainbow2(0, 100, 50, color1.colour.a, 1.0)
+        } else {
+            color1.colour
+        }
+    }
+
+    private fun getColor2() : Colour {
+        return if(rainbow.valBoolean) {
+            RainbowUtil.rainbow2(50, 100, 50, color2.colour.a, 1.0)
+        } else {
+            color2.colour
+        }
     }
 }
