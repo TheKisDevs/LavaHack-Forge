@@ -44,6 +44,7 @@ public class OffHand extends Module {
         setmgr.rSetting(fallBackDistance);
         setmgr.rSetting(totemOnElytra);
         setmgr.rSetting(offhandGapOnSword);
+        setmgr.rSetting(rightClickGap);
         setmgr.rSetting(hotbarFirst);
         setmgr.rSetting(useUpdateController);
         setmgr.rSetting(antiTotemFail);
