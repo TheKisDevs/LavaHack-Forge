@@ -4,6 +4,7 @@ import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.RainbowUtil;
 import com.kisman.cc.util.Rendering;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -33,6 +34,6 @@ public class BlockOverlay extends Module {
         if(pos == null)
             return;
 
-        Rendering.drawTripleGradient2(Rendering.correct(new AxisAlignedBB(pos)), color1.getColour(), color2.getColour(), color3.getColour());
+        Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2f, new Colour(RainbowUtil.rainbow2(0, 100, 50, 255, 1.0)), new Colour(RainbowUtil.rainbow2(50, 100, 50, 255, 1.0)), Rendering.Mode.GRADIENT);
     }
 }

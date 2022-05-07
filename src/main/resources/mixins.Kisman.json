@@ -52,6 +52,7 @@
     "viaforge.MixinGuiDisconnected",
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
-    "viaforge.MixinNetworkManagerChInit"
+    "viaforge.MixinNetworkManagerChInit",
+    "cubic.AccessorClassLoader"
   ]
 }

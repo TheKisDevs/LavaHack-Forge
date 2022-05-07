@@ -43,7 +43,7 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.module");
 
 		//Debug
-		//modules.add(new BlockOverlay());
+		modules.add(new BlockOverlay());
 		modules.add(new HelloWorld());
 
 		//combat
@@ -56,7 +56,7 @@ public class ModuleManager {
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoFirework());
-		//modules.add(new AutoObsidian());
+		modules.add(new AutoObsidian());
 		modules.add(new AutoPot());
 		modules.add(new AutoRer());
 		modules.add(new AutoTotem());
@@ -219,7 +219,7 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
-		modules.add(new DDOSModule());
+		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
 		//modules.add(new GhostEnderPearl());

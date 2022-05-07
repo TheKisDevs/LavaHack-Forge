@@ -1,6 +1,5 @@
 package com.kisman.cc.module.combat;
 
-import com.google.common.collect.Sets;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -36,7 +35,7 @@ public class HoleFillerRewrite extends Module {
     private final Setting enemyRange = register(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target")));
     private final Setting aroundEnemyRange = register(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target")));
     private final Setting holeRange = register(new Setting("HoleRange", this, 5, 1, 10, false));
-    private final Setting limit = register(new Setting("Limit", this, 0, 0, 100, true));
+    private final Setting limit = register(new Setting("Limit", this, 0, 0, 50, true));
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
@@ -47,6 +46,8 @@ public class HoleFillerRewrite extends Module {
     private final Timer placeTimer = new Timer();
 
     private final Set<BlockPos> placed = new HashSet<>(512);
+
+    private int lim = 0;
 
     @Override
     public void update(){
@@ -103,17 +104,17 @@ public class HoleFillerRewrite extends Module {
         List<BlockPos> holes = new ArrayList<>(64);
         float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
         Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
-        int lim = 0;
+        lim = 0;
         if(singleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE, lim));
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
         if(doubleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE, lim));
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
         if(customHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM, lim));
+            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
         return holes;
     }
 
-    private List<BlockPos> getHoleBlocksOfType(Set<BlockPos> possibleHoles, HoleUtil.HoleType type, int lim){
+    private List<BlockPos> getHoleBlocksOfType(Set<BlockPos> possibleHoles, HoleUtil.HoleType type){
         List<BlockPos> holes = new ArrayList<>(32);
         for(BlockPos pos : possibleHoles){
             if(limit.getValInt() != 0 && lim > limit.getValInt())
@@ -182,6 +183,9 @@ public class HoleFillerRewrite extends Module {
         Set<BlockPos> possibleHoles = new HashSet<>();
         List<BlockPos> blockPosList = EntityUtil.getSphere(getEntityPos(entity), range, (int) range, false, true, 0);
         for (BlockPos pos : blockPosList) {
+            AxisAlignedBB aabb = new AxisAlignedBB(pos);
+            if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())
+                continue;
             if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR))
                 continue;
             if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR))
@@ -257,6 +261,11 @@ public class HoleFillerRewrite extends Module {
                 mc.player.inventory.currentItem = slot;
                 break;
         }
+    }
+
+    @Override
+    public boolean isBeta(){
+        return true;
     }
 
     /*
