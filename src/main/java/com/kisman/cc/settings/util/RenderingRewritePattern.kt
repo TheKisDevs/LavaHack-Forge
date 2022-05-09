@@ -27,6 +27,7 @@ class RenderingRewritePattern(
     val rainbow = Setting("Rainbow", module, false)
     val rainbowSat = Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
     val rainbowBright = Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowGlow = Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
 
     //Colors
     val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
@@ -46,11 +47,28 @@ class RenderingRewritePattern(
         Kisman.instance.settingsManager.rSetting(rainbow)
         Kisman.instance.settingsManager.rSetting(rainbowSat)
         Kisman.instance.settingsManager.rSetting(rainbowBright)
+        Kisman.instance.settingsManager.rSetting(rainbowGlow)
         Kisman.instance.settingsManager.rSetting(color1)
         Kisman.instance.settingsManager.rSetting(color2)
     }
 
     fun draw(aabb : AxisAlignedBB) {
+        if(!rainbowGlow.valString.equals("None")){
+            val cAabb = Rendering.correct(aabb);
+            val colour1 = getColor1()
+            val colour2 = getColor2()
+            var outAlpha1 = 255
+            var outAlpha2 = 255
+            val reverse = rainbowGlow.valString.equals("ReverseGlow")
+            if(reverse){
+                outAlpha1 = 0;
+            } else {
+                outAlpha2 = 0;
+            }
+            Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
+            Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
+            return
+        }
         Rendering.draw(
             Rendering.correct(aabb),
             lineWidth.valFloat,
@@ -70,16 +88,26 @@ class RenderingRewritePattern(
     }
 
     private fun getColor1() : Colour {
+        val glow = rainbowGlow.valString;
+        var alpha = color1.colour.a;
+        if(glow.equals("ReverseGlow")){
+            alpha = 0
+        }
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, color1.colour.a, 1.0)
+            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, alpha, 1.0)
         } else {
             color1.colour
         }
     }
 
     private fun getColor2() : Colour {
+        val glow = rainbowGlow.valString;
+        var alpha = color2.colour.a
+        if(glow.equals("Glow")){
+            alpha = 0
+        }
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, color2.colour.a, 1.0)
+            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, alpha, 1.0)
         } else {
             color2.colour
         }
