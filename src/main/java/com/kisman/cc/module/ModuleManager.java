@@ -5,10 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.kisman.cc.module.Debug.BlockOverlay;
-import com.kisman.cc.module.Debug.EventSystemTest;
-import com.kisman.cc.module.Debug.HelloWorld;
-import com.kisman.cc.module.Debug.NoMove;
+import com.kisman.cc.module.Debug.*;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -43,7 +40,7 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.module");
 
 		//Debug
-		modules.add(new BlockOverlay());
+		//modules.add(new BlockOverlay());
 		modules.add(new HelloWorld());
 
 		//combat

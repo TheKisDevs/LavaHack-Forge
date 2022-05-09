@@ -113,6 +113,10 @@ public class AutoRer extends Module {
 
     private final Setting text = new Setting("Text", this, true);
 
+    //private final Setting rainbow = new Setting("Rainbow", this, "None", Arrays.asList("None", "Rainbow", "GradientRainbow"));
+    //private final Setting rainbowSat = new Setting("Saturation", this, 100, 0, 100, true).setVisible(() -> !rainbow.getValString().equals("None"));
+    //private final Setting rainbowBright = new Setting("Brightness", this, 50, 0, 100, true).setVisible(() -> !rainbow.getValString().equals("None"));
+
     private final Setting targetCharmsLine = new Setting("Target Charms", this, "Target Shader Charms");
     private final Setting targetCharms = new Setting("Target Charms", this, false);
     private final Setting targetCharmsShader = new Setting("TC Shader", this, ShaderModes.SMOKE);
@@ -237,6 +241,11 @@ public class AutoRer extends Module {
         renderer_.init();
         setmgr.rSetting(movingLength);
         setmgr.rSetting(fadeLength);
+
+        //setmgr.rSetting(rainbow);
+        //setmgr.rSetting(rainbowSat);
+        //setmgr.rSetting(rainbowBright);
+
         setmgr.rSetting(text);
 
         setmgr.rSetting(targetCharmsLine);

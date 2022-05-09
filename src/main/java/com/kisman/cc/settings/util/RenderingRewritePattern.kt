@@ -25,6 +25,8 @@ class RenderingRewritePattern(
     }
 
     val rainbow = Setting("Rainbow", module, false)
+    val rainbowSat = Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowBright = Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
 
     //Colors
     val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
@@ -42,6 +44,8 @@ class RenderingRewritePattern(
         Kisman.instance.settingsManager.rSetting(mode)
         Kisman.instance.settingsManager.rSetting(lineWidth)
         Kisman.instance.settingsManager.rSetting(rainbow)
+        Kisman.instance.settingsManager.rSetting(rainbowSat)
+        Kisman.instance.settingsManager.rSetting(rainbowBright)
         Kisman.instance.settingsManager.rSetting(color1)
         Kisman.instance.settingsManager.rSetting(color2)
     }
@@ -67,7 +71,7 @@ class RenderingRewritePattern(
 
     private fun getColor1() : Colour {
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, 100, 50, color1.colour.a, 1.0)
+            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, color1.colour.a, 1.0)
         } else {
             color1.colour
         }
@@ -75,7 +79,7 @@ class RenderingRewritePattern(
 
     private fun getColor2() : Colour {
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, 100, 50, color2.colour.a, 1.0)
+            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, color2.colour.a, 1.0)
         } else {
             color2.colour
         }
