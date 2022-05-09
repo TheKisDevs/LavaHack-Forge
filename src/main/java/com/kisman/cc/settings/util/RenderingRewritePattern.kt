@@ -20,11 +20,13 @@ class RenderingRewritePattern(
     constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
 
     val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
+    val abyss = Setting("Abyss", module, false)
     val lineWidth = Setting((if(prefix != null) "$prefix " else "") + "Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
         visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
     }
 
     val rainbow = Setting("Rainbow", module, false)
+    val rainbowSpeed = Setting("RainbowSpeed", module, 1.0, 0.25, 5.0, false)
     val rainbowSat = Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
     val rainbowBright = Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
     val rainbowGlow = Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
@@ -43,8 +45,10 @@ class RenderingRewritePattern(
 
     fun init() {
         Kisman.instance.settingsManager.rSetting(mode)
+        Kisman.instance.settingsManager.rSetting(abyss)
         Kisman.instance.settingsManager.rSetting(lineWidth)
         Kisman.instance.settingsManager.rSetting(rainbow)
+        Kisman.instance.settingsManager.rSetting(rainbowSpeed)
         Kisman.instance.settingsManager.rSetting(rainbowSat)
         Kisman.instance.settingsManager.rSetting(rainbowBright)
         Kisman.instance.settingsManager.rSetting(rainbowGlow)
@@ -53,8 +57,12 @@ class RenderingRewritePattern(
     }
 
     fun draw(aabb : AxisAlignedBB) {
+        var a = aabb;
+        if(abyss.valBoolean){
+            a = AxisAlignedBB(a.minX, a.minY + 1.0, a.minZ, a.maxX, a.maxY + 0.075, a.maxZ)
+        }
         if(!rainbowGlow.valString.equals("None")){
-            val cAabb = Rendering.correct(aabb);
+            val cAabb = Rendering.correct(a);
             val colour1 = getColor1()
             val colour2 = getColor2()
             var outAlpha1 = 255
@@ -70,7 +78,7 @@ class RenderingRewritePattern(
             return
         }
         Rendering.draw(
-            Rendering.correct(aabb),
+            Rendering.correct(a),
             lineWidth.valFloat,
             getColor1(),
             getColor2(),
@@ -94,7 +102,7 @@ class RenderingRewritePattern(
             alpha = 0
         }
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, alpha, 1.0)
+            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, alpha, rainbowSpeed.valDouble)
         } else {
             color1.colour
         }
@@ -107,7 +115,7 @@ class RenderingRewritePattern(
             alpha = 0
         }
         return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, alpha, 1.0)
+            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, alpha, rainbowSpeed.valDouble)
         } else {
             color2.colour
         }

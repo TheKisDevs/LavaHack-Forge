@@ -20,8 +20,9 @@ public class CustomDelay extends Module {
         super("CustomDelay", Category.DEBUG);
     }
 
-    private ScheduledExecutorService service;
+    //private ScheduledExecutorService service;
 
+    /*
     @Override
     public void onEnable(){
         this.service = new ScheduledThreadPoolExecutor(corePoolSize.getValInt());
@@ -45,4 +46,5 @@ public class CustomDelay extends Module {
     public void onDisable(){
         service.shutdown();
     }
+     */
 }

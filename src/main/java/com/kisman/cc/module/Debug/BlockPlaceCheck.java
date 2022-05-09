@@ -16,6 +16,7 @@ public class BlockPlaceCheck extends Module {
         super("BlockPlaceCheck", Category.DEBUG);
     }
 
+    /*
     @Override
     public void onEnable(){
         Kisman.EVENT_BUS.subscribe(listener);
@@ -32,4 +33,5 @@ public class BlockPlaceCheck extends Module {
     public void onDisable(){
         Kisman.EVENT_BUS.unsubscribe(listener);
     }
+     */
 }

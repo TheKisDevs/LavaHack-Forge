@@ -61,15 +61,4 @@ public class MixinItemBlock {
                                          hitZ,
                                          state);
     }
-
-    /*
-    @Inject(method = "canPlaceBlockOnSide", at = @At(value = "HEAD"), cancellable = true)
-    public void onBlockPlaceCheck(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack, CallbackInfoReturnable<Boolean> cir){
-        EventBlockPlaceCheck event = new EventBlockPlaceCheck(worldIn, pos, side, player, stack);
-        Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()){
-            cir.setReturnValue(true);
-        }
-    }
-     */
 }
