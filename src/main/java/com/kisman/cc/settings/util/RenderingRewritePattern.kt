@@ -7,6 +7,7 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
+import com.kisman.cc.util.render.objects.TextOnBoundingBox
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -17,7 +18,7 @@ class RenderingRewritePattern(
     val visible : Supplier<Boolean>,
     val prefix : String?
 ) {
-    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
+     constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
 
     val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
     val abyss = Setting("Abyss", module, false)
@@ -62,7 +63,7 @@ class RenderingRewritePattern(
             a = AxisAlignedBB(a.minX, a.minY + 1.0, a.minZ, a.maxX, a.maxY + 0.075, a.maxZ)
         }
         if(!rainbowGlow.valString.equals("None")){
-            val cAabb = Rendering.correct(a);
+            val cAabb = Rendering.correct(a)
             val colour1 = getColor1()
             val colour2 = getColor2()
             var outAlpha1 = 255
