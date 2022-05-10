@@ -42,7 +42,7 @@ class BoxRendererPattern(
     val width = Setting("${(if (prefix != null) "$prefix " else "")}Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) && visible.get() }
     val offset = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, 0.002, 0.002, 0.2, false).setVisible { visible.get() }
 
-    val color = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, "${(if (prefix != null) "$prefix " else "")}Offset", Colour(255, 255, 255, 255)).setVisible { visible.get() }
+    val color = Setting("${(if (prefix != null) "$prefix " else "")}Color", module, "${(if (prefix != null) "$prefix " else "")}Color", Colour(255, 255, 255, 255)).setVisible { visible.get() }
 
     fun init() : BoxRendererPattern {
         Kisman.instance.settingsManager.rSetting(mode)

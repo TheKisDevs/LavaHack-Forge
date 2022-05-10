@@ -24,7 +24,8 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {
         EventCape event = new EventCape(playerInfo);
+        event.setResLoc(playerInfo == null ? null : playerInfo.getLocationCape());
         Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()) cir.setReturnValue(event.getResLoc());
+        cir.setReturnValue(event.getResLoc());
     }
 }

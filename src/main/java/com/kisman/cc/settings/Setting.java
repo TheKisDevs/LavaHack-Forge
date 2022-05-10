@@ -29,14 +29,12 @@ public class Setting {
 	private Entity entity;
 
 	private int index = 0;
-	private int color;
 	private int key = Keyboard.KEY_NONE;
 	
 	private String name;
 	private Module parent;
-	private Setting setparent;
-	private HudModule hudParent;
-	private String mode;
+	public Setting parent_ = null;
+	public String mode;
 
 	private String title;
 
@@ -47,22 +45,16 @@ public class Setting {
 	
 	private boolean bval;
 	private boolean rainbow;
-	private boolean syns;
 	private boolean hud = false;
-	private boolean opening;
 	private boolean onlyOneWord;
 	private boolean onlyNumbers;
-	private boolean minus;
 	private boolean enumCombo = false;
 
 	private double dval;
 	private double min;
 	private double max;
 
-	private float[] colorHSB;
 	private ItemStack[] items;
-
-	private int r, g, b, a;
 
 	private int x1, y1, x2, y2;
 
@@ -81,30 +73,12 @@ public class Setting {
 		this.mode = "Bind";
 	}
 
-	public Setting(String name, Module parent, Setting setparent, String title) {
-		this.name = name;
-		this.parent = parent;
-		this.setparent = setparent;
-		this.title = title;
-		this.mode = "CategoryLine";
-	}
-
-	public Setting(String name, Module parent, String title, boolean open) {
-		this.name = name;
-		this.parent = parent;
-		this.title = title;
-		this.opening = open;
-		this.mode = "Category";
-	}
-
 	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
 		this.name = name;
 		this.parent = parent;
 		this.sval = sval;
 		this.dString = dString;
-		this.opening = opening;
 		this.onlyOneWord = false;
-		this.minus = true;
 		this.onlyNumbers = false;
 		this.mode = "String";
 	}
@@ -114,19 +88,9 @@ public class Setting {
 		this.parent = parent;
 		this.sval = sval;
 		this.dString = dString;
-		this.opening = opening;
 		this.onlyOneWord = onlyOneWord;
-		this.minus = true;
 		this.onlyNumbers = false;
 		this.mode = "String";
-	}
-
-	public Setting(String name, Module parent, String gays, String lgbtq) {
-		this.name = name;
-		this.parent = parent;
-		this.title = gays;
-		this.sval = lgbtq;
-		this.mode = "yep";
 	}
 
 	public Setting(String name, Module parent, String title) {
@@ -171,24 +135,6 @@ public class Setting {
 		this.mode = "Check";
 	}
 
-	public Setting(String name, HudModule parent, boolean bval) {
-		this.name = name;
-		this.hudParent = parent;
-		this.bval = bval;
-		this.mode = "CheckHud";
-		this.hud = true;
-	}
-
-	public Setting(String name, Module parent, float red, float green, float blue, float alpha) {
-		this.name = name;
-		this.parent = parent;
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-		this.alpha = alpha;
-		this.mode = "ExampleColor";
-	}
-
 	public Setting(String name, Module parent, double dval, double min, double max, Slider.NumberType numberType){
 		this.name = name;
 		this.parent = parent;
@@ -216,11 +162,6 @@ public class Setting {
 		this.parent = parent;
 		this.title = title;
 		this.colour = colour;
-		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
-		this.r = colour.r;
-		this.g = colour.g;
-		this.b = colour.b;
-		this.a = colour.a;
 		this.mode = "ColorPicker";
 	}
 
@@ -238,6 +179,11 @@ public class Setting {
 		this.title = title;
 		this.items = items;
 		this.mode = "Items";
+	}
+
+	public Setting(String name, Module parent) {
+		this.name = name;
+		this.parent = parent;
 	}
 
 	public Enum getEnumByName() {
@@ -259,7 +205,7 @@ public class Setting {
 		if(isCheck()) return String.valueOf(getValBoolean());
 		if(isSlider()) return String.valueOf(onlyint ? getValInt() : getValDouble());
 		if(isString()) return getValString();
-		if(isColorPicker()) return TextUtil.get32BitString((colour != null) ? colour.getRGB() : new Color(1f, 1f, 1f).getRGB()) + "-" + syns + "-" + rainbow;
+		if(isColorPicker()) return ColourUtilKt.Companion.toConfig(colour);
 		return super.toString();
 	}
 
@@ -395,15 +341,10 @@ public class Setting {
 
 	public void setColour(Colour colour) {
 		this.colour = colour;
-		float[] color = Color.RGBtoHSB(colour.r, colour.g, colour.b, null);
 	}
 
 	public Enum getValEnum() {
 		return optionEnum.valueOf(optionEnum.getClass(), sval);
-	}
-
-	public Setting getSetparent() {
-		return setparent;
 	}
 
 	public String getdString() {
@@ -440,10 +381,6 @@ public class Setting {
 
 	public void setY2(int num) {
 		this.y2 = num;
-	}
-
-	public HudModule getParentHudModule() {
-		return this.hudParent;
 	}
 
 	public boolean isHud() {
@@ -584,6 +521,8 @@ public class Setting {
 	public boolean isBind() { return mode.equalsIgnoreCase("Bind"); }
 
 	public boolean isCategory() { return this.mode.equalsIgnoreCase("Category"); }
+
+	public boolean isGroup() { return this.mode.equalsIgnoreCase("Group"); }
 
 	public boolean isString() { return this.mode.equalsIgnoreCase("String"); }
 

@@ -2,16 +2,10 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.mixin.mixins.cubic.AccessorClassLoader;
 import org.cubic.loader.Loader;
-import org.cubic.loader.URLPath;
 import org.cubic.loader.reflect.Instantiator;
-import org.cubic.loader.urlpath.DefaultURLPath;
-import org.luaj.vm2.ast.Str;
-import org.lwjgl.opencl.CL;
-import sun.security.krb5.internal.crypto.CksumType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.security.ProtectionDomain;
 import java.util.List;
 
 public final class ReflectUtil extends SecurityManager {

@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.gui.halq.component.components.sub.ColorButton;
+import com.kisman.cc.gui.halq.component.components.sub.GroupButton;
 import com.kisman.cc.gui.halq.component.components.sub.ModeButton;
 import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.module.Category;
@@ -118,6 +119,24 @@ public class Frame {
                         Render2DUtil.drawRectWH(comp1.getX() + (HalqGui.width - (LayerMap.getLayer(comp1.getLayer()).modifier * 2)) - 1.5 - (open ? 0.5 : 0), startY, 1.5 + (open ? 0.5 : 0), comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
                     }
                     startY += comp1.getHeight();
+
+                    if(comp1 instanceof GroupButton) {
+                        GroupButton group = (GroupButton) comp1;
+                        if(group.getOpen()) {
+                            for(Component comp2 : group.getComps()) {
+                                boolean open1 = (comp2 instanceof ModeButton && ((ModeButton) comp2).open) || (comp2 instanceof ColorButton && ((ColorButton) comp2).open);
+                                if(HalqGui.shadowRects) {
+                                    new ShadowRectObject(comp2.getX(), startY, comp2.getX() + 1.5 + (open1 ? 0.5 : 0), startY + comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()), HalqGui.getGradientColour(comp2.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
+                                    double x__ = comp2.getX() + (HalqGui.width - (LayerMap.getLayer(comp2.getLayer()).modifier * 2)) - 1.5 - (open1 ? 0.5 : 0);
+                                    new ShadowRectObject(x__, startY, x + 1.5 + (open1 ? 0.5 : 0), startY + comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()), HalqGui.getGradientColour(comp2.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
+                                } else {
+                                    Render2DUtil.drawRectWH(comp2.getX(), startY, 1.5 + (open1 ? 0.5 : 0), comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()).getRGB());
+                                    Render2DUtil.drawRectWH(comp2.getX() + (HalqGui.width - (LayerMap.getLayer(comp2.getLayer()).modifier * 2)) - 1.5 - (open1 ? 0.5 : 0), startY, 1.5 + (open1 ? 0.5 : 0), comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()).getRGB());
+                                }
+                                startY += comp2.getHeight();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -145,6 +164,17 @@ public class Frame {
                         comp1.setOff(offsetY);
                         offsetY += comp1.getHeight();
                         count1++;
+                        if(comp1 instanceof GroupButton) {
+                            GroupButton group = (GroupButton) comp1;
+                            if(group.getOpen()) {
+                                for (Component comp2 : group.getComps()) {
+                                    comp2.setCount(count1);
+                                    comp2.setOff(offsetY);
+                                    offsetY += comp2.getHeight();
+                                    count1++;
+                                }
+                            }
+                        }
                     }
                 }
             }

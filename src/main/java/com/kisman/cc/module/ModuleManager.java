@@ -5,10 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.kisman.cc.module.Debug.BlockOverlay;
-import com.kisman.cc.module.Debug.EventSystemTest;
-import com.kisman.cc.module.Debug.HelloWorld;
-import com.kisman.cc.module.Debug.NoMove;
+import com.kisman.cc.module.Debug.*;
 import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
@@ -23,7 +20,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.*;
-import org.lwjgl.input.Keyboard;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -44,7 +40,11 @@ public class ModuleManager {
 
 		//Debug
 		modules.add(new BlockOverlay());
+		modules.add(new ChatPrint());
+		modules.add(new EventSystemTest());
 		modules.add(new HelloWorld());
+		modules.add(new Meow());
+		modules.add(new NoMove());
 
 		//combat
 		modules.add(new AutoCrystal());
@@ -171,6 +171,7 @@ public class ModuleManager {
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
+		modules.add(new BlockInteraction());
 		//modules.add(new ChorusDelay());
 		modules.add(new ElytraEquip());
 		modules.add(new FastBreak());
@@ -200,10 +201,8 @@ public class ModuleManager {
 		modules.add(new Ghost());
 		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
-		modules.add(new MultiTask());
 		modules.add(new NoClip());
 		modules.add(new NoGlitchBlocks());
-		modules.add(new NoMiningTrace());
 		modules.add(new NoSwing());
 		modules.add(new PacketEat());
 		modules.add(new PacketMine());

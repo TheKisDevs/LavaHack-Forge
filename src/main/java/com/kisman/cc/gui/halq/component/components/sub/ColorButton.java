@@ -39,6 +39,7 @@ public class ColorButton extends Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        this.pickerWidth = width;
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
             Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width / 2, y + offset}, new double[] {x + width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), color.getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1)));

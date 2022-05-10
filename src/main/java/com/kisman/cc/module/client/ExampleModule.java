@@ -35,9 +35,8 @@ public class ExampleModule extends Module {
     public ExampleModule() {
         super("ExampleModule", "example", Category.CLIENT);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
 
-        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, "ExampleCategory", true));
+//        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, "ExampleCategory", true));
 //        Kisman.instance.settingsManager.rSubSetting(new Setting(
 //                "ExampleCLine",
 //                this,
@@ -46,7 +45,7 @@ public class ExampleModule extends Module {
 //                )
 //        );
 
-        Kisman.instance.settingsManager.rSetting(new Setting("ExampleString", this, "kisman", "kisman", true));
+//        Kisman.instance.settingsManager.rSetting(new Setting("ExampleString", this, "kisman", "kisman", true));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory", this, 1, "ExampleCategory"));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCCheckBox", this, 1, "ExampleCCheckBox", false));
 //        Kisman.instance.settingsManager.rSetting(new Setting("ExampleCategory1", this, 2, "ExampleCategory1"));

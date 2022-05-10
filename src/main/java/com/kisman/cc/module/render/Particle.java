@@ -20,7 +20,6 @@ public class Particle extends Module {
         Kisman.instance.settingsManager.rSetting(new Setting("Heart", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Crit", this, false));
 
-        Kisman.instance.settingsManager.rSetting(new Setting("voidsetting", this, "void", "setting"));
     }
 
     public boolean isBeta() {return true;}

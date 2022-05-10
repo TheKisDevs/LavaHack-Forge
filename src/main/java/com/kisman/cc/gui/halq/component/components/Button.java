@@ -12,6 +12,7 @@ import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
 import com.kisman.cc.gui.halq.component.components.sub.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
@@ -55,7 +56,11 @@ public class Button extends Component {
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
                 for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
-                    if (set == null) continue;
+                    if (set == null || set.parent_ != null) continue;
+                    if (set.isGroup() && set instanceof SettingGroup) {
+                        comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++));
+                        offsetY += HalqGui.height;
+                    }
                     if (set.isSlider()) {
                         comps.add(new Slider(set, x, y, offsetY, count1++));
                         offsetY += HalqGui.height;
@@ -74,7 +79,7 @@ public class Button extends Component {
                     }
                     if (set.isColorPicker()) {
                         comps.add(new ColorButton(set, x, y, offsetY, count1++));
-                        offset += HalqGui.height;
+                        offsetY += HalqGui.height;
                     }
                 }
             }

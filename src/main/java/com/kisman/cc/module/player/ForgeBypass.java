@@ -8,7 +8,8 @@ import me.zero.alpine.listener.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
 
-public class ForgeBypass extends Module {
+public class
+ForgeBypass extends Module {
     public static ForgeBypass instance;
 
     public ForgeBypass() {
