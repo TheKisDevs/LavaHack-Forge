@@ -171,7 +171,6 @@ public class ModuleManager {
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
-		modules.add(new BlockInteraction());
 		//modules.add(new ChorusDelay());
 		modules.add(new ElytraEquip());
 		modules.add(new FastBreak());

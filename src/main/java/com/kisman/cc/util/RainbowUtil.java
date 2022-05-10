@@ -13,8 +13,10 @@ public class RainbowUtil {
         return new Color(val, true);
     }
 
-    public static Colour rainbow2(int hOffset, int sat, int bright, int alpha, double speed){
-        int hue = (int) (((System.currentTimeMillis()) % (11520L / speed)) / 32) + hOffset;
+    public static Colour rainbow2(int hOffset, final int sat, final int bright, final int alpha, double speed){
+        double mod = 11520L / speed;
+        double div = mod / 360;
+        int hue = (int) ((System.currentTimeMillis() % mod) / div) + hOffset;
         if(hue > 360)
             hue = hue - 360;
         int rgb = fromHSB(hue, sat, bright);
