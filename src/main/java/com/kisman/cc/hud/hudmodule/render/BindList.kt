@@ -3,7 +3,6 @@ package com.kisman.cc.hud.hudmodule.render
 import com.kisman.cc.Kisman
 import com.kisman.cc.hud.hudmodule.HudCategory
 import com.kisman.cc.hud.hudmodule.HudModule
-import com.kisman.cc.module.Module
 import com.kisman.cc.util.customfont.CustomFontUtil
 import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -20,36 +19,45 @@ class BindList : HudModule(
         val x = x
         val y = y
 
-        val list : ArrayList<Module> = ArrayList()
+        val list : ArrayList<Element> = ArrayList()
 
         for(module in Kisman.instance.moduleManager.modules) {
             if(module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
-                list += module
+                list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
             }
         }
 
-        val comparator = Comparator { first: Module, second: Module ->
-            val firstName = "${first.name} [${Keyboard.getKeyName(first.key)}]"
-            val secondName = "${second.name} [${Keyboard.getKeyName(second.key)}]"
-            val dif = (CustomFontUtil.getStringWidth(secondName) - CustomFontUtil.getStringWidth(firstName)).toFloat()
-            if (dif != 0f) dif.toInt() else secondName.compareTo(firstName)
+        for(setting in Kisman.instance.settingsManager.settings) {
+            if(setting.key != Keyboard.KEY_NONE && setting.isCheck) {
+                list += Element("${setting.parentMod.name}->${setting.name} [${Keyboard.getKeyName(setting.key)}]", setting.valBoolean)
+            }
+        }
+
+        val comparator = Comparator { first: Element, second: Element ->
+            val dif = (CustomFontUtil.getStringWidth(second.text) - CustomFontUtil.getStringWidth(first.text)).toFloat()
+            if (dif != 0f) dif.toInt() else second.text.compareTo(first.text)
         }
 
         list.sortWith(comparator)
 
-        for((count, module) in list.withIndex()) {
+        for((count, element) in list.withIndex()) {
             CustomFontUtil.drawStringWithShadow(
                     "${
-                        if(module.isToggled) TextFormatting.GREEN
+                        if(element.state) TextFormatting.GREEN
                         else TextFormatting.RED
-                    }${module.name} [${Keyboard.getKeyName(module.key)}]",
+                    }${element.text}",
                     x,
                     y + count * (CustomFontUtil.getFontHeight() + 2),
                     -1
             )
         }
 
-        w = CustomFontUtil.getStringWidth("${list[0].name} [${Keyboard.getKeyName(list[0].key)}]").toDouble()
+        w = CustomFontUtil.getStringWidth(list[0].text).toDouble()
         h = list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + 2.0)
     }
+
+    class Element(
+            val text : String,
+            val state : Boolean
+    )
 }

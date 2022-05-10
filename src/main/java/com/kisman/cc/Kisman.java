@@ -23,6 +23,7 @@ import com.kisman.cc.gui.vega.Gui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
@@ -33,6 +34,7 @@ import me.zero.alpine.bus.EventManager;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.*;
 import org.cubic.eventsystem.EventBus;
 import org.lwjgl.input.Keyboard;
@@ -202,7 +204,10 @@ public class Kisman {
                     if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) if (m.getKey() == keyCode) m.toggle();
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) s.setValBoolean(!s.getValBoolean());
+                    for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) {
+                        s.setValBoolean(!s.getValBoolean());
+                        if(init && moduleManager.getModule("Notification").isToggled()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                    }
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }
         } catch (Exception ignored) {}

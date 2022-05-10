@@ -121,6 +121,11 @@ public class InventoryUtil {
         }
     }
 
+    public static void meow(int slot) {
+        if(slot == -1) return;
+        mc.player.inventory.currentItem = slot;
+    }
+
     public static int findWeaponSlot(int min, int max, boolean shieldBreak) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);

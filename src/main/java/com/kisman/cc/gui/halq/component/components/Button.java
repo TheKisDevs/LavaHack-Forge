@@ -114,6 +114,14 @@ public class Button extends Component {
                  if(!comp.visible()) continue;
                  comp.drawScreen(mouseX, mouseY);
                  height += comp.getHeight();
+                 if(comp instanceof GroupButton) {
+                     GroupButton group = (GroupButton) comp;
+                     if(group.getOpen()) {
+                         for(Component comp1 : group.getComps()) {
+                             height += comp1.getHeight();
+                         }
+                     }
+                 }
              }
              if(HalqGui.test) {
                  Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());

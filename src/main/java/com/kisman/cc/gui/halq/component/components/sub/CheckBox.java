@@ -80,7 +80,10 @@ public class CheckBox extends Component {
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}
-    public void setWidth(int width) {this.width = width;}
+    public void setWidth(int width) {
+        this.width = width;
+        this.bind.setWidth(width - 10);
+    }
     public void setX(int x) {this.x = x;}
     public int getX() {return x;}
     public void setLayer(int layer) {this.layer = layer;}

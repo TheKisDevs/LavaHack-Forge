@@ -766,7 +766,7 @@ public class AutoRer extends Module {
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && !offhand) {
             if(switch_.getValString().equals("None")) return;
             else if ("Normal".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, false);
-            else if ("Silent".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, false);
+            else if ("Silent".equals(switch_.getValString())) InventoryUtil.switchToSlot(crystalSlot, true);
             else if (silentBypass) bypass.doSwitch();
         }
 
@@ -810,7 +810,7 @@ public class AutoRer extends Module {
             mc.player.rotationPitch = oldRots[1];
         }
         if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1 && !silentBypass) if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, false);
+        if(oldSlot != -1 && !silentBypass) if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
         else if(silentBypass) bypass.doSwitch();
     }
 
