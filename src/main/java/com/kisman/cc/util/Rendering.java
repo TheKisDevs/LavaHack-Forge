@@ -44,7 +44,9 @@ public class Rendering {
         OUTLINE_GRADIENT,
         BOTH_GRADIENT,
         CUSTOM_OUTLINE,
-        GRADIENT_CUSTOM_OUTLINE
+        GRADIENT_CUSTOM_OUTLINE,
+        GLOW,
+        REVERSE_GLOW
     }
 
     public static void setup(){
@@ -122,6 +124,18 @@ public class Rendering {
                 prepare();
                 drawGradientFilledBox(axisAlignedBB, color, color1);
                 drawGradientBlockOutline(axisAlignedBB, color1, color, lineWidth);
+                restore();
+                break;
+            case GLOW:
+                prepare();
+                drawGradientFilledBox(axisAlignedBB, color, color1);
+                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), 255), new Color(color.getRed(), color.getGreen(), color.getBlue(), 0), lineWidth);
+                restore();
+                break;
+            case REVERSE_GLOW:
+                prepare();
+                drawGradientFilledBox(axisAlignedBB, color, color1);
+                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0), new Color(color.getRed(), color.getGreen(), color.getBlue(), 255), lineWidth);
                 restore();
                 break;
         }
