@@ -1,5 +1,6 @@
 package com.kisman.cc.hud.hudmodule.combat;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.hud.hudmodule.*;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.combat.*;
@@ -32,11 +33,13 @@ public class PvpInfo extends HudModule {
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "OFF: " + (isToggled(OffHand.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HR: " + (isToggled(Kisman.instance.moduleManager.getModule("HandRewrite")) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "SURR: " + (isToggled(Surround.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "AT: " + (isToggled(AutoTrap.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HF: " + (isToggled(HoleFiller.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HFR: " + (isToggled(HoleFillerRewrite.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "CF: " + (isToggled(CrystalFiller.instance) ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;

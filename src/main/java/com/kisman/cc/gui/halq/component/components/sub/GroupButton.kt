@@ -30,6 +30,10 @@ class GroupButton(
 
             for (setting_ in setting.settings) {
                 if (setting_ == null) continue
+                if (setting_.isCombo) {
+                    comps.add(ModeButton(setting_, x, y, offsetY, count1++))
+                    offsetY += HalqGui.height
+                }
                 if (setting_.isSlider) {
                     comps.add(Slider(setting_, x, y, offsetY, count1++))
                     offsetY += HalqGui.height
@@ -51,7 +55,7 @@ class GroupButton(
             if(comps.isNotEmpty()) {
                 for(comp in comps) {
                     comp.layer = 2
-                    comp.setWidth(70)
+                    comp.setWidth(80)
                 }
             }
         }
@@ -172,7 +176,7 @@ class GroupButton(
                 for(comp in comps) {
                     if(!comp.visible()) continue
                     comp.updateComponent(
-                            x + LayerMap.getLayer(comp.layer).modifier,
+                            x + LayerMap.getLayer(comp.layer).modifier / 2,
                             y
                     )
                 }
@@ -199,7 +203,17 @@ class GroupButton(
 
     override fun getHeight(): Int {
         var height = HalqGui.height
-        if(comps.isNotEmpty()) {
+//        if(open && comps.isNotEmpty()) {
+//            for(comp in comps) {
+//                height += comp.height
+//            }
+//        }
+        return height
+    }
+
+    fun getHeight1() : Int {
+        var height = HalqGui.height
+        if(open && comps.isNotEmpty()) {
             for(comp in comps) {
                 height += comp.height
             }
@@ -240,6 +254,6 @@ class GroupButton(
     }
 
     private fun isMouseOnButton2(x: Int, y: Int): Boolean {
-        return x > x_ && x < x_ + width_ && y > this.y + offset && y < this.y + offset + height
+        return x > x_ && x < x_ + width_ && y > this.y + offset && y < this.y + offset + getHeight1()
     }
 }

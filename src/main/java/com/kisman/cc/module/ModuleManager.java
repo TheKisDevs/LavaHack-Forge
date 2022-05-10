@@ -79,6 +79,7 @@ public class ModuleManager {
 		modules.add(new Surround());
 //		modules.add(new TrapDoorBurrow());
 		//client
+		modules.add(new Baritone());
 		modules.add(new Cape());
 		modules.add(new Changer());
 		modules.add(new Config());

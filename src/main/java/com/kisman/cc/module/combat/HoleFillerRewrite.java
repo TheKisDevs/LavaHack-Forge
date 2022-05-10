@@ -19,6 +19,7 @@ import java.util.*;
  * @author Cubic
  */
 public class HoleFillerRewrite extends Module {
+    public static HoleFillerRewrite instance;
 
     private final Setting obsidianHoles = register(new Setting("ObsidianHoles", this, true));
     private final Setting bedrockHoles = register(new Setting("BedrockHoles", this, true));
@@ -39,6 +40,8 @@ public class HoleFillerRewrite extends Module {
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
+
+        instance = this;
     }
 
     private List<BlockPos> holes = new ArrayList<>();

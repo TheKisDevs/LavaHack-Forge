@@ -20,6 +20,7 @@ import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.gui.vega.Gui;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
@@ -201,6 +202,7 @@ public class Kisman {
                     if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) if (m.getKey() == keyCode) m.toggle();
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
+                    for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) s.setValBoolean(!s.getValBoolean());
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }
         } catch (Exception ignored) {}

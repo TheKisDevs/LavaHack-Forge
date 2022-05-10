@@ -36,7 +36,7 @@ public class Replenish extends Module {
 
     @Override
     public void update(){
-        if(mc.world == null || mc.player == null)
+        if(mc.world == null || mc.player == null || mc.currentScreen != null)
             return;
 
         int delay = this.delay.getValInt();

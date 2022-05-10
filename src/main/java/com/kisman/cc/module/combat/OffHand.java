@@ -78,6 +78,7 @@ public class OffHand extends Module {
             switchOffHandIfNeed("Gap");
             return;
         }
+
         switchOffHandIfNeed(mode.getValString());
     }
 

@@ -96,7 +96,7 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
                 if(entity.getDistance(mc.player) > nameRenderDistance.valDouble){
                     continue
                 }
-                //item.name like item.item.expBottle
+                //item.name like "item.item.expBottle"
                 TextOnBoundingBox(entity.item.displayName, entity.boundingBox, textColor.colour).draw(event.partialTicks)
             }
         }
