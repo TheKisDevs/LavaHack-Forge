@@ -57,7 +57,7 @@ class RenderingRewritePattern(
     }
 
     fun draw(aabb : AxisAlignedBB) {
-        var a = aabb;
+        var a = aabb
         if(abyss.valBoolean){
             a = AxisAlignedBB(a.minX, a.minY + 1.0, a.minZ, a.maxX, a.maxY + 0.075, a.maxZ)
         }
