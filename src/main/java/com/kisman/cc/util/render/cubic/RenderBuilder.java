@@ -9,17 +9,17 @@ import java.awt.*;
 
 public class RenderBuilder {
 
-    private BoundingBox aabb;
+    protected BoundingBox aabb;
 
-    private Color color1;
+    protected Color color1;
 
-    private Color color2;
+    protected Color color2;
 
-    private float lineWidth;
+    protected float lineWidth;
 
-    private Rendering.Mode mode;
+    protected Rendering.Mode mode;
 
-    private RenderBuilder(){
+    protected RenderBuilder(){
         this.aabb = null;
         this.color1 = Rendering.DUMMY_COLOR.getColor();
         this.color2 = Rendering.DUMMY_COLOR.getColor();
@@ -30,6 +30,10 @@ public class RenderBuilder {
 
     public static RenderBuilder build(){
         return new RenderBuilder();
+    }
+
+    static RenderBuilder buildDelegate(ModuleRenderPattern renderer){
+        return new DelegateRenderBuilder(renderer);
     }
 
 

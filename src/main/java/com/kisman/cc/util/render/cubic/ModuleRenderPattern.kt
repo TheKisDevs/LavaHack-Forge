@@ -6,6 +6,7 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
+import net.minecraft.util.math.AxisAlignedBB
 
 class ModuleRenderPattern(module : Module) : RenderPattern() {
 
@@ -44,38 +45,58 @@ class ModuleRenderPattern(module : Module) : RenderPattern() {
     }
 
     override fun getRenderBuilder(): RenderBuilder {
-        var c1 = color1.colour
-        var c2 = color2.colour
-        val glow1 = rainbowGlow.valString;
-        var alpha1 = color1.colour.a;
-        if(glow1.equals("ReverseGlow")){
-            alpha1 = 0
-        }
-        val glow2 = rainbowGlow.valString;
-        var alpha2 = color1.colour.a;
-        if(glow2.equals("Glow")){
-            alpha2 = 0
-        }
-        if(rainbow.valBoolean){
-            c1 = RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, alpha1, rainbowSpeed.valDouble)
-            c2 = RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, alpha2, rainbowSpeed.valDouble)
-        }
-        if(!rainbowGlow.valString.equals("None")){
-            val reverse = rainbowGlow.valString.equals("ReverseGlow")
-            var renderMode = Rendering.Mode.GLOW;
-            if(reverse){
-                renderMode = Rendering.Mode.REVERSE_GLOW;
-            }
-            return RenderBuilder.build()
-                .mode(renderMode)
-                .color(c1, c2)
-                .lineWidth(lineWidth.valFloat)
-
-        }
-        return RenderBuilder.build()
+        val c1 = getColor1()
+        val c2 = getColor2()
+        return DelegateRenderBuilder(this)
             .mode((mode.valEnum as RenderingRewriteModes).mode)
             .color(c1, c2)
             .lineWidth(lineWidth.valFloat)
+    }
 
+    // only DelegateRenderBuilder should call this!
+    fun render(aabb : AxisAlignedBB, delegate : DelegateRenderBuilder){
+        if(rainbow.valBoolean && !rainbowGlow.valString.equals("None")){
+            val cAabb = Rendering.correct(aabb)
+            val colour1 = getColor1()
+            val colour2 = getColor2()
+            var outAlpha1 = 255
+            var outAlpha2 = 255
+            val reverse = rainbowGlow.valString.equals("ReverseGlow")
+            if(reverse){
+                outAlpha1 = 0;
+            } else {
+                outAlpha2 = 0;
+            }
+            Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
+            Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
+            return
+        }
+        delegate.doRender();
+    }
+
+    private fun getColor1() : Colour {
+        val glow = rainbowGlow.valString;
+        var alpha = color1.colour.a;
+        if(glow.equals("ReverseGlow")){
+            alpha = 0
+        }
+        return if(rainbow.valBoolean) {
+            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, alpha, rainbowSpeed.valDouble)
+        } else {
+            color1.colour
+        }
+    }
+
+    private fun getColor2() : Colour {
+        val glow = rainbowGlow.valString;
+        var alpha = color2.colour.a
+        if(glow.equals("Glow")){
+            alpha = 0
+        }
+        return if(rainbow.valBoolean) {
+            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, alpha, rainbowSpeed.valDouble)
+        } else {
+            color2.colour
+        }
     }
 }
