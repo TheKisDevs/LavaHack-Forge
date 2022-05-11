@@ -3,6 +3,9 @@ package com.kisman.cc.util.render.cubic;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
+import javax.swing.plaf.IconUIResource;
 
 public class BoundingBox {
 
@@ -35,6 +38,15 @@ public class BoundingBox {
         this(new AxisAlignedBB(pos));
     }
 
+    private BoundingBox(double x1, double y1, double z1, double x2, double y2, double z2){
+        minX = x1;
+        minY = y1;
+        minZ = z1;
+        maxX = x2;
+        maxY = y2;
+        maxZ = z2;
+    }
+
 
     public BoundingBox grow(double amount){
         minX -= amount;
@@ -43,6 +55,16 @@ public class BoundingBox {
         maxX += amount;
         maxY += amount;
         maxZ += amount;
+        return this;
+    }
+
+    public BoundingBox grow(double x, double y, double z){
+        minX -= x;
+        minY -= y;
+        minZ -= z;
+        maxX += x;
+        maxY += y;
+        maxZ += z;
         return this;
     }
 
@@ -75,6 +97,79 @@ public class BoundingBox {
         maxY = y + difY;
         maxZ = z + difZ;
         return this;
+    }
+
+    public BoundingBox centerTo(Vec3d vec3d){
+        centerTo(vec3d.x, vec3d.y, vec3d.z);
+        return this;
+    }
+
+    public BoundingBox centerTo(BoundingBox bb){
+        centerTo(bb.getCenter());
+        return this;
+    }
+
+    public BoundingBox centerTo(AxisAlignedBB aabb){
+        centerTo(new BoundingBox(aabb).getCenter());
+        return this;
+    }
+
+    public BoundingBox centerTo(BlockPos pos){
+        centerTo(new BoundingBox(pos).getCenter());
+        return this;
+    }
+
+    public Vec3d getCenter(){
+        double difX = (maxX - minX) * 0.5;
+        double difY = (maxY - minY) * 0.5;
+        double difZ = (maxZ - minZ) * 0.5;
+        return new Vec3d(minX + difX, minY + difY, minZ + difZ);
+    }
+
+    public BoundingBox offset(double x, double y, double z){
+        minX += x;
+        minY += y;
+        minZ += z;
+        maxX += x;
+        maxY += y;
+        maxZ += z;
+        return this;
+    }
+
+    public BoundingBox offset(Vec3d vec3d){
+        offset(vec3d.x, vec3d.y, vec3d.z);
+        return this;
+    }
+
+    public BoundingBox scale(double x, double y, double z){
+        Vec3d center = getCenter();
+        double cx = center.x;
+        double cy = center.y;
+        double cz = center.z;
+        minX = cx;
+        minY = cy;
+        minZ = cz;
+        maxX = cx;
+        maxY = cy;
+        maxZ = cz;
+        grow(x * 0.5, y * 0.5, z * 0.5);
+        return this;
+    }
+
+    public boolean intersects(BoundingBox boundingBox){
+        return toAABB().intersects(boundingBox.toAABB());
+    }
+
+    public boolean intersects(AxisAlignedBB axisAlignedBB){
+        return toAABB().intersects(axisAlignedBB);
+    }
+
+    public boolean contains(double x, double y, double z){
+        return toAABB().contains(new Vec3d(x, y, z));
+    }
+
+    public boolean contains(Vec3d vec3d){
+        return toAABB().contains(vec3d);
     }
 
     /*

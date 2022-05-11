@@ -8,28 +8,28 @@ import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.util.math.AxisAlignedBB
 
-class ModuleRenderPattern(module : Module) : DelegateRenderPattern() {
+class ModuleSuffixRenderPattern(module : Module, suffix : String) : DelegateRenderPattern() {
 
-    val mode = Setting("Render Mode", module, RenderingRewriteModes.Filled)
-    val lineWidth = Setting("Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
+    val mode = Setting("Render Mode $suffix", module, RenderingRewriteModes.Filled)
+    val lineWidth = Setting("Render Line Width $suffix", module, 1.0, 0.1, 5.0, false).setVisible {
         mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
     }
 
-    val rainbow = Setting("Rainbow", module, false)
-    val rainbowSpeed = Setting("RainbowSpeed", module, 1.0, 0.25, 5.0, false)
-    val rainbowSat = Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowBright = Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowGlow = Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
+    val rainbow = Setting("Rainbow $suffix", module, false)
+    val rainbowSpeed = Setting("RainbowSpeed $suffix", module, 1.0, 0.25, 5.0, false)
+    val rainbowSat = Setting("Saturation $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowBright = Setting("Brightness $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowGlow = Setting("Glow $suffix", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
 
     //Colors
-    val color1 = Setting("Render Color", module, "Render Color", Colour(255, 0, 0, 255))
-    val color2 = Setting("Render Second Color", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible { (
-                mode.valEnum == RenderingRewriteModes.FilledGradient ||
-                        mode.valEnum == RenderingRewriteModes.OutlineGradient ||
-                        mode.valEnum == RenderingRewriteModes.BothGradient ||
-                        mode.valEnum == RenderingRewriteModes.GlowOutline ||
-                        mode.valEnum == RenderingRewriteModes.Glow
-                )
+    val color1 = Setting("Render Color $suffix", module, "Render Color", Colour(255, 0, 0, 255))
+    val color2 = Setting("Render Second Color $suffix", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible { (
+            mode.valEnum == RenderingRewriteModes.FilledGradient ||
+                    mode.valEnum == RenderingRewriteModes.OutlineGradient ||
+                    mode.valEnum == RenderingRewriteModes.BothGradient ||
+                    mode.valEnum == RenderingRewriteModes.GlowOutline ||
+                    mode.valEnum == RenderingRewriteModes.Glow
+            )
     }
 
     override fun initialize(){

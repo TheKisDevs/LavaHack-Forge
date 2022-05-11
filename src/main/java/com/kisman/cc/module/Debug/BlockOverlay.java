@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.RainbowUtil;
 import com.kisman.cc.util.Rendering;
+import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.cubic.ModuleRenderPattern;
 import com.kisman.cc.util.render.cubic.RenderPattern;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -39,6 +40,7 @@ public class BlockOverlay extends Module {
 
         if(pos == null)
             return;
+
 
         //Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2f, RainbowUtil.rainbow2(0, 100, 50, 120, 1.0), RainbowUtil.rainbow2(50, 100, 50, 120, 1.0), Rendering.Mode.BOTH_GRADIENT);
         render.getRenderBuilder().pos(pos).render();
