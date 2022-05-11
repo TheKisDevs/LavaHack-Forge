@@ -32,10 +32,6 @@ public class RenderBuilder {
         return new RenderBuilder();
     }
 
-    static RenderBuilder buildDelegate(ModuleRenderPattern renderer){
-        return new DelegateRenderBuilder(renderer);
-    }
-
 
     public RenderBuilder pos(BoundingBox boundingBox){
         aabb = boundingBox;

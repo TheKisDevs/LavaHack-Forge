@@ -119,6 +119,7 @@ public class ModuleManager {
 		modules.add(new EyeFinder());
 		modules.add(new EntityESPRewrite());
 		modules.add(new HoleESP());
+		modules.add(new HoleESPRewrite());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());

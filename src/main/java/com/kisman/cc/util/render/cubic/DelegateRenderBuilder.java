@@ -6,9 +6,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 public class DelegateRenderBuilder extends RenderBuilder {
 
-    private final ModuleRenderPattern renderer;
+    private final DelegateRenderPattern renderer;
 
-    public DelegateRenderBuilder(ModuleRenderPattern renderer){
+    public DelegateRenderBuilder(DelegateRenderPattern renderer){
         super();
         this.renderer = renderer;
     }
