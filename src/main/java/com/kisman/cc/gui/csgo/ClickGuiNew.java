@@ -307,6 +307,12 @@ public class ClickGuiNew extends GuiScreen {
 
         drawDefaultBackground();
 
+        if(Config.instance.guiParticles.getValBoolean()) {
+            particleSystem.tick(10);
+            particleSystem.render();
+            particleSystem.onUpdate();
+        }
+
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 
         window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSize.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
@@ -327,12 +333,6 @@ public class ClickGuiNew extends GuiScreen {
         GL11.glPopMatrix();
 
         window.postRender(renderer);
-
-        if(Config.instance.guiParticles.getValBoolean()) {
-            particleSystem.tick(10);
-            particleSystem.render();
-            particleSystem.onUpdate();
-        }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 

@@ -53,10 +53,10 @@ public class HalqGui extends GuiScreen {
 
     public HalqGui() {
         this.particleSystem = new ParticleSystem(300);
-        int offsetX = headerOffset - 1;
+        int offsetX = headerOffset - 1 - 1;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 17));
-            offsetX += headerOffset * 2 + width - 1 - 1 - 1;
+            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1;
         }
     }
 
@@ -80,6 +80,12 @@ public class HalqGui extends GuiScreen {
 
         drawDefaultBackground();
 
+        if(Config.instance.guiParticles.getValBoolean()) {
+            particleSystem.tick(10);
+            particleSystem.render();
+            particleSystem.onUpdate();
+        }
+
         scrollWheelCheck();
         for(Frame frame : frames) {
             if(frame.reloading) continue;
@@ -91,12 +97,6 @@ public class HalqGui extends GuiScreen {
             frame.renderPost(mouseX, mouseY);
             frame.veryRenderPost(mouseX, mouseY);
             frame.refresh();
-        }
-
-        if(Config.instance.guiParticles.getValBoolean()) {
-            particleSystem.tick(10);
-            particleSystem.render();
-            particleSystem.onUpdate();
         }
 
         Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);

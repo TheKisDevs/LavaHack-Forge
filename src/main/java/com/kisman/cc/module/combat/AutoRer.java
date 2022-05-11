@@ -13,6 +13,7 @@ import com.kisman.cc.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.module.render.shader.FramebufferShader;
 import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.bypasses.SilentSwitchBypass;
@@ -40,103 +41,114 @@ import java.util.stream.Collectors;
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
 public class AutoRer extends Module {
-    public final Setting lagProtect = new Setting("Lag Protect", this, false);
-    public final Setting placeRange = new Setting("Place Range", this, 6, 0, 6, false);
-    private final Setting recalcPlaceRange = new Setting("Recalc Place Range", this, 4, 0, 6, false);
-    private final Setting placeWallRange = new Setting("Place Wall Range", this, 4.5f, 0, 6, false);
-    private final Setting breakRange = new Setting("Break Range", this, 6, 0, 6, false);
-    private final Setting breakWallRange = new Setting("Break Wall Range", this, 4.5f, 0, 6, false);
-    private final Setting targetRange = new Setting("Target Range", this, 9, 0, 20, false);
-    private final Setting logic = new Setting("Logic", this, LogicMode.PlaceBreak);
-    public final Setting terrain = new Setting("Terrain", this, false);
-    private final Setting switch_ = new Setting("Switch", this, SwitchMode.None);
-    private final Setting fastCalc = new Setting("Fast Calc", this, true);
-    private final Setting recalc = new Setting("ReCalc", this, false);
-    private final Setting cubicCalc = new Setting("Cubic Calc", this, false);
-    private final Setting motionCrystal = new Setting("Motion Crystal", this, false);
-    private final Setting motionCalc = new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean);
-    private final Setting swing = new Setting("Swing", this, SwingMode.PacketSwing);
-    private final Setting instant = new Setting("Instant", this, true);
-    private final Setting instantCalc = new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean);
-    private final Setting instantRotate = new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean);
-    private final Setting inhibit = new Setting("Inhibit", this, true);
-    private final Setting sound = new Setting("Sound", this, true);
-    public final Setting syns = new Setting("Syns", this, true);
-    private final Setting rotate = new Setting("Rotate", this, Rotate.Place);
-    private final Setting rotateMode = new Setting("Rotate Mode", this, RotateMode.Silent).setVisible(() -> !rotate.checkValString("None"));
-    private final Setting ai = new Setting("AI", this, false);
-    private final Setting calcDistSort = new Setting("Calc Dist Sort", this, false);
+    private final SettingGroup main = (SettingGroup) register(new SettingGroup(new Setting("Main", this)));
+    private final SettingGroup ranges = (SettingGroup) register(new SettingGroup(new Setting("Ranges", this)));
+    private final SettingGroup calc = (SettingGroup) register(new SettingGroup(new Setting("Calc", this)));
+    private final SettingGroup motion_ = (SettingGroup) register(new SettingGroup(new Setting("Motion", this)));
+    private final SettingGroup helpers = (SettingGroup) register(new SettingGroup(new Setting("Helpers", this)));
+    private final SettingGroup place_ = (SettingGroup) register(new SettingGroup(new Setting("Place", this)));
+    private final SettingGroup break__ = (SettingGroup) register(new SettingGroup(new Setting("Break", this)));
+    private final SettingGroup delay = (SettingGroup) register(new SettingGroup(new Setting("Delay", this)));
+    private final SettingGroup damage = (SettingGroup) register(new SettingGroup(new Setting("Damage", this)));
+    private final SettingGroup thread_ = (SettingGroup) register(new SettingGroup(new Setting("Thread", this)));
+    private final SettingGroup render_ = (SettingGroup) register(new SettingGroup(new Setting("Render", this)));
+    private final SettingGroup tc = (SettingGroup) register(new SettingGroup(new Setting("Target Charms", this)));
+
+
+    public final Setting lagProtect = main.add(new Setting("Lag Protect", this, false));
+    public final Setting placeRange = ranges.add(new Setting("Place Range", this, 6, 0, 6, false));
+    private final Setting recalcPlaceRange = ranges.add(new Setting("Recalc Place Range", this, 4, 0, 6, false));
+    private final Setting placeWallRange = ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false));
+    private final Setting breakRange = ranges.add(new Setting("Break Range", this, 6, 0, 6, false));
+    private final Setting breakWallRange = ranges.add(new Setting("Break Wall Range", this, 4.5f, 0, 6, false));
+    private final Setting targetRange = ranges.add(new Setting("Target Range", this, 9, 0, 20, false));
+    private final Setting logic = main.add(new Setting("Logic", this, LogicMode.PlaceBreak));
+    public final Setting terrain = main.add(new Setting("Terrain", this, false));
+    private final Setting switch_ = main.add(new Setting("Switch", this, SwitchMode.None));
+    private final Setting fastCalc = calc.add(new Setting("Fast Calc", this, true));
+    private final Setting recalc = calc.add(new Setting("ReCalc", this, false));
+    private final Setting cubicCalc = calc.add(new Setting("Cubic Calc", this, false));
+    private final Setting motionCrystal = motion_.add(new Setting("Motion Crystal", this, false));
+    private final Setting motionCalc = motion_.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean));
+    private final Setting swing = main.add(new Setting("Swing", this, SwingMode.PacketSwing));
+    private final Setting instant = helpers.add(new Setting("Instant", this, true));
+    private final Setting instantCalc = helpers.add(new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean));
+    private final Setting instantRotate = helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean));
+    private final Setting inhibit = helpers.add(new Setting("Inhibit", this, true));
+    private final Setting sound = helpers.add(new Setting("Sound", this, true));
+    public final Setting syns = helpers.add(new Setting("Syns", this, true));
+    private final Setting rotate = helpers.add(new Setting("Rotate", this, Rotate.Place));
+    private final Setting rotateMode = helpers.add(new Setting("Rotate Mode", this, RotateMode.Silent).setVisible(() -> !rotate.checkValString("None")));
+    private final Setting ai = helpers.add(new Setting("AI", this, false));
+    private final Setting calcDistSort = helpers.add(new Setting("Calc Dist Sort", this, false));
 
     private final Setting placeLine = new Setting("PlaceLine", this, "Place");
-    private final Setting place = new Setting("Place", this, true);
-    public final Setting secondCheck = new Setting("Second Check", this, false);
-    private final Setting thirdCheck = new Setting("Third Check", this, false);
-    public final Setting armorBreaker = new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT);
-    private final Setting multiPlace = new Setting("Multi Place", this, false);
-    private final Setting firePlace = new Setting("Fire Place", this, false);
+    private final Setting place = place_.add(new Setting("Place", this, true));
+    public final Setting secondCheck = place_.add(new Setting("Second Check", this, false));
+    private final Setting thirdCheck = place_.add(new Setting("Third Check", this, false));
+    public final Setting armorBreaker = place_.add(new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT));
+    private final Setting multiPlace = place_.add(new Setting("Multi Place", this, false));
+    private final Setting firePlace = place_.add(new Setting("Fire Place", this, false));
 
     private final Setting breakLine = new Setting("BreakLine", this, "Break");
-    private final Setting break_ = new Setting("Break", this, true);
-    private final Setting breakPriority = new Setting("Break Priority", this, BreakPriority.Damage);
-    private final Setting friend_ = new Setting("Friend", this, FriendMode.AntiTotemPop);
-    private final Setting clientSide = new Setting("Client Side", this, false);
-    private final Setting manualBreaker = new Setting("Manual Breaker", this, false);
-    private final Setting removeAfterAttack = new Setting("Remove After Attack", this, false);
-    private final Setting antiCevBreakerMode = new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None);
+    private final Setting break_ = break__.add(new Setting("Break", this, true));
+    private final Setting breakPriority = break__.add(new Setting("Break Priority", this, BreakPriority.Damage));
+    private final Setting friend_ = break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop));
+    private final Setting clientSide = break__.add(new Setting("Client Side", this, false));
+    private final Setting manualBreaker = break__.add(new Setting("Manual Breaker", this, false));
+    private final Setting removeAfterAttack = break__.add(new Setting("Remove After Attack", this, false));
+    private final Setting antiCevBreakerMode = break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None));
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
-    private final Setting placeDelay = new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private final Setting breakDelay = new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME);
-    private final Setting calcDelay = new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME);
-    private final Setting clearDelay = new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME);
-    private final Setting multiplication = new Setting("Multiplication", this, 1, 1, 10, true);
+    private final Setting placeDelay = delay.add(new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME));
+    private final Setting breakDelay = delay.add(new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME));
+    private final Setting calcDelay = delay.add(new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME));
+    private final Setting clearDelay = delay.add(new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME));
+    private final Setting multiplication = delay.add(new Setting("Multiplication", this, 1, 1, 10, true));
 
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
-    public final Setting minDMG = new Setting("Min DMG", this, 6, 0, 37, true);
-    public final Setting maxSelfDMG = new Setting("Max Self DMG", this, 18, 0, 37, true);
-    private final Setting maxFriendDMG = new Setting("Max Friend DMG", this, 10, 0, 37, true);
-    public final Setting lethalMult = new Setting("Lethal Mult", this, 0, 0, 6, false);
+    public final Setting minDMG = damage.add(new Setting("Min DMG", this, 6, 0, 37, true));
+    public final Setting maxSelfDMG = damage.add(new Setting("Max Self DMG", this, 18, 0, 37, true));
+    private final Setting maxFriendDMG = damage.add(new Setting("Max Friend DMG", this, 10, 0, 37, true));
+    public final Setting lethalMult = damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false));
 
     private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
-    private final Setting threadMode = new Setting("Thread Mode", this, ThreadMode.None);
-    private final Setting threadDelay = new Setting("Thread Delay", this, 50, 1, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadSyns = new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadSynsValue = new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()));
-    private final Setting threadPacketRots = new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()));
-    private final Setting threadSoundPlayer = new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"));
-    private final Setting threadCalc = new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"));
+    private final Setting threadMode = thread_.add(new Setting("Thread Mode", this, ThreadMode.None));
+    private final Setting threadDelay = thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    private final Setting threadSyns = thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    private final Setting threadSynsValue = thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    private final Setting threadPacketRots = thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name())));
+    private final Setting threadSoundPlayer = thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound")));
+    private final Setting threadCalc = thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None")));
 
-    private final Setting renderLine = new Setting("RenderLine", this, "Render");
-    private final Setting render = new Setting("Render", this, true);
-    private final Setting movingLength = new Setting("Moving Length", this, 400, 0, 1000, true).setVisible(render::getValBoolean);
-    private final Setting fadeLength = new Setting("Fade Length", this, 200, 0, 1000, true).setVisible(render::getValBoolean);
+    private final Setting renderLine = render_.add(new Setting("RenderLine", this, "Render"));
+    private final Setting render = render_.add(new Setting("Render", this, true));
+    private RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, () -> true, null, render_).preInit();
+    private final Setting movingLength = render_.add(new Setting("Moving Length", this, 400, 0, 1000, true).setVisible(render::getValBoolean));
+    private final Setting fadeLength = render_.add(new Setting("Fade Length", this, 200, 0, 1000, true).setVisible(render::getValBoolean));
 
-    private final Setting text = new Setting("Text", this, true);
-
-    //private final Setting rainbow = new Setting("Rainbow", this, "None", Arrays.asList("None", "Rainbow", "GradientRainbow"));
-    //private final Setting rainbowSat = new Setting("Saturation", this, 100, 0, 100, true).setVisible(() -> !rainbow.getValString().equals("None"));
-    //private final Setting rainbowBright = new Setting("Brightness", this, 50, 0, 100, true).setVisible(() -> !rainbow.getValString().equals("None"));
+    private final Setting text = render_.add(new Setting("Text", this, true));
 
     private final Setting targetCharmsLine = new Setting("Target Charms", this, "Target Shader Charms");
-    private final Setting targetCharms = new Setting("Target Charms", this, false);
-    private final Setting targetCharmsShader = new Setting("TC Shader", this, ShaderModes.SMOKE);
+    private final Setting targetCharms = tc.add(new Setting("Target Charms", this, false));
+    private final Setting targetCharmsShader = tc.add(new Setting("TC Shader", this, ShaderModes.SMOKE));
 
-    private final Setting targetCharmsAnimationSpeed = new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsAnimationSpeed = tc.add(new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
 
-    private final Setting targetCharmsBlur = new Setting("Blur", this, true).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean());
-    private final Setting targetCharmsRadius = new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE") || targetCharmsShader.checkValString("GRADIENT")) && targetCharms.getValBoolean());
-    private final Setting targetCharmsMix = new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean());
-    private final Setting targetCharmsColor = new Setting("TC Color", this, "TC Color", new Colour(255, 255, 255)).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean());
+    private final Setting targetCharmsBlur = tc.add(new Setting("Blur", this, true).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsRadius = tc.add(new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE") || targetCharmsShader.checkValString("GRADIENT")) && targetCharms.getValBoolean()));
+    private final Setting targetCharmsMix = tc.add(new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsColor = tc.add(new Setting("TC Color", this, "TC Color", new Colour(255, 255, 255)).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean()));
 
-    private final Setting targetCharmsQuality = new Setting("Quality", this, 1, 0, 20, false).setVisible(() -> (targetCharmsShader.checkValString("GRADIENT") || targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean());
-    private final Setting targetCharmsGradientAlpha = new Setting("Gradient Alpha", this, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsAlphaGradient = new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsDuplicateOutline = new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsMoreGradientOutline = new Setting("More Gradient", this, 1, 0, 10, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsCreepyOutline = new Setting("Creepy", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsAlpha = new Setting("Alpha", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsNumOctavesOutline = new Setting("Num Octaves", this, 5, 1, 30, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
-    private final Setting targetCharmsSpeedOutline = new Setting("Speed", this, 0.1, 0.001, 0.1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean());
+    private final Setting targetCharmsQuality = tc.add(new Setting("Quality", this, 1, 0, 20, false).setVisible(() -> (targetCharmsShader.checkValString("GRADIENT") || targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean()));
+    private final Setting targetCharmsGradientAlpha = tc.add(new Setting("Gradient Alpha", this, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsAlphaGradient = tc.add(new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsDuplicateOutline = tc.add(new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsMoreGradientOutline = tc.add(new Setting("More Gradient", this, 1, 0, 10, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsCreepyOutline = tc.add(new Setting("Creepy", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsAlpha = tc.add(new Setting("Alpha", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsNumOctavesOutline = tc.add(new Setting("Num Octaves", this, 5, 1, 30, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
+    private final Setting targetCharmsSpeedOutline = tc.add(new Setting("Speed", this, 0.1, 0.001, 0.1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean()));
 
     public static AutoRer instance;
 
@@ -160,7 +172,6 @@ public class AutoRer extends Module {
     private boolean subscribed = false;
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
-    private RenderingRewritePattern renderer_;
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
@@ -237,7 +248,6 @@ public class AutoRer extends Module {
         setmgr.rSetting(renderLine);
         setmgr.rSetting(render);
         //New renderer
-        renderer_ = new RenderingRewritePattern(this, render::getValBoolean);
         renderer_.init();
         setmgr.rSetting(movingLength);
         setmgr.rSetting(fadeLength);
@@ -741,7 +751,6 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = placePos == null ? null : new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
-//        this.placePos = placePos == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos, currentTarget, terrain.getValBoolean());
     }
 
     private boolean isPosValid(BlockPos pos) {

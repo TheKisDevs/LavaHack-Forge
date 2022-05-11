@@ -3,11 +3,11 @@ package com.kisman.cc.settings.util
 import com.kisman.cc.Kisman
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
-import com.kisman.cc.util.render.objects.TextOnBoundingBox
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -16,9 +16,11 @@ import java.util.function.Supplier
 class RenderingRewritePattern(
     val module : Module,
     val visible : Supplier<Boolean>,
-    val prefix : String?
+    val prefix : String?,
+    val group : SettingGroup?
 ) {
-     constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
+    constructor(module : Module, visible : Supplier<Boolean>, prefix : String) : this(module, visible, prefix, null)
+    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null, null)
 
     val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
     val abyss = Setting("Abyss", module, false)
@@ -26,11 +28,11 @@ class RenderingRewritePattern(
         visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
     }
 
-    val rainbow = Setting("Rainbow", module, false)
-    val rainbowSpeed = Setting("RainbowSpeed", module, 1.0, 0.25, 5.0, false)
-    val rainbowSat = Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowBright = Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowGlow = Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
+    val rainbow = Setting((if(prefix != null) "$prefix " else "") + "Rainbow", module, false)
+    val rainbowSpeed = Setting((if(prefix != null) "$prefix " else "") + "RainbowSpeed", module, 1.0, 0.25, 5.0, false)
+    val rainbowSat = Setting((if(prefix != null) "$prefix " else "") + "Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowBright = Setting((if(prefix != null) "$prefix " else "") + "Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
+    val rainbowGlow = Setting((if(prefix != null) "$prefix " else "") + "Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
 
     //Colors
     val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
@@ -42,6 +44,20 @@ class RenderingRewritePattern(
                         mode.valEnum == RenderingRewriteModes.GlowOutline ||
                         mode.valEnum == RenderingRewriteModes.Glow
                 )
+    }
+
+    fun preInit() : RenderingRewritePattern {
+        group?.add(mode)
+        group?.add(abyss)
+        group?.add(lineWidth)
+        group?.add(rainbow)
+        group?.add(rainbowSpeed)
+        group?.add(rainbowSat)
+        group?.add(rainbowBright)
+        group?.add(rainbowGlow)
+        group?.add(color1)
+        group?.add(color2)
+        return this
     }
 
     fun init() {

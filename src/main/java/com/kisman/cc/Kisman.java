@@ -5,11 +5,11 @@ import com.kisman.cc.catlua.ScriptManager;
 import com.kisman.cc.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.catlua.mapping.*;
 import com.kisman.cc.command.CommandManager;
-import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.*;
 import com.kisman.cc.file.ConfigManager;
 import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.gui.MainGui;
+import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.hud.hudeditor.HudEditorGui;
 import com.kisman.cc.hud.hudgui.HudGui;
@@ -31,12 +31,10 @@ import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
 import me.zero.alpine.bus.EventManager;
-import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.*;
-import org.cubic.eventsystem.EventBus;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.Minecraft;
@@ -71,7 +69,7 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean allowToConfiguredAnotherClients = true, remapped = false;
+    public static boolean allowToConfiguredAnotherClients, remapped = false;
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;

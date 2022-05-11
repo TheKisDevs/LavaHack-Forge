@@ -1,11 +1,13 @@
 package com.kisman.cc.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.console.rewrite.ConsoleGui;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.gui.console.ConsoleGui;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.*;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.gui.GuiChat;
@@ -23,14 +25,16 @@ import org.lwjgl.input.Keyboard;
 public class NoSlow extends Module {
     private final Setting mode = new Setting("Mode", this, Mode.None);
 
-    private final Setting invMove = new Setting("InvMove", this, true);
     private final Setting items = new Setting("Items", this, true);
     private final Setting ncpStrict = new Setting("NCPStrict", this, true);
     private final Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
 
-    private final Setting ignoreChat = new Setting("IgnoreChat", this, true).setVisible(invMove::getValBoolean);
-    private final Setting ignoreConsole = new Setting("IgnoreConsole", this, true).setVisible(invMove::getValBoolean);
-    private final Setting ignoreClickGui = new Setting("IgnoreClickGui", this, false).setVisible(invMove::getValBoolean);
+    private final SettingGroup invMoveGroup = new SettingGroup(new Setting("Inv Move", this));
+
+    private final Setting invMove = invMoveGroup.add(new Setting("InvMove", this, true));
+    private final Setting ignoreChat = invMoveGroup.add(new Setting("IgnoreChat", this, true).setVisible(invMove::getValBoolean));
+    private final Setting ignoreConsole = invMoveGroup.add(new Setting("IgnoreConsole", this, true).setVisible(invMove::getValBoolean));
+    private final Setting ignoreClickGui = invMoveGroup.add(new Setting("IgnoreClickGui", this, false).setVisible(invMove::getValBoolean));
 
     public static NoSlow instance;
 
@@ -41,11 +45,12 @@ public class NoSlow extends Module {
 
         setmgr.rSetting(mode);
 
-        setmgr.rSetting(invMove);
         setmgr.rSetting(items);
         setmgr.rSetting(ncpStrict);
         setmgr.rSetting(slimeBlocks);
 
+        setmgr.rSetting(invMoveGroup);
+        setmgr.rSetting(invMove);
         setmgr.rSetting(ignoreChat);
         setmgr.rSetting(ignoreConsole);
         setmgr.rSetting(ignoreClickGui);
@@ -105,7 +110,7 @@ public class NoSlow extends Module {
         if (invMove.getValBoolean() && mc.currentScreen != null) {
             if(mc.currentScreen instanceof GuiChat && ignoreChat.getValBoolean()) return;
             if(mc.currentScreen instanceof ConsoleGui && ignoreConsole.getValBoolean()) return;
-            if(mc.currentScreen instanceof ClickGui && ignoreClickGui.getValBoolean()) return;
+            if(mc.currentScreen instanceof HalqGui && ignoreClickGui.getValBoolean()) return;
 
             mc.player.movementInput.moveStrafe = 0.0F;
             mc.player.movementInput.moveForward = 0.0F;

@@ -3,6 +3,7 @@ package com.kisman.cc.file
 import com.kisman.cc.Kisman
 import com.kisman.cc.friend.FriendManager
 import com.kisman.cc.util.ColourUtilKt
+import org.apache.logging.log4j.core.util.Integers
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -71,14 +72,26 @@ class ConfigManager(
                                     } catch(ignored : Exception) {}
                                 }
                                 config.settingsPrefix -> {
-                                    val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3])
-                                    if(setting != null) {
-                                        try {
-                                            if(setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
-                                            if(setting.isCombo) setting.valString = split1[1].split("\"")[1]
-                                            if(setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
-                                            if(setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
-                                        } catch(e : Exception) {}
+                                    if(split2[3].contains(":")) {
+                                        val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0])
+
+                                        if(setting != null && split2[3].split(":")[1].equals("key", true)) {
+                                            if(setting.isCheck) {
+                                                try {
+                                                    setting.key = Integer.parseInt(split1[1])
+                                                } catch (e : Exception) {}
+                                            }
+                                        }
+                                    } else {
+                                        val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3])
+                                        if (setting != null && !setting.isGroup) {
+                                            try {
+                                                if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
+                                                if (setting.isCombo) setting.valString = split1[1].split("\"")[1]
+                                                if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
+                                                if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
+                                            } catch (e: Exception) {}
+                                        }
                                     }
                                 }
                             }
@@ -145,10 +158,14 @@ class ConfigManager(
                 writer.newLine()
                 if(Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
                     for(setting in Kisman.instance.settingsManager.getSettingsByMod(module)) {
-                        if(setting  != null) {
+                        if(setting != null && !setting.isGroup) {
                             if(setting.isCheck) {
                                 writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${setting.valBoolean}")
                                 writer.newLine()
+                                if(setting.key != -1) {
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}:key=${setting.key}")
+                                    writer.newLine()
+                                }
                             }
                             if(setting.isCombo) {
                                 writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")

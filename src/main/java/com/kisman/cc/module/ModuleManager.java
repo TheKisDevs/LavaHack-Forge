@@ -145,8 +145,9 @@ public class ModuleManager {
 		//movement
 		modules.add(new AirJump());
 		modules.add(new Anchor());
-		modules.add(new AutoJump());
-		modules.add(new AutoWalk());
+//		modules.add(new AutoJump());
+		modules.add(new AutoMovement());
+//		modules.add(new AutoWalk());
 		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
 		modules.add(new FastSwim());
@@ -172,21 +173,21 @@ public class ModuleManager {
 		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
-		modules.add(new BlockInteraction());
 		//modules.add(new ChorusDelay());
-		modules.add(new ElytraEquip());
-		modules.add(new FastBreak());
+//		modules.add(new ElytraEquip());
+//		modules.add(new FastBreak());
 		modules.add(new FastLadder());
-		modules.add(new FastPlace());
+//		modules.add(new FastPlace());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
+		modules.add(new Interaction());
 		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Reach());
 		modules.add(new Refill());
 		modules.add(new Replenish());
-		modules.add(new RoofInteract());
+//		modules.add(new RoofInteract());
 		modules.add(new Swing());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());

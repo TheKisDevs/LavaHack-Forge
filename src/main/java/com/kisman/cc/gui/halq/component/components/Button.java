@@ -83,6 +83,9 @@ public class Button extends Component {
                     }
                 }
             }
+        }
+
+        if(!comps.isEmpty()) {
             for(Component comp : comps) {
                 comp.setLayer(1);
                 comp.setWidth(90);

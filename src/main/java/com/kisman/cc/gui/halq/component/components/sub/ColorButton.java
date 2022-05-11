@@ -50,17 +50,17 @@ public class ColorButton extends Component {
 
         if(open) {
             int offsetY = HalqGui.height + 5;
-            drawPickerBase(x + 2, y + offset + offsetY, pickerWidth, pickerWidth, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            drawPickerBase(x, y + offset + offsetY, pickerWidth, pickerWidth, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             offsetY += pickerWidth + 5;
-            drawHueSlider(x + 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.getHue(), mouseX, mouseY);
+            drawHueSlider(x, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.getHue(), mouseX, mouseY);
             offsetY += HalqGui.height - 3 + 5;
-            drawAlphaSlider(x + 2, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            drawAlphaSlider(x, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             height = offsetY + HalqGui.height - 3 + 5;
 
             updateValue(mouseX, mouseY, x + 2, y + offset + HalqGui.height + 5);
 
             {
-                final int cursorX = (int) (x + 2 + color.RGBtoHSB()[1]*pickerWidth);
+                final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
                 final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
                 Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
             }

@@ -1,6 +1,6 @@
 package com.kisman.cc.gui
 
-import com.kisman.cc.console.rewrite.ConsoleGui
+import com.kisman.cc.gui.console.ConsoleGui
 import com.kisman.cc.gui.csgo.ClickGuiNew
 import com.kisman.cc.gui.halq.HalqGui
 import net.minecraft.client.Minecraft
