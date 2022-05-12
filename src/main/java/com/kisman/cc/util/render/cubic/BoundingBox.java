@@ -172,6 +172,20 @@ public class BoundingBox {
         return toAABB().contains(vec3d);
     }
 
+    public boolean contains(BoundingBox bb){
+        AxisAlignedBB aabb = toAABB();
+        Vec3d vec1 = new Vec3d(bb.minX, bb.minY, bb.minZ);
+        Vec3d vec2 = new Vec3d(bb.maxX, bb.maxY, bb.maxZ);
+        return aabb.contains(vec1) && aabb.contains(vec2);
+    }
+
+    public boolean contains(AxisAlignedBB bb){
+        AxisAlignedBB aabb = toAABB();
+        Vec3d vec1 = new Vec3d(bb.minX, bb.minY, bb.minZ);
+        Vec3d vec2 = new Vec3d(bb.maxX, bb.maxY, bb.maxZ);
+        return aabb.contains(vec1) && aabb.contains(vec2);
+    }
+
     /*
     public BoundingBox correct(){
         minX = minX - mc.renderManager.viewerPosX;
