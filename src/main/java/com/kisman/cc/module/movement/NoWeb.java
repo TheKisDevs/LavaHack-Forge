@@ -23,9 +23,9 @@ public class NoWeb extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
-        if (mc.player.isInWeb && !Step.instance.isToggled()) {
+        if (mc.player.isInWeb) {
             if (Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode())) {
                 mc.player.isInWeb = true;
                 mc.player.motionY *= motionY.getValDouble();

@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.settings.Setting;
@@ -28,6 +29,8 @@ public class NoSlow extends Module {
     private final Setting items = new Setting("Items", this, true);
     private final Setting ncpStrict = new Setting("NCPStrict", this, true);
     private final Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
+
+    private final Setting sneak = new Setting("Sneak", this, false);
 
     private final SettingGroup invMoveGroup = new SettingGroup(new Setting("Inv Move", this));
 
@@ -81,6 +84,40 @@ public class NoSlow extends Module {
         if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && PlayerUtil.isMoving(mc.player) && mode.getValString().equals("None")) {
             mc.player.motionX *= 0.9;
             mc.player.motionZ *= 0.9;
+        }
+
+        if(sneak.getValBoolean()) doSneak();
+    }
+
+    private void doSneak() {
+        if(mc.player == null || mc.world == null) return;
+        if(mc.player.isSneaking()) {
+            if(mc.gameSettings.keyBindForward.isKeyDown()) {
+                mc.player.jumpMovementFactor = 0.1f;
+
+                if(mc.player.onGround) {
+                    mc.player.motionX *= 5;
+                    mc.player.motionZ *= 5;
+                    mc.player.motionX /= 3.1495;
+                    mc.player.motionZ /= 3.1495;
+                    MovementUtil.strafe(0.1245f);
+
+                    if(mc.gameSettings.keyBindBack.isKeyDown()) {
+                        mc.player.jumpMovementFactor = 0.08f;
+
+                        if(mc.player.onGround) {
+                            mc.player.motionX *= -5;
+                            mc.player.motionZ *= -5;
+                            mc.player.motionX /= -3.1495;
+                            mc.player.motionZ /= -3.1495;
+                            MovementUtil.strafe(0.1245f);
+                        }
+                    }
+                }
+            }
+        } else {
+            mc.player.jumpMovementFactor = 0.02f;
+            ((AccessorEntityPlayer) mc.player).setSpeedInAir(0.02f);
         }
     }
 

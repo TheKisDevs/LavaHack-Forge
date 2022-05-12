@@ -69,7 +69,6 @@ public class ModuleManager {
 		modules.add(new CrystalFiller());
 		modules.add(new Flatten());
 		modules.add(new HandRewrite());
-		modules.add(new HoleFiller());
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());
 		modules.add(new NoFriendDamage());
@@ -89,7 +88,6 @@ public class ModuleManager {
 		modules.add(new GuiModule());
 		modules.add(new HUD());
 		modules.add(new HudEditorTest());
-		modules.add(new KotlinTest());
 		modules.add(new NotEnoughCoinsModule());
 //		modules.add(new ExampleModule());
 //		modules.add(new Test());
@@ -137,7 +135,6 @@ public class ModuleManager {
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
-//		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
@@ -146,9 +143,7 @@ public class ModuleManager {
 		//movement
 		modules.add(new AirJump());
 		modules.add(new Anchor());
-//		modules.add(new AutoJump());
-		modules.add(new AutoMovement());
-//		modules.add(new AutoWalk());
+//		modules.add(new AutoMovement());
 		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
 		modules.add(new FastSwim());
@@ -157,28 +152,27 @@ public class ModuleManager {
 		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new LongJump());
+		modules.add(new MoveModifier());
 		modules.add(new NoFall());
 		modules.add(new NoJumpDelay());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new NoSlowBypass());
-		modules.add(new NoSlowSneak());
+//		modules.add(new NoSlowSneak());
 		modules.add(new NoStepDelay());
 		modules.add(new NoWeb());
 		modules.add(new Parkour());
-		modules.add(new ReverseStep());
+//		modules.add(new ReverseStep());
 		modules.add(new Scaffold());
 		modules.add(new Speed());
 		modules.add(new Spider());
-		modules.add(new Sprint());
-		modules.add(new Step());
+//		modules.add(new Sprint());
+//		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
 		//modules.add(new ChorusDelay());
 //		modules.add(new ElytraEquip());
-//		modules.add(new FastBreak());
 		modules.add(new FastLadder());
-//		modules.add(new FastPlace());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
 		modules.add(new Interaction());

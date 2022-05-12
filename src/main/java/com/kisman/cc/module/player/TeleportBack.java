@@ -1,10 +1,12 @@
 package com.kisman.cc.module.player;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.module.movement.Sprint;
+import com.kisman.cc.module.movement.MoveModifier;
 import com.kisman.cc.util.CheckUtil;
 import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.enums.SprintModes;
 
 public class TeleportBack extends Module {
     private double x;
@@ -35,8 +37,9 @@ public class TeleportBack extends Module {
             y = mc.player.posY;
             z = mc.player.posZ;
 
-            if(Sprint.instance.isToggled()) {
-                Sprint.instance.setToggled(false);
+            MoveModifier moveModifier = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
+            if(moveModifier.getSprint().getValEnum() != SprintModes.None) {
+                moveModifier.getSprint().setValEnum(SprintModes.None);
             }
 
             if(mc.player.isSprinting()) {

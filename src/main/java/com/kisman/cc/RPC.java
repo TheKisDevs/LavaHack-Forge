@@ -3,6 +3,7 @@ package com.kisman.cc;
 import club.minnced.discord.rpc.*;
 import com.kisman.cc.module.client.DiscordRPCModule;
 import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.enums.RPCImages;
 
 public class RPC implements Globals {
     private static final DiscordRichPresence discordRichPresence = new DiscordRichPresence();
@@ -34,6 +35,7 @@ public class RPC implements Globals {
             if(DiscordRPCModule.instance.impr.getValBoolean()) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
+                        discordRichPresence.largeImageKey = ((RPCImages) DiscordRPCModule.instance.imgMode.getValEnum()).getKey();
                         String details, state;
                         discordRPC.Discord_RunCallbacks();
                         if (mc.isIntegratedServerRunning() || mc.world == null) details = Kisman.getVersion();
