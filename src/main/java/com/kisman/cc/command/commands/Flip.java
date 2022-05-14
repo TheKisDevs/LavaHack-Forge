@@ -1,9 +1,9 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import com.kisman.cc.hypixel.util.ApiHandler;
-import com.kisman.cc.hypixel.util.ConfigHandler;
-import com.kisman.cc.hypixel.util.Utils;
+import com.kisman.cc.util.hypixel.ApiHandler;
+import com.kisman.cc.util.hypixel.ConfigHandler;
+import com.kisman.cc.util.hypixel.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;

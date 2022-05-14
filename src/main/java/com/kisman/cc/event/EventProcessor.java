@@ -5,7 +5,7 @@ import com.kisman.cc.command.commands.Flip;
 import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
-import com.kisman.cc.hypixel.util.ConfigHandler;
+import com.kisman.cc.util.hypixel.ConfigHandler;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;

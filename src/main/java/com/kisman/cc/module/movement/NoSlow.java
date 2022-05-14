@@ -6,7 +6,6 @@ import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.module.*;
-import com.kisman.cc.gui.ClickGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.*;

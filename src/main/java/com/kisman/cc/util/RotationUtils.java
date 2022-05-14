@@ -2,7 +2,8 @@ package com.kisman.cc.util;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.util.pyro.Rotation;
+import com.kisman.cc.util.math.vectors.Rotation;
+import com.kisman.cc.util.math.vectors.VecRotation;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;

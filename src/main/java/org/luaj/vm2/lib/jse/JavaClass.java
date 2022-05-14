@@ -83,7 +83,7 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			fields = m;
 		}
 
-		if(fields.get(key) != null) {
+		/*if(fields.get(key) != null) {
 			System.out.println(fields.get(key).toString());
 			return (Field) fields.get(key);
 		}
@@ -110,7 +110,7 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			}
 
 			if(fields.get(key) != null) Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
-		}
+		}*/
 
 		System.out.println("yes!");
 		return (Field) fields.get(key);
@@ -148,7 +148,7 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			methods = map;
 		}
 
-		if(methods.get(key) != null) return (LuaValue) methods.get(key);
+		/*if(methods.get(key) != null) return (LuaValue) methods.get(key);
 
 		if(Kisman.remapped) {
 			Class<?> superclass = ((Class<?>) m_instance);
@@ -166,9 +166,9 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			}
 
 			Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(key)); // <- probably null
-		}
+		}*/
 
-		return null;
+		return (LuaValue) methods.get(key);
 	}
 
 	Class getInnerClass(LuaValue key) {

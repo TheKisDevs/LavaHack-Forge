@@ -2,12 +2,14 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
+import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.module.misc.Optimizer;
 import com.kisman.cc.module.render.Charms;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
+import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -60,9 +62,10 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
             if(Charms.instance.isToggled() && p_renderModel_1_ instanceof EntityPlayer) {
                 glPushMatrix();
 
-                glEnable(GL_POLYGON_OFFSET_LINE);
-
-                if(Charms.instance.polygonOffset.getValBoolean()) glPolygonOffset(1.0f, 1000000);
+                if(Charms.instance.wallHack.getValBoolean()) {
+                    glEnable(GL_POLYGON_OFFSET_LINE);
+                    glPolygonOffset(1.0f, 1000000);
+                }
 
                 glDisable(GL_TEXTURE_2D);
                 glDisable(GL_LIGHTING);
@@ -72,7 +75,8 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
                     if(Charms.instance.targetRender.getValBoolean()) {
                         if(AutoRer.currentTarget == p_renderModel_1_ || KillAura.instance.target == p_renderModel_1_ || AutoCrystal.instance.target == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getColour().a1);
                         else color.getColour().glColor();
-                    } else color.getColour().glColor();
+                    } else if(FriendManager.instance.isFriend((EntityPlayer) p_renderModel_1_) && Charms.instance.friends.getValBoolean()) ColorUtils.glColor(ColorUtils.injectAlpha(Color.CYAN, color.getColour().getAlpha()));
+                    else color.getColour().glColor();
                 }
 
                 glDisable(GL_DEPTH_TEST);
@@ -80,7 +84,7 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
                 glEnable(GL_DEPTH_TEST);
                 this.mainModel.render(p_renderModel_1_, p_renderModel_2_, p_renderModel_3_, p_renderModel_4_, p_renderModel_5_, p_renderModel_6_, p_renderModel_7_);
 
-                if(Charms.instance.customColor.getValBoolean()) RenderUtil.setupColor(new Color(0xFFFFFFF).hashCode());
+                if(Charms.instance.customColor.getValBoolean()) ColorUtils.glColor(Color.WHITE);
 
                 glEnable(GL_TEXTURE_2D);
                 glEnable(GL_LIGHTING);

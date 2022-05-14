@@ -1,10 +1,11 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.halq.component.Openable;
 import com.kisman.cc.gui.halq.component.components.sub.ColorButton;
-import com.kisman.cc.gui.halq.component.components.sub.GroupButton;
 import com.kisman.cc.gui.halq.component.components.sub.ModeButton;
 import com.kisman.cc.gui.halq.util.LayerMap;
+import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
@@ -25,6 +26,7 @@ public class Frame {
     //vars
     public final ArrayList<Component> mods = new ArrayList<>();
     public final Category cat;
+    public final boolean hud;
     public int x, y, count = 0;
     public boolean reloading = false;
 
@@ -32,7 +34,24 @@ public class Frame {
     public boolean dragging, open = true;
     public int dragX, dragY;
 
+    public Frame(int x, int y) {
+        this.cat = null;
+        this.hud = true;
+        this.x = x;
+        this.y = y;
+
+        int offsetY = HalqGui.height;
+        int count1 = 0;
+
+        for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
+            mods.add(new Button(mod, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+        }
+    }
+
     public Frame(Category cat, int x, int y) {
+        this.hud = false;
+
         int offsetY = HalqGui.height;
         int count1 = 0;
 
@@ -62,15 +81,22 @@ public class Frame {
         int offsetY = HalqGui.height;
         int count1 = 0;
 
-        if(!cat.equals(Category.LUA)) {
-            for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+        if(hud) {
+            for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
                 mods.add(new Button(mod, x, y, offsetY, count1++));
                 offsetY += HalqGui.height;
             }
         } else {
-            for(Module script : Kisman.instance.scriptManager.scripts) {
-                mods.add(new Button(script, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
+            if (!cat.equals(Category.LUA)) {
+                for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+                    mods.add(new Button(mod, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
+            } else {
+                for (Module script : Kisman.instance.scriptManager.scripts) {
+                    mods.add(new Button(script, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
             }
         }
         reloading = false;
@@ -91,7 +117,7 @@ public class Frame {
             if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0)));
         }
 
-        HalqGui.drawString(cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size()) + "]": ""), x, y, HalqGui.width, HalqGui.height);
+        HalqGui.drawString((hud ? "Hud Editor" : cat.getName()) + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (hud ? Kisman.instance.hudModuleManager.modules.size() : (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size())) + "]": ""), x, y, HalqGui.width, HalqGui.height);
     }
 
     public void renderPost(int mouseX, int mouseY) {
@@ -119,10 +145,10 @@ public class Frame {
                     }
                     startY += comp1.getHeight();
 
-                    if(comp1 instanceof GroupButton) {
-                        GroupButton group = (GroupButton) comp1;
-                        if(group.getOpen()) {
-                            for(Component comp2 : group.getComps()) {
+                    if(comp1 instanceof Openable) {
+                        Openable openable = (Openable) comp1;
+                        if(openable.isOpen()) {
+                            for(Component comp2 : openable.getComponents()) {
                                 if(!comp2.visible()) continue;
                                 boolean open1 = (comp2 instanceof ModeButton && ((ModeButton) comp2).open) || (comp2 instanceof ColorButton && ((ColorButton) comp2).open);
                                 if(HalqGui.shadowRects) {
@@ -164,15 +190,26 @@ public class Frame {
                         comp1.setOff(offsetY);
                         offsetY += comp1.getHeight();
                         count1++;
-                        if(comp1 instanceof GroupButton) {
-                            GroupButton group = (GroupButton) comp1;
-                            if(group.getOpen()) {
-                                for (Component comp2 : group.getComps()) {
+                        if(comp1 instanceof Openable) {
+                            Openable group = (Openable) comp1;
+                            if(group.isOpen()) {
+                                for (Component comp2 : group.getComponents()) {
                                     if(!comp2.visible()) continue;
                                     comp2.setCount(count1);
                                     comp2.setOff(offsetY);
                                     offsetY += comp2.getHeight();
                                     count1++;
+                                    if(comp2 instanceof Openable) {
+                                        Openable openable = (Openable) comp2;
+                                        if(openable.isOpen() && openable.visible()) {
+                                            for(Component comp3 : openable.getComponents()) {
+                                                comp3.setCount(count1++);
+                                                comp3.setOff(offsetY);
+                                                offsetY += comp3.getHeight();
+                                                count1++;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

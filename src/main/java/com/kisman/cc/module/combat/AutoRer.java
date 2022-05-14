@@ -1,6 +1,7 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.KismanStatic;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.event.events.lua.EventRender3D;
@@ -41,18 +42,17 @@ import java.util.stream.Collectors;
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
 public class AutoRer extends Module {
-    private final SettingGroup main = (SettingGroup) register(new SettingGroup(new Setting("Main", this)));
-    private final SettingGroup ranges = (SettingGroup) register(new SettingGroup(new Setting("Ranges", this)));
-    private final SettingGroup calc = (SettingGroup) register(new SettingGroup(new Setting("Calc", this)));
-    private final SettingGroup motion_ = (SettingGroup) register(new SettingGroup(new Setting("Motion", this)));
-    private final SettingGroup helpers = (SettingGroup) register(new SettingGroup(new Setting("Helpers", this)));
-    private final SettingGroup place_ = (SettingGroup) register(new SettingGroup(new Setting("Place", this)));
-    private final SettingGroup break__ = (SettingGroup) register(new SettingGroup(new Setting("Break", this)));
-    private final SettingGroup delay = (SettingGroup) register(new SettingGroup(new Setting("Delay", this)));
-    private final SettingGroup damage = (SettingGroup) register(new SettingGroup(new Setting("Damage", this)));
-    private final SettingGroup thread_ = (SettingGroup) register(new SettingGroup(new Setting("Thread", this)));
-    private final SettingGroup render_ = (SettingGroup) register(new SettingGroup(new Setting("Render", this)));
-    private final SettingGroup tc = (SettingGroup) register(new SettingGroup(new Setting("Target Charms", this)));
+    private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
+    private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
+    private final SettingGroup calc = register(new SettingGroup(new Setting("Calc", this)));
+    private final SettingGroup helpers = register(new SettingGroup(new Setting("Helpers", this)));
+    private final SettingGroup place_ = register(new SettingGroup(new Setting("Place", this)));
+    private final SettingGroup break__ = register(new SettingGroup(new Setting("Break", this)));
+    private final SettingGroup delay = register(new SettingGroup(new Setting("Delay", this)));
+    private final SettingGroup damage = register(new SettingGroup(new Setting("Damage", this)));
+    private final SettingGroup thread_ = register(new SettingGroup(new Setting("Thread", this)));
+    private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
+    private final SettingGroup tc = register(new SettingGroup(new Setting("Target Charms", this)));
 
 
     public final Setting lagProtect = main.add(new Setting("Lag Protect", this, false));
@@ -68,8 +68,8 @@ public class AutoRer extends Module {
     private final Setting fastCalc = calc.add(new Setting("Fast Calc", this, true));
     private final Setting recalc = calc.add(new Setting("ReCalc", this, false));
     private final Setting cubicCalc = calc.add(new Setting("Cubic Calc", this, false));
-    private final Setting motionCrystal = motion_.add(new Setting("Motion Crystal", this, false));
-    private final Setting motionCalc = motion_.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean));
+    private final Setting motionCrystal = helpers.add(new Setting("Motion Crystal", this, false));
+    private final Setting motionCalc = helpers.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean));
     private final Setting swing = main.add(new Setting("Swing", this, SwingMode.PacketSwing));
     private final Setting instant = helpers.add(new Setting("Instant", this, true));
     private final Setting instantCalc = helpers.add(new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean));
@@ -113,10 +113,10 @@ public class AutoRer extends Module {
     public final Setting lethalMult = damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false));
 
     private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
-    private final Setting threadMode = thread_.add(new Setting("Thread Mode", this, ThreadMode.None));
-    private final Setting threadDelay = thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
-    private final Setting threadSyns = thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
-    private final Setting threadSynsValue = thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    public final Setting threadMode = thread_.add(new Setting("Thread Mode", this, ThreadMode.None));
+    public final Setting threadDelay = thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    public final Setting threadSyns = thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    public final Setting threadSynsValue = thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
     private final Setting threadPacketRots = thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name())));
     private final Setting threadSoundPlayer = thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound")));
     private final Setting threadCalc = thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None")));
@@ -436,7 +436,7 @@ public class AutoRer extends Module {
     private void doAutoRerLogic(EventPlayerMotionUpdate event, boolean thread) {
         if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
             doPlace(event, thread);
-            if(placePos != null) doBreak();
+            doBreak();
         } else {
             doBreak();
             doPlace(event, thread);

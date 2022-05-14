@@ -4,14 +4,20 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.component.Component;
+import com.kisman.cc.gui.halq.component.Openable;
 import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
+import org.jetbrains.annotations.NotNull;
 
-public class CheckBox extends Component {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+public class CheckBox implements Openable {
     private final Setting setting;
     private int x, y, offset, count;
     private int width = HalqGui.width;
@@ -63,7 +69,6 @@ public class CheckBox extends Component {
     @Override
     public void setOff(int newOff) {
         this.offset = newOff;
-        this.bind.setOff(newOff + HalqGui.height);
     }
 
     @Override
@@ -73,7 +78,7 @@ public class CheckBox extends Component {
 
     @Override
     public int getHeight() {
-        return HalqGui.height * (open ? 2 : 1);
+        return HalqGui.height;// * (open ? 2 : 1);
     }
 
     public boolean visible() {return setting.isVisible();}
@@ -91,5 +96,16 @@ public class CheckBox extends Component {
 
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open;
+    }
+
+    @NotNull
+    @Override
+    public ArrayList<Component> getComponents() {
+        return new ArrayList<>(Collections.singletonList(bind));
     }
 }

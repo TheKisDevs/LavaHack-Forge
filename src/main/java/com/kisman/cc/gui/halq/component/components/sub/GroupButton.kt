@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.component.components.sub
 
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.component.Component
+import com.kisman.cc.gui.halq.component.Openable
 import com.kisman.cc.gui.halq.util.LayerMap
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Render2DUtil
@@ -15,7 +16,7 @@ class GroupButton(
         var y : Int,
         var offset : Int,
         var count_ : Int
-) : Component() {
+) : Openable {
     val comps : ArrayList<Component> = ArrayList()
 
     var layer_ : Int = 0
@@ -59,6 +60,14 @@ class GroupButton(
                 }
             }
         }
+    }
+
+    override fun isOpen(): Boolean {
+        return open
+    }
+
+    override fun getComponents(): ArrayList<Component> {
+        return comps
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
@@ -202,16 +211,10 @@ class GroupButton(
     }
 
     override fun getHeight(): Int {
-        var height = HalqGui.height
-//        if(open && comps.isNotEmpty()) {
-//            for(comp in comps) {
-//                height += comp.height
-//            }
-//        }
-        return height
+        return HalqGui.height
     }
 
-    fun getHeight1() : Int {
+    private fun getHeight1() : Int {
         var height = HalqGui.height
         if(open && comps.isNotEmpty()) {
             for(comp in comps) {

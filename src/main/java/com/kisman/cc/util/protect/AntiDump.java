@@ -17,8 +17,6 @@ public class AntiDump {
     private static Method findNative;
     private static ClassLoader classLoader;
 
-    private static boolean ENABLE;
-
     private static final String[] naughtyFlags = {
             "-XBootclasspath",
             "-javaagent",
@@ -53,7 +51,6 @@ public class AntiDump {
 
     /* CookieFuckery */
     public static void check() {
-        if (!ENABLE) return;
         try {
             Field jvmField = ManagementFactory.getRuntimeMXBean().getClass().getDeclaredField("jvm");
             jvmField.setAccessible(true);

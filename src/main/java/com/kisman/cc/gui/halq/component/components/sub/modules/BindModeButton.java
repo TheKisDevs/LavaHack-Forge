@@ -7,7 +7,7 @@ import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 
-public class BindModeButton extends Component {
+public class BindModeButton implements Component {
     private final Module module;
     private int x, y, offset, count, index;
     private final String[] values;

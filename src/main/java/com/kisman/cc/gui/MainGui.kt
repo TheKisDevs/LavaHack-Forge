@@ -14,6 +14,7 @@ class MainGui {
             when (bar.selection) {
                 Guis.ClickGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqGui)
                 Guis.CSGOGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.clickGuiNew)
+                Guis.HudEditor -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqHudGui)
                 Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
             }
         }
@@ -49,7 +50,6 @@ class MainGui {
             val startX = ScaledResolution(Minecraft.getMinecraft()).scaledWidth / 2 - getSelectionBarWidth() / 2
             if(mouseX >= startX && mouseX <= startX + getSelectionBarWidth() && mouseY >= 0 && mouseY <= CustomFontUtil.getFontHeight() + offset * 2) {
                 for((count, gui) in Guis.values().withIndex()) {
-                    println("Click k $startX")
                     if(mouseX >= startX + (count * (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) && mouseX <= startX + (count * (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) + (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) {
                         selection = gui
                         return false
@@ -75,6 +75,7 @@ class MainGui {
     ) {
         ClickGui("Click Gui"),
         CSGOGui("CSGO Gui"),
+        HudEditor("Hud Editor"),
         Console("Console")
     }
 }

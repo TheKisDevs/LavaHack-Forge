@@ -10,7 +10,7 @@ import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 
-public class ModeButton extends Component {
+public class ModeButton implements Component {
     private final Setting setting;
     private int x, y, offset, index, count;
     public boolean open;

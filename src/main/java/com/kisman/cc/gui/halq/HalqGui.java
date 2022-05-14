@@ -39,7 +39,7 @@ public class HalqGui extends GuiScreen {
     public final ArrayList<Frame> frames = new ArrayList<>();
 
     //particles
-    private final ParticleSystem particleSystem;
+    public final ParticleSystem particleSystem;
 
     /**
      * {@link com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
@@ -51,13 +51,21 @@ public class HalqGui extends GuiScreen {
         this.lastGui = lastGui;
     }
 
-    public HalqGui() {
+    public HalqGui(boolean notFullInit) {
         this.particleSystem = new ParticleSystem(300);
-        int offsetX = headerOffset - 1 - 1;
+    }
+
+    public HalqGui() {
+        this(true);
+        int offsetX = headerOffset - 1 - 1 - 1;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 17));
-            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1;
+            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1;
         }
+    }
+
+    protected MainGui.Guis gui() {
+        return MainGui.Guis.ClickGui;
     }
 
     @Override
@@ -73,7 +81,7 @@ public class HalqGui extends GuiScreen {
         if(!background) backgroundColor = new Color(0, 0, 0, 0);
         else backgroundColor = new Color(30, 30, 30, 121);
 
-        if(Kisman.instance.selectionBar.getSelection() != MainGui.Guis.ClickGui) {
+        if(Kisman.instance.selectionBar.getSelection() != gui()) {
             MainGui.Companion.openGui(Kisman.instance.selectionBar);
             return;
         }
@@ -90,13 +98,16 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
-            if(frame.open) for(Component comp : frame.mods) if(!frame.reloading) {
+            if(frame.open) for(Component comp : frame.mods) if(comp.visible()) {
                 comp.updateComponent(frame.x, frame.y);
                 comp.drawScreen(mouseX, mouseY);
             }
             frame.renderPost(mouseX, mouseY);
-            frame.veryRenderPost(mouseX, mouseY);
             frame.refresh();
+        }
+
+        for(Frame frame : frames) if(!frame.reloading) {
+            frame.veryRenderPost(mouseX, mouseY);
         }
 
         Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
@@ -105,7 +116,7 @@ public class HalqGui extends GuiScreen {
     @Override
     public void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
-        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component b : frame.mods) if(!frame.reloading)b.keyTyped(typedChar, keyCode);
+        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component mod : frame.mods) if(mod.visible()) mod.keyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -121,7 +132,7 @@ public class HalqGui extends GuiScreen {
                 }
                 else if(mouseButton == 1) frame.open = !frame.open;
             }
-            if(frame.open && !frame.mods.isEmpty()) if(!frame.reloading) for(Component mod : frame.mods) if(!frame.reloading) mod.mouseClicked(mouseX, mouseY, mouseButton);
+            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(mod.visible()) mod.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
@@ -130,7 +141,7 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.dragging = false;
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(!frame.reloading)mod.mouseReleased(mouseX, mouseY, state);
+            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(mod.visible()) mod.mouseReleased(mouseX, mouseY, state);
         }
     }
 
@@ -174,11 +185,11 @@ public class HalqGui extends GuiScreen {
         int dWheel = Mouse.getDWheel();
         if(dWheel < 0) for(Frame frame : frames) {
             if(frame.reloading) continue;
-            if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x - (int) Config.instance.scrollSpeed.getValDouble();
+            if(Config.instance.horizontalScroll.getValBoolean() && Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x - (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y - (int) Config.instance.scrollSpeed.getValDouble();
         } else if(dWheel > 0) for(Frame frame : frames) {
             if(frame.reloading) continue;
-            if(Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
+            if(Config.instance.horizontalScroll.getValBoolean() && Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
         }
     }

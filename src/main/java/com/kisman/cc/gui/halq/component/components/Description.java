@@ -8,7 +8,7 @@ import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 
-public class Description extends Component {
+public class Description implements Component {
     public final String title;
     private int count;
     private final int width;

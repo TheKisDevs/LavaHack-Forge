@@ -1,6 +1,6 @@
 package com.kisman.cc.module.client;
 
-import com.kisman.cc.hypixel.util.ConfigHandler;
+import com.kisman.cc.util.hypixel.ConfigHandler;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.settings.Setting;

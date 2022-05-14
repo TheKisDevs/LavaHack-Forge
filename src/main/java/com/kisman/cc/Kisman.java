@@ -11,9 +11,9 @@ import com.kisman.cc.friend.FriendManager;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.Frame;
-import com.kisman.cc.hud.hudeditor.HudEditorGui;
-import com.kisman.cc.hud.hudgui.HudGui;
-import com.kisman.cc.hud.hudmodule.*;
+import com.kisman.cc.gui.halq.HalqHudGui;
+import com.kisman.cc.hud.HudModule;
+import com.kisman.cc.hud.HudModuleManager;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
@@ -25,6 +25,7 @@ import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
+import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
@@ -90,10 +91,9 @@ public class Kisman {
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
     public ConsoleGui consoleGui;
-    public HudGui hudGui;
-    public HudEditorGui hudEditorGui;
     public Gui gui;
     public HalqGui halqGui;
+    public HalqHudGui halqHudGui;
     public MainGui.SelectionBar selectionBar;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
@@ -182,10 +182,9 @@ public class Kisman {
 
         //gui's
         clickGuiNew = new ClickGuiNew();
-        hudGui = new HudGui();
-        hudEditorGui = new HudEditorGui();
         gui = new Gui();
         halqGui = new HalqGui();
+        halqHudGui = new HalqHudGui();
 
         selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
 
@@ -213,6 +212,7 @@ public class Kisman {
 
     private void onRelease(int key) {
         for(Module m : moduleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
+        for(HudModule m : hudModuleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
     }
 
     public static String getName() {
@@ -265,12 +265,5 @@ public class Kisman {
         if(mc.player != null || mc.world != null) mc.displayGuiScreen(null);
         instance.halqGui.frames.forEach(Frame::reload);
         instance.clickGuiNew = new ClickGuiNew();
-    }
-
-    //lua
-    public static void reloadHudGUIs() {
-        if(mc.player != null || mc.world != null) mc.displayGuiScreen(null);
-        instance.hudGui = new HudGui();
-        instance.hudEditorGui = new HudEditorGui();
     }
 }

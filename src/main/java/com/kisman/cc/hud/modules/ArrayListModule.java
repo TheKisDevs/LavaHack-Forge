@@ -1,0 +1,188 @@
+package com.kisman.cc.hud.modules;
+
+import com.kisman.cc.Kisman;
+import com.kisman.cc.gui.csgo.components.Slider;
+import com.kisman.cc.hud.HudCategory;
+import com.kisman.cc.hud.HudModule;
+import com.kisman.cc.module.Module;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.enums.GradientModes;
+import com.kisman.cc.util.enums.Orientations;
+import com.kisman.cc.util.render.ColorUtils;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.awt.*;
+import java.util.Comparator;
+
+public class ArrayListModule extends HudModule {
+    public static ArrayListModule instance = new ArrayListModule();
+
+    private final Setting yCoord = register(new Setting("Y Coord", this, 3, 0, 500, true));
+    private final Setting orientation = register(new Setting("Orientation", this, Orientations.Right));
+    private final Setting offsets = register(new Setting("Offsets", this, 2, 0, 10, true));
+    private final Setting astolfoColor = register(new Setting("Astolfo", this, true));
+    private final Setting color = register(new Setting("Color", this, "Color", new Colour(-1)));
+    private final Setting gradient = register(new Setting("Gradient", this, GradientModes.None));
+    private final Setting diff = register(new Setting("Gradient Diff", this, 1, 0, 1000, Slider.NumberType.TIME));
+    private final Setting background = register(new Setting("Background", this, true));
+    private final Setting backgroundAlpha = register(new Setting("Background Alpha", this, 255, 0, 255, true));
+    private final SettingGroup glowGroup = register(new SettingGroup(new Setting("Glow", this)));
+    private final Setting glow = register(glowGroup.add(new Setting("Glow", this, false)));
+    private final Setting glowAlpha = register(new Setting("Glow Alpha", this, 255, 0, 255, true));
+    private final Setting glowV2 = register(glowGroup.add(new Setting("Second Glow", this, false).setVisible(glow::getValBoolean)));
+    private final Setting glowOffset = register(glowGroup.add(new Setting("Glow Offset", this, 5, 1, 20, true).setVisible(glow::getValBoolean)));
+    private final Setting glowRadius = register(glowGroup.add(new Setting("Glow Radius", this, 0, 5, 20, true).setVisible(glow::getValBoolean)));
+    private final Setting glowBackground = register(glowGroup.add(new Setting("Glow Background", this, false)));
+
+    public ArrayListModule() {
+        super("ArrayList", "Displays your enables modules!", HudCategory.RENDER);
+    }
+
+    @SubscribeEvent
+    public void onRender(RenderGameOverlayEvent.Text event) {
+        java.util.ArrayList<Module> mods = new java.util.ArrayList<>();
+        ScaledResolution sr = new ScaledResolution(mc);
+
+        for(Module mod : Kisman.instance.moduleManager.modules) if(mod != null && mod.isToggled() && mod.visible) mods.add(mod);
+
+        Comparator<Module> comparator = (first, second) -> {
+            String firstName = first.getName() + (first.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + first.getDisplayInfo());
+            String secondName = second.getName() + (second.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + second.getDisplayInfo());
+            float dif = CustomFontUtil.getStringWidth(secondName) - CustomFontUtil.getStringWidth(firstName);
+            return (dif != 0) ? ((int) dif) : secondName.compareTo(firstName);
+        };
+
+        mods.sort(comparator);
+
+        int count = 0;
+        int color = astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
+        double heigth = CustomFontUtil.getFontHeight() + offsets.getValDouble() + 1;
+        float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), null);
+
+        for(int j = 0; j < mods.size(); j++) {
+            Module mod = mods.get(j);
+            if(mod != null && mod.isToggled() && mod.visible) {
+                String name = mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo());
+
+                switch (gradient.getValString()) {
+                    case "None": {
+                        if(background.getValBoolean()) {
+                            double offset = offsets.getValDouble() / 2 + 1;
+                            drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, yCoord.getValDouble() + (heigth * count) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(glowBackground.getValBoolean()) {
+                            double offset1 = offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), yCoord.getValDouble() + (heigth * count), color);
+
+                        if(glow.getValBoolean()) {
+                            double offset = glowOffset.getValDouble() + offsets.getValDouble() / 2;
+                            if(glowV2.getValBoolean()) {
+                                double offset1 = offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(color, glowAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), yCoord.getValDouble() + (heigth * count) - offset, ((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(color, glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Rainbow": {
+                        if(background.getValBoolean()) {
+                            double offset = offsets.getValDouble() / 2 + 1;
+                            drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, yCoord.getValDouble() + (heigth * count) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(glowBackground.getValBoolean()) {
+                            double offset1 = offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), yCoord.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.rainbow(count * diff.getValInt(), hsb[1], 1f), 255).getRGB());
+
+                        if(glow.getValBoolean()) {
+                            double offset = glowOffset.getValDouble() + offsets.getValDouble() / 2;
+                            if(glowV2.getValBoolean()) {
+                                double offset1 = offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * diff.getValInt(), hsb[1], 1f), glowAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), yCoord.getValDouble() + (heigth * count) - offset, ((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.rainbow(count * diff.getValInt(), hsb[1], 1f), glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Astolfo": {
+                        if(background.getValBoolean()) {
+                            double offset = offsets.getValDouble() / 2 + 1;
+                            drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, yCoord.getValDouble() + (heigth * count) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(glowBackground.getValBoolean()) {
+                            double offset1 = offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), yCoord.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * diff.getValInt()), 255).getRGB());
+
+                        if(glow.getValBoolean()) {
+                            double offset = glowOffset.getValDouble() + offsets.getValDouble() / 2;
+                            if(glowV2.getValBoolean()) {
+                                double offset1 = offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * diff.getValInt()), glowAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), yCoord.getValDouble() + (heigth * count) - offset, ((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(count * diff.getValInt()), glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Pulsive": {
+                        if(background.getValBoolean()) {
+                            double offset = offsets.getValDouble() / 2 + 1;
+                            drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset, yCoord.getValDouble() + (heigth * count) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        if(glowBackground.getValBoolean()) {
+                            double offset1 = offsets.getValDouble() / 2 + 1;
+                            Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                        }
+
+                        CustomFontUtil.drawStringWithShadow(name, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1), yCoord.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(this.color.getColour(), this.color.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * diff.getValFloat()) / 60.0).getColor(), 255).getRGB());
+
+                        if(glow.getValBoolean()) {
+                            double offset = glowOffset.getValDouble() + offsets.getValDouble() / 2;
+                            if(glowV2.getValBoolean()) {
+                                double offset1 = offsets.getValDouble() / 2 + 1;
+                                Render2DUtil.drawRoundedRect((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name) - 1) - offset1 - glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) - offset1 - glowRadius.getValInt(), (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset1 + glowRadius.getValInt(), yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset1 - 1 + glowRadius.getValInt(), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(this.color.getColour(), this.color.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * diff.getValFloat()) / 60.0).getColor(), glowAlpha.getValInt()).getRGB(), glowOffset.getValInt());
+                            } else Render2DUtil.drawGlow((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)), yCoord.getValDouble() + (heigth * count) - offset, ((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) + CustomFontUtil.getStringWidth(name)), offset + yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(ColorUtils.twoColorEffect(this.color.getColour(), this.color.getColour().setBrightness(0.25f), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (count * diff.getValFloat()) / 60.0).getColor(), glowAlpha.getValInt()).getRGB());
+                        }
+                        break;
+                    }
+                    case "Sideway": {
+                        int update = (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name));
+
+                        if(background.getValBoolean()) {
+                            double offset = offsets.getValDouble() / 2 + 1;
+                            drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(name)) - offset, yCoord.getValDouble() + (heigth * count) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(name) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * count) + CustomFontUtil.getFontHeight() + offset - 1);
+                        }
+
+                        for(int i = 0; i < mod.getName().length(); ++i) {
+                            String str = String.valueOf(mod.getName().charAt(i));
+
+                            CustomFontUtil.drawStringWithShadow(str, update, yCoord.getValDouble() + (heigth * count), ColorUtils.injectAlpha(ColorUtils.rainbow(i * diff.getValInt(), hsb[1], 1f), 255).getRGB());
+
+                            update += CustomFontUtil.getStringWidth(str);
+                        }
+                        break;
+                    }
+                }
+
+                count++;
+            }
+        }
+    }
+
+    private void drawBackground(double x, double y, double x1, double y1) {Render2DUtil.drawRect(x, y, x1, y1, ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB());}
+}

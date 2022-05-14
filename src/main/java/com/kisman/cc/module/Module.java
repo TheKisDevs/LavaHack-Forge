@@ -3,6 +3,7 @@ package com.kisman.cc.module;
 import com.kisman.cc.Kisman;
 
 import com.kisman.cc.settings.*;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
@@ -61,6 +62,11 @@ public class Module {
 	public Setting register(Setting set) {
 		setmgr.rSetting(set);
 		return set;
+	}
+
+	public SettingGroup register(SettingGroup group) {
+		setmgr.rSetting(group);
+		return group;
 	}
 
 	public String getDescription() {return description;}

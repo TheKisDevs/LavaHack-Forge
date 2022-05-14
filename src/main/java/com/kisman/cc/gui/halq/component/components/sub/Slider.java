@@ -15,7 +15,7 @@ import org.lwjgl.input.Keyboard;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Slider extends Component {
+public class Slider implements Component {
     private final Setting setting;
     private int x, y, offset, count;
     private boolean dragging;

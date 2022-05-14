@@ -2,6 +2,7 @@ package com.kisman.cc.util.render.cubic
 
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.Rendering
@@ -9,30 +10,32 @@ import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.util.math.AxisAlignedBB
 
 class ModuleSuffixRenderPattern(module : Module, suffix : String) : DelegateRenderPattern() {
+    val group = SettingGroup(Setting("Render $suffix", module))
 
-    val mode = Setting("Render Mode $suffix", module, RenderingRewriteModes.Filled)
-    val lineWidth = Setting("Render Line Width $suffix", module, 1.0, 0.1, 5.0, false).setVisible {
+    val mode = group.add(Setting("Render Mode $suffix", module, RenderingRewriteModes.Filled))
+    val lineWidth = group.add(Setting("Render Line Width $suffix", module, 1.0, 0.1, 5.0, false).setVisible {
         mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
-    }
+    })
 
-    val rainbow = Setting("Rainbow $suffix", module, false)
-    val rainbowSpeed = Setting("RainbowSpeed $suffix", module, 1.0, 0.25, 5.0, false)
-    val rainbowSat = Setting("Saturation $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowBright = Setting("Brightness $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowGlow = Setting("Glow $suffix", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
+    val rainbow = group.add(Setting("Rainbow $suffix", module, false))
+    val rainbowSpeed = group.add(Setting("RainbowSpeed $suffix", module, 1.0, 0.25, 5.0, false))
+    val rainbowSat = group.add(Setting("Saturation $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean})
+    val rainbowBright = group.add(Setting("Brightness $suffix", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean})
+    val rainbowGlow = group.add(Setting("Glow $suffix", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean})
 
     //Colors
-    val color1 = Setting("Render Color $suffix", module, "Render Color", Colour(255, 0, 0, 255))
-    val color2 = Setting("Render Second Color $suffix", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible { (
+    val color1 = group.add(Setting("Render Color $suffix", module, "Render Color", Colour(255, 0, 0, 255)))
+    val color2 = group.add(Setting("Render Second Color $suffix", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible { (
             mode.valEnum == RenderingRewriteModes.FilledGradient ||
                     mode.valEnum == RenderingRewriteModes.OutlineGradient ||
                     mode.valEnum == RenderingRewriteModes.BothGradient ||
                     mode.valEnum == RenderingRewriteModes.GlowOutline ||
                     mode.valEnum == RenderingRewriteModes.Glow
             )
-    }
+    })
 
     override fun initialize(){
+        rSetting("group", group)
         rSetting("mode", mode)
         rSetting("lineWidth", lineWidth)
         rSetting("rainbow", rainbow)

@@ -1,13 +1,11 @@
 package com.kisman.cc.settings;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.hud.hudmodule.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.util.*;
@@ -23,7 +21,7 @@ import org.lwjgl.input.Keyboard;
  *  @author HeroCode
  */
 public class Setting {
-	private Supplier<Boolean> visibleSuppliner = () -> true;
+	public Supplier<Boolean> visibleSupplier = () -> true;
 	private Colour colour;
 
 	private Entity entity;
@@ -45,7 +43,6 @@ public class Setting {
 	
 	private boolean bval;
 	private boolean rainbow;
-	private boolean hud = false;
 	private boolean onlyOneWord;
 	private boolean onlyNumbers;
 	private boolean enumCombo = false;
@@ -216,17 +213,17 @@ public class Setting {
 	}
 
 	public boolean isVisible() {
-		return visibleSuppliner.get();
+		return visibleSupplier.get();
 	}
 
 	public Setting setVisible(Supplier<Boolean> suppliner) {
-		visibleSuppliner = suppliner;
+		visibleSupplier = suppliner;
 
 		return this;
 	}
 
 	public Setting setVisible(boolean visible) {
-		visibleSuppliner = () -> visible;
+		visibleSupplier = () -> visible;
 		return this;
 	}
 
@@ -385,10 +382,6 @@ public class Setting {
 
 	public void setY2(int num) {
 		this.y2 = num;
-	}
-
-	public boolean isHud() {
-		return this.hud;
 	}
 
 	public int getIndex() {

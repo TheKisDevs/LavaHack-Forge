@@ -1,6 +1,7 @@
 package com.kisman.cc.util;
 
 import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.math.vectors.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.*;

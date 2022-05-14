@@ -3,7 +3,7 @@ package com.kisman.cc.file;
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.friend.FriendManager;
-import com.kisman.cc.hud.hudmodule.HudModule;
+import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.player.TeleportBack;
 import com.kisman.cc.settings.Setting;

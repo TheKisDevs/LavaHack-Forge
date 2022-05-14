@@ -10,7 +10,7 @@ import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
-public class BindButton extends Component {
+public class BindButton implements Component {
     private final Setting setting;
     private final Module module;
     private int x, y, offset, count;

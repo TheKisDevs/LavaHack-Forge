@@ -71,7 +71,7 @@ public class ModuleManager {
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());
-		modules.add(new NoFriendDamage());
+//		modules.add(new NoFriendDamage());
 		modules.add(new OffHand());
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
@@ -86,8 +86,7 @@ public class ModuleManager {
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
 		modules.add(new GuiModule());
-		modules.add(new HUD());
-		modules.add(new HudEditorTest());
+//		modules.add(new HUD());
 		modules.add(new NotEnoughCoinsModule());
 //		modules.add(new ExampleModule());
 //		modules.add(new Test());
@@ -97,7 +96,6 @@ public class ModuleManager {
 		modules.add(new AntiSpammer());
 		modules.add(new AutoEZ());
 		modules.add(new ChatModifier());
-		modules.add(new Credits());
 		modules.add(new Notification());
 		modules.add(new Spammer());
 		modules.add(new TotemPopCounter());
@@ -112,7 +110,7 @@ public class ModuleManager {
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
-		modules.add(new CustomFog());
+//		modules.add(new CustomFog());
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESPRewrite());
@@ -177,7 +175,7 @@ public class ModuleManager {
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
 		modules.add(new Interaction());
-		modules.add(new NoInteract());
+//		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Reach());

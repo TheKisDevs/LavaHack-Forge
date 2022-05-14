@@ -7,7 +7,7 @@ import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 
-public class ActionButton extends Component {
+public class ActionButton implements Component {
     private final ModuleScript script;
     private final Action action;
     private int x, y, count, offset;

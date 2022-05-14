@@ -9,6 +9,7 @@ class SettingGroup(
 
     init {
         this.mode = "Group"
+        this.setVisible(setting.visibleSupplier)
     }
 
     fun add(setting : Setting) : Setting {

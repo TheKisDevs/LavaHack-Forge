@@ -1,7 +1,7 @@
 package com.kisman.cc.module.player;
 
-import com.kisman.cc.hud.hudmodule.render.PacketChat;
-import com.kisman.cc.hud.hudmodule.render.packetchat.Message;
+import com.kisman.cc.hud.modules.PacketChat;
+import com.kisman.cc.hud.modules.packetchat.Message;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 

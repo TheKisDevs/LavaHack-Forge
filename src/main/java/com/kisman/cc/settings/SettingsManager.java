@@ -3,6 +3,7 @@ package com.kisman.cc.settings;
 import java.util.*;
 
 import com.kisman.cc.module.Module;
+import com.kisman.cc.settings.types.SettingGroup;
 
 /**
  *  Made by HeroCode
@@ -36,7 +37,14 @@ public class SettingsManager {
 
 	public Setting getSettingByName(Module mod, String name){
 		for(Setting set : getSettings()) {
-			if(set.isHud()) return null;
+			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
+		}
+		return null;
+	}
+
+	public Setting getSettingByName(Module mod, String name, boolean ignoreGroups) {
+		for(Setting set : getSettings()) {
+			if(ignoreGroups && (set.isGroup() || set instanceof SettingGroup)) continue;
 			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
 		}
 		return null;

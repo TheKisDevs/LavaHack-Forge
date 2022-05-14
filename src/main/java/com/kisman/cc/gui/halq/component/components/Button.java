@@ -2,10 +2,13 @@ package com.kisman.cc.gui.halq.component.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.module.ModuleScript;
+import com.kisman.cc.gui.halq.component.Openable;
+import com.kisman.cc.gui.halq.component.components.sub.hud.Draggable;
 import com.kisman.cc.gui.halq.component.components.sub.lua.ActionButton;
 import com.kisman.cc.gui.halq.component.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.component.components.sub.modules.VisibleBox;
 import com.kisman.cc.gui.halq.util.LayerMap;
+import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -24,15 +27,19 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
-public class Button extends Component {
+public class Button implements Component {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
+    public final Draggable draggable;
     public final Description description;
+    public final boolean hud;
     public int x, y, offset, count;
     public boolean open = false;
 
     public Button(Module mod, int x, int y, int offset, int count) {
         this.mod = mod;
+        this.hud = (mod instanceof HudModule);
+        this.draggable = (hud ? new Draggable((HudModule) mod) : null);
         this.description = new Description(mod.getDescription(), count);
         this.x = x;
         this.y = y;
@@ -95,6 +102,8 @@ public class Button extends Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        if(hud && draggable != null) draggable.drawScreen(mouseX, mouseY);
+
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
             if(mod.isToggled()) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + HalqGui.width / 2, y + offset}, new double[] {x + HalqGui.width, y + offset}, new double[] {x + HalqGui.width, y + offset + HalqGui.height}, new double[] {x + HalqGui.width / 2, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor, 1), HalqGui.getGradientColour(count).getColor()));
@@ -117,10 +126,10 @@ public class Button extends Component {
                  if(!comp.visible()) continue;
                  comp.drawScreen(mouseX, mouseY);
                  height += comp.getHeight();
-                 if(comp instanceof GroupButton) {
-                     GroupButton group = (GroupButton) comp;
-                     if(group.getOpen()) {
-                         for(Component comp1 : group.getComps()) {
+                 if(comp instanceof Openable) {
+                     Openable openable = (Openable) comp;
+                     if(openable.isOpen()) {
+                         for(Component comp1 : openable.getComponents()) {
                              height += comp1.getHeight();
                          }
                      }
@@ -139,6 +148,7 @@ public class Button extends Component {
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
+        if(hud && draggable != null) draggable.mouseClicked(mouseX, mouseY, button);
         if(isMouseOnButton(mouseX, mouseY) && button == 0) mod.toggle();
         if(isMouseOnButton(mouseX, mouseY) && button == 1) open = !open;
         if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.mouseClicked(mouseX, mouseY, button);
@@ -146,6 +156,7 @@ public class Button extends Component {
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+        if(hud && draggable != null) draggable.mouseReleased(mouseX, mouseY, mouseButton);
         if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.mouseReleased(mouseX, mouseY, mouseButton);
     }
 

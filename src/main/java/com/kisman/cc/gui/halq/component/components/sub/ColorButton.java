@@ -18,7 +18,7 @@ import java.awt.*;
 import static com.kisman.cc.util.Render2DUtil.drawGradientRect;
 import static com.kisman.cc.util.Render2DUtil.drawLeftGradientRect;
 
-public class ColorButton extends Component {
+public class ColorButton implements Component {
     private final Setting setting;
     private Colour color;
     private int x, y, offset, pickerWidth, height, count;

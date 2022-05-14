@@ -25,7 +25,6 @@ public class CommandManager {
 	public void addCommands() {
 		commands.add(new AntiSpammerCommand());
 		commands.add(new Bind());
-		commands.add(new ColfCmd());
 		commands.add(new Credits());
 		commands.add(new DDOSCommand());
 		commands.add(new Flip());

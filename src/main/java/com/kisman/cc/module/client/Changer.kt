@@ -18,47 +18,33 @@ import java.awt.Color
 import javax.vecmath.Vector3f
 
 class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTime + Aspect + CustomFog", Category.CLIENT) {
-    private val gamma = Setting("Gamma", this, 100.0, 1.0, 100.0, true)
-    private val fov = Setting("Fov", this, 120.0, 30.0, 150.0, true)
-    private val ambience = Setting("Ambience", this, false)
+    private val gamma = register(Setting("Gamma", this, 100.0, 1.0, 100.0, true))
+    private val fov = register(Setting("Fov", this, 120.0, 30.0, 150.0, true))
 
     //Ambience settings
-    private val ambColor: Setting = Setting("Ambience Color", this, "Ambience Color", Colour(-1)).setVisible { ambience.valBoolean }
-
-    private val time = Setting("Time", this, false)
+    private val ambience = register(Setting("Ambience", this, false))
+    private val ambColor: Setting = register(Setting("Ambience Color", this, "Ambience Color", Colour(-1)).setVisible { ambience.valBoolean })
 
     //Time settings
-    private val timeVal = Setting("Time Value", this, 24.0, 5.0, 25.0, true).setVisible { time.valBoolean }
-    private val timeInfCircle = Setting("Time Infinity Circle", this, true).setVisible { time.valBoolean }
-    private val timeSpeed = Setting("Time Speed", this, 100.0, 10.0, 1000.0, Slider.NumberType.TIME).setVisible { time.valBoolean }
+    private val time = register(Setting("Time", this, false))
+    private val timeVal = register(Setting("Time Value", this, 24.0, 5.0, 25.0, true).setVisible { time.valBoolean })
+    private val timeInfCircle = register(Setting("Time Infinity Circle", this, true).setVisible { time.valBoolean })
+    private val timeSpeed = register(Setting("Time Speed", this, 100.0, 10.0, 1000.0, Slider.NumberType.TIME).setVisible { time.valBoolean })
 
     //Aspect settings
-    private val aspect = Setting("Aspect", this, false)
-    private val aspectWidth = Setting("Aspect Width", this, 4.0, 1.0, 10.0, true)
-    private val aspectHeight = Setting("Aspect Height", this, 3.0, 1.0, 10.0, true)
+    private val aspect = register(Setting("Aspect", this, false))
+    private val aspectWidth = register(Setting("Aspect Width", this, 4.0, 1.0, 10.0, true))
+    private val aspectHeight = register(Setting("Aspect Height", this, 3.0, 1.0, 10.0, true))
 
     //CustomFog settings
-    private val customFog = Setting("Custom Fog", this, false)
-    private val customFogColor = Setting("Custom Fog Color", this, "Custom Fog Color", Colour(-1))
+    private val customFog = register(Setting("Custom Fog", this, false))
+    private val customFogColor = register(Setting("Custom Fog Color", this, "Custom Fog Color", Colour(-1)).setVisible { customFog.valBoolean })
 
     private var circle = 0
     private var oldFov = 0F
 
-    init {
-        setmgr.rSetting(gamma)
-        setmgr.rSetting(fov)
-        setmgr.rSetting(ambience)
-        setmgr.rSetting(ambColor)
-        setmgr.rSetting(time)
-        setmgr.rSetting(timeVal)
-        setmgr.rSetting(timeInfCircle)
-        setmgr.rSetting(timeSpeed)
-        setmgr.rSetting(aspect)
-        setmgr.rSetting(aspectWidth)
-        setmgr.rSetting(aspectHeight)
-    }
-
     override fun onEnable() {
+        super.onEnable()
         Kisman.EVENT_BUS.subscribe(receive)
         Kisman.EVENT_BUS.subscribe(updateLightmap)
         Kisman.EVENT_BUS.subscribe(aspectEvent)
@@ -66,6 +52,7 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
     }
 
     override fun onDisable() {
+        super.onDisable()
         Kisman.EVENT_BUS.unsubscribe(aspectEvent)
         Kisman.EVENT_BUS.unsubscribe(updateLightmap)
         Kisman.EVENT_BUS.unsubscribe(receive)

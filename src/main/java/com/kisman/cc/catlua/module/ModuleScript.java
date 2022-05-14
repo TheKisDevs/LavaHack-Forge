@@ -138,7 +138,7 @@ public class ModuleScript extends Module {
     public void addHudModule(HudModuleLua lua) {
         hudModulesLua.add(lua);
         Kisman.instance.hudModuleManager.modules.add(lua);
-        Kisman.reloadHudGUIs();
+//        Kisman.reloadHudGUIs();
     }
 
     public List<LuaCallback> getCallbacks() {

@@ -2,7 +2,7 @@ package com.kisman.cc.module.Debug;
 
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.util.ChatLoggerUtil;
+import com.kisman.cc.util.chat.lava.ChatLoggerUtil;
 
 
 /**

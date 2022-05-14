@@ -1,19 +1,19 @@
 package com.kisman.cc.gui.halq.component;
 
-public class Component {
-    public void drawScreen(int mouseX, int mouseY) {}
-    public void mouseClicked(int mouseX, int mouseY, int button) {}
-    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {}
-    public void updateComponent(int x, int y) {}
-    public void keyTyped(char typedChar, int key) {}
-    public void setOff(int newOff) {}
-    public void setCount(int count) {}
-    public int getHeight() {return 0;}
-    public int getCount() {return 0;}
-    public void setWidth(int width) {}
-    public void setX(int x) {}
-    public int getX() {return 0;}
-    public void setLayer(int layer) {}
-    public int getLayer() {return 0;}
-    public boolean visible() {return true;}
+public interface Component {
+    default void drawScreen(int mouseX, int mouseY) {}
+    default void mouseClicked(int mouseX, int mouseY, int button) {}
+    default void mouseReleased(int mouseX, int mouseY, int mouseButton) {}
+    default void updateComponent(int x, int y) {}
+    default void keyTyped(char typedChar, int key) {}
+    default void setOff(int newOff) {}
+    default void setCount(int count) {}
+    default int getHeight() {return 0;}
+    default int getCount() {return 0;}
+    default void setWidth(int width) {}
+    default void setX(int x) {}
+    default int getX() {return 0;}
+    default void setLayer(int layer) {}
+    default int getLayer() {return 0;}
+    default boolean visible() {return true;}
 }

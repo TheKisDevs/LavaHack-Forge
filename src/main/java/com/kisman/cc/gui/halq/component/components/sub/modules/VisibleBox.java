@@ -7,7 +7,7 @@ import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 
-public class VisibleBox extends Component {
+public class VisibleBox implements Component {
     private final Module module;
     private int x, y, offset, count;
     private int width = HalqGui.width;
