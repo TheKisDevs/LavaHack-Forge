@@ -23,7 +23,7 @@ public class OffHand extends Module {
     private final Setting health = new Setting("Health", this, 11, 0, 20, true);
 
     private final Setting mode = new Setting("Mode", this, "Totem", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
-    private final Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gapple", "Pearl", "Chorus", "Strength", "Shield")));
+    private final Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
     private final Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
     private final Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
     private final Setting offhandGapOnSword = new Setting("GapOnSword", this, true);

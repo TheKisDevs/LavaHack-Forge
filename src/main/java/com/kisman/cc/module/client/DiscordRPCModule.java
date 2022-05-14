@@ -3,17 +3,18 @@ package com.kisman.cc.module.client;
 import com.kisman.cc.RPC;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.enums.RPCImages;
 
 public class DiscordRPCModule extends Module {
     public static DiscordRPCModule instance;
 
-    public Setting impr = new Setting("Impr RPC", this, true);
+    public Setting impr = register(new Setting("Impr RPC", this, true));
+
+    public Setting imgMode = register(new Setting("Image Mode", this, RPCImages.LavaHake));
 
     public DiscordRPCModule() {
         super("DiscordRPC", "", Category.CLIENT);
         instance = this;
-
-        setmgr.rSetting(impr);
 
         super.setToggled(true);
     }

@@ -343,8 +343,12 @@ public class Setting {
 		this.colour = colour;
 	}
 
-	public Enum getValEnum() {
+	public Enum<?> getValEnum() {
 		return optionEnum.valueOf(optionEnum.getClass(), sval);
+	}
+
+	public void setValEnum(Enum<?> enum_) {
+		sval = enum_.name();
 	}
 
 	public String getdString() {

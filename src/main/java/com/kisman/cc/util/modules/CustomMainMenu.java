@@ -25,7 +25,8 @@ public class CustomMainMenu {
             "made by _kisman_#5039",
             "Where XuluPlus shaders??",
             "Future? No.",
-            "meow"
+            "meow",
+            "Lavahake"
     };
 
     public static void update() {
