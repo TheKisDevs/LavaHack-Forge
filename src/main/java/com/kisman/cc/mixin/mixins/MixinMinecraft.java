@@ -1,6 +1,7 @@
  package com.kisman.cc.mixin.mixins;
 
  import com.kisman.cc.Kisman;
+ import com.kisman.cc.event.events.EventClientTick;
  import com.kisman.cc.module.player.Interaction;
  import com.kisman.cc.viaforge.ViaForge;
  import net.minecraft.client.entity.EntityPlayerSP;
@@ -23,6 +24,24 @@
 
   private boolean mt_handActive = false;
   private boolean mt_isHittingBlock = false;
+
+  /**
+   * @author Cubic
+   */
+  @Inject(method = "runTick", at = @At("HEAD"))
+  public void runTickPre(){
+   EventClientTick.Pre eventClientTick = new EventClientTick.Pre();
+   Kisman.EVENT_BUS.post(eventClientTick);
+  }
+
+  /**
+   * @author Cubic
+   */
+  @Inject(method = "runTick", at = @At("RETURN"))
+  public void runTickPost(){
+   EventClientTick.Post eventClientTick = new EventClientTick.Post();
+   Kisman.EVENT_BUS.post(eventClientTick);
+  }
 
   @Inject( method = "processKeyBinds", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2 ) )
   public void mt_processKeyBinds( CallbackInfo info ) {

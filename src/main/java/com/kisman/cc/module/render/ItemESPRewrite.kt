@@ -37,10 +37,10 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
             return
         }
 
-        //check Module class
-//        if(!isToggled){
-//            return
-//        }
+        //check Module class // since this is a forge event, we have to check (i tried in game)
+        if(!isToggled){
+            return
+        }
 
         for((count, entity) in mc.world.loadedEntityList.withIndex()){
             if(entity !is EntityItem){

@@ -186,7 +186,6 @@ public class BoundingBox {
         return aabb.contains(vec1) && aabb.contains(vec2);
     }
 
-    /*
     public BoundingBox correct(){
         minX = minX - mc.renderManager.viewerPosX;
         minY = minY - mc.renderManager.viewerPosY;
@@ -197,7 +196,6 @@ public class BoundingBox {
         corrected = true;
         return this;
     }
-     */
 
     public AxisAlignedBB toAABB(){
         return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
