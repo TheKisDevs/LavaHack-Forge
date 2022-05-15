@@ -1,4 +1,4 @@
-package com.kisman.cc.module.chat;
+package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
@@ -20,21 +20,20 @@ public class Spammer extends Module {
         "L3g3ndry on top!",
         "_kisman_ on top!",
         "kisman.cc on top!",
-        "DenYoyo on top!",
         "Buy RusherHack with code \"Robertoss\"!",
         "kisman.cc owned me((",
         "Robertoss on top!",
             "TheKisDevs owns all",
-            "Gentleman is cute",
-            "Dallas so better",
-            "FakePearl enjoyers on tope",
+            "Gentleman is cute cate",
+            "Dallas better than me hacks(",
+            "FakePearl enjoyers",
             "https://github.com/TheKisDevs/LavaHack"
     };
 
     private final TimerUtils timer = new TimerUtils();
 
     public Spammer() {
-        super("Spammer", "chat spammer", Category.CHAT);
+        super("Spammer", "chat spammer", Category.MISC);
 
         Kisman.instance.settingsManager.rSetting(new Setting("GlobalMode", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Delay", this, 5000, 0, 10000, true));

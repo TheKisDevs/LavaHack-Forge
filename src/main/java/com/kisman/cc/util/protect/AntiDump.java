@@ -1,5 +1,6 @@
 package com.kisman.cc.util.protect;
 
+import com.kisman.cc.Kisman;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -51,6 +52,7 @@ public class AntiDump {
 
     /* CookieFuckery */
     public static void check() {
+        if(!Kisman.remapped) return;
         try {
             Field jvmField = ManagementFactory.getRuntimeMXBean().getClass().getDeclaredField("jvm");
             jvmField.setAccessible(true);
@@ -60,7 +62,7 @@ public class AntiDump {
             for (String arg : naughtyFlags) {
                 for (String inputArgument : inputArguments) {
                     if (inputArgument.contains(arg)) {
-                        System.out.println("Found illegal program arguments!");
+                        System.out.println("Found illegal program arguments!");//TODO: remove it!!!!!
                         dumpDetected();
                     }
                 }

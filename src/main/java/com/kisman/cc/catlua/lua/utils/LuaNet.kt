@@ -1,11 +1,11 @@
 package com.kisman.cc.catlua.lua.utils
 
-import com.kisman.cc.api.util.PasteBinAPI
+import com.kisman.cc.api.util.URLReader
 import com.kisman.cc.util.process.web.util.HttpTools
 
 class LuaNet {
-    fun getPasteBinAPI(url: String): PasteBinAPI {
-        return PasteBinAPI(url)
+    fun getPasteBinAPI(url: String): URLReader {
+        return URLReader(url)
     }
 
     fun ping(url: String): Boolean {

@@ -198,6 +198,8 @@ public class Colour {
     }
 
     public float getHue() {return RGBtoHSB()[0];}
+    public float getSaturation() {return RGBtoHSB()[1];}
+    public float getBrightness() {return RGBtoHSB()[2];}
 
     public float[] RGBtoHSB() {
         return Color.RGBtoHSB(r, g, b, null);

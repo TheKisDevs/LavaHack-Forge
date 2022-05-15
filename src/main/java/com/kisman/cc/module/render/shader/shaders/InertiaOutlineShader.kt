@@ -1,8 +1,6 @@
 package com.kisman.cc.module.render.shader.shaders
 
-import com.kisman.cc.mixin.mixins.accessor.AccessorShaderGroup
 import com.kisman.cc.module.render.ShaderCharms
-import com.kisman.cc.module.render.shader.ShaderUtil
 import com.kisman.cc.module.render.shader.shaders.troll.ShaderHelper
 import com.kisman.cc.util.EntityUtil
 import com.kisman.cc.util.MathUtil
@@ -12,34 +10,23 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
-import org.lwjgl.opengl.GL11.*
-import kotlin.math.pow
+import org.lwjgl.opengl.GL11
 
-object Outline2Shader {
+/**
+ * @author _kisman_
+ * @since 13:13 of 15.05.2022
+ */
+object InertiaOutlineShader {
     private val mc = Minecraft.getMinecraft()
 
-    private var outlineAlpha: ShaderUtil.UniformFloat? = null
-    private var filledAlpha: ShaderUtil.UniformFloat? = null
-    private var width: ShaderUtil.UniformFloat? = null
-    private var widthSq: ShaderUtil.UniformFloat? = null
-    private var ratio: ShaderUtil.UniformFloat? = null
-
-    fun setupUniforms(outlineAlpha: Float, filledAlpha: Float, width: Float, ratio: Float) {
-        this.outlineAlpha = ShaderUtil.UniformFloat("outlineAlpha", outlineAlpha)
-        this.filledAlpha = ShaderUtil.UniformFloat("filledAlpha", filledAlpha)
-        this.width = ShaderUtil.UniformFloat("width", width);
-        this.widthSq = ShaderUtil.UniformFloat("widthSq", width.pow(2));
-        this.ratio = ShaderUtil.UniformFloat("ratio", ratio);
-    }
-
-    fun drawShader(shaderHelper: ShaderHelper, frameBufferFinal: Framebuffer, partialTicks: Float) {
+    fun drawShader(shaderHelper : ShaderHelper, frameBufferFinal : Framebuffer, ticks : Float) {
         // Push matrix
         GlStateUtils.pushMatrixAll()
 
         GlStateUtils.blend(true)
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
 
-        shaderHelper.shader!!.render(partialTicks)
+        shaderHelper.shader!!.render(ticks)
 
         // Re-enable blend because shader rendering will disable it at the end
         GlStateUtils.blend(true)
@@ -93,11 +80,6 @@ object Outline2Shader {
         GlStateUtils.alpha(false)
     }
 
-    fun updateUniforms(shaderHelper: ShaderHelper) {
-        shaderHelper.shader?.let {
-            for(shader in (it as AccessorShaderGroup).listShaders) {
-                ShaderUtil.setupUniforms(shader, arrayOf<ShaderUtil.Uniform>(outlineAlpha!!, filledAlpha!!, width!!, widthSq!!, ratio!!))
-            }
-        }
-    }
+    fun setupUniforms() {}
+    fun updateUniforms(shaderHelper: ShaderHelper) {}
 }

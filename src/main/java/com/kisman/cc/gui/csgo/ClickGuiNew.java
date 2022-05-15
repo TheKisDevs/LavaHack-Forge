@@ -50,6 +50,7 @@ public class ClickGuiNew extends GuiScreen {
         List<Pane> paneList = new ArrayList<>();
 
         for(Category cat : Category.values()) {
+            if(cat == Category.LUA) continue;
             ArrayList<Module> modules = Kisman.instance.moduleManager.getModulesInCategory(cat);
             Pane spoilerPane = new Pane(renderer, new GridLayout(1));
             Button button = new Button(renderer, cat.getName() + (Config.instance.guiRenderSize.getValBoolean() ? " [" + modules.size() + "]" : ""));

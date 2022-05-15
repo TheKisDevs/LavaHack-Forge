@@ -9,9 +9,12 @@ import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.enums.SwingHands
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import net.minecraft.item.ItemSword
 import net.minecraft.network.play.server.SPacketTimeUpdate
+import net.minecraft.util.EnumHand
 import net.minecraftforge.client.event.EntityViewRenderEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
@@ -40,6 +43,10 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
     private val customFog = register(Setting("Custom Fog", this, false))
     private val customFogColor = register(Setting("Custom Fog Color", this, "Custom Fog Color", Colour(-1)).setVisible { customFog.valBoolean })
 
+    //Swing setting
+    private val swing = register(Setting("Swing", this, false))
+    private val swingHand = register(Setting("Swing Hand", this, SwingHands.MainHand))
+
     private var circle = 0
     private var oldFov = 0F
 
@@ -58,6 +65,8 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
         Kisman.EVENT_BUS.unsubscribe(receive)
         mc.gameSettings.gammaSetting = 1F
         mc.gameSettings.fovSetting = oldFov
+        if(mc.player == null || mc.world == null) return
+        mc.player.swingingHand = EnumHand.MAIN_HAND
     }
 
     override fun update() {
@@ -70,6 +79,23 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
             circle += timeSpeed.valInt
             mc.world.worldTime = if (timeInfCircle.valBoolean) circle.toLong() else timeVal.valLong * 1000L
             if (circle >= 24000) circle = 0
+        }
+
+        doSwing()
+    }
+
+    private fun doSwing() {
+        if(swing.valBoolean) {
+            when (swingHand.valEnum as SwingHands) {
+                SwingHands.MainHand -> mc.player.swingingHand = EnumHand.MAIN_HAND
+                SwingHands.OffHand -> mc.player.swingingHand = EnumHand.OFF_HAND
+                SwingHands.PacketSwing -> {
+                    if(mc.player.heldItemMainhand.item is ItemSword && mc.entityRenderer.itemRenderer.prevEquippedProgressMainHand >= 0.9) {
+                        mc.entityRenderer.itemRenderer.equippedProgressMainHand = 1f
+                        mc.entityRenderer.itemRenderer.itemStackMainHand = mc.player.heldItemMainhand
+                    }
+                }
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import com.kisman.cc.module.chat.AntiSpammer;
+import com.kisman.cc.module.misc.AntiSpammer;
 
 public class AntiSpammerCommand extends Command {
     public AntiSpammerCommand() {

@@ -386,9 +386,11 @@ public class AutoRer extends Module {
         }
 
         if(threadMode.getValString().equalsIgnoreCase("None")) {
-            if (manualBreaker.getValBoolean()) manualBreaker();
+            System.out.println("1111");
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
+            if (manualBreaker.getValBoolean()) manualBreaker();
+            System.out.println("2222");
             if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
             else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
         } else processMultiThreading();
@@ -758,10 +760,12 @@ public class AutoRer extends Module {
     }
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
+        System.out.println("3333");
         if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
         if(placePos == null || (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK))) return;
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
+        System.out.println("4444");
 
         SilentSwitchBypass bypass = new SilentSwitchBypass(Items.END_CRYSTAL);
         EnumHand hand = null;

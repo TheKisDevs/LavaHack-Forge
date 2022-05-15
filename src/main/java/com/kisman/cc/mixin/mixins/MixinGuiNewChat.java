@@ -1,7 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.chat.*;
+import com.kisman.cc.module.misc.ChatModifier;
 import com.kisman.cc.module.render.NoRender;
 import com.kisman.cc.util.MathUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;

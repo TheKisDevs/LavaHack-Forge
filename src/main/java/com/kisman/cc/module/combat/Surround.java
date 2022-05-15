@@ -7,8 +7,8 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import com.kisman.cc.util.Rotation;
-import com.kisman.cc.util.Rotation.*;
+//import com.kisman.cc.util.Rotation;
+//import com.kisman.cc.util.Rotation.*;
 import com.kisman.cc.util.TimerUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
@@ -46,9 +46,9 @@ public class Surround extends Module {
     private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
     private Setting rewriteProtected = new Setting("Rewrite Protect Vec", this, false);
 
-    private Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
-    private Setting rotateCenter = new Setting("RotateCenter", this, false);
-    private Setting rotateRandom = new Setting("RotateRandom", this, false);
+//    private Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
+//    private Setting rotateCenter = new Setting("RotateCenter", this, false);
+//    private Setting rotateRandom = new Setting("RotateRandom", this, false);
 
     public static Surround instance;
 
@@ -58,7 +58,8 @@ public class Surround extends Module {
     private int surroundPlaced = 0;
     private BlockPos oldPos = BlockPos.ORIGIN;
     private BlockPos surroundPosition = BlockPos.ORIGIN;
-    private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
+    //TODO: new rotation
+//    private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
     private TimerUtils breakTimer = new TimerUtils();
     private ArrayList<BlockPos> protectOffsets = new ArrayList<>();
 
@@ -88,13 +89,13 @@ public class Surround extends Module {
         setmgr.rSetting(breakRange);
         setmgr.rSetting(rewriteProtected);
 
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(rotateCenter);
-        setmgr.rSetting(rotateRandom);
+//        setmgr.rSetting(rotate);
+//        setmgr.rSetting(rotateCenter);
+//        setmgr.rSetting(rotateRandom);
     }
 
     public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(listener);
+//        Kisman.EVENT_BUS.subscribe(listener);
 
         oldPos = new BlockPos(new Vec3d(MathUtil.roundFloat(mc.player.getPositionVector().x, 0), MathUtil.roundFloat(mc.player.getPositionVector().y, 0), MathUtil.roundFloat(mc.player.getPositionVector().z, 0)));
 
@@ -124,9 +125,9 @@ public class Surround extends Module {
         }
     }
 
-    public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(listener);
-    }
+//    public void onDisable() {
+//        Kisman.EVENT_BUS.unsubscribe(listener);
+//    }
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
@@ -168,10 +169,10 @@ public class Surround extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {
-        if (event.getPacket() instanceof CPacketPlayer && !Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) {
-            ((ICPacketPlayer) event.getPacket()).setYaw(surroundRotation.getYaw());
-            ((ICPacketPlayer) event.getPacket()).setPitch(surroundRotation.getPitch());
-        }
+//        if (event.getPacket() instanceof CPacketPlayer && !Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) {
+//            ((ICPacketPlayer) event.getPacket()).setYaw(surroundRotation.getYaw());
+//            ((ICPacketPlayer) event.getPacket()).setPitch(surroundRotation.getPitch());
+//        }
     });
 
     public void handleSurround() {
@@ -193,13 +194,13 @@ public class Surround extends Module {
                     surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
                     if (RaytraceUtil.raytraceBlock(surroundPosition, RaytraceUtil.Raytrace.NORMAL) && raytrace.getValBoolean()) return;
-                    if (surroundPosition != BlockPos.ORIGIN) {
-                        if (!rotate.getValString().equals(Rotate.NONE.name())) {
-                            float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);
-                            surroundRotation = new Rotation((float) (surroundAngles[0] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (float) (surroundAngles[1] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (Rotate) rotate.getValEnum());
-                            if (!Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) surroundRotation.updateModelRotations();
-                        }
-                    }
+//                    if (surroundPosition != BlockPos.ORIGIN) {
+//                        if (!rotate.getValString().equals(Rotate.NONE.name())) {
+//                            float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);
+//                            surroundRotation = new Rotation((float) (surroundAngles[0] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (float) (surroundAngles[1] + (rotateRandom.getValBoolean() ? ThreadLocalRandom.current().nextDouble(-4, 4) : 0)), (Rotate) rotate.getValEnum());
+//                            if (!Float.isNaN(surroundRotation.getYaw()) && !Float.isNaN(surroundRotation.getPitch())) surroundRotation.updateModelRotations();
+//                        }
+//                    }
 
                     for (Entity item : mc.world.loadedEntityList) {
                         if (item instanceof EntityItem && ((EntityItem) item).getItem().getItem().equals(Item.getItemFromBlock(Blocks.OBSIDIAN))) {

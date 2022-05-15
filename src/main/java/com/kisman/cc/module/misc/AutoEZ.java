@@ -1,4 +1,4 @@
-package com.kisman.cc.module.chat;
+package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
@@ -23,7 +23,7 @@ public class AutoEZ extends Module {
     private Setting random = new Setting("Random message", this, true);
 
     public AutoEZ() {
-        super("AutoEZ", "", Category.CHAT);
+        super("AutoEZ", "", Category.MISC);
 
         setmgr.rSetting(random);
     }

@@ -70,13 +70,11 @@ public class AutoFirework extends Module {
     private boolean smartRotate = false;
     private BlockPos startPos = null;
 
-    private AimBot aimBot;
     public EntityPlayer target = null;
 
     public AutoFirework() {
         super("AutoFirework", "", Category.COMBAT);
 
-        aimBot = AimBot.instance;
         instance = this;
 
         setmgr.rSetting(targetRange);
@@ -111,15 +109,15 @@ public class AutoFirework extends Module {
     }
 
     public void onEnable() {
-        if(!aimBot.isToggled()) aimBot.setToggled(true);
-        aimBot.rotationSpoof = null;
+//        if(!aimBot.isToggled()) aimBot.setToggled(true);
+//        aimBot.rotationSpoof = null;
         startPos = EntityUtil.getRoundedBlockPos(mc.player);
         lastHotbarSlot = mc.player.inventory.currentItem;
         retries.clear();
     }
 
     public void onDisable() {
-        aimBot.rotationSpoof = null;
+//        aimBot.rotationSpoof = null;
         isSneaking = EntityUtil.stopSneaking(isSneaking);
     }
 
@@ -148,12 +146,12 @@ public class AutoFirework extends Module {
                     if (rotate.getValBoolean()) {
                         final double[] pos =  EntityUtil.calculateLookAt(target.posX + 0.5, target.posY - 0.5, target.posZ + 0.5, mc.player);
 
-                        aimBot.rotationSpoof = new RotationSpoof((float) pos[0], (float) pos[1]);
+//                        aimBot.rotationSpoof = new RotationSpoof((float) pos[0], (float) pos[1]);
 
                         Random rand = new Random(2);
 
-                        aimBot.rotationSpoof.yaw += (rand.nextFloat() / 100);
-                        aimBot.rotationSpoof.pitch += (rand.nextFloat() / 100);
+//                        aimBot.rotationSpoof.yaw += (rand.nextFloat() / 100);
+//                        aimBot.rotationSpoof.pitch += (rand.nextFloat() / 100);
                     }
 
                     //place

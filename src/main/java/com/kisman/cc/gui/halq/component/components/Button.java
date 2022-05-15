@@ -131,6 +131,14 @@ public class Button implements Component {
                      if(openable.isOpen()) {
                          for(Component comp1 : openable.getComponents()) {
                              height += comp1.getHeight();
+                             if(comp1 instanceof Openable) {
+                                 Openable openable1 = (Openable) comp1;
+                                 if(openable1.isOpen()) {
+                                     for(Component comp2 : openable1.getComponents()) {
+                                         height += comp2.getHeight();
+                                     }
+                                 }
+                             }
                          }
                      }
                  }

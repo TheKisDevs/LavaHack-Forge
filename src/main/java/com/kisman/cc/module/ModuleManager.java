@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.kisman.cc.module.Debug.*;
-import com.kisman.cc.module.chat.*;
 import com.kisman.cc.module.client.*;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
@@ -49,7 +48,6 @@ public class ModuleManager {
 		//combat
 		modules.add(new AutoCrystal());
 //		modules.add(new AimAssist());
-		modules.add(new AimBot());
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
@@ -96,13 +94,12 @@ public class ModuleManager {
 		modules.add(new AntiSpammer());
 		modules.add(new AutoEZ());
 		modules.add(new ChatModifier());
-		modules.add(new Notification());
 		modules.add(new Spammer());
 		modules.add(new TotemPopCounter());
 		modules.add(new TraceTeleport());
 		//render
 		modules.add(new Animation());
-		modules.add(new BlockESP());
+//		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
 		modules.add(new CameraClip());
@@ -110,7 +107,6 @@ public class ModuleManager {
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());
-//		modules.add(new CustomFog());
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESPRewrite());
@@ -125,6 +121,7 @@ public class ModuleManager {
 		modules.add(new NameTagsRewrite());
 		modules.add(new NoRender());
 		modules.add(new Particle());
+//		modules.add(new PearlTracer());
 		modules.add(new PopCharms());
 		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
@@ -142,31 +139,21 @@ public class ModuleManager {
 		//movement
 		modules.add(new AirJump());
 		modules.add(new Anchor());
-//		modules.add(new AutoMovement());
 		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
-		modules.add(new FastSwim());
 		modules.add(new Fly());
 		modules.add(new HoleSnap());
-		modules.add(new IceSpeed());
 		modules.add(new Jesus());
 		modules.add(new LongJump());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());
-		modules.add(new NoJumpDelay());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
-		modules.add(new NoSlowBypass());
-//		modules.add(new NoSlowSneak());
-		modules.add(new NoStepDelay());
 		modules.add(new NoWeb());
 		modules.add(new Parkour());
-//		modules.add(new ReverseStep());
 		modules.add(new Scaffold());
 		modules.add(new Speed());
 		modules.add(new Spider());
-//		modules.add(new Sprint());
-//		modules.add(new Step());
 		modules.add(new TargetStrafe());
 		//player
 		//modules.add(new ChorusDelay());
@@ -175,14 +162,11 @@ public class ModuleManager {
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
 		modules.add(new Interaction());
-//		modules.add(new NoInteract());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Reach());
 		modules.add(new Refill());
 		modules.add(new Replenish());
-//		modules.add(new RoofInteract());
-		modules.add(new Swing());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit

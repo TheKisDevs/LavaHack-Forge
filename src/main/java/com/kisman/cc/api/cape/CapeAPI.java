@@ -1,27 +1,29 @@
 package com.kisman.cc.api.cape;
 
-import com.kisman.cc.api.util.PasteBinAPI;
-import com.kisman.cc.api.util.exception.PasteBinBufferedReaderException;
+import com.kisman.cc.api.util.URLReader;
+import com.kisman.cc.api.util.exception.URLReaderException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class CapeAPI {
-    public PasteBinAPI pasteBinAPI;
+    public URLReader reader;
 
-    public List<String> uuids = new ArrayList<>();
+    public List<UUID> uuids = new ArrayList<>();
 
-    public static final String URL = "https://pastebin.com/raw/Mjhz9nxW";
+    public static final String URL = "https://raw.githubusercontent.com/TheKisDevs/LavaHack-Assets/main/Capes.txt";
 
     public CapeAPI() {
         try {
-            pasteBinAPI = new PasteBinAPI(URL);
-            uuids.addAll(pasteBinAPI.get());
-        } catch (PasteBinBufferedReaderException ignored) {}
+            reader = new URLReader(URL);
+            for(String uuid : reader.get()) {
+                uuids.add(UUID.fromString(uuid));
+            }
+        } catch (URLReaderException ignored) {}
     }
 
     public boolean is(UUID uuid) {
-        return uuids.contains(uuid.toString());
+        return uuids.contains(uuid);
     }
 }

@@ -8,6 +8,7 @@ import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.MovementUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.enums.SprintModes
+import net.minecraft.init.Blocks
 
 /**
  * @author _kisman_
@@ -36,6 +37,14 @@ class MoveModifier : Module(
     val autoWalk = register(move.add(Setting("Auto Walk", this, false)))
     val autoJump = register(move.add(Setting("Auto Jump", this, false)))
     val autoSneak = register(move.add(Setting("Auto Sneak", this, false)))
+    val iceSpeed = register(move.add(Setting("Ice Speed", this, false)))
+    val iceSpeedVal = register(move.add(Setting("Ice Speed Val", this, 0.4, 0.2, 1.5, false).setVisible { iceSpeed.valBoolean }))
+    val fastSwim = register(move.add(Setting("Fast Swim", this, false)))
+
+    val delays = register(SettingGroup(Setting("Delays", this)))
+
+    val noJumpDelay = register(delays.add(Setting("No Jump Delay", this, false)))
+    val noStepDelay = register(delays.add(Setting("No Step Delay", this, false)))
 
     val lagTimer = TimerUtils()
 
@@ -52,6 +61,8 @@ class MoveModifier : Module(
         if(mc.player.ridingEntity != null) {
             mc.player.ridingEntity.stepHeight = 0.5f
         }
+
+        onDisableIceSpeed()
     }
 
     override fun update() {
@@ -69,6 +80,43 @@ class MoveModifier : Module(
 
         doAutoMoving()
         doSprint()
+        doDelays()
+        doIceSpeed()
+        doFastSwim()
+    }
+
+    private fun doFastSwim() {
+        if((mc.player.isInLava || mc.player.isInWater) && MovementUtil.isMoving() && fastSwim.valBoolean) {
+            mc.player.isSprinting = true
+            if(mc.gameSettings.keyBindJump.isKeyDown) {
+                mc.player.motionY = 0.098
+            }
+        }
+    }
+
+    private fun doIceSpeed() {
+        if(iceSpeed.valBoolean) {
+            Blocks.ICE.slipperiness = iceSpeedVal.valFloat
+            Blocks.PACKED_ICE.slipperiness = iceSpeedVal.valFloat
+            Blocks.FROSTED_ICE.slipperiness = iceSpeedVal.valFloat
+        }
+    }
+
+    private fun onDisableIceSpeed() {
+        Blocks.ICE.slipperiness = 0.98f
+        Blocks.PACKED_ICE.slipperiness = 0.98f
+        Blocks.FROSTED_ICE.slipperiness = 0.98f
+    }
+
+    private fun doDelays() {
+        if(noJumpDelay.valBoolean) {
+            mc.player.jumpTicks = 0
+            mc.player.nextStepDistance = 0
+        }
+
+        if(noStepDelay.valBoolean) {
+            mc.playerController.stepSoundTickCounter = 0f
+        }
     }
 
     private fun doSprint() {
@@ -87,7 +135,7 @@ class MoveModifier : Module(
             mc.gameSettings.keyBindForward.pressed = autoWalk.valBoolean
         }
         if(autoSneak.valBoolean) {
-            mc.gameSettings.keyBindForward.pressed = autoSneak.valBoolean
+            mc.gameSettings.keyBindSneak.pressed = autoSneak.valBoolean
         }
     }
 

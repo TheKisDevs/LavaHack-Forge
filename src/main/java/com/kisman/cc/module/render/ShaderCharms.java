@@ -51,9 +51,9 @@ public class ShaderCharms extends Module {
     private final Setting blur = new Setting("Blur", this, true).setVisible(() -> mode.checkValString("ITEMGLOW"));
     private final Setting radius = new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("GRADIENT") || mode.checkValString("Outline2"));
     private final Setting mix = new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("Outline2"));
-    private final Setting red = new Setting("Red", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
-    private final Setting green = new Setting("Green", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
-    private final Setting blue = new Setting("Blue", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2"));
+    private final Setting red = new Setting("Red", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"));
+    private final Setting green = new Setting("Green", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"));
+    private final Setting blue = new Setting("Blue", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"));
     private final Setting rainbow = new Setting("RainBow", this, true).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("Outline2"));
     private final Setting delay = new Setting("Delay", this, 100, 1, 2000, true);
     private final Setting saturation = new Setting("Saturation", this, 36, 0, 100, Slider.NumberType.PERCENT);
@@ -83,8 +83,10 @@ public class ShaderCharms extends Module {
 
     private boolean criticalSection = false;
 
-    private final ShaderHelper shaderHelper = new ShaderHelper(new ResourceLocation("shaders/post/esp_outline.json"));
-    private final Framebuffer frameBufferFinal = shaderHelper.getFrameBuffer("final");
+    private final ShaderHelper shaderHelperOutline2 = new ShaderHelper(new ResourceLocation("shaders/post/esp_outline.json"));
+    private final ShaderHelper shaderHelperInertiaOutline = new ShaderHelper(new ResourceLocation("shaders/post/inertia_entity_outline.json"));
+    private final Framebuffer frameBufferFinalOutline2 = shaderHelperOutline2.getFrameBuffer("final");
+    private final Framebuffer frameBufferFinalInertiaOutline = shaderHelperInertiaOutline.getFrameBuffer("final");
 
     public ShaderCharms() {
         super("ShaderCharms", Category.RENDER);
@@ -160,7 +162,11 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onFog(EntityViewRenderEvent.FogColors event) {
-        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelper.getShader())).getListFramebuffers().forEach(framebuffer -> {
+        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperOutline2.getShader())).getListFramebuffers().forEach(framebuffer -> {
+            framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
+        });
+
+        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperInertiaOutline.getShader())).getListFramebuffers().forEach(framebuffer -> {
             framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
         });
     }
@@ -181,18 +187,26 @@ public class ShaderCharms extends Module {
     }
 
     private void outline2Shader(float particalTicks) {
-        if(frameBufferFinal == null) return;
+        if(frameBufferFinalOutline2 == null) return;
         Outline2Shader.INSTANCE.setupUniforms(outlineAlpha.getValFloat(), filledAlpha.getValFloat(), width.getValFloat(), (float) ((width.getAlpha() - 1.0f) * (Math.pow(ratio.getValFloat(), 3)) + 1.0f));
-        Outline2Shader.INSTANCE.updateUniforms(shaderHelper);
-        ShaderUtil.Companion.clearFrameBuffer(frameBufferFinal);
+        Outline2Shader.INSTANCE.updateUniforms(shaderHelperOutline2);
+        ShaderUtil.Companion.clearFrameBuffer(frameBufferFinalOutline2);
         Outline2Shader.INSTANCE.drawEntities(particalTicks, range.getValFloat());
-        Outline2Shader.INSTANCE.drawShader(shaderHelper, frameBufferFinal, particalTicks);
+        Outline2Shader.INSTANCE.drawShader(shaderHelperOutline2, frameBufferFinalOutline2, particalTicks);
+    }
+
+    private void inertiaOutlineShader(float ticks) {
+        if(frameBufferFinalInertiaOutline == null) return;
+        ShaderUtil.Companion.clearFrameBuffer(frameBufferFinalInertiaOutline);
+        InertiaOutlineShader.INSTANCE.drawEntities(ticks, range.getValFloat());
+        InertiaOutlineShader.INSTANCE.drawShader(shaderHelperInertiaOutline, frameBufferFinalInertiaOutline, ticks);
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         try {
             if(mode.checkValString("Outline2")) outline2Shader(event.getPartialTicks());
+            else if(mode.checkValString("InertiaOutline")) inertiaOutlineShader(event.getPartialTicks());
             else {
                 FramebufferShader framebufferShader = null;
                 boolean itemglow = false, gradient = false, glow = false, outline = false;

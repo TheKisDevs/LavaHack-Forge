@@ -1,6 +1,6 @@
 package com.kisman.cc.util.manager;
 
-import com.kisman.cc.util.Rotation;
+import com.kisman.cc.util.math.vectors.Rotation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;

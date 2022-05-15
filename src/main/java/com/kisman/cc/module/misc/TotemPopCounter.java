@@ -1,4 +1,4 @@
-package com.kisman.cc.module.chat;
+package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class TotemPopCounter extends Module {
     private Setting target = new Setting("Target", this, TargetMode.Both);
     public TotemPopCounter() {
-        super("TotemPopCounter", "totem pops count!", Category.CHAT);
+        super("TotemPopCounter", "totem pops count!", Category.MISC);
 
         setmgr.rSetting(target);
     }

@@ -1,4 +1,4 @@
-package com.kisman.cc.module.chat;
+package com.kisman.cc.module.misc;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
@@ -16,7 +16,7 @@ public class AntiSpammer extends Module {
     public ArrayList<String> illegalWords = new ArrayList<>();
 
     public AntiSpammer() {
-        super("AntiSpammer", Category.CHAT);
+        super("AntiSpammer", Category.MISC);
         instance = this;
     }
 

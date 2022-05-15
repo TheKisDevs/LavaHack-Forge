@@ -32,8 +32,9 @@ public class Config extends Module {
     public Setting scrollSpeed = register(main.add(new Setting("Scroll Speed", this, 15, 0, 100, Slider.NumberType.PERCENT)));
     public Setting horizontalScroll = register(main.add(new Setting("Horizontal Scroll", this, true)));
     public Setting keyForHorizontalScroll = register(main.add(new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_LSHIFT).setVisible(() -> horizontalScroll.getValBoolean())));
+    public Setting notification = register(main.add(new Setting("Notification", this, true)));
     public Setting guiGlow = register(gui.add(new Setting("Gui Glow", this, false)));
-    public Setting glowOffset = register(glow.add(new Setting("Glow Offset", this, 6, 1, 20, true)));
+//    public Setting glowOffset = register(glow.add(new Setting("Glow Offset", this, 6, 1, 20, true)));
     public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true)));
     public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true)));
     public Setting guiGradient = register(gui.add(new Setting("Gui Gradient", this, GradientModes.None)));

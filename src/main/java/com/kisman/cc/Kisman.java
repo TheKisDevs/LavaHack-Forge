@@ -124,13 +124,13 @@ public class Kisman {
     }
 
     public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
-        AntiDump.check();
-
         try {
             Minecraft.class.getDeclaredField("player");
         } catch(Exception e) {
             remapped = true;
         }
+
+        AntiDump.check();
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -203,7 +203,7 @@ public class Kisman {
                     for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
                     for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) {
                         s.setValBoolean(!s.getValBoolean());
-                        if(init && moduleManager.getModule("Notification").isToggled()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                        if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
                     }
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
             }

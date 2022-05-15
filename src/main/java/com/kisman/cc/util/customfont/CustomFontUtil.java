@@ -39,7 +39,7 @@ public class CustomFontUtil {
     public static CFontRenderer futura20 = new CFontRenderer(getFontTTF("futura-normal", 20), true, true);
     public static CFontRenderer futura18 = new CFontRenderer(getFontTTF("futura-normal", 18), true, true);
 
-    public static CFontRenderer lexendDeca18 = new CFontRenderer(getFontTTF("LexendDeca-Regular", 18), true, true);
+    public static CFontRenderer lexendDeca18 = new CFontRenderer(getFontTTF("lexenddeca-regular", 18), true, true);
 
     public static CFontRenderer century18 = new CFontRenderer(getFontTTF("main", 18), true, true);
 

@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 
 public class Breadcrumbs extends Module {
-    private Setting lineWidth = new Setting("Line Width", this, 1, 1, 6, true);
-    private Setting removeTicks =  new Setting("Remove Ticks", this, 10, 0, 50, true);
-    private Setting alpha = new Setting("Alpha", this, 100, 0, 255, true);
+    private final Setting lineWidth = register(new Setting("Line Width", this, 1, 1, 6, true));
+    private final Setting removeTicks =  register(new Setting("Remove Ticks", this, 10, 0, 50, true));
+    private final Setting alpha = register(new Setting("Alpha", this, 100, 0, 255, true));
 
     private ArrayList<Helper> positions = new ArrayList<>();
 
@@ -28,8 +28,10 @@ public class Breadcrumbs extends Module {
         setmgr.rSetting(alpha);
     }
 
-    public void onEnable() {positions.clear();}
-    public void onDisable() {positions.clear();}
+    public void onEnable() {
+        super.onEnable();
+        positions.clear();
+    }
 
     public void update() {
         if(mc.player == null || mc.world == null) return;
@@ -78,7 +80,7 @@ public class Breadcrumbs extends Module {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glDisable(GL11.GL_BLEND);
+//        GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
     }
 

@@ -190,7 +190,7 @@ public class RotationUtils {
         setPlayerRotations(angle[0], angle[1]);
     }
 
-    public static void setPlayerRotations(com.kisman.cc.util.Rotation rotation) {
+    public static void setPlayerRotations(Rotation rotation) {
         setPlayerRotations(rotation.getYaw(), rotation.getPitch());
     }
 

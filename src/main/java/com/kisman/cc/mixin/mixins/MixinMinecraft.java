@@ -29,7 +29,7 @@
    * @author Cubic
    */
   @Inject(method = "runTick", at = @At("HEAD"))
-  public void runTickPre(){
+  public void runTickPre(CallbackInfo ci){
    EventClientTick.Pre eventClientTick = new EventClientTick.Pre();
    Kisman.EVENT_BUS.post(eventClientTick);
   }
@@ -38,7 +38,7 @@
    * @author Cubic
    */
   @Inject(method = "runTick", at = @At("RETURN"))
-  public void runTickPost(){
+  public void runTickPost(CallbackInfo ci){
    EventClientTick.Post eventClientTick = new EventClientTick.Post();
    Kisman.EVENT_BUS.post(eventClientTick);
   }
