@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,7 +14,7 @@ public class PvpResources extends HudModule {
     public static PvpResources instance;
 
     public PvpResources() {
-        super("PvpResources", "PvpResources", HudCategory.COMBAT, true);
+        super("PvpResources", "PvpResources", true);
         instance = this;
 
         setX(100);

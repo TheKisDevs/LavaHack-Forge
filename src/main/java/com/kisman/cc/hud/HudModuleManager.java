@@ -41,10 +41,4 @@ public class HudModuleManager {
 		for (HudModule m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
 		return null;
 	}
-
-	public ArrayList<HudModule> getModulesInCategory(HudCategory c) {
-		ArrayList<HudModule> mods = new ArrayList<>();
-		for (HudModule m : this.modules) if (m.getCategoryHud() == c) mods.add(m);
-		return mods;
-	}
 }

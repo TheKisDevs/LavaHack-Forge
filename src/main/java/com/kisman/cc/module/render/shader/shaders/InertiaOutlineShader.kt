@@ -1,7 +1,9 @@
 package com.kisman.cc.module.render.shader.shaders
 
 import com.kisman.cc.module.render.ShaderCharms
+import com.kisman.cc.module.render.shader.ShaderUtil
 import com.kisman.cc.module.render.shader.shaders.troll.ShaderHelper
+import com.kisman.cc.util.Colour
 import com.kisman.cc.util.EntityUtil
 import com.kisman.cc.util.MathUtil
 import com.kisman.cc.util.render.GlStateUtils
@@ -10,6 +12,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
+import net.minecraft.util.math.Vec2f
 import org.lwjgl.opengl.GL11
 
 /**

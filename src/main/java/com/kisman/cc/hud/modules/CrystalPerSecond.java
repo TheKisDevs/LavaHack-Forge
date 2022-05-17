@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.manager.Managers;
@@ -12,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CrystalPerSecond extends HudModule {
     public CrystalPerSecond() {
-        super("CrystalPerSecond", HudCategory.COMBAT, true);
+        super("CrystalPerSecond", true);
         super.setX(1);
         super.setY(1);
     }

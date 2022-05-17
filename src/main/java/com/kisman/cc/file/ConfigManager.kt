@@ -28,6 +28,8 @@ class ConfigManager(
     ) {
         @Throws(IOException::class)
         fun init() {
+            Kisman.initDirs()
+
             if(!Files.exists(Paths.get(config.path + config.name + config.suffix))) {
                 LoadConfig.init()
                 return
@@ -73,7 +75,7 @@ class ConfigManager(
                                 }
                                 config.settingsPrefix -> {
                                     if(split2[3].contains(":")) {
-                                        val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0])
+                                        val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0], true)
 
                                         if(setting != null && split2[3].split(":")[1].equals("key", true)) {
                                             if(setting.isCheck) {
@@ -134,7 +136,7 @@ class ConfigManager(
                                 }
                                 config.settingsPrefix -> {
                                     if(split2[3].contains(":")) {
-                                        val setting = Kisman.instance.settingsManager.getSettingByName(hud, split2[3].split(":")[0])
+                                        val setting = Kisman.instance.settingsManager.getSettingByName(hud, split2[3].split(":")[0], true)
 
                                         if(setting != null && split2[3].split(":")[1].equals("key", true)) {
                                             if(setting.isCheck) {
@@ -172,6 +174,8 @@ class ConfigManager(
     ) {
         @Throws(IOException::class)
         fun init() {
+            Kisman.initDirs()
+
             fileCheck()
 
             BufferedWriter(

@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.ScaledResolution;
@@ -10,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ServerIp extends HudModule {
     public ServerIp() {
-        super("ServerIP", "", HudCategory.PLAYER);
+        super("ServerIP", "");
     }
 
     @SubscribeEvent

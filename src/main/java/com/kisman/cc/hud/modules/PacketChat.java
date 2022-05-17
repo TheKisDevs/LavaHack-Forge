@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.hud.modules.packetchat.Log;
 import com.kisman.cc.hud.modules.packetchat.Message;
@@ -23,7 +22,7 @@ public class PacketChat extends HudModule {
     public Log logs = new Log();
 
     public PacketChat() {
-        super("PacketChat", "", HudCategory.PLAYER);
+        super("PacketChat", "");
         logs.ActiveMessages.add(new Message("lol"));
         logs.ActiveMessages.add(new Message("lmao"));
         Instance = this;

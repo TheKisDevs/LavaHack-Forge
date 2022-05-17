@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.client.CustomFontModule;
 import com.kisman.cc.settings.Setting;
@@ -25,9 +24,10 @@ public class Logo extends HudModule {
     private final Setting bold = register(new Setting("Bold", this, false));
     private final Setting glow = register(new Setting("Glow", this, false));
     private final Setting glowOffset = register(new Setting("Glow Offset", this, 5, 0, 20, true));
+    private final Setting csgoVersion = register(new Setting("CSGO Version", this, false));
 
     public Logo() {
-        super("Logo", "lava-hack on top", HudCategory.RENDER);
+        super("Logo", "lava-hack on top");
     }
 
     @SubscribeEvent
@@ -47,7 +47,7 @@ public class Logo extends HudModule {
                 CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
             }
         } else if(mode.checkValString("CSGO")) {
-            String text = ((CustomFontModule.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "") + name) + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            String text = ((CustomFontModule.instance.mode.getValString().equals("Verdana") ? TextFormatting.BOLD : "") + name) + (csgoVersion.getValBoolean() ? TextFormatting.GRAY + " | " + TextFormatting.RESET + Kisman.getVersion() : "") + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int x = 3;
             int y = 8;
             int width = 4 + CustomFontUtil.getStringWidth(text);

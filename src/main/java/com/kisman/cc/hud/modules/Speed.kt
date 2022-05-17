@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules
 
-import com.kisman.cc.hud.HudCategory
 import com.kisman.cc.hud.HudModule
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.TimerUtils
@@ -20,7 +19,6 @@ import kotlin.math.floor
 class Speed : HudModule(
         "Speed",
         "Displays your current speed.",
-        HudCategory.MOVEMENT,
         true
 ) {
     private val astolfo = register(Setting("Astolfo", this, true))

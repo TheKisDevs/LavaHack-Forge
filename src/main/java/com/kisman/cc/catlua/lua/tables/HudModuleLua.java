@@ -3,7 +3,6 @@ package com.kisman.cc.catlua.lua.tables;
 import com.kisman.cc.catlua.lua.LuaCallback;
 import com.kisman.cc.catlua.lua.utils.*;
 import com.kisman.cc.catlua.module.ModuleScript;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.LibFunction;
@@ -16,8 +15,8 @@ public class HudModuleLua extends HudModule {
     private LuaClosure onEnable;
     private LuaClosure onDisable;
 
-    public HudModuleLua(String name, String description, HudCategory category, boolean drag, ModuleScript script) {
-        super(name, description, category, drag);
+    public HudModuleLua(String name, String description, boolean drag, ModuleScript script) {
+        super(name, description, drag);
         this.script = script;
     }
 
@@ -99,7 +98,7 @@ public class HudModuleLua extends HudModule {
     static class New extends LibFunction {
         public LuaValue call(LuaValue name, LuaValue description, LuaValue category, LuaValue drag, LuaValue script) {
             if(!name.isstring() || !description.isstring() || !category.isstring() || !drag.isstring()) throw new IllegalArgumentException("Invalid arguments.");
-            return CoerceJavaToLua.coerce(new HudModuleLua(name.tojstring(), description.tojstring(), HudCategory.valueOf(category.tojstring()), Boolean.valueOf(drag.tojstring()), ( ModuleScript ) CoerceLuaToJava.coerce(script, ModuleScript.class)));
+            return CoerceJavaToLua.coerce(new HudModuleLua(name.tojstring(), description.tojstring(), Boolean.valueOf(drag.tojstring()), ( ModuleScript ) CoerceLuaToJava.coerce(script, ModuleScript.class)));
         }
     }
 }

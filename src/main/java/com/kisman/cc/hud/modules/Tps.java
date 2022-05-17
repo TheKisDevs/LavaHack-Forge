@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import net.minecraft.client.gui.ScaledResolution;
@@ -11,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Tps extends HudModule {
     public Tps() {
-        super("Tps", "", HudCategory.PLAYER);
+        super("Tps", "");
     }
 
     @SubscribeEvent

@@ -3,23 +3,32 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.module.player.Reach;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
+import net.minecraft.world.GameType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = PlayerControllerMP.class, priority = 10000)
 public class MixinPlayerControllerMP {
+    @Shadow public GameType currentGameType;
+    @Shadow @Final public Minecraft mc;
+
     @Inject(method = "getBlockReachDistance", at = @At("HEAD"), cancellable = true)
     public void getBlockReachDistance(CallbackInfoReturnable<Float> callback) {
-        if (Reach.instance.isToggled()) {
-            callback.setReturnValue(Reach.instance.distance.getValFloat());
-            callback.cancel();
-        }
+        float attrib = (float)mc.player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+        EventBlockReachDistance event = new EventBlockReachDistance(currentGameType.isCreative() ? attrib : attrib - 0.5F);
+        Kisman.EVENT_BUS.post(event);
+        callback.setReturnValue(event.getDistance());
+//        if (Reach.instance.isToggled()) {
+//            callback.setReturnValue(Reach.instance.distance.getValFloat());
+//            callback.cancel();
+//        }
     }
 
     @Inject(method = "clickBlock", at = @At("HEAD"), cancellable = true)

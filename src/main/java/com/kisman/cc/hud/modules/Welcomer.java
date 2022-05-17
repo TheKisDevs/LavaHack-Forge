@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
@@ -15,7 +14,7 @@ public class Welcomer extends HudModule {
     private final Setting color = register(new Setting("Color", this, "Color", new Colour(-1)));
 
     public Welcomer() {
-        super("Welcomer", HudCategory.RENDER, true);
+        super("Welcomer", true);
     }
 
     @SubscribeEvent

@@ -7,30 +7,27 @@ import net.minecraft.client.Minecraft;
 public class HudModule extends Module {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
-	private final HudCategory categoryHud;
 	public boolean drag = false;
 	private double x = 0, y = 0, w = 0, h = 0;
 
-	public HudModule(String name, String description, HudCategory category) {
+	public HudModule(String name, String description) {
 		super(name, description, Category.RENDER);
-		this.categoryHud = category;
 	}
 
-	public HudModule(String name, String description, HudCategory category, boolean drag) {
-		this(name, description, category);
+	public HudModule(String name, String description, boolean drag) {
+		this(name, description);
 		this.drag = drag;
 	}
 
-	public HudModule(String name, HudCategory category) {
-		this(name, "", category);
+	public HudModule(String name) {
+		this(name, "");
 	}
 
-	public HudModule(String name, HudCategory category, boolean drag) {
-		this(name, category);
+	public HudModule(String name, boolean drag) {
+		this(name);
 		this.drag = drag;
 	}
 
-	public HudCategory getCategoryHud() {return categoryHud;}
 	public double getX() {return x;}
 	public void setX(double x) {this.x = x;}
 	public double getY() {return y;}

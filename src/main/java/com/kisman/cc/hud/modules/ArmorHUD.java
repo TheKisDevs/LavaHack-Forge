@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -21,7 +20,7 @@ public class ArmorHUD extends HudModule {
     private final Setting damage = register(new Setting("Damage", this, true));
 
     public ArmorHUD() {
-        super("ArmorHud", "ArmorHUD", HudCategory.COMBAT);
+        super("ArmorHud", "ArmorHUD");
     }
 
     @SubscribeEvent

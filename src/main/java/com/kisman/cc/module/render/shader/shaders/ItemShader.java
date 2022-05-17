@@ -1,5 +1,6 @@
 package com.kisman.cc.module.render.shader.shaders;
 
+import com.kisman.cc.file.FileManager;
 import com.kisman.cc.module.render.shader.FramebufferShader;
 import org.lwjgl.opengl.*;
 
@@ -52,6 +53,7 @@ public class ItemShader extends FramebufferShader {
         GL20.glUniform1f(getUniform("minAlpha"), alpha);
         GL13.glActiveTexture(GL13.GL_TEXTURE8);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+//        GL11.glBindTexture(GL11.GL_TEXTURE_2D, FileManager.Companion.getImage() == null ? 0 : FileManager.Companion.getImage().getTexture().getGlTextureId());
         GL20.glUniform1i(getUniform("image"), 8);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL20.glUniform1f(getUniform("imageMix"), imageMix);

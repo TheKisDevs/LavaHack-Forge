@@ -2,6 +2,7 @@ package com.kisman.cc.module.render.shader
 
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
+import net.minecraft.util.math.Vec2f
 import org.lwjgl.opengl.GL20
 
 class ShaderUtil {
@@ -13,6 +14,9 @@ class ShaderUtil {
                 }
                 if(uniform is UniformInt) {
                     GL20.glUniform1i(shader.getUniform(uniform.name), uniform.value)
+                }
+                if(uniform is UniformVec2f) {
+                    GL20.glUniform2f(shader.getUniform(uniform.name), uniform.value.x, uniform.value.y)
                 }
             }
         }
@@ -47,4 +51,5 @@ class ShaderUtil {
     open class Uniform
     class UniformFloat(val name: String, val value: Float) : Uniform()
     class UniformInt(val name: String, val value: Int) : Uniform()
+    class UniformVec2f(val name : String, val value : Vec2f) : Uniform()
 }

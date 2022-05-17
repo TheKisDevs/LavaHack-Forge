@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -14,7 +13,7 @@ public class Fps extends HudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
 
     public Fps() {
-        super("Fps", HudCategory.RENDER, true);
+        super("Fps", true);
 
         setX(1);
         setY(1);

@@ -84,19 +84,10 @@ public class ModuleManager {
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
 		modules.add(new GuiModule());
-//		modules.add(new HUD());
 		modules.add(new NotEnoughCoinsModule());
 //		modules.add(new ExampleModule());
 //		modules.add(new Test());
-		modules.add(new ToolTip());
 		modules.add(new VegaGui());
-		//chat
-		modules.add(new AntiSpammer());
-		modules.add(new AutoEZ());
-		modules.add(new ChatModifier());
-		modules.add(new Spammer());
-		modules.add(new TotemPopCounter());
-		modules.add(new TraceTeleport());
 		//render
 		modules.add(new Animation());
 //		modules.add(new BlockESP());
@@ -164,7 +155,7 @@ public class ModuleManager {
 		modules.add(new Interaction());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
-		modules.add(new Reach());
+//		modules.add(new Reach());
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new TeleportBack());
@@ -196,9 +187,12 @@ public class ModuleManager {
 		modules.add(new WebLeave());
 		//misc
 		modules.add(new AntiRegear());
+		modules.add(new AntiSpammer());
+		modules.add(new AutoEZ());
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
+		modules.add(new ChatModifier());
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
@@ -210,8 +204,10 @@ public class ModuleManager {
 		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkylightFix());
+		modules.add(new Spammer());
 		modules.add(new Spin());
 		modules.add(new TeamRusherLag());
+		modules.add(new TotemPopCounter());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());

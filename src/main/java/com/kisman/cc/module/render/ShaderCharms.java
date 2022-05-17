@@ -11,6 +11,8 @@ import com.kisman.cc.module.render.shader.shaders.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.render.shader.shaders.troll.ShaderHelper;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.MathUtil;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.enums.ShaderModes;
@@ -25,6 +27,7 @@ import net.minecraft.entity.monster.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +38,9 @@ import java.util.Objects;
 public class ShaderCharms extends Module {
     private final Setting range = new Setting("Range", this, 32, 8, 64, true);
     public final Setting mode = new Setting("Mode", this, ShaderModes.SMOKE);
+
+    private final Setting entities = new SettingGroup(new Setting("Entities", this));
+
     private final Setting crystals = new Setting("Crystals", this, true);
     private final Setting players = new Setting("Players", this, false);
     private final Setting friends = new Setting("Friends", this, true);
@@ -75,9 +81,12 @@ public class ShaderCharms extends Module {
     private final Setting width = new Setting("Width", this, 2, 1, 8, false).setVisible(() -> mode.checkValString("Outline2"));
     private final Setting ratio = new Setting("Ratio", this, 0.5, 0,1, false).setVisible(() -> mode.checkValString("Outline2"));
 
-    private final Setting rainbowSpeed = new Setting("Rainbow Speed", this, 0.4, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
-    private final Setting rainbowStrength = new Setting("Rainbow Strength", this, 0.3, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
-    private final Setting rainbowSaturation = new Setting("Rainbow Saturation", this, 0.5, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE"));
+    private final Setting rainbowSpeed = new Setting("Rainbow Speed", this, 0.4, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"));
+    private final Setting rainbowStrength = new Setting("Rainbow Strength", this, 0.3, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"));
+    private final Setting rainbowSaturation = new Setting("Rainbow Saturation", this, 0.5, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"));
+
+    private final Setting useImage = new Setting("Use Image", this, false);
+    private final Setting imageMix = new Setting("Image Mix", this, 0.5, 0, 1, false);
 
     public static ShaderCharms instance;
 
@@ -96,6 +105,9 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(range);
 
         setmgr.rSetting(mode);
+
+        setmgr.rSetting(entities);
+
         setmgr.rSetting(crystals);
         setmgr.rSetting(players);
         setmgr.rSetting(friends);
@@ -139,6 +151,9 @@ public class ShaderCharms extends Module {
         setmgr.rSetting(rainbowSpeed);
         setmgr.rSetting(rainbowStrength);
         setmgr.rSetting(rainbowSaturation);
+
+//        setmgr.rSetting(useImage);
+//        setmgr.rSetting(imageMix);
     }
 
     public void onEnable() {
@@ -197,6 +212,15 @@ public class ShaderCharms extends Module {
 
     private void inertiaOutlineShader(float ticks) {
         if(frameBufferFinalInertiaOutline == null) return;
+//        InertiaOutlineShader.INSTANCE.setupUniforms(
+//                new Colour(red.getValFloat(), green.getValFloat(), blue.getValFloat(), 1f),
+//                radius.getValFloat(),
+//                rainbowSpeed.getValFloat() != 0,
+//                rainbowSpeed.getValFloat(),
+//                getStrength(),
+//                rainbowSaturation.getValFloat()
+//        );
+//        InertiaOutlineShader.INSTANCE.updateUniforms(shaderHelperInertiaOutline);
         ShaderUtil.Companion.clearFrameBuffer(frameBufferFinalInertiaOutline);
         InertiaOutlineShader.INSTANCE.drawEntities(ticks, range.getValFloat());
         InertiaOutlineShader.INSTANCE.drawShader(shaderHelperInertiaOutline, frameBufferFinalInertiaOutline, ticks);

@@ -62,6 +62,7 @@ public class Kisman {
     public static final String miscName = "Misc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
+    public static final String imagesName = "Images/";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -228,6 +229,9 @@ public class Kisman {
                 case "kidman": return "kidman.club";
                 case "TheClient": return "TheClient";
                 case "BloomWare": return "BloomWare";
+                case "kidmad": return "kidmad.sex";
+                case "UwU": return "UwU";
+                case "EarthHack": return "3arthH4ck";
                 case "custom": return Config.instance.customName.getValString();
             }
         }
@@ -235,6 +239,13 @@ public class Kisman {
     }
 
     public static String getVersion() {
+        if(instance.init) {
+            switch (Config.instance.nameMode.getValString()) {
+                case "BloomWare": return "1.0";
+                case "EarthHack": return "1.6.2";
+                default : return VERSION;
+            }
+        }
         return VERSION;
     }
 
@@ -242,6 +253,10 @@ public class Kisman {
         if (!Files.exists(Paths.get(fileName))) {
             Files.createDirectories(Paths.get(fileName));
             LOGGER.info("Root dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + imagesName))) {
+            Files.createDirectories(Paths.get(fileName + imagesName));
+            LOGGER.info("Images dir created");
         }
         if (!Files.exists(Paths.get(fileName + luaName))) {
             Files.createDirectories(Paths.get(fileName + luaName));

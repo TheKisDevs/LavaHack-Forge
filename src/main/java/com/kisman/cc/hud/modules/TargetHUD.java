@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.settings.Setting;
@@ -36,7 +35,7 @@ public class TargetHUD extends HudModule {
     private final Setting shadow = register(new Setting("Shadow", this, true));
 
     public TargetHUD() {
-        super("TargetHud", HudCategory.COMBAT, true);
+        super("TargetHud", true);
 
         setX(500);
         setY(300);

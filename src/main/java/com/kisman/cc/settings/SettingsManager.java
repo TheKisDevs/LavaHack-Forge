@@ -36,14 +36,13 @@ public class SettingsManager {
 	}
 
 	public Setting getSettingByName(Module mod, String name){
-		for(Setting set : getSettings()) {
-			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
-		}
+		for(Setting set : getSettings()) if(set != null && set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
 		return null;
 	}
 
 	public Setting getSettingByName(Module mod, String name, boolean ignoreGroups) {
 		for(Setting set : getSettings()) {
+			if(set == null) continue;
 			if(ignoreGroups && (set.isGroup() || set instanceof SettingGroup)) continue;
 			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
 		}

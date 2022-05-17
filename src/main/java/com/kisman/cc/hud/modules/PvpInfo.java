@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.combat.*;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.*;
 
 public class PvpInfo extends HudModule {
     public PvpInfo() {
-        super("PvpInfo", "PvpInfo", HudCategory.COMBAT, true);
+        super("PvpInfo", "PvpInfo", true);
 
         setX(1);
         setY(1);

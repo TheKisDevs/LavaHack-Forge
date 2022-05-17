@@ -1,7 +1,6 @@
 package com.kisman.cc.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -14,7 +13,7 @@ public class Ping extends HudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
 
     public Ping() {
-        super("Ping", "", HudCategory.PLAYER, true);
+        super("Ping", "", true);
         setX(1);
         setY(1);
     }

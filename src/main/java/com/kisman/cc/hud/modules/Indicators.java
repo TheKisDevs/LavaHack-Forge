@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.client.CustomFontModule;
 import com.kisman.cc.settings.Setting;
@@ -29,34 +28,23 @@ public class Indicators extends HudModule {
     private final Setting shadow = register(new Setting("Shadow", this, true));
 
     public Indicators() {
-        super("Indicators", HudCategory.PLAYER, true);
+        super("Indicators", true);
 
         setX(3);
         setY(8);
-    }
-
-    public void update() {
-        switch (theme.getValString()) {
-            case "Default": {
-                setW(sliderWidth + 4);
-                setH(6 + getHeight() + 4 * (getHeight() + sliderHeight + 3));
-                break;
-            }
-            case "Rewrite": {
-                setW(borderOffset * 3 + CustomFontUtil.getStringWidth(stringWithMaxLength) * 2);
-                setH(borderOffset * 7 + CustomFontUtil.getFontHeight() * 5);
-                break;
-            }
-        }
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
         switch (theme.getValString()) {
             case "Default":
+                setW(sliderWidth + 4);
+                setH(6 + getHeight() + 4 * (getHeight() + sliderHeight + 3));
                 drawDefault();
                 break;
             case "Rewrite":
+                setW(borderOffset * 3 + CustomFontUtil.getStringWidth(stringWithMaxLength) * 2);
+                setH(borderOffset * 7 + CustomFontUtil.getFontHeight() * 5);
                 drawRewrite();
                 break;
         }

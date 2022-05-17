@@ -1,6 +1,5 @@
 package com.kisman.cc.hud.modules;
 
-import com.kisman.cc.hud.HudCategory;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
@@ -20,7 +19,7 @@ public class Radar extends HudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
 
     public Radar() {
-        super("Radar", HudCategory.RENDER, true);
+        super("Radar", true);
 
         setX(0);
         setY(0);

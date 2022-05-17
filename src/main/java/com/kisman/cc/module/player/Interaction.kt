@@ -1,6 +1,7 @@
 package com.kisman.cc.module.player
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.EventBlockReachDistance
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.friend.FriendManager
@@ -41,11 +42,12 @@ class Interaction : Module(
 
     private val noMiningTrace : Setting = register(blocks.add(Setting("No Mining Trace", this, false)))
     private val nmtPickaxeOnly : Setting = register(blocks.add(Setting("NMT Pickaxe Only", this, false).setVisible { noMiningTrace.valBoolean }))
-    @JvmField
-    val multiTask : Setting = register(blocks.add(Setting("Multi Task", this, false)))
+    @JvmField val multiTask : Setting = register(blocks.add(Setting("Multi Task", this, false)))
     private val roofInteract = register(blocks.add(Setting("Roof Interact", this, false)))
     private val fastBreak = register(blocks.add(Setting("Fast Break", this, false)))
     private val noInteractVal = register(blocks.add(Setting("No Interact", this, false)))
+    @JvmField val reach : Setting = register(blocks.add(Setting("Reach", this, false)))
+    @JvmField val reachDistance : Setting = register(blocks.add(Setting("Reach Distance", this, 5.0, 1.0, 10.0, true).setVisible { reach.valBoolean }))
 
     private val fastUse = register(SettingGroup(Setting("Fast Use", this)))
 
@@ -76,10 +78,12 @@ class Interaction : Module(
         super.onEnable()
         Kisman.EVENT_BUS.subscribe(renderGetEntitiesINAABBexcluding)
         Kisman.EVENT_BUS.subscribe(send)
+        Kisman.EVENT_BUS.subscribe(blockReachDistance)
     }
 
     override fun onDisable() {
         super.onDisable()
+        Kisman.EVENT_BUS.unsubscribe(blockReachDistance)
         Kisman.EVENT_BUS.unsubscribe(send)
         Kisman.EVENT_BUS.unsubscribe(renderGetEntitiesINAABBexcluding)
     }
@@ -134,6 +138,12 @@ class Interaction : Module(
             ) mc.rightClickDelayTimer = 0
         } catch (ignored : ArrayIndexOutOfBoundsException) {}
     }
+
+    private val blockReachDistance = Listener<EventBlockReachDistance>(EventHook {
+        if(reach.valBoolean) {
+            it.distance = reachDistance.valFloat
+        }
+    })
 
     private val renderGetEntitiesINAABBexcluding = Listener<EventRenderGetEntitiesINAABBexcluding>(EventHook {
         if(noMiningTrace.valBoolean && (!nmtPickaxeOnly.valBoolean || mc.player.heldItemMainhand.item is ItemPickaxe)) it.cancel()
