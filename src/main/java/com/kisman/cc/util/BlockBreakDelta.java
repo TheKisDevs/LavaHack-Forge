@@ -53,6 +53,10 @@ public class BlockBreakDelta {
         return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
     }
 
+    public IBlockState getBlockState(){
+        return mc.world.getBlockState(pos);
+    }
+
     public void updateBestStack(){
         IBlockState state = mc.world.getBlockState(pos);
         ItemStack bestStack = mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem);
