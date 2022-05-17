@@ -1,14 +1,14 @@
 
 name: Gradle Build
-
+#we need to get this to work
 on:
   push:
   pull_request:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+##lmao
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -16,12 +16,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+
       - name: Build with Gradle
         run: |
           ./gradlew setupDecompWorkspace
-          ./gradlew build --warning-mode=all --stacktrace
+          ./gradlew build 
+          
       - name: List files
         run: ls
       - name: Upload a Build Artifact

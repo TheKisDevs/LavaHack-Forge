@@ -74,6 +74,7 @@ public class ModuleManager {
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
+		modules.add(new SurroundRewrite());
 //		modules.add(new TrapDoorBurrow());
 		//client
 		modules.add(new Baritone());
