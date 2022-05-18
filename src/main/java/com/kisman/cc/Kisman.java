@@ -6,8 +6,8 @@ import com.kisman.cc.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.catlua.mapping.*;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.event.*;
-import com.kisman.cc.file.ConfigManager;
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.file.ConfigManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.Frame;
@@ -29,7 +29,6 @@ import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
-import com.kisman.cc.util.shaders.Shaders;
 import com.kisman.cc.util.glow.ShaderShell;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
@@ -103,7 +102,6 @@ public class Kisman {
     public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ServerManager serverManager;
-    public Shaders shaders;
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
     public CapeAPI capeAPI;
@@ -162,7 +160,6 @@ public class Kisman {
         discord = new RPC();
         rotationUtils = new RotationUtils();
         serverManager = new ServerManager();
-        shaders = new Shaders();
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
 

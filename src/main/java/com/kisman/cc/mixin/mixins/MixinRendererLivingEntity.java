@@ -2,13 +2,12 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.combat.*;
 import com.kisman.cc.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.module.misc.Optimizer;
 import com.kisman.cc.module.render.Charms;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;

@@ -1,7 +1,7 @@
 package com.kisman.cc.command.commands;
 
 import com.kisman.cc.command.Command;
-import com.kisman.cc.file.LoadConfig;
+import com.kisman.cc.util.manager.file.LoadConfig;
 
 public class LoadConfigCommand extends Command {
     public LoadConfigCommand() {

@@ -14,6 +14,7 @@ import org.lwjgl.input.Mouse
 
 class HandRewrite : Module(
         "HandRewrite",
+        "Need to update btw, dont use mainhand feature",
         Category.COMBAT
 ) {
     private val mainhandMode = register(Setting("Mainhand Mode", this, Modes.None))

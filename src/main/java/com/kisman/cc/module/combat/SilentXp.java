@@ -1,8 +1,10 @@
 package com.kisman.cc.module.combat;
 
+import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.InventoryUtil;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumHand;
@@ -11,17 +13,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SilentXp extends Module {
-    private final Setting lookPitch = new Setting("LookPitch", this, 90, 0, 100, false);
-    private final Setting switchMode = new Setting("SwitchMode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Client")));
+    private final Setting lookPitch = register(new Setting("LookPitch", this, 90, 0, 100, false));
+    private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, Slider.NumberType.TIME));
+    private final Setting switchMode = register(new Setting("SwitchMode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Client"))));
+
+    private final TimerUtils timer = new TimerUtils();
 
     public SilentXp() {
         super("SilentXP", "SilentXp", Category.COMBAT);
+    }
 
-        setmgr.rSetting(lookPitch);
-        setmgr.rSetting(switchMode);
+    public void onEnable() {
+        timer.reset();
     }
 
     public void update() {
+        if(!timer.passedMillis(delay.getValInt())) return;
+        timer.reset();
         if(mc.currentScreen == null && mc.player != null && mc.world != null) {
             int oldPitch = (int)mc.player.rotationPitch;
             int oldSlot = mc.player.inventory.currentItem;

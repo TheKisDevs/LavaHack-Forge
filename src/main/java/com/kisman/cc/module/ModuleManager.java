@@ -119,7 +119,6 @@ public class ModuleManager {
 		modules.add(new RangeVisualisator());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
-		modules.add(new SkyColor());
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
@@ -164,7 +163,6 @@ public class ModuleManager {
 		//exploit
 		modules.add(new AntiLogger());
 		modules.add(new AntiVanish());
-		modules.add(new AutoKick());
 		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
 		modules.add(new BowExploitRewrite());
@@ -175,10 +173,8 @@ public class ModuleManager {
 		modules.add(new MiddleClick());
 		modules.add(new NoClip());
 		modules.add(new NoGlitchBlocks());
-		modules.add(new NoSwing());
 		modules.add(new PacketEat());
 		modules.add(new PacketMine());
-		modules.add(new Rubberband());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 		modules.add(new Teleport());
@@ -197,11 +193,11 @@ public class ModuleManager {
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
+		modules.add(new Funny());
 		//modules.add(new GhostEnderPearl());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
-		modules.add(new PigPOV());
 		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkylightFix());

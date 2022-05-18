@@ -1,8 +1,8 @@
-package com.kisman.cc.file;
+package com.kisman.cc.util.manager.file;
 
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.player.TeleportBack;

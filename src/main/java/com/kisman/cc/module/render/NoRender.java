@@ -3,11 +3,13 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventIngameOverlay;
 import com.kisman.cc.event.events.EventSetupFog;
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,6 +32,7 @@ public class NoRender extends Module {
     public Setting defaultBlockHighlight = new Setting("Default Block Highlight", this, false);
     public Setting handItemsTex  = new Setting("Hand Items Texture", this, false);
     public Setting enchantGlint = new Setting("Enchant Glint", this, false);
+    private final Setting swing = new Setting("Swing", this, SwingMode.None);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -51,6 +54,7 @@ public class NoRender extends Module {
         setmgr.rSetting(defaultBlockHighlight);
         setmgr.rSetting(handItemsTex);
         setmgr.rSetting(enchantGlint);
+        setmgr.rSetting(swing);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));
@@ -64,10 +68,12 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.subscribe(pumpkin);
         Kisman.EVENT_BUS.subscribe(portal_);
         Kisman.EVENT_BUS.subscribe(overlay_);
+        Kisman.EVENT_BUS.subscribe(send);
     }
 
     public void onDisable() {
         super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(send);
         Kisman.EVENT_BUS.unsubscribe(overlay_);
         Kisman.EVENT_BUS.unsubscribe(portal_);
         Kisman.EVENT_BUS.unsubscribe(pumpkin);
@@ -95,6 +101,10 @@ public class NoRender extends Module {
         if(overlay.getValBoolean()) event.cancel();
     });
 
+    @EventHandler private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
+        if(swing.checkValString("Server") && event.getPacket() instanceof CPacketAnimation) event.cancel();
+    });
+
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
@@ -114,6 +124,13 @@ public class NoRender extends Module {
         }
 
         if(weather) mc.world.setRainStrength(0.0f);
+
+        if(swing.checkValString("Client")) {
+            mc.player.isSwingInProgress = false;
+            mc.player.swingProgressInt = 0;
+            mc.player.swingProgress = 0;
+            mc.player.prevSwingProgress = 0;
+        }
     }
 
     @SubscribeEvent
@@ -127,4 +144,5 @@ public class NoRender extends Module {
     }
 
     public enum ParticleMode {None, All, AllButIgnorePops}
+    public enum SwingMode {None, Client, Server}
 }

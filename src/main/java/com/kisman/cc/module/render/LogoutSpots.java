@@ -2,7 +2,7 @@ package com.kisman.cc.module.render;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;

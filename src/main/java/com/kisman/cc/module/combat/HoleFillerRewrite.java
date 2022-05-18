@@ -59,8 +59,12 @@ public class HoleFillerRewrite extends Module {
 
         Entity entity = placeMode.getValString().equals("All") ? mc.player : EntityUtil.getTarget(enemyRange.getValFloat());
 
-        if(entity == null)
+        if(entity == null) {
+            super.setDisplayInfo("");
             return;
+        }
+
+        super.setDisplayInfo("[" + (entity != mc.player ? entity.getName() : "Self") + "]");
 
         placeHoleBlocks(entity);
     }

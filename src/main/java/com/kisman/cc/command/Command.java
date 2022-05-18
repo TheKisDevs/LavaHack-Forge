@@ -3,6 +3,7 @@ package com.kisman.cc.command;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent;
 import com.kisman.cc.gui.console.ConsoleGui;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
@@ -40,22 +41,22 @@ public abstract class Command {
 	}
 	public static void message(String message) {
 		if(mc.currentScreen instanceof ConsoleGui) new ConsoleMessageEvent(TextFormatting.GRAY + "[" + TextFormatting.WHITE + Kisman.getName() + TextFormatting.GRAY + "] " + message).post();
-		else ChatUtils.message(message);
+		else ChatUtility.message().printClientMessage(message);
 	}
 	public static void warning(String message) {
 		if(mc.currentScreen instanceof ConsoleGui) new ConsoleMessageEvent(TextFormatting.GRAY + "[" + TextFormatting.GOLD + Kisman.getName() + TextFormatting.GRAY + "] " + message).post();
-		else ChatUtils.warning(message);
+		else ChatUtility.warning().printClientMessage(message);
 	}
 	public static void complete(String message) {
 		if(mc.currentScreen instanceof ConsoleGui) new ConsoleMessageEvent(TextFormatting.GRAY + "[" + TextFormatting.LIGHT_PURPLE + Kisman.getName() + TextFormatting.GRAY + "] " + message).post();
-		else ChatUtils.complete(message);
+		else ChatUtility.complete().printClientMessage(message);
 	}
 	public static void error(String message) {
 		if(mc.currentScreen instanceof ConsoleGui) new ConsoleMessageEvent(TextFormatting.GRAY + "[" + TextFormatting.RED + Kisman.getName() + TextFormatting.GRAY + "] " + message).post();
-		else ChatUtils.error(message);
+		else ChatUtility.error().printClientMessage(message);
 	}
 	public static void print(String message) {
 		if(mc.currentScreen instanceof ConsoleGui) new ConsoleMessageEvent(message).post();
-		else ChatUtils.simpleMessage(message);
+		else ChatUtility.message().printMessage(message);
 	}
 }

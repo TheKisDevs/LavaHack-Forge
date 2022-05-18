@@ -1,4 +1,4 @@
-package com.kisman.cc.friend;
+package com.kisman.cc.util.manager.friend;
 
 import com.kisman.cc.module.client.Config;
 import net.minecraft.entity.player.EntityPlayer;

@@ -25,7 +25,7 @@ public class CommandManager {
 	public void addCommands() {
 		commands.add(new AntiSpammerCommand());
 		commands.add(new Bind());
-		commands.add(new Credits());
+		commands.add(new ConfigCommand());
 		commands.add(new DDOSCommand());
 		commands.add(new Flip());
 		commands.add(new FriendCommand());
@@ -34,7 +34,6 @@ public class CommandManager {
 		commands.add(new LuaCommand());
         commands.add(new Slider());
         commands.add(new OpenDir());
-		commands.add(new Peek());
         commands.add(new SaveConfigCommand());
 		commands.add(new SetKey());
         commands.add(new Toggle());

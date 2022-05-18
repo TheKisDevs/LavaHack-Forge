@@ -1,9 +1,8 @@
-package com.kisman.cc.file
+package com.kisman.cc.util.manager.file
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.friend.FriendManager
+import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.ColourUtilKt
-import org.apache.logging.log4j.core.util.Integers
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths

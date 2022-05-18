@@ -2,11 +2,8 @@ package com.kisman.cc.module.combat;
 
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
-import com.kisman.cc.module.combat.holefiller.Hole;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -47,7 +44,7 @@ public class CrystalFiller extends Module {
     public Hole targetHole;
 
     public CrystalFiller() {
-        super("CrystalFiller", "gay's module xd", Category.COMBAT);
+        super("CrystalFiller", "HoleFiller but crystal", Category.COMBAT);
 
         instance = this;
 
@@ -202,5 +199,23 @@ public class CrystalFiller extends Module {
         None,
         Normal,
         Silent
+    }
+
+    public class Hole {
+        public BlockPos pos;
+        public float distToPlayer;
+        public float distToTarget;
+
+        public Hole(BlockPos pos, float distToPlayer, float distToTarget) {
+            this.pos = pos;
+            this.distToPlayer = distToPlayer;
+            this.distToTarget = distToTarget;
+        }
+
+        public BlockPos getDownHoleBlock() {
+            if(pos == null) return BlockPos.ORIGIN;
+
+            return pos.down();
+        }
     }
 }

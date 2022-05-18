@@ -1,11 +1,10 @@
 package com.kisman.cc.module.combat;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.KismanStatic;
 import com.kisman.cc.ai.autorer.AutoRerAI;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.event.events.lua.EventRender3D;
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.module.client.Config;

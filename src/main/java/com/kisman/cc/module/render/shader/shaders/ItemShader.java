@@ -1,6 +1,5 @@
 package com.kisman.cc.module.render.shader.shaders;
 
-import com.kisman.cc.file.FileManager;
 import com.kisman.cc.module.render.shader.FramebufferShader;
 import org.lwjgl.opengl.*;
 

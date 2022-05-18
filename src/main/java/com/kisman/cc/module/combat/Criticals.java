@@ -9,14 +9,15 @@ import net.minecraft.entity.*;
 import net.minecraft.network.play.client.*;
 
 public class Criticals extends Module {
-    private Setting strict = new Setting("Strict", this, false);
-    private Setting onlyKillaura = new Setting("OnlyKillAura", this, false);
+    private final Setting strict = new Setting("Strict", this, false);
+    private final Setting onlyKillAura = new Setting("OnlyKillAura", this, false);
 
     public Criticals() {
         super("Criticals", "", Category.COMBAT);
+        super.setDisplayInfo(() -> strict.getValBoolean() ? ("[Strict]") : "");
 
         setmgr.rSetting(strict);
-        setmgr.rSetting(onlyKillaura);
+        setmgr.rSetting(onlyKillAura);
     }
 
     public void onEnable() {
@@ -32,7 +33,7 @@ public class Criticals extends Module {
         if(event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.action.equals(CPacketUseEntity.Action.ATTACK) && mc.player.onGround && !mc.player.isInLava() && !mc.player.isInWater() && !mc.player.isInWeb) {
-                if(onlyKillaura.getValBoolean() && !KillAura.instance.isToggled()) return;
+                if(onlyKillAura.getValBoolean() && !KillAura.instance.isToggled()) return;
 
                 Entity entity = packet.getEntityFromWorld(mc.world);
 

@@ -1,7 +1,7 @@
 package com.kisman.cc.module.client;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.file.*;
+import com.kisman.cc.util.manager.file.*;
 import com.kisman.cc.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;

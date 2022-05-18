@@ -1,6 +1,6 @@
 package com.kisman.cc.module.render;
 
-import com.kisman.cc.friend.FriendManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.entity.Entity;
