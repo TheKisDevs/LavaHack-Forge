@@ -38,6 +38,7 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.module");
 
 		//Debug
+		modules.add(new BaritoneTest());
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
 		modules.add(new EventSystemTest());
@@ -91,7 +92,7 @@ public class ModuleManager {
 		modules.add(new VegaGui());
 		//render
 		modules.add(new Animation());
-//		modules.add(new BlockESP());
+		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
 		modules.add(new CameraClip());

@@ -1,5 +1,7 @@
 package com.kisman.cc.module.Debug
 
+import com.kisman.cc.Kisman
+import com.kisman.cc.gui.MainGui
 import com.kisman.cc.module.Category
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
@@ -16,4 +18,10 @@ class Meow : Module(
     val group1_2 : Setting = register(group1.add(Setting("Group1 Combo", this, "Meow", listOf("Meow", "Meeow", "Meowow", "Cat"))))
     val group1_3 : Setting = register(group1.add(Setting("Group1 Check", this, true)))
     val group1_4 : Setting = register(group1.add(Setting("Group1 Color", this, "Group1 Color", Colour(255, 0, 125, 255))))
+
+    override fun onEnable() {
+        Kisman.instance.selectionBar.selection = MainGui.Guis.Music
+        mc.displayGuiScreen(Kisman.instance.musicGui)
+        isToggled = false
+    }
 }

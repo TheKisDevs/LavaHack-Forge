@@ -3,6 +3,7 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderToolTip;
 import com.kisman.cc.module.*;
+import com.kisman.cc.module.client.Config;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -18,6 +19,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import java.awt.*;
 
 public class ContainerModifier extends Module {
@@ -26,6 +31,7 @@ public class ContainerModifier extends Module {
 
     private final SettingGroup toolTip = register(new SettingGroup(new Setting("Tool Tip", this)));
     private final Setting shulkers = register(toolTip.add(new Setting("Shulkers", this, false)));
+    private final Setting scrollable = register(toolTip.add(new Setting("Scrollable", this, false)));
 
     public static ContainerModifier instance;
 
@@ -48,6 +54,19 @@ public class ContainerModifier extends Module {
         if (shulkers.getValBoolean() && event.stack.getItem() instanceof ItemShulkerBox) {
             renderShulkerTip(event.stack, event.x, event.y);
             event.cancel();
+        } else if(scrollable.getValBoolean()) {
+            if(event.y < 0) {
+                int wheel = Mouse.getDWheel();
+                if(wheel != 0) {
+                    if (Config.instance.horizontalScroll.getValBoolean()) {
+                        if (Keyboard.isKeyDown(Config.instance.keyForHorizontalScroll.getKey())) {
+                            event.x = wheel < 0 ? event.x + 10 : event.x - 10;
+                            return;
+                        }
+                    }
+                    event.x = wheel < 0 ? event.x - 10 : event.x + 10;
+                }
+            }
         }
     });
 

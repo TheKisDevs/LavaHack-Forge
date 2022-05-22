@@ -1,16 +1,16 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.gui.halq.component.Openable;
-import com.kisman.cc.gui.halq.component.components.sub.ColorButton;
-import com.kisman.cc.gui.halq.component.components.sub.ModeButton;
+import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.halq.components.sub.ColorButton;
+import com.kisman.cc.gui.halq.components.sub.ModeButton;
 import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.hud.HudModule;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.Module;
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.gui.halq.component.Component;
-import com.kisman.cc.gui.halq.component.components.Button;
+import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.components.Button;
 import com.kisman.cc.util.Render2DUtil;
 import com.kisman.cc.util.enums.RectSides;
 import com.kisman.cc.util.render.objects.AbstractGradient;

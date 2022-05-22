@@ -33,6 +33,7 @@ public class NoRender extends Module {
     public Setting handItemsTex  = new Setting("Hand Items Texture", this, false);
     public Setting enchantGlint = new Setting("Enchant Glint", this, false);
     private final Setting swing = new Setting("Swing", this, SwingMode.None);
+    public Setting sway = new Setting("Sway",  this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -55,6 +56,7 @@ public class NoRender extends Module {
         setmgr.rSetting(handItemsTex);
         setmgr.rSetting(enchantGlint);
         setmgr.rSetting(swing);
+        setmgr.rSetting(sway);
         Kisman.instance.settingsManager.rSetting(new Setting("Potion", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Weather", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Block", this, false));

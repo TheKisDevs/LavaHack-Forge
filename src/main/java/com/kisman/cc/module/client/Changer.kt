@@ -45,7 +45,11 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
 
     //Swing setting
     private val swing = register(Setting("Swing", this, false))
-    private val swingHand = register(Setting("Swing Hand", this, SwingHands.MainHand))
+    private val swingHand = register(Setting("Swing Hand", this, SwingHands.MainHand).setVisible { swing.valBoolean })
+
+    //Animation setting
+    private val animation = register(Setting("Animation", this, false))
+    private val animationSpeed = register(Setting("Animation Speed", this, 13.0, 1.0, 20.0, true).setVisible { animation.valBoolean })
 
     private var circle = 0
     private var oldFov = 0F

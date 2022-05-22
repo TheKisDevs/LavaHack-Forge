@@ -19,6 +19,13 @@ public class MixinItemRenderer {
     private final Minecraft mc = Minecraft.getMinecraft();
     @Shadow private void transformSideFirstPerson(EnumHandSide hand, float p_187459_2_) {}
 
+    @Inject(method = "rotateArm", at = @At("HEAD"), cancellable = true)
+    private void doRotateArm(float p_187458_1_, CallbackInfo ci) {
+        if(NoRender.instance.isToggled() && NoRender.instance.sway.getValBoolean()) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", shift = At.Shift.AFTER))
     private void transformSideFirstPersonInvokePushMatrix(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
         if(ViewModel.instance.hands.getValBoolean()) ViewModel.instance.hand(hand.equals(EnumHand.MAIN_HAND) ? player.getPrimaryHand() : player.getPrimaryHand().opposite());

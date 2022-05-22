@@ -257,7 +257,7 @@ class ConfigManager(
                                 writer.newLine()
                             }
                             if(setting.isColorPicker) {
-                                writer.write("${config.modulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${ColourUtilKt.toConfig(setting.colour)}")
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${ColourUtilKt.toConfig(setting.colour)}")
                                 writer.newLine()
                             }
                         }

@@ -7,6 +7,7 @@ import com.kisman.cc.util.customfont.CustomFontUtil
 import com.kisman.cc.util.render.ColorUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Mouse
 
 class MainGui {
     companion object {
@@ -15,6 +16,7 @@ class MainGui {
                 Guis.ClickGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqGui)
                 Guis.CSGOGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.clickGuiNew)
                 Guis.HudEditor -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqHudGui)
+                Guis.Music -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.musicGui)
                 Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
             }
         }
@@ -42,20 +44,27 @@ class MainGui {
                         offset.toDouble(),
                         if(gui == selection) ColorUtils.astolfoColors(100, 100) else -1
                 )
+                if(Mouse.isButtonDown(0)) {
+                    if(mouseX >= startX && mouseX <= startX + offset * 2 + CustomFontUtil.getStringWidth(gui.displayName) && mouseY >= 0 && mouseY <= offset * 2 + CustomFontUtil.getFontHeight()) {
+                        selection = gui
+                    }
+                }
                 startX += offset * 2 + CustomFontUtil.getStringWidth(gui.displayName)
             }
         }
 
         fun mouseClicked(mouseX : Int, mouseY : Int) : Boolean {
-            val startX = ScaledResolution(Minecraft.getMinecraft()).scaledWidth / 2 - getSelectionBarWidth() / 2
+            /*val startX = ScaledResolution(Minecraft.getMinecraft()).scaledWidth / 2 - getSelectionBarWidth() / 2
             if(mouseX >= startX && mouseX <= startX + getSelectionBarWidth() && mouseY >= 0 && mouseY <= CustomFontUtil.getFontHeight() + offset * 2) {
                 for((count, gui) in Guis.values().withIndex()) {
                     if(mouseX >= startX + (count * (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) && mouseX <= startX + (count * (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) + (offset * 2 + CustomFontUtil.getStringWidth(gui.displayName))) {
+                        println("Gui: ${gui.displayName}")
                         selection = gui
                         return false
                     }
                 }
             }
+            return true*/
             return true
         }
 
@@ -76,6 +85,7 @@ class MainGui {
         ClickGui("Click Gui"),
         CSGOGui("CSGO Gui"),
         HudEditor("Hud Editor"),
+        Music("Music"),
         Console("Console")
     }
 }

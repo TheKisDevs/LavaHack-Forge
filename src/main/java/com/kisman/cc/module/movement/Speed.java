@@ -24,7 +24,7 @@ public class Speed extends Module {
 
     private float yPortSpeed;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP")));
 
     private Setting useTimer = new Setting("Use Timer", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe New"));
 
@@ -57,6 +57,9 @@ public class Speed extends Module {
     private double speed;
     private double dist;
     private boolean boost;
+
+    private int ncpStage;
+    private double lastDist;
 
     private BlockPos lastPos;
     private Motion currentMotion;
@@ -105,6 +108,7 @@ public class Speed extends Module {
         stage = 4;
         dist = MovementUtil.getDistance2D();
         speed = MovementUtil.getSpeed();
+        ncpStage = 0;
     }
 
     public void onDisable() {
@@ -208,7 +212,44 @@ public class Speed extends Module {
         } else if(speedMode.getValString().equalsIgnoreCase("Matrix") && MovementUtil.isMoving() && mc.player.ticksExisted % 2 == 0) {
             if(mc.player.onGround) mc.player.jump();
             else MovementUtil.setMotion(MovementUtil.WALK_SPEED * 1.025);
+        } else if(speedMode.checkValString("NCP") && !mc.player.isElytraFlying()) {
+            switch(ncpStage) {
+                case 0 : {
+                    ncpStage++;
+                    lastDist = 0;
+                    break;
+                }
+                case 2 : {
+                    if((mc.player.moveForward != 0 || mc.player.moveStrafing != 0) && mc.player.onGround) {
+                        mc.player.motionY = (isBoxColliding() ? 0.2 : 0.3999) + MovementUtil.getJumpSpeed();
+                        speed *= 2.149;
+                    }
+                    break;
+                }
+                case 3 : {
+                    speed = lastDist - (0.7095 * (lastDist - MovementUtil.getSpeed(slow.getValBoolean(), 0.2873)));
+                    break;
+                }
+                default : {
+                    if((mc.world.getCollisionBoxes(null, mc.player.getEntityBoundingBox().offset(0, mc.player.motionY, 0)).size() > 0 || mc.player.collidedHorizontally) && ncpStage > 0) {
+                        ncpStage = (mc.player.moveForward == 0 && mc.player.moveStrafing == 0) ? 0 : 1;
+                    }
+
+                    speed = lastDist - lastDist / 159;
+
+                    break;
+                }
+            }
+
+            speed = Math.min(speed, getCap());
+            speed = Math.max(speed, MovementUtil.getSpeed(slow.getValBoolean(), 0.2873));
+            MovementUtil.strafe((float) speed);
+            ncpStage++;
         }
+    }
+
+    public boolean isBoxColliding() {
+        return mc.world.getCollisionBoxes(mc.player, mc.player.getEntityBoundingBox().offset(0.0, 0.21, 0.0)).size() > 0;
     }
 
     private void doYPortSpeed() {

@@ -5,7 +5,7 @@ import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.module.Category;
 import com.kisman.cc.module.client.Config;
 import com.kisman.cc.module.client.GuiModule;
-import com.kisman.cc.gui.halq.component.Component;
+import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.customfont.CustomFontUtil;
@@ -25,7 +25,7 @@ public class HalqGui extends GuiScreen {
     //variables for main gui settings
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
-    public static Color backgroundColor = new Color(30, 30, 30, 121);
+    public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false;
     public static int diff = 0;
     public static float testLight; /**@range 0-1*/
@@ -70,6 +70,11 @@ public class HalqGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        if(Kisman.instance.selectionBar.getSelection() != gui()) {
+            MainGui.Companion.openGui(Kisman.instance.selectionBar);
+            return;
+        }
+
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
         shadowCheckBox = GuiModule.instance.shadow.getValBoolean();
@@ -78,13 +83,8 @@ public class HalqGui extends GuiScreen {
         line = GuiModule.instance.line.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
 
-        if(!background) backgroundColor = new Color(0, 0, 0, 0);
-        else backgroundColor = new Color(30, 30, 30, 121);
-
-        if(Kisman.instance.selectionBar.getSelection() != gui()) {
-            MainGui.Companion.openGui(Kisman.instance.selectionBar);
-            return;
-        }
+        if(!background) backgroundColor = new Colour(0, 0, 0, 0);
+        else backgroundColor = GuiModule.instance.backgroundColor.getColour();
 
         drawDefaultBackground();
 

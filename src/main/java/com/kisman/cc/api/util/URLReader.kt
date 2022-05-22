@@ -1,6 +1,5 @@
 package com.kisman.cc.api.util
 
-import com.kisman.cc.api.util.exception.URLReaderException
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URL

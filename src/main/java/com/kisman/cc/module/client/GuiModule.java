@@ -7,12 +7,13 @@ import com.kisman.cc.util.Colour;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiModule extends Module {
-    public final Setting primaryColor = new Setting("Primary Color", this, "Primary Color", new Colour(255, 0, 0));
-    public final Setting background = new Setting("Background", this, true);
-    public final Setting shadow = new Setting("Shadow", this, false);
-    public final Setting test = new Setting("test", this, false);
-    public final Setting shadowRects = new Setting("Shadow Rects", this, false);
-    public final Setting line = new Setting("Line", this, true);
+    public final Setting primaryColor = register(new Setting("Primary Color", this, "Primary Color", new Colour(255, 0, 0)));
+    public final Setting background = register(new Setting("Background", this, true));
+    public final Setting backgroundColor = register(new Setting("Background Color", this, "Background Color", new Colour(30, 30, 30, 121)).setVisible(background::getValBoolean));
+    public final Setting shadow = register(new Setting("Shadow", this, false));
+    public final Setting test = register(new Setting("test", this, false));
+    public final Setting shadowRects = register(new Setting("Shadow Rects", this, false));
+    public final Setting line = register(new Setting("Line", this, true));
 
     public static GuiModule instance;
 
@@ -20,13 +21,6 @@ public class GuiModule extends Module {
         super("Gui", Category.CLIENT);
 
         instance = this;
-
-        setmgr.rSetting(primaryColor);
-        setmgr.rSetting(background);
-        setmgr.rSetting(shadow);
-        setmgr.rSetting(test);
-        setmgr.rSetting(shadowRects);
-        setmgr.rSetting(line);
     }
 
     public void onEnable() {

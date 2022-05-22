@@ -33,11 +33,11 @@ class BlockESP : Module(
 
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
         for(pos in CrystalUtils.getSphere(range.valFloat, true, false)) {
-            val block = mc.world.getBlockState(pos)
+            val block = mc.world.getBlockState(pos).block
             if(block == Blocks.WEB && web.valBoolean) webRenderer.draw(event.partialTicks, pos)
             if(block == Blocks.PORTAL && portal.valBoolean) portalRenderer.draw(event.partialTicks, pos)
             if(block == Blocks.END_PORTAL && endPortal.valBoolean) endPortalRenderer.draw(event.partialTicks, pos)
-            if(burrow.valBoolean && mc.world.getEntitiesWithinAABBExcludingEntity(null, block.getSelectedBoundingBox(mc.world, pos)).isNotEmpty() && block != Blocks.AIR) burrowRenderer.draw(event.partialTicks, pos)
+            if(burrow.valBoolean && mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isNotEmpty() && block != Blocks.AIR) burrowRenderer.draw(event.partialTicks, pos)
         }
     }
 }

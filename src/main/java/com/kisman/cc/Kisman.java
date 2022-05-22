@@ -6,6 +6,8 @@ import com.kisman.cc.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.catlua.mapping.*;
 import com.kisman.cc.command.CommandManager;
 import com.kisman.cc.event.*;
+import com.kisman.cc.gui.other.music.MusicGui;
+import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.gui.MainGui;
@@ -95,6 +97,8 @@ public class Kisman {
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
     public MainGui.SelectionBar selectionBar;
+    public SearchGui searchGui;
+    public MusicGui musicGui;
     public CustomFontRenderer customFontRenderer;
     public CustomFontRenderer customFontRenderer1;
     public CommandManager commandManager;
@@ -185,6 +189,10 @@ public class Kisman {
         halqHudGui = new HalqHudGui();
 
         selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
+
+        //For test
+        searchGui = new SearchGui(new Setting("Test"), null);
+        musicGui = new MusicGui();
 
         init = true;
     }

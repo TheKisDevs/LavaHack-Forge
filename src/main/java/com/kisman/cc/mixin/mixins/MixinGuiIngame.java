@@ -48,8 +48,9 @@ public class MixinGuiIngame extends Gui {
     }
 
     /**
+     * Thanks to Wild client for this idea
+     *
      * @author _kisman_
-     * @credits wild
      */
     @Overwrite
     protected void renderHotbar(ScaledResolution sr, float partialTicks) {
