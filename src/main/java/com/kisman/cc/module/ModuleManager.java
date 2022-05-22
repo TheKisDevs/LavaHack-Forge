@@ -52,6 +52,7 @@ public class ModuleManager {
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
+		modules.add(new AutoAnvil());
 		modules.add(new AutoArmor());
 		modules.add(new AutoClicker());
 		modules.add(new AutoFirework());
