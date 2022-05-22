@@ -176,7 +176,7 @@ public class Speed extends Module {
                 EntityUtil.setTimer(1.8f);
             }
         } else if(speedMode.getValString().equalsIgnoreCase("Matrix 6.4")) {
-            if (mc.player.ticksExisted % 4 == 0) mc.getConnection().sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+            if (mc.player.ticksExisted % 4 == 0) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
             if (!PlayerUtil.isMoving(mc.player)) return;
             if (mc.player.onGround) {
                 mc.gameSettings.keyBindJump.pressed = false;
@@ -220,7 +220,7 @@ public class Speed extends Module {
                     break;
                 }
                 case 2 : {
-                    if((mc.player.moveForward != 0 || mc.player.moveStrafing != 0) && mc.player.onGround) {
+                    if(MovementUtil.isMoving() && mc.player.onGround) {
                         mc.player.motionY = (isBoxColliding() ? 0.2 : 0.3999) + MovementUtil.getJumpSpeed();
                         speed *= 2.149;
                     }
@@ -231,8 +231,8 @@ public class Speed extends Module {
                     break;
                 }
                 default : {
-                    if((mc.world.getCollisionBoxes(null, mc.player.getEntityBoundingBox().offset(0, mc.player.motionY, 0)).size() > 0 || mc.player.collidedHorizontally) && ncpStage > 0) {
-                        ncpStage = (mc.player.moveForward == 0 && mc.player.moveStrafing == 0) ? 0 : 1;
+                    if((mc.world.getCollisionBoxes(null, mc.player.getEntityBoundingBox().offset(0, mc.player.motionY, 0)).size() > 0 || mc.player.collidedHorizontally)) {
+                        ncpStage = MovementUtil.isMoving() ? 0 : 1;
                     }
 
                     speed = lastDist - lastDist / 159;
