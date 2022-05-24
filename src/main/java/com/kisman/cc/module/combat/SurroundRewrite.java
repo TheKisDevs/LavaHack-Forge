@@ -6,9 +6,11 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.BlockUtil;
 import com.kisman.cc.util.InventoryUtil;
+import com.kisman.cc.util.RotationUtils;
 import com.kisman.cc.util.Timer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
@@ -17,19 +19,16 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class SurroundRewrite extends Module {
-
-    private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
 
     private final Setting mode = register(new Setting("Mode", this, Vectors.Normal));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
@@ -41,9 +40,15 @@ public class SurroundRewrite extends Module {
     private final Setting feetBlocks = register(new Setting("FeetBlocks", this, false));
 
     private final Setting breakCrystals = register(new Setting("BreakCrystals", this, false));
+
+    private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
+
+    private final Setting cbMode = crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area")));
+    private final Setting cbRange = crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area")));
     private final Setting cbDelay = crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true));
     private final Setting cbRotate = crystalBreaker.add(new Setting("CBRotate", this, false));
     private final Setting cbPacket = crystalBreaker.add(new Setting("CBPacket", this, false));
+    private final Setting clientSide = crystalBreaker.add(new Setting("ClientSide", this, false));
 
     private static SurroundRewrite instance;
 
@@ -54,7 +59,6 @@ public class SurroundRewrite extends Module {
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT);
         instance = this;
-        crystalBreaker.setVisible(breakCrystals.getValBoolean());
     }
 
     @Override
@@ -92,7 +96,8 @@ public class SurroundRewrite extends Module {
 
         List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
 
-        breakCrystals(blocks);
+        if(breakCrystals.getValBoolean())
+            breakCrystals(blocks);
 
         placeBlocks(blocks);
 
@@ -117,6 +122,84 @@ public class SurroundRewrite extends Module {
         if(!timer.passedMs(cbDelay.getValInt()))
             return;
         //List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
+        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+        Set<EntityEnderCrystal> alreadyHit = new HashSet<>(64);
+        if(cbMode.getValString().equals("Area")){
+            double range = cbRange.getValDouble();
+            double x1 = mc.player.posX - range;
+            double y1 = mc.player.posY - range;
+            double z1 = mc.player.posZ - range;
+            double x2 = mc.player.posX + range;
+            double y2 = mc.player.posY + range;
+            double z2 = mc.player.posZ + range;
+            AxisAlignedBB aabb = new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+            for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb)){
+                /*
+                if(cbRotate.getValBoolean()){
+                    float[] rots = RotationUtils.getRotation(crystal);
+                    mc.player.rotationYaw = rots[0];
+                    mc.player.rotationPitch = rots[1];
+                }
+                if(cbPacket.getValBoolean())
+                    mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+                else
+                    mc.playerController.attackEntity(mc.player, crystal);
+                mc.player.swingArm(EnumHand.MAIN_HAND);
+                if(clientSide.getValBoolean())
+                    mc.world.removeEntityFromWorld(crystal.entityId);
+                if(cbRotate.getValBoolean()){
+                    mc.player.rotationYaw = oldRots[0];
+                    mc.player.rotationPitch = oldRots[1];
+                }
+                 */
+                breakCrystal(crystal, oldRots);
+            }
+            return;
+        }
+        for(BlockPos pos : blocks){
+            for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(pos))){
+                if(alreadyHit.contains(crystal)) continue;
+                /*
+                if(cbRotate.getValBoolean()){
+                    float[] rots = RotationUtils.getRotation(crystal);
+                    mc.player.rotationYaw = rots[0];
+                    mc.player.rotationPitch = rots[1];
+                }
+                if(cbPacket.getValBoolean())
+                    mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+                else
+                    mc.playerController.attackEntity(mc.player, crystal);
+                mc.player.swingArm(EnumHand.MAIN_HAND);
+                if(clientSide.getValBoolean())
+                    mc.world.removeEntityFromWorld(crystal.entityId);
+                if(cbRotate.getValBoolean()){
+                    mc.player.rotationYaw = oldRots[0];
+                    mc.player.rotationPitch = oldRots[1];
+                }
+                 */
+                breakCrystal(crystal, oldRots);
+                alreadyHit.add(crystal);
+            }
+        }
+    }
+
+    private void breakCrystal(EntityEnderCrystal crystal, float[] oldRots){
+        if(cbRotate.getValBoolean()){
+            float[] rots = RotationUtils.getRotation(crystal);
+            mc.player.rotationYaw = rots[0];
+            mc.player.rotationPitch = rots[1];
+        }
+        if(cbPacket.getValBoolean())
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        else
+            mc.playerController.attackEntity(mc.player, crystal);
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        if(clientSide.getValBoolean())
+            mc.world.removeEntityFromWorld(crystal.entityId);
+        if(cbRotate.getValBoolean()){
+            mc.player.rotationYaw = oldRots[0];
+            mc.player.rotationPitch = oldRots[1];
+        }
     }
 
     private void centerPlayer(){
