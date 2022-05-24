@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 public class CustomFont {
     private final float imgSize = 512.0f;
-    protected CharData[] charData = new CharData[256];
+    protected CharData[] charData = new CharData[2000];
     protected Font font;
     protected boolean antiAlias;
     protected boolean fractionalMetrics;

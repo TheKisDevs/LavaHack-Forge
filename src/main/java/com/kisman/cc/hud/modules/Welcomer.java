@@ -24,6 +24,6 @@ public class Welcomer extends HudModule {
         setW(CustomFontUtil.getStringWidth("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!"));
         setH(CustomFontUtil.getFontHeight());
 
-        CustomFontUtil.drawCenteredStringWithShadow("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!", getX(), getY(), color);
+        CustomFontUtil.drawStringWithShadow("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!", getX(), getY(), color);
     }
 }

@@ -51,7 +51,7 @@ public class Velocity extends Module{
         if(mode.equalsIgnoreCase("Matrix")) {
             if (mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0)) if (mc.player.hurtTime > 0) mc.player.motionY = -0.2;
         } else if(mode.equalsIgnoreCase("Matrix 6.4")) if(mc.player.hurtTime > 8) mc.player.onGround = true;
-        else if(mode.equalsIgnoreCase("Vanilla") && mc.player.hurtTime == mc.player.maxHurtTime && mc.player.maxHurtTime > 0) {
+        else if(mode.equalsIgnoreCase("Vanilla") && mc.player.hurtTime == mc.player.maxHurtTime) {
             mc.player.motionX *= (double) horizontal.getValInt() / 100;
             mc.player.motionY *= (double) vertical.getValInt() / 100;
             mc.player.motionZ *= (double) horizontal.getValInt() / 100;

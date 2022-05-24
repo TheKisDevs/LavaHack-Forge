@@ -3,6 +3,7 @@ package com.kisman.cc.module.render;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.*;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.BoxRendererPattern;
 import com.kisman.cc.util.ColourUtilKt;
 
@@ -25,18 +26,19 @@ public class StorageESP extends Module{
     private final BoxRendererPattern renderer = new BoxRendererPattern(this);
 
     public StorageESP() {
-        super("StorageESP", "sosat", Category.RENDER);
+        super("StorageESP", "ESP for storages", Category.RENDER);
 
         setmgr.rSetting(distance);
         setmgr.rSetting(colorAlpha);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Chest", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("EChest", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("ShulkerBox", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Dispenser", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Furnace", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Hopper", this, true));
-        Kisman.instance.settingsManager.rSetting(new Setting("Dropper", this, true));
+        SettingGroup storages = register(new SettingGroup(new Setting("Storages", this)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("Chest", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("EChest", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("ShulkerBox", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("Dispenser", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("Furnace", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("Hopper", this, true)));
+        Kisman.instance.settingsManager.rSetting(storages.add(new Setting("Dropper", this, true)));
 
         renderer.init();
     }

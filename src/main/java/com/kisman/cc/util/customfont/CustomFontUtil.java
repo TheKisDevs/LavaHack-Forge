@@ -3,59 +3,63 @@ package com.kisman.cc.util.customfont;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.module.client.CustomFontModule;
 import com.kisman.cc.util.customfont.norules.CFontRenderer;
+import com.kisman.cc.util.enums.FontStyles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 
 import java.awt.*;
 import java.io.InputStream;
 
 public class CustomFontUtil {
-    private static final FontRenderer fontRenderer = (Minecraft.getMinecraft()).fontRenderer;
+    private static final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
-    public static CFontRenderer comfortaal20 = new CFontRenderer(getFontTTF("comfortaa-light", 22), true, true);
-    public static CFontRenderer comfortaal18 = new CFontRenderer(getFontTTF("comfortaa-light", 18), true, true);
-    public static CFontRenderer comfortaal15 = new CFontRenderer(getFontTTF("comfortaa-light", 15), true, true);
-    public static CFontRenderer comfortaal16 = new CFontRenderer(getFontTTF("comfortaa-light", 16), true, true);
+    public static CustomFontRenderer comfortaal20 = new CustomFontRenderer(getFontTTF("comfortaa-light", 22), true, true);
+    public static CustomFontRenderer comfortaal18 = new CustomFontRenderer(getFontTTF("comfortaa-light", 18), true, true);
+    public static CustomFontRenderer comfortaal15 = new CustomFontRenderer(getFontTTF("comfortaa-light", 15), true, true);
+    public static CustomFontRenderer comfortaal16 = new CustomFontRenderer(getFontTTF("comfortaa-light", 16), true, true);
 
-    public static CFontRenderer comfortaab72 = new CFontRenderer(getFontTTF("comfortaa-bold", 72), true, true);
-    public static CFontRenderer comfortaab55 = new CFontRenderer(getFontTTF("comfortaa-bold", 55), true, true);
-    public static CFontRenderer comfortaab20 = new CFontRenderer(getFontTTF("comfortaa-bold", 22), true, true);
-    public static CFontRenderer comfortaab18 = new CFontRenderer(getFontTTF("comfortaa-bold", 18), true, true);
-    public static CFontRenderer comfortaab16 = new CFontRenderer(getFontTTF("comfortaa-bold", 16), true, true);
+    public static CustomFontRenderer comfortaab72 = new CustomFontRenderer(getFontTTF("comfortaa-bold", 72), true, true);
+    public static CustomFontRenderer comfortaab55 = new CustomFontRenderer(getFontTTF("comfortaa-bold", 55), true, true);
+    public static CustomFontRenderer comfortaab20 = new CustomFontRenderer(getFontTTF("comfortaa-bold", 22), true, true);
+    public static CustomFontRenderer comfortaab18 = new CustomFontRenderer(getFontTTF("comfortaa-bold", 18), true, true);
+    public static CustomFontRenderer comfortaab16 = new CustomFontRenderer(getFontTTF("comfortaa-bold", 16), true, true);
 
-    public static CFontRenderer comfortaa20 = new CFontRenderer(getFontTTF("comfortaa-regular", 22), true, true);
-    public static CFontRenderer comfortaa18 = new CFontRenderer(getFontTTF("comfortaa-regular", 18), true, true);
-    public static CFontRenderer comfortaa15 = new CFontRenderer(getFontTTF("comfortaa-regular", 15), true, true);
+    public static CustomFontRenderer comfortaa20 = new CustomFontRenderer(getFontTTF("comfortaa-regular", 22), true, true);
+    public static CustomFontRenderer comfortaa18 = new CustomFontRenderer(getFontTTF("comfortaa-regular", 18), true, true);
+    public static CustomFontRenderer comfortaa15 = new CustomFontRenderer(getFontTTF("comfortaa-regular", 15), true, true);
 
-    public static CFontRenderer consolas18 = new CFontRenderer(getFontTTF("consolas", 18), true, true);
-    public static CFontRenderer consolas16 = new CFontRenderer(getFontTTF("consolas", 16), true, true);
-    public static CFontRenderer consolas15 = new CFontRenderer(getFontTTF("consolas", 15), true, true);
+    public static CustomFontRenderer consolas18 = new CustomFontRenderer(getFontTTF("consolas", 18), true, true);
+    public static CustomFontRenderer consolas16 = new CustomFontRenderer(getFontTTF("consolas", 16), true, true);
+    public static CustomFontRenderer consolas15 = new CustomFontRenderer(getFontTTF("consolas", 15), true, true);
 
-    public static CFontRenderer sfui19 = new CFontRenderer(getFontTTF("sf-ui", 19), true, true);
-    public static CFontRenderer sfui18 = new CFontRenderer(getFontTTF("sf-ui", 18), true, true);
+    public static CustomFontRenderer sfui19 = new CustomFontRenderer(getFontTTF("sf-ui", 19), true, true);
+    public static CustomFontRenderer sfui18 = new CustomFontRenderer(getFontTTF("sf-ui", 18), true, true);
 
-    public static CFontRenderer futura20 = new CFontRenderer(getFontTTF("futura-normal", 20), true, true);
-    public static CFontRenderer futura18 = new CFontRenderer(getFontTTF("futura-normal", 18), true, true);
+    public static CustomFontRenderer futura20 = new CustomFontRenderer(getFontTTF("futura-normal", 20), true, true);
+    public static CustomFontRenderer futura18 = new CustomFontRenderer(getFontTTF("futura-normal", 18), true, true);
 
-    public static CFontRenderer lexendDeca18 = new CFontRenderer(getFontTTF("lexenddeca-regular", 18), true, true);
+    public static CustomFontRenderer lexendDeca18 = new CustomFontRenderer(getFontTTF("lexenddeca-regular", 18), true, true);
 
-    public static CFontRenderer century18 = new CFontRenderer(getFontTTF("main", 18), true, true);
+    public static CustomFontRenderer century18 = new CustomFontRenderer(getFontTTF("main", 18), true, true);
 
     public static CustomFontRenderer verdana18 = Kisman.instance.customFontRenderer;
     public static CustomFontRenderer verdana15 = Kisman.instance.customFontRenderer1;
 
-    private static Font getFontTTF(String name, int size) {
+    public static Font getFontTTF(String name, int size) {
+        return getFontTTF(name, FontStyles.Plain, size);
+    }
+
+    public static Font getFontTTF(String name, FontStyles style, int size) {
         Font font;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("font/" + name + ".ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(style.getStyle(), size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", 0, size);
+            font = new Font("default", style.getStyle(), size);
         }
         return font;
     }
@@ -72,45 +76,45 @@ public class CustomFontUtil {
         if (customFont()) {
             y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName(), gui);
-            if(font instanceof CFontRenderer) ((CFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
-            else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
-        } else fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
+            if(font instanceof CFontRenderer) ((CFontRenderer) font).drawString(text, x, y, color, false);
+            else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawString(text, x, y, color, false);
+        } else fontRenderer.drawString(text, (int)x, (int)y, color);
     }
 
     public static int drawString(String text, double x, double y, int color) {
         if (customFont()) {
             y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
-            if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
-            else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawString(getStringModofiers() + text, x, y - 1.0D, color, false);
+            if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawString(text, x, y, color, false);
+            else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawString(text, x, y, color, false);
         }
-        return fontRenderer.drawString(getStringModofiers() + text, (int)x, (int)y, color);
+        return fontRenderer.drawString(text, (int)x, (int)y, color);
     }
 
     public static int drawStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
             y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
-            if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
-            else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawStringWithShadow(getStringModofiers() + text, x, y - 1.0D, color);
+            if(font instanceof CFontRenderer) return (int) ((CFontRenderer) font).drawStringWithShadow(text, x, y, color);
+            else if(font instanceof CustomFontRenderer) return (int) ((CustomFontRenderer) font).drawStringWithShadow(text, x, y, color);
         }
-        return fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float)x, (float)y, color);
+        return fontRenderer.drawStringWithShadow(text, (float)x, (float)y, color);
     }
 
     public static void drawCenteredStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
             y += 2;
             Object font = CustomFontUtilKt.Companion.getCustomFont(getCustomFontName());
-            if(font instanceof CFontRenderer) ((CFontRenderer) font).drawCenteredStringWithShadow(getStringModofiers() + text, x, y - 1, color);
-            else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawCenteredStringWithShadow(getStringModofiers() + text, (float) x, (float) y - 1, color);
-        } else fontRenderer.drawStringWithShadow(getStringModofiers() + text, (float) x - fontRenderer.getStringWidth(getStringModofiers() + text) / 2.0F, (float) y, color);
+            if(font instanceof CFontRenderer) ((CFontRenderer) font).drawCenteredStringWithShadow(text, x, y, color);
+            else if(font instanceof CustomFontRenderer) ((CustomFontRenderer) font).drawCenteredStringWithShadow(text, (float) x, (float) y, color);
+        } else fontRenderer.drawStringWithShadow(text, (float) x - fontRenderer.getStringWidth(text) / 2.0F, (float) y, color);
     }
 
     public static int getFontHeight(boolean gui) {
         return CustomFontUtilKt.Companion.getHeight(getCustomFontName(), gui);
     }
 
-    public static int getFontHeight(CFontRenderer customFont) {
+    public static int getFontHeight(CustomFontRenderer customFont) {
         return (customFont.fontHeight - 8) / 2;
     }
 
@@ -124,14 +128,5 @@ public class CustomFontUtil {
 
     public static String getCustomFontName() {
         return CustomFontModule.instance == null ? null : CustomFontModule.instance.mode.getValString();
-    }
-
-    private static String getStringModofiers() {
-        String str = "";
-        if(CustomFontModule.instance != null) {
-            if(CustomFontModule.instance.italic.getValBoolean()) str += TextFormatting.ITALIC;
-            if(CustomFontModule.instance.bold.getValBoolean() && getCustomFontName().equalsIgnoreCase("Verdana")) str += TextFormatting.BOLD;
-        }
-        return str;
     }
 }

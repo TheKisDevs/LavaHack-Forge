@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.kisman.cc.util.customfont.CustomFont;
+import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
 import org.lwjgl.opengl.GL11;
 
-public class CFontRenderer extends CustomFont {
-	protected CharData[] boldChars = new CharData['§'];
-    protected CharData[] italicChars = new CharData['§'];
-    protected CharData[] boldItalicChars = new CharData['§'];
+public class CFontRenderer extends CustomFontRenderer {
+	protected CharData[] boldChars = new CharData[1104];
+    protected CharData[] italicChars = new CharData[1104];
+    protected CharData[] boldItalicChars = new CharData[1104];
 
     private float[] charWidthFloat = new float[256];
     private final byte[] glyphWidth = new byte[65536];

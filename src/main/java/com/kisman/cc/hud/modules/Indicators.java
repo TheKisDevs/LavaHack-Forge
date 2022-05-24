@@ -208,7 +208,7 @@ public class Indicators extends HudModule {
     }
 
     private int getHeight() {
-        if(CustomFontModule.turnOn) return  CustomFontUtil.consolas15.getStringHeight();
+        if(CustomFontModule.turnOn) return  CustomFontUtil.getFontHeight(CustomFontUtil.consolas15);
         else return mc.fontRenderer.FONT_HEIGHT;
     }
 

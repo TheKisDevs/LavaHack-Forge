@@ -1,11 +1,11 @@
 package com.kisman.cc.module.render;
 
+import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.RenderUtil;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import com.kisman.cc.util.customfont.norules.CFontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
 import net.minecraft.enchantment.Enchantment;
@@ -131,7 +131,7 @@ public class  NameTags extends Module {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
         GL11.glDisable(2929);
-        final CFontRenderer font = CustomFontUtil.sfui19;
+        final CustomFontRenderer font = CustomFontUtil.sfui19;
         final int width = font.getStringWidth(name) / 2;
         final double widthBackGround = bgAlpha.getValDouble();
         final int[] counter = { 1 };
@@ -223,7 +223,7 @@ public class  NameTags extends Module {
                     encName = encName + level;
                     GL11.glPushMatrix();
                     GL11.glScalef(1.0f, 1.0f, 0.0f);
-                    CFontRenderer font = CustomFontUtil.futura20;
+                    CustomFontRenderer font = CustomFontUtil.futura20;
                     if (level == 1) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(202, 202, 202, 255).getRGB());
                     else if (level == 2) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(246, 218, 45, 255).getRGB());
                     else if (level == 3) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(229, 128, 0, 255).getRGB());

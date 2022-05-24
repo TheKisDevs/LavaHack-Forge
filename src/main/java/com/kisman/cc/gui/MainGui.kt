@@ -45,7 +45,8 @@ class MainGui {
                         if(gui == selection) ColorUtils.astolfoColors(100, 100) else -1
                 )
                 if(Mouse.isButtonDown(0)) {
-                    if(mouseX >= startX && mouseX <= startX + offset * 2 + CustomFontUtil.getStringWidth(gui.displayName) && mouseY >= 0 && mouseY <= offset * 2 + CustomFontUtil.getFontHeight()) {
+                    if(mouseX >= startX && mouseX <= startX + offset * 2 + CustomFontUtil.getStringWidth(gui.displayName) && mouseY >= 0 && mouseY <= offset * 2 + CustomFontUtil.getFontHeight(                     )
+                    ) {
                         selection = gui
                     }
                 }

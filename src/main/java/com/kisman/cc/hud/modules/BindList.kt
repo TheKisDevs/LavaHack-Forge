@@ -2,8 +2,10 @@ package com.kisman.cc.hud.modules
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.hud.HudModule
+import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.util.Colour
 import com.kisman.cc.util.customfont.CustomFontUtil
-import net.minecraft.util.text.TextFormatting
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -13,6 +15,12 @@ class BindList : HudModule(
         "Bind list like Abyss",
         true
 ) {
+    private val offsets = register(Setting("Offsets", this, 2.0, 0.0, 10.0, true))
+
+    private val colorG = register(SettingGroup(Setting("Colors", this)))
+    private val colorActive = register(colorG.add(Setting("Active Color", this, "Active Color", Colour(0, 255, 0, 255))))
+    private val colorInactive = register(colorG.add(Setting("Inactive Color", this, "Inactive Color", Colour(255, 0, 0, 255))))
+
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
         val x = x
         val y = y
@@ -40,18 +48,16 @@ class BindList : HudModule(
 
         for((count, element) in list.withIndex()) {
             CustomFontUtil.drawStringWithShadow(
-                    "${
-                        if(element.state) TextFormatting.GREEN
-                        else TextFormatting.RED
-                    }${element.text}",
+                    element.text,
                     x,
-                    y + count * (CustomFontUtil.getFontHeight() + 2),
-                    -1
+                    y + count * (CustomFontUtil.getFontHeight() + offsets.valInt),
+                    (if(element.state) colorActive.colour.rgb else colorInactive.colour.rgb)
             )
         }
 
         w = CustomFontUtil.getStringWidth(list[0].text).toDouble()
-        h = list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + 2.0)
+        h = list.size.toDouble() * (CustomFontUtil.getFontHeight()
+            .toDouble() + 2.0)
     }
 
     class Element(

@@ -6,8 +6,8 @@ import java.awt.Color;
 import java.text.*;
 import java.util.*;
 
-import com.kisman.cc.catlua.lua.utils.LuaBox;
 import com.kisman.cc.module.render.NameTags;
+import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.customfont.CustomFontUtil;
 import com.kisman.cc.util.customfont.norules.CFontRenderer;
 import com.kisman.cc.util.render.objects.Vec3dSimple;
@@ -22,7 +22,6 @@ import org.lwjgl.opengl.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.*;
@@ -1520,11 +1519,11 @@ public class RenderUtil {
         GL11.glEnable(34383);
     }
 
-    public static void renderItemOverlays(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
+    public static void renderItemOverlays(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
         renderItemOverlayIntoGUI(cfr, stack, xPosition, yPosition, null);
     }
 
-    public static void renderItemOverlayIntoGUI(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, boolean showDurBar) {
+    public static void renderItemOverlayIntoGUI(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, boolean showDurBar) {
         if (!stack.isEmpty()) {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
@@ -1572,7 +1571,7 @@ public class RenderUtil {
         }
     }
 
-    public static void renderItemOverlayIntoGUI(CFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+    public static void renderItemOverlayIntoGUI(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
         if (!stack.isEmpty()) {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;

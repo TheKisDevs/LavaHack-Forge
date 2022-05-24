@@ -116,7 +116,6 @@ public class ModuleManager {
 		modules.add(new Particle());
 //		modules.add(new PearlTracer());
 		modules.add(new PopCharms());
-		modules.add(new PortalESP());
 		modules.add(new RangeVisualisator());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
@@ -196,6 +195,7 @@ public class ModuleManager {
 		modules.add(new FreeLook());
 		modules.add(new Funny());
 		//modules.add(new GhostEnderPearl());
+		modules.add(new HotbarScroller());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
@@ -204,12 +204,11 @@ public class ModuleManager {
 		modules.add(new SkylightFix());
 		modules.add(new Spammer());
 		modules.add(new Spin());
-		modules.add(new TeamRusherLag());
 		modules.add(new TotemPopCounter());
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
-		modules.add(new WebhookSpammer());
+//		modules.add(new WebhookSpammer());
 		modules.add(new XCarry());
 	}
 	
