@@ -213,7 +213,7 @@ public class Colour {
         if(b > 255) b= 255;
         else if(b < 0) b = 0;
         if(a > 255) a = 255;
-        else if(a< 0) a = 0;
+        else if(a < 0) a = 0;
         if(r1 > 1) r1 = 1;
         else if(r1 < 0) r1 = 0;
         if(g1 > 1) g1 = 1;

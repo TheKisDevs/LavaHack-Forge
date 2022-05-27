@@ -38,23 +38,23 @@ public class CheckBox implements Openable {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadowCheckBox) {
-            Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
             if(setting.getValBoolean()) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[] {x, y + offset},
-                                        new double[] {x + width, y + offset},
-                                        new double[] {x + width, y + offset + HalqGui.height},
-                                        new double[] {x, y + offset + HalqGui.height}
+                                        new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
+                                        new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
+                                        new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
+                                        new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                                 ),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
                                 HalqGui.getGradientColour(count).getColor()
                         )
                 );
             }
-        } else Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
         HalqGui.drawString(setting.getName(), x, y + offset, width, HalqGui.height);
 

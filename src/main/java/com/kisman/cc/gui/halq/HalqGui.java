@@ -26,9 +26,8 @@ public class HalqGui extends GuiScreen {
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
-    public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false;
-    public static int diff = 0;
-    public static float testLight; /**@range 0-1*/
+    public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false, test2 = true;
+    public static int diff = 0, offsets = 0;
 
     //constants
     public static final int height = 13;
@@ -39,7 +38,7 @@ public class HalqGui extends GuiScreen {
     public final ArrayList<Frame> frames = new ArrayList<>();
 
     //particles
-    public final ParticleSystem particleSystem;
+    public ParticleSystem particleSystem;
 
     /**
      * {@link com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
@@ -52,7 +51,7 @@ public class HalqGui extends GuiScreen {
     }
 
     public HalqGui(boolean notFullInit) {
-        this.particleSystem = new ParticleSystem(300);
+        this.particleSystem = new ParticleSystem();
     }
 
     public HalqGui() {
@@ -60,8 +59,14 @@ public class HalqGui extends GuiScreen {
         int offsetX = headerOffset - 1 - 1 - 1;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 17));
-            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1 - 1;
+            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1;
         }
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        particleSystem = new ParticleSystem();
     }
 
     protected MainGui.Guis gui() {
@@ -82,6 +87,9 @@ public class HalqGui extends GuiScreen {
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
         line = GuiModule.instance.line.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
+        offsets = GuiModule.instance.offsets.getValInt();
+        stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
+        test2 = GuiModule.instance.test2.getValBoolean();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -93,6 +101,8 @@ public class HalqGui extends GuiScreen {
             particleSystem.render();
             particleSystem.onUpdate();
         }
+
+        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         scrollWheelCheck();
         for(Frame frame : frames) {

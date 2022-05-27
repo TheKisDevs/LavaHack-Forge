@@ -74,6 +74,11 @@ class Interaction : Module(
 
     private var mousePos : BlockPos? = null
 
+    init {
+        noMiningTrace.setDisplayInfo { if(nmtPickaxeOnly.valBoolean) "[Pickaxe Only]" else "" }
+        reach.setDisplayInfo { reachDistance.valInt.toString() }
+    }
+
     override fun onEnable() {
         super.onEnable()
         Kisman.EVENT_BUS.subscribe(renderGetEntitiesINAABBexcluding)

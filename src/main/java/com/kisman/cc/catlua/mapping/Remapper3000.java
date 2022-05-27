@@ -1,9 +1,6 @@
 package com.kisman.cc.catlua.mapping;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.catlua.parser.entry.ClassEntry;
-import com.kisman.cc.catlua.parser.entry.FieldEntry;
-import com.kisman.cc.catlua.parser.entry.MethodEntry;
 import org.luaj.vm2.LuaValue;
 
 import java.io.*;
@@ -18,26 +15,24 @@ public class Remapper3000 {
     public final Path mapping = Paths.get(Kisman.fileName + Kisman.mappingName + lzma);//lzma
 
     public HashMap<String, String> fieldsMapping, methodsMapping, fieldsMappingReverse, methodsMappingReverse;
-
-    public HashMap<String, FieldEntry> fieldsEntryCache;
-    public HashMap<String, ClassEntry> classesEntryCache;
-    public HashMap<String, MethodEntry> methodsEntryCache;
-
     public final HashMap<String, Field> fieldsCache = new HashMap<>();
     public final HashMap<String, LuaValue> methodsCache = new HashMap<>();
     public final HashMap<String, Class<?>> classCache = new HashMap<>();
 
     public String remappingField(String toRemap) {
-        if(fieldsMapping.containsKey(toRemap)) return fieldsMapping.get(toRemap);
-        return toRemap;
+        return fieldsMapping.getOrDefault(toRemap, toRemap);
     }
 
     public String remappingMethod(String toRemap) {
-        if(methodsMapping.containsKey(toRemap)) return methodsMapping.get(toRemap);
-        return toRemap;
+        return methodsMapping.getOrDefault(toRemap, toRemap);
     }
 
     public void init() {
+        if(!Kisman.canInitializateCatLua) {
+            Kisman.LOGGER.error("Can't init CatLua :<");
+            return;
+        }
+
         Kisman.LOGGER.info("[Remapper3000] Start remapping!");
 
 
@@ -88,29 +83,5 @@ public class Remapper3000 {
         }
 
         Kisman.LOGGER.info("[Remapper3000] Remapping has been finished!");
-    }
-
-    public Class getClassByName(String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    public Method getMethodFromClassByName(Class clazz, String name) {
-        try {
-            return clazz.getMethod(name);
-        } catch (NoSuchMethodException e) {
-            return null;
-        }
-    }
-
-    public Method getMethodFromClassByName(String pathToClazz, String name) {
-        try {
-            return Class.forName(pathToClazz).getMethod(name);
-        } catch (NoSuchMethodException | ClassNotFoundException e) {
-            return null;
-        }
     }
 }

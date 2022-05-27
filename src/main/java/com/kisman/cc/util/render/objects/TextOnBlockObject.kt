@@ -25,7 +25,7 @@ class TextOnBlockObject(
                         pos.z + 0.5
                 ),
                 Minecraft.getMinecraft().player,
-                8f//(2 - 0.3f)
+                1f//(2 - 0.3f)
         )
 
         GL11.glTranslated(

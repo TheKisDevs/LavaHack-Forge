@@ -19,7 +19,7 @@ public class MixinAbstractClientPlayer extends EntityPlayer {
     public MixinAbstractClientPlayer(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
     @Shadow public boolean isSpectator() {return true;}
-    @Override public boolean isCreative() {return false;}
+    @Shadow @Override public boolean isCreative() {return false;}
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getLocationCape(CallbackInfoReturnable<ResourceLocation> cir) {

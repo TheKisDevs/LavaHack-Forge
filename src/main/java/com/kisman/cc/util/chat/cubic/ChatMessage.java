@@ -6,8 +6,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 class ChatMessage extends AbstractChatMessage {
-
-    private static final String CLIENT_PREFIX = ChatFormatting.GRAY + "[" + ChatFormatting.WHITE + Kisman.NAME + ChatFormatting.GRAY + "] " + ChatFormatting.RESET;
+    private static String getClientPrefix() {
+        return ChatFormatting.GRAY + "[" + ChatFormatting.WHITE + Kisman.getName() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET;
+    }
 
     private TextComponentTranslation fModule(){
         return new TextComponentTranslation(ChatFormatting.GRAY + "[" + ChatFormatting.WHITE + formatModule() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET);
@@ -19,7 +20,7 @@ class ChatMessage extends AbstractChatMessage {
 
     @Override
     public void printClientMessage(ITextComponent textComponent) {
-        printMessage(new TextComponentTranslation(CLIENT_PREFIX).appendSibling(textComponent));
+        printMessage(new TextComponentTranslation(getClientPrefix()).appendSibling(textComponent));
     }
 
     @Override
@@ -29,7 +30,7 @@ class ChatMessage extends AbstractChatMessage {
 
     @Override
     public void printClientModuleMessage(ITextComponent textComponent) {
-        printMessage(new TextComponentTranslation(CLIENT_PREFIX).appendSibling(fModule()).appendSibling(textComponent));
+        printMessage(new TextComponentTranslation(getClientPrefix()).appendSibling(fModule()).appendSibling(textComponent));
     }
 
     @Override
@@ -59,7 +60,7 @@ class ChatMessage extends AbstractChatMessage {
 
     @Override
     public void printClientClassMessage(ITextComponent textComponent) {
-        printMessage(new TextComponentTranslation(CLIENT_PREFIX).appendSibling(fClass()).appendSibling(textComponent));
+        printMessage(new TextComponentTranslation(getClientPrefix()).appendSibling(fClass()).appendSibling(textComponent));
     }
 
     @Override

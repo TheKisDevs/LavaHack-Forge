@@ -83,6 +83,30 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			fields = m;
 		}
 
+		if(fields.get(key) != null) {
+			System.out.println("uwu " + fields.get(key).toString());
+			return (Field) fields.get(key);
+		}
+
+		if(Kisman.remapped) {
+			Class<?> superclass = (Class) m_instance;
+			String name = superclass.getName() + key.tojstring();
+			if(Kisman.instance.remapper3000.fieldsCache.containsKey(name)) {
+				return Kisman.instance.remapper3000.fieldsCache.get(name);
+			}
+			while(superclass != null) {
+				FieldEntry fieldEntry = Kisman.instance.forgeMappings.findField(superclass.getName().replace(".", ","), key.tojstring(), ForgeMappings.NormalFindType.NAMED);
+				if(fieldEntry != null) {
+					Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary)));
+					System.out.println("uwu field");
+					return (Field) fields.get(LuaValue.valueOf(fieldEntry.intermediary));
+				}
+				superclass = superclass.getSuperclass();
+			}
+
+			Kisman.instance.remapper3000.fieldsCache.put(name, (Field) fields.get(key));
+		}
+
 		/*if(fields.get(key) != null) {
 			System.out.println(fields.get(key).toString());
 			return (Field) fields.get(key);
@@ -146,6 +170,30 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 				map.put( LuaValue.valueOf(name), methods.size()==1? methods.get(0): JavaMethod.forMethods( (JavaMethod[])methods.toArray(new JavaMethod[methods.size()])) );
 			}
 			methods = map;
+		}
+
+		if(methods.get(key) != null) {
+			System.out.println("uwu " + methods.get(key).toString());
+			return (LuaValue) methods.get(key);
+		}
+
+		if(Kisman.remapped) {
+			Class<?> superclass = (Class) m_instance;
+			String name = superclass.getName() + key.tojstring();
+			if(Kisman.instance.remapper3000.methodsCache.containsKey(name)) {
+				return Kisman.instance.remapper3000.methodsCache.get(name);
+			}
+			while(superclass != null) {
+				MethodEntry methodEntry = Kisman.instance.forgeMappings.findMethod(superclass.getName().replace(".", ","), key.tojstring(), ForgeMappings.NormalFindType.NAMED, -1, null);
+				if(methodEntry != null) {
+					Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary)));
+					System.out.println("uwu method");
+					return (LuaValue) methods.get(LuaValue.valueOf(methodEntry.intermediary));
+				}
+				superclass = superclass.getSuperclass();
+			}
+
+			Kisman.instance.remapper3000.methodsCache.put(name, (LuaValue) fields.get(key));
 		}
 
 		/*if(methods.get(key) != null) return (LuaValue) methods.get(key);

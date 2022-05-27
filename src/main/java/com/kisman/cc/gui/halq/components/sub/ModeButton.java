@@ -31,11 +31,33 @@ public class ModeButton implements Component {
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         this.index = setting.getSelectedIndex();
+        Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadowCheckBox) {
-            Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
-            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width / 2, y + offset}, new double[] {x + width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30), HalqGui.getGradientColour(count).getColor()));
-            Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + width / 2, y + offset}, new double[] {x + width, y + offset}, new double[] {x + width, y + offset + HalqGui.height}, new double[] {x + width / 2, y + offset + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)));
-        } else Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
+            Render2DUtil.drawAbstract(
+                    new AbstractGradient(
+                    new Vec4d(
+                            new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
+                            new double[] {x + width / 2, y + offset + HalqGui.offsets},
+                            new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
+                            new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                    ),
+                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                    HalqGui.getGradientColour(count).getColor()
+                    )
+            );
+            Render2DUtil.drawAbstract(
+                    new AbstractGradient(
+                            new Vec4d(
+                                    new double[] {x + width / 2, y + offset + HalqGui.offsets},
+                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
+                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
+                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
+                            ),
+                            HalqGui.getGradientColour(count).getColor(),
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)
+                    )
+            );
+        } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());
 
         HalqGui.drawString(setting.getName() + ": " + values[index], x, y + offset, width, HalqGui.height);
 

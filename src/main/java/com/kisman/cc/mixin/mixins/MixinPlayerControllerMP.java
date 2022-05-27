@@ -25,10 +25,6 @@ public class MixinPlayerControllerMP {
         EventBlockReachDistance event = new EventBlockReachDistance(currentGameType.isCreative() ? attrib : attrib - 0.5F);
         Kisman.EVENT_BUS.post(event);
         callback.setReturnValue(event.getDistance());
-//        if (Reach.instance.isToggled()) {
-//            callback.setReturnValue(Reach.instance.distance.getValFloat());
-//            callback.cancel();
-//        }
     }
 
     @Inject(method = "clickBlock", at = @At("HEAD"), cancellable = true)

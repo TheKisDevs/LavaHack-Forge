@@ -1,8 +1,10 @@
 package com.kisman.cc.gui.book.components;
 
 import com.kisman.cc.gui.book.BookEditingGui;
+import com.kisman.cc.module.exploit.BookFormatModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
@@ -37,16 +39,17 @@ public class FormatButton extends ActionButton {
     int y_end = (int)((float)(this.y + this.height) / scale);
 
     if(this.format.isColor()) {
-      this.drawRect(x, y, x_end, y_end, 0xff000000 | this.fontRenderer.getColorCode(this.format.toString().charAt(1)));
+      drawRect(x, y, x_end, y_end, 0xff000000 | this.fontRenderer.getColorCode(this.format.toString().charAt(1)));
     } else {
-      this.fontRenderer.drawString(this.format.toString().substring(1), x + 2, y + 1, 0xffffffff);
+      this.fontRenderer.drawString(this.format.toString().substring(1), x + 2, y + 1, BookFormatModule.instance.textColor.getColour().getRGB());
     }
 
-    // Borders
-    this.drawRect(x, y, x_end, y + 1, 0xffffffff);
-    this.drawRect(x, y, x + 1, y_end, 0xffffffff);
-    this.drawRect(x, y_end - 1, x_end, y_end, 0xffffffff);
-    this.drawRect(x_end - 1, y, x_end, y_end, 0xffffffff);
+    if(BookFormatModule.instance.outline.getValBoolean()) {
+      drawRect(x, y, x_end, y + 1, BookFormatModule.instance.outlineColor.getColour().getRGB());
+      drawRect(x, y, x + 1, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+      drawRect(x, y_end - 1, x_end, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+      drawRect(x_end - 1, y, x_end, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+    }
 
     GlStateManager.popMatrix();
   }
@@ -54,5 +57,4 @@ public class FormatButton extends ActionButton {
   public void onClick(GuiScreen parent) {
     ((BookEditingGui) parent).appendFormat(this.format.toString());
   }
-
 }

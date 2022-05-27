@@ -32,6 +32,8 @@ public class ArrayListModule extends HudModule {
     private final Setting modules = register(types.add(new Setting("Modules", this, true)));
     private final Setting hudModules = register(types.add(new Setting("Hud Modules", this, false)));
     private final Setting checkBoxes = register(types.add(new Setting("Check Boxes", this, false)));
+    
+    private final Setting showDisplayInfo = register(new Setting("Show Display Info", this, true));
 
     private final Setting yCoord = register(new Setting("Y Coord", this, 3, 0, 500, true));
     private final Setting orientation = register(new Setting("Orientation", this, Orientations.Right));
@@ -59,11 +61,11 @@ public class ArrayListModule extends HudModule {
         ArrayList<ArrayListElement> elements = new ArrayList<>();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        if(modules.getValBoolean()) for(Module mod : Kisman.instance.moduleManager.modules) if(mod != null && mod.isToggled() && mod.visible) elements.add(new ArrayListElement((mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.Module));
-        if(hudModules.getValBoolean()) for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod != null && mod.isToggled() && mod.visible) elements.add(new ArrayListElement((mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.HudModule));
+        if(modules.getValBoolean()) for(Module mod : Kisman.instance.moduleManager.modules) if(mod != null && mod.isToggled() && mod.visible) elements.add(new ArrayListElement((mod.getName() + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.Module));
+        if(hudModules.getValBoolean()) for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod != null && mod.isToggled() && mod.visible) elements.add(new ArrayListElement((mod.getName() + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.HudModule));
         if(checkBoxes.getValBoolean()) {
             for(Setting set : Kisman.instance.settingsManager.getSettings()) {
-                if(set.isCheck() && set.getKey() != Keyboard.KEY_NONE && set.getValBoolean()) elements.add(new ArrayListElement(set.getParentMod().getName() + "->" + set.getName(), ElementTypes.CheckBox));
+                if(set.isCheck() && set.getKey() != Keyboard.KEY_NONE && set.getValBoolean()) elements.add(new ArrayListElement(set.getParentMod().getName() + "->" + set.getName() + (set.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + set.getDisplayInfo()), ElementTypes.CheckBox));
             }
         }
 

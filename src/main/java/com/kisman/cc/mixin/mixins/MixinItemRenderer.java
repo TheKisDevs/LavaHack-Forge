@@ -16,8 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemRenderer.class, priority = 10000)
 public class MixinItemRenderer {
-    private final Minecraft mc = Minecraft.getMinecraft();
     @Shadow private void transformSideFirstPerson(EnumHandSide hand, float p_187459_2_) {}
+
+    @Shadow @Final public Minecraft mc;
 
     @Inject(method = "rotateArm", at = @At("HEAD"), cancellable = true)
     private void doRotateArm(float p_187458_1_, CallbackInfo ci) {
