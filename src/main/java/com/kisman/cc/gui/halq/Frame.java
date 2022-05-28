@@ -113,8 +113,8 @@ public class Frame {
             obj.draw();
         } else {
             Render2DUtil.drawRectWH(x, y, HalqGui.width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
-            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x - HalqGui.headerOffset, y}, new double[]{x, y}, new double[]{x, y + HalqGui.height}, new double[]{x - HalqGui.headerOffset, y + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0), HalqGui.getGradientColour(count).getColor()));
-            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0)));
+            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x - HalqGui.headerOffset, y}, new double[]{x, y}, new double[]{x, y + HalqGui.height}, new double[]{x - HalqGui.headerOffset, y + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30), HalqGui.getGradientColour(count).getColor()));
+            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30)));
         }
 
         HalqGui.drawString((hud ? "Hud Editor" : cat.getName()) + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (hud ? Kisman.instance.hudModuleManager.modules.size() : (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size())) + "]": ""), x, y, HalqGui.width, HalqGui.height);

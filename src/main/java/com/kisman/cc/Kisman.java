@@ -79,6 +79,12 @@ public class Kisman {
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
+
+        try {
+            Minecraft.class.getDeclaredField("player");
+        } catch (NoSuchFieldException e) {
+            remapped = true;
+        }
     }
 
     public boolean init = false;
@@ -97,6 +103,7 @@ public class Kisman {
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
     public MainGui.SelectionBar selectionBar;
+    public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
     public MusicGui musicGui;
     public CustomFontRenderer customFontRenderer;
@@ -189,6 +196,7 @@ public class Kisman {
         halqHudGui = new HalqHudGui();
 
         selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
+        guiGradient = new MainGui.GuiGradient();
 
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);

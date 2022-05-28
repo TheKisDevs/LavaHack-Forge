@@ -1,7 +1,9 @@
 package com.kisman.cc.gui.book.components;
 
+import com.kisman.cc.module.exploit.BookFormatModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,15 +28,16 @@ public class GenericButton extends ActionButton {
       int x_end = this.x + this.width;
       int y_end = this.y + this.height;
 
-      this.drawRect(this.x, this.y, x_end, y_end, new Color(0, 0, 0, 255).getRGB());
-      this.drawRect(this.x, this.y, x_end, this.y + 1, -1);
-      this.drawRect(this.x, this.y, this.x + 1, y_end, -1);
-      this.drawRect(this.x, y_end - 1, x_end, y_end, -1);
-      this.drawRect(x_end - 1, this.y, x_end, y_end, -1);
-      this.fontRenderer.drawString(this.displayString, this.x + 2, this.y + 2, -1);
+      if(BookFormatModule.instance.filled.getValBoolean()) this.drawRect(this.x, this.y, x_end, y_end, BookFormatModule.instance.filledColor.getColour().getRGB());
+      if(BookFormatModule.instance.outline.getValBoolean()) {
+        drawRect(this.x, this.y, x_end, this.y + 1, BookFormatModule.instance.outlineColor.getColour().getRGB());
+        drawRect(this.x, this.y, this.x + 1, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+        drawRect(this.x, y_end - 1, x_end, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+        drawRect(x_end - 1, this.y, x_end, y_end, BookFormatModule.instance.outlineColor.getColour().getRGB());
+      }
+      this.fontRenderer.drawString(this.displayString, this.x + 2, this.y + 2, BookFormatModule.instance.textColor.getColour().getRGB());
     }
   }
 
   public void onClick(GuiScreen parent) {}
-
 }

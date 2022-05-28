@@ -22,6 +22,10 @@ import org.lwjgl.input.Keyboard;
  */
 public class Setting {
 	public Supplier<Boolean> visibleSupplier = () -> true;
+
+	public boolean haveDisplayInfo = false;
+	public Supplier<String> displayInfoSupplier = () -> "";
+
 	private Colour colour;
 
 	private Entity entity;
@@ -162,6 +166,10 @@ public class Setting {
 		this.mode = "ColorPicker";
 	}
 
+	public Setting(String name, Module parent, Colour colour) {
+		this(name, parent, name, colour);
+	}
+
 	public Setting(String name, Module parent, String title, Entity entity) {
 		this.name = name;
 		this.parent = parent;
@@ -181,6 +189,20 @@ public class Setting {
 	public Setting(String name, Module parent) {
 		this.name = name;
 		this.parent = parent;
+	}
+
+	public Setting setDisplayInfo(Supplier<String> displayInfoSupplier) {
+		this.displayInfoSupplier = displayInfoSupplier;
+		this.haveDisplayInfo = true;
+		return this;
+	}
+
+	public Setting setDisplayInfo(String displayInfo) {
+		return setDisplayInfo(() -> displayInfo);
+	}
+
+	public String getDisplayInfo() {
+		return haveDisplayInfo ? displayInfoSupplier.get() : "";
 	}
 
 	public Enum getEnumByName() {

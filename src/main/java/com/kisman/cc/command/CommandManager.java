@@ -54,12 +54,6 @@ public class CommandManager {
 				break;
 			}
 		}
-		if(!commandResolved) ChatUtils.error("Cannot resolve internal command: \u00a7c" + commandName);
-	}
-
-	@SubscribeEvent
-	public void onKeyPressed(InputEvent.KeyInputEvent event) {
-		if (Minecraft.getMinecraft().currentScreen != null) return;
-		for(Command cmd : commands) if(cmd.getKey() == Keyboard.getEventKey()) Kisman.instance.commandManager.runCommands("." + cmd.getExecute());
+		if(!commandResolved) Command.error("Cannot resolve internal command: \u00a7c" + commandName);
 	}
 }

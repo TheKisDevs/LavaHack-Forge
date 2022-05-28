@@ -45,6 +45,8 @@ class ConsoleGui : GuiScreen() {
 
         super.drawDefaultBackground()
 
+        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY)
+
         if(history.size >= 25) {
             history.removeAt(0)
         }

@@ -53,10 +53,23 @@ public class Slider implements Component {
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         int width = (int) (this.width * (setting.getValDouble() - min) / (max - min));
-        if(HalqGui.shadowCheckBox) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width, y + offset}, new double[] {x + width, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)));
-        else Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
+        if(HalqGui.shadowCheckBox) {
+            Render2DUtil.drawAbstract(
+                    new AbstractGradient(
+                            new Vec4d(
+                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
+                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
+                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
+                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                            ),
+                            HalqGui.getGradientColour(count).getColor(),
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)
+                    )
+            );
+        }
+        else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());
 
-        HalqGui.drawString(toRender, x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(toRender, x, y + offset, this.width, HalqGui.height);
     }
 
     @Override

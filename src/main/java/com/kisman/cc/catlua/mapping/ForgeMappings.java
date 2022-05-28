@@ -34,17 +34,18 @@ public class ForgeMappings {
                 System.out.println("Class: official " + classEntry.official + ", named/intermediary " + classEntry.named);
             }
             if(line.startsWith("FD")) {
-                if(!line.contains("#C")) {
-                    String[] split = line.replaceAll("FD: ", "").split(" ");
-                    FieldEntry fieldEntry = new FieldEntry();
-                    fieldEntry.official = split[0].split("/")[1];
-                    fieldEntry.type = "";
-                    fieldEntry.intermediary = split[1].split("/")[split[1].split("/").length - 1];
-                    fieldEntry.named = Kisman.instance.remapper3000.remappingField(fieldEntry.intermediary);
-                    fieldEntry.classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
-                    fields.add(fieldEntry);
-                    System.out.println("Field: official " + fieldEntry.official + ", named " + fieldEntry.named + ", intermediary " + fieldEntry.intermediary);
+                String[] split = line.replaceAll("FD: ", "").split(" ");
+                FieldEntry fieldEntry = new FieldEntry();
+                fieldEntry.official = split[0].split("/")[1];
+                fieldEntry.type = "";
+                fieldEntry.intermediary = split[1].split("/")[split[1].split("/").length - 1];
+                fieldEntry.named = Kisman.instance.remapper3000.remappingField(fieldEntry.intermediary);
+                fieldEntry.classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
+                if(fieldEntry.classEntry != null) {
+                    fieldEntry.official = fieldEntry.classEntry.intermediary;
                 }
+                fields.add(fieldEntry);
+                System.out.println("Field: official " + fieldEntry.official + ", named " + fieldEntry.named + ", intermediary " + fieldEntry.intermediary);
             }
             if(line.startsWith("MD")) {
                 String[] split = line.replace("MD: ", "").split(" ");
@@ -54,6 +55,9 @@ public class ForgeMappings {
                 methodEntry.intermediary = split[2].split("/")[split[2].split("/").length - 1];
                 methodEntry.named = Kisman.instance.remapper3000.remappingMethod(methodEntry.intermediary);
                 methodEntry.classEntry = findClass(split[0].split("/")[0], ClassFindType.OFFICIAL);
+                if(methodEntry.classEntry != null) {
+                    methodEntry.official = methodEntry.classEntry.intermediary;
+                }
                 methods.add(methodEntry);
                 System.out.println("Method: official " + methodEntry.official + ", named " + methodEntry.named + ", intermediary " + methodEntry.intermediary);
             }

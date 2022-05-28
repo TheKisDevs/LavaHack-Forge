@@ -35,7 +35,7 @@ public class ClickGuiNew extends GuiScreen {
     private List<ActionEventListener> onRenderListeners = new ArrayList<>();
 
     public ClickGuiNew() {
-        particleSystem = new ParticleSystem(300);
+        particleSystem = new ParticleSystem();
         categoryPaneMap = new HashMap<>();
         renderer = new ClientBaseRendererImpl();
         spoilerPane = new Pane(renderer, new GridLayout(1));
@@ -300,6 +300,12 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
+    public void initGui() {
+        super.initGui();
+        particleSystem = new ParticleSystem();
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if(Kisman.instance.selectionBar.getSelection() != MainGui.Guis.CSGOGui) {
            MainGui.Companion.openGui(Kisman.instance.selectionBar);
@@ -313,6 +319,8 @@ public class ClickGuiNew extends GuiScreen {
             particleSystem.render();
             particleSystem.onUpdate();
         }
+
+        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 

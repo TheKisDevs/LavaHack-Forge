@@ -1,13 +1,19 @@
 package com.kisman.cc.gui
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.halq.HalqHudGui
+import com.kisman.cc.module.client.Config
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.Render2DUtil
 import com.kisman.cc.util.customfont.CustomFontUtil
 import com.kisman.cc.util.render.ColorUtils
+import com.kisman.cc.util.render.objects.AbstractGradient
+import com.kisman.cc.util.render.objects.Vec4d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
+import java.awt.Color
 
 class MainGui {
     companion object {
@@ -18,6 +24,55 @@ class MainGui {
                 Guis.HudEditor -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqHudGui)
                 Guis.Music -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.musicGui)
                 Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
+            }
+        }
+    }
+
+    class GuiGradient {
+        fun drawScreen(mouseX : Int, mouseY: Int) {
+            if(Config.instance.guiGradientBackground.valBoolean) {
+                Render2DUtil.drawAbstract(
+                    AbstractGradient(
+                        Vec4d(
+                            doubleArrayOf(0.0, 0.0),
+                            doubleArrayOf(ScaledResolution(Minecraft.getMinecraft()).scaledWidth_double, 0.0),
+                            doubleArrayOf(
+                                ScaledResolution(Minecraft.getMinecraft()).scaledWidth_double,
+                                ScaledResolution(Minecraft.getMinecraft()).scaledHeight_double
+                            ),
+                            doubleArrayOf(0.0, ScaledResolution(Minecraft.getMinecraft()).scaledHeight_double)
+                        ),
+                        getStartColor(),
+                        getEndColor(),
+                        true
+                    )
+                )
+            }
+        }
+
+        private fun getStartColor() : Color {
+            return when(Config.instance.ggbStartColorMode.valEnum as Config.GGBColorMode) {
+                Config.GGBColorMode.Custom -> Config.instance.ggbStartColor.colour.color
+                Config.GGBColorMode.SynsWithGui -> {
+                    if(Minecraft.getMinecraft().currentScreen is HalqGui || Minecraft.getMinecraft().currentScreen is HalqHudGui) {
+                        HalqGui.getGradientColour(0).color
+                    } else {
+                        Config.instance.ggbStartColor.colour.color
+                    }
+                }
+            }
+        }
+
+        private fun getEndColor() : Color {
+            return when(Config.instance.ggbEndColorMode.valEnum as Config.GGBColorMode) {
+                Config.GGBColorMode.Custom -> Config.instance.ggbEndColor.colour.color
+                Config.GGBColorMode.SynsWithGui -> {
+                    if(Minecraft.getMinecraft().currentScreen is HalqGui || Minecraft.getMinecraft().currentScreen is HalqHudGui) {
+                        HalqGui.getGradientColour(0).color
+                    } else {
+                        Config.instance.ggbEndColor.colour.color
+                    }
+                }
             }
         }
     }

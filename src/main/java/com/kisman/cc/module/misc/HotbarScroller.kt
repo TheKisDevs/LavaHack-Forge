@@ -20,6 +20,10 @@ class HotbarScroller : Module(
 
     private val timer = TimerUtils()
 
+    init {
+        setDisplayInfo { "[${Slider.NumberType.TIME.formatter.apply(delay.valInt)}" }
+    }
+
     override fun onEnable() {
         timer.reset()
     }

@@ -102,11 +102,6 @@ public class LuajavaLib extends VarArgFunction {
 	public LuajavaLib() {
 	}
 
-	//because forge haven't class mapping
-	//MappingManager mappings() {
-//		return Ferret.getDefault().getMappingManager();
-//	}
-
 	public Varargs invoke(Varargs args) {
 		try {
 			switch ( opcode ) {
@@ -185,13 +180,13 @@ public class LuajavaLib extends VarArgFunction {
 			else {
 				ClassEntry classEntry = Kisman.instance.forgeMappings.findClass(name.replace(".", "/"), ForgeMappings.ClassFindType.NAMED);
 				if(classEntry != null) {
-					Class<?> c = Class.forName(classEntry.named.replace("/", "."), true, Minecraft.class.getClassLoader());
+					Class<?> c = Class.forName(classEntry.intermediary.replace("/", "."), true, Minecraft.class.getClassLoader());
 					Kisman.instance.remapper3000.classCache.put(name, c);
-					System.out.println("Class: " + c.getName());
+					System.out.println("Class: " + c.getName() + " uwu " + classEntry.intermediary);
 					return c;
 				}
 			}
-			Kisman.instance.remapper3000.classCache.put( name,  Class.forName(name, true, Minecraft.class.getClassLoader()));
+			Kisman.instance.remapper3000.classCache.put(name,  Class.forName(name, true, Minecraft.class.getClassLoader()));
 		}
 		return Class.forName(name, true, Minecraft.class.getClassLoader());
 	}

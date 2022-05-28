@@ -32,7 +32,7 @@ public class ColorButton extends AbstractComponent {
     private int hueSliderX, hueSliderY, hueSliderWidth, hueSliderHeight;
     private int alphaSliderX, alphaSliderY, alphaSliderWidth, alphaSliderHeight;
     private int rainbowX, rainbowY, rainbowWidth, rainbowHeight;
-    private int selectedColorFinal;
+    private Colour selectedColorFinal;
 
     private ValueChangeListener<Colour> listener;
     private ValueChangeListener<Boolean> listener2;
@@ -124,7 +124,7 @@ public class ColorButton extends AbstractComponent {
 //            this.drawButton(rainbowX, rainbowY, rainbowWidth, rainbowHeight, value2, "Rainbow");
             //final int
             this.selectedColorFinal = alpha(new Color(Color.HSBtoRGB(this.color[0], this.color[1], this.color[2])), this.color[3]);
-            Gui.drawRect(selectedX, selectedY, selectedX + selectedWidth, selectedY + selectedHeight, this.selectedColorFinal);
+            Gui.drawRect(selectedX, selectedY, selectedX + selectedWidth, selectedY + selectedHeight, this.selectedColorFinal.getRGB());
 
             {
                 final int cursorX = (int) (pickerX + color[1]*pickerWidth);
@@ -132,7 +132,7 @@ public class ColorButton extends AbstractComponent {
                 Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
             }
 
-            value = new Colour(selectedColorFinal);
+            value = selectedColorFinal;
         }
 
         if(listener != null) listener.onValueChange(value);
@@ -156,8 +156,8 @@ public class ColorButton extends AbstractComponent {
         renderer.drawString(x + width + height / 4, y + getHeight() / 2 - renderer.getStringHeight(title) / 2, title, Window.FOREGROUND);
     }
 
-    final int alpha(Color color, float alpha) {
-        return new Colour(color, alpha).getRGB();
+    final Colour alpha(Color color, float alpha) {
+        return new Colour(color, alpha);
     }
 
     private void updateHovered(int x, int y, boolean offscreen) {

@@ -44,7 +44,7 @@ public class Particle
     }
 
     public float getAlpha() {
-        return this.alpha;
+        return StaticParticles.randomPointsAlpha ? this.alpha : color.a1;
     }
 
     public float getDistanceTo(final Particle particle1) {

@@ -71,32 +71,32 @@ class GroupButton(
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
+        Render2DUtil.drawRectWH(
+            x.toDouble(),
+            (y + offset).toDouble(),
+            width_.toDouble(),
+            HalqGui.height.toDouble(),
+            HalqGui.backgroundColor.rgb
+        )
         if (HalqGui.shadowCheckBox) {
-            Render2DUtil.drawRectWH(
-                    x.toDouble(),
-                    (y + offset).toDouble(),
-                    width_.toDouble(),
-                    HalqGui.height.toDouble(),
-                    HalqGui.backgroundColor.rgb
-            )
             Render2DUtil.drawAbstract(
                     AbstractGradient(
                             Vec4d(
                                     doubleArrayOf(
-                                            x.toDouble(),
-                                            (y + offset).toDouble()
+                                            x.toDouble() + HalqGui.offsets,
+                                            (y + offset).toDouble() + HalqGui.offsets
                                     ),
                                     doubleArrayOf(
                                             (x + width_ / 2).toDouble(),
-                                            (y + offset).toDouble()
+                                            (y + offset).toDouble() + HalqGui.offsets
                                     ),
                                     doubleArrayOf(
                                             (x + width_ / 2).toDouble(),
-                                            (y + offset + HalqGui.height).toDouble()
+                                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
                                     ),
                                     doubleArrayOf(
-                                            x.toDouble(),
-                                            (y + offset + HalqGui.height).toDouble()
+                                            x.toDouble() + HalqGui.offsets,
+                                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
                                     )
                             ),
                             ColorUtils.injectAlpha(
@@ -111,19 +111,19 @@ class GroupButton(
                             Vec4d(
                                     doubleArrayOf(
                                             (x + width_ / 2).toDouble(),
-                                            (y + offset).toDouble()
+                                            (y + offset).toDouble() + HalqGui.offsets
                                     ),
                                     doubleArrayOf(
-                                            (x + width_).toDouble(),
-                                            (y + offset).toDouble()
+                                            (x + width_).toDouble() - HalqGui.offsets,
+                                            (y + offset).toDouble() + HalqGui.offsets
                                     ),
                                     doubleArrayOf(
-                                            (x + width_).toDouble(),
-                                            (y + offset + HalqGui.height).toDouble()
+                                            (x + width_).toDouble() - HalqGui.offsets,
+                                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
                                     ),
                                     doubleArrayOf(
                                             (x + width_ / 2).toDouble(),
-                                            (y + offset + HalqGui.height).toDouble()
+                                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
                                     )
                             ),
                             HalqGui.getGradientColour(count).color,
@@ -134,10 +134,10 @@ class GroupButton(
                     )
             )
         } else Render2DUtil.drawRectWH(
-                x.toDouble(),
-                (y + offset).toDouble(),
-                width_.toDouble(),
-                height.toDouble(),
+                x.toDouble() + HalqGui.offsets,
+                (y + offset).toDouble() + HalqGui.offsets,
+                width_.toDouble() - HalqGui.offsets * 2,
+                height.toDouble() - HalqGui.offsets * 2,
                 HalqGui.getGradientColour(count).rgb
         )
 

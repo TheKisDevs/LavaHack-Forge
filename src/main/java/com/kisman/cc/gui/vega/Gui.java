@@ -25,7 +25,7 @@ public class Gui extends GuiScreen {
     public Gui() {
         frames = new ArrayList<>();
 
-        particleSystem = new ParticleSystem(300);
+        particleSystem = new ParticleSystem();
 
         int x = 3;
         int y = 6;
@@ -98,6 +98,7 @@ public class Gui extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
+        particleSystem = new ParticleSystem();
     }
 
     private void scrollWheelCheck() {

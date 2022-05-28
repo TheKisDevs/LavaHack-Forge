@@ -1,7 +1,6 @@
 package com.kisman.cc.gui.other.music
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.api.HitMotopAPI
 import com.kisman.cc.gui.MainGui
 import com.kisman.cc.util.customfont.CustomFontUtil
 import com.kisman.cc.util.process.web.music.Player
@@ -51,6 +50,7 @@ class MusicGui : GuiScreen() {
         }
 
         drawDefaultBackground()
+        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY)
         super.drawScreen(mouseX, mouseY, ticks)
         field.drawTextBox()
         GL11.glPushMatrix()
