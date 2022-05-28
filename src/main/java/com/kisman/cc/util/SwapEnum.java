@@ -2,12 +2,8 @@ package com.kisman.cc.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.spi.AbstractLogger;
 import org.cubic.dynamictask.AbstractEnum;
 import org.cubic.dynamictask.AbstractTask;
-
-import java.io.FileDescriptor;
 
 public class SwapEnum extends AbstractEnum<SwapEnum, AbstractTask<Void>> {
 

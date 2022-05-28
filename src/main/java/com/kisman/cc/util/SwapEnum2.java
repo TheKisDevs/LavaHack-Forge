@@ -18,11 +18,13 @@ public class SwapEnum2 {
             mc.player.inventory.currentItem = arg.fetch(0);
             return null;
         })),
+
         Silent(task.task(arg -> {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
             mc.player.inventory.currentItem = arg.fetch(1);
             return null;
         })),
+
         Packet(task.task(arg -> {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
             return null;
