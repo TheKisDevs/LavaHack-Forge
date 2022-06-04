@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 
+//just crystal per second manager
 class CPSManager {
     val timer = TimerUtils()
     var usage: Int = 0

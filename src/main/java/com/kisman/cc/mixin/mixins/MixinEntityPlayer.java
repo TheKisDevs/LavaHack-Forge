@@ -5,6 +5,8 @@ import com.kisman.cc.event.events.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
@@ -18,7 +20,9 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
     @Shadow protected void doWaterSplashEffect() {}
     @Shadow public @NotNull String getName() {return "";}
 
-    @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
+    @Shadow @Final protected static DataParameter<Byte> MAIN_HAND;
+
+    @Inject(method = "jump", at = @At("HEAD"))
     private void onJump(CallbackInfo ci) {
         if(Minecraft.getMinecraft().player.getName().equals(getName())) {
             EventPlayerJump event = new EventPlayerJump(this);
@@ -51,5 +55,17 @@ public class MixinEntityPlayer extends MixinEntityLivingBase {
         Kisman.EVENT_BUS.post(event);
 
         if (event.isCancelled()) cir.setReturnValue(false);
+    }
+
+    /**
+     * @author _kisman_
+     */
+    @Overwrite
+    public EnumHandSide getPrimaryHand() {
+        try {
+            return this.dataManager.get(MAIN_HAND) == 0 ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
+        } catch(Exception ignored) {
+            return EnumHandSide.RIGHT;
+        }
     }
 }

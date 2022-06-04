@@ -26,12 +26,12 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.math.vectors.VectorUtils;
+import com.kisman.cc.util.network.NetworkHandler;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
-import com.kisman.cc.util.glow.ShaderShell;
+import com.kisman.cc.util.render.shader.ShaderShell;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,6 +77,8 @@ public class Kisman {
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
 
+    public static String currentConfig = null;
+
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
 
@@ -106,8 +108,6 @@ public class Kisman {
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
     public MusicGui musicGui;
-    public CustomFontRenderer customFontRenderer;
-    public CustomFontRenderer customFontRenderer1;
     public CommandManager commandManager;
     public RPC discord;
     public RotationUtils rotationUtils;
@@ -129,6 +129,8 @@ public class Kisman {
     //Config
     public ConfigManager configManager;
 
+    public NetworkHandler networkHandler;
+
     public Kisman() {
         instance = this;
     }
@@ -144,18 +146,15 @@ public class Kisman {
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
-        Display.setTitle(NAME + " | " + VERSION);
-    	MinecraftForge.EVENT_BUS.register(this);
-
         aiImpr = new MainAiImpr();
-
         eventProcessor = new EventProcessor();
-        eventProcessor.onInit();
-
-        mc = Minecraft.getMinecraft();
-
         managers = new Managers();
         managers.init();
+        aiImpr.init();
+
+        Display.setTitle(NAME + " | " + VERSION);
+        MinecraftForge.EVENT_BUS.register(this);
+        mc = Minecraft.getMinecraft();
 
         vectorUtils = new VectorUtils();
 
@@ -165,8 +164,6 @@ public class Kisman {
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
         consoleGui = new ConsoleGui();
-        customFontRenderer = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 18), true, true);
-        customFontRenderer1 = new CustomFontRenderer(new Font("Verdana", Font.PLAIN, 15), true, true);
         commandManager = new CommandManager();
         discord = new RPC();
         rotationUtils = new RotationUtils();
@@ -201,6 +198,8 @@ public class Kisman {
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);
         musicGui = new MusicGui();
+
+        networkHandler = new NetworkHandler();
 
         init = true;
     }

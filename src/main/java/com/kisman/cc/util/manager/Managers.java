@@ -2,8 +2,10 @@ package com.kisman.cc.util.manager;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.render.PulseManager;
 import me.zero.alpine.listener.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -24,6 +26,12 @@ public class Managers {
 
     public Managers() {
         instance = this;
+
+        if(!Kisman.allowToConfiguredAnotherClients) {
+            if(Minecraft.getMinecraft().currentScreen instanceof AuthGui) {
+                throw new NullPointerException("UwU != OwO");
+            }
+        }
     }
 
     public void init() {

@@ -151,13 +151,15 @@ class MoveModifier : Module(
 
     private fun doAutoMoving() {
         if(autoJump.valBoolean) {
-            mc.gameSettings.keyBindJump.pressed = autoJump.valBoolean
+            ++mc.player.movementInput.moveForward
+            mc.player.movementInput.forwardKeyDown = true
+//            mc.gameSettings.keyBindJump.pressed = true
         }
         if(autoWalk.valBoolean) {
-            mc.gameSettings.keyBindForward.pressed = autoWalk.valBoolean
+            mc.gameSettings.keyBindForward.pressed = true
         }
         if(autoSneak.valBoolean) {
-            mc.gameSettings.keyBindSneak.pressed = autoSneak.valBoolean
+            mc.gameSettings.keyBindSneak.pressed = true
         }
     }
 

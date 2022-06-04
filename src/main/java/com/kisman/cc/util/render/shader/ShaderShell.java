@@ -1,4 +1,4 @@
-package com.kisman.cc.util.glow;
+package com.kisman.cc.util.render.shader;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.ARBFragmentShader;

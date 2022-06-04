@@ -7,9 +7,9 @@ import java.text.*;
 import java.util.*;
 
 import com.kisman.cc.module.render.NameTags;
+import com.kisman.cc.util.customfont.AbstractFontRenderer;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.customfont.CustomFontUtil;
-import com.kisman.cc.util.customfont.norules.CFontRenderer;
 import com.kisman.cc.util.render.objects.Vec3dSimple;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.*;
@@ -1519,18 +1519,18 @@ public class RenderUtil {
         GL11.glEnable(34383);
     }
 
-    public static void renderItemOverlays(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
+    public static void renderItemOverlays(AbstractFontRenderer cfr, ItemStack stack, int xPosition, int yPosition) {
         renderItemOverlayIntoGUI(cfr, stack, xPosition, yPosition, null);
     }
 
-    public static void renderItemOverlayIntoGUI(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, boolean showDurBar) {
+    public static void renderItemOverlayIntoGUI(AbstractFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text, boolean showDurBar) {
         if (!stack.isEmpty()) {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
-                cfr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - cfr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
+                cfr.drawStringWithShadow(s, (xPosition + 19 - 2 - cfr.getStringWidth(s)), (yPosition + 6 + 3), 16777215);
                 GlStateManager.enableLighting();
                 GlStateManager.enableDepth();
                 GlStateManager.enableBlend();
@@ -1571,14 +1571,14 @@ public class RenderUtil {
         }
     }
 
-    public static void renderItemOverlayIntoGUI(CustomFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
+    public static void renderItemOverlayIntoGUI(AbstractFontRenderer cfr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
         if (!stack.isEmpty()) {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
-                cfr.drawStringWithShadow(s, (float)(xPosition + 19 - 2 - cfr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215);
+                cfr.drawStringWithShadow(s, (xPosition + 19 - 2 - cfr.getStringWidth(s)), (yPosition + 6 + 3), 16777215);
                 GlStateManager.enableLighting();
                 GlStateManager.enableDepth();
                 GlStateManager.enableBlend();

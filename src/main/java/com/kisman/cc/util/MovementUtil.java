@@ -12,6 +12,12 @@ public class MovementUtil {
     public static final double WALK_SPEED = 0.221;
     public static Minecraft mc = Minecraft.getMinecraft();
 
+    public static double getJumpHeight(boolean strict) {
+        double jumpHeight = strict ? 0.42 : 0.3995;
+        if (mc.player.isPotionActive(MobEffects.JUMP_BOOST)) jumpHeight += (mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1;
+        return jumpHeight;
+    }
+
     public static void setMotion(double speed) {
         double forward = mc.player.movementInput.moveForward;
         double strafe = mc.player.movementInput.moveStrafe;

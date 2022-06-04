@@ -1,7 +1,7 @@
 package com.kisman.cc.util;
 
 import com.kisman.cc.module.client.Config;
-import com.kisman.cc.util.glow.ShaderShell;
+import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.render.objects.*;
 
 import net.minecraft.client.renderer.*;

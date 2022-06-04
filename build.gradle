@@ -87,6 +87,7 @@ configurations {
 }
 
 dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
         exclude module: 'guava'

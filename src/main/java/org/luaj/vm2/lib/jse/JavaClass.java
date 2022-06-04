@@ -83,11 +83,6 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 			fields = m;
 		}
 
-		if(fields.get(key) != null) {
-			System.out.println("uwu " + fields.get(key).toString());
-			return (Field) fields.get(key);
-		}
-
 		if(Kisman.remapped) {
 			Class<?> superclass = (Class) m_instance;
 			String name = superclass.getName() + key.tojstring();
@@ -170,11 +165,6 @@ class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion {
 				map.put( LuaValue.valueOf(name), methods.size()==1? methods.get(0): JavaMethod.forMethods( (JavaMethod[])methods.toArray(new JavaMethod[methods.size()])) );
 			}
 			methods = map;
-		}
-
-		if(methods.get(key) != null) {
-			System.out.println("uwu " + methods.get(key).toString());
-			return (LuaValue) methods.get(key);
 		}
 
 		if(Kisman.remapped) {

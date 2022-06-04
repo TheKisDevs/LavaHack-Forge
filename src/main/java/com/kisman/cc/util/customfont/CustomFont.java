@@ -1,13 +1,14 @@
 package com.kisman.cc.util.customfont;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class CustomFont {
+public class CustomFont extends AbstractFontRenderer {
     private final float imgSize = 512.0f;
     protected CharData[] charData = new CharData[2000];
     protected Font font;
@@ -71,7 +72,13 @@ public class CustomFont {
         return bufferedImage;
     }
 
-    public void drawChar(CharData[] chars, char c, float x, float y) throws ArrayIndexOutOfBoundsException {
+    @Override
+    public void drawChar(CharData @NotNull [] chars, char c, float x, float y) throws ArrayIndexOutOfBoundsException {
+        //TODO доделать и это возвращает краш бвт
+        /*if(!font.canDisplay(c) && CustomFontUtilKt.Companion.getFallbackFont() != null) {
+            CustomFontUtilKt.Companion.getFallbackFont().drawChar(chars, c, x, y);
+            return;
+        }*/
         try {
             drawQuad(x, y, (chars[c]).width, (chars[c]).height, (chars[c]).storedX, (chars[c]).storedY, (chars[c]).width, (chars[c]).height);
         } catch (Exception e) {e.printStackTrace();}
@@ -129,7 +136,17 @@ public class CustomFont {
         this.tex = setupTexture(font, this.antiAlias, this.fractionalMetrics, this.charData);
     }
 
-    protected static class CharData {
+    @Override public void drawStringWithShadow(@NotNull String text, int x, int y, int color) {}
+    @Override public void drawLine(int x, int y, int x1, int y1) {}
+    @Override public float drawString(@NotNull String text, double x, double y, int color, boolean shadow) {return 0;}
+    @Override public void drawCenteredString(@NotNull String text, float x, float y, int color) {}
+    @Override public void drawCenteredStringWithShadow(@NotNull String text, float x, float y, int color) {}
+    @Override public int getHeight() {return 0;}
+    @Override public float drawString(@NotNull String text, double x, double y, int color) {return 0;}
+    @Override public boolean getFractionMetrics() {return false;}
+    @Override public boolean getAntiAlias() {return false;}
+
+    public static class CharData {
         public int width;
         public int height;
         public int storedX;

@@ -48,11 +48,14 @@
     "accessor.ICPacketPlayer",
     "accessor.IEntityPlayerSP",
     "accessor.ISession",
+    "cubic.AccessorClassLoader",
     "viaforge.MixinGuiConnecting",
     "viaforge.MixinGuiDisconnected",
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
-    "viaforge.MixinNetworkManagerChInit",
-    "cubic.AccessorClassLoader"
+    "viaforge.MixinNetworkManagerChInit"
+  ],
+  "client": [
+    "MixinBlockRendererDispatcher"
   ]
 }

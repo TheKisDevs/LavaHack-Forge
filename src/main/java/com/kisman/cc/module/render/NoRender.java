@@ -8,6 +8,7 @@ import com.kisman.cc.module.*;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.potion.Potion;
@@ -34,6 +35,7 @@ public class NoRender extends Module {
     public Setting enchantGlint = new Setting("Enchant Glint", this, false);
     private final Setting swing = new Setting("Swing", this, SwingMode.None);
     public Setting sway = new Setting("Sway",  this, false);
+    private final Setting glow = new Setting("Glow", this, false);
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -132,6 +134,12 @@ public class NoRender extends Module {
             mc.player.swingProgressInt = 0;
             mc.player.swingProgress = 0;
             mc.player.prevSwingProgress = 0;
+        }
+
+        if(glow.getValBoolean()) {
+            for(Entity entity : mc.world.loadedEntityList) {
+                entity.glowing = false;
+            }
         }
     }
 

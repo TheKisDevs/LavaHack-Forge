@@ -27,6 +27,8 @@ class ConfigManager(
     ) {
         @Throws(IOException::class)
         fun init() {
+            Kisman.currentConfig = config.name;
+
             Kisman.initDirs()
 
             if(!Files.exists(Paths.get(config.path + config.name + config.suffix))) {

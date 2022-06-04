@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard
  * @author _kisman_
  * @since 20:44 of 19.05.2022
  */
-class TextField(
+class TextFieldHandler(
     val font : FontRenderer,
     val x : Int,
     val y : Int,

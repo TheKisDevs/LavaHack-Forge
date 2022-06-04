@@ -1,4 +1,4 @@
-package com.kisman.cc.util;
+package com.kisman.cc.util.enums.dynamic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketHeldItemChange;

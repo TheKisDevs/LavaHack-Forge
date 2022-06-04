@@ -203,12 +203,12 @@ public class Indicators extends HudModule {
     }
 
     private void drawStringWithShadow(String text, double x, double y, int color) {
-        if(CustomFontModule.turnOn) CustomFontUtil.consolas15.drawStringWithShadow(text, x, y, color);
+        if(CustomFontModule.turnOn) CustomFontUtil.consolas15.drawStringWithShadow(text, (int) x, (int) y, color);
         else mc.fontRenderer.drawStringWithShadow(text, (int) x, (int) y, color);
     }
 
     private int getHeight() {
-        if(CustomFontModule.turnOn) return  CustomFontUtil.getFontHeight(CustomFontUtil.consolas15);
+        if(CustomFontModule.turnOn) return CustomFontUtil.consolas15.getHeight();
         else return mc.fontRenderer.FONT_HEIGHT;
     }
 

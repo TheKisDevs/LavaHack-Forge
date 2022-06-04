@@ -22,6 +22,7 @@ public class HudModuleManager {
 		modules.add(new BindList());
 		modules.add(new Coord());
 		modules.add(new CrystalPerSecond());
+		modules.add(new CurrentConfig());
 		modules.add(new Fps());
 		modules.add(new Indicators());
 		modules.add(new Logo());

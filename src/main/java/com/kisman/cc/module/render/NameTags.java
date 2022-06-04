@@ -1,5 +1,6 @@
 package com.kisman.cc.module.render;
 
+import com.kisman.cc.util.customfont.AbstractFontRenderer;
 import com.kisman.cc.util.customfont.CustomFontRenderer;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.module.*;
@@ -131,7 +132,7 @@ public class  NameTags extends Module {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
         GL11.glDisable(2929);
-        final CustomFontRenderer font = CustomFontUtil.sfui19;
+        final AbstractFontRenderer font = CustomFontUtil.sfui19;
         final int width = font.getStringWidth(name) / 2;
         final double widthBackGround = bgAlpha.getValDouble();
         final int[] counter = { 1 };
@@ -140,7 +141,7 @@ public class  NameTags extends Module {
         final int[] array = counter;
         final int n = 0;
         ++array[n];//9 + 14 / 2 - font.fontHeight / 2
-        font.drawString(name, -width, 9 + 7 - (font.fontHeight - 8) / 4, Color.red.getRGB());
+        font.drawString(name, -width, 9 + 7 - (font.getHeight()) / 2, Color.red.getRGB());
         boolean item = this.items.getValBoolean();
         if (item) {
             int xOffset = -8;
@@ -223,7 +224,7 @@ public class  NameTags extends Module {
                     encName = encName + level;
                     GL11.glPushMatrix();
                     GL11.glScalef(1.0f, 1.0f, 0.0f);
-                    CustomFontRenderer font = CustomFontUtil.futura20;
+                    AbstractFontRenderer font = CustomFontUtil.futura20;
                     if (level == 1) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(202, 202, 202, 255).getRGB());
                     else if (level == 2) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(246, 218, 45, 255).getRGB());
                     else if (level == 3) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(229, 128, 0, 255).getRGB());

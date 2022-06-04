@@ -26,7 +26,8 @@ public class CustomMainMenu {
             "Where XuluPlus shaders??",
             "Future? No.",
             "meow",
-            "Lavahake"
+            "Lavahake",
+            "Dallas got skidded"
     };
 
     public static void update() {

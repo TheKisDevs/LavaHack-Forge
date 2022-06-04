@@ -19,6 +19,19 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static int findSoftBlocks(int min, int max) {
+        for(int i = min; i <= max; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            Block block = Block.getBlockFromItem(stack.getItem());
+
+            if(!block.isCollidable() || !block.isTopSolid(block.getDefaultState())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public static int findItemInInventory(Item item) {
         if(mc.player != null) {
             for (int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i) {

@@ -3,25 +3,41 @@ package com.kisman.cc.event.events;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.catlua.util.PacketUtil;
 import com.kisman.cc.event.Event;
+import io.netty.channel.ChannelHandlerContext;
+import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.Packet;
 
 @SuppressWarnings("rawtypes")
 public class PacketEvent extends Event {
- 
+	private final EnumPacketDirection direction;
+	private final ChannelHandlerContext context;
 	private final Packet packet;
- 
+
 	public PacketEvent(Packet packet) {
-		super();
-		this.packet = packet;
+		this(packet, EnumPacketDirection.CLIENTBOUND);
 	}
- 
+
+	public PacketEvent(Packet packet, EnumPacketDirection direction) {
+		this(packet, direction, null);
+	}
+
+	public PacketEvent(Packet packet, EnumPacketDirection direction, ChannelHandlerContext context) {
+		this.direction = direction;
+		this.packet = packet;
+		this.context = context;
+	}
+
 	public Packet getPacket() {
 		return this.packet;
+	}
+
+	public EnumPacketDirection getDirection() {
+		return this.direction;
 	}
  
 	public static class Receive extends PacketEvent {
 		public Receive(Packet packet) {
-			super(packet);
+			super(packet, EnumPacketDirection.CLIENTBOUND);
 		}
 
 		public String getName() {
@@ -36,7 +52,7 @@ public class PacketEvent extends Event {
  
 	public static class Send extends PacketEvent {
 		public Send(Packet packet) {
-			super(packet);
+			super(packet, EnumPacketDirection.SERVERBOUND);
 		}
 
 		public String getName() {

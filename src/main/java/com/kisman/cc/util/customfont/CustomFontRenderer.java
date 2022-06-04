@@ -160,7 +160,7 @@ public class CustomFontRenderer extends CustomFont {
         this.texItalicBold = setupTexture(this.font.deriveFont(Font.BOLD | Font.ITALIC), this.antiAlias, this.fractionalMetrics, this.boldItalicChars);
     }
 
-    private void drawLine(double x, double y, double x1, double y1) {
+    public void drawLine(double x, double y, double x1, double y1) {
         GL11.glDisable(3553);
         GL11.glLineWidth(1.0F);
         GL11.glBegin(1);

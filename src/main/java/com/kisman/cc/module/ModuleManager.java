@@ -45,6 +45,7 @@ public class ModuleManager {
 		modules.add(new HelloWorld());
 		modules.add(new Meow());
 		modules.add(new NoMove());
+		modules.add(new TextFieldTest());
 
 		//combat
 		modules.add(new AutoCrystal());
@@ -71,7 +72,6 @@ public class ModuleManager {
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());
-//		modules.add(new NoFriendDamage());
 		modules.add(new OffHand());
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
@@ -141,8 +141,8 @@ public class ModuleManager {
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new NoWeb());
-//		modules.add(new Parkour());
 		modules.add(new Scaffold());
+		modules.add(new SoftScaffold());
 		modules.add(new Speed());
 		modules.add(new Spider());
 		modules.add(new TargetStrafe());
@@ -155,9 +155,9 @@ public class ModuleManager {
 		modules.add(new Interaction());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
-//		modules.add(new Reach());
 		modules.add(new Refill());
 		modules.add(new Replenish());
+		modules.add(new RotationLook());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
@@ -201,6 +201,7 @@ public class ModuleManager {
 		modules.add(new Optimizer());
 		modules.add(new Reverse());
 		modules.add(new SelfDamage());
+		modules.add(new SkyBlockFeatures());
 		modules.add(new SkylightFix());
 		modules.add(new Spammer());
 		modules.add(new Spin());

@@ -1,6 +1,6 @@
 package com.kisman.cc.util.render.objects;
 
-import com.kisman.cc.util.glow.ShaderShell;
+import com.kisman.cc.util.render.shader.ShaderShell;
 
 import org.lwjgl.opengl.GL11;
 

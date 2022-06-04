@@ -42,6 +42,11 @@ public class EventProcessor {
     public int oldWidth = -1, oldHeight = -1;
 
     public EventProcessor() {
+        if(!Kisman.allowToConfiguredAnotherClients) {
+            mc.displayGuiScreen(new AuthGui());
+            Kisman.isOpenAuthGui = true;
+        }
+
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
@@ -56,12 +61,6 @@ public class EventProcessor {
     }
 
     @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.allowToConfiguredAnotherClients) event.setCanceled(true);}
-
-    public void onInit() {
-        if(Kisman.allowToConfiguredAnotherClients) return;
-        mc.displayGuiScreen(new AuthGui());
-        Kisman.isOpenAuthGui = true;
-    }
 
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {

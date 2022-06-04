@@ -1,20 +1,14 @@
 package com.kisman.cc.gui.other.search
 
-import com.kisman.cc.Kisman
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.halq.HalqGui
-import com.kisman.cc.module.Category
-import com.kisman.cc.module.client.Config
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Render2DUtil
-import com.kisman.cc.util.enums.RectSides
 import com.kisman.cc.util.enums.SearchGuiItemsNameModes
 import com.kisman.cc.util.render.ColorUtils
-import com.kisman.cc.util.render.gui.TextField
+import com.kisman.cc.util.render.gui.TextFieldHandler
 import com.kisman.cc.util.render.objects.AbstractGradient
-import com.kisman.cc.util.render.objects.ShadowRectObject
 import com.kisman.cc.util.render.objects.Vec4d
-import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 
 /**
@@ -25,7 +19,7 @@ class SearchGui(
     val setting : Setting, //TODO
     val lastGui : GuiScreen?
 ) : GuiScreen() {
-    var textField : TextField? = null
+    var textField : TextFieldHandler? = null
 
     val comps : ArrayList<Component> = ArrayList()
 
@@ -51,7 +45,7 @@ class SearchGui(
     }
 
     private fun init() {
-        textField = TextField(
+        textField = TextFieldHandler(
             x + HalqGui.height,
             y + HalqGui.headerOffset,
             width_ - HalqGui.headerOffset * 2,

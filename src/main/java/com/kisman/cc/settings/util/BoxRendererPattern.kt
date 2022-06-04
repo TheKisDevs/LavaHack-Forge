@@ -3,6 +3,7 @@ package com.kisman.cc.settings.util
 import com.kisman.cc.Kisman
 import com.kisman.cc.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
@@ -52,6 +53,18 @@ class BoxRendererPattern(
         Kisman.instance.settingsManager.rSetting(offset)
 
         if(canColor) Kisman.instance.settingsManager.rSetting(color)
+
+        return this
+    }
+    
+    fun initWithGroup(group : SettingGroup) : BoxRendererPattern {
+        Kisman.instance.settingsManager.rSetting(group.add(mode))
+        Kisman.instance.settingsManager.rSetting(group.add(depth))
+        Kisman.instance.settingsManager.rSetting(group.add(alpha))
+        Kisman.instance.settingsManager.rSetting(group.add(width))
+        Kisman.instance.settingsManager.rSetting(group.add(offset))
+
+        if(canColor) Kisman.instance.settingsManager.rSetting(group.add(color))
 
         return this
     }

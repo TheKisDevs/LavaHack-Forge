@@ -5,6 +5,7 @@ import com.kisman.cc.command.commands.*;
 
 import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.Packet;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
@@ -34,6 +35,7 @@ public class CommandManager {
 		commands.add(new LuaCommand());
         commands.add(new Slider());
         commands.add(new OpenDir());
+		commands.add(new RollBackCommand());
         commands.add(new SaveConfigCommand());
 		commands.add(new SetKey());
         commands.add(new Toggle());

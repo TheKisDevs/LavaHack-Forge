@@ -51,6 +51,8 @@ public class NoSlow extends Module {
         setmgr.rSetting(ncpStrict);
         setmgr.rSetting(slimeBlocks);
 
+        setmgr.rSetting(sneak);
+
         setmgr.rSetting(invMoveGroup);
         setmgr.rSetting(invMove);
         setmgr.rSetting(ignoreChat);
