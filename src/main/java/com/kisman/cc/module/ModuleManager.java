@@ -170,6 +170,7 @@ public class ModuleManager {
 		modules.add(new CactusLeave());
 		modules.add(new Disabler());
 		modules.add(new Ghost());
+		modules.add(new TickShiftTeleport());
 //		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new NoGlitchBlocks());
