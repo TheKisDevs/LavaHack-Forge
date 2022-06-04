@@ -2,6 +2,8 @@ package com.kisman.cc.command.commands
 
 import com.kisman.cc.command.Command
 import io.netty.buffer.ByteBuf
+import net.minecraft.entity.Entity
+import net.minecraft.entity.passive.AbstractChestHorse
 import net.minecraft.entity.passive.AbstractHorse
 import net.minecraft.network.EnumPacketDirection
 import net.minecraft.network.Packet
@@ -45,10 +47,36 @@ class RollBackDupeCommand : Command("rdupe") {
                 RollBackCommand.instance?.runCommand("rollback", emptyArray())
 
                 //canceler
+                toCancel.remove(16)
 
                 UseCommand.instance?.runCommand("use", arrayOf(ride.getEntityId() as String))
 
                 state = true
+            } else {
+                val donkeys = mc.player.world.getEntitiesWithinAABB(
+                    AbstractChestHorse::class.java, mc.player.entityBoundingBox.grow(6.0, 2.0, 6.0)
+                )
+
+                var ddonkey: Entity? = null
+                for (c in donkeys) {
+                    if (c !== mc.player.getRidingEntity()) {
+                        ddonkey = c
+                        break
+                    }
+                }
+
+                if (ddonkey == null) {
+                    error("Where's donkey?")
+                    return
+                }
+
+                UseCommand.instance?.runCommand("use", arrayOf("sneak", ddonkey.getEntityId() as String))
+
+                toCancel += 16
+
+                RollBackCommand.instance?.runCommand("rollback", arrayOf("double"))
+
+                state = false
             }
         }
     }
@@ -57,7 +85,7 @@ class RollBackDupeCommand : Command("rdupe") {
         direction : EnumPacketDirection,
         id : Int,
         packet : Packet<*>,
-        buff : ByteBuf
+        buff : ByteBuf?
     ) : Packet<*>? {
         if(state) {
             if(toCancel.contains(id)) {

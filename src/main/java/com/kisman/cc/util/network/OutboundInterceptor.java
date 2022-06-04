@@ -33,7 +33,7 @@ public class OutboundInterceptor extends NettyPacketEncoder {
   protected void encode(ChannelHandlerContext context, Packet<?> packet, ByteBuf out) throws IOException, Exception {
 
     if(! this.isPlay) {
-      EnumConnectionState state = (EnumConnectionState)(context.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get());
+      EnumConnectionState state = (context.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get());
       this.isPlay = (state == EnumConnectionState.PLAY);
     }
 

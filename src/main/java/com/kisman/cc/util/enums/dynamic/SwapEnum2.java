@@ -21,7 +21,7 @@ public class SwapEnum2 {
 
         Silent(task.task(arg -> {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
-            mc.player.inventory.currentItem = arg.fetch(1);
+            mc.player.inventory.currentItem = arg.fetch(0);
             return null;
         })),
 

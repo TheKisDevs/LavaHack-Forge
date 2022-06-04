@@ -24,9 +24,9 @@ class NetworkHandler {
         direction : EnumPacketDirection,
         id : Int,
         packet : Packet<*>,
-        buff : ByteBuf
+        buff : ByteBuf?
     ) : Packet<*>? {
-        var packet1: Packet<*> = RollBackDupeCommand.instance?.packetReceived(direction, id, packet, buff)!!
+        var packet1: Packet<*> = (if(RollBackDupeCommand.instance != null) RollBackDupeCommand.instance?.packetReceived(direction, id, packet, buff)!! else packet)
         return packet1;
     }
 
