@@ -1,5 +1,8 @@
 package org.cubic.dynamictask;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 public abstract class AbstractTask<R> {
 
     private final Class<?>[] types;
@@ -19,6 +22,24 @@ public abstract class AbstractTask<R> {
         return new DelegateAbstractTask<>(cls);
     }
 
+    public static <T> AbstractTask<T> directTask(Class<T> ret, T retValue){
+        return new AbstractTask<T>() {
+            @Override
+            protected T call(ArgumentFetcher arg) {
+                return retValue;
+            }
+        };
+    }
+
+    public static <T> AbstractTask<T> noArgsTask(Class<T> ret, Callable<T> task) {
+        return new AbstractTask<T>() {
+            @Override
+            protected T call(ArgumentFetcher arg) {
+                return task.call();
+            }
+        };
+    }
+
     public static class DelegateAbstractTask<R> {
 
         private final Class<?>[] types;
@@ -35,5 +56,10 @@ public abstract class AbstractTask<R> {
                 }
             };
         }
+    }
+
+    private interface Callable<R> {
+
+        R call();
     }
 }
