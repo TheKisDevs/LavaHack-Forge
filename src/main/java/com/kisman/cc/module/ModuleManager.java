@@ -169,6 +169,7 @@ public class ModuleManager {
 		modules.add(new BowExploitUwU());
 		modules.add(new CactusLeave());
 		modules.add(new Disabler());
+		modules.add(new FastMove());
 		modules.add(new Ghost());
 		modules.add(new TickShiftTeleport());
 //		modules.add(new KismansDupe());
