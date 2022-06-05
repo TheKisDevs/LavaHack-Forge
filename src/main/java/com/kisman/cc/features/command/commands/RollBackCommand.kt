@@ -32,7 +32,7 @@ class RollBackCommand() : Command("rollback") {
     }
 
     private var pos : Vec3d? = null
-    private var id : Int = 0
+    private var id : Int = -1
 
     override fun runCommand(s: String?, args: Array<out String>?) {
         if(id == -1) {
@@ -44,26 +44,26 @@ class RollBackCommand() : Command("rollback") {
 
             if (args?.size!! > 1) {
                 mode = try {
-                    Mode.valueOf(args[1])
+                    Mode.valueOf(args[1].toLowerCase())
                 } catch (e: IllegalArgumentException) {
                     error("Usage: $syntax")
                     return
                 }
             }
 
-            val toSend: Array<Packet<*>?> = arrayOfNulls<Packet<*>?>(3)
+            val toSend: Array<Packet<*>> = emptyArray()
 
-            if (mode === Mode.SIMPLE) {
+            if (mode == Mode.SIMPLE) {
                 toSend[0] = CPacketConfirmTeleport(id) // Set position server-side
                 toSend[1] = CPacketPlayer.Rotation(
                     mc.player.rotationYaw,
                     mc.player.rotationPitch,
                     true
                 ) // Refresh player chunk map
-            } else if (mode === Mode.YEET) {
+            } else if (mode == Mode.YEET) {
                 if (mc.player.fishEntity != null) {
-                    val fish = mc.player.fishEntity!!.caughtEntity
-                    if (fish != null && fish === mc.player.getRidingEntity()) {
+                    val fish = mc.player.fishEntity?.caughtEntity
+                    if (fish != null && fish == mc.player.getRidingEntity()) {
                         val d0: Double = pos?.x!! - mc.player.fishEntity!!.posX
                         val d1: Double = pos?.y!! - mc.player.fishEntity!!.posY
                         val d2: Double = pos?.z!! - mc.player.fishEntity!!.posZ
@@ -84,7 +84,7 @@ class RollBackCommand() : Command("rollback") {
 
                 val evoid = EntityVoid(mc.world, 0)
                 evoid.setPosition(ride.posX, ride.posY - 0.3, ride.posZ)
-                if (mode === Mode.DOUBLE) {
+                if (mode == Mode.DOUBLE) {
                     toSend[0] = CPacketConfirmTeleport(id)
                     toSend[1] = CPacketPlayer.Rotation(mc.player.rotationYaw, mc.player.rotationPitch, true)
                 } else { // Tmp rollback
@@ -110,7 +110,7 @@ class RollBackCommand() : Command("rollback") {
 
             // Send everything in a row, hope it gets computed within the same tick
             for(packet in toSend) {
-                mc.player.connection.sendPacket(packet!!)
+                mc.player.connection.sendPacket(packet)
             }
             if (mode !== Mode.TMP) this.onDisconnect()
 

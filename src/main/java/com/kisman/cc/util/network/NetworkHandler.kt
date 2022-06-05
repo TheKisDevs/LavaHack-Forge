@@ -1,6 +1,7 @@
 package com.kisman.cc.util.network
 
 import com.kisman.cc.features.command.commands.RollBackDupeCommand
+import com.kisman.cc.features.module.Debug.PacketIDGetterTest
 import io.netty.buffer.ByteBuf
 import net.minecraft.network.*
 import net.minecraftforge.common.MinecraftForge
@@ -26,7 +27,9 @@ class NetworkHandler {
         packet : Packet<*>,
         buff : ByteBuf?
     ) : Packet<*>? {
-        var packet1: Packet<*> = (if(RollBackDupeCommand.instance != null) RollBackDupeCommand.instance?.packetReceived(direction, id, packet, buff)!! else packet)
+        //TODO make custom event
+        var packet1: Packet<*>? = (if(RollBackDupeCommand.instance != null) RollBackDupeCommand.instance?.packetReceived(direction, id, packet, buff)!! else packet)
+        packet1 = (if(PacketIDGetterTest.instance != null) PacketIDGetterTest.instance?.packetReceived(direction, id, packet, buff)!! else packet)
         return packet1;
     }
 

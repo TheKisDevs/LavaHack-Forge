@@ -1,12 +1,14 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.event.events.EventIngameOverlay;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -182,5 +184,21 @@ public class MixinGuiIngame extends Gui {
                 GlStateManager.disableBlend();
             }
         }
+    }
+
+    @Redirect(method = "renderGameOverlay", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))
+    private EntityPlayerSP redirectOverlayPlayer(Minecraft mc) {
+        EventEntityFreeCam event = new EventEntityFreeCam();
+        event.entity = mc.player;
+        Kisman.EVENT_BUS.post(event);
+        return event.entity;
+    }
+
+    @Redirect(method = "renderPotionEffects", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))
+    private EntityPlayerSP redirectPotionPlayer(Minecraft mc) {
+        EventEntityFreeCam event = new EventEntityFreeCam();
+        event.entity = mc.player;
+        Kisman.EVENT_BUS.post(event);
+        return event.entity;
     }
 }

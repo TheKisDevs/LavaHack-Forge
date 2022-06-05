@@ -151,13 +151,14 @@ public class ModuleManager {
 //		modules.add(new ElytraEquip());
 		modules.add(new FastLadder());
 		modules.add(new ForgeBypass());
+		modules.add(new FreeCam());
 		modules.add(new FreeCamBypass());
 		modules.add(new Interaction());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Refill());
 		modules.add(new Replenish());
-		modules.add(new RotationLook());
+		modules.add(new RotationLock());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
@@ -169,8 +170,8 @@ public class ModuleManager {
 		modules.add(new BowExploitUwU());
 		modules.add(new CactusLeave());
 		modules.add(new Disabler());
+		modules.add(new FastMove());
 		modules.add(new Ghost());
-		modules.add(new TickShiftTeleport());
 //		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new NoGlitchBlocks());
@@ -180,6 +181,7 @@ public class ModuleManager {
 		modules.add(new SoundCoordLogger());
 		modules.add(new Teleport());
 		modules.add(new TickShift());
+		modules.add(new TickShiftTeleport());
 		modules.add(new Timer());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());

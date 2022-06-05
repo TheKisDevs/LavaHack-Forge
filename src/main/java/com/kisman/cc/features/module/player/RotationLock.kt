@@ -8,9 +8,9 @@ import com.kisman.cc.settings.Setting
  * @author _kisman_
  * @since 17:15 of 04.06.2022
  */
-class RotationLook : Module(
-    "RotationLook",
-    "Will look your yaw and pitch.",
+class RotationLock : Module(
+    "RotationLock",
+    "Locks your yaw and pitch.",
     Category.PLAYER
 ) {
     private val yaw = register(Setting("Yaw", this, 0.0, -180.0, 180.0, true))

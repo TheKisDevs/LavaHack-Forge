@@ -25,10 +25,12 @@ class RollBackDupeCommand : Command("rdupe") {
     }
 
     private var state = false
+    private var canceller = false
 
     override fun runCommand(s: String?, args: Array<out String>?) {
         if(args?.size!! > 1 && args[1] == "reset") {
             state = false
+            canceller = false
         } else {
             //TODO исключения для пакен кенцела
 
@@ -48,6 +50,7 @@ class RollBackDupeCommand : Command("rdupe") {
 
                 //canceler
                 toCancel.remove(16)
+                canceller = true
 
                 UseCommand.instance?.runCommand("use", arrayOf(ride.getEntityId() as String))
 
@@ -57,7 +60,7 @@ class RollBackDupeCommand : Command("rdupe") {
                     AbstractChestHorse::class.java, mc.player.entityBoundingBox.grow(6.0, 2.0, 6.0)
                 )
 
-                var ddonkey: Entity? = null
+                var ddonkey: AbstractChestHorse? = null
                 for (c in donkeys) {
                     if (c !== mc.player.getRidingEntity()) {
                         ddonkey = c
@@ -87,7 +90,7 @@ class RollBackDupeCommand : Command("rdupe") {
         packet : Packet<*>,
         buff : ByteBuf?
     ) : Packet<*>? {
-        if(state) {
+        if(canceller) {
             if(toCancel.contains(id)) {
                 return null
             }

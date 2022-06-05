@@ -28,6 +28,7 @@ public class CommandManager {
         commands.add(new Slider());
         commands.add(new OpenDir());
 		commands.add(new RollBackCommand());
+		commands.add(new RollBackDupeCommand());
         commands.add(new SaveConfigCommand());
 		commands.add(new SetKey());
         commands.add(new Toggle());
