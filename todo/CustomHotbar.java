@@ -1,6 +1,6 @@
-package com.kisman.cc.module.render;
+package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.module.*;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Render2DUtil;
 import i.gishreloaded.gishcode.utils.visual.ColorUtils;

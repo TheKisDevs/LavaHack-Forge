@@ -6,7 +6,7 @@ import com.kisman.cc.event.events.StringEvent;
 import com.kisman.cc.gui.vega.component.Component;
 import com.kisman.cc.gui.vega.component.components.Button;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

@@ -2,8 +2,8 @@ package com.kisman.cc.gui.halq.components.sub.modules;
 
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 

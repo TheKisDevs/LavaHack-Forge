@@ -1,7 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.event.events.RenderEntityEvent;
-import com.kisman.cc.module.render.*;
+import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;

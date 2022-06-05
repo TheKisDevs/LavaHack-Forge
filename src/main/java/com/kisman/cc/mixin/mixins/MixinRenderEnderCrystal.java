@@ -1,7 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.render.CrystalModifier;
-import com.kisman.cc.util.OutlineUtils;
+import com.kisman.cc.features.module.render.CrystalModifier;
+import com.kisman.cc.util.render.OutlineUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderEnderCrystal;

@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.render.*;
+import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;

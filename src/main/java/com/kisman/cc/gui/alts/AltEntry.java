@@ -2,7 +2,7 @@ package com.kisman.cc.gui.alts;
 
 import java.util.Map;
 
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 

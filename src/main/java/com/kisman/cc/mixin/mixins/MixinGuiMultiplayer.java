@@ -1,9 +1,9 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.gui.alts.AltManagerGUI;
-import com.kisman.cc.viaforge.ViaForge;
-import com.kisman.cc.viaforge.gui.GuiProtocolSelector;
-import com.kisman.cc.viaforge.protocol.ProtocolCollection;
+import com.kisman.cc.features.viaforge.ViaForge;
+import com.kisman.cc.features.viaforge.gui.GuiProtocolSelector;
+import com.kisman.cc.features.viaforge.protocol.ProtocolCollection;
 import net.minecraft.client.gui.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;

@@ -1,7 +1,7 @@
 package com.kisman.cc.util.render.cubic;
 
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.Rendering;
+import com.kisman.cc.util.render.Rendering;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class DelegateRenderBuilder extends RenderBuilder {

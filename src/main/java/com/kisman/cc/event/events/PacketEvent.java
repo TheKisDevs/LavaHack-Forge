@@ -1,7 +1,7 @@
 package com.kisman.cc.event.events;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.catlua.util.PacketUtil;
+import com.kisman.cc.features.catlua.util.PacketUtil;
 import com.kisman.cc.event.Event;
 import net.minecraft.network.Packet;
 

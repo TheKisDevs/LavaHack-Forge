@@ -1,11 +1,11 @@
 package com.kisman.cc.util.render.cubic
 
-import com.kisman.cc.module.Module
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
-import com.kisman.cc.util.Rendering
+import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.util.math.AxisAlignedBB
 

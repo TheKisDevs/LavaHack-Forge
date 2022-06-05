@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.render.NoRender;
+import com.kisman.cc.features.module.render.NoRender;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.entity.item.EntityItem;
 import org.spongepowered.asm.mixin.Mixin;

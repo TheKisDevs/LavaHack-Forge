@@ -1,6 +1,6 @@
 package com.kisman.cc.util.math
 
-import com.kisman.cc.module.combat.autorer.math.MathUtilKt
+import com.kisman.cc.features.module.combat.autorer.math.MathUtilKt
 import kotlin.math.sqrt
 
 inline fun distance(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): Double {

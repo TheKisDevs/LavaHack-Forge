@@ -1,6 +1,6 @@
 package com.kisman.cc.util.movement
 
-import com.kisman.cc.module.combat.autorer.math.MathUtilKt
+import com.kisman.cc.features.module.combat.autorer.math.MathUtilKt
 import com.kisman.cc.util.math.distanceSq
 import com.kisman.cc.util.math.toLong
 import it.unimi.dsi.fastutil.longs.LongSet

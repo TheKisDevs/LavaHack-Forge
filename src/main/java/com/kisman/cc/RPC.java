@@ -1,7 +1,7 @@
 package com.kisman.cc;
 
 import club.minnced.discord.rpc.*;
-import com.kisman.cc.module.client.DiscordRPCModule;
+import com.kisman.cc.features.module.client.DiscordRPCModule;
 import com.kisman.cc.util.Globals;
 import com.kisman.cc.util.enums.RPCImages;
 

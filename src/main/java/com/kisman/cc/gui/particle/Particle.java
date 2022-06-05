@@ -6,7 +6,7 @@ import com.kisman.cc.util.render.ColorUtils;
 
 import java.util.*;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.util.Colour;
 
 import org.lwjgl.opengl.*;

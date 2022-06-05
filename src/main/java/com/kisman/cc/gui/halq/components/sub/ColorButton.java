@@ -6,7 +6,7 @@ import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
@@ -15,8 +15,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static com.kisman.cc.util.Render2DUtil.drawGradientRect;
-import static com.kisman.cc.util.Render2DUtil.drawLeftGradientRect;
+import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
+import static com.kisman.cc.util.render.Render2DUtil.drawLeftGradientRect;
 
 public class ColorButton implements Component {
     private final Setting setting;

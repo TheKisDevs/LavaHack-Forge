@@ -25,7 +25,7 @@
  */
 package com.kisman.cc.util.process.web;
 
-import com.kisman.cc.module.misc.DDOSModule;
+import com.kisman.cc.features.module.misc.DDOSModule;
 import com.kisman.cc.util.chat.other.ChatUtils;
 
 import java.io.IOException;

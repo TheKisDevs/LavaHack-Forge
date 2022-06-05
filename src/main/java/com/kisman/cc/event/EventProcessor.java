@@ -1,19 +1,19 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.command.commands.Flip;
+import com.kisman.cc.features.command.commands.Flip;
 import com.kisman.cc.event.events.*;
 
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.util.hypixel.ConfigHandler;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.*;
-import com.kisman.cc.module.combat.*;
-import com.kisman.cc.module.player.ElytraEquip;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.*;
+import com.kisman.cc.features.module.combat.*;
+import com.kisman.cc.features.module.player.ElytraEquip;
 import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 
-import com.kisman.cc.util.modules.CustomMainMenu;
+import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.Minecraft;

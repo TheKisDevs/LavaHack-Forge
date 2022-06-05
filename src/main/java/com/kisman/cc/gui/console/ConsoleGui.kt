@@ -3,7 +3,7 @@ package com.kisman.cc.gui.console
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
 import com.kisman.cc.gui.MainGui
-import com.kisman.cc.module.client.Config
+import com.kisman.cc.features.module.client.Config
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook

@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins.viaforge;
 
-import com.kisman.cc.viaforge.ViaForge;
+import com.kisman.cc.features.viaforge.ViaForge;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;

@@ -1,10 +1,10 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.misc.ChatModifier;
-import com.kisman.cc.module.render.NoRender;
-import com.kisman.cc.util.MathUtil;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.features.module.misc.ChatModifier;
+import com.kisman.cc.features.module.render.NoRender;
+import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;

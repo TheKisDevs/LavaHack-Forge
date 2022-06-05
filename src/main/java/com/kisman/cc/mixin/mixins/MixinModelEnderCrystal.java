@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.render.CrystalModifier;
+import com.kisman.cc.features.module.render.CrystalModifier;
 import net.minecraft.client.model.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;

@@ -1,8 +1,8 @@
 package com.kisman.cc.gui.halq.components.sub.hud
 
 import com.kisman.cc.gui.api.Component
-import com.kisman.cc.hud.HudModule
-import com.kisman.cc.util.Render2DUtil
+import com.kisman.cc.features.hud.HudModule
+import com.kisman.cc.util.render.Render2DUtil
 import java.awt.Color
 
 /**

@@ -1,7 +1,7 @@
 package com.kisman.cc.util.chat.cubic;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.ReflectUtil;
 import net.minecraft.client.Minecraft;
 

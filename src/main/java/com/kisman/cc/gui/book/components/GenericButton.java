@@ -1,15 +1,11 @@
 package com.kisman.cc.gui.book.components;
 
-import com.kisman.cc.module.exploit.BookFormatModule;
+import com.kisman.cc.features.module.exploit.BookFormatModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.Side;
-
-import java.awt.*;
 
 @SideOnly(Side.CLIENT)
 public class GenericButton extends ActionButton {

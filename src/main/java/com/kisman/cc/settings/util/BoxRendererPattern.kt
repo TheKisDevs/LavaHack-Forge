@@ -1,7 +1,7 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.module.Module
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour

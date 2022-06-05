@@ -3,7 +3,7 @@ package com.kisman.cc.gui.particle;
 import java.util.*;
 import java.util.List;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 
 import com.kisman.cc.util.Colour;
 import org.lwjgl.opengl.*;

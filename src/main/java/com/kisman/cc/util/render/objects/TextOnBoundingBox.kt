@@ -1,8 +1,8 @@
 package com.kisman.cc.util.render.objects
 
-import com.kisman.cc.module.client.CustomFontModule
+import com.kisman.cc.features.module.client.CustomFontModule
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.customfont.CustomFontUtil
+import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.enums.Object3dTypes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager

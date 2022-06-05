@@ -1,9 +1,9 @@
 package com.kisman.cc.gui.csgo.components;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.csgo.*;
 import com.kisman.cc.gui.csgo.Window;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 
 public class LineButton extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;

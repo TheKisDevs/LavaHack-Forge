@@ -1,5 +1,9 @@
 package com.kisman.cc.util.process;
 
+import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
+import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
@@ -7,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
-import com.kisman.cc.module.combat.Surround;
+import com.kisman.cc.features.module.combat.Surround;
 import com.kisman.cc.util.*;
 
 public class DynamicTrapUtil implements Globals {

@@ -6,7 +6,7 @@ import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.util.TextUtil;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;

@@ -1,6 +1,6 @@
 package com.kisman.cc.util.render.konas;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 

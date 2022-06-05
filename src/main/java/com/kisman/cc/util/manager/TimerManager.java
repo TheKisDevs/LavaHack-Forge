@@ -1,6 +1,6 @@
 package com.kisman.cc.util.manager;
 
-import com.kisman.cc.module.Module;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.TickRateUtil;
 import net.minecraft.client.Minecraft;
 

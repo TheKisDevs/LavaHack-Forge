@@ -1,8 +1,8 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.module.misc.Reverse;
-import com.kisman.cc.module.misc.Spin;
-import com.kisman.cc.module.render.*;
+import com.kisman.cc.features.module.misc.Reverse;
+import com.kisman.cc.features.module.misc.Spin;
+import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.*;

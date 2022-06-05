@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.auth;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.protect.keyauth.KeyAuthApp;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;

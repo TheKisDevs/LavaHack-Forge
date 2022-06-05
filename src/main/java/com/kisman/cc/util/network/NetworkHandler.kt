@@ -1,6 +1,6 @@
 package com.kisman.cc.util.network
 
-import com.kisman.cc.command.commands.RollBackDupeCommand
+import com.kisman.cc.features.command.commands.RollBackDupeCommand
 import io.netty.buffer.ByteBuf
 import net.minecraft.network.*
 import net.minecraftforge.common.MinecraftForge

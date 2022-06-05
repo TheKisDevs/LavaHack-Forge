@@ -25,8 +25,8 @@ package org.luaj.vm2.lib.jse;
 import java.lang.reflect.*;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.catlua.mapping.ForgeMappings;
-import com.kisman.cc.catlua.parser.entry.ClassEntry;
+import com.kisman.cc.features.catlua.mapping.ForgeMappings;
+import com.kisman.cc.features.catlua.parser.entry.ClassEntry;
 import net.minecraft.client.Minecraft;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;

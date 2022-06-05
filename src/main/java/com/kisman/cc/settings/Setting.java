@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.module.Module;
+import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.util.*;
 import net.minecraft.entity.Entity;

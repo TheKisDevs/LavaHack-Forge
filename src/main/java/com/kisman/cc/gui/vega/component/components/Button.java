@@ -1,13 +1,13 @@
 package com.kisman.cc.gui.vega.component.components;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.VegaGui;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.VegaGui;
 import com.kisman.cc.gui.vega.component.*;
 import com.kisman.cc.gui.vega.component.components.sub.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Render2DUtil;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;

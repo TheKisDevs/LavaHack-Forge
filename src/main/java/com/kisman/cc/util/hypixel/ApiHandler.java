@@ -2,7 +2,7 @@ package com.kisman.cc.util.hypixel;
 
 import com.google.gson.*;
 import com.kisman.cc.Kisman;
-import com.kisman.cc.command.commands.Flip;
+import com.kisman.cc.features.command.commands.Flip;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;

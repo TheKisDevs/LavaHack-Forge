@@ -1,11 +1,11 @@
 package com.kisman.cc.gui.vega.component;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.*;
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.vega.component.components.Button;
 import com.kisman.cc.util.Timer;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 

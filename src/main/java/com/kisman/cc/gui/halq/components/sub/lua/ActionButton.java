@@ -1,9 +1,9 @@
 package com.kisman.cc.gui.halq.components.sub.lua;
 
-import com.kisman.cc.catlua.module.ModuleScript;
+import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 

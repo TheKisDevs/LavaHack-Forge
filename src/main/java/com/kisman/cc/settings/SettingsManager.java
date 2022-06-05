@@ -2,7 +2,7 @@ package com.kisman.cc.settings;
 
 import java.util.*;
 
-import com.kisman.cc.module.Module;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.SettingGroup;
 
 /**

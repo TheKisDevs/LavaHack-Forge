@@ -2,8 +2,8 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventIngameOverlay;
-import com.kisman.cc.module.render.*;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.features.module.render.*;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;

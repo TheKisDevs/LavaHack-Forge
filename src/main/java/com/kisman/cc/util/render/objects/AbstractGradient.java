@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static com.kisman.cc.util.RenderUtil.glColor;
+import static com.kisman.cc.util.render.RenderUtil.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 public class AbstractGradient extends Gui {

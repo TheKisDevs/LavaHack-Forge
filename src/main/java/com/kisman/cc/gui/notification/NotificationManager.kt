@@ -1,10 +1,10 @@
 package com.kisman.cc.gui.notification/*
 package com.kisman.cc.gui.notification
 
-import com.kisman.cc.module.combat.autorer.util.Easing
+import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.Render2DUtil
-import com.kisman.cc.util.customfont.CustomFontUtil
+import com.kisman.cc.util.render.Render2DUtil
+import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.TimerUtils
 import org.lwjgl.opengl.GL11.glTranslatef
 import java.util.function.Supplier

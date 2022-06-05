@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.csgo.components;
 
-import com.kisman.cc.module.Module;
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.csgo.*;
 
 public class Spoiler extends AbstractComponent {

@@ -1,10 +1,10 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.module.combat.KillAura;
-import com.kisman.cc.module.render.*;
+import com.kisman.cc.features.module.combat.KillAura;
+import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.PlayerUtil;
+import com.kisman.cc.util.entity.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.*;

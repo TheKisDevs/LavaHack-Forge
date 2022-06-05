@@ -1,16 +1,17 @@
 package com.kisman.cc.gui.csgo.components;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.csgo.*;
 import com.kisman.cc.gui.csgo.Window;
 import com.kisman.cc.util.*;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static com.kisman.cc.util.Render2DUtil.drawGradientRect;
+import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
 
 public class ColorButton extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;

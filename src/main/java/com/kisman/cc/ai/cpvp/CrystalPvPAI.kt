@@ -7,8 +7,8 @@ import com.kisman.cc.ai.cpvp.action.actions.HoleFillerAction
 import com.kisman.cc.ai.cpvp.action.actions.MoveToHoleAction
 import com.kisman.cc.ai.cpvp.action.actions.MoveToTargetAction
 import com.kisman.cc.ai.cpvp.util.CPvPAIHole
-import com.kisman.cc.util.EntityUtil
-import com.kisman.cc.util.HoleUtil
+import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.world.HoleUtil
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.enums.CPvPAIMovePriorities
 import com.kisman.cc.util.enums.CPvPAIMoveTriggers

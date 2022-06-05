@@ -1,12 +1,12 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.module.Module
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.EntitySetting
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.RenderUtil
-import com.kisman.cc.util.Rendering
+import com.kisman.cc.util.render.RenderUtil
+import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.enums.EntityESPModes
 import com.kisman.cc.util.enums.EntityESPTypes
 import com.kisman.cc.util.enums.RenderingRewriteModes

@@ -2,8 +2,8 @@
 
  import com.kisman.cc.Kisman;
  import com.kisman.cc.event.events.EventClientTick;
- import com.kisman.cc.module.player.Interaction;
- import com.kisman.cc.viaforge.ViaForge;
+ import com.kisman.cc.features.module.player.Interaction;
+ import com.kisman.cc.features.viaforge.ViaForge;
  import net.minecraft.client.entity.EntityPlayerSP;
  import net.minecraft.client.main.GameConfiguration;
  import net.minecraft.client.multiplayer.PlayerControllerMP;

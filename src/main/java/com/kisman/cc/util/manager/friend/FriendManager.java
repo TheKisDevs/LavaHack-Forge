@@ -1,6 +1,6 @@
 package com.kisman.cc.util.manager.friend;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderToolTip;
-import com.kisman.cc.module.render.NoRender;
+import com.kisman.cc.features.module.render.NoRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.item.ItemStack;

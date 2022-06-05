@@ -1,8 +1,8 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.gui.other.container.ItemESP;
-import com.kisman.cc.module.render.ContainerModifier;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.features.module.render.ContainerModifier;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;

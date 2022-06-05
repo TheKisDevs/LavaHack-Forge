@@ -3,7 +3,7 @@ package com.kisman.cc.gui.other.search
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.Render2DUtil
+import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.enums.SearchGuiItemsNameModes
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.gui.TextFieldHandler

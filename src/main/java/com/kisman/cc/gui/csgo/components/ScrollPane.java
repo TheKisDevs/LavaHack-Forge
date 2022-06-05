@@ -1,11 +1,11 @@
 package com.kisman.cc.gui.csgo.components;
 
-import com.kisman.cc.module.client.Config;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.csgo.AbstractComponent;
 import com.kisman.cc.gui.csgo.Window;
 import com.kisman.cc.gui.csgo.IRenderer;
 import com.kisman.cc.gui.csgo.layout.ILayoutManager;
-import com.kisman.cc.util.Render2DUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 
 import java.awt.*;
 

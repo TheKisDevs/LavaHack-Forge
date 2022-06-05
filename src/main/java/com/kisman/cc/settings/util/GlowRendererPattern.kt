@@ -1,10 +1,10 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.module.Module
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.Render2DUtil
+import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.enums.GlowModes
 import java.awt.Color
 import java.util.function.Supplier

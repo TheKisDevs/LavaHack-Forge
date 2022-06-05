@@ -1,6 +1,6 @@
 package com.kisman.cc.util.chat.cubic;
 
-import com.kisman.cc.module.Module;
+import com.kisman.cc.features.module.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;

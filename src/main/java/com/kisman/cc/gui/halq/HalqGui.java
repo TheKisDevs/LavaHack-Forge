@@ -2,13 +2,13 @@ package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.gui.MainGui;
-import com.kisman.cc.module.Category;
-import com.kisman.cc.module.client.Config;
-import com.kisman.cc.module.client.GuiModule;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;

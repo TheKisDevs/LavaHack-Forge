@@ -3,7 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.module.render.*;
+import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;

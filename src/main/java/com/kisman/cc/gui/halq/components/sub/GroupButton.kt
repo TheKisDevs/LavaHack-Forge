@@ -5,7 +5,7 @@ import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.Openable
 import com.kisman.cc.gui.halq.util.LayerMap
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.util.Render2DUtil
+import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.objects.AbstractGradient
 import com.kisman.cc.util.render.objects.Vec4d
