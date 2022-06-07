@@ -22,11 +22,5 @@ class TestEnum {
             println("Test1: ${arg.fetch<String>(0)}")
             null
         })
-        /*Test2(SwapEnum2.task.task { arg: ArgumentFetcher ->
-            if (arg.fetch(1)) return@task null
-            SwapEnum2.mc.player.connection.sendPacket(CPacketHeldItemChange(arg.fetch(0)))
-            SwapEnum2.mc.player.inventory.currentItem = arg.fetch(0)
-            null
-        })*/
     }
 }

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(GuiScreen.class)
-public abstract class MixinGuiScreen extends Gui implements GuiYesNoCallback {
+public class MixinGuiScreen extends Gui implements GuiYesNoCallback {
     @Shadow public Minecraft mc;
     @Shadow protected FontRenderer fontRenderer;
     @Shadow protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {}

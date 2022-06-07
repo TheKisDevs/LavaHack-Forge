@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
@@ -31,18 +32,23 @@ public class ModeButton implements Component {
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         this.index = setting.getSelectedIndex();
-        Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
+        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+
+        if(open) {
+            Render2DUtil.drawRectWH(x + 5, y + HalqGui.height + offset, width - 10, getHeight() - HalqGui.height, HalqGui.backgroundColor.getRGB());
+        }
+
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
-                    new Vec4d(
-                            new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
-                            new double[] {x + width / 2, y + offset + HalqGui.offsets},
-                            new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
-                            new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
-                    ),
-                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
-                    HalqGui.getGradientColour(count).getColor()
+                        new Vec4d(
+                                new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
+                                new double[] {x + width / 2, y + offset + HalqGui.offsets},
+                                new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
+                                new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                        ),
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                        HalqGui.getGradientColour(count).getColor()
                     )
             );
             Render2DUtil.drawAbstract(

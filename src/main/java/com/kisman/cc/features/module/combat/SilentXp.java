@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.*;

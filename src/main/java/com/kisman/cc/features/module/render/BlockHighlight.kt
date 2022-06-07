@@ -4,6 +4,9 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
 import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
+import com.kisman.cc.features.module.render.blockhighlight.BlockHighlightRenderer
+import com.kisman.cc.features.module.render.blockhighlight.Selection
+import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
@@ -32,6 +35,14 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     private val crystalInfoColor = register(ciGroup.add(Setting("Crystal Info Color", this, "Crystal Info Color", Colour(255, 255, 255, 255)).setVisible { crystalInfo.valBoolean }))
     private val crystalInfoTerrain = register(ciGroup.add(Setting("Crystal Info Terrain", this, false).setVisible { crystalInfo.valBoolean }))
     private val crystalInfoTargetRange = register(ciGroup.add(Setting("Crystal Info Target Range", this, 15.0, 0.0, 20.0, true).setVisible { crystalInfo.valBoolean }))
+    
+    //Advanced renderer
+    private val adGroup = register(SettingGroup(Setting("Advanced Renderer", this)))
+    private val advancedRenderer = register(adGroup.add(Setting("Advanced Renderer", this, false)))
+    private val movingLength = register(adGroup.add(Setting("Moving Length", this, 400.0, 0.0, 1000.0, Slider.NumberType.TIME)))
+    private val fadeLength = register(adGroup.add(Setting("Fade Length", this, 200.0, 0.0, 1000.0, Slider.NumberType.TIME)))
+
+    private val renderer = BlockHighlightRenderer()
 
     companion object {
         var instance : BlockHighlight? = null
@@ -43,10 +54,17 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         instance = this
     }
 
+    override fun onEnable() {
+        super.onEnable()
+        renderer.reset()
+    }
+
     @SubscribeEvent fun onRenderWorld(event: RenderWorldLastEvent) {
         if (mc.objectMouseOver == null) return
         val hitObject = mc.objectMouseOver
         var box: Box? = null
+        var selection : Selection? = null
+        var shouldReturn = false
 
         when (hitObject.typeOfHit) {
             RayTraceResult.Type.ENTITY -> {
@@ -57,30 +75,53 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     val lookVec = viewEntity.lookVec
                     val sightEnd = eyePos.add(lookVec.scale(6.0))
                     val hitSide = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
+                    selection = Selection(entity.entityBoundingBox)
                     box = Box.byAABB(hitObject.entityHit.entityBoundingBox)
                     if (hitSideOnly.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitSide))
                 }
             }
             RayTraceResult.Type.BLOCK -> {
-                box = Box.byAABB(
-                    mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos)
-                        .grow(offset.valDouble)
-                )
-                if (hitSideOnly.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitObject.sideHit))
+                selection = Selection(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos))
+                box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos).grow(offset.valDouble))
+                if (hitSideOnly.valBoolean){
+                    box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitObject.sideHit))
+                }
             }
-            else -> return
+            else -> {
+                shouldReturn = true
+                selection = null
+            }
         }
 
-        if (box == null) return
+        if (box == null || (selection == null && !shouldReturn)) return
 
-        BoxObject(
-            box,
-            color.colour,
-            mode.valEnum as BoxRenderModes,
-            width.valFloat,
-            depth.valBoolean,
-            alpha.valBoolean
-        ).draw(event.partialTicks)
+        if(advancedRenderer.valBoolean) {
+            renderer.onRenderWorld(
+                movingLength.valFloat,
+                fadeLength.valFloat,
+                selection,
+                color.colour,
+                mode.valEnum as BoxRenderModes,
+                width.valFloat,
+                depth.valBoolean,
+                alpha.valBoolean,
+                event.partialTicks,
+                offset.valDouble
+            )
+
+            if(shouldReturn) {
+                return
+            }
+        } else {
+            BoxObject(
+                box,
+                color.colour,
+                mode.valEnum as BoxRenderModes,
+                width.valFloat,
+                depth.valBoolean,
+                alpha.valBoolean
+            ).draw(event.partialTicks)
+        }
 
         if(crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
             val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)

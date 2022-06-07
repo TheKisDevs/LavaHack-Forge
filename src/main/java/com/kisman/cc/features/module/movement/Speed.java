@@ -10,7 +10,7 @@ import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.*;
 
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.movement.MovementUtil;
 import me.zero.alpine.listener.*;

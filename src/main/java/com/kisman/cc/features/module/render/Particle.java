@@ -39,8 +39,9 @@ public class Particle extends Module {
             if(heart) {
                 mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
                 mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 0.5, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
-                mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 0.5, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
-                mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 0.5, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
+                mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 1, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
+                mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 1.5, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
+                mc.world.spawnParticle(EnumParticleTypes.HEART, mc.player.posX, mc.player.posY + 2, mc.player.posZ, mc.player.motionX, mc.player.motionY, mc.player.motionZ, 1);
             }
         }
     }

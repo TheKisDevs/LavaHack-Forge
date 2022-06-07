@@ -17,6 +17,11 @@ class BindList : HudModule(
 ) {
     private val offsets = register(Setting("Offsets", this, 2.0, 0.0, 10.0, true))
 
+    private val types = register(SettingGroup(Setting("Types", this)))
+    private val modules = register(types.add(Setting("Modules", this, true)))
+    private val hudModules = register(types.add(Setting("Hud Modules", this, false)))
+    private val checkBoxes = register(types.add(Setting("Check Boxes", this, true)))
+
     private val colorG = register(SettingGroup(Setting("Colors", this)))
     private val colorActive = register(colorG.add(Setting("Active Color", this, "Active Color", Colour(0, 255, 0, 255))))
     private val colorInactive = register(colorG.add(Setting("Inactive Color", this, "Inactive Color", Colour(255, 0, 0, 255))))
@@ -27,15 +32,30 @@ class BindList : HudModule(
 
         val list : ArrayList<Element> = ArrayList()
 
-        for(module in Kisman.instance.moduleManager.modules) {
-            if(module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
-                list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
+        if(modules.valBoolean) {
+            for (module in Kisman.instance.moduleManager.modules) {
+                if (module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
+                    list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
+                }
             }
         }
 
-        for(setting in Kisman.instance.settingsManager.settings) {
-            if(setting.key != Keyboard.KEY_NONE && setting.isCheck) {
-                list += Element("${setting.parentMod.name}->${setting.name} [${Keyboard.getKeyName(setting.key)}]", setting.valBoolean)
+        if(hudModules.valBoolean) {
+            for (module in Kisman.instance.hudModuleManager.modules) {
+                if (module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
+                    list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
+                }
+            }
+        }
+
+        if(checkBoxes.valBoolean) {
+            for (setting in Kisman.instance.settingsManager.settings) {
+                if (setting.key != Keyboard.KEY_NONE && setting.isCheck) {
+                    list += Element(
+                        "${setting.parentMod.name}->${setting.name} [${Keyboard.getKeyName(setting.key)}]",
+                        setting.valBoolean
+                    )
+                }
             }
         }
 
@@ -56,8 +76,7 @@ class BindList : HudModule(
         }
 
         w = CustomFontUtil.getStringWidth(list[0].text).toDouble()
-        h = list.size.toDouble() * (CustomFontUtil.getFontHeight()
-            .toDouble() + 2.0)
+        h = list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + offsets.valInt)
     }
 
     class Element(

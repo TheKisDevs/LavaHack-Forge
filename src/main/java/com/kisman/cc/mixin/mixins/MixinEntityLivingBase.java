@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
 import net.minecraft.entity.*;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.*;
@@ -31,8 +32,12 @@ public class MixinEntityLivingBase extends Entity {
 
     @Inject(method = "getArmSwingAnimationEnd", at = @At("HEAD"), cancellable = true)
     private void yesido(CallbackInfoReturnable<Integer> cir) {
-        EventArmSwingAnimationEnd event = new EventArmSwingAnimationEnd();
+        int armSwingAnimationEnd;
+        if (this.isPotionActive(MobEffects.HASTE)) armSwingAnimationEnd = 6 - (1 + this.getActivePotionEffect(MobEffects.HASTE).getAmplifier());
+        else armSwingAnimationEnd = this.isPotionActive(MobEffects.MINING_FATIGUE) ? 6 + (1 + this.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
+        EventArmSwingAnimationEnd event = new EventArmSwingAnimationEnd(armSwingAnimationEnd);
         Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()) cir.setReturnValue(event.getArmSwingAnimationEnd());
+        cir.setReturnValue(event.getArmSwingAnimationEnd());
+        cir.cancel();
     }
 }

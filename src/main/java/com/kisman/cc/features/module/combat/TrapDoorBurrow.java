@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;

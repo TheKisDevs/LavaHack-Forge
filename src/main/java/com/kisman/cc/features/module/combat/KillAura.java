@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.RenderUtil2;
 import com.kisman.cc.util.world.RotationUtils;

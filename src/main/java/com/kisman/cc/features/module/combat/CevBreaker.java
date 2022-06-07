@@ -4,9 +4,11 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.gui.csgo.components.Slider.NumberType;
 import com.kisman.cc.settings.*;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
+import com.kisman.cc.util.enums.RotationModes;
+import com.kisman.cc.util.enums.SurroundSupportModes;
+import com.kisman.cc.util.enums.SwitchModes;
 import com.kisman.cc.util.process.*;
-import com.kisman.cc.util.process.DynamicTrapUtil.*;
 
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.other.ChatUtils;
@@ -24,7 +26,7 @@ public class CevBreaker extends Module {
     //another
     private Setting range = new Setting("Range", this, 4, 1, 5, false);
     private Setting targetRange = new Setting("Target Range", this, 15, 1, 30, true);
-    private Setting switch_ = new Setting("Switch Mode", this, RewriteSwitchModes.Silent);
+    private Setting switch_ = new Setting("Switch Mode", this, SwitchModes.Silent);
 
     //crystal
     private Setting placeDelay = new Setting("Crystal Place Delay", this, 10, 0, 5000, NumberType.TIME);
@@ -40,9 +42,9 @@ public class CevBreaker extends Module {
     private Setting raytrace = new Setting("Trap RayTrace", this, false);
     private Setting packet = new Setting("Trap Packet Place", this, true);
     private Setting dynamic = new Setting("Trap Rewrite Dynamic", this, false);
-    private Setting supportBlocks = new Setting("Trap Support Blocks", this, RewriteSupportModes.Dynamic);
+    private Setting supportBlocks = new Setting("Trap Support Blocks", this, SurroundSupportModes.Dynamic);
     private Setting rewriteRetries = new Setting("Trap Retries", this, 0, 0, 20, true);
-    private Setting rotateMode = new Setting("Trap Reite Rotate Mode", this, RewriteRotateModes.Silent);
+    private Setting rotateMode = new Setting("Trap Reite Rotate Mode", this, RotationModes.Silent);
 
     //packet break mode
     private Setting packetMineRange = new Setting("Packet Break Range", this, 10, 5, 15, true);

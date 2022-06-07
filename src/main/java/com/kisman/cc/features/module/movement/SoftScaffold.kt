@@ -5,8 +5,8 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.world.BlockUtil2
-import com.kisman.cc.util.entity.InventoryUtil
-import com.kisman.cc.util.entity.PlayerUtil
+import com.kisman.cc.util.entity.player.InventoryUtil
+import com.kisman.cc.util.entity.player.PlayerUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.enums.dynamic.SwapEnum2

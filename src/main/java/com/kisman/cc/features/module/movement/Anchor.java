@@ -6,7 +6,7 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.block.material.Material;

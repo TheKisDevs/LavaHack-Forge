@@ -8,7 +8,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.RotationUtils;
@@ -24,12 +24,12 @@ import java.util.*;
 public class AntiTrap extends Module {
     public static AntiTrap instance;
 
-    private final Setting mode = new Setting("Mode", this, "MotionTick", new ArrayList<>(Arrays.asList("MotionTick", "ClientTick")));
-    private final Setting delay = new Setting("Delay", this, 400, 0, 1000, true);
-    private final Setting switchMode = new Setting("SwitchMode", this, SwitchModes.None);
-    private final Setting rotate = new Setting("Rotate", this, Rotate.NONE);
-    private final Setting sortY = new Setting("SortY", this, true);
-    private final Setting onlyInHole = new Setting("OnlyInHole", this, true);
+    private final Setting mode = register(new Setting("Mode", this, "MotionTick", new ArrayList<>(Arrays.asList("MotionTick", "ClientTick"))));
+    private final Setting delay = register(new Setting("Delay", this, 400, 0, 1000, true));
+    private final Setting switchMode = register(new Setting("SwitchMode", this, SwitchModes.None));
+    private final Setting rotate = register(new Setting("Rotate", this, Rotate.NONE));
+    private final Setting sortY = register(new Setting("SortY", this, true));
+    private final Setting onlyInHole = register(new Setting("OnlyInHole", this, true));
 
     private final TimerUtils timer = new TimerUtils();
 
@@ -42,13 +42,6 @@ public class AntiTrap extends Module {
         super("AntiTrap", "", Category.COMBAT);
 
         instance = this;
-
-        setmgr.rSetting(mode);
-        setmgr.rSetting(delay);
-        setmgr.rSetting(switchMode);
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(sortY);
-        setmgr.rSetting(onlyInHole);
     }
 
     public void onEnable() {

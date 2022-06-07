@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module.client
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.EventArmSwingAnimationEnd
 import com.kisman.cc.event.events.EventAspect
 import com.kisman.cc.event.events.EventUpdateLightmap
 import com.kisman.cc.event.events.PacketEvent
@@ -59,11 +60,13 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
         Kisman.EVENT_BUS.subscribe(receive)
         Kisman.EVENT_BUS.subscribe(updateLightmap)
         Kisman.EVENT_BUS.subscribe(aspectEvent)
+        Kisman.EVENT_BUS.subscribe(animationListener)
         oldFov = mc.gameSettings.fovSetting
     }
 
     override fun onDisable() {
         super.onDisable()
+        Kisman.EVENT_BUS.unsubscribe(animationListener)
         Kisman.EVENT_BUS.unsubscribe(aspectEvent)
         Kisman.EVENT_BUS.unsubscribe(updateLightmap)
         Kisman.EVENT_BUS.unsubscribe(receive)
@@ -110,6 +113,12 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
             event.blue = customFogColor.colour.b1
         }
     }
+
+    private val animationListener = Listener<EventArmSwingAnimationEnd>(EventHook {
+        if(animation.valBoolean) {
+            it.armSwingAnimationEnd = animationSpeed.valInt
+        }
+    })
 
     private val aspectEvent = Listener<EventAspect>(EventHook {
         if(aspect.valBoolean) {

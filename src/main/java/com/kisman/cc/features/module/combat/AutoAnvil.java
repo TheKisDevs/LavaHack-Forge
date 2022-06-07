@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.world.BlockUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;

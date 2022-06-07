@@ -1,5 +1,6 @@
-package com.kisman.cc.util.entity;
+package com.kisman.cc.util.entity.player;
 
+import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;

@@ -42,9 +42,11 @@ public class ModuleManager {
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
 		modules.add(new EventSystemTest());
+		modules.add(new FallbackableFontTest());
 		modules.add(new HelloWorld());
 		modules.add(new Meow());
 		modules.add(new NoMove());
+		modules.add(new PacketIDGetterTest());
 		modules.add(new TextFieldTest());
 
 		//combat
@@ -60,7 +62,6 @@ public class ModuleManager {
 		modules.add(new AutoObsidian());
 		modules.add(new AutoPot());
 		modules.add(new AutoRer());
-		modules.add(new AutoTotem());
 		modules.add(new AutoTrap());
 		modules.add(new AntiTrapDoorBurrow());
 		modules.add(new BowAimBot());
@@ -72,6 +73,7 @@ public class ModuleManager {
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAura());
+		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
@@ -92,7 +94,7 @@ public class ModuleManager {
 //		modules.add(new Test());
 		modules.add(new VegaGui());
 		//render
-		modules.add(new Animation());
+//		modules.add(new Animation());
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
@@ -123,6 +125,7 @@ public class ModuleManager {
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
@@ -166,13 +169,10 @@ public class ModuleManager {
 		modules.add(new AntiVanish());
 		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
-		modules.add(new BowExploitRewrite());
-		modules.add(new BowExploitUwU());
-		modules.add(new CactusLeave());
-		modules.add(new Disabler());
+		modules.add(new DamageLeave());
+		modules.add(new FakePearl());
 		modules.add(new FastMove());
 		modules.add(new Ghost());
-//		modules.add(new KismansDupe());
 		modules.add(new MiddleClick());
 		modules.add(new NoGlitchBlocks());
 		modules.add(new PacketEat());
@@ -197,7 +197,6 @@ public class ModuleManager {
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
 		modules.add(new Funny());
-		//modules.add(new GhostEnderPearl());
 		modules.add(new HotbarScroller());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
@@ -212,7 +211,6 @@ public class ModuleManager {
 		modules.add(new Tracker());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
-//		modules.add(new WebhookSpammer());
 		modules.add(new XCarry());
 	}
 	

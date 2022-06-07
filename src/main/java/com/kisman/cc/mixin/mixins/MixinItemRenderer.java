@@ -3,9 +3,10 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.features.module.combat.KillAura;
+import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -43,7 +44,7 @@ public class MixinItemRenderer {
 
             boolean isEating = PlayerUtil.IsEating();
             boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
-            boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && KillAura.instance.isToggled() && KillAura.instance.target != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
+            boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && ((KillAuraRewrite) Kisman.instance.moduleManager.getModule("KillAuraRewrite")).getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
             if (isSwingMain) {
                 switch (SwingAnimation.instance.strongMode.getValString()) {

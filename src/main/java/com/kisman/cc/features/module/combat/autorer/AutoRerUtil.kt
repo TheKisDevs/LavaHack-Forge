@@ -2,13 +2,16 @@ package com.kisman.cc.features.module.combat.autorer
 
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.entity.InventoryUtil
+import com.kisman.cc.util.entity.player.InventoryUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import kotlin.math.max
+import kotlin.math.min
 
 class AutoRerUtil {
     companion object {

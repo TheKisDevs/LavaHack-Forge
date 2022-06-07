@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.block.Block;

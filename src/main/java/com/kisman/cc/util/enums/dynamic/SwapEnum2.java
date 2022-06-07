@@ -11,6 +11,8 @@ public class SwapEnum2 {
     private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(Void.class, Integer.class, Boolean.class);
 
     public enum Swap {
+        None(task.task(arg -> null)),
+
         Normal(task.task(arg -> {
             if(arg.fetch(1))
                 return null;

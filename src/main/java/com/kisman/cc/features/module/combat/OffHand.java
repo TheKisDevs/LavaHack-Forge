@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;

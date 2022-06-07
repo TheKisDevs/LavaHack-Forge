@@ -4,28 +4,23 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.manager.RotationManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 
 public class AntiBow extends Module {
-    private Setting packet = new Setting("Packet", this, false);
-    private Setting range = new Setting("Range", this, 40, 0, 40, false);
-    private Setting checkUse = new Setting("CheckUse", this, false);
-    private Setting maxUse = new Setting("MaxUse", this, 10, 0, 20, true);
-    private Setting bowInHandCheck = new Setting("BowInHandCheck", this, true);
+    private final Setting packet = register(new Setting("Packet", this, false));
+    private final Setting range = register(new Setting("Range", this, 40, 0, 40, false));
+    private final Setting checkUse = register(new Setting("CheckUse", this, false));
+    private final Setting maxUse = register(new Setting("MaxUse", this, 10, 0, 20, true));
+    private final Setting bowInHandCheck = register(new Setting("BowInHandCheck", this, true));
 
     private boolean bool;
+    private int oldSlot;
 
     public AntiBow() {
         super("AntiBow", Category.COMBAT);
-
-        setmgr.rSetting(packet);
-        setmgr.rSetting(range);
-        setmgr.rSetting(checkUse);
-        setmgr.rSetting(maxUse);
-        setmgr.rSetting(bowInHandCheck);
     }
 
     public void onEnable() {
@@ -36,8 +31,6 @@ public class AntiBow extends Module {
         if(mc.player == null && mc.world == null) return;
 
         EntityPlayer target = EntityUtil.getTarget(range.getValFloat());
-        int oldSlot = -1;
-        int shieldSlot = InventoryUtil.findItem(Items.SHIELD, 0, 9);
 
         if(target == null) {
             if(bool) {
@@ -48,6 +41,8 @@ public class AntiBow extends Module {
                 bool = false;
             }
         } else {
+            int shieldSlot = InventoryUtil.findItem(Items.SHIELD, 0, 9);
+
             if(shieldSlot == -1) {
                 target = null;
                 return;

@@ -3,7 +3,8 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.SurroundSupportModes;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
@@ -33,7 +34,7 @@ public class AutoTrap extends Module {
     protected final Setting packet = new Setting("Packet Place", this, true);
     protected final Setting rewrite = new Setting("Rewrite", this, false);
     protected final Setting dynamic = new Setting("Rewrite Dynamic", this, false);
-    protected final Setting supportBlocks = new Setting("Rewrite Support Blocks", this, RewriteSupportModes.Dynamic);
+    protected final Setting supportBlocks = new Setting("Rewrite Support Blocks", this, SurroundSupportModes.Dynamic);
     protected final Setting rewriteRetries = new Setting("Rewrite Retries", this, 0, 0, 20, true);
     protected final Setting switch_ = new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent);
     protected final Setting rotateMode = new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent);
@@ -128,7 +129,7 @@ public class AutoTrap extends Module {
         ArrayList<BlockPos> finalPosList = new ArrayList<>();
 
         for(BlockPos pos : startPosList) {
-            if(!supportBlocks.getValString().equalsIgnoreCase(Surround.SupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || supportBlocks.getValString().equalsIgnoreCase(Surround.SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
+            if(!supportBlocks.checkValString(SurroundSupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || supportBlocks.checkValString(SurroundSupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
             if(surroundPlacing.getValBoolean()) finalPosList.add(pos);
         }
 
@@ -362,6 +363,5 @@ public class AutoTrap extends Module {
     }
 
     public enum RewriteSwitchModes {Normal, Silent}
-    public enum RewriteSupportModes {None, Dynamic, Static}
     public enum RewriteRotateModes {None, Normal, Silent}
 }

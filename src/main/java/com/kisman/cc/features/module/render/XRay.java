@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.world.BlockInteractionHelper;
 import net.minecraft.block.Block;

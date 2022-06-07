@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.WorldUtil;

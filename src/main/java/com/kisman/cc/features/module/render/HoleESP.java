@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.render.GeometryMasks;
 import com.kisman.cc.util.render.KonasRenderer;
 import com.kisman.cc.util.render.RenderUtil;

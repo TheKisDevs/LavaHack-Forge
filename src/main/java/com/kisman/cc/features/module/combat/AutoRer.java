@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
@@ -124,9 +124,9 @@ public class AutoRer extends Module {
 
     private final Setting renderLine = render_.add(new Setting("RenderLine", this, "Render"));
     private final Setting render = render_.add(new Setting("Render", this, true));
-    private RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, () -> true, null, render_).preInit();
-    private final Setting movingLength = render_.add(new Setting("Moving Length", this, 400, 0, 1000, true).setVisible(render::getValBoolean));
-    private final Setting fadeLength = render_.add(new Setting("Fade Length", this, 200, 0, 1000, true).setVisible(render::getValBoolean));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
+    private final Setting movingLength = render_.add(new Setting("Moving Length", this, 400, 0, 1000, Slider.NumberType.TIME).setVisible(render::getValBoolean));
+    private final Setting fadeLength = render_.add(new Setting("Fade Length", this, 200, 0, 1000, Slider.NumberType.TIME).setVisible(render::getValBoolean));
 
     private final Setting text = render_.add(new Setting("Text", this, true));
 
@@ -802,7 +802,10 @@ public class AutoRer extends Module {
             } catch (Exception ignored) {}
         }
 
-        RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
+        RayTraceResult result = null;
+        try {
+            result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
+        } catch(Exception ignored) {}
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
         if(!swing.checkValString(SwingMode.None.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));

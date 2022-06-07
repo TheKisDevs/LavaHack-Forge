@@ -94,10 +94,10 @@ class AutoRerRenderer {
         )
     }
 
-    fun update(placeInfo: PlaceInfo) {
+    fun update(placeInfo: PlaceInfo?) {
         val newBlockPos = placeInfo?.blockPos
         if (newBlockPos != lastBlockPos) {
-            currentPos = AutoRerUtil.toVec3dCenter(placeInfo.blockPos)
+            currentPos = AutoRerUtil.toVec3dCenter(placeInfo?.blockPos!!)
             prevPos = lastRenderPos ?: currentPos
             lastUpdateTime = System.currentTimeMillis()
             if (lastBlockPos == null) startTime = System.currentTimeMillis()

@@ -1,4 +1,4 @@
-package com.kisman.cc.util.entity;
+package com.kisman.cc.util.entity.player;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;

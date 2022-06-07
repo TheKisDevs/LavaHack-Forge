@@ -1,6 +1,8 @@
 package com.kisman.cc.util.process;
 
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.features.module.combat.Surround;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.SurroundSupportModes;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.RotationUtils;
@@ -11,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
-import com.kisman.cc.features.module.combat.Surround;
 import com.kisman.cc.util.*;
 
 public class DynamicTrapUtil implements Globals {
@@ -108,7 +109,7 @@ public class DynamicTrapUtil implements Globals {
         ArrayList<BlockPos> finalPosList = new ArrayList<>();
 
         for(BlockPos pos : startPosList) {
-            if(!supportBlocks.equalsIgnoreCase(Surround.SupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || supportBlocks.equalsIgnoreCase(Surround.SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
+            if(!supportBlocks.equalsIgnoreCase(SurroundSupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || supportBlocks.equalsIgnoreCase(Surround.SupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
             if(surroundPlacing) finalPosList.add(pos);
         }
 
@@ -212,6 +213,5 @@ public class DynamicTrapUtil implements Globals {
     }
 
     public enum RewriteSwitchModes {Normal, Silent}
-    public enum RewriteSupportModes {None, Dynamic, Static}
     public enum RewriteRotateModes {None, Normal, Silent}
 }

@@ -23,7 +23,7 @@ public class CustomFontModule extends Module {
 
     public CustomFontModule() {
         super("CustomFont", "custom font", Category.CLIENT);
-        super.setDisplayInfo(() -> "[" + mode.getValString() + (fallbackFont.getValBoolean() ? "|" + fallbackMode.getValString() : "") + "]");
+        super.setDisplayInfo(() -> "[" + mode.getValString() + (fallbackFont.getValBoolean() ? " | " + fallbackMode.getValString() : "") + "]");
 
         instance = this;
     }

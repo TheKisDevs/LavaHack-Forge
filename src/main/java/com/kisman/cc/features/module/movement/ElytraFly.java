@@ -5,7 +5,7 @@ import com.kisman.cc.event.events.EventPlayerTravel;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
 import me.zero.alpine.listener.*;
 import net.minecraft.init.Items;

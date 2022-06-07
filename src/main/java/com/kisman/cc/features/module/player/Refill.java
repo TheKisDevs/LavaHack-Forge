@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import net.minecraft.init.*;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;

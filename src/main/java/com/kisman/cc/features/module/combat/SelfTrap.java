@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.kisman.cc.util.chat.other.ChatUtils;

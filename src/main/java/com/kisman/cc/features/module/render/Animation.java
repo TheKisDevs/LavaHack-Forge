@@ -34,6 +34,5 @@ public class Animation extends Module {
         if(mc.player == null) return;
         if(mc.player.isPotionActive(MobEffects.HASTE)) event.setArmSwingAnimationEnd(speed.getValInt() - (mc.player.getActivePotionEffect(MobEffects.HASTE).getAmplifier()));
         else event.setArmSwingAnimationEnd(mc.player.isPotionActive(MobEffects.MINING_FATIGUE) ? speed.getValInt() + (mc.player.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier() + 1) * 2 : speed.getValInt());
-        event.cancel();
     });
 }

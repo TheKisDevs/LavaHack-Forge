@@ -1,17 +1,15 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 //import com.kisman.cc.util.Rotation;
 //import com.kisman.cc.util.Rotation.*;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.entity.InventoryUtil;
-import com.kisman.cc.util.entity.PlayerUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.*;
-import me.zero.alpine.listener.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;
 import net.minecraft.init.Blocks;

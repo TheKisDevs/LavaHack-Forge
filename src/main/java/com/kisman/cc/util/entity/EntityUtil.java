@@ -103,13 +103,13 @@ public class EntityUtil {
         return getTarget(range, range);
     }
 
-    public static Entity getTarget(float range, float wallRange, boolean players, boolean animals, boolean monsters) {
+    public static Entity getTarget(float range, float wallRange, boolean players, boolean passive, boolean monsters) {
         Entity currentTarget = null;
         for (Entity entity1 : mc.world.loadedEntityList) {
             if(!(entity1 instanceof EntityLivingBase)) continue;
             EntityLivingBase entity = (EntityLivingBase) entity1;
             if(!antibotCheck(entity) && AntiBot.instance.isToggled() && AntiBot.instance.mode.checkValString("Zamorozka")) continue;
-            if (!isntValid(entity, range, wallRange) && !isntValid2(entity, players, animals, monsters)) {
+            if (!isntValid(entity, range, wallRange) && !isntValid2(entity, players, passive, monsters)) {
                 if (currentTarget == null) currentTarget = entity;
                 else if (mc.player.getDistanceSq(entity) < mc.player.getDistanceSq(currentTarget)) currentTarget = entity;
             }
@@ -126,7 +126,7 @@ public class EntityUtil {
     }
 
     public static boolean isntValid2(final EntityLivingBase entity, boolean players, boolean animals, boolean monsters) {
-        return (players && entity instanceof EntityPlayer) || (animals && isPassive(entity)) || (monsters && isMobAggressive(entity));
+        return (players && !(entity instanceof EntityPlayer)) || (animals && !isPassive(entity)) || (monsters && !isMobAggressive(entity));
     }
 
     public static boolean isPassive(Entity e) {

@@ -4,8 +4,8 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.world.BlockInteractionHelper
-import com.kisman.cc.util.entity.InventoryUtil
-import com.kisman.cc.util.entity.PlayerUtil
+import com.kisman.cc.util.entity.player.InventoryUtil
+import com.kisman.cc.util.entity.player.PlayerUtil
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.item.ItemPickaxe

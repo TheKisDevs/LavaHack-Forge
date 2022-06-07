@@ -1,6 +1,6 @@
 package com.kisman.cc.util.world;
 
-import com.kisman.cc.util.entity.InventoryUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
