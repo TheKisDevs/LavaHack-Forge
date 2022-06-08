@@ -1,7 +1,7 @@
 package com.kisman.cc.features.plugins.managers;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.mixin.mixins.accessor.IMinecraft;
+import com.kisman.cc.features.plugins.exceptions.ResourceException;
 import com.kisman.cc.util.Globals;
 
 import net.minecraft.client.resources.IResource;
@@ -101,7 +101,7 @@ public class PluginResourceManager implements Globals
             throw new IllegalStateException("Plugin ClassLoader was null!");
         }
 
-        MetadataSerializer mds = ((IMinecraft) mc).getMetadataSerializer();
+        MetadataSerializer mds = mc.metadataSerializer_;
         if (mds == null)
         {
             throw new IllegalStateException("MetadataSerializer was null!");

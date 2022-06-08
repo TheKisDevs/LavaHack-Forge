@@ -1,4 +1,4 @@
-package com.kisman.cc.features.plugins.utils;
+package com.kisman.cc.features.plugins.exceptions;
 
 public class BadPluginException extends Exception
 {

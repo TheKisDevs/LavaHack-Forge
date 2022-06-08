@@ -7,6 +7,7 @@ import com.kisman.cc.features.catlua.mapping.*;
 import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
 import com.kisman.cc.features.plugins.Plugin;
+import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
 import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.gui.other.music.MusicGui;
@@ -134,7 +135,8 @@ public class Kisman {
     //Config
     public ConfigManager configManager;
 
-
+    //Phobos Plugins
+    public PluginHandler pluginHandler;
 
 
     public Kisman() {
@@ -152,13 +154,6 @@ public class Kisman {
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
-        Environment.loadEnvironment();
-        PluginManager.getInstance().createPluginConfigs(PluginManager.class.getClassLoader());
-        PluginManager.getInstance().instantiatePlugins();
-        for (Plugin plugin : PluginManager.getInstance().getPlugins().values()) {
-            System.out.println("Plugin injecting");
-            plugin.load();
-        }
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
         managers = new Managers();
@@ -201,6 +196,9 @@ public class Kisman {
             luaRotation = new LuaRotation();
             scriptManager = new ScriptManager();
         }
+
+        pluginHandler = new PluginHandler();
+        pluginHandler.init();
 
         //gui's
         clickGuiNew = new ClickGuiNew();

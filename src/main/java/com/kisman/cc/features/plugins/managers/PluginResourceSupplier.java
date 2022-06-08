@@ -1,8 +1,8 @@
 package com.kisman.cc.features.plugins.managers;
 
+import com.kisman.cc.features.plugins.exceptions.ResourceException;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.data.MetadataSerializer;
-import net.minecraft.util.ResourceLocation;
 
 import java.io.InputStream;
 import java.util.Objects;

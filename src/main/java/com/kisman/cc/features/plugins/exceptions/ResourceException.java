@@ -1,4 +1,4 @@
-package com.kisman.cc.features.plugins.managers;
+package com.kisman.cc.features.plugins.exceptions;
 
 public class ResourceException extends Exception
 {

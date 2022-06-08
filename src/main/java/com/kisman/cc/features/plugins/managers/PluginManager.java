@@ -3,7 +3,7 @@ package com.kisman.cc.features.plugins.managers;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.plugins.Plugin;
 import com.kisman.cc.features.plugins.PluginConfig;
-import com.kisman.cc.features.plugins.utils.BadPluginException;
+import com.kisman.cc.features.plugins.exceptions.BadPluginException;
 import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.features.plugins.utils.Jsonable;
 import com.kisman.cc.features.plugins.utils.ReflectionUtil;
@@ -142,15 +142,15 @@ public class PluginManager
 
         Manifest manifest = jarFile.getManifest();
         Attributes attributes = manifest.getMainAttributes();
-        String configName = attributes.getValue("3arthh4ckConfig");
+        String configName = attributes.getValue("LavaHackConfig");
 
         if (configName == null)
         {
             throw new BadPluginException(jarFile.getName()
-                    + ": Manifest doesn't provide a 3arthh4ckConfig!");
+                    + ": Manifest doesn't provide a LavaHackConfig!");
         }
 
-        String vanilla = attributes.getValue("3arthh4ckVanilla");
+        String vanilla = attributes.getValue("LavaHackVanilla");
         switch (Environment.getEnvironment())
         {
             case VANILLA:
