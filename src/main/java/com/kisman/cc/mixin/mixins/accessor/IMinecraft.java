@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.mixins.accessor;
 
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.Timer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -18,4 +19,6 @@ public interface IMinecraft {
 
 	@Accessor("timer")
 	Timer getTimer();
+    @Accessor("metadataSerializer_")
+	MetadataSerializer getMetadataSerializer();
 }

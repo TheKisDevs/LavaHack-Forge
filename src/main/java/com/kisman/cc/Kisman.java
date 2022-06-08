@@ -6,6 +6,9 @@ import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.*;
 import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
+import com.kisman.cc.features.plugins.Plugin;
+import com.kisman.cc.features.plugins.managers.PluginManager;
+import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.util.manager.ServerManager;
@@ -117,6 +120,7 @@ public class Kisman {
     public SandBoxShaders sandBoxShaders;
     public Managers managers;
     public CapeAPI capeAPI;
+    public PluginManager pluginManager;
 
     public MainAiImpr aiImpr;
 
@@ -129,6 +133,8 @@ public class Kisman {
 
     //Config
     public ConfigManager configManager;
+
+
 
 
     public Kisman() {
@@ -146,6 +152,13 @@ public class Kisman {
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
+        Environment.loadEnvironment();
+        PluginManager.getInstance().createPluginConfigs(PluginManager.class.getClassLoader());
+        PluginManager.getInstance().instantiatePlugins();
+        for (Plugin plugin : PluginManager.getInstance().getPlugins().values()) {
+            System.out.println("Plugin injecting");
+            plugin.load();
+        }
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
         managers = new Managers();
@@ -157,6 +170,8 @@ public class Kisman {
         mc = Minecraft.getMinecraft();
 
         vectorUtils = new VectorUtils();
+        pluginManager = new PluginManager();
+
 
         friendManager = new FriendManager();
     	settingsManager = new SettingsManager();
@@ -173,6 +188,7 @@ public class Kisman {
 
         configManager = new ConfigManager("config");
         configManager.getLoader().init();
+
 
         //load glow shader
         ShaderShell.init();
