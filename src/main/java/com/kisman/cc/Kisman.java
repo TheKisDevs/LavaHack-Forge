@@ -27,7 +27,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.math.vectors.VectorUtils;
-import com.kisman.cc.util.network.NetworkHandler;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.protect.*;
 import com.kisman.cc.util.manager.Managers;
@@ -65,6 +64,7 @@ public class Kisman {
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
     public static final String imagesName = "Images/";
+    public static final String pluginsName = "Plugins/";
 
     public static Kisman instance;
     public static final EventManager EVENT_BUS = new EventManager();
@@ -130,7 +130,6 @@ public class Kisman {
     //Config
     public ConfigManager configManager;
 
-    public NetworkHandler networkHandler;
 
     public Kisman() {
         instance = this;
@@ -199,8 +198,6 @@ public class Kisman {
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);
         musicGui = new MusicGui();
-
-        networkHandler = new NetworkHandler();
 
         init = true;
     }
@@ -278,6 +275,10 @@ public class Kisman {
         if (!Files.exists(Paths.get(fileName + mappingName))) {
             Files.createDirectories(Paths.get(fileName + mappingName));
             LOGGER.info("Mapping dir created");
+        }
+        if (!Files.exists(Paths.get(fileName + pluginsName))) {
+            Files.createDirectories(Paths.get(fileName + pluginsName));
+            LOGGER.info("Plugins dir created");
         }
     }
 

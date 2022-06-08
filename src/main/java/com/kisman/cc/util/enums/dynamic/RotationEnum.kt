@@ -3,7 +3,6 @@ package com.kisman.cc.util.enums.dynamic
 import com.kisman.cc.util.entity.RotationSaver
 import com.kisman.cc.util.enums.RotationLogic
 import net.minecraft.client.Minecraft
-import net.minecraft.entity.Entity
 import org.cubic.dynamictask.*
 import net.minecraft.network.play.client.*
 import com.kisman.cc.util.world.*

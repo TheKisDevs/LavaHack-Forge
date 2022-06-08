@@ -32,9 +32,15 @@ class PacketIDGetterTest : Module(
         packet : Packet<*>,
         buff : ByteBuf?
     ) : Packet<*>? {
-        if(packet is CPacketPlayer.Position) {
-            ChatUtility.info().printClientModuleMessage("CPacketPlayer.Position id1($id), id2(${EnumConnectionState.getById(0).getPacketId(direction, packet)}), id3(${EnumConnectionState.getFromPacket(packet).id})")
-            toggled = false
+        if(toggled) {
+            if (packet is CPacketPlayer.Position) {
+                ChatUtility.info().printClientModuleMessage(
+                    "CPacketPlayer.Position id1($id), id2(${
+                        EnumConnectionState.getById(0).getPacketId(direction, packet)
+                    }), id3(${EnumConnectionState.getFromPacket(packet).id})"
+                )
+                toggled = false
+            }
         }
         return packet
     }
