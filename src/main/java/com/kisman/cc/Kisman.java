@@ -149,8 +149,6 @@ public class Kisman {
         } catch(Exception e) {
             remapped = true;
         }
-
-        AntiDump.check();
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
