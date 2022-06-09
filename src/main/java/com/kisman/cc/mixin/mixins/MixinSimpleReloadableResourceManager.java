@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @Mixin(SimpleReloadableResourceManager.class)
-public abstract class MixinSimpleReloadableResourceManager {
+public class MixinSimpleReloadableResourceManager {
     @Shadow @Final private MetadataSerializer rmMetadataSerializer;
     @Shadow @Final private Set<String> setResourceDomains;
 

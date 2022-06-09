@@ -6,7 +6,7 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "MixinAbstractClientPlayer",
-    "MixinSimpleReloadableResourceManager",
+    "MixinBlockRendererDispatcher",
     "MixinC00Handshake",
     "MixinEntity",
     "MixinEntityLivingBase",
@@ -39,6 +39,7 @@
     "MixinRenderManager",
     "MixinRenderPlayer",
     "MixinScreenShotHelper",
+    "MixinSimpleReloadableResourceManager",
     "MixinTileEntity",
     "MixinVisGraph",
     "MixinWorld",
@@ -55,8 +56,5 @@
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
     "viaforge.MixinNetworkManagerChInit"
-  ],
-  "client": [
-    "MixinBlockRendererDispatcher"
   ]
 }
