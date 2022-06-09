@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.render.cubic.BoundingBox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -154,6 +155,17 @@ public class Rendering {
         double y2 = (pos.getY() + 0.5) + s;
         double z2 = (pos.getZ() + 0.5) + s;
         return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+    }
+
+    public static BoundingBox animateMove(BoundingBox origin, BoundingBox destination, float partialTicks, float lengthPartialTicks){
+        float m = partialTicks / lengthPartialTicks;
+        double maxX = origin.maxX + ((destination.maxX - origin.maxX) * m) + (((destination.maxX - destination.minX) - (origin.maxX - origin.minX)) * 0.5 * m);
+        double maxY = origin.maxY + ((destination.maxY - origin.maxY) * m) + (((destination.maxY - destination.minY) - (origin.maxY - origin.minY)) * 0.5 * m);
+        double maxZ = origin.maxZ + ((destination.maxZ - origin.maxZ) * m) + (((destination.maxZ - destination.minZ) - (origin.maxZ - origin.minZ)) * 0.5 * m);
+        double minX = origin.minX + ((destination.maxX - origin.maxX) * m) + (((destination.maxX - destination.minX) - (origin.maxX - origin.minX)) * 0.5 * m);
+        double minY = origin.minY + ((destination.maxY - origin.maxY) * m) + (((destination.maxY - destination.minY) - (origin.maxY - origin.minY)) * 0.5 * m);
+        double minZ = origin.minZ + ((destination.maxZ - origin.maxZ) * m) + (((destination.maxZ - destination.minZ) - (origin.maxZ - origin.minZ)) * 0.5 * m);
+        return new BoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
     }
 
     public static void drawTripleGradient(AxisAlignedBB aabb, Colour colour1, Colour colour2, Colour colour3){
