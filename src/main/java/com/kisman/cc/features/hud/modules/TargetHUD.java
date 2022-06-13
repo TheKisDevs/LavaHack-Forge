@@ -47,7 +47,7 @@ public class TargetHUD extends HudModule {
 
     public void update() {
         target = AutoRer.currentTarget;
-        if(target == null) target = KillAura.instance.target;
+        if(target == null && KillAuraRewrite.Companion.getTarget() instanceof EntityPlayer) target = (EntityPlayer) KillAuraRewrite.Companion.getTarget();
     }
 
     @SubscribeEvent

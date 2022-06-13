@@ -12,36 +12,36 @@ import java.io.InputStream;
 public class CustomFontUtil {
     private static final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
-    public static AbstractFontRenderer comfortaal20 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 22));
-    public static AbstractFontRenderer comfortaal18 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 18));
-    public static AbstractFontRenderer comfortaal15 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 15));
-    public static AbstractFontRenderer comfortaal16 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 16));
+    public static AbstractFontRenderer comfortaal20 = new SizechangeableFontRenderer(getFontTTF("comfortaa-light", 22));
+    public static AbstractFontRenderer comfortaal18 = new SizechangeableFontRenderer(getFontTTF("comfortaa-light", 18));
+    public static AbstractFontRenderer comfortaal15 = new SizechangeableFontRenderer(getFontTTF("comfortaa-light", 15));
+    public static AbstractFontRenderer comfortaal16 = new SizechangeableFontRenderer(getFontTTF("comfortaa-light", 16));
 
-    public static AbstractFontRenderer comfortaab72 = new ExtendedFontRenderer(getFontTTF("comfortaa-bold", 72));
-    public static AbstractFontRenderer comfortaab55 = new ExtendedFontRenderer(getFontTTF("comfortaa-bold", 55));
-    public static AbstractFontRenderer comfortaab20 = new ExtendedFontRenderer(getFontTTF("comfortaa-bold", 22));
-    public static AbstractFontRenderer comfortaab18 = new ExtendedFontRenderer(getFontTTF("comfortaa-bold", 18));
-    public static AbstractFontRenderer comfortaab16 = new ExtendedFontRenderer(getFontTTF("comfortaa-bold", 16));
+    public static AbstractFontRenderer comfortaab72 = new SizechangeableFontRenderer(getFontTTF("comfortaa-bold", 72));
+    public static AbstractFontRenderer comfortaab55 = new SizechangeableFontRenderer(getFontTTF("comfortaa-bold", 55));
+    public static AbstractFontRenderer comfortaab20 = new SizechangeableFontRenderer(getFontTTF("comfortaa-bold", 22));
+    public static AbstractFontRenderer comfortaab18 = new SizechangeableFontRenderer(getFontTTF("comfortaa-bold", 18));
+    public static AbstractFontRenderer comfortaab16 = new SizechangeableFontRenderer(getFontTTF("comfortaa-bold", 16));
 
-    public static AbstractFontRenderer comfortaa20 = new ExtendedFontRenderer(getFontTTF("comfortaa-regular", 22));
-    public static AbstractFontRenderer comfortaa18 = new ExtendedFontRenderer(getFontTTF("comfortaa-regular", 18));
-    public static AbstractFontRenderer comfortaa15 = new ExtendedFontRenderer(getFontTTF("comfortaa-regular", 15));
+    public static AbstractFontRenderer comfortaa20 = new SizechangeableFontRenderer(getFontTTF("comfortaa-regular", 22));
+    public static AbstractFontRenderer comfortaa18 = new SizechangeableFontRenderer(getFontTTF("comfortaa-regular", 18));
+    public static AbstractFontRenderer comfortaa15 = new SizechangeableFontRenderer(getFontTTF("comfortaa-regular", 15));
 
-    public static AbstractFontRenderer consolas18 = new ExtendedFontRenderer(getFontTTF("consolas", 18));
-    public static AbstractFontRenderer consolas16 = new ExtendedFontRenderer(getFontTTF("consolas", 16));
-    public static AbstractFontRenderer consolas15 = new ExtendedFontRenderer(getFontTTF("consolas", 15));
+    public static AbstractFontRenderer consolas18 = new SizechangeableFontRenderer(getFontTTF("consolas", 18));
+    public static AbstractFontRenderer consolas16 = new SizechangeableFontRenderer(getFontTTF("consolas", 16));
+    public static AbstractFontRenderer consolas15 = new SizechangeableFontRenderer(getFontTTF("consolas", 15));
 
-    public static AbstractFontRenderer sfui19 = new ExtendedFontRenderer(getFontTTF("sf-ui", 19));
-    public static AbstractFontRenderer sfui18 = new ExtendedFontRenderer(getFontTTF("sf-ui", 18));
+    public static AbstractFontRenderer sfui19 = new SizechangeableFontRenderer(getFontTTF("sf-ui", 19));
+    public static AbstractFontRenderer sfui18 = new SizechangeableFontRenderer(getFontTTF("sf-ui", 18));
 
-    public static AbstractFontRenderer futura20 = new ExtendedFontRenderer(getFontTTF("futura-normal", 20));
-    public static AbstractFontRenderer futura18 = new ExtendedFontRenderer(getFontTTF("futura-normal", 18));
+    public static AbstractFontRenderer futura20 = new SizechangeableFontRenderer(getFontTTF("futura-normal", 20));
+    public static AbstractFontRenderer futura18 = new SizechangeableFontRenderer(getFontTTF("futura-normal", 18));
 
-    public static AbstractFontRenderer lexendDeca18 = new ExtendedFontRenderer(getFontTTF("lexenddeca-regular", 18));
+    public static AbstractFontRenderer lexendDeca18 = new SizechangeableFontRenderer(getFontTTF("lexenddeca-regular", 18));
 
-    public static AbstractFontRenderer century18 = new ExtendedFontRenderer(getFontTTF("main", 18));
+    public static AbstractFontRenderer century18 = new SizechangeableFontRenderer(getFontTTF("main", 18));
 
-    public static AbstractFontRenderer verdana18 = new ExtendedFontRenderer(new Font("Verdana", Font.PLAIN, 18));
+    public static AbstractFontRenderer verdana18 = new SizechangeableFontRenderer(new Font("Verdana", Font.PLAIN, 18));
 
     public static Font getFontTTF(String name, int size) {
         return getFontTTF(name, FontStyles.Plain, size);

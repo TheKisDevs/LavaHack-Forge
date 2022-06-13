@@ -1,7 +1,7 @@
 package com.kisman.cc.features.module.movement;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.features.module.combat.KillAura;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -37,7 +37,7 @@ public class TargetStrafe extends Module {
     }
 
     public void update() {
-        if(mc.player == null || mc.world == null || !KillAura.instance.isToggled()) return;
+        if(mc.player == null || mc.world == null || !Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled()) return;
 
         target = EntityUtil.getTarget(6);
 

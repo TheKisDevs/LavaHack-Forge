@@ -6,10 +6,8 @@ import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.*;
 import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
-import com.kisman.cc.features.plugins.Plugin;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
-import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.util.manager.ServerManager;
@@ -178,6 +176,8 @@ public class Kisman {
         serverManager = new ServerManager();
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
+        pluginHandler = new PluginHandler();
+        pluginHandler.init();
 
         configManager = new ConfigManager("config");
         configManager.getLoader().init();
@@ -194,9 +194,6 @@ public class Kisman {
             luaRotation = new LuaRotation();
             scriptManager = new ScriptManager();
         }
-
-        pluginHandler = new PluginHandler();
-        pluginHandler.init();
 
         //gui's
         clickGuiNew = new ClickGuiNew();
@@ -303,8 +300,15 @@ public class Kisman {
 
     //lua
     public static void reloadGUIs() {
-        if(mc.player != null || mc.world != null) mc.displayGuiScreen(null);
+        if(instance.halqGui == null) return;
+        boolean flag = false;
+        if(mc.currentScreen instanceof HalqGui) {
+            mc.displayGuiScreen(null);
+            flag = true;
+        }
         instance.halqGui.frames.forEach(Frame::reload);
-        instance.clickGuiNew = new ClickGuiNew();
+        if(flag) {
+            mc.displayGuiScreen(instance.halqGui);
+        }
     }
 }

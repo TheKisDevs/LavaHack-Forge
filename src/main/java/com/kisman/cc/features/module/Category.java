@@ -9,7 +9,7 @@ public enum Category {
 	MISC("Misc"),
 	EXPLOIT("Exploit"),
 	DEBUG("Debug"),
-	LUA("Lua");
+	LUA("Plugin&Lua");
 
 	private final String name;
 	Category(final String name) { this.name = name;}

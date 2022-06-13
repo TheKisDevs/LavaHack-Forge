@@ -72,7 +72,7 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
                 if(Charms.instance.customColor.getValBoolean()) {
                     final Setting color = Charms.instance.color;
                     if(Charms.instance.targetRender.getValBoolean()) {
-                        if(AutoRer.currentTarget == p_renderModel_1_ || KillAura.instance.target == p_renderModel_1_ || AutoCrystal.instance.target == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getColour().a1);
+                        if(AutoRer.currentTarget == p_renderModel_1_ || KillAuraRewrite.Companion.getTarget() == p_renderModel_1_ || AutoCrystal.instance.target == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getColour().a1);
                         else color.getColour().glColor();
                     } else if(FriendManager.instance.isFriend((EntityPlayer) p_renderModel_1_) && Charms.instance.friends.getValBoolean()) ColorUtils.glColor(ColorUtils.injectAlpha(Color.CYAN, color.getColour().getAlpha()));
                     else color.getColour().glColor();

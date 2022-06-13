@@ -1,21 +1,26 @@
-package com.kisman.cc.gui.halq.components.sub.lua;
+package com.kisman.cc.gui.halq.components.sub.plugins;
 
-import com.kisman.cc.features.catlua.module.ModuleScript;
-import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Component;
-import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.*;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.objects.AbstractGradient;
+import com.kisman.cc.util.render.objects.Vec4d;
 
-public class ActionButton implements Component {
-    private final ModuleScript script;
+/**
+ * @author _kisman_
+ * @since 20:07 of 09.06.2022
+ */
+public class PluginActionButton implements Component {
+    private final ModulePlugin plugin;
     private final Action action;
     private int x, y, count, offset;
     private int width = HalqGui.width;
     private int layer;
 
-    public ActionButton(ModuleScript script, Action action, int x, int y, int offset, int count) {
-        this.script = script;
+    public PluginActionButton(ModulePlugin plugin, Action action, int x, int y, int offset, int count) {
+        this.plugin = plugin;
         this.action = action;
         this.x = x;
         this.y = y;
@@ -38,11 +43,14 @@ public class ActionButton implements Component {
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) {
             switch(action) {
-                case RELOAD:
-                    script.reload();
+                case LOAD:
+                    plugin.load();
                     break;
                 case UNLOAD:
-                    script.unload(true);
+                    plugin.unload();
+                    break;
+                case RELOAD:
+                    plugin.reload();
                     break;
             }
         }
@@ -68,6 +76,11 @@ public class ActionButton implements Component {
         return count;
     }
 
+    @Override
+    public boolean visible() {
+        return (plugin.getLoaded() == (action != Action.LOAD));
+    }
+
     public void setWidth(int width) {this.width = width;}
     public void setX(int x) {this.x = x;}
     public int getX() {return x;}
@@ -85,8 +98,9 @@ public class ActionButton implements Component {
     }
 
     public enum Action {
-        RELOAD("Reload"),
-        UNLOAD("Unload");
+        LOAD("Load"),
+        UNLOAD("Unload"),
+        RELOAD("Reload");
 
         String name;
         Action(String name) {this.name = name;}

@@ -2,12 +2,14 @@ package com.kisman.cc.gui.halq.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.module.ModuleScript;
+import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.sub.hud.Draggable;
-import com.kisman.cc.gui.halq.components.sub.lua.ActionButton;
+import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
 import com.kisman.cc.gui.halq.components.sub.*;
+import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
 import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Module;
@@ -50,9 +52,15 @@ public class Button implements Component {
         int count1 = 0;
 
         if(mod instanceof ModuleScript) {
-            comps.add(new ActionButton((ModuleScript) mod, ActionButton.Action.RELOAD, x, y, offsetY, count1++));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++));
             offsetY += HalqGui.height;
-            comps.add(new ActionButton((ModuleScript) mod, ActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+        } else if(mod instanceof ModulePlugin) {
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+            offsetY += HalqGui.height;
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++));
         } else {
             comps.add(new BindButton(mod, x, y, offsetY, count1++));
             offsetY += HalqGui.height;

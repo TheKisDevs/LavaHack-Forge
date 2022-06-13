@@ -1,6 +1,7 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.sub.ColorButton;
 import com.kisman.cc.gui.halq.components.sub.ModeButton;
@@ -66,6 +67,12 @@ public class Frame {
                     mods.add(new Button(script, x, y, offsetY, count1++));
                     offsetY += HalqGui.height;
                 }
+            }
+
+            for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
+                if(mod instanceof ModulePlugin)
+                mods.add(new Button(mod, x, y, offsetY, count1++));
+                offsetY += HalqGui.height;
             }
         }
 

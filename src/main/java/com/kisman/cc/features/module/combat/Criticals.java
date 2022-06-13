@@ -33,7 +33,7 @@ public class Criticals extends Module {
         if(event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.action.equals(CPacketUseEntity.Action.ATTACK) && mc.player.onGround && !mc.player.isInLava() && !mc.player.isInWater() && !mc.player.isInWeb) {
-                if(onlyKillAura.getValBoolean() && !KillAura.instance.isToggled()) return;
+                if(onlyKillAura.getValBoolean() && !Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled()) return;
 
                 Entity entity = packet.getEntityFromWorld(mc.world);
 

@@ -16,6 +16,8 @@ public class CustomFontModule extends Module {
     public final Setting test2 = register(new Setting("Test 2", this, false));
     public final Setting fallbackFont = register(new Setting("Fallback Font", this, false));
     public final Setting fallbackMode = register(new Setting("Fallback Mode", this, "Futura", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century")));
+    public final Setting customSize = register(new Setting("Custom Size", this, false));
+    public final Setting size = register(new Setting("Size", this, 18.0, 5.0, 30.0, true).setVisible(customSize::getValBoolean));
 
     public static boolean turnOn = false;
 

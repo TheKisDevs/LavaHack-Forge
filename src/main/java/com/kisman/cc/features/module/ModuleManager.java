@@ -43,6 +43,7 @@ public class ModuleManager {
 		modules.add(new ChatPrint());
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
+		modules.add(new FutureShader());
 		modules.add(new HelloWorld());
 		modules.add(new Meow());
 		modules.add(new NoMove());
@@ -74,7 +75,6 @@ public class ModuleManager {
 		modules.add(new Flatten());
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
-		modules.add(new KillAura());
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
 		modules.add(new SelfTrap());

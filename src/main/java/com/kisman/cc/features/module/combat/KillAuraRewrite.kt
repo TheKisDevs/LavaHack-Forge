@@ -55,7 +55,9 @@ class KillAuraRewrite : Module(
     private val ccOnlyCrits = register(checks.add(Setting("CC Only Crits", this, true).setVisible { cooldownCheck.valBoolean }))
     private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
 
-    var target : Entity? = null
+    companion object {
+        public var target : Entity? = null
+    }
 
     init {
         setDisplayInfo { "[${if(target == null) "No targets" else target?.name }]" }

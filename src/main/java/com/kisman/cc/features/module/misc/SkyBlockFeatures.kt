@@ -63,6 +63,7 @@ class SkyBlockFeatures : Module(
         Kisman.EVENT_BUS.subscribe(renderBlock)
         hyperionExploitTimer.reset()
         hyperionExploitManualTimer.reset()
+        toRender.clear()
     }
 
     override fun onDisable() {
@@ -93,13 +94,13 @@ class SkyBlockFeatures : Module(
     }
 
     private val renderBlock = Listener<EventRenderBlock>(EventHook {
-        toRender.clear()
-
-        val block = it.state.block
         if(
-            block == Blocks.LEVER && espLever.valBoolean
+            mc.world.getBlockState(it.pos).block == Blocks.LEVER && espLever.valBoolean
             || RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(it.pos)) && crackedStoneBricks.valBoolean
-        ) toRender.add(it.pos)
+        ) {
+            toRender.add(it.pos)
+            renderer.draw(1f, espLeverColor.colour, it.pos, espLeverColor.colour.a)
+        }
     })
 
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
@@ -108,6 +109,7 @@ class SkyBlockFeatures : Module(
             if(block == Blocks.LEVER && espLever.valBoolean) renderer.draw(event.partialTicks, espLeverColor.colour, pos, espLeverColor.colour.a)
             if(RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(pos))) renderer.draw(event.partialTicks, crackedStoneBricksColor.colour, pos, crackedStoneBricksColor.colour.a)
         }
+        toRender.clear()
     }
 
     @SubscribeEvent fun onMouseInput(event : InputEvent.MouseInputEvent) {

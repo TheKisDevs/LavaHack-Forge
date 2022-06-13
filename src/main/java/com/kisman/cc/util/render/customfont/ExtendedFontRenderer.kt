@@ -9,7 +9,7 @@ import java.util.function.Supplier
  * @author _kisman_
  * @since 10:40 of 28.05.2022
  */
-class ExtendedFontRenderer(
+open class ExtendedFontRenderer(
     val font : Font
 ) : AbstractFontRenderer() {
     private val plain = CustomFontRenderer(font.deriveFont(FontStyles.Plain.style), true, true)
@@ -21,7 +21,7 @@ class ExtendedFontRenderer(
     private val test = Supplier { if(CustomFontModule.instance != null) CustomFontModule.instance.test.valBoolean else false }
     private val test2 = Supplier { if(CustomFontModule.instance != null) CustomFontModule.instance.test2.valBoolean else false }
 
-    private fun getCurrentFont() : CustomFontRenderer {
+    open fun getCurrentFont() : CustomFontRenderer {
         return when(style.get()) {
             FontStyles.Plain -> plain
             FontStyles.Bold -> bold
