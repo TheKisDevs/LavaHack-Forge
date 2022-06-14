@@ -56,7 +56,7 @@ class KillAuraRewrite : Module(
     private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
 
     companion object {
-        public var target : Entity? = null
+        var target : Entity? = null
     }
 
     init {

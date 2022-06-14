@@ -18,6 +18,7 @@ class CustomFontUtilKt {
                 "Futura" -> futura20
                 "SfUi" -> sfui19
                 "Century" -> century18
+                "Jellee Bold" -> jelleeb18
                 else -> null
             }
         }

@@ -154,7 +154,7 @@ public class ModuleManager {
 		//player
 		//modules.add(new ChorusDelay());
 //		modules.add(new ElytraEquip());
-		modules.add(new FastLadder());
+//		modules.add(new FastLadder());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCam());
 		modules.add(new FreeCamBypass());
@@ -203,6 +203,7 @@ public class ModuleManager {
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
+		modules.add(new PortalsModifier());
 		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkyBlockFeatures());

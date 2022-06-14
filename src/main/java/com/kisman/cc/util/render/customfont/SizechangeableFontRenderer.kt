@@ -11,12 +11,19 @@ import java.util.function.Supplier
 class SizechangeableFontRenderer(
     font : Font
 ) : ExtendedFontRenderer(font) {
-    private val fonts = arrayListOf(
-        ExtendedFontRenderer(font)
+    private val fonts = ArrayList<ExtendedFontRenderer>(
+//        ExtendedFontRenderer(font)
     )
 
     private val size = Supplier { if(CustomFontModule.instance != null && CustomFontModule.instance.customSize.valBoolean) CustomFontModule.instance.size.valInt else font.size }
+    private val min = Supplier { if(CustomFontModule.instance != null && CustomFontModule.instance.customSize.valBoolean) CustomFontModule.instance.size.min.toInt() else 18 }
+    private val max = Supplier { if(CustomFontModule.instance != null && CustomFontModule.instance.customSize.valBoolean) CustomFontModule.instance.size.max.toInt() else 18 }
 
+    init {
+        for(i in min.get()..max.get()) {
+            fonts.add(ExtendedFontRenderer(font.deriveFont(i)))
+        }
+    }
 
     override fun getCurrentFont(): CustomFontRenderer {
         for(font in fonts) {

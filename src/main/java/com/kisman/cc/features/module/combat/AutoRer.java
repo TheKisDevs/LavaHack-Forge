@@ -99,6 +99,7 @@ public class AutoRer extends Module {
     private final Setting manualBreaker = break__.add(new Setting("Manual Breaker", this, false));
     private final Setting removeAfterAttack = break__.add(new Setting("Remove After Attack", this, false));
     private final Setting antiCevBreakerMode = break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None));
+    private final Setting packetBreak = break__.add(new Setting("Packet Break", this, false).setVisible(break_::getValBoolean));
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
     private final Setting placeDelay = delay.add(new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME));
@@ -917,7 +918,11 @@ public class AutoRer extends Module {
         }
 
         lastHitEntity = crystal;
-        mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        if(packetBreak.getValBoolean()) {
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        } else {
+            mc.playerController.attackEntity(mc.player, crystal);
+        }
         swing();
         try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);} catch (Exception ignored) {}
         breakTimer.reset();

@@ -1,5 +1,9 @@
 package com.kisman.cc.features.module.movement
 
+import com.kisman.cc.Kisman
+import com.kisman.cc.KismanStatic
+import com.kisman.cc.event.events.EventEntityControl
+import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
@@ -8,7 +12,10 @@ import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.movement.MovementUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.enums.SprintModes
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
 import net.minecraft.init.Blocks
+import net.minecraft.network.play.client.CPacketPlayer
 
 /**
  * @author _kisman_
@@ -16,14 +23,14 @@ import net.minecraft.init.Blocks
  */
 class MoveModifier : Module(
         "MoveModifier",
-        "AutoWalk + AutoJump + Step + ReverseStep + AutoSneak + EntityStep + Sprint",
+        "Extra movement features.",
         Category.MOVEMENT
 ) {
     val entities = register(SettingGroup(Setting("Entities", this))) as SettingGroup
     private val entityStep = register(entities.add(Setting("Entity Step", this, false)))
     private val entityStepVal = register(entities.add(Setting("Entity Step Value", this, 1.0, 1.0, 4.0, true).setVisible { entityStep.valBoolean }))
 
-    val blocks = register(SettingGroup(Setting("Blocks", this))) as SettingGroup
+    private val blocks = register(SettingGroup(Setting("Blocks", this)))
     private val step = register(blocks.add(Setting("Step", this, false)))
     private val stepVal = register(blocks.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible { step.valBoolean }))
     private val reverseStep = register(blocks.add(Setting("Reverse Step", this, false)))
@@ -32,7 +39,7 @@ class MoveModifier : Module(
     private val reverseStepLagTimeVal = register(blocks.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, Slider.NumberType.TIME).setVisible { reverseStep.valBoolean && reverseStepLagTime.valBoolean }))
     private val parkour = register(blocks.add(Setting("Parkour", this, false)))
 
-    private val move = register(SettingGroup(Setting("Move", this))) as SettingGroup
+    private val move = register(SettingGroup(Setting("Move", this)))
     val sprint : Setting = register(move.add(Setting("Sprint", this, SprintModes.None)))
     private val sprintOnlyWhileMoving = register(move.add(Setting("Sprint Only While Moving", this, false).setVisible { sprint.valEnum != SprintModes.None }))
     private val autoWalk = register(move.add(Setting("Auto Walk", this, false)))
@@ -41,6 +48,8 @@ class MoveModifier : Module(
     private val iceSpeed = register(move.add(Setting("Ice Speed", this, false)))
     private val iceSpeedVal = register(move.add(Setting("Ice Speed Val", this, 0.4, 0.2, 1.5, false).setVisible { iceSpeed.valBoolean }))
     private val fastSwim = register(move.add(Setting("Fast Swim", this, false)))
+    private val fastLadder = register(move.add(Setting("Fast Ladder", this, false)))
+    private val entityControl = register(move.add(Setting("Entity Control", this, false)))
 
     private val delays = register(SettingGroup(Setting("Delays", this)))
 
@@ -56,10 +65,14 @@ class MoveModifier : Module(
     }
 
     override fun onEnable() {
+        Kisman.EVENT_BUS.subscribe(send)
+        Kisman.EVENT_BUS.subscribe(entityControlListener)
         lagTimer.reset()
     }
 
     override fun onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(entityControlListener)
+        Kisman.EVENT_BUS.unsubscribe(send)
         if(mc.player == null || mc.world == null) return
 
         mc.player.stepHeight = 0.5f
@@ -88,6 +101,13 @@ class MoveModifier : Module(
         doIceSpeed()
         doFastSwim()
         doParkour()
+        doFastLadder()
+    }
+
+    private fun doFastLadder() {
+        if(mc.player.isOnLadder && fastLadder.valBoolean) {
+            mc.player.jump()
+        }
     }
 
     private fun doParkour() {
@@ -179,4 +199,16 @@ class MoveModifier : Module(
             }
         }
     }
+
+    private val send = Listener<PacketEvent.Send>(EventHook {
+        if(mc.player != null && mc.player.isOnLadder && fastLadder.valBoolean && MovementUtil.isMoving() && it.packet is CPacketPlayer) {
+            (it.packet as CPacketPlayer).onGround = true;
+        }
+    })
+
+    private val entityControlListener = Listener<EventEntityControl>(EventHook {
+        if(entityControl.valBoolean) {
+            it.cancel()
+        }
+    })
 }

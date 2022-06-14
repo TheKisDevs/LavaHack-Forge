@@ -6,6 +6,7 @@
   "refmap": "mixins.kisman.refmap.json",
   "mixins": [
     "MixinAbstractClientPlayer",
+    "MixinAbstractHorse",
     "MixinBlockRendererDispatcher",
     "MixinC00Handshake",
     "MixinEntity",

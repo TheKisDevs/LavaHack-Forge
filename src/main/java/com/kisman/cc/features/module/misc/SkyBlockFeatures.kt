@@ -104,7 +104,7 @@ class SkyBlockFeatures : Module(
     })
 
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
-        for(pos in toRender) {
+        for(pos in ArrayList(toRender)) {
             val block = mc.world.getBlockState(pos).block
             if(block == Blocks.LEVER && espLever.valBoolean) renderer.draw(event.partialTicks, espLeverColor.colour, pos, espLeverColor.colour.a)
             if(RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(pos))) renderer.draw(event.partialTicks, crackedStoneBricksColor.colour, pos, crackedStoneBricksColor.colour.a)
