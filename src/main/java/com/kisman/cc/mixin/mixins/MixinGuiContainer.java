@@ -45,7 +45,7 @@ public class MixinGuiContainer extends GuiScreen {
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void drawee(int mouseX, int mouseY, float particalTicks, CallbackInfo ci) {
-        if(ContainerModifier.instance.isToggled() && ContainerModifier.instance.containerShadow.getValBoolean()) {
+        if(ContainerModifier.instance.isToggled()) {
             if(ContainerModifier.instance.containerShadow.getValBoolean()) {
                 {
                     double x = 0, y = (guiTop + xSize / 2) - guiLeft / 2, y2 = (guiTop + xSize / 2) + guiLeft / 2;

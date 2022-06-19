@@ -5,7 +5,6 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
 import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.features.module.render.blockhighlight.BlockHighlightRenderer
-import com.kisman.cc.features.module.render.blockhighlight.Selection
 import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -15,6 +14,7 @@ import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
 import com.kisman.cc.util.render.objects.TextOnBlockObject
+import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -63,7 +63,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         if (mc.objectMouseOver == null) return
         val hitObject = mc.objectMouseOver
         var box: Box? = null
-        var selection : Selection? = null
+        var bb : AxisAlignedBB? = null
         var shouldReturn = false
 
         when (hitObject.typeOfHit) {
@@ -75,31 +75,30 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     val lookVec = viewEntity.lookVec
                     val sightEnd = eyePos.add(lookVec.scale(6.0))
                     val hitSide = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
-                    selection = Selection(entity.entityBoundingBox)
-                    box = Box.byAABB(hitObject.entityHit.entityBoundingBox)
+                    box = Box.byAABB(entity.entityBoundingBox.also { bb = it })
                     if (hitSideOnly.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitSide))
                 }
             }
             RayTraceResult.Type.BLOCK -> {
-                selection = Selection(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos))
                 box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos).grow(offset.valDouble))
                 if (hitSideOnly.valBoolean){
                     box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitObject.sideHit))
                 }
+                bb = box.toAABB()
             }
             else -> {
                 shouldReturn = true
-                selection = null
+                bb = null
             }
         }
 
-        if (box == null || (selection == null && !shouldReturn)) return
+        if (box == null || (bb == null && !shouldReturn)) return
 
         if(advancedRenderer.valBoolean) {
             renderer.onRenderWorld(
                 movingLength.valFloat,
                 fadeLength.valFloat,
-                selection,
+                bb,
                 color.colour,
                 mode.valEnum as BoxRenderModes,
                 width.valFloat,

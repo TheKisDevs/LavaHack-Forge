@@ -1,7 +1,10 @@
 package com.kisman.cc.features.command.commands
 
+import com.kisman.cc.Kisman
 import com.kisman.cc.features.command.Command
 import com.kisman.cc.util.manager.file.ConfigManager
+import net.minecraft.util.text.TextFormatting
+import java.io.File
 
 /**
  * @author _kisman_
@@ -18,11 +21,43 @@ class ConfigCommand : Command("config") {
             } else if(args[0] == "load") {
                 ConfigManager(args[1]).loader.init()
                 complete("Config \"${args[1]}\" was loaded!")
+            } else if(args[0] == "list") {
+                val configs = ArrayList<String>()
+
+                for(file in (File(Kisman.fileName + Kisman.pluginsName).listFiles() ?: throw IllegalArgumentException("meow"))) {
+                    if(file.name.endsWith(".kis")) {
+                        configs.add(file.name)
+                    }
+                }
+
+                var output = "Configs: "
+
+                for((i, config) in configs.withIndex()) {
+                    output += "${
+                        if(Kisman.currentConfig == config.split(".")[0]) {
+                            TextFormatting.GREEN
+                        } else {
+                            TextFormatting.RED
+                        }
+                    }${
+                        if(i != configs.size - 1) {
+                            ", "
+                        } else {
+                            ""
+                        }
+                    }"
+                }
+
+                complete(output)
             } else {
                 throw Exception()
             }
         } catch (e : Exception) {
             error("Usage: $syntax")
+        } catch (e : IllegalArgumentException) {
+            if(e.message == "meow") {
+                error("StackTrace: ${e.stackTrace}")
+            }
         }
     }
 
@@ -31,6 +66,6 @@ class ConfigCommand : Command("config") {
     }
 
     override fun getSyntax(): String {
-        return "config create/save/load <name of config>"
+        return "config create/save <name> | config list"
     }
 }

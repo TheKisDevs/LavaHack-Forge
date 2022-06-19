@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 
 public class KismanMainMenuGui extends GuiScreen {
-    private GuiScreen lastGui;
+    private final GuiScreen lastGui;
 
     public KismanMainMenuGui(GuiScreen lastGui) {this.lastGui = lastGui;}
 

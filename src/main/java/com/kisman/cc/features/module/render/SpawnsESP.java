@@ -17,27 +17,20 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class SpawnsESP extends Module {
-    private final Setting color = new Setting("Color", this, "Color", new Colour(255, 255, 255, 255));
-    private final Setting crystals = new Setting("Crystals", this, true);
-    private final Setting players = new Setting("Players", this, false);
-    private final Setting mobs = new Setting("Mobs", this, false);
-    private final Setting boats = new Setting("Boats", this, false);
-    private final Setting duration = new Setting("Duration", this, 1, 0.1f, 5, false);
-    private final Setting width = new Setting("Widtht", this, 2.5f, 0.1, 10, false);
+    private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
+    private final Setting crystals = register(new Setting("Crystals", this, true));
+    private final Setting players = register(new Setting("Players", this, false));
+    private final Setting mobs = register(new Setting("Mobs", this, false));
+    private final Setting boats = register(new Setting("Boats", this, false));
+    private final Setting duration = register(new Setting("Duration", this, 1, 0.1f, 5, false));
+    private final Setting width = register(new Setting("Width", this, 2.5f, 0.1, 10, false));
+    private final Setting multiThreading = register(new Setting("Multi Threading", this, false));
 
-    public CopyOnWriteArrayList<VecCircle> circles = new CopyOnWriteArrayList();
-    public ConcurrentHashMap<BlockPos, Long> blocks = new ConcurrentHashMap();
+    private final CopyOnWriteArrayList<VecCircle> circles = new CopyOnWriteArrayList();
+    private final ConcurrentHashMap<BlockPos, Long> blocks = new ConcurrentHashMap();
 
     public SpawnsESP() {
         super("SpawnsESP", "        super(\"SpawnsESP\", )", Category.RENDER);
-
-        setmgr.rSetting(color);
-        setmgr.rSetting(crystals);
-        setmgr.rSetting(players);
-        setmgr.rSetting(mobs);
-        setmgr.rSetting(boats);
-        setmgr.rSetting(duration);
-        setmgr.rSetting(width);
     }
 
     public void onEnable() {
@@ -49,9 +42,8 @@ public class SpawnsESP extends Module {
         super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(listener);
     }
-
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
+    
+    private void doSpawnsESP() {
         for (VecCircle circle : circles) {
             if ((float)(System.currentTimeMillis() - VecCircle.getTime(circle)) > 1000.0f * duration.getValDouble()) {
                 this.circles.remove(circle);
@@ -80,6 +72,12 @@ public class SpawnsESP extends Module {
 
             Rendering.release();
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(multiThreading.getValBoolean()) new Thread(this::doSpawnsESP).start();
+        else doSpawnsESP();
     }
 
     @EventHandler

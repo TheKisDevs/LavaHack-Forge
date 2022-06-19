@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class HoleESPRewrite2 extends Module {
+    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this);
 
     private final Setting oHoles = register(new Setting("Obsidian", this, true));
     private final Setting bHoles = register(new Setting("Bedrock", this, true));
@@ -46,29 +48,30 @@ public class HoleESPRewrite2 extends Module {
     private final RenderPattern cRender = new ModulePrefixRenderPattern(this, "Custom").init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
+    private Map<BoundingBox, Type> map = new ConcurrentHashMap<>();
+
     public HoleESPRewrite2(){
         super("HoleESPRewrite2", Category.RENDER);
     }
 
-    private Map<BoundingBox, Type> holes = new ConcurrentHashMap<>();
-
     @Override
-    public void update(){
-        if(mc.player == null || mc.world == null)
-            return;
-
-        getHoles();
+    public void onEnable() {
+        super.onEnable();
+        multiThread.reset();
     }
 
     @SubscribeEvent
-    public void onRender(RenderWorldLastEvent event){
-        if(mc.player == null || mc.world == null)
-            return;
+    public void onRender(RenderWorldLastEvent event) {
+        multiThread.update(this::doHoleESPLogic);
+        doHoleESP();
+    }
 
-        if(!isToggled())
-            return;
+    private void doHoleESPLogic() {
+        mc.addScheduledTask(() -> map = getHoles());
+    }
 
-        for(Map.Entry<BoundingBox, Type> entry : holes.entrySet()){
+    private void doHoleESP() {
+        for(Map.Entry<BoundingBox, Type> entry : map.entrySet()){
             BoundingBox bb = entry.getKey();
             Type type = entry.getValue();
             if(type == Type.OBSIDIAN && !obsidianRender.getValBoolean()) continue;
@@ -79,8 +82,8 @@ public class HoleESPRewrite2 extends Module {
         }
     }
 
-    private void getHoles(){
-        holes.clear();
+    private Map<BoundingBox, Type> getHoles(){
+        Map<BoundingBox, Type> holes = new ConcurrentHashMap<>();
         List<BlockPos> possibleHoles = getPossibleHoles(range.getValFloat());
         int lim = 0;
         for(BlockPos pos : possibleHoles){
@@ -97,7 +100,7 @@ public class HoleESPRewrite2 extends Module {
             HoleUtil.BlockSafety holeSafety = holeInfo.getSafety();
             AxisAlignedBB centerBlock = holeInfo.getCentre();
 
-            if(centerBlock == null) return;
+            if(centerBlock == null) return holes;
 
             Type type;
 
@@ -120,6 +123,8 @@ public class HoleESPRewrite2 extends Module {
 
             lim++;
         }
+
+        return holes;
     }
 
     private List<BlockPos> getPossibleHoles(float range){

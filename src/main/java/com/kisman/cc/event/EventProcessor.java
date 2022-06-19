@@ -9,7 +9,6 @@ import com.kisman.cc.util.hypixel.ConfigHandler;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
-import com.kisman.cc.features.module.player.ElytraEquip;
 import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 
@@ -94,7 +93,6 @@ public class EventProcessor {
             new EventResolutionUpdate(oldWidth, oldHeight).post();
         }
         if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
-        if(ElytraEquip.instance != null) ElytraEquip.instance.updateState();
         if(Config.instance != null) Kisman.canUseImprAstolfo = Config.instance.astolfoColorMode.checkValString(Config.AstolfoColorMode.Impr.name());
     }
 

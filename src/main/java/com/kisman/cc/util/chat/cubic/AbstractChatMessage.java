@@ -11,7 +11,7 @@ public abstract class AbstractChatMessage {
 
     Class<?> curCaller;
 
-    AbstractChatMessage(){
+    public AbstractChatMessage(){
         this.mc = Minecraft.getMinecraft();
         curCaller = null;
     }
