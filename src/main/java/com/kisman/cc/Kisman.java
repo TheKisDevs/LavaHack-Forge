@@ -8,6 +8,7 @@ import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
+import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.util.manager.ServerManager;
@@ -111,6 +112,7 @@ public class Kisman {
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
     public MusicGui musicGui;
+    public MainMenuController mainMenuController;
     public CommandManager commandManager;
     public RPC discord;
     public RotationUtils rotationUtils;
@@ -200,6 +202,9 @@ public class Kisman {
         gui = new Gui();
         halqGui = new HalqGui();
         halqHudGui = new HalqHudGui();
+
+        mainMenuController = new MainMenuController();
+        mainMenuController.init();
 
         selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
         guiGradient = new MainGui.GuiGradient();

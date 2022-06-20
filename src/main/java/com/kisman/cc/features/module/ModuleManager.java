@@ -152,9 +152,7 @@ public class ModuleManager {
 		modules.add(new Spider());
 		modules.add(new TargetStrafe());
 		//player
-		//modules.add(new ChorusDelay());
-//		modules.add(new ElytraEquip());
-//		modules.add(new FastLadder());
+		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCam());
 		modules.add(new FreeCamBypass());

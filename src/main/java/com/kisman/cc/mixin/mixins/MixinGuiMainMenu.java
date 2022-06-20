@@ -6,7 +6,6 @@ import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import net.minecraft.client.gui.*;
-import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -31,10 +30,7 @@ public class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     public void down(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if(CustomMainMenu.WATERMARK) {
-            CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + Kisman.getName() + " " + TextFormatting.GRAY + Kisman.getVersion(), 1, 1, -1);
-            CustomFontUtil.drawStringWithShadow(TextFormatting.WHITE + "made by " + TextFormatting.GRAY + "_kisman_#5039", 1, CustomFontUtil.getFontHeight() + 2, -1);
-        }
+        if(CustomMainMenu.WATERMARK) Kisman.instance.mainMenuController.draw();
         if(CustomMainMenu.PARTICLES) {
             particleSystem.tick(10);
             particleSystem.render();

@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * @author Cubic
  */
 public class ChorusDelay extends Module {
-
     public ChorusDelay(){
         super("ChorusDelay", Category.PLAYER);
     }
@@ -27,11 +26,7 @@ public class ChorusDelay extends Module {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
-        if(mc.world == null || mc.player == null)
-            return;
-
-        if(!isToggled())
-            return;
+        if(mc.world == null || mc.player == null) return;
 
         AxisAlignedBB aabb = mc.player.getEntityBoundingBox();
 
@@ -40,24 +35,22 @@ public class ChorusDelay extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> packetEvent = new Listener<>(event -> {
-        if(!(event.getPacket() instanceof CPacketConfirmTeleport))
-            return;
+        if(!(event.getPacket() instanceof CPacketConfirmTeleport)) return;
         teleport = (CPacketConfirmTeleport) event.getPacket();
         event.cancel();
     });
 
     @Override
     public void onEnable(){
+        super.onEnable();
         Kisman.EVENT_BUS.subscribe(packetEvent);
     }
 
     @Override
     public void onDisable(){
+        super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(packetEvent);
-        if(mc.player == null || mc.world == null)
-            return;
-        if(teleport == null)
-            return;
+        if(mc.player == null || mc.world == null || teleport == null) return;
         mc.player.connection.sendPacket(teleport);
         mc.playerController.updateController();
     }

@@ -11,4 +11,8 @@ public class SettingGroupAPI extends SettingGroup {
     public SettingGroupAPI(Setting setting) {
         super(setting);
     }
+
+    public Setting add(Setting setting) {
+        return super.add(setting);
+    }
 }

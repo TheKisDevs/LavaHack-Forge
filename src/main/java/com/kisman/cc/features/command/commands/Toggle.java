@@ -3,7 +3,7 @@ package com.kisman.cc.features.command.commands;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.Command;
 
-public class Toggle extends Command{
+public class Toggle extends Command {
     public Toggle() {
         super("toggle");
     }
