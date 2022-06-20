@@ -33,6 +33,7 @@ public class CommandManager {
 		commands.add(new SetKey());
         commands.add(new Toggle());
 		commands.add(new Tp());
+		commands.add(new MusicCommand());
 	}
 
 	public void runCommands(String s) {
