@@ -158,6 +158,7 @@ public class ModuleManager {
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCam());
 		modules.add(new FreeCamBypass());
+		modules.add(new FreeCamRewrite());
 		modules.add(new Interaction());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());

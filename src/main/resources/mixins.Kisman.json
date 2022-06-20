@@ -22,6 +22,7 @@
     "MixinGuiNewChat",
     "MixinGuiScreen",
     "MixinItemBlock",
+    "MixinItemEnderCrystal",
     "MixinItemRenderer",
     "MixinLayerBipedArmor",
     "MixinMinecraft",
