@@ -14,11 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(ItemEndCrystal.class)
-public class MixinItemEnderCrystal
-{
-
-
-
+public class MixinItemEnderCrystal {
     @Redirect(
             method = "onItemUse",
             at = @At(
@@ -36,21 +32,12 @@ public class MixinItemEnderCrystal
         List<Entity> entities =
                 world.getEntitiesWithinAABBExcludingEntity(entityIn, bb);
 
-        if ( FreeCamRewrite.instance.isToggled())
-        {
+        if ( FreeCamRewrite.instance.isToggled()) {
             Entity player = Minecraft.getMinecraft().player;
-            if (player == null)
-            {
-                return entities;
-            }
+            if (player == null) return entities;
 
-            for (Entity entity : entities)
-            {
-                if (player.equals(entity))
-                {
-                    continue;
-                }
-
+            for (Entity entity : entities) {
+                if (player.equals(entity)) continue;
                 return entities;
             }
 

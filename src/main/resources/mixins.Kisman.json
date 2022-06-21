@@ -58,5 +58,8 @@
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
     "viaforge.MixinNetworkManagerChInit"
+  ],
+  "client": [
+    "accessor.AccessorNetHandlerPlayClient"
   ]
 }

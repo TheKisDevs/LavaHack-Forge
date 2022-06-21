@@ -1,9 +1,8 @@
 package com.kisman.cc.util.entity;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.mixin.mixins.accessor.INetHandlerPlayClient;
+import com.kisman.cc.mixin.mixins.accessor.AccessorNetHandlerPlayClient;
 import com.kisman.cc.util.Globals;
-import com.kisman.cc.util.NetworkUtil;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
@@ -68,13 +67,13 @@ public class PacketUtil implements Globals {
                 false);
 
         if ( event ) {
-            NetworkUtil.send(confirm);
+            mc.player.connection.sendPacket(confirm);
             Kisman.instance.rotationUtils.setBlocking(true);
-            NetworkUtil.send(posRot);
+            mc.player.connection.sendPacket(posRot);
             Kisman.instance.rotationUtils.setBlocking(false);
         } else {
-            NetworkUtil.sendPacketNoEvent(confirm);
-            NetworkUtil.sendPacketNoEvent(posRot);
+            mc.player.connection.sendPacket(confirm);
+            mc.player.connection.sendPacket(posRot);
         }
 
         // might be called async
@@ -94,13 +93,13 @@ public class PacketUtil implements Globals {
         // This might get called asynchronously so better be safe
         mc.addScheduledTask(() ->
         {
-            if (!((INetHandlerPlayClient) mc.player.connection)
+            if (!((AccessorNetHandlerPlayClient) mc.player.connection)
                     .isDoneLoadingTerrain())
             {
                 mc.player.prevPosX = mc.player.posX;
                 mc.player.prevPosY = mc.player.posY;
                 mc.player.prevPosZ = mc.player.posZ;
-                ((INetHandlerPlayClient) mc.player.connection)
+                ((AccessorNetHandlerPlayClient) mc.player.connection)
                         .setDoneLoadingTerrain(true);
 
                 mc.displayGuiScreen(null);
