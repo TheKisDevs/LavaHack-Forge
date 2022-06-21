@@ -1,9 +1,9 @@
 package com.kisman.cc.features.module.client
 
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.number.NumberType
 
 class Baritone : Module(
         "Baritone",
@@ -68,20 +68,20 @@ class Baritone : Module(
     val simplifyUnloadedYCoord = register(Setting("Simplify Unloaded Y Coord", this, true))
     //repackOnAnyBlockChange
     val movementTimeoutTicks = register(Setting("Movement Timeout Ticks", this, 100.0, 50.0, 150.0, true))
-    val primaryTimeout = register(Setting("Primary Timeout", this, 500.0, 200.0, 1000.0, Slider.NumberType.TIME))
-    val failureTimeout = register(Setting("Failure Timeout", this, 2000.0, 1000.0, 3000.0, Slider.NumberType.TIME))
-    val planAheadPrimaryTimeout = register(Setting("Plan Ahead Primary Timeout", this, 4000.0, 2000.0, 8000.0, Slider.NumberType.TIME))
-    val planAheadFailureTimeout = register(Setting("Plan Ahead Failure Timeout", this, 5000.0, 2000.0, 8000.0, Slider.NumberType.TIME))
+    val primaryTimeout = register(Setting("Primary Timeout", this, 500.0, 200.0, 1000.0, NumberType.TIME))
+    val failureTimeout = register(Setting("Failure Timeout", this, 2000.0, 1000.0, 3000.0, NumberType.TIME))
+    val planAheadPrimaryTimeout = register(Setting("Plan Ahead Primary Timeout", this, 4000.0, 2000.0, 8000.0, NumberType.TIME))
+    val planAheadFailureTimeout = register(Setting("Plan Ahead Failure Timeout", this, 5000.0, 2000.0, 8000.0, NumberType.TIME))
     val slowPath = register(Setting("Slow Path", this, false))
-    val slowPathTimeDelay = register(Setting("Slow Path Time Delay", this, 100.0, 50.0, 200.0, Slider.NumberType.TIME))
-    val slowPathTimeout = register(Setting("Slow Path Timeout", this, 40000.0, 30000.0, 50000.0, Slider.NumberType.TIME))
+    val slowPathTimeDelay = register(Setting("Slow Path Time Delay", this, 100.0, 50.0, 200.0, NumberType.TIME))
+    val slowPathTimeout = register(Setting("Slow Path Timeout", this, 40000.0, 30000.0, 50000.0, NumberType.TIME))
     val doBedWaypoints = register(Setting("Do Bed Waypoints", this, true))
     val doDeathWaypoints = register(Setting("Do Death Waypoints", this, true))
     val chunkCaching = register(Setting("Chunk Caching", this, true))
     val pruneRegionsFromRAM = register(Setting("Prune Regions From RAM", this, true))
     val backfill = register(Setting("Backfill", this, false))
     val logAsToast = register(Setting("Log As Toast", this, false))
-    val toastTimer = register(Setting("Toast Timer", this, 5000.0, 2000.0, 7000.0, Slider.NumberType.TIME))
+    val toastTimer = register(Setting("Toast Timer", this, 5000.0, 2000.0, 7000.0, NumberType.TIME))
     val chatDebug = register(Setting("Chat Debug", this, true))
     val chatControlAnyway = register(Setting("Chat Control Anyway", this, false))
     val renderPath = register(Setting("Render Path", this, true))

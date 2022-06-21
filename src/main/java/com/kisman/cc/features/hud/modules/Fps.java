@@ -19,13 +19,11 @@ public class Fps extends HudModule {
         setY(1);
     }
 
-    public void update() {
-        setW(CustomFontUtil.getStringWidth("Fps: " + Minecraft.getDebugFPS()));
-        setH(CustomFontUtil.getFontHeight());
-    }
-
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
+        setW(CustomFontUtil.getStringWidth("Fps: " + Minecraft.getDebugFPS()));
+        setH(CustomFontUtil.getFontHeight());
+
         int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
         CustomFontUtil.drawStringWithShadow("Fps: " + TextFormatting.GRAY + Minecraft.getDebugFPS(), getX(), getY(), color);
     }

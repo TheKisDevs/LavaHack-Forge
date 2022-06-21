@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.gui.csgo.components.Slider;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -63,7 +63,7 @@ public class Setting {
 
 	private boolean onlyint = false;
 
-	private Slider.NumberType numberType = Slider.NumberType.DECIMAL;
+	private NumberType numberType = NumberType.DECIMAL;
 
 	public Setting(String type) {mode = type;}
 
@@ -136,13 +136,13 @@ public class Setting {
 		this.mode = "Check";
 	}
 
-	public Setting(String name, Module parent, double dval, double min, double max, Slider.NumberType numberType){
+	public Setting(String name, Module parent, double dval, double min, double max, NumberType numberType){
 		this.name = name;
 		this.parent = parent;
 		this.dval = dval;
 		this.min = min;
 		this.max = max;
-		this.onlyint = numberType.equals(Slider.NumberType.INTEGER);
+		this.onlyint = numberType.equals(NumberType.INTEGER);
 		this.mode = "Slider";
 		this.numberType = numberType;
 	}
@@ -155,7 +155,7 @@ public class Setting {
 		this.max = max;
 		this.onlyint = onlyint;
 		this.mode = "Slider";
-		this.numberType = onlyint ? Slider.NumberType.INTEGER : Slider.NumberType.DECIMAL;
+		this.numberType = onlyint ? NumberType.INTEGER : NumberType.DECIMAL;
 	}
 
 	public Setting(String name, Module parent, String title, Colour colour) {
@@ -277,11 +277,11 @@ public class Setting {
 	}
 
 
-	public Slider.NumberType getNumberType() {
+	public NumberType getNumberType() {
 		return numberType;
 	}
 
-	public void setNumberType(Slider.NumberType numberType) {
+	public void setNumberType(NumberType numberType) {
 		this.numberType = numberType;
 	}
 

@@ -1,14 +1,13 @@
 package com.kisman.cc.features.module.movement
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.KismanStatic
 import com.kisman.cc.event.events.EventEntityControl
 import com.kisman.cc.event.events.PacketEvent
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.movement.MovementUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.enums.SprintModes
@@ -36,7 +35,7 @@ class MoveModifier : Module(
     private val reverseStep = register(blocks.add(Setting("Reverse Step", this, false)))
     private val reverseStepVal = register(blocks.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible { reverseStep.valBoolean }))
     private val reverseStepLagTime = register(blocks.add(Setting("Reverse Step Lag Time", this, false).setVisible { reverseStep.valBoolean }))
-    private val reverseStepLagTimeVal = register(blocks.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, Slider.NumberType.TIME).setVisible { reverseStep.valBoolean && reverseStepLagTime.valBoolean }))
+    private val reverseStepLagTimeVal = register(blocks.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setVisible { reverseStep.valBoolean && reverseStepLagTime.valBoolean }))
     private val parkour = register(blocks.add(Setting("Parkour", this, false)))
 
     private val move = register(SettingGroup(Setting("Move", this)))

@@ -3,11 +3,11 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.event.events.lua.EventRender3D;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
@@ -87,7 +87,7 @@ public class AutoRer extends Module {
     private final Setting place = place_.add(new Setting("Place", this, true));
     public final Setting secondCheck = place_.add(new Setting("Second Check", this, false));
     private final Setting thirdCheck = place_.add(new Setting("Third Check", this, false));
-    public final Setting armorBreaker = place_.add(new Setting("Armor Breaker", this, 100, 0, 100, Slider.NumberType.PERCENT));
+    public final Setting armorBreaker = place_.add(new Setting("Armor Breaker", this, 100, 0, 100, NumberType.PERCENT));
     private final Setting multiPlace = place_.add(new Setting("Multi Place", this, false));
     private final Setting firePlace = place_.add(new Setting("Fire Place", this, false));
 
@@ -102,10 +102,10 @@ public class AutoRer extends Module {
     private final Setting packetBreak = break__.add(new Setting("Packet Break", this, false).setVisible(break_::getValBoolean));
 
     private final Setting delayLine = new Setting("DelayLine", this, "Delay");
-    private final Setting placeDelay = delay.add(new Setting("Place Delay", this, 0, 0, 2000, Slider.NumberType.TIME));
-    private final Setting breakDelay = delay.add(new Setting("Break Delay", this, 0, 0, 2000, Slider.NumberType.TIME));
-    private final Setting calcDelay = delay.add(new Setting("Calc Delay", this, 0, 0, 20000, Slider.NumberType.TIME));
-    private final Setting clearDelay = delay.add(new Setting("Clear Delay", this, 500, 0, 2000, Slider.NumberType.TIME));
+    private final Setting placeDelay = delay.add(new Setting("Place Delay", this, 0, 0, 2000, NumberType.TIME));
+    private final Setting breakDelay = delay.add(new Setting("Break Delay", this, 0, 0, 2000, NumberType.TIME));
+    private final Setting calcDelay = delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME));
+    private final Setting clearDelay = delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME));
     private final Setting multiplication = delay.add(new Setting("Multiplication", this, 1, 1, 10, true));
 
     private final Setting dmgLine = new Setting("DMGLine", this, "Damage");
@@ -116,9 +116,9 @@ public class AutoRer extends Module {
 
     private final Setting threadLine = new Setting("ThreadLine", this, "Thread");
     public final Setting threadMode = thread_.add(new Setting("Thread Mode", this, ThreadMode.None));
-    public final Setting threadDelay = thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    public final Setting threadDelay = thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
     public final Setting threadSyns = thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
-    public final Setting threadSynsValue = thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, Slider.NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
+    public final Setting threadSynsValue = thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name())));
     private final Setting threadPacketRots = thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name())));
     private final Setting threadSoundPlayer = thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound")));
     private final Setting threadCalc = thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None")));
@@ -126,8 +126,8 @@ public class AutoRer extends Module {
     private final Setting renderLine = render_.add(new Setting("RenderLine", this, "Render"));
     private final Setting render = render_.add(new Setting("Render", this, true));
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
-    private final Setting movingLength = render_.add(new Setting("Moving Length", this, 400, 0, 1000, Slider.NumberType.TIME).setVisible(render::getValBoolean));
-    private final Setting fadeLength = render_.add(new Setting("Fade Length", this, 200, 0, 1000, Slider.NumberType.TIME).setVisible(render::getValBoolean));
+    private final Setting movingLength = render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean));
+    private final Setting fadeLength = render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean));
 
     private final Setting text = render_.add(new Setting("Text", this, true));
 

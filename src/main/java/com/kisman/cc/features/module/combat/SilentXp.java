@@ -1,8 +1,8 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class SilentXp extends Module {
     private final Setting lookPitch = register(new Setting("LookPitch", this, 90, 0, 100, false));
-    private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, Slider.NumberType.TIME));
+    private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, NumberType.TIME));
     private final Setting switchMode = register(new Setting("SwitchMode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Client"))));
 
     private final TimerUtils timer = new TimerUtils();

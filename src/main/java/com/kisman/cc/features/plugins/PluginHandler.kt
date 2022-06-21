@@ -13,13 +13,11 @@ class PluginHandler {
         Environment.loadEnvironment()
         PluginManager.getInstance().createPluginConfigs(PluginManager::class.java.classLoader)
         PluginManager.getInstance().instantiatePlugins()
-//        for(plugin in PluginManager.getInstance().plugins.values) {
-//            plugin.load()
-//        }
 
         for(config in PluginManager.getInstance().configs.values) {
             val module = ModulePlugin(config)
             Kisman.instance.moduleManager.modules.add(module)
+            module.plugin.init()
             module.load()
         }
     }

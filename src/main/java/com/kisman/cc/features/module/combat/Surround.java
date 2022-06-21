@@ -1,10 +1,10 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 //import com.kisman.cc.util.Rotation;
 //import com.kisman.cc.util.Rotation.*;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
@@ -40,7 +40,7 @@ public class Surround extends Module {
     private Setting protectRetries = new Setting("Rewrite Protect Retries", this, 5, 0, 20, true);
     private Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
     private Setting crystalBreaker = new Setting("Rewrite Crystal Breaker", this, true);
-    private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, Slider.NumberType.TIME);
+    private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, NumberType.TIME);
     private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
     private Setting rewriteProtected = new Setting("Rewrite Protect Vec", this, false);
 

@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.components.sub.hud
 
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.features.hud.HudModule
+import com.kisman.cc.gui.halq.util.HudModuleCoordsFixer
 import com.kisman.cc.util.render.Render2DUtil
 import java.awt.Color
 
@@ -22,6 +23,8 @@ class Draggable(
                 module.x = (mouseX - dragX).toDouble()
                 module.y = (mouseY - dragY).toDouble()
             }
+
+            HudModuleCoordsFixer.fix(module)
 
             Render2DUtil.drawRectWH(module.x, module.y, module.w, module.h, Color(10, 10, 10, 170).rgb)
         } else {

@@ -27,6 +27,7 @@ public class HudModuleManager {
 		modules.add(new Indicators());
 		modules.add(new Logo());
 		modules.add(new PacketChat());
+		modules.add(new PearlCooldown());
 		modules.add(new Ping());
 		modules.add(new PvpInfo());
 		modules.add(new PvpResources());

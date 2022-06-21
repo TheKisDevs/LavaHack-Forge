@@ -2,8 +2,8 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.render.shader.shaders.ItemShader;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 
@@ -23,8 +23,8 @@ public class FramebufferTest extends Module {
     private Setting blue = new Setting("Blue", this, 1, 0, 1, false);
     private Setting rainbow = new Setting("RainBow", this, true);
     private Setting delay = new Setting("Delay", this, 100, 1, 2000, true);
-    private Setting saturation = new Setting("Saturation", this, 36, 0, 100, Slider.NumberType.PERCENT);
-    private Setting brightness = new Setting("Brightness", this, 100, 0, 100, Slider.NumberType.PERCENT);
+    private Setting saturation = new Setting("Saturation", this, 36, 0, 100, NumberType.PERCENT);
+    private Setting brightness = new Setting("Brightness", this, 100, 0, 100, NumberType.PERCENT);
 
     private ItemShader shader;
 

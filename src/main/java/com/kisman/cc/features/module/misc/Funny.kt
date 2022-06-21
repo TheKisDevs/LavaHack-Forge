@@ -1,10 +1,10 @@
 package com.kisman.cc.features.module.misc
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Globals
 import com.kisman.cc.util.entity.NoRenderPig
 import com.kisman.cc.util.TimerUtils
@@ -23,7 +23,7 @@ class Funny : Module(
 ) {
     private val pigPov = register(Setting("Pig POV", this, false))
     private val sneakSpam = register(Setting("Sneak Spam", this, false))
-    private val ssDelay = register(Setting("SS Delay", this, 100.0, 0.0, 1000.0, Slider.NumberType.TIME).setVisible { sneakSpam.valBoolean })
+    private val ssDelay = register(Setting("SS Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME).setVisible { sneakSpam.valBoolean })
     private val kismansDupe = register(Setting("Kismans Dupe", this, false))
 
     private val ssTimer = TimerUtils()

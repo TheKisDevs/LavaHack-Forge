@@ -5,7 +5,6 @@ import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.event.events.EventItemRenderer;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.features.module.render.*;
-import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -76,11 +75,11 @@ public class MixinItemRenderer {
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.RIGHT) {
                 if(isEating && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
                 else {
-                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(getSet("RightX").getValDouble(), getSet("RightY").getValDouble(), getSet("RightZ").getValDouble());
+                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(ViewModel.instance.translateRightX.getValDouble(), ViewModel.instance.translateRightY.getValDouble(), ViewModel.instance.translateRightZ.getValDouble());
                     else this.transformSideFirstPerson(hand, y);
-                    GlStateManager.rotate(isSwingMain ? rotateMainX : (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (getSet("RotateRightX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                    GlStateManager.rotate(isSwingMain ? rotateMainY : (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (getSet("RotateRightY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                    GlStateManager.rotate(isSwingMain ? rotateMainZ : (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (getSet("RotateRightZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                    GlStateManager.rotate(isSwingMain ? rotateMainX : (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (ViewModel.instance.rotateRightX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+                    GlStateManager.rotate(isSwingMain ? rotateMainY : (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (ViewModel.instance.rotateRightY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+                    GlStateManager.rotate(isSwingMain ? rotateMainZ : (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (ViewModel.instance.rotateRightZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
                 }
                 GlStateManager.scale(ViewModel.instance.scaleRightX.getValDouble(), ViewModel.instance.scaleRightY.getValDouble(), ViewModel.instance.scaleRightZ.getValDouble());
             }
@@ -88,11 +87,11 @@ public class MixinItemRenderer {
             if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.LEFT) {
                 if(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
                 else {
-                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(getSet("LeftX").getValDouble(), getSet("LeftY").getValDouble(), getSet("LeftZ").getValDouble());
+                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(ViewModel.instance.translateLeftX.getValDouble(), ViewModel.instance.translateLeftY.getValDouble(), ViewModel.instance.translateLeftZ.getValDouble());
                     else this.transformSideFirstPerson(hand, y);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (getSet("RotateLeftX").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (getSet("RotateLeftY").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (getSet("RotateLeftZ").getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
+                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
                 }
                 GlStateManager.scale(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
             }
@@ -102,10 +101,6 @@ public class MixinItemRenderer {
     private void drawDefaultPos(EnumHandSide hand, float y) {
         int i = hand == EnumHandSide.RIGHT ? 1 : -1;
         GlStateManager.translate((float)i * 0.56F, -0.52F + y * -0.6F, -0.72F);
-    }
-
-    private Setting getSet(String name) {
-        return Kisman.instance.settingsManager.getSettingByName(Kisman.instance.moduleManager.getModule("ViewModel"), name);
     }
 
     @Redirect(method = "setLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))

@@ -45,13 +45,11 @@ public class TargetHUD extends HudModule {
         setY(300);
     }
 
-    public void update() {
-        target = AutoRer.currentTarget;
-        if(target == null && KillAuraRewrite.Companion.getTarget() instanceof EntityPlayer) target = (EntityPlayer) KillAuraRewrite.Companion.getTarget();
-    }
-
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
+        target = AutoRer.currentTarget;
+        if(target == null && KillAuraRewrite.Companion.getTarget() instanceof EntityPlayer) target = (EntityPlayer) KillAuraRewrite.Companion.getTarget();
+
         if(target == null) return;
 
         switch (theme.getValString()) {

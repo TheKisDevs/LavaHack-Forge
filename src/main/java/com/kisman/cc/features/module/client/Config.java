@@ -1,9 +1,9 @@
 package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.manager.file.*;
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.Colour;
@@ -29,7 +29,7 @@ public class Config extends Module {
     public Setting friends = register(main.add(new Setting("Friends", this, true)));
     public Setting nameMode = register(main.add(new Setting("Name Mode", this, NameMode.kismancc)));
     public Setting customName = register(main.add(new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true).setVisible(() -> nameMode.getValBoolean())));
-    public Setting scrollSpeed = register(main.add(new Setting("Scroll Speed", this, 15, 0, 100, Slider.NumberType.PERCENT)));
+    public Setting scrollSpeed = register(main.add(new Setting("Scroll Speed", this, 15, 0, 100, NumberType.PERCENT)));
     public Setting horizontalScroll = register(main.add(new Setting("Horizontal Scroll", this, true)));
     public Setting keyForHorizontalScroll = register(main.add(new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_LSHIFT).setVisible(() -> horizontalScroll.getValBoolean())));
     public Setting notification = register(main.add(new Setting("Notification", this, true)));
@@ -37,7 +37,7 @@ public class Config extends Module {
     public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true)));
     public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true)));
     public Setting guiGradient = register(gui.add(new Setting("Gui Gradient", this, GradientModes.None)));
-    public Setting guiGradientDiff = register(gui.add(new Setting("Gui Gradient Diff", this, 1, 0, 1000, Slider.NumberType.TIME).setVisible(() -> guiGradient.getValEnum() != GradientModes.None)));
+    public Setting guiGradientDiff = register(gui.add(new Setting("Gui Gradient Diff", this, 1, 0, 1000, NumberType.TIME).setVisible(() -> guiGradient.getValEnum() != GradientModes.None)));
     public Setting guiDesc = register(gui.add(new Setting("Gui Desc", this, false)));
     public Setting guiParticles = register(gui.add(new Setting("Gui Particles", this, true)));
     public Setting guiGradientBackground = register(gui.add(new Setting("Gui Gradient Background", this, false)));

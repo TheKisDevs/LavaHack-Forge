@@ -14,6 +14,7 @@ import com.kisman.cc.gui.csgo.layout.FlowLayout;
 import com.kisman.cc.gui.csgo.layout.GridLayout;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.*;
@@ -206,21 +207,21 @@ public class ClickGuiNew extends GuiScreen {
                                 }
                                 if (set.isSlider()) {
                                     settingPane.addComponent(new Label(renderer, set.getName()));
-                                    Slider.NumberType type = Slider.NumberType.DECIMAL;
+                                    NumberType type = NumberType.DECIMAL;
                                     Slider sl;
 
                                     switch (set.getNumberType()) {
                                         case INTEGER: {
-                                            if (set.isOnlyint()) type = Slider.NumberType.INTEGER;
+                                            if (set.isOnlyint()) type = NumberType.INTEGER;
                                             break;
                                         }
                                         case PERCENT: {
                                             if (set.getMin() == 0 && set.getMax() == 100)
-                                                type = Slider.NumberType.PERCENT;
+                                                type = NumberType.PERCENT;
                                             break;
                                         }
                                         case TIME: {
-                                            type = Slider.NumberType.TIME;
+                                            type = NumberType.TIME;
                                             break;
                                         }
                                     }

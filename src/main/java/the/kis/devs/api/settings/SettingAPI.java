@@ -1,8 +1,8 @@
 package the.kis.devs.api.settings;
 
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -25,7 +25,7 @@ public class SettingAPI extends Setting {
     public SettingAPI(String name, Module parent, String sval, List<String> options) {super(name, parent, sval, options);}
     public SettingAPI(String name, Module parent, Enum options) {super(name, parent, options);}
     public SettingAPI(String name, Module parent, boolean bval) {super(name, parent, bval);}
-    public SettingAPI(String name, Module parent, double dval, double min, double max, Slider.NumberType numberType) {super(name, parent, dval, min, max, numberType);}
+    public SettingAPI(String name, Module parent, double dval, double min, double max, NumberType numberType) {super(name, parent, dval, min, max, numberType);}
     public SettingAPI(String name, Module parent, double dval, double min, double max, boolean onlyint) {super(name, parent, dval, min, max, onlyint);}
     public SettingAPI(String name, Module parent, String title, Colour colour) {super(name, parent, title, colour);}
     public SettingAPI(String name, Module parent, Colour colour) {super(name, parent, colour);}
@@ -42,8 +42,8 @@ public class SettingAPI extends Setting {
     public String[] getStringValues() {return super.getStringValues();}
     public String getStringFromIndex(int index) {return super.getStringFromIndex(index);}
     public int getSelectedIndex() {return super.getSelectedIndex();}
-    public Slider.NumberType getNumberType() {return super.getNumberType();}
-    public void setNumberType(Slider.NumberType numberType) {super.setNumberType(numberType);}
+    public NumberType getNumberType() {return super.getNumberType();}
+    public void setNumberType(NumberType numberType) {super.setNumberType(numberType);}
     public Entity getEntity() {return super.getEntity();}
     public int getValInt() {return super.getValInt();}
     public int getKey() {return super.getKey();}

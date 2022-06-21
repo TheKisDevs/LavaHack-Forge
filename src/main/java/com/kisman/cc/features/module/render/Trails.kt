@@ -2,8 +2,8 @@ package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.render.Rendering
@@ -24,9 +24,9 @@ class Trails : Module(
     Category.RENDER
 ) {
     private val color = register(Setting("Color", this, Colour(255, 255, 255, 255)))
-    private val delay = register(Setting("Delay", this, 10.0, 1.0, 1000.0, Slider.NumberType.TIME))
+    private val delay = register(Setting("Delay", this, 10.0, 1.0, 1000.0, NumberType.TIME))
     private val fade = register(Setting("Fade", this, true))
-    private val fadeDelay = register(Setting("Fade Delay", this, 500.0, 10.0, 10000.0, Slider.NumberType.TIME).setVisible { fade.valBoolean })
+    private val fadeDelay = register(Setting("Fade Delay", this, 500.0, 10.0, 10000.0, NumberType.TIME).setVisible { fade.valBoolean })
     private val lineWidth = register(Setting("Line Width", this, 1.0, 0.1, 5.0, false))
 
     private val timer = TimerUtils()
