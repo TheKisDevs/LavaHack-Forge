@@ -1,9 +1,9 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.thread.kisman.GlobalThreads
 
@@ -18,7 +18,7 @@ class MultiThreaddableModulePattern(
 ) : GlobalThreads {
     private val group = module.register(SettingGroup(Setting("Multi Thread", module)))
 
-    private val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, Slider.NumberType.TIME)))
+    private val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
     private val multiThread = module.register(group.add(Setting("Multi Thread", module, false)))
 
     private val timer = TimerUtils()

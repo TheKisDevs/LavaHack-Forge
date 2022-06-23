@@ -2,9 +2,9 @@ package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.entity.player.PlayerUtil;
@@ -25,7 +25,7 @@ public class Scaffold extends Module {
     private final Setting distance = new Setting("Distance", this, 2, 0, 20, true);
     private final Setting towerMode = new Setting("Tower Mode", this, TowerMode.None);
     private final Setting downSpeed = new Setting("Down Speed", this, 0, 0, 0.2f, false);
-    private final Setting jumpDelay = new Setting("Jump Delay", this, 2, 1, 10, Slider.NumberType.TIME);
+    private final Setting jumpDelay = new Setting("Jump Delay", this, 2, 1, 10, NumberType.TIME);
     private final Setting rotate = new Setting("Rotate", this, false);
     private final Setting sneakTest = new Setting("Sneak Test", this, false);
 

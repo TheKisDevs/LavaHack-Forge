@@ -1,9 +1,9 @@
 package com.kisman.cc.features.module.movement
 
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.world.BlockUtil2
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.entity.player.PlayerUtil
@@ -23,7 +23,7 @@ class SoftScaffold : Module(
 ) {
     private val switchMode = register(Setting("Switch Mode", this, SwapEnum2.Swap.Silent))
     private val noJump = register(Setting("No Jump", this, false))
-    private val delay = register(Setting("Delay", this, 20.0, 0.0, 1000.0, Slider.NumberType.TIME))
+    private val delay = register(Setting("Delay", this, 20.0, 0.0, 1000.0, NumberType.TIME))
     private val packet = register(Setting("Packet", this, false))
     private val onlyWhenOnGround = register(Setting("Only When onGround", this, true))
 

@@ -1,10 +1,10 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
@@ -23,7 +23,7 @@ public class Anchor extends Module {
     private final Setting fastFall = new Setting("Fast Fall", this, false);
     private final Setting fastFallMotion = new Setting("Fast Fall Motion", this, 10, 1, 10, false).setVisible(fastFall::getValBoolean);
     private final Setting useLagTime = new Setting("Use Fast Fall Lag Time", this, false);
-    private final Setting lagTime = new Setting("Fast Fall Lag Time", this, 500, 0, 1000, Slider.NumberType.TIME);
+    private final Setting lagTime = new Setting("Fast Fall Lag Time", this, 500, 0, 1000, NumberType.TIME);
 
     private boolean using = false;
     private double[] oneblockPositions = new double[] { 0.42, 0.75 };

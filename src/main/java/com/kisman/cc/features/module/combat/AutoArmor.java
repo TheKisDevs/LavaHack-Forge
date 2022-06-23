@@ -2,7 +2,7 @@
 
  import com.kisman.cc.Kisman;
  import com.kisman.cc.features.module.*;
- import com.kisman.cc.gui.csgo.components.Slider;
+ import com.kisman.cc.settings.types.number.NumberType;
  import com.kisman.cc.util.entity.player.InventoryUtil;
  import com.kisman.cc.settings.*;
 
@@ -17,7 +17,7 @@
  import java.util.*;
 
  public class AutoArmor extends Module {
-     private final Setting delay = new Setting("Delay", this, 0, 0, 100, Slider.NumberType.TIME);
+     private final Setting delay = new Setting("Delay", this, 0, 0, 100, NumberType.TIME);
 
      public static AutoArmor instance;
      private final TimerUtils timer = new TimerUtils();

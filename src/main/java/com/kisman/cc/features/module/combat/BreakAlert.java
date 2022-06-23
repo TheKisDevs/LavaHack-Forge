@@ -4,8 +4,8 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.other.ChatUtils;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class BreakAlert extends Module {
     private Setting messageType = new Setting("Message Type", this, MessageType.Chat);
-    private Setting displayShowDelay = new Setting("Display Show Delay", this, 1000, 1, 5000, Slider.NumberType.TIME);
+    private Setting displayShowDelay = new Setting("Display Show Delay", this, 1000, 1, 5000, NumberType.TIME);
 
     private ArrayList<BlockPos> blocksBeginBroken = new ArrayList<>();
     private TimerUtils renderTimer = new TimerUtils();

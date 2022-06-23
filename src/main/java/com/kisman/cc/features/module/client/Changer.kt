@@ -5,10 +5,10 @@ import com.kisman.cc.event.events.EventArmSwingAnimationEnd
 import com.kisman.cc.event.events.EventAspect
 import com.kisman.cc.event.events.EventUpdateLightmap
 import com.kisman.cc.event.events.PacketEvent
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.SwingHands
 import me.zero.alpine.listener.EventHook
@@ -33,7 +33,7 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
     private val time = register(Setting("Time", this, false))
     private val timeVal = register(Setting("Time Value", this, 24.0, 5.0, 25.0, true).setVisible { time.valBoolean })
     private val timeInfCircle = register(Setting("Time Infinity Circle", this, true).setVisible { time.valBoolean })
-    private val timeSpeed = register(Setting("Time Speed", this, 100.0, 10.0, 1000.0, Slider.NumberType.TIME).setVisible { time.valBoolean })
+    private val timeSpeed = register(Setting("Time Speed", this, 100.0, 10.0, 1000.0, NumberType.TIME).setVisible { time.valBoolean })
 
     //Aspect settings
     private val aspect = register(Setting("Aspect", this, false))

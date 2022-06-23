@@ -6,9 +6,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.*;
 
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
@@ -37,7 +37,7 @@ public class Speed extends Module {
     private final Setting slow = new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
     private final Setting cap = new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New"));
     private final Setting scaleCap = new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    private final Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, Slider.NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
+    private final Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
 
     private final Setting yPortLine = new Setting("YPortLine", this, "YPort").setVisible(() -> speedMode.checkValString("YPort"));
     private final Setting yWater = new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort"));

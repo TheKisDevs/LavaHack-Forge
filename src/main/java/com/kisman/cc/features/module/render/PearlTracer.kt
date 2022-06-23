@@ -1,10 +1,10 @@
 package com.kisman.cc.features.module.render
 
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.enums.GradientModes
@@ -28,11 +28,11 @@ class PearlTracer : Module(
         Category.RENDER
 ) {
     private val lineWidth = register(Setting("Line Width", this, 1.0, 0.1, 5.0, false))
-    private val removeTime = register(Setting("Remove Time", this, 1000.0, 100.0, 5000.0, Slider.NumberType.TIME))
+    private val removeTime = register(Setting("Remove Time", this, 1000.0, 100.0, 5000.0, NumberType.TIME))
 
     private val color = register(SettingGroup(Setting("Color", this)))
     private val gradient = register(color.add(Setting("Gradient", this, GradientModes.None)))
-    private val gradientDiff = register(color.add(Setting("Diff", this, 1.0, 1.0, 1000.0, Slider.NumberType.TIME)))
+    private val gradientDiff = register(color.add(Setting("Diff", this, 1.0, 1.0, 1000.0, NumberType.TIME)))
     private val colorVal = register(color.add(Setting("Color", this, "Color", Colour(-1))))
 
     private val map = HashMap<EntityEnderPearl, ArrayList<VectorWithTimer>>()

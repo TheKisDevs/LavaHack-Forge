@@ -2,8 +2,8 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -17,7 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
 public class CrystalBasePlace extends Module {
-    private final Setting delay = new Setting("Delay", this, 10, 0, 10000, Slider.NumberType.TIME);
+    private final Setting delay = new Setting("Delay", this, 10, 0, 10000, NumberType.TIME);
     private final Setting placeRange = new Setting("Place Range", this, 5, 1, 6, false);
     private final Setting targetRange = new Setting("Target Range", this, 15, 5, 20, false);
     private final Setting useAutoRerTarget = new Setting("Use Auto Rer Target", this, false);

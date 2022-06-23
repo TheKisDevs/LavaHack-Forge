@@ -1,8 +1,8 @@
 package com.kisman.cc.features.module.misc;
 
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.process.web.TCPDDos;
 import com.kisman.cc.util.chat.other.ChatUtils;
 
@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 
 public class DDOSModule extends Module {
-    public final Setting delay = new Setting("Delay", this, 100, 30, 3000, Slider.NumberType.TIME);
+    public final Setting delay = new Setting("Delay", this, 100, 30, 3000, NumberType.TIME);
     public final Setting threads = new Setting("Threads", this, 10, 1, 100, true);
-    public final Setting timeOut = new Setting("TimeOut", this, 30, 5, 60, Slider.NumberType.TIME);
+    public final Setting timeOut = new Setting("TimeOut", this, 30, 5, 60, NumberType.TIME);
 
     private final Setting ipMode = new Setting("Ip Mode", this, IpMode.Custom);
     private final Setting russianSites = new Setting("Russian Sites", this, "vesti.ru", Arrays.asList("lenta.ru","ria.ru","rbc.ru","www.rt.com","kremlin.ru","smotrim.ru","tass.ru","tvzvezda.ru","vsoloviev.ru","1tv.ru","vesti.ru","sberbank.ru","zakupki.gov.ru", "russian.rt.com"));

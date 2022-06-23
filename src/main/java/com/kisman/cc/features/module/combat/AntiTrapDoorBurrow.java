@@ -1,8 +1,8 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.render.RenderUtil;
@@ -17,7 +17,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class AntiTrapDoorBurrow extends Module {
-    private final Setting delay = new Setting("Delay", this, 0, 0, 1000, Slider.NumberType.TIME);
+    private final Setting delay = new Setting("Delay", this, 0, 0, 1000, NumberType.TIME);
     private final Setting range = new Setting("Range", this, 5, 1, 5, true);
     private final Setting render = new Setting("Render", this, false);
     private final Setting color = new Setting("Color", this, "Color", new Colour(Color.WHITE)).setVisible(render::getValBoolean);

@@ -2,23 +2,33 @@ package com.kisman.cc.util.entity.player;
 
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.BlockUtil;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.*;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.*;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.*;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 
 public class PlayerUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
+    public static final Map<Integer, EntityOtherPlayerMP> FAKE_PLAYERS =
+            new HashMap<>();
 
     public static void swingArm(Hand hand) {
         switch (hand) {
@@ -43,6 +53,55 @@ public class PlayerUtil {
         if (packets > 3) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.0013359791121, mc.player.posZ, true));
         if (packets > 4) mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.1661092609382, mc.player.posZ, true));
     }
+    public static EntityOtherPlayerMP createFakePlayerAndAddToWorld(GameProfile profile) {
+        return createFakePlayerAndAddToWorld(profile, EntityOtherPlayerMP::new);
+    }
+
+    public static EntityOtherPlayerMP createFakePlayerAndAddToWorld(GameProfile profile, BiFunction<World, GameProfile, EntityOtherPlayerMP> create) {
+        EntityOtherPlayerMP fakePlayer = createFakePlayer(profile, create);
+        int randomID = -1000;
+        while (FAKE_PLAYERS.containsKey(randomID)
+                || mc.world.getEntityByID(randomID) != null) {
+            randomID = ThreadLocalRandom.current().nextInt(-100000, -100);
+        }
+
+        FAKE_PLAYERS.put(randomID, fakePlayer);
+        mc.world.addEntityToWorld(randomID, fakePlayer);
+        return fakePlayer;
+    }
+
+    public static EntityOtherPlayerMP createFakePlayer(GameProfile profile, BiFunction<World, GameProfile, EntityOtherPlayerMP> create)
+    {
+        EntityOtherPlayerMP fakePlayer = create.apply(mc.world, profile);
+
+        fakePlayer.inventory = mc.player.inventory;
+        fakePlayer.inventoryContainer = mc.player.inventoryContainer;
+        fakePlayer.setPositionAndRotation(mc.player.posX, mc.player.getEntityBoundingBox().minY, mc.player.posZ, mc.player.rotationYaw, mc.player.rotationPitch);
+        fakePlayer.rotationYawHead = mc.player.rotationYawHead;
+        fakePlayer.onGround = mc.player.onGround;
+        fakePlayer.setSneaking(mc.player.isSneaking());
+        fakePlayer.setHealth(mc.player.getHealth());
+        fakePlayer.setAbsorptionAmount(mc.player.getAbsorptionAmount());
+
+        for (PotionEffect effect : mc.player.getActivePotionEffects())
+        {
+            fakePlayer.addPotionEffect(effect);
+        }
+
+        return fakePlayer;
+    }
+
+    public static void removeFakePlayer(EntityOtherPlayerMP fakePlayer) {
+        mc.addScheduledTask(() -> {
+            FAKE_PLAYERS.remove(fakePlayer.getEntityId());
+            fakePlayer.isDead = true; // setDead might be overridden
+            if (mc.world != null) {
+                mc.world.removeEntity(fakePlayer);
+            }
+        });
+    }
+
+
 
     public static BlockPos getPlayerPos() {
         return new BlockPos(Math.floor(mc.player.posX), Math.floor(mc.player.posY), Math.floor(mc.player.posZ));

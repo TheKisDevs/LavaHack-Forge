@@ -1,15 +1,15 @@
 package com.kisman.cc.features.catlua.lua.settings;
 
 import com.kisman.cc.features.catlua.lua.exception.LuaIllegalNumberTypeException;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 public class LuaSetting {
-    public static Slider.NumberType getNumberTypeByName(String name) {
-        for(Slider.NumberType type : Slider.NumberType.values()) if(type.name().equals(name)) return type;
+    public static NumberType getNumberTypeByName(String name) {
+        for(NumberType type : NumberType.values()) if(type.name().equals(name)) return type;
         throw new LuaIllegalNumberTypeException("Lua: cant resolve number type " + name);
     }
 

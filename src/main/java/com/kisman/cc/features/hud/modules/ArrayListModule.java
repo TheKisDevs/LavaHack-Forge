@@ -1,13 +1,13 @@
 package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.gui.csgo.components.Slider;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.hud.modules.arraylist.ArrayListElement;
 import com.kisman.cc.features.hud.modules.arraylist.ElementTypes;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
@@ -41,7 +41,7 @@ public class ArrayListModule extends HudModule {
     private final Setting astolfoColor = register(new Setting("Astolfo", this, true));
     private final Setting color = register(new Setting("Color", this, "Color", new Colour(-1)));
     private final Setting gradient = register(new Setting("Gradient", this, GradientModes.None));
-    private final Setting diff = register(new Setting("Gradient Diff", this, 1, 0, 1000, Slider.NumberType.TIME));
+    private final Setting diff = register(new Setting("Gradient Diff", this, 1, 0, 1000, NumberType.TIME));
     private final Setting background = register(new Setting("Background", this, true));
     private final Setting backgroundAlpha = register(new Setting("Background Alpha", this, 255, 0, 255, true));
     private final SettingGroup glowGroup = register(new SettingGroup(new Setting("Glow", this)));

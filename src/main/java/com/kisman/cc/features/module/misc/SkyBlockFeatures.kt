@@ -2,11 +2,11 @@ package com.kisman.cc.features.module.misc
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventRenderBlock
-import com.kisman.cc.gui.csgo.components.Slider
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.settings.util.BoxRendererPattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.TimerUtils
@@ -47,9 +47,9 @@ class SkyBlockFeatures : Module(
     private val hyperionExploit = register(hyperionExploitG.add(Setting("Hyperion Exploit", this, false)))
     private val heAOTESlot = register(hyperionExploitG.add(Setting("HE AOTE Slot", this, 3.0, 1.0, 9.0, true)))
     private val heAOTDSlot = register(hyperionExploitG.add(Setting("HE AOTD Slot", this, 1.0, 1.0, 9.0, true)))
-    private val heDelay = register(hyperionExploitG.add(Setting("HE Delay", this, 100.0, 0.0, 1000.0, Slider.NumberType.TIME)))
+    private val heDelay = register(hyperionExploitG.add(Setting("HE Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME)))
     private val heLogic = register(hyperionExploitG.add(Setting("HE Logic", this, HyperionExploitLogic.Manual)))
-    private val heManualDelay = register(hyperionExploitG.add(Setting("HE Manual Delay", this, 1000.0 / 20.0, 0.0, 1000.0, Slider.NumberType.TIME).setVisible { heLogic.valEnum == HyperionExploitLogic.Manual }))
+    private val heManualDelay = register(hyperionExploitG.add(Setting("HE Manual Delay", this, 1000.0 / 20.0, 0.0, 1000.0, NumberType.TIME).setVisible { heLogic.valEnum == HyperionExploitLogic.Manual }))
 
     private val toRender = ArrayList<BlockPos>()
 

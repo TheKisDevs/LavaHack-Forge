@@ -22,6 +22,7 @@
     "MixinGuiNewChat",
     "MixinGuiScreen",
     "MixinItemBlock",
+    "MixinItemEnderCrystal",
     "MixinItemRenderer",
     "MixinLayerBipedArmor",
     "MixinMinecraft",
@@ -57,5 +58,8 @@
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
     "viaforge.MixinNetworkManagerChInit"
+  ],
+  "client": [
+    "accessor.AccessorNetHandlerPlayClient"
   ]
 }

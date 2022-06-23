@@ -30,7 +30,7 @@ import static com.kisman.cc.util.world.BlockUtil.getEyesPos;
 @SideOnly(Side.CLIENT)
 public class RotationUtils {
     private static Minecraft mc = Minecraft.getMinecraft();
-
+    private boolean blocking;
     private Random random;
     private int keepLength;
     public Rotation targetRotation;
@@ -181,6 +181,11 @@ public class RotationUtils {
         double z = MathHelper.clamp(eyePos.z, box.minZ, box.maxZ);
 
         return getRotationTo(eyePos, new Vec3d(x, y, z));
+    }
+
+    public void setBlocking(boolean blocking)
+    {
+        this.blocking = blocking;
     }
 
     public static Vec2f getRotationTo(Vec3d posTo) {
