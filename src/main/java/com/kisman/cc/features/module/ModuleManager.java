@@ -11,6 +11,7 @@ import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
+import com.kisman.cc.features.module.misc.Botnet.BotnetConnection;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
@@ -213,6 +214,7 @@ public class ModuleManager {
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
+		modules.add(new BotnetConnection());
 	}
 	
 	public Module getModule(String name) {

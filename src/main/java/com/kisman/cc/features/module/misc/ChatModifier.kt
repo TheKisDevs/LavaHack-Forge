@@ -23,20 +23,17 @@ class ChatModifier : Module(
     val ttf = register(Setting("TTF", this, false))
 
     @SubscribeEvent fun onChat(event: ClientChatEvent) {
-        if (!event.message.startsWith("/") &&
-                !event.message.startsWith(Kisman.instance.commandManager.cmdPrefixStr) &&
-                !event.message.startsWith(".") &&
-                !event.message.startsWith(",") &&
-                !event.message.startsWith(";") &&
-                !event.message.startsWith(":") &&
-                !event.message.startsWith("-") &&
-                !event.message.startsWith("+")) {
-            if(autoGlobal.valBoolean) {
-                event.message = "!${event.message}"
-            }
+        //var firstchar = arrayOf("/', ".", ",", ";", ":", "-", "+")
+        var firstchar = arrayOf('/', '.', ',', ';', ':', '-', '+', Kisman.instance.commandManager.cmdPrefixStr)
+        if (!firstchar.contains(event.message[0])) {
             if(greenText.valBoolean) {
                 event.message = "> ${event.message}"
             }
+
+            if(autoGlobal.valBoolean) {
+                event.message = "!${event.message}"
+            }
+
             if(suffix.valBoolean) {
                 event.message = "${event.message} | ${Kisman.getName()} own you and all"
             }
