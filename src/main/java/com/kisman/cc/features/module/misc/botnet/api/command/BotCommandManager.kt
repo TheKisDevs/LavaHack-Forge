@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.misc.botnet.api.command
 
+import com.kisman.cc.features.module.misc.botnet.api.command.commands.BaritoneCommand
 import com.kisman.cc.features.module.misc.botnet.api.command.commands.ServerCommand
 
 
@@ -10,6 +11,7 @@ object BotCommandManager {
         commands.clear()
 
         commands.add(ServerCommand())
+        commands.add(BaritoneCommand())
     }
 
 }

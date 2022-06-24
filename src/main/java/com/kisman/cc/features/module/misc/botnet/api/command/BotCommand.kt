@@ -2,31 +2,52 @@ package com.kisman.cc.features.module.misc.botnet.api.command
 
 import net.minecraft.client.Minecraft
 
+enum class ExecutingType {
+    NONE, NAMEnARGS, ARGS, RAW
+}
+
 open class BotCommand {
 
-    constructor(name:String, args_needed: Boolean = false) {
-        names.add(name)
-        this.args_needed = args_needed
+    constructor(name:String, executingType: ExecutingType = ExecutingType.NONE) {
+        names.plus(name)
+        this.executingType = executingType
     }
 
-    constructor(names: ArrayList<String>, args: Boolean = false) {
+    constructor(names: Array<String>, executingType: ExecutingType = ExecutingType.NONE) {
         this.names = names
-        this.args_needed = args_needed
+        this.executingType = executingType
     }
 
-    lateinit var names: ArrayList<String>
+    var executingType: ExecutingType;
+    lateinit var names: Array<String>
     protected var mc: Minecraft = Minecraft.getMinecraft()
-    protected var args_needed: Boolean = false
 
-    fun execute(args: Array<String?>) {
-        if(args_needed) perform(args)
-        else perform()
+
+
+    //none
+
+    open fun execute() {
     }
 
-    open fun perform(args: Array<String?>) {
+    //args
+
+    open fun execute(args: Array<String?>) {
     }
 
-    open fun perform() {
+    //name&args
+
+    open fun execute(name: String, args: Array<String?>) {
     }
+
+    //raw
+
+    open fun execute(command: String) {
+    }
+
+
+
+
+
+
 
 }
