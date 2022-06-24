@@ -11,7 +11,7 @@ import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
-import com.kisman.cc.features.module.misc.Botnet.BotnetConnection;
+import com.kisman.cc.features.module.misc.botnet.BotnetConnection;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
