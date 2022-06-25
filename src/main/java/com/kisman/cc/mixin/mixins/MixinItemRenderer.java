@@ -6,7 +6,6 @@ import com.kisman.cc.event.events.EventItemRenderer;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.util.entity.player.PlayerUtil;
-import com.sun.javafx.geom.Vec3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -38,7 +37,7 @@ public class MixinItemRenderer {
     @Redirect(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformSideFirstPerson(Lnet/minecraft/util/EnumHandSide;F)V"))
     public void transformRedirect(ItemRenderer renderer, EnumHandSide hand, float y) {
         Vec3d translate = new Vec3d((hand == EnumHandSide.RIGHT ? 1 : -1) * 0.56, -0.52 + y * -0.6, -0.72);
-        Vec3f rotate = new Vec3f();
+        Vec3d rotate = new Vec3d(0.0, 0.0, 0.0);
         Vec3d scale = new Vec3d(0, 0, 0);
 
         boolean isEating = PlayerUtil.IsEating();
@@ -49,21 +48,15 @@ public class MixinItemRenderer {
             if (isSwingMain) {
                 switch (SwingAnimation.instance.strongMode.getValString()) {
                     case "Blockhit1": {
-                        rotate.x = 72;
-                        rotate.y = 180;
-                        rotate.z = 240;
+                        rotate = new Vec3d(72, 180, 240);
                         break;
                     }
                     case "Blockhit2": {
-                        rotate.x = 344;
-                        rotate.y = 225;
-                        rotate.z = 0;
+                        rotate = new Vec3d(344, 225, 0);
                         break;
                     }
                     case "Knife": {
-                        rotate.x = 43;
-                        rotate.y = 130;
-                        rotate.z = 230;
+                        rotate = new Vec3d(43, 130, 230);
                     }
                 }
             }
@@ -74,7 +67,7 @@ public class MixinItemRenderer {
                 if(!(isEating && !ViewModel.instance.customEating.getValBoolean())) {
                     if(ViewModel.instance.translate.getValBoolean()) translate = new Vec3d(ViewModel.instance.translateRightX.getValDouble(), ViewModel.instance.translateRightY.getValDouble(), ViewModel.instance.translateRightZ.getValDouble());
                     if(!isSwingMain) {
-                        rotate = new Vec3f(
+                        rotate = new Vec3d(
                                 (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (ViewModel.instance.rotateRightX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
                                 (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (ViewModel.instance.rotateRightY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
                                 (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (ViewModel.instance.rotateRightZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f)
@@ -87,7 +80,7 @@ public class MixinItemRenderer {
             if (hand == EnumHandSide.LEFT) {
                 if(!(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean())) {
                     if(ViewModel.instance.translate.getValBoolean()) translate = new Vec3d(ViewModel.instance.translateLeftX.getValDouble(), ViewModel.instance.translateLeftY.getValDouble(), ViewModel.instance.translateLeftZ.getValDouble());
-                    rotate = new Vec3f(
+                    rotate = new Vec3d(
                             (!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
                             (!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
                             (!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f)
@@ -99,9 +92,9 @@ public class MixinItemRenderer {
 
         GlStateManager.translate(translate.x, translate.y, translate.z);
         GlStateManager.scale(scale.x, scale.y, scale.z);
-        GlStateManager.rotate(rotate.x, 1, 0, 0);
-        GlStateManager.rotate(rotate.y, 0, 1, 0);
-        GlStateManager.rotate(rotate.z, 0, 0, 1);
+        GlStateManager.rotate((float) rotate.x, 1, 0, 0);
+        GlStateManager.rotate((float) rotate.y, 0, 1, 0);
+        GlStateManager.rotate((float) rotate.z, 0, 0, 1);
     }
 
     @Redirect(method = "setLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))
