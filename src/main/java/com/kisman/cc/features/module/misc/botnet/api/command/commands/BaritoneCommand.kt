@@ -4,11 +4,12 @@ import com.kisman.cc.features.module.misc.botnet.api.command.BotCommand
 import com.kisman.cc.features.module.misc.botnet.api.command.ExecutingType
 
 class BaritoneCommand : BotCommand(
-    arrayOf("axis", "highway", "blacklist", "build", "farm", "goto", "mine", "sel", "selection", "s", "schematica"),
+    arrayOf("baritone", "b"),
     ExecutingType.RAW) {
 
     override fun execute(command: String) {
-        mc.player.sendChatMessage("#$command")
+        if(command.contains("b")) mc.player.sendChatMessage(command.replace("b ", "#"))
+        else if (command.contains("baritone")) mc.player.sendChatMessage(command.replace("baritone ", "#"))
     }
 
 }
