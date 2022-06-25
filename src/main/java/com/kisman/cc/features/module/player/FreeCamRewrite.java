@@ -27,6 +27,7 @@ public class FreeCamRewrite extends Module {
 
     public FreeCamRewrite() {
         super("FreeCamRewrite", Category.PLAYER);
+        instance = this;
     }
 
     @Override
