@@ -13,7 +13,7 @@ class ServerCommand: BotCommand("server", ExecutingType.ARGS) {
             }
 
             "leave" -> {
-
+                
 
             }
         }

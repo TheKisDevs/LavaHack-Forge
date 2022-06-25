@@ -22,8 +22,6 @@ open class BotCommand {
     lateinit var names: Array<String>
     protected var mc: Minecraft = Minecraft.getMinecraft()
 
-
-
     //none
 
     open fun execute() {
@@ -43,11 +41,6 @@ open class BotCommand {
 
     open fun execute(command: String) {
     }
-
-
-
-
-
 
 
 }

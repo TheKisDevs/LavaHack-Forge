@@ -27,8 +27,13 @@ object CommandExecutor {
                     ExecutingType.ARGS -> c.execute(getArgs())
                     ExecutingType.NAMEnARGS -> c.execute(cmd[0], getArgs())
                     ExecutingType.RAW -> c.execute(command)
+
                 }
+
+                return
             }
         }
+
+        ChatUtils.message("Bot command " + cmd[0] + " not found")
     }
 }
