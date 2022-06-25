@@ -48,25 +48,6 @@ public class MixinItemBlock {
         return world.isRemote && NoGlitchBlocks.instance.isToggled() && NoGlitchBlocks.instance.noPlace() || this.placeBlockAt(stack, player, world, pos, facing, hitX, hitY, hitZ, state);
     }
 
-    /*@Redirect(
-            method = "canPlaceBlockOnSide",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;" +
-                            "mayPlace(Lnet/minecraft/block/Block;" +
-                            "Lnet/minecraft/util/math/BlockPos;" +
-                            "ZLnet/minecraft/util/EnumFacing;" +
-                            "Lnet/minecraft/entity/Entity;)Z"))*/
-    private boolean mayPlaceHook2(World world,
-                                  Block blockIn,
-                                  BlockPos pos,
-                                  boolean skip,
-                                  EnumFacing sidePlacedOn,
-                                  Entity placer)
-    {
-        return FreeCamRewrite.instance.isToggled() ? mayPlace(world, blockIn, pos, skip, sidePlacedOn, placer) : world.mayPlace(blockIn, pos, skip, sidePlacedOn, placer);
-    }
-
     private boolean mayPlace(World world,
                              Block blockIn,
                              BlockPos pos,

@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.util.LayerMap;
@@ -10,6 +11,8 @@ import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
+
+import java.awt.*;
 
 public class ModeButton implements Component {
     private final Setting setting;
@@ -47,7 +50,7 @@ public class ModeButton implements Component {
                                 new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
                                 new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                         ),
-                        ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                         HalqGui.getGradientColour(count).getColor()
                     )
             );
@@ -60,7 +63,7 @@ public class ModeButton implements Component {
                                     new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
                             HalqGui.getGradientColour(count).getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
                     )
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());

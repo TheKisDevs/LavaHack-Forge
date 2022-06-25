@@ -18,6 +18,7 @@ public class GuiModule extends Module {
     public final Setting offsets = register(new Setting("Offsets test uwu owo", this, 0.0, 0.0, 5.0, true));
     public final Setting uwu = register(new Setting("UwU Locate Mod", this, HalqGui.LocateMode.Left));
     public final Setting test2 = register(new Setting("Test 2", this, true));
+    public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));
 
     public static GuiModule instance;
 

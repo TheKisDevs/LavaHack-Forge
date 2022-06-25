@@ -1,8 +1,11 @@
 package com.kisman.cc.features.module.combat.autorer
 
+import com.kisman.cc.features.module.combat.AutoRer
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
+import com.kisman.cc.util.thread.kisman.ThreadHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -10,12 +13,19 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import java.util.function.Supplier
 import kotlin.math.max
 import kotlin.math.min
 
 class AutoRerUtil {
     companion object {
-        val mc: Minecraft = Minecraft.getMinecraft()
+        private val mc: Minecraft = Minecraft.getMinecraft()
+
+        var targetFinder = TargetFinder(Supplier { AutoRer.instance.targetRange.valDouble } , Supplier { 15L }, Supplier { AutoRer.instance.multiThreaddedSphereGetter.valBoolean || AutoRer.instance.multiThreaddedTargetGetter.valBoolean })
+
+        fun onEnable() {
+            targetFinder.reset()
+        }
 
         fun getDamageByCrystal(target: Entity, terrain: Boolean, crystal: BlockPos): Float {
             if(mc.world == null) {

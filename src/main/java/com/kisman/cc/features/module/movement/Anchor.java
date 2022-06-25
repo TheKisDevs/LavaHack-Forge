@@ -15,33 +15,27 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.*;
 
 public class Anchor extends Module {
-    private final Setting mode = new Setting("Mode", this, Mode.Motion);
-    private final Setting movementStop = new Setting("Movement Stop", this, false).setVisible(!mode.checkValString(Mode.Teleport.name()));
-    private final Setting timer = new Setting("Timer", this, false);
-    private final Setting timerValue = new Setting("Timer Value", this, 5, 0.1f, 20, false).setVisible(timer::getValBoolean);
-    private final Setting disableAfterComplete = new Setting("Disable After Complete", this, false);
-    private final Setting fastFall = new Setting("Fast Fall", this, false);
-    private final Setting fastFallMotion = new Setting("Fast Fall Motion", this, 10, 1, 10, false).setVisible(fastFall::getValBoolean);
-    private final Setting useLagTime = new Setting("Use Fast Fall Lag Time", this, false);
-    private final Setting lagTime = new Setting("Fast Fall Lag Time", this, 500, 0, 1000, NumberType.TIME);
+    private final Setting mode = register(new Setting("Mode", this, Mode.Motion));
+    private final Setting pitch = register(new Setting("Pitch", this, 60, 0, 90, false));
+    private final Setting movementStop = /*register*/(new Setting("Movement Stop", this, false).setVisible(!mode.checkValString(Mode.Teleport.name())));
+    private final Setting timer = register(new Setting("Timer", this, false));
+    private final Setting timerValue = register(new Setting("Timer Value", this, 5, 0.1f, 20, false).setVisible(timer::getValBoolean));
+    private final Setting disableAfterComplete = register(new Setting("Disable After Complete", this, false));
+    private final Setting fastFall = register(new Setting("Fast Fall", this, false));
+    private final Setting fastFallMotion = register(new Setting("Fast Fall Motion", this, 10, 1, 10, false).setVisible(fastFall::getValBoolean));
+    private final Setting useLagTime = register(new Setting("Use Fast Fall Lag Time", this, false));
+    private final Setting lagTime = register(new Setting("Fast Fall Lag Time", this, 500, 0, 1000, NumberType.TIME));
+    private final Setting synsWithReverseStep = register(new Setting("Syns With Reverse Step", this, false));
 
     private boolean using = false;
     private double[] oneblockPositions = new double[] { 0.42, 0.75 };
     private int packets;
     private boolean jumped = false;
+    private boolean hasReverseStepDisabled = false;
 
     public Anchor() {
         super("Anchor", "help with holes", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
-
-        setmgr.rSetting(mode);
-        setmgr.rSetting(movementStop);
-        setmgr.rSetting(timer);
-        setmgr.rSetting(timerValue);
-        setmgr.rSetting(disableAfterComplete);
-        setmgr.rSetting(fastFall);
-        setmgr.rSetting(fastFallMotion);
-        Kisman.instance.settingsManager.rSetting(new Setting("Pitch", this, 60, 0, 90, false));
     }
 
     private boolean isBlockHole(BlockPos blockpos) {
@@ -59,37 +53,34 @@ public class Anchor extends Module {
         return holeblocks >= 9;
     }
 
-    private Vec3d center = Vec3d.ZERO;
-
     private Vec3d getCenter(double posX, double posY, double posZ) {
-        double x = Math.floor(posX) + 0.5D;
-        double y = Math.floor(posY);
-        double z = Math.floor(posZ) + 0.5D ;
-
-        return new Vec3d(x, y, z);
+        return new Vec3d(Math.floor(posX) + 0.5D, Math.floor(posY), Math.floor(posZ) + 0.5D);
     }
 
-    public void onDisable() {
+    public void onEnable() {
+        if(using && hasReverseStepDisabled) {
+            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
+            module.getReverseStep().setValBoolean(true);
+        }
         using = false;
     }
 
     public void update() {
         if (mc.world == null && mc.player == null) return;
-        super.setDisplayInfo("[" + mode.getValString() + "]");
-        if (mc.player.posY < 0) return;
+        if(mc.player.isDead || mc.player.posY < 0) {
+            using = false;
+            return;
+        }
 
-        double pitch = Kisman.instance.settingsManager.getSettingByName(this, "Pitch").getValDouble();
-
-        if (mc.player.rotationPitch >= pitch) {
+        if (mc.player.rotationPitch >= pitch.getValInt()) {
             if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) || isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
                 if(mode.getValString().equals(Mode.Motion.name())) {
-                    center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
+                    Vec3d center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
 
                     double xDiff = Math.abs(center.x - mc.player.posX);
                     double zDiff = Math.abs(center.z - mc.player.posZ);
 
-                    if (xDiff <= 0.1 && zDiff <= 0.1) center = Vec3d.ZERO;
-                    else {
+                    if(!(xDiff <= 0.1 && zDiff <= 0.1)) {
                         double motionX = center.x - mc.player.posX;
                         double motionZ = center.z - mc.player.posZ;
 
@@ -124,6 +115,16 @@ public class Anchor extends Module {
         if(isBlockHole(PlayerUtil.getPlayerPos())) {
             if(disableAfterComplete.getValBoolean()) super.setToggled(false);
             if(using) using = false;
+        }
+
+        if(using && synsWithReverseStep.getValBoolean()) {
+            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
+            module.getReverseStep().setValBoolean(false);
+        }
+
+        if(hasReverseStepDisabled && !using) {
+            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
+            module.getReverseStep().setValBoolean(true);
         }
     }
 

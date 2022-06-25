@@ -34,7 +34,7 @@ class RollBackCommand() : Command("rollback") {
     private var pos : Vec3d? = null
     private var id : Int = -1
 
-    override fun runCommand(s: String?, args: Array<out String>?) {
+    override fun runCommand(s: String, args: Array<String>) {
         if(id == -1) {
             pos = Vec3d(0.0, 0.0, 0.0)
             Kisman.EVENT_BUS.subscribe(send)

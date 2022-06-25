@@ -11,7 +11,7 @@ import java.io.File
  * @since 16:56 of 18.05.2022
  */
 class ConfigCommand : Command("config") {
-    override fun runCommand(s: String?, args: Array<out String>?) {
+    override fun runCommand(s: String, args: Array<String>) {
         try {
             if((args?.get(0) ?: (throw Exception())) == "add") {
                 //TODO

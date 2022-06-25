@@ -6,20 +6,20 @@ import com.kisman.cc.event.events.EventItemRenderer;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.util.entity.player.PlayerUtil;
+import com.sun.javafx.geom.Vec3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemRenderer.class, priority = 10000)
 public class MixinItemRenderer {
-    @Shadow private void transformSideFirstPerson(EnumHandSide hand, float p_187459_2_) {}
-
     @Shadow @Final public Minecraft mc;
 
     @Inject(method = "rotateArm", at = @At("HEAD"), cancellable = true)
@@ -37,70 +37,71 @@ public class MixinItemRenderer {
 
     @Redirect(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformSideFirstPerson(Lnet/minecraft/util/EnumHandSide;F)V"))
     public void transformRedirect(ItemRenderer renderer, EnumHandSide hand, float y) {
-        if(ViewModel.instance.isToggled() || SwingAnimation.instance.isToggled()) {
-            float rotateMainX = 0;
-            float rotateMainY = 0;
-            float rotateMainZ = 0;
+        Vec3d translate = new Vec3d((hand == EnumHandSide.RIGHT ? 1 : -1) * 0.56, -0.52 + y * -0.6, -0.72);
+        Vec3f rotate = new Vec3f();
+        Vec3d scale = new Vec3d(0, 0, 0);
 
-            boolean isEating = PlayerUtil.IsEating();
-            boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
-            boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
+        boolean isEating = PlayerUtil.IsEating();
+        boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
+        boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
+        if(SwingAnimation.instance.isToggled()) {
             if (isSwingMain) {
                 switch (SwingAnimation.instance.strongMode.getValString()) {
                     case "Blockhit1": {
-                        rotateMainX = 72;
-                        rotateMainY = 180;
-                        rotateMainZ = 240;
+                        rotate.x = 72;
+                        rotate.y = 180;
+                        rotate.z = 240;
                         break;
                     }
                     case "Blockhit2": {
-                        rotateMainX = 344;
-                        rotateMainY = 225;
-                        rotateMainZ = 0;
+                        rotate.x = 344;
+                        rotate.y = 225;
+                        rotate.z = 0;
                         break;
                     }
                     case "Knife": {
-                        rotateMainX = 43;
-                        rotateMainY = 130;
-                        rotateMainZ = 230;
+                        rotate.x = 43;
+                        rotate.y = 130;
+                        rotate.z = 230;
                     }
                 }
-            } else if (mc.player.swingProgress == 0) {
-                rotateMainX = 0;
-                rotateMainY = 0;
-                rotateMainZ = 0;
             }
+        }
 
-            if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.RIGHT) {
-                if(isEating && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
-                else {
-                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(ViewModel.instance.translateRightX.getValDouble(), ViewModel.instance.translateRightY.getValDouble(), ViewModel.instance.translateRightZ.getValDouble());
-                    else this.transformSideFirstPerson(hand, y);
-                    GlStateManager.rotate(isSwingMain ? rotateMainX : (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (ViewModel.instance.rotateRightX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                    GlStateManager.rotate(isSwingMain ? rotateMainY : (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (ViewModel.instance.rotateRightY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                    GlStateManager.rotate(isSwingMain ? rotateMainZ : (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (ViewModel.instance.rotateRightZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+        if(ViewModel.instance.isToggled()) {
+            if (hand == EnumHandSide.RIGHT) {
+                if(!(isEating && !ViewModel.instance.customEating.getValBoolean())) {
+                    if(ViewModel.instance.translate.getValBoolean()) translate = new Vec3d(ViewModel.instance.translateRightX.getValDouble(), ViewModel.instance.translateRightY.getValDouble(), ViewModel.instance.translateRightZ.getValDouble());
+                    if(!isSwingMain) {
+                        rotate = new Vec3f(
+                                (!ViewModel.instance.autoRotateRigthX.getValBoolean() ? ((float) (ViewModel.instance.rotateRightX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
+                                (!ViewModel.instance.autoRotateRigthY.getValBoolean() ? ((float) (ViewModel.instance.rotateRightY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
+                                (!ViewModel.instance.autoRotateRigthZ.getValBoolean() ? ((float) (ViewModel.instance.rotateRightZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f)
+                        );
+                    }
                 }
-                GlStateManager.scale(ViewModel.instance.scaleRightX.getValDouble(), ViewModel.instance.scaleRightY.getValDouble(), ViewModel.instance.scaleRightZ.getValDouble());
+                scale = new Vec3d(ViewModel.instance.scaleRightX.getValDouble(), ViewModel.instance.scaleRightY.getValDouble(), ViewModel.instance.scaleRightZ.getValDouble());
             }
 
-            if (Kisman.instance.moduleManager.getModule("ViewModel").isToggled() && hand == EnumHandSide.LEFT) {
-                if(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean()) drawDefaultPos(hand, y);
-                else {
-                    if(ViewModel.instance.translate.getValBoolean()) GlStateManager.translate(ViewModel.instance.translateLeftX.getValDouble(), ViewModel.instance.translateLeftY.getValDouble(), ViewModel.instance.translateLeftZ.getValDouble());
-                    else this.transformSideFirstPerson(hand, y);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 1, 0, 0);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 1, 0);
-                    GlStateManager.rotate((!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f), 0, 0, 1);
+            if (hand == EnumHandSide.LEFT) {
+                if(!(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean())) {
+                    if(ViewModel.instance.translate.getValBoolean()) translate = new Vec3d(ViewModel.instance.translateLeftX.getValDouble(), ViewModel.instance.translateLeftY.getValDouble(), ViewModel.instance.translateLeftZ.getValDouble());
+                    rotate = new Vec3f(
+                            (!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
+                            (!ViewModel.instance.autoRotateLeftY.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftY.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),
+                            (!ViewModel.instance.autoRotateLeftZ.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftZ.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f)
+                    );
                 }
-                GlStateManager.scale(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
+                scale = new Vec3d(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
             }
-        } else this.transformSideFirstPerson(hand, y);
-    }
+        }
 
-    private void drawDefaultPos(EnumHandSide hand, float y) {
-        int i = hand == EnumHandSide.RIGHT ? 1 : -1;
-        GlStateManager.translate((float)i * 0.56F, -0.52F + y * -0.6F, -0.72F);
+        GlStateManager.translate(translate.x, translate.y, translate.z);
+        GlStateManager.scale(scale.x, scale.y, scale.z);
+        GlStateManager.rotate(rotate.x, 1, 0, 0);
+        GlStateManager.rotate(rotate.y, 0, 1, 0);
+        GlStateManager.rotate(rotate.z, 0, 0, 1);
     }
 
     @Redirect(method = "setLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))

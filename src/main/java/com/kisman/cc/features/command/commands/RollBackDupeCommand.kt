@@ -27,7 +27,7 @@ class RollBackDupeCommand : Command("rdupe") {
     private var state = false
     private var canceller = false
 
-    override fun runCommand(s: String?, args: Array<out String>?) {
+    override fun runCommand(s: String, args: Array<String>) {
         if(args?.size!! > 1 && args[1] == "reset") {
             state = false
             canceller = false

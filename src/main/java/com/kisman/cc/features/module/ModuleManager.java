@@ -150,6 +150,7 @@ public class ModuleManager {
 		modules.add(new Scaffold());
 		modules.add(new SoftScaffold());
 		modules.add(new Speed());
+		modules.add(new SpeedRewrite());
 		modules.add(new Spider());
 		modules.add(new TargetStrafe());
 		//player

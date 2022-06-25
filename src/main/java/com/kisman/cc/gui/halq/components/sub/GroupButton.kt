@@ -1,5 +1,6 @@
 package com.kisman.cc.gui.halq.components.sub
 
+import com.kisman.cc.features.module.client.GuiModule
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.Openable
@@ -9,6 +10,7 @@ import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.objects.AbstractGradient
 import com.kisman.cc.util.render.objects.Vec4d
+import java.awt.Color
 
 class GroupButton(
         val setting : SettingGroup,
@@ -19,8 +21,8 @@ class GroupButton(
 ) : Openable {
     val comps : ArrayList<Component> = ArrayList()
 
-    var layer_ : Int = 0
-    var width_ : Int = 0
+    private var layer_ : Int = 0
+    private var width_ : Int = 0
 
     var open : Boolean = false
 
@@ -99,10 +101,7 @@ class GroupButton(
                                             (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
                                     )
                             ),
-                            ColorUtils.injectAlpha(
-                                    HalqGui.backgroundColor.rgb,
-                                    30
-                            ),
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt),
                             HalqGui.getGradientColour(count).color
                     )
             )
@@ -127,10 +126,7 @@ class GroupButton(
                                     )
                             ),
                             HalqGui.getGradientColour(count).color,
-                            ColorUtils.injectAlpha(
-                                    HalqGui.backgroundColor.rgb,
-                                    30
-                            )
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt)
                     )
             )
         } else Render2DUtil.drawRectWH(

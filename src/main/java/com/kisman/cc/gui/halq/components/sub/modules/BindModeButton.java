@@ -1,11 +1,14 @@
 package com.kisman.cc.gui.halq.components.sub.modules;
 
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
+
+import java.awt.*;
 
 public class BindModeButton implements Component {
     private final Module module;
@@ -38,7 +41,7 @@ public class BindModeButton implements Component {
                                     new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
                                     new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                             HalqGui.getGradientColour(count).getColor()
                     )
             );
@@ -51,7 +54,7 @@ public class BindModeButton implements Component {
                                     new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
                             HalqGui.getGradientColour(count).getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
                     )
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());

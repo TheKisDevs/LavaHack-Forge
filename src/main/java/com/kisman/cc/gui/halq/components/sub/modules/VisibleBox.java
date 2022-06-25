@@ -1,11 +1,14 @@
 package com.kisman.cc.gui.halq.components.sub.modules;
 
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
+
+import java.awt.*;
 
 public class VisibleBox implements Component {
     private final Module module;
@@ -34,7 +37,7 @@ public class VisibleBox implements Component {
                                         new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
                                         new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                                 ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                                 HalqGui.getGradientColour(count).getColor()
                         )
                 );

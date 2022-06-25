@@ -4,8 +4,8 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
-import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.thread.kisman.GlobalThreads
+import com.kisman.cc.util.thread.kisman.*
+import java.util.function.Supplier
 
 /**
  * TODO: more modes of threads(like AutoReR)
@@ -15,27 +15,19 @@ import com.kisman.cc.util.thread.kisman.GlobalThreads
  */
 class MultiThreaddableModulePattern(
     val module : Module
-) : GlobalThreads {
+) {
     private val group = module.register(SettingGroup(Setting("Multi Thread", module)))
 
     private val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
     private val multiThread = module.register(group.add(Setting("Multi Thread", module, false)))
 
-    private val timer = TimerUtils()
+    private val handler = ThreadHandler(Supplier { delay.valLong }, Supplier { multiThread.valBoolean })
 
     fun reset() {
-        timer.reset()
+        handler.reset()
     }
 
     fun update(task : Runnable) {
-        if(timer.passedMillis(delay.valLong)) {
-            timer.reset()
-
-            if(multiThread.valBoolean) {
-                executor.submit(task)
-            } else {
-                task.run()
-            }
-        }
+        handler.update(task)
     }
 }

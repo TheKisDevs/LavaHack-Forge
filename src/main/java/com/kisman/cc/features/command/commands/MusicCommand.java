@@ -1,7 +1,9 @@
 package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
+import com.kisman.cc.features.command.SubCommand;
 import com.kisman.cc.util.process.web.music.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -10,13 +12,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MusicCommand extends Command {
-
     private static MusicCommand instance;
 
     private String dir;
 
     public MusicCommand(){
         super("music");
+        addInstances(
+                new CommandDir(this),
+                new CommandPause(this),
+                new CommandResume(this),
+                new CommandVolume(this),
+                new CommandPlay(this),
+                new CommandStop(this)
+        );
         this.dir = "";
         instance = this;
     }
@@ -25,7 +34,7 @@ public class MusicCommand extends Command {
     public void runCommand(String s, String[] args) {
         if(args.length < 1)
             return;
-        SubCommand command = SubCommand.getInstance(args[0]);
+        SubCommand command = getInstance(args[0]);
         if(command == null)
             return;
         command.runCommand(s, args);
@@ -33,42 +42,21 @@ public class MusicCommand extends Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "null";
     }
 
     @Override
     public String getSyntax() {
-        return null;
-    }
-
-    private static abstract class SubCommand {
-
-        private static final Map<String, SubCommand> instances;
-
-        static {
-            instances = new HashMap<>();
-            instances.put("play", new CommandPlay());
-            instances.put("stop", new CommandStop());
-            instances.put("resume", new CommandResume());
-            instances.put("pause", new CommandPause());
-            instances.put("volume", new CommandVolume());
-            instances.put("dir", new CommandDir());
-        }
-
-        private SubCommand(){
-        }
-
-        abstract void runCommand(String s, String[] args);
-
-        private static SubCommand getInstance(String name){
-            return instances.get(name);
-        }
+        return "null";
     }
 
     private static class CommandDir extends SubCommand {
+        public CommandDir(Command instance) {
+            super("dir", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             if(args.length < 2)
                 return;
             if(args[1].equals("file")){
@@ -107,9 +95,12 @@ public class MusicCommand extends Command {
     }
 
     private static class CommandVolume extends SubCommand {
+        public CommandVolume(Command instance) {
+            super("volume", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             if(args.length < 2)
                 return;
             int a = Integer.parseInt(args[1]);
@@ -119,36 +110,48 @@ public class MusicCommand extends Command {
     }
 
     private static class CommandPause extends SubCommand {
+        public CommandPause(Command instance) {
+            super("pause", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             Player.pause();
             complete("Paused the music");
         }
     }
 
     private static class CommandResume extends SubCommand {
+        public CommandResume(Command instance) {
+            super("resume", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             Player.resume();
             complete("Resumed the music");
         }
     }
 
     private static class CommandStop extends SubCommand {
+        public CommandStop(Command instance) {
+            super("stop", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             Player.stop();
             complete("Stopped the music");
         }
     }
 
     private static class CommandPlay extends SubCommand {
+        public CommandPlay(Command instance) {
+            super("play", instance);
+        }
 
         @Override
-        void runCommand(String s, String[] args) {
+        public void runCommand(String s, String[] args) {
             if(args.length < 2)
                 return;
             if(args[1].equals("file")){

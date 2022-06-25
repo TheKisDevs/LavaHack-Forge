@@ -27,7 +27,7 @@ class UseCommand : Command("use") {
         instance = this
     }
 
-    override fun runCommand(s: String?, args: Array<out String>?) {
+    override fun runCommand(s: String, args: Array<String>) {
         var x = 0
         var y = 0
         var z = 0

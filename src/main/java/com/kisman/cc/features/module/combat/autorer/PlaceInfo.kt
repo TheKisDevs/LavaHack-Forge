@@ -42,32 +42,6 @@ open class PlaceInfo(
             update(player, BlockPos.ORIGIN, Float.MAX_VALUE, targetDamage)
         }
 
-/*        fun calcPlacement(event: SafeClientEvent) {
-            event {
-                when (placeBypass) {
-                    PlaceBypass.UP -> {
-                        side = EnumFacing.UP
-                        hitVecOffset = Vec3f(0.5f, 1.0f, 0.5f)
-                        hitVec = Vec3d(blockPos.x + 0.5, blockPos.y + 1.0, blockPos.z + 0.5)
-                    }
-                    PlaceBypass.DOWN -> {
-                        side = EnumFacing.DOWN
-                        hitVecOffset = Vec3f(0.5f, 0.0f, 0.5f)
-                        hitVec = Vec3d(blockPos.x + 0.5, blockPos.y.toDouble(), blockPos.z + 0.5)
-                    }
-                    PlaceBypass.CLOSEST -> {
-                        side = calcDirection(player.eyePosition, blockPos.toVec3dCenter())
-                        val directionVec = side.directionVec
-                        val x = directionVec.x * 0.5f + 0.5f
-                        val y = directionVec.y * 0.5f + 0.5f
-                        val z = directionVec.z * 0.5f + 0.5f
-                        hitVecOffset = Vec3f(x, y, z)
-                        hitVec = blockPos.toVec3dCenter(x.toDouble(), y.toDouble(), z.toDouble())
-                    }
-                }
-            }
-        }*/
-
         inline fun takeValid(damage: Float): Mutable? {
             return this.takeIf {
                 target != mc.player
@@ -78,6 +52,10 @@ open class PlaceInfo(
     }
 
     companion object {
+        fun getElementFromListByPos(list : List<PlaceInfo>, pos : BlockPos): PlaceInfo? {
+            return list.firstOrNull { it.blockPos == pos }
+        }
+
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         @JvmField
         val INVALID = PlaceInfo(object : EntityLivingBase(null) {

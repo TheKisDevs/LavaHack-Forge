@@ -1,11 +1,13 @@
 package com.kisman.cc.features.command;
 
 import com.kisman.cc.features.command.commands.*;
+import com.kisman.cc.features.command.exceptions.SimilarCommandNamesException;
+import com.kisman.cc.util.chat.ChatHandler;
 
 import java.util.*;
 
-public class CommandManager {
-    public static ArrayList<Command> commands = new ArrayList<Command>();
+public class CommandManager extends ChatHandler {
+    public static HashMap<String, Command> commands = new HashMap<>();
 	
 	public char cmdPrefix = '-';
 	public String cmdPrefixStr = "" + cmdPrefix;
@@ -16,24 +18,30 @@ public class CommandManager {
 	}
 
 	public void addCommands() {
-		commands.add(new AntiSpammerCommand());
-		commands.add(new Bind());
-		commands.add(new ConfigCommand());
-		commands.add(new DDOSCommand());
-		commands.add(new Flip());
-		commands.add(new FriendCommand());
-		commands.add(new Help());
-		commands.add(new LoadConfigCommand());
-		commands.add(new LuaCommand());
-        commands.add(new Slider());
-        commands.add(new OpenDir());
-		commands.add(new RollBackCommand());
-		commands.add(new RollBackDupeCommand());
-        commands.add(new SaveConfigCommand());
-		commands.add(new SetKey());
-        commands.add(new Toggle());
-		commands.add(new Tp());
-		commands.add(new MusicCommand());
+		add(new AntiSpammerCommand());
+		add(new Bind());
+		add(new ConfigCommand());
+		add(new DDOSCommand());
+		add(new Flip());
+		add(new FriendCommand());
+		add(new Help());
+		add(new LoadConfigCommand());
+		add(new LuaCommand());
+        add(new Slider());
+		add(new TestCommand());
+        add(new OpenDir());
+		add(new RollBackCommand());
+		add(new RollBackDupeCommand());
+        add(new SaveConfigCommand());
+		add(new SetKey());
+        add(new Toggle());
+		add(new Tp());
+		add(new MusicCommand());
+	}
+
+	private void add(Command command) {
+		if(commands.get(command.getCommand()) != null) throw new SimilarCommandNamesException(command, commands.get(command.getCommand()));
+		commands.put(command.getCommand(), command);
 	}
 
 	public void runCommands(String s) {
@@ -43,13 +51,13 @@ public class CommandManager {
 		String commandName = hasArgs ? readString.split(" ")[0] : readString.trim();
 		String[] args = hasArgs ? readString.substring(commandName.length()).trim().split(" ") : new String[0];
 
-		for(Command command : commands) {
+		for(Command command : commands.values()) {
 			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) {
 				command.runCommand(readString, args);
 				commandResolved = true;
 				break;
 			}
 		}
-		if(!commandResolved) Command.error("Cannot resolve internal command: \u00a7c" + commandName);
+		if(!commandResolved) error("Cannot resolve internal command: \u00a7c" + commandName);
 	}
 }

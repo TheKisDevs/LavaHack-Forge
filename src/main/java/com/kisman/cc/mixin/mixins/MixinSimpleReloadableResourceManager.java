@@ -36,7 +36,7 @@ public class MixinSimpleReloadableResourceManager {
     @Inject(method = "getResource", at = @At("HEAD"), cancellable = true)
     private void getResourceHook(ResourceLocation location, CallbackInfoReturnable<IResource> cir) {
         ResourceSupplier supplier;
-        if (/*!Environment.hasForge() &&*/ !(location instanceof PluginResourceLocation) && location.getResourceDomain().equals("earthhack")) location = new PluginResourceLocation(location.getResourceDomain() + ":" + location.getResourcePath(), "earthhack");
+        if (/*!Environment.hasForge() &&*/ !(location instanceof PluginResourceLocation) && location.getResourceDomain().equals("kismancc")) location = new PluginResourceLocation(location.getResourceDomain() + ":" + location.getResourcePath(), "kismancc");
 
         if (location instanceof PluginResourceLocation) {
             PluginResourceLocation loc = (PluginResourceLocation) location;
@@ -60,10 +60,10 @@ public class MixinSimpleReloadableResourceManager {
         }
     }
 
-    @Inject(method = "getResourceDomains", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getResourceDomains", at = @At("HEAD"))
     private void getResourceDomainsHook(CallbackInfoReturnable<Set<String>> cir) {
         Set<String> domains = this.setResourceDomains;
-        domains.add("earthhack");
+        domains.add("kismancc");
     }
 
 }

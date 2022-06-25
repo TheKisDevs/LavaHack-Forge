@@ -5,7 +5,7 @@ import com.kisman.cc.features.command.Command;
 
 import com.kisman.cc.settings.Setting;
 
-public class Slider extends Command{
+public class Slider extends Command {
     public Slider() {
         super("slider");
     }

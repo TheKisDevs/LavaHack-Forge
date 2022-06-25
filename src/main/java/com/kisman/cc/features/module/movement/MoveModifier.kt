@@ -32,7 +32,7 @@ class MoveModifier : Module(
     private val blocks = register(SettingGroup(Setting("Blocks", this)))
     private val step = register(blocks.add(Setting("Step", this, false)))
     private val stepVal = register(blocks.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible { step.valBoolean }))
-    private val reverseStep = register(blocks.add(Setting("Reverse Step", this, false)))
+    val reverseStep : Setting = register(blocks.add(Setting("Reverse Step", this, false)))
     private val reverseStepVal = register(blocks.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible { reverseStep.valBoolean }))
     private val reverseStepLagTime = register(blocks.add(Setting("Reverse Step Lag Time", this, false).setVisible { reverseStep.valBoolean }))
     private val reverseStepLagTimeVal = register(blocks.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setVisible { reverseStep.valBoolean && reverseStepLagTime.valBoolean }))

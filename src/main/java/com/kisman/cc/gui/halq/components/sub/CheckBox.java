@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
@@ -13,6 +14,7 @@ import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -49,7 +51,7 @@ public class CheckBox implements Openable {
                                         new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
                                         new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                                 ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                                 HalqGui.getGradientColour(count).getColor()
                         )
                 );

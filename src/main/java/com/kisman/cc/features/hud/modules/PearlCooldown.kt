@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.customfont.CustomFontUtil
@@ -59,13 +58,13 @@ class PearlCooldown : HudModule(
 
         Render2DUtil.drawRectWH(x, y + CustomFontUtil.getFontHeight() + 1, w, 1.0, Color.GRAY.rgb)//1 is offset
         Render2DUtil.drawRectWH(x, y + CustomFontUtil.getFontHeight() + 1, getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w), 1.0, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))//1 is height of progress bare
-        println(getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w))
-        println(getCurrentCooldown())
-        println("\n")
+//        println(getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w))
+//        println(getCurrentCooldown())
+//        println("\n")
     }
 
     private fun haveCooldown() : Boolean {
-        return getCurrentCooldown() >=0
+        return getCurrentCooldown() >= getCooldown()
     }
 
     private fun getXCoordByCooldown(cooldown : Long): Double {
@@ -73,8 +72,7 @@ class PearlCooldown : HudModule(
     }
 
     private fun getCurrentCooldown() : Long {
-        val cooldown = System.currentTimeMillis() - lastPearlTimestamp
-        return getCooldown() - cooldown
+        return System.currentTimeMillis() - lastPearlTimestamp
     }
 
     private fun getCooldown(): Long {

@@ -12,6 +12,7 @@ import java.util.Objects;
 
 public class MovementUtil {
     public static final double WALK_SPEED = 0.221;
+    public static final double DEFAULT_SPEED = 0.2873;
     public static Minecraft mc = Minecraft.getMinecraft();
 
     public static double getJumpHeight(boolean strict) {
@@ -94,7 +95,7 @@ public class MovementUtil {
         return baseSpeed;
     }
 
-    public static double getSpeed() {return getSpeed(false, 0.2873);}
+    public static double getSpeed() {return getSpeed(false, DEFAULT_SPEED);}
 
     public static double getSpeed(boolean slowness, double defaultSpeed) {
         if (mc.player.isPotionActive(MobEffects.SPEED)) {

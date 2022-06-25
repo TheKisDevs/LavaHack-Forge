@@ -1,7 +1,7 @@
 package com.kisman.cc.features.plugins;
 
-public interface Plugin {
-    default void init() {}
-    void load();
-    void unload();
+public abstract class Plugin {
+    public void init() {}
+    public abstract void load();
+    public abstract void unload();
 }

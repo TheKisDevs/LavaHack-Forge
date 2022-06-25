@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.settings.Setting;
@@ -51,7 +52,7 @@ public class ColorButton implements Component {
                                     new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
                             color.getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30)
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
                     )
             );
             Render2DUtil.drawAbstract(
@@ -62,7 +63,7 @@ public class ColorButton implements Component {
                                     new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
                                     new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
+                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                             color.getColor()
                     )
             );
