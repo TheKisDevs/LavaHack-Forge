@@ -22,3 +22,6 @@
 
 `Halq`
 - discord - `Halq#0101`
+
+`toster96` aka TF-64
+- discord - `! >y#5419`
