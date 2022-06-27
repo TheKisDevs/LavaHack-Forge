@@ -2,9 +2,10 @@ package com.kisman.cc.features.hud;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.gui.api.Draggable;
 import net.minecraft.client.Minecraft;
 
-public class HudModule extends Module {
+public class HudModule extends Module implements Draggable {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 
 	public boolean drag = false;
@@ -28,12 +29,12 @@ public class HudModule extends Module {
 		this.drag = drag;
 	}
 
-	public double getX() {return x;}
-	public void setX(double x) {this.x = x;}
-	public double getY() {return y;}
-	public void setY(double y) {this.y = y;}
-	public double getW() {return w;}
-	public void setW(double w) {this.w = w;}
-	public double getH() {return h;}
-	public void setH(double h) {this.h = h;}
+	@Override public double getX() {return x;}
+	@Override public void setX(double x) {this.x = x;}
+	@Override public double getY() {return y;}
+	@Override public void setY(double y) {this.y = y;}
+	@Override public double getW() {return w;}
+	@Override public void setW(double w) {this.w = w;}
+	@Override public double getH() {return h;}
+	@Override public void setH(double h) {this.h = h;}
 }

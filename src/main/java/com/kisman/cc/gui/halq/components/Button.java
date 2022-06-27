@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Openable;
-import com.kisman.cc.gui.halq.components.sub.hud.Draggable;
+import com.kisman.cc.gui.halq.components.sub.hud.DraggableBox;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class Button implements Component {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
-    public final Draggable draggable;
+    public final DraggableBox draggable;
     public final Description description;
     public final boolean hud;
     public int x, y, offset, count;
@@ -41,7 +41,7 @@ public class Button implements Component {
     public Button(Module mod, int x, int y, int offset, int count) {
         this.mod = mod;
         this.hud = (mod instanceof HudModule);
-        this.draggable = (hud ? new Draggable((HudModule) mod) : null);
+        this.draggable = (hud ? new DraggableBox((HudModule) mod) : null);
         this.description = new Description(mod.getDescription(), count);
         this.x = x;
         this.y = y;

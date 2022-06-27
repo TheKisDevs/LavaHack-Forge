@@ -60,6 +60,7 @@
     "viaforge.MixinNetworkManagerChInit"
   ],
   "client": [
+    "MixinFontRenderer",
     "accessor.AccessorNetHandlerPlayClient"
   ]
 }

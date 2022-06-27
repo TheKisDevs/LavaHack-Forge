@@ -1,5 +1,7 @@
 package com.kisman.cc.util.render.customfont
 
+import com.kisman.cc.Kisman
+import com.kisman.cc.features.module.client.Changer
 import com.kisman.cc.features.module.client.CustomFontModule
 import com.kisman.cc.util.render.customfont.CustomFontUtil.*
 import com.kisman.cc.util.enums.FontStyles
@@ -69,36 +71,16 @@ class CustomFontUtilKt {
             return font?.getFractionMetrics() ?: true
         }
 
-        //cringe code by kisman
-        fun setFonts(style : FontStyles) {
-            comfortaal20 = CustomFontRenderer(getFontTTF("comfortaa-light", style, 22), true, true)
-            comfortaal18 = CustomFontRenderer(getFontTTF("comfortaa-light", style, 18), true, true)
-            comfortaal15 = CustomFontRenderer(getFontTTF("comfortaa-light", style, 15), true, true)
-            comfortaal16 = CustomFontRenderer(getFontTTF("comfortaa-light", style, 16), true, true)
+        fun getShadowX() : Double {
+            return if(getChanger().shadowTextModifier.valBoolean) getChanger().shadowX.valDouble else 1.0
+        }
 
-            comfortaab72 = CustomFontRenderer(getFontTTF("comfortaa-bold", style, 72), true, true)
-            comfortaab55 = CustomFontRenderer(getFontTTF("comfortaa-bold", style, 55), true, true)
-//            comfortaab20 = CustomFontRenderer(getFontTTF("comfortaa-bold", style, 72), true, true)
-            comfortaab18 = CustomFontRenderer(getFontTTF("comfortaa-bold", style, 18), true, true)
-//            comfortaab16 = CustomFontRenderer(getFontTTF("comfortaa-bold", style, 72), true, true)
+        fun getShadowY() : Double {
+            return if(getChanger().shadowTextModifier.valBoolean) getChanger().shadowY.valDouble else 1.0
+        }
 
-            //20
-            comfortaa18 = CustomFontRenderer(getFontTTF("comfortaa-regular", style, 18), true, true)
-            //15
-
-            consolas18 = CustomFontRenderer(getFontTTF("consolas", style, 18), true, true)
-            consolas16 = CustomFontRenderer(getFontTTF("consolas", style, 16), true, true)
-            consolas15 = CustomFontRenderer(getFontTTF("consolas", style, 15), true, true)
-
-            sfui19 = CustomFontRenderer(getFontTTF("sf-ui", style, 19), true, true)
-            //18
-
-            futura20 = CustomFontRenderer(getFontTTF("futura-normal", style, 20), true, true)
-            //18
-
-            lexendDeca18 = CustomFontRenderer(getFontTTF("lexenddeca-regular", style, 18), true, true)
-
-            century18 = CustomFontRenderer(getFontTTF("main", style, 18), true, true)
+        private fun getChanger() : Changer {
+            return Kisman.instance.moduleManager.getModule("Changer") as Changer
         }
     }
 }

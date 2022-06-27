@@ -60,9 +60,9 @@ class Speed : HudModule(
 
         val text = "Speed: ${TextFormatting.GRAY}$speed ${(speedUnit.valEnum as SpeedUnits).displayInfo}"
 
-        CustomFontUtil.drawStringWithShadow(text, x, y, (if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
+        CustomFontUtil.drawStringWithShadow(text, getX(), getY(), (if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
 
-        w = CustomFontUtil.getStringWidth(text).toDouble()
-        h = CustomFontUtil.getFontHeight().toDouble()
+        setW(CustomFontUtil.getStringWidth(text).toDouble())
+        setH(CustomFontUtil.getFontHeight().toDouble())
     }
 }

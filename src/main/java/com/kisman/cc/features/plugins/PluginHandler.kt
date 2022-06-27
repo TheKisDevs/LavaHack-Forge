@@ -17,7 +17,9 @@ class PluginHandler {
         for(config in PluginManager.getInstance().configs.values) {
             val module = ModulePlugin(config)
             Kisman.instance.moduleManager.modules.add(module)
-            module.plugin.init()
+            try {
+                module.plugin.init()
+            } catch(ignored : IncompatibleClassChangeError) {}
             module.load()
         }
     }

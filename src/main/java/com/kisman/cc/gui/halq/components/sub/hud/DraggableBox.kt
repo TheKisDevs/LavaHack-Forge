@@ -2,7 +2,7 @@ package com.kisman.cc.gui.halq.components.sub.hud
 
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.features.hud.HudModule
-import com.kisman.cc.gui.halq.util.HudModuleCoordsFixer
+import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
 import com.kisman.cc.util.render.Render2DUtil
 import java.awt.Color
 
@@ -10,7 +10,7 @@ import java.awt.Color
  * @author _kisman_
  * @since 14.05.2022
  */
-class Draggable(
+class DraggableBox(
         val module : HudModule
 ) : Component {
     var dragX = 0
@@ -20,13 +20,13 @@ class Draggable(
     override fun drawScreen(mouseX: Int, mouseY: Int) {
         if(module.isToggled) {
             if(drag) {
-                module.x = (mouseX - dragX).toDouble()
-                module.y = (mouseY - dragY).toDouble()
+                module.setX((mouseX - dragX).toDouble())
+                module.setY((mouseY - dragY).toDouble())
             }
 
-            HudModuleCoordsFixer.fix(module)
+            DraggableCoordsFixer.fix(module)
 
-            Render2DUtil.drawRectWH(module.x, module.y, module.w, module.h, Color(10, 10, 10, 170).rgb)
+            Render2DUtil.drawRectWH(module.getX(), module.getY(), module.getW(), module.getH(), Color(10, 10, 10, 170).rgb)
         } else {
             drag = false
         }
@@ -35,8 +35,8 @@ class Draggable(
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
         if(module.isToggled) {
             drag = isMouseOnButton(mouseX, mouseY)
-            dragX = (mouseX - module.x).toInt()
-            dragY = (mouseY - module.y).toInt()
+            dragX = (mouseX - module.getX()).toInt()
+            dragY = (mouseY - module.getY()).toInt()
         }
     }
 
@@ -45,6 +45,6 @@ class Draggable(
     }
 
     private fun isMouseOnButton(x : Int, y : Int) : Boolean {
-        return x > module.x && x < module.x + module.w && y > module.y && y < module.y + module.h
+        return x > module.getX() && x < module.getX() + module.getW() && y > module.getY() && y < module.getY() + module.getH()
     }
 }

@@ -52,6 +52,11 @@ class Changer : Module("Changer", "FullBright + CustomFov + Ambience + CustomTim
     private val animation = register(Setting("Animation", this, false))
     private val animationSpeed = register(Setting("Animation Speed", this, 13.0, 1.0, 20.0, true).setVisible { animation.valBoolean })
 
+    //Shadow Text Modifier settings
+    val shadowTextModifier = register(Setting("Shadow Text Modifier", this, false))
+    val shadowX = register(Setting("Shadow X", this, 1.0, 0.0, 2.0, false).setVisible { shadowTextModifier.valBoolean })
+    val shadowY = register(Setting("Shadow Y", this, 1.0, 0.0, 2.0, false).setVisible { shadowTextModifier.valBoolean })
+
     private var circle = 0
     private var oldFov = 0F
 

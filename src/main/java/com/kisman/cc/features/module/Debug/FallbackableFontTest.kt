@@ -16,7 +16,7 @@ class FallbackableFontTest : Module(
     "Test of fallback fonts",
     Category.DEBUG
 ) {
-    val font = FallbackableFont(CustomFontUtil.getFontTTF("comfortaa-bold", 18), CustomFontUtil.getFontTTF("Futura", 18))
+    val font = FallbackableFont(CustomFontUtil.getFontTTF("comfortaa-bold", 18), CustomFontUtil.getFontTTF("futura-normal", 18))
 
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
         font.drawString("Привет uww!", 100.0, 100.0, -1, true)

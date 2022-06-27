@@ -23,7 +23,7 @@ public class CustomFontRenderer extends CustomFont {
     }
 
     public float drawStringWithShadow(String text, double x, double y, int color) {
-        drawString(text, x + 1.0D, y + 1.0D, color, true);
+        drawString(text, x + CustomFontUtilKt.Companion.getShadowX(), y + CustomFontUtilKt.Companion.getShadowY(), color, true);
         return drawString(text, x, y, color, false);
     }
 

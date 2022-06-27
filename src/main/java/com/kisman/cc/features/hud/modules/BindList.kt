@@ -27,8 +27,8 @@ class BindList : HudModule(
     private val colorInactive = register(colorG.add(Setting("Inactive Color", this, "Inactive Color", Colour(255, 0, 0, 255))))
 
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
-        val x = x
-        val y = y
+        val x = getX()
+        val y = getY()
 
         val list : ArrayList<Element> = ArrayList()
 
@@ -75,8 +75,8 @@ class BindList : HudModule(
             )
         }
 
-        w = CustomFontUtil.getStringWidth(list[0].text).toDouble()
-        h = list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + offsets.valInt)
+        setW(CustomFontUtil.getStringWidth(list[0].text).toDouble())
+        setH(list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + offsets.valInt))
     }
 
     class Element(

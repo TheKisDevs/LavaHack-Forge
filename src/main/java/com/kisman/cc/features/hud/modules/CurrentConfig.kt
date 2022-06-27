@@ -21,9 +21,9 @@ class CurrentConfig : HudModule(
     private val astolfo = register(Setting("Astolfo", this, true))
 
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
-        h = CustomFontUtil.getFontHeight().toDouble()
+        setH(CustomFontUtil.getFontHeight().toDouble())
         val text = "Current Config${TextFormatting.GRAY}: ${if(Kisman.currentConfig != null) Kisman.currentConfig else "null"}"
-        CustomFontUtil.drawStringWithShadow(text, x, y, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
-        w = CustomFontUtil.getStringWidth(text).toDouble()
+        CustomFontUtil.drawStringWithShadow(text, getX(), getY(), (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
+        setW(CustomFontUtil.getStringWidth(text).toDouble())
     }
 }

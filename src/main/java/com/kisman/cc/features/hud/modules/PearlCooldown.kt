@@ -52,12 +52,12 @@ class PearlCooldown : HudModule(
     })
 
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
-        CustomFontUtil.drawStringWithShadow("Pearl Cooldown", x, y, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
-        w = CustomFontUtil.getStringWidth("Pearl Cooldown").toDouble()
-        h = (CustomFontUtil.getFontHeight() + 2).toDouble()
+        CustomFontUtil.drawStringWithShadow("Pearl Cooldown", getX(), getY(), (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
+        setW(CustomFontUtil.getStringWidth("Pearl Cooldown").toDouble())
+        setH((CustomFontUtil.getFontHeight() + 2).toDouble())
 
-        Render2DUtil.drawRectWH(x, y + CustomFontUtil.getFontHeight() + 1, w, 1.0, Color.GRAY.rgb)//1 is offset
-        Render2DUtil.drawRectWH(x, y + CustomFontUtil.getFontHeight() + 1, getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w), 1.0, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))//1 is height of progress bare
+        Render2DUtil.drawRectWH(getX(), getY() + CustomFontUtil.getFontHeight() + 1, getW(), 1.0, Color.GRAY.rgb)//1 is offset
+        Render2DUtil.drawRectWH(getX(), getY() + CustomFontUtil.getFontHeight() + 1, getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, getW()), 1.0, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))//1 is height of progress bare
 //        println(getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w))
 //        println(getCurrentCooldown())
 //        println("\n")
@@ -68,7 +68,7 @@ class PearlCooldown : HudModule(
     }
 
     private fun getXCoordByCooldown(cooldown : Long): Double {
-        return (cooldown / getCooldown()) * w
+        return (getCooldown() / cooldown) * getW()
     }
 
     private fun getCurrentCooldown() : Long {

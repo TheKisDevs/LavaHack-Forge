@@ -127,12 +127,12 @@ class ConfigManager(
                                 }
                                 "x" -> {
                                     try {
-                                        hud.x = java.lang.Double.parseDouble(split1[1])
+                                        hud.setX(java.lang.Double.parseDouble(split1[1]))
                                     } catch (ignored : Exception) {}
                                 }
                                 "y" -> {
                                     try {
-                                        hud.y = java.lang.Double.parseDouble(split1[1])
+                                        hud.setY(java.lang.Double.parseDouble(split1[1]))
                                     } catch (ignored : Exception) {}
                                 }
                                 config.settingsPrefix -> {
@@ -235,9 +235,9 @@ class ConfigManager(
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.key}")
                 writer.newLine()
-                writer.write("${config.hudModulesPrefix}.${hud.name}.x=${hud.x}")
+                writer.write("${config.hudModulesPrefix}.${hud.name}.x=${hud.getX()}")
                 writer.newLine()
-                writer.write("${config.hudModulesPrefix}.${hud.name}.y=${hud.y}")
+                writer.write("${config.hudModulesPrefix}.${hud.name}.y=${hud.getY()}")
                 writer.newLine()
                 if(Kisman.instance.settingsManager.getSettingsByMod(hud) != null) {
                     for(setting in Kisman.instance.settingsManager.getSettingsByMod(hud)) {

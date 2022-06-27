@@ -4,6 +4,8 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
 import com.kisman.cc.gui.MainGui
 import com.kisman.cc.features.module.client.Config
+import com.kisman.cc.gui.api.Draggable
+import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
@@ -12,6 +14,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
@@ -20,17 +23,21 @@ import java.io.UnsupportedEncodingException
 
 /**@author Dallas/gerald0mc
  */
-class ConsoleGui : GuiScreen() {
-    var width1: Int = 300
-    var height1: Int = 250 - 25
-    var x: Int = 25
-    var y: Int = 25
+class ConsoleGui : GuiScreen(), Draggable {
+    private var width1: Int = 300
+    private var height1: Int = 250 - 25
+    private var x: Int = 25
+    private var y: Int = 25
 
-    val history = ArrayList<String>()
+    private val history = ArrayList<String>()
     var entryString = ""
 
+    private var drag = false
+    private var dragX = 0
+    private var dragY = 0
+
     @EventHandler val onMessage = Listener(EventHook { event: ConsoleMessageEvent ->
-        history.add(event.message);
+        history.add(event.message)
     })
 
     init {
@@ -46,6 +53,13 @@ class ConsoleGui : GuiScreen() {
         super.drawDefaultBackground()
 
         Kisman.instance.guiGradient.drawScreen(mouseX, mouseY)
+
+        if(drag) {
+            x = mouseX - dragX
+            y = mouseY - dragY
+        }
+
+        DraggableCoordsFixer.fix(this)
 
         if(history.size >= 25) {
             history.removeAt(0)
@@ -84,8 +98,17 @@ class ConsoleGui : GuiScreen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if(Mouse.isButtonDown(0) && mouseX >= x && mouseX <= x + width1 && mouseY >= y && mouseY <= y + height1) {
+            drag = true
+            dragX = mouseX - x
+            dragY = mouseY - y
+        }
         Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
         super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        drag = false
     }
 
     public override fun keyTyped(typedChar: Char, keyCode: Int) {
@@ -163,4 +186,13 @@ class ConsoleGui : GuiScreen() {
         } catch (ignored: Exception) { }
         super.onGuiClosed()
     }
+
+    override fun getX(): Double { return x.toDouble() }
+    override fun getY(): Double { return y.toDouble() }
+    override fun getW(): Double { return width1.toDouble() }
+    override fun getH(): Double { return height1.toDouble() }
+    override fun setX(x: Double) { this.x = x.toInt() }
+    override fun setY(y: Double) { this.y = y.toInt() }
+    override fun setW(w: Double) { this.width1 = w.toInt() }
+    override fun setH(h: Double) { this.height1 = h.toInt() }
 }
