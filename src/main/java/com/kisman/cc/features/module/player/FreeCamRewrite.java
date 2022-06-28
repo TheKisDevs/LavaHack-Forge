@@ -38,8 +38,9 @@ public class FreeCamRewrite extends Module {
         Kisman.EVENT_BUS.subscribe(listener2);
         Kisman.EVENT_BUS.subscribe(listener3);
 
-        if ( mc.player == null ) {
+        if (mc.player == null || mc.world == null) {
             super.setToggled(false);
+            return;
         }
         mc.player.dismountRidingEntity();
         fakePlayer = PlayerUtil.createFakePlayerAndAddToWorld(mc.player.getGameProfile());
@@ -54,7 +55,7 @@ public class FreeCamRewrite extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener2);
         Kisman.EVENT_BUS.unsubscribe(listener3);
 
-        if ( mc.player == null ) return;
+        if (mc.player == null || mc.world == null) return;
         mc.player.setPosition(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ);
         mc.player.noClip = false;
         PlayerUtil.removeFakePlayer(fakePlayer);
@@ -121,11 +122,13 @@ public class FreeCamRewrite extends Module {
     private final Listener<BlockPushEvent> listener3 = new Listener<>(Cancellable::cancel);
 
     public void update() {
+        if(mc.player == null || mc.world == null) return;
+
         mc.player.noClip = true;
         mc.player.setVelocity(0, 0, 0);
         mc.player.jumpMovementFactor = (float) speed.getValDouble();
-        double[] dir = MovementUtil.strafe(speed.getValDouble());
-        if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0) {
+        if (MovementUtil.isMoving()) {
+            double[] dir = MovementUtil.strafe(speed.getValDouble());
             mc.player.motionX = dir[0];
             mc.player.motionZ = dir[1];
         } else {

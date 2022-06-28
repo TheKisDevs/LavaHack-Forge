@@ -2,6 +2,7 @@ package com.kisman.cc.api.cape;
 
 import com.kisman.cc.api.util.URLReader;
 import com.kisman.cc.api.util.exception.URLReaderException;
+import com.kisman.cc.features.module.client.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,6 @@ public class CapeAPI {
     }
 
     public boolean is(UUID uuid) {
-        return uuids.contains(uuid);
+        return Config.instance.capeAPI.getValBoolean() && uuids.contains(uuid);
     }
 }

@@ -13,7 +13,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Indicators extends HudModule {
-    private final  TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = new TimerUtils();
     private final int sliderWidth = 51;
     private final int sliderHeight = 2;
 

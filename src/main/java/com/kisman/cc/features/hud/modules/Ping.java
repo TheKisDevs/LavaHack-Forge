@@ -14,8 +14,6 @@ public class Ping extends HudModule {
 
     public Ping() {
         super("Ping", "", true);
-        setX(1);
-        setY(1);
     }
 
     @SubscribeEvent

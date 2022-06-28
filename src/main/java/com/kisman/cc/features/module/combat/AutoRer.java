@@ -58,7 +58,7 @@ public class AutoRer extends Module {
 
     public final Setting multiThreaddedSphereGetter = register(optimization.add(new Setting("Multi Threadded Sphere Getter", this, false)));
     public final Setting multiThreaddedTargetGetter = register(optimization.add(new Setting("Multi Threadded Target Getter", this, false)));
-    private final Setting squaredDistanceGetter = register(optimization.add(new Setting("Squared Distance Getter", this, false)));
+    private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
     public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false)));
@@ -598,7 +598,8 @@ public class AutoRer extends Module {
                         maxSelfDMG.getValInt(),
                         lethalMult.getValFloat(),
                         terrain.getValBoolean(),
-                        armorBreaker.getValInt()
+                        armorBreaker.getValInt(),
+                        wallRangeUsage.getValBoolean()
                 );
             } else {
                 calculatePlace();

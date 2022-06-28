@@ -80,13 +80,7 @@ public class EventProcessor {
     }
 
     @SubscribeEvent
-    public void onKey(KeyInputEvent event) {
-        Kisman.EVENT_BUS.post(this);
-    }
-
-    @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        Kisman.EVENT_BUS.post(this);
         if(oldWidth != mc.displayWidth || oldHeight != mc.displayHeight) {
             oldWidth = mc.displayWidth;
             oldHeight = mc.displayHeight;
@@ -94,16 +88,6 @@ public class EventProcessor {
         }
         if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
         if(Config.instance != null) Kisman.canUseImprAstolfo = Config.instance.astolfoColorMode.checkValString(Config.AstolfoColorMode.Impr.name());
-    }
-
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent event) {
-        Kisman.EVENT_BUS.post(this);
-    }
-
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
-        Kisman.EVENT_BUS.post(this);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

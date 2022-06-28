@@ -42,7 +42,7 @@ class TargetFinder(
         var i = 0
         while (i < size) {
             val player = mc.world.playerEntities[i]
-            if (!EntityUtil.antibotCheck(player) && AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka")) {
+            if (AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka") && !EntityUtil.antibotCheck(player)) {
                 ++i
                 continue
             }
@@ -55,6 +55,6 @@ class TargetFinder(
     }
 
     fun isntValid(entity: EntityLivingBase, range: Double, wallRange: Double): Boolean {
-        return mc.player.getDistanceSq(entity) > (if (mc.player.canEntityBeSeen(entity)) range else wallRange) || entity === mc.player || entity.health <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.name)
+        return mc.player.getDistanceSq(entity) > (if (mc.player.canEntityBeSeen(entity)) (range * range) else (wallRange * wallRange)) || entity === mc.player || entity.health <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.name)
     }
 }

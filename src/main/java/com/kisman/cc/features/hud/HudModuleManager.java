@@ -20,7 +20,7 @@ public class HudModuleManager {
 		modules.add(new ArmorHUD());
 		modules.add(ArrayListModule.instance);
 		modules.add(new BindList());
-		modules.add(new Coord());
+		modules.add(new Coords());
 		modules.add(new CrystalPerSecond());
 		modules.add(new CurrentConfig());
 		modules.add(new Fps());

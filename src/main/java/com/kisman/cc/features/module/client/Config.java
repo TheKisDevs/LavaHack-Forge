@@ -25,6 +25,7 @@ public class Config extends Module {
     private final SettingGroup particles = register(new SettingGroup(new Setting("Particles", this)));
     private final SettingGroup other = register(new SettingGroup(new Setting("Other", this)));
 
+    public Setting capeAPI = register(main.add(new Setting("Cape API", this, true)));
     public Setting astolfoColorMode = new Setting("Astolfo Color Mode", this, AstolfoColorMode.Old);
     public Setting friends = register(main.add(new Setting("Friends", this, true)));
     public Setting nameMode = register(main.add(new Setting("Name Mode", this, NameMode.kismancc)));

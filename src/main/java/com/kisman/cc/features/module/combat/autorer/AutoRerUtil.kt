@@ -5,23 +5,19 @@ import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.thread.kisman.ThreadHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import java.util.function.Supplier
-import kotlin.math.max
-import kotlin.math.min
 
 class AutoRerUtil {
     companion object {
         private val mc: Minecraft = Minecraft.getMinecraft()
 
-        var targetFinder = TargetFinder(Supplier { AutoRer.instance.targetRange.valDouble } , Supplier { 15L }, Supplier { AutoRer.instance.multiThreaddedSphereGetter.valBoolean || AutoRer.instance.multiThreaddedTargetGetter.valBoolean })
+        var targetFinder = TargetFinder(Supplier { AutoRer.instance.targetRange.valDouble } , Supplier { 50L }, Supplier { AutoRer.instance.multiThreaddedSphereGetter.valBoolean || AutoRer.instance.multiThreaddedTargetGetter.valBoolean })
 
         fun onEnable() {
             targetFinder.reset()
@@ -62,7 +58,8 @@ class AutoRerUtil {
                 maxSelfDamage : Int,
                 lethalMult : Float,
                 terrain : Boolean,
-                armorBreaker : Int
+                armorBreaker : Int,
+                wallRangeUsage : Boolean
         ) : PlaceInfo? {
             var maxDamage = 0.5f
             var selfDamage_ = 0.0f
@@ -75,18 +72,15 @@ class AutoRerUtil {
                     var y : Int = mc.player.position.y - range.toInt()
 
                     while(y < mc.player.position.y + range) {
-                        val distance =
-                                (
-                                        (mc.player.position.x - x) *
-                                        (mc.player.position.x - x) +
-                                        (mc.player.position.z - z) *
-                                        (mc.player.position.z - z) +
-                                        (mc.player.position.y - y) * (mc.player.position.y - y)
-                                ).toDouble()
+                        val distance = (
+                                (mc.player.position.x - (x + 0.5)) * (mc.player.position.x - (x + 0.5)) +
+                                (mc.player.position.z - (z + 0.5)) * (mc.player.position.z - (z + 0.5)) +
+                                (mc.player.position.y - y) * (mc.player.position.y - y)
+                        )
 
                         if(distance < range * range) {
                             val pos = BlockPos(x, y, z)
-                            if(!thirdCheck || isPosValid(pos, range.toDouble(), wallRange.toDouble())) {
+                            if(!thirdCheck || !wallRangeUsage || !EntityUtil.canSee(pos) || distance <= wallRange * wallRange /*(distance <= (if(wallRangeUsage) (if (EntityUtil.canSee(pos)) (range * range) else (wallRange * wallRange)) else (range * range)))*/) {
                                 if(
                                         CrystalUtils.canPlaceCrystal(
                                                 pos,

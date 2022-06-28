@@ -12,8 +12,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class CrystalPerSecond extends HudModule {
     public CrystalPerSecond() {
         super("CrystalPerSecond", true);
-        super.setX(1);
-        super.setY(1);
     }
 
     @SubscribeEvent
