@@ -8,13 +8,13 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MusicCommand extends Command {
     private static MusicCommand instance;
 
     private String dir;
+
+    private boolean argBuilding;
 
     public MusicCommand(){
         super("music");
@@ -24,9 +24,11 @@ public class MusicCommand extends Command {
                 new CommandResume(this),
                 new CommandVolume(this),
                 new CommandPlay(this),
-                new CommandStop(this)
+                new CommandStop(this),
+                new CommandArgBuilding(this)
         );
         this.dir = "";
+        this.argBuilding = false;
         instance = this;
     }
 
@@ -50,6 +52,20 @@ public class MusicCommand extends Command {
         return "null";
     }
 
+    private static class CommandArgBuilding extends SubCommand {
+
+        public CommandArgBuilding(Command instance){
+            super("argbuilding", instance);
+        }
+
+        @Override
+        public void runCommand(@NotNull String s, @NotNull String[] args) {
+            boolean val = Boolean.parseBoolean(args[1]);
+            ((MusicCommand) getInstance()).argBuilding = val;
+            complete("Arg building is now set to: " + val);
+        }
+    }
+
     private static class CommandDir extends SubCommand {
         public CommandDir(Command instance) {
             super("dir", instance);
@@ -57,12 +73,14 @@ public class MusicCommand extends Command {
 
         @Override
         public void runCommand(String s, String[] args) {
+            MusicCommand cmd = (MusicCommand) getInstance();
             if(args.length < 2)
                 return;
             if(args[1].equals("file")){
                 if(args.length < 3)
                     return;
-                File file = new File(args[2]);
+                String arg = cmd.argBuilding ? buildArgs(args, 2) : args[2];
+                File file = new File(arg);
                 if(!file.exists() || file.isDirectory())
                     return;
                 URL url;
@@ -77,9 +95,10 @@ public class MusicCommand extends Command {
             if(args[1].equals("url")){
                 if(args.length < 3)
                     return;
+                String arg = cmd.argBuilding ? buildArgs(args, 2) : args[2];
                 URL url;
                 try {
-                    url = new URL(args[2]);
+                    url = new URL(arg);
                 } catch (MalformedURLException ignored){
                     return;
                 }
@@ -152,12 +171,14 @@ public class MusicCommand extends Command {
 
         @Override
         public void runCommand(String s, String[] args) {
+            MusicCommand cmd = (MusicCommand) getInstance();
             if(args.length < 2)
                 return;
             if(args[1].equals("file")){
                 if(args.length < 3)
                     return;
-                File file = new File(args[2]);
+                String arg = cmd.argBuilding ? buildArgs(args, 2) : args[2];
+                File file = new File(arg);
                 if(!file.exists() || file.isDirectory())
                     return;
                 URL url;
@@ -173,9 +194,10 @@ public class MusicCommand extends Command {
             if(args[1].equals("url")){
                 if(args.length < 3)
                     return;
+                String arg = cmd.argBuilding ? buildArgs(args, 2) : args[2];
                 URL url;
                 try {
-                    url = new URL(args[2]);
+                    url = new URL(arg);
                 } catch (MalformedURLException ignored){
                     return;
                 }
@@ -183,8 +205,31 @@ public class MusicCommand extends Command {
                 complete("Now playing: " + url.toExternalForm());
                 return;
             }
-            Player.play(instance.dir + args[1]);
-            complete("Now playing: " + instance.dir + args[1]);
+            String arg = cmd.argBuilding ? buildArgs(args, 1) : args[1];
+            Player.play(instance.dir + arg);
+            complete("Now playing: " + instance.dir + arg);
         }
+    }
+
+    private static String buildArgs(String[] args, int pos){
+        StringBuilder sb = new StringBuilder(lenOf(pos, args));
+        for(int i = 0; i < args.length; i++){
+            if(i == args.length - 1){
+                sb.append(args[i]);
+                continue;
+            }
+            sb.append(args[i]);
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
+
+    private static int lenOf(int pos, String[] args){
+        int len = 0;
+        for(int i = pos; i < args.length; i++){
+            len += args[i].length();
+        }
+        len += args.length; // don't forget to count the spaces
+        return len;
     }
 }
