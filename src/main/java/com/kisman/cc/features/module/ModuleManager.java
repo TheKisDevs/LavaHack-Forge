@@ -196,6 +196,7 @@ public class ModuleManager {
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
 		modules.add(new ChatModifier());
+		modules.add(new BotnetConnection());
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
@@ -216,7 +217,7 @@ public class ModuleManager {
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
-		modules.add(new BotnetConnection());
+
 	}
 	
 	public Module getModule(String name) {

