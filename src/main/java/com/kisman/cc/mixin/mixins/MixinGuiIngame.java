@@ -71,20 +71,15 @@ public class MixinGuiIngame extends Gui {
                 double[] selectedCoords = new double[] {i - 91 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22, 22, 22};
                 Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {selectedCoords[0], selectedCoords[1]}, new double[] {selectedCoords[0] + selectedCoords[2], selectedCoords[1]}, new double[] {selectedCoords[0] + selectedCoords[2], selectedCoords[1] + selectedCoords[3]}, new double[] {selectedCoords[0], selectedCoords[1] + selectedCoords[3]}), ColorUtils.injectAlpha(backgroundColor, 1), HotbarModifier.getPrimaryColor(), true));
                 if (!itemstack.isEmpty()) {
-                    if (enumhandside == EnumHandSide.LEFT) {
-                        if(!HotbarModifier.instance.offhand.getValBoolean()) this.drawTexturedModalRect(i - 91 - 29, sr.getScaledHeight() - 23, 24, 22, 29, 24);
-                        else {
-                            Render2DUtil.drawRectWH(i - 91 - 29, sr.getScaledHeight() - 22, 22, 22, backgroundColor.getRGB());
-                            double[] selectedCoordsOffhand = new double[] {i - 91 - 29, sr.getScaledHeight() - 22, 22, 22};
-                            if(HotbarModifier.instance.offhandGradient.getValBoolean()) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {selectedCoordsOffhand[0], selectedCoordsOffhand[1]}, new double[] {selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1]}, new double[] {selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}, new double[] {selectedCoordsOffhand[0], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}), ColorUtils.injectAlpha(backgroundColor, 1), HotbarModifier.getPrimaryColor(), true));
-                        }
-                    } else {
-                        if(!HotbarModifier.instance.offhand.getValBoolean()) this.drawTexturedModalRect(i + 91, sr.getScaledHeight() - 23, 53, 22, 29, 24);
-                        else {
-                            Render2DUtil.drawRectWH(i + 91 + 7, sr.getScaledHeight() - 22, 22, 22, backgroundColor.getRGB());
-                            double[] selectedCoordsOffhand = new double[] {i + 91 + 7, sr.getScaledHeight() - 22, 22, 22};
-                            if(HotbarModifier.instance.offhandGradient.getValBoolean()) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {selectedCoordsOffhand[0], selectedCoordsOffhand[1]}, new double[] {selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1]}, new double[] {selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}, new double[] {selectedCoordsOffhand[0], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}), ColorUtils.injectAlpha(backgroundColor, 1), new Color(255, 255, 255, 152), true));
-                        }
+                    if(!HotbarModifier.instance.offhand.getValBoolean()) this.drawTexturedModalRect(i - 91 - 29, sr.getScaledHeight() - 23, 24, 22, 29, 24);
+                    else {
+                        double[] selectedCoordsOffhand;
+
+                        if (enumhandside == EnumHandSide.LEFT) selectedCoordsOffhand = new double[]{i - 91 - 29, sr.getScaledHeight() - 22, 22, 22};
+                        else selectedCoordsOffhand = new double[]{i + 91 + 7, sr.getScaledHeight() - 22, 22, 22};
+
+                        Render2DUtil.drawRectWH(selectedCoordsOffhand[0], selectedCoordsOffhand[1], selectedCoordsOffhand[2], selectedCoordsOffhand[3], backgroundColor.getRGB());
+                        if (HotbarModifier.instance.offhandGradient.getValBoolean()) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{selectedCoordsOffhand[0], selectedCoordsOffhand[1]}, new double[]{selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1]}, new double[]{selectedCoordsOffhand[0] + selectedCoordsOffhand[2], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}, new double[]{selectedCoordsOffhand[0], selectedCoordsOffhand[1] + selectedCoordsOffhand[3]}), ColorUtils.injectAlpha(backgroundColor, 1), HotbarModifier.getPrimaryColor(), true));
                     }
                 }
 

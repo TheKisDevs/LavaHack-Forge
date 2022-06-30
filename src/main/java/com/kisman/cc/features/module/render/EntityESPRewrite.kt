@@ -16,6 +16,11 @@ class EntityESPRewrite : Module(
         pattern.init()
     }
 
+    override fun onEnable() {
+        super.onEnable()
+        pattern.onEnable()
+    }
+
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
         pattern.draw(event.partialTicks)
     }

@@ -87,7 +87,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+//    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -101,7 +101,7 @@ dependencies {
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
-    compile group: 'org.beykery', name: 'neuroph', version: '2.92'
+//    compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 
     compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
@@ -123,6 +123,8 @@ dependencies {
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: "$coroutines_version"
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: "$coroutines_version"
     compile 'org.jsoup:jsoup:1.11.3'
+    compile 'com.github.cabaletta:baritone:1.2.14'
+    compile 'cabaletta:baritone-api:1.2'
 }
 
 processResources {
@@ -191,6 +193,7 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"))
         include(dependency("org.jsoup:jsoup:1.11.3"))
+        include(dependency('cabaletta:baritone-api'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

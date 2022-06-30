@@ -45,6 +45,7 @@ public class ModuleManager {
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
 		modules.add(new FutureShader());
+		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
 		modules.add(new Meow());
 		modules.add(new NoMove());
@@ -54,7 +55,6 @@ public class ModuleManager {
 
 		//combat
 		modules.add(new AutoCrystal());
-//		modules.add(new AimAssist());
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
@@ -97,7 +97,6 @@ public class ModuleManager {
 //		modules.add(new Test());
 		modules.add(new VegaGui());
 		//render
-//		modules.add(new Animation());
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
@@ -156,7 +155,6 @@ public class ModuleManager {
 		//player
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
-		modules.add(new FreeCam());
 		modules.add(new FreeCamBypass());
 		modules.add(new FreeCamRewrite());
 		modules.add(new Interaction());
@@ -172,6 +170,7 @@ public class ModuleManager {
 		modules.add(new AntiVanish());
 		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
+		modules.add(new CowDupe());
 		modules.add(new DamageLeave());
 		modules.add(new FakePearl());
 		modules.add(new FastMove());

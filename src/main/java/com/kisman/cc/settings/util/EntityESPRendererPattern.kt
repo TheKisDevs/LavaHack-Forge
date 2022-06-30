@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.EntitySetting
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.RenderUtil
 import com.kisman.cc.util.render.Rendering
@@ -18,39 +19,65 @@ import kotlin.collections.ArrayList
 class EntityESPRendererPattern(
         val module : Module
 ) {
+    val groups = ArrayList<SettingGroup>()
     val settings = ArrayList<EntitySetting>()
+
+    private val threads = MultiThreaddableModulePattern(module)
+
+    private var entities = ArrayList<Entity>()
 
     init {
         for(type in EntityESPTypes.values()) {
-            settings.addAll(getSettingsByType(type))
+            val group = SettingGroup(Setting(type.name, module))
+            groups.add(group)
+            settings.addAll(getSettingsByType(type, group))
         }
     }
 
     fun init() {
+        for(group in groups) {
+            module.register(group)
+        }
+
         for(setting in settings) {
-            Kisman.instance.settingsManager.rSetting(setting.setting)
+            module.register(setting.setting)
         }
     }
 
-    private fun getSettingsByType(typeE : EntityESPTypes) : ArrayList<EntitySetting> {
+    private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup) : ArrayList<EntitySetting> {
         val mode = Setting("${typeE.name} Mode", module, EntityESPModes.None)
         val pattern = RenderingRewritePattern(module, Supplier{ mode.valEnum == EntityESPModes.Cubic }, "${typeE.name} Cubic")
         return ArrayList(listOf(
-                EntitySetting(mode, typeE, SettingTypes.Mode),
-                EntitySetting(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }, typeE, SettingTypes.Box1Color),
-                EntitySetting(pattern.mode, typeE, SettingTypes.CubicMode),
-                EntitySetting(pattern.lineWidth, typeE, SettingTypes.CubicLineWidth),
-                EntitySetting(pattern.color1, typeE, SettingTypes.CubicColor1),
-                EntitySetting(pattern.color2, typeE, SettingTypes.CubicColor2)
+                EntitySetting(group.add(mode), typeE, SettingTypes.Mode),
+                EntitySetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),
+                EntitySetting(group.add(pattern.mode), typeE, SettingTypes.CubicMode),
+                EntitySetting(group.add(pattern.lineWidth), typeE, SettingTypes.CubicLineWidth),
+                EntitySetting(group.add(pattern.color1), typeE, SettingTypes.CubicColor1),
+                EntitySetting(group.add(pattern.color2), typeE, SettingTypes.CubicColor2)
         ))
+    }
+
+    fun onEnable() {
+        threads.reset()
     }
 
     fun draw(ticks : Float) {
         val mc = Minecraft.getMinecraft()
-        for(entity in mc.world.loadedEntityList) {
-            if(entity == mc.player) continue
-            val mode = getSettingByType(SettingTypes.Mode, EntityESPTypes.get(entity))
-            if(mode != null && mode.valEnum != EntityESPModes.None) drawEntity(ticks, entity)
+
+        threads.update(Runnable {
+            val list = ArrayList<Entity>()
+
+            for(entity in mc.world.loadedEntityList) {
+                if(entity == mc.player) continue
+                val mode = getSettingByType(SettingTypes.Mode, EntityESPTypes.get(entity))
+                if(mode != null && mode.valEnum != EntityESPModes.None) list.add(entity)
+            }
+
+            mc.addScheduledTask { entities = list }
+        })
+
+        for(entity in entities) {
+            drawEntity(ticks, entity)
         }
     }
 

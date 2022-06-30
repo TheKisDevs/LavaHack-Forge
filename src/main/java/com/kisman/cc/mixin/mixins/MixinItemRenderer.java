@@ -44,24 +44,6 @@ public class MixinItemRenderer {
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
         boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
-        if(SwingAnimation.instance.isToggled()) {
-            if (isSwingMain) {
-                switch (SwingAnimation.instance.strongMode.getValString()) {
-                    case "Blockhit1": {
-                        rotate = new Vec3d(72, 180, 240);
-                        break;
-                    }
-                    case "Blockhit2": {
-                        rotate = new Vec3d(344, 225, 0);
-                        break;
-                    }
-                    case "Knife": {
-                        rotate = new Vec3d(43, 130, 230);
-                    }
-                }
-            }
-        }
-
         if(ViewModel.instance.isToggled()) {
             if (hand == EnumHandSide.RIGHT) {
                 if(!(isEating && !ViewModel.instance.customEating.getValBoolean())) {
@@ -87,6 +69,22 @@ public class MixinItemRenderer {
                     );
                 }
                 scale = new Vec3d(ViewModel.instance.scaleLeftX.getValDouble(), ViewModel.instance.scaleLeftY.getValDouble(), ViewModel.instance.scaleLeftZ.getValDouble());
+            }
+        }
+
+        if(isSwingMain) {
+            switch (SwingAnimation.instance.strongMode.getValString()) {
+                case "Blockhit1": {
+                    rotate = new Vec3d(72, 180, 240);
+                    break;
+                }
+                case "Blockhit2": {
+                    rotate = new Vec3d(344, 225, 0);
+                    break;
+                }
+                case "Knife": {
+                    rotate = new Vec3d(43, 130, 230);
+                }
             }
         }
 

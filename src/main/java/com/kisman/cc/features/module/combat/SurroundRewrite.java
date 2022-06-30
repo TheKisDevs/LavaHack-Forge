@@ -43,12 +43,12 @@ public class SurroundRewrite extends Module {
 
     private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
 
-    private final Setting cbMode = crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area")));
-    private final Setting cbRange = crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area")));
-    private final Setting cbDelay = crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true));
-    private final Setting cbRotate = crystalBreaker.add(new Setting("CBRotate", this, false));
-    private final Setting cbPacket = crystalBreaker.add(new Setting("CBPacket", this, false));
-    private final Setting clientSide = crystalBreaker.add(new Setting("ClientSide", this, false));
+    private final Setting cbMode = register(crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area"))));
+    private final Setting cbRange = register(crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area"))));
+    private final Setting cbDelay = register(crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true)));
+    private final Setting cbRotate = register(crystalBreaker.add(new Setting("CBRotate", this, false)));
+    private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false)));
+    private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false)));
 
     private static SurroundRewrite instance;
 

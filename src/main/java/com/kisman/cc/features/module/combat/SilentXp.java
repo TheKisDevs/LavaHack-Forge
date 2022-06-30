@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SilentXp extends Module {
-    private final Setting lookPitch = register(new Setting("LookPitch", this, 90, 0, 100, false));
+    private final Setting customPitch = register(new Setting("Custom Pitch", this, true));
+    private final Setting lookPitch = register(new Setting("LookPitch", this, 90, 0, -90, false).setVisible(customPitch::getValBoolean));
     private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, NumberType.TIME));
     private final Setting switchMode = register(new Setting("SwitchMode", this, "Packet", new ArrayList<>(Arrays.asList("Packet", "Client"))));
 
@@ -31,8 +33,14 @@ public class SilentXp extends Module {
         if(!timer.passedMillis(delay.getValInt())) return;
         timer.reset();
         if(mc.currentScreen == null && mc.player != null && mc.world != null) {
-            int oldPitch = (int)mc.player.rotationPitch;
             int oldSlot = mc.player.inventory.currentItem;
+            
+            int xpSlot = InventoryUtil.findItem(Items.EXPERIENCE_BOTTLE, 0, 9);
+            
+            if(xpSlot == -1) {
+                ChatUtility.error().printClientModuleMessage("No XP in hotbar! Disabling!");
+                return;
+            }
 
             switch (switchMode.getValString()) {
                 case "Packet":
@@ -43,10 +51,11 @@ public class SilentXp extends Module {
                     break;
             }
 
-            mc.player.rotationPitch = (float) lookPitch.getValDouble();
+            float oldPitch = mc.player.rotationPitch;
+            if(customPitch.getValBoolean()) mc.player.rotationPitch = (float) lookPitch.getValDouble();
             mc.player.connection.sendPacket(new CPacketPlayer.Rotation(mc.player.rotationYaw, (float) lookPitch.getValDouble(), true));
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItem(EnumHand.MAIN_HAND));
-            mc.player.rotationPitch = oldPitch;
+            if(customPitch.getValBoolean()) mc.player.rotationPitch = oldPitch;
 
             switch (switchMode.getValString()) {
                 case "Packet":

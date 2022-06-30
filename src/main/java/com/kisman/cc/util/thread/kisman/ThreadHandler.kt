@@ -8,8 +8,8 @@ import java.util.function.Supplier
  * @since 22:23 of 22.06.2022
  */
 class ThreadHandler(
-    private val delay : Supplier<Long>,
-    private val threadded : Supplier<Boolean>
+    val delay : Supplier<Long>,
+    val threadded : Supplier<Boolean>
 ) : GlobalThreads {
     private val timer = TimerUtils()
 

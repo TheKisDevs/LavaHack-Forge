@@ -14,6 +14,7 @@ import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
 import com.kisman.cc.util.render.objects.TextOnBlockObject
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -66,6 +67,8 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         var bb : AxisAlignedBB? = null
         var shouldReturn = false
 
+        var facing : EnumFacing? = null
+
         when (hitObject.typeOfHit) {
             RayTraceResult.Type.ENTITY -> {
                 if (entities.valBoolean) {
@@ -74,15 +77,16 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     val entity = hitObject.entityHit ?: return
                     val lookVec = viewEntity.lookVec
                     val sightEnd = eyePos.add(lookVec.scale(6.0))
-                    val hitSide = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
+                    facing = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
                     box = Box.byAABB(entity.entityBoundingBox.also { bb = it })
-                    if (hitSideOnly.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitSide))
+                    if (hitSideOnly.valBoolean && !advancedRenderer.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), facing))
                 }
             }
             RayTraceResult.Type.BLOCK -> {
                 box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos).grow(offset.valDouble))
-                if (hitSideOnly.valBoolean){
-                    box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), hitObject.sideHit))
+                if (hitSideOnly.valBoolean) {
+                    facing = hitObject.sideHit
+                    if(!advancedRenderer.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), facing))
                 }
                 bb = box.toAABB()
             }
@@ -105,7 +109,8 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                 depth.valBoolean,
                 alpha.valBoolean,
                 event.partialTicks,
-                offset.valDouble
+                offset.valDouble,
+                facing
             )
 
             if(shouldReturn) {

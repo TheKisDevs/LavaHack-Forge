@@ -2,8 +2,8 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -19,8 +19,8 @@ import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.*;
 import com.kisman.cc.util.enums.ShaderModes;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.thread.kisman.ThreadHandler;
 import com.kisman.cc.util.world.*;
 import me.zero.alpine.listener.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -32,12 +32,15 @@ import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
@@ -56,8 +59,10 @@ public class AutoRer extends Module {
     private final SettingGroup tc = register(new SettingGroup(new Setting("Target Charms", this)));
     private final SettingGroup optimization = register(new SettingGroup(new Setting("Optimization", this)));
 
-    public final Setting multiThreaddedSphereGetter = register(optimization.add(new Setting("Multi Threadded Sphere Getter", this, false)));
-    public final Setting multiThreaddedTargetGetter = register(optimization.add(new Setting("Multi Threadded Target Getter", this, false)));
+    public final Setting multiThreaddedSphereGetter = register(optimization.add(new Setting("MT Sphere Getter", this, false)));
+    public final Setting multiThreaddedTargetGetter = register(optimization.add(new Setting("MT Target Getter", this, false)));
+    private final Setting multiThreaddedCrystalGetter = register(optimization.add(new Setting("MT Crystal Getter", this, false)));
+    private final Setting mtcgDelay = register(optimization.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME)));
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
@@ -171,6 +176,10 @@ public class AutoRer extends Module {
     private String lastThreadMode = threadMode.getValString();
     private boolean subscribed = false;
 
+    private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay::getValLong, multiThreaddedCrystalGetter::getValBoolean);
+
+    private final AtomicReference<Entity> atomicCrystal = new AtomicReference<>();
+
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
     public AutoRer() {
@@ -180,6 +189,7 @@ public class AutoRer extends Module {
     }
 
     public void onEnable() {
+        super.onEnable();
         AutoRerUtil.Companion.onEnable();
         renderer.reset();
         placedList.clear();
@@ -197,17 +207,16 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
-        Kisman.EVENT_BUS.subscribe(render3d);
 
         subscribed = true;
     }
 
     public void onDisable() {
+        super.onDisable();
         if(subscribed) {
             Kisman.EVENT_BUS.unsubscribe(listener);
             Kisman.EVENT_BUS.unsubscribe(listener1);
             Kisman.EVENT_BUS.unsubscribe(motion);
-            Kisman.EVENT_BUS.unsubscribe(render3d);
         }
 
         if(thread != null) shouldInterrupt.set(false);
@@ -276,7 +285,6 @@ public class AutoRer extends Module {
 
         AutoRerUtil.Companion.getTargetFinder().update();
         currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
-//        currentTarget = EntityUtil.getTarget(targetRange.getValFloat());
 
         if(!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
             if (this.executor != null) this.executor.shutdown();
@@ -354,8 +362,8 @@ public class AutoRer extends Module {
         }
     }
 
-    @EventHandler
-    private final Listener<EventRender3D> render3d = new Listener<>(event -> {
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
         if(targetCharms.getValBoolean()) {
             if(currentTarget != null) {
                 try {
@@ -478,11 +486,11 @@ public class AutoRer extends Module {
                             ((OutlineShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
                             ((OutlineShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
                         }
-                        framebufferShader.startDraw(event.particalTicks);
+                        framebufferShader.startDraw(event.getPartialTicks());
                         for (Entity entity : mc.world.loadedEntityList) {
                             if (entity == mc.player || entity == mc.getRenderViewEntity() || !entity.equals(currentTarget)) continue;
-                            Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.particalTicks);
-                            Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.particalTicks);
+                            Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
+                            Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
                         }
                         framebufferShader.stopDraw();
                         if (gradient) ((GradientOutlineShader) framebufferShader).update(targetCharmsSpeedOutline.getValDouble());
@@ -495,14 +503,14 @@ public class AutoRer extends Module {
                 } catch (Exception ignored) {
                     if(Config.instance.antiOpenGLCrash.getValBoolean() || lagProtect.getValBoolean()) {
                         super.setToggled(false);
-                        ChatUtils.error("[AutoRer] Error, Config -> AntiOpenGLCrash disabled AutoRer");
+                        ChatUtility.error().printClientModuleMessage("[AutoRer] Error, Config -> AntiOpenGLCrash disabled AutoRer");
                     }
                 }
             }
         }
 
         if(render.getValBoolean()) if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
-    });
+    }
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
         if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
@@ -820,31 +828,46 @@ public class AutoRer extends Module {
     private void doBreak() {
         if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
 
-        Entity crystal, crystalWithMaxDamage = getCrystalWithMaxDamage();
-        
-        if(breakPriority.getValString().equals("Damage")) crystal = crystalWithMaxDamage;
-        else crystal = getCrystalForAntiCevBreaker();
+        AtomicReference<Entity> crystal = new AtomicReference<>();
+        AtomicReference<Entity> crystalWithMaxDamage = new AtomicReference<>();
 
-        if(crystal == null) crystal = crystalWithMaxDamage;
-        if(crystal == null) return;
+        crystalTHandler.update(
+                () -> mc.addScheduledTask(
+                        () -> {
+                            if(crystalTHandler.getThreadded().get()) atomicCrystal.set(getCrystalWithMaxDamage());
+                            else crystalWithMaxDamage.set(getCrystalWithMaxDamage());
+                        }
+                )
+        );
+        
+        if(crystalTHandler.getThreadded().get()) crystalWithMaxDamage.set(atomicCrystal.get());
+        
+        if(breakPriority.getValString().equals("Damage")) crystal.set(crystalWithMaxDamage.get());
+        else {
+            crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
+            crystal.set(getCrystalForAntiCevBreaker());
+            if(crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
+        }
+
+        if(crystal.get() == null) return;
 
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
 
         if(rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) {
-            float[] rots = RotationUtils.getRotation(crystal);
+            float[] rots = RotationUtils.getRotation(crystal.get());
             mc.player.rotationYaw = rots[0];
             mc.player.rotationPitch = rots[1];
         }
 
-        lastHitEntity = crystal;
+        lastHitEntity = crystal.get();
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
 
-        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-        else mc.playerController.attackEntity(mc.player, crystal);
+        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(crystal.get()));
+        else mc.playerController.attackEntity(mc.player, crystal.get());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.entityId);} catch (Exception ignored) {}
+        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().entityId);} catch (Exception ignored) {}
         breakTimer.reset();
 
         if((rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
@@ -856,7 +879,7 @@ public class AutoRer extends Module {
 
         if(syns.getValBoolean()) for(PlaceInfo info : placedList) {
             BlockPos pos = info.getBlockPos();
-            if(crystal.getDistance(pos.getX(), pos.getY(), pos.getZ()) <= 3) toRemove = pos;
+            if(crystal.get().getDistance(pos.getX(), pos.getY(), pos.getZ()) <= 3) toRemove = pos;
         }
         if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
     }

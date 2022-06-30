@@ -1,10 +1,12 @@
 package com.kisman.cc.features.module.render.blockhighlight
 
 import com.kisman.cc.features.module.combat.autorer.util.Easing
+import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.objects.Box
 import com.kisman.cc.util.render.objects.BoxObject
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d
 import kotlin.math.max
@@ -62,7 +64,8 @@ class BlockHighlightRenderer {
         depth : Boolean,
         alpha : Boolean,
         ticks : Float,
-        offset : Double
+        offset : Double,
+        facing : EnumFacing?
     ) {
         update(bb)
 
@@ -76,8 +79,14 @@ class BlockHighlightRenderer {
                     Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
                 }
 
+                var bb = toRenderBox(renderPos, scale, (bb ?: lastBB!!)).grow(offset)
+
+                if(facing != null) {
+                    bb = EnumFacingMask.toAABB(bb, facing)
+                }
+
                 BoxObject(
-                    Box.byAABB(toRenderBox(renderPos, scale, (bb ?: lastBB!!)).grow(offset)),
+                    Box.byAABB(bb),
                     color,
                     mode,
                     width,
