@@ -14,41 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PluginResourceManager implements Globals
-{
-    private static final PluginResourceManager INSTANCE =
-            new PluginResourceManager();
+public class PluginResourceManager implements Globals {
+    private static final Map<ResourceLocation, List<ResourceSupplier>> resourceMap = new ConcurrentHashMap<>();
 
-    private final Map<ResourceLocation, List<ResourceSupplier>> resourceMap;
-
-    private PluginResourceManager()
-    {
-        this.resourceMap = new ConcurrentHashMap<>();
-    }
-
-    public static PluginResourceManager getInstance()
-    {
-        return INSTANCE;
-    }
-
-    public ResourceSupplier getSingleResource(ResourceLocation location)
-    {
+    public static ResourceSupplier getSingleResource(ResourceLocation location) {
         List<ResourceSupplier> suppliers = resourceMap.get(location);
-        if (suppliers == null || suppliers.size() != 1)
-        {
-            return null;
-        }
-
-        return suppliers.get(0);
+        return(suppliers == null || suppliers.size() != 1) ? null : suppliers.get(0);
     }
 
-    public List<IResource> getPluginResources(ResourceLocation location)
-    {
+    public static List<IResource> getPluginResources(ResourceLocation location) {
         List<IResource> result;
         List<ResourceSupplier> suppliers = resourceMap.get(location);
 
-        if (suppliers != null)
-        {
+        if (suppliers != null) {
             Kisman.LOGGER.info("Found "
                     + suppliers.size()
                     + " custom ResourceLocation"
@@ -57,75 +35,42 @@ public class PluginResourceManager implements Globals
                     + location);
 
             result = new ArrayList<>(suppliers.size());
-            for (ResourceSupplier supplier : suppliers)
-            {
-                if (supplier != null)
-                {
-                    try
-                    {
+            for (ResourceSupplier supplier : suppliers) {
+                if (supplier != null) {
+                    try {
                         IResource resource = supplier.get();
-                        if (resource != null)
-                        {
-                            result.add(resource);
-                        }
+                        if (resource != null) result.add(resource);
                     }
-                    catch (ResourceException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    catch (ResourceException e) {e.printStackTrace();}
                 }
             }
-        }
-        else
-        {
-            result = Collections.emptyList();
-        }
+        } else result = Collections.emptyList();
+
 
         return result;
     }
 
-    public void register(PluginResourceLocation r)
-    {
-        this.register(new ResourceLocation(r.getResourceDomain(), r.getResourcePath()), r);
+    public static void register(PluginResourceLocation r) {
+        register(new ResourceLocation(r.getResourceDomain(), r.getResourcePath()), r);
     }
 
-    public void register(ResourceLocation location,
-                         PluginResourceLocation resourceLocation)
-    {
-        Kisman.LOGGER.info("Adding custom ResourceLocation: "
-                + location + " for: " + resourceLocation);
+    public static void register(ResourceLocation location, PluginResourceLocation resourceLocation) {
+        Kisman.LOGGER.info("Adding custom ResourceLocation: " + location + " for: " + resourceLocation);
 
         ClassLoader loader = PluginManager.getInstance().getPluginClassLoader();
-        if (loader == null)
-        {
-            throw new IllegalStateException("Plugin ClassLoader was null!");
-        }
+        if (loader == null) throw new IllegalStateException("Plugin ClassLoader was null!");
 
         MetadataSerializer mds = mc.metadataSerializer_;
-        if (mds == null)
-        {
-            throw new IllegalStateException("MetadataSerializer was null!");
-        }
+        if (mds == null) throw new IllegalStateException("MetadataSerializer was null!");
 
-        ResourceSupplier supplier =
-                new PluginResourceSupplier(resourceLocation, mds, loader);
+        ResourceSupplier supplier = new PluginResourceSupplier(resourceLocation, mds, loader);
 
         register(location, supplier);
     }
 
-    public void register(ResourceLocation location,
-                         ResourceSupplier...resourceSuppliers)
-    {
-        List<ResourceSupplier> suppliers =
-                resourceMap.computeIfAbsent(location, v -> new ArrayList<>());
+    public static void register(ResourceLocation location, ResourceSupplier...resourceSuppliers) {
+        List<ResourceSupplier> suppliers = resourceMap.computeIfAbsent(location, v -> new ArrayList<>());
 
-        for (ResourceSupplier supplier : resourceSuppliers)
-        {
-            if (supplier != null)
-            {
-                suppliers.add(supplier);
-            }
-        }
+        for (ResourceSupplier supplier : resourceSuppliers) if (supplier != null) suppliers.add(supplier);
     }
-
 }
