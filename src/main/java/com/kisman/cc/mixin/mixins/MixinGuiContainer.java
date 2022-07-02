@@ -102,8 +102,8 @@ public class MixinGuiContainer extends GuiScreen {
     /**
      * @author _kisman_
      */
-    @Overwrite
-    private void drawSlot(Slot slotIn) {
+//    @Overwrite
+    /*private void drawSlot(Slot slotIn) {
         int i = slotIn.xPos;
         int j = slotIn.yPos;
         ItemStack itemstack = slotIn.getStack();
@@ -154,5 +154,10 @@ public class MixinGuiContainer extends GuiScreen {
 
         this.itemRender.zLevel = 0.0F;
         this.zLevel = 0.0F;
+    }*/
+
+    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;enableDepth()V"))
+    private void drawSlotHook(Slot slot, CallbackInfo ci) {
+        if(ContainerModifier.instance.isToggled() && ContainerModifier.instance.itemESP.getValBoolean() && !itemESP.getItemStacks().isEmpty() && itemESP.getItemStacks().contains(slot.getStack())) drawRect(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, ColorUtils.astolfoColors(100, 100));
     }
 }
