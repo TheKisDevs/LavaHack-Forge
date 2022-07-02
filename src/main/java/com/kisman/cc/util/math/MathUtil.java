@@ -341,4 +341,43 @@ public class MathUtil {
         c = c < 0.0 ? c - 1.0 :  c;
         return c + 0.5; // after we floor, we add a half
     }
+
+    public static List<BlockPos> getBlocksForLine(double z, double x1, double y1, double x2, double y2){
+        List<BlockPos> blocks = new ArrayList<>();
+        double x = x1;
+        double y = y1;
+        double dX = Math.abs(x2 - x1);
+        double dY = Math.abs(y2 - y1);
+        double s1 = Math.signum(x2 - x1);
+        double s2 = Math.signum(y2 - y1);
+        double interchange;
+        double t;
+        if(dY > dX){
+            t = dX;
+            dX = dY;
+            dY = t;
+            interchange = 1;
+        } else {
+            interchange = 0;
+        }
+        double e = 2 * dY - dX;
+        double a = 2 * dY;
+        double b = 2 * dY - 2 * dX;
+        for(int i = 0; i < dX; i++){
+            if(e < 0){
+                if(interchange == 1){
+                    y = y + s2;
+                } else {
+                    x = x + x1;
+                }
+                e = e + a;
+            } else {
+                y = y + s2;
+                x = x + s1;
+                e = e + b;
+            }
+            blocks.add(new BlockPos(x, y, z));
+        }
+        return blocks;
+    }
 }

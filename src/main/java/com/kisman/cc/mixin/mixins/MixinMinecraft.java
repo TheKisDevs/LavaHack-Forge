@@ -2,6 +2,7 @@
 
  import com.kisman.cc.Kisman;
  import com.kisman.cc.event.events.EventClientTick;
+ import com.kisman.cc.features.module.player.AntiDesync;
  import com.kisman.cc.features.module.player.Interaction;
  import com.kisman.cc.features.viaforge.ViaForge;
  import net.minecraft.client.entity.EntityPlayerSP;
@@ -41,6 +42,7 @@
   public void runTickPost(CallbackInfo ci){
    EventClientTick.Post eventClientTick = new EventClientTick.Post();
    Kisman.EVENT_BUS.post(eventClientTick);
+   AntiDesync.INSTANCE.onClientTickPost();
   }
 
   @Inject( method = "processKeyBinds", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2 ) )
