@@ -1,35 +1,20 @@
-package the.kis.devs.server.keyauth.user;
+package the.kis.devs.server.keyauth.user
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONObject
 
-public class UserData {
+class UserData(
+    json: JSONObject
+) {
+    val username: String
+    val subscription: String
+    val expiry: String
 
-	private String username;
-	private String subscription;
-	private String expiry;
-
-	public UserData(JSONObject json) {
-		JSONObject info = json.getJSONObject("info");
-
-		JSONArray subArray = info.getJSONArray("subscriptions");
-		JSONObject subObject = subArray.getJSONObject(0);
-		
-		this.username = info.getString("username");
-		this.subscription = subObject.getString("subscription");
-		this.expiry = subObject.getString("expiry");
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public String getSubscription() {
-		return subscription;
-	}
-
-	public String getExpiry() {
-		return expiry;
-	}
-
+    init {
+        val info = json.getJSONObject("info")
+        val subArray = info.getJSONArray("subscriptions")
+        val subObject = subArray.getJSONObject(0)
+        username = info.getString("username")
+        subscription = subObject.getString("subscription")
+        expiry = subObject.getString("expiry")
+    }
 }

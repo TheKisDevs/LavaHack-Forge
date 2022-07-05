@@ -1,16 +1,14 @@
-package the.kis.devs.server.keyauth;
+package the.kis.devs.server.keyauth
 
-import the.kis.devs.server.keyauth.api.KeyAuth;
+import the.kis.devs.server.keyauth.api.KeyAuth
 
 /**
  * @author SprayD
  */
-public class KeyAuthApp {
-	private static final String url = "https://keyauth.win/api/1.1/";
-	
-	private static final String ownerid = "hW04ojuQKY"; // You can find out the owner id in the profile settings keyauth.win
-	private static final String appname = "kismanccplus"; // Application name
-	private static final String version = "1.0"; // Application version
-
-	public static KeyAuth keyAuth = new KeyAuth(appname, ownerid, version, url);
+object KeyAuthApp {
+    private const val url = "https://keyauth.win/api/1.1/"
+    private const val ownerid = "hW04ojuQKY" // You can find out the owner id in the profile settings keyauth.win
+    private const val appname = "kismanccplus" // Application name
+    private const val version = "1.0" // Application version
+    var keyAuth = KeyAuth(appname, ownerid, version, url)
 }

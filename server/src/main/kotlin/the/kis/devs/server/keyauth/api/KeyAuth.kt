@@ -1,174 +1,97 @@
-package the.kis.devs.server.keyauth.api;
+package the.kis.devs.server.keyauth.api
 
-import the.kis.devs.server.keyauth.user.UserData;
-import the.kis.devs.server.keyauth.util.HWID;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONObject;
+import com.mashape.unirest.http.HttpResponse
+import com.mashape.unirest.http.Unirest
+import com.mashape.unirest.http.exceptions.UnirestException
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory
+import org.apache.http.impl.client.HttpClients
+import org.json.JSONObject
+import the.kis.devs.server.keyauth.user.UserData
+import java.lang.Exception
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.cert.X509Certificate;
+class KeyAuth(
+    val appname: String,
+    val ownerid: String,
+    val version: String,
+    val url: String
+) {
+    protected var sessionid: String? = null
+    protected var initialized = false
+    var userData: UserData? = null
+        protected set
 
-public class KeyAuth {
+    companion object {
+        init {
+            try {
+                val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+                    override fun getAcceptedIssuers(): Array<X509Certificate>? { return null }
+                    override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String) {}
+                    override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String) {}
+                })
+                val sslcontext = SSLContext.getInstance("SSL")
+                sslcontext.init(
+                    null,
+                    trustAllCerts,
+                    SecureRandom()
+                )
+                HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.socketFactory)
+                val sslsf = SSLConnectionSocketFactory(sslcontext)
+                val httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
+                Unirest.setHttpClient(httpclient)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
-	public final String appname;
-	public final String ownerid;
-	public final String version;
-	public final String url;
+    private fun init(): Boolean {
+        val response: HttpResponse<String>
+        try {
+            response = Unirest.post(url).field("type", "init").field("ver", version).field("name", appname)
+                .field("ownerid", ownerid).asString()
+            try {
+                val responseJSON = JSONObject(response.body)
+                if (!response.body.equals("KeyAuth_Invalid", ignoreCase = true) && responseJSON.getBoolean("success")) {
+                    sessionid = responseJSON.getString("sessionid")
+                    initialized = true
+                    return true
+                }
+            } catch (ignored: Exception) {}
+        } catch (e: UnirestException) { e.printStackTrace() }
+        return false
+    }
 
-	protected String sessionid;
-	protected boolean initialized;
+    fun license(key: String, hwid : String): Boolean {
+        if (!initialized) {
+//			System.out.println("\n\n Please initzalize first");
+            init()
+            return false
+        }
+        val response: HttpResponse<String>
+        try {
+            response = Unirest.post(url).field("type", "license").field("key", key).field("hwid", hwid)
+                .field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid).asString()
+            try {
+                val responseJSON = JSONObject(response.body)
+                if (responseJSON.getBoolean("success")) {
+                    userData = UserData(responseJSON)
+                    return true
+                }
+            } catch (ignored: Exception) {
+            }
+        } catch (e: UnirestException) {
+            e.printStackTrace()
+        }
+        return false
+    }
 
-	protected UserData userData;
-
-	public KeyAuth(String appname, String ownerid, String version, String url) {
-		this.appname = appname;
-		this.ownerid = ownerid;
-		this.version = version;
-		this.url = url;
-	}
-
-	public UserData getUserData() {
-		return userData;
-	}
-
-	static {
-		try {
-			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				public X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-			}};
-
-			SSLContext sslcontext = SSLContext.getInstance("SSL");
-			sslcontext.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.getSocketFactory());
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext);
-			CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
-			Unirest.setHttpClient(httpclient);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public boolean init() {
-		HttpResponse<String> response;
-		try {
-			response = Unirest.post(url).field("type", "init").field("ver", version).field("name", appname)
-					.field("ownerid", ownerid).asString();
-
-			System.out.println(response.getBody());
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if (!response.getBody().equalsIgnoreCase("KeyAuth_Invalid") && responseJSON.getBoolean("success")) {
-					sessionid = responseJSON.getString("sessionid");
-					initialized = true;
-					return true;
-				}
-			} catch (Exception ignored) {}
-		} catch (UnirestException e) {e.printStackTrace();}
-		return false;
-	}
-
-	public boolean license(String key) {
-		if (!initialized) {
-			System.out.println("\n\n Please initzalize first");
-			init();
-			return false;
-		}
-
-		HttpResponse<String> response;
-		try {
-			String hwid = HWID.getHWID();
-
-			response = Unirest.post(url).field("type", "license").field("key", key).field("hwid", hwid)
-					.field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid).asString();
-
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if(responseJSON.getBoolean("success")) {
-					userData = new UserData(responseJSON);
-					return true;
-				}
-			} catch (Exception ignored) {}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	public void ban() {
-		if (!initialized) {
-			System.out.println("\n\n Please initzalize first");
-			return;
-		}
-
-		HttpResponse<String> response;
-		try {
-			String hwid = HWID.getHWID();
-
-			response = Unirest.post(url).field("type", "ban").field("sessionid", sessionid).field("name", appname)
-					.field("ownerid", ownerid).asString();
-
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if (!responseJSON.getBoolean("success")) {
-					System.out.println("Error");
-					// System.exit(0);
-				} else {
-
-					// optional success msg
-				}
-
-			} catch (Exception e) {
-
-			}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void webhook(String webid, String param) {
-		if (!initialized) {
-			System.out.println("\n\n Please initzalize first");
-			return;
-		}
-
-		HttpResponse<String> response;
-		try {
-			String hwid = HWID.getHWID();
-
-			response = Unirest.post(url).field("type", "webhook").field("webid", webid).field("params", param)
-					.field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid).asString();
-
-			try {
-				JSONObject responseJSON = new JSONObject(response.getBody());
-
-				if (!responseJSON.getBoolean("success")) {
-					System.out.println("Error");
-					// System.exit(0);
-				} else {
-
-					// optional success msg
-				}
-
-			} catch (Exception e) {
-
-			}
-		} catch (UnirestException e) {
-			e.printStackTrace();
-		}
-	}
+    init {
+        init()
+    }
 }

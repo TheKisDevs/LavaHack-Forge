@@ -3,6 +3,7 @@ package the.kis.devs.server
 import me.yailya.sockets.example.ADDRESS
 import me.yailya.sockets.example.PORT
 import me.yailya.sockets.server.SocketServer
+import the.kis.devs.server.command.commands.AuthCommand
 
 /**
  * @author _kisman_
@@ -17,7 +18,17 @@ fun main() {
         println("New socket connection!")
 
         connection.onMessageReceived = {
-            println("Message from socket: $it")
+            if(it.isNotEmpty()) {
+                println("Message from socket: $it")
+
+                val split = it.split(" ")
+
+                when(split[0]) {
+                    "auth" -> {
+                        AuthCommand.runCommand(it, split, connection)
+                    }
+                }
+            }
         }
     }
     server.onSocketDisconnected = {
