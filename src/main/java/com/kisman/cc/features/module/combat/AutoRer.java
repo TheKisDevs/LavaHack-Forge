@@ -119,6 +119,7 @@ public class AutoRer extends Module {
     public final Setting maxSelfDMG = register(damage.add(new Setting("Max Self DMG", this, 18, 0, 37, true)));
     private final Setting maxFriendDMG = register(damage.add(new Setting("Max Friend DMG", this, 10, 0, 37, true)));
     public final Setting lethalMult = register(damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false)));
+    private final Setting noSuicide = register(damage.add(new Setting("No Suicide", this, true)));
 
     public final Setting threadMode = register(thread_.add(new Setting("Thread Mode", this, ThreadMode.None)));
     public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()))));
@@ -607,7 +608,8 @@ public class AutoRer extends Module {
                         lethalMult.getValFloat(),
                         terrain.getValBoolean(),
                         armorBreaker.getValInt(),
-                        wallRangeUsage.getValBoolean()
+                        wallRangeUsage.getValBoolean(),
+                        noSuicide.getValBoolean()
                 );
             } else {
                 calculatePlace();

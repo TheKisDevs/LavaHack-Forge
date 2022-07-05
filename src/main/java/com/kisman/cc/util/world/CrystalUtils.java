@@ -153,12 +153,12 @@ public class CrystalUtils {
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
-        if (entity == mc.player) if (mc.player.capabilities.isCreativeMode) return 0.0f;
+        if (entity == mc.player && mc.player.capabilities.isCreativeMode) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
-        double dist = entity.getDistance(posX, posY, posZ);
+        double dist = entity.getDistanceSq(posX, posY, posZ);
         
-        if (dist > doubleExplosionSize) return 0f;
+        if (dist > (doubleExplosionSize * doubleExplosionSize)) return 0f;
 
         if (interlopedAmount > 0) {
             Vec3d l_Interloped = EntityUtil.getInterpolatedAmount(entity, interlopedAmount);

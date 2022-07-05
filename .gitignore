@@ -13,6 +13,10 @@ hs_err_pid*.log
 replay_pid*.log
 options.txt
 .idea
+auth/.vs/
+auth/SocketAuth/obj/
+auth/SocketAuth/bin/
+auth/SocketAuth.sln.DotSettings.user
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,jetbrains,intellij,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,jetbrains,intellij,visualstudiocode

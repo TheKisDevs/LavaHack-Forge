@@ -69,7 +69,6 @@ class Coords : HudModule(
                         "(${TextFormatting.RESET}${(posZ * nextFloat(true)).toInt()}${TextFormatting.GRAY})[${TextFormatting.RESET}${(nPosZ * nextFloat(true)).toInt()}${TextFormatting.GRAY}]"
 
             width = max(width, CustomFontUtil.getStringWidth(coordString).toDouble())
-            height += CustomFontUtil.getFontHeight() + offsets.valInt
 
             CustomFontUtil.drawStringWithShadow(
                 coordString,
@@ -77,6 +76,8 @@ class Coords : HudModule(
                 getY() + getH() - CustomFontUtil.getFontHeight(),
                 color
             )
+
+            height += CustomFontUtil.getFontHeight() + offsets.valInt
         }
 
         if(showRotation.valBoolean) {
@@ -87,7 +88,6 @@ class Coords : HudModule(
                         "[${TextFormatting.RESET}${(mc.player.rotationPitch * nextFloat(false)).toInt()}${TextFormatting.GRAY}]"
 
             width = max(width, CustomFontUtil.getStringWidth(rotationString).toDouble())
-            height += CustomFontUtil.getFontHeight()
 
             CustomFontUtil.drawStringWithShadow(
                 rotationString,
@@ -95,6 +95,8 @@ class Coords : HudModule(
                 getY() + getH() - CustomFontUtil.getFontHeight() - height,
                 color
             )
+
+            height += CustomFontUtil.getFontHeight()
         }
 
         setW(width)

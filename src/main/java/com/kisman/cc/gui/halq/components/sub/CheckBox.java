@@ -2,6 +2,7 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
@@ -13,8 +14,8 @@ import com.kisman.cc.util.render.objects.AbstractGradient;
 import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -24,7 +25,7 @@ public class CheckBox implements Openable {
     private int width = HalqGui.width;
     private int layer;
 
-    private BindButton bind;
+    private final BindButton bind;
     private boolean open;
 
     public CheckBox(Setting setting, int x, int y, int offset, int count) {
@@ -58,7 +59,7 @@ public class CheckBox implements Openable {
             }
         } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(setting.getName(), x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getName() + (Config.instance.guiShowBinds.getValBoolean() && setting.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(setting.getKey()) + "]" : ""), x, y + offset, width, HalqGui.height);
 
         if(open) bind.drawScreen(mouseX, mouseY);
     }

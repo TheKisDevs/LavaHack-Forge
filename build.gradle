@@ -200,7 +200,124 @@ shadowJar {
     classifier = 'release'
 }
 
-build.dependsOn(shadowJar)
+task privateJar(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        /*include 'com/kisman/cc/**'
+        include 'me/zero/alpine/**'
+        include 'org/cubic/**'
+        include 'org/luaj/**'
+        include 'the/kis/devs/api/**'
+        include 'mixins.Kisman.json'
+        include 'mixins.kisman.refmap.json'
+        include 'mappings/**'
+        include 'darwin/**'
+        include 'linux-x86-64/**'
+        include 'win32-x86/**'
+        include 'win32-x86-64/**'
+        include 'pack.mcmeta'
+        include 'META-INF/services/**'
+        include 'kisman_at.cfg'
+        */
+        exclude "com/kisman/cc/loader/**"
+    }
+    baseName = ''
+    version = ''
+    classifier = 'kisman.cc-b0.1.6.5-plus'
+}
+
+task publicJar(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        include 'com/kisman/cc/**'
+        exclude 'me/zero/alpine/**'
+        include 'org/cubic/**'
+        exclude 'org/luaj/**'
+        include 'the/kis/devs/api/**'
+        include 'mixins.Kisman.json'
+        include 'mixins.kisman.refmap.json'
+        include 'mappings/**'
+        include 'Main.class'
+        include 'assets/**'
+
+        exclude 'kotlin/**'
+        exclude 'kotlinx/**'
+        exclude 'darwin/**'
+        exclude 'linux-x86-64/**'
+        exclude 'win32-x86/**'
+        exclude 'win32-x86-64/**'
+        exclude 'pack.mcmeta'
+
+        exclude 'META-INF/services/**'
+        exclude 'kisman_at.cfg'
+        exclude "com/kisman/cc/loader/**"
+    }
+    baseName = ''
+    version = ''
+    classifier = 'LavaHack-b0.1.6.5-plus'
+}
+
+task loaderJar(type: Jar, dependsOn: shadowJar) {
+    from(zipTree(shadowJar.archivePath)) {
+
+        include "com/kisman/cc/loader/**"
+        exclude 'com/kisman/cc/ai/**'
+        exclude 'com/kisman/cc/api/**'
+        exclude 'com/kisman/cc/event/**'
+        exclude 'com/kisman/cc/features/**'
+        exclude 'com/kisman/cc/gui/**'
+        exclude 'com/kisman/cc/mixin/**'
+        exclude 'com/kisman/cc/settings/**'
+        exclude 'com/kisman/cc/util/**'
+        exclude 'com/kisman/cc/Kisman.class/**'
+        exclude 'com/kisman/cc/KismanStatic.class/**'
+        exclude 'com/kisman/cc/RPC.class/**'
+        include 'me/zero/alpine/**'
+        exclude 'org/cubic/**'
+        include 'org/luaj/**'
+        exclude 'the/kis/devs/api/**'
+        exclude 'mixins.Kisman.json'
+        exclude 'mixins.kisman.refmap.json'
+        exclude 'mappings/**'
+        /*exclude 'darwin/**'
+        exclude 'linux-x86-64/**'
+        exclude 'win32-x86/**'
+        exclude 'win32-x86-64/**'*/
+
+        include 'pack.mcmeta'
+        include 'kisman_at.cfg'
+
+        include "team/**"
+//        include "me/robeart/raion/mixin/MixinLoader.class"
+//        include "me/cookiedragon234/**"
+        exclude 'assets/**'
+        include "org/spongepowered/**"
+        include "kotlin/**"
+        include "kotlinx/**"
+        include "win32-x86-64/**"
+        include "win32-x86/**"
+        include "linux-x86-64/**"
+        include "darwin/**"
+        include "club/**"
+        include "com/**"
+        include "META-INF/**"
+        exclude "META-INF/fml_cache_class_versions.json"
+        exclude "META-INF/fml_cache_annotation.json"
+    }
+    manifest {
+        attributes(
+                'MixinConfigs': 'mixins.Kisman.json',
+                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'com.kisman.cc.loader.LavaFalconCoreMod',
+                'ForceLoadAsMod': 'true',
+        )
+    }
+    baseName = ''
+    version = ''
+    classifier = 'LavaHackLoader-1.0'
+}
+
+build.dependsOn(privateJar, publicJar, loaderJar)
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

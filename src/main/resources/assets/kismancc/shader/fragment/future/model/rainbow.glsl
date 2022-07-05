@@ -8,8 +8,6 @@ uniform int time;
 uniform vec2 sv;
 uniform float opacity;
 
-varying vec4 varyingTexCoord0;
-
 const float twoThirds = 2.0f / 3.0f;
 const float oneThirds = 1.0f / 3.0f;
 vec3 hsv2rgb(vec3 c) {
@@ -28,7 +26,7 @@ void main(void) {
     vec3 rgbColor = hsv2rgb(vec3(hue, sv.x, sv.y));
     vec4 color = vec4(rgbColor, opacity);
 
-    vec4 texelColor = texture2D(texture, varyingTexCoord0.xy);
+    vec4 texelColor = texture2D(texture, gl_TexCoord[0].xy);
     gl_FragColor = vec4(color.rgb * color.a, texelColor.a != 0.0f ? color.a : 0.0f);
     gl_FragDepth = 0.0f;
 }

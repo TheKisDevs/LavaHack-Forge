@@ -59,7 +59,8 @@ class AutoRerUtil {
                 lethalMult : Float,
                 terrain : Boolean,
                 armorBreaker : Int,
-                wallRangeUsage : Boolean
+                wallRangeUsage : Boolean,
+                noSuicide : Boolean
         ) : PlaceInfo? {
             var maxDamage = 0.5f
             var selfDamage_ = 0.0f
@@ -97,7 +98,7 @@ class AutoRerUtil {
                                         if (targetDamage > minDamage || targetDamage * lethalMult > target.health + target.absorptionAmount || InventoryUtil.isArmorUnderPercent(target, armorBreaker.toFloat())) {
                                             val selfDamage = getSelfDamageByCrystal(terrain, pos)
 
-                                            if (selfDamage <= maxSelfDamage && selfDamage + 2 < mc.player.health + mc.player.absorptionAmount && selfDamage < targetDamage) {
+                                            if (selfDamage <= maxSelfDamage && (selfDamage + 2 < mc.player.health + mc.player.absorptionAmount || !noSuicide) && selfDamage < targetDamage) {
                                                 maxDamage = targetDamage
                                                 selfDamage_ = selfDamage
                                                 placePos = pos

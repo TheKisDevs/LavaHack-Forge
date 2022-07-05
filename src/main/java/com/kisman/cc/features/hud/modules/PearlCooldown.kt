@@ -57,7 +57,7 @@ class PearlCooldown : HudModule(
         setH((CustomFontUtil.getFontHeight() + 2).toDouble())
 
         Render2DUtil.drawRectWH(getX(), getY() + CustomFontUtil.getFontHeight() + 1, getW(), 1.0, Color.GRAY.rgb)//1 is offset
-        Render2DUtil.drawRectWH(getX() + getW(), getY() + CustomFontUtil.getFontHeight() + 1, -getXCoordByCooldown(getCurrentCooldown())/*.coerceIn(0.0, getW())*/, 1.0, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))//1 is height of progress bare
+        Render2DUtil.drawRectWH(getX(), getY() + CustomFontUtil.getFontHeight() + 1, getXCoordByCooldown(getCurrentCooldown())/*.coerceIn(0.0, getW())*/, 1.0, (if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))//1 is height of progress bare
 //        println(getXCoordByCooldown(getCurrentCooldown()).coerceIn(0.0, w))
 //        println(getCurrentCooldown())
 //        println("\n")
