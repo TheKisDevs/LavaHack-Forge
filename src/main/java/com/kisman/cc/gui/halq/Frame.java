@@ -14,9 +14,9 @@ import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.components.Button;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.enums.RectSides;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.ShadowRectObject;
-import com.kisman.cc.util.render.objects.Vec4d;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.ShadowRectObject;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 
 import java.util.ArrayList;

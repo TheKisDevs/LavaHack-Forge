@@ -8,8 +8,8 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.render.ColorUtils
-import com.kisman.cc.util.render.objects.AbstractGradient
-import com.kisman.cc.util.render.objects.Vec4d
+import com.kisman.cc.util.render.objects.screen.AbstractGradient
+import com.kisman.cc.util.render.objects.screen.Vec4d
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse

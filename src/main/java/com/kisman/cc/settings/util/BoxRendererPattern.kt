@@ -6,8 +6,8 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
-import com.kisman.cc.util.render.objects.Box
-import com.kisman.cc.util.render.objects.BoxObject
+import com.kisman.cc.util.render.objects.world.Box
+import com.kisman.cc.util.render.objects.world.BoxObject
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
 import java.util.function.Supplier

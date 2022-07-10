@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
+@SuppressWarnings("unused")
 @Mixin(value = EntityPlayerSP.class, priority = 10000)
 public class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow public MovementInput movementInput;

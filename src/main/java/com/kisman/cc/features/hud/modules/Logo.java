@@ -7,7 +7,7 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.Render2DUtil;
 
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.util.render.objects.Icons;
+import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

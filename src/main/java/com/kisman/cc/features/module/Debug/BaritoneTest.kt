@@ -19,6 +19,6 @@ class BaritoneTest : Module(
             return;
         }
 
-        BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(1000, 1000))
+//        BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(1000, 1000))
     }
 }

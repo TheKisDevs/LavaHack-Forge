@@ -1,6 +1,6 @@
 package com.kisman.cc.util.enums
 
-import com.kisman.cc.util.render.objects.RectObject
+import com.kisman.cc.util.render.objects.screen.RectObject
 import com.sun.javafx.geom.Vec2d
 
 enum class RectSides {

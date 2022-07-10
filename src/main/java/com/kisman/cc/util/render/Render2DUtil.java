@@ -2,8 +2,10 @@ package com.kisman.cc.util.render;
 
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.util.ColorUtil;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.AbstractObject;
+import com.kisman.cc.util.render.objects.screen.ObjectWithGlow;
 import com.kisman.cc.util.render.shader.ShaderShell;
-import com.kisman.cc.util.render.objects.*;
 
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;

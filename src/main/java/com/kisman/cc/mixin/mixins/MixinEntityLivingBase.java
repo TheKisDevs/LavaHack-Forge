@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
 
+@SuppressWarnings({"unused", "NullableProblems"})
 @Mixin(value = EntityLivingBase.class, priority = 10000)
 public class MixinEntityLivingBase extends Entity {
     @Shadow public EnumHand swingingHand;

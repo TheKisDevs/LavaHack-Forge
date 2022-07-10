@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class AutoRer extends Module {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
@@ -877,13 +878,14 @@ public class AutoRer extends Module {
             mc.player.rotationPitch = oldRots[1];
         }
 
-        BlockPos toRemove = null;
 
-        if(syns.getValBoolean()) for(PlaceInfo info : placedList) {
-            BlockPos pos = info.getBlockPos();
-            if(crystal.get().getDistance(pos.getX(), pos.getY(), pos.getZ()) <= 3) toRemove = pos;
+        if(syns.getValBoolean()) {
+            BlockPos toRemove = null;
+
+            for(int i = 0; i < placedList.size(); i++) if(crystal.get().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
+
+            if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }
-        if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
     }
 
     private void swing() {
@@ -961,6 +963,7 @@ public class AutoRer extends Module {
         }
     }
 
+    @SuppressWarnings("BusyWait")
     public static class RAutoRer implements Runnable {
         private static RAutoRer instance;
         private AutoRer autoRer;

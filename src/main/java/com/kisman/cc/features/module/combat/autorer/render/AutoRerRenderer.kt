@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.combat.autorer.PlaceInfo
 import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.objects.TextOnBlockObject
+import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d

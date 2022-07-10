@@ -66,7 +66,6 @@ public class ModuleManager {
 		modules.add(new AutoPot());
 		modules.add(new AutoRer());
 		modules.add(new AutoTrap());
-		modules.add(new AntiTrapDoorBurrow());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
 		modules.add(new BreakAlert());
@@ -195,8 +194,8 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
-		modules.add(new ChatModifier());
 		modules.add(new BotnetConnection());
+		modules.add(new ChatModifier());
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
 		modules.add(new FreeLook());
@@ -206,6 +205,7 @@ public class ModuleManager {
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
 		modules.add(new PortalsModifier());
+//		modules.add(new Printer());
 		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkyBlockFeatures());

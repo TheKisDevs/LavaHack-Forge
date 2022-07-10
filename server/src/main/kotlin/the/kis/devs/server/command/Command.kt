@@ -1,6 +1,7 @@
 package the.kis.devs.server.command
 
 import me.yailya.sockets.server.SocketServerConnection
+import the.kis.devs.server.permission.IPermission
 
 /**
  * @author _kisman_
@@ -9,16 +10,13 @@ import me.yailya.sockets.server.SocketServerConnection
 abstract class Command(
     val command : String
 ) : ICommand {
-    private var line = ""
-    private var args = emptyList<String>()
-    private var connection : SocketServerConnection? = null
+    val permissions = ArrayList<IPermission>()
 
     fun runCommand(line : String, args : List<String>, connection : SocketServerConnection) {
-        this.line = line
-        this.args = args
-        this.connection = connection
         Thread {
-            connection.writeString(execute(line, args))
+            for(message in execute(line, args)) {
+                connection.writeMessage(message)
+            }
         }.start()
     }
 }

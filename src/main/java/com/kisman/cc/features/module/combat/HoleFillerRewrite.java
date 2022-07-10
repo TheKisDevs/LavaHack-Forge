@@ -3,8 +3,10 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.Timer;
 import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
@@ -41,8 +43,14 @@ public class HoleFillerRewrite extends Module {
     private final Setting holeRange = register(new Setting("HoleRange", this, 5, 1, 10, false));
     private final Setting limit = register(new Setting("Limit", this, 0, 0, 50, true));
 
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
+
+    private Entity entity = null;
+
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
+        super.setDisplayInfo(() -> entity == null ? "" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
 
         instance = this;
     }
@@ -56,18 +64,23 @@ public class HoleFillerRewrite extends Module {
     private int lim = 0;
 
     @Override
-    public void update(){
-        if(mc.world == null || mc.player == null)
-            return;
+    public void onEnable() {
+        super.onEnable();
+        targets.reset();
+        threads.reset();
+    }
 
-        Entity entity = placeMode.getValString().equals("All") ? mc.player : EntityUtil.getTarget(enemyRange.getValFloat());
+    @Override
+    public void update() {
+        if(mc.world == null || mc.player == null) return;
 
-        if(entity == null) {
-            super.setDisplayInfo("");
-            return;
-        }
+        entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
 
-        super.setDisplayInfo("[" + (entity != mc.player ? entity.getName() : "Self") + "]");
+        if(entity == null) return;
+
+        threads.update(() -> {
+            mc.addScheduledTask(() -> holes = getHoleBlocks(entity));
+        });
 
         placeHoleBlocks(entity);
     }
@@ -77,8 +90,6 @@ public class HoleFillerRewrite extends Module {
         if(slot == -1)
             return;
         if(place.getValString().equals("Instant")){
-            holes.clear();
-            holes = getHoleBlocks(entity);
             holes.forEach(blockPos -> place(blockPos, slot));
             placeTimer.reset();
             return;
@@ -95,7 +106,6 @@ public class HoleFillerRewrite extends Module {
     }
 
     private void placeHoleBlocksChained(Entity entity, int slot){
-        holes = getHoleBlocks(entity);
         boolean clear = true;
         for(BlockPos pos : holes){
             if(placed.contains(pos))

@@ -14,6 +14,7 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinFontRenderer",
     "MixinGuiBossOverlay",
     "MixinGuiContainer",
     "MixinGuiIngame",
@@ -47,20 +48,18 @@
     "MixinWorld",
     "accessor.AccessorCPacketUseEntity",
     "accessor.AccessorEntityPlayer",
+    "accessor.AccessorNetHandlerPlayClient",
     "accessor.AccessorPlayerControllerMP",
     "accessor.AccessorShaderGroup",
     "accessor.ICPacketPlayer",
     "accessor.IEntityPlayerSP",
     "accessor.ISession",
+    "accessor.ITemplate",
     "cubic.AccessorClassLoader",
     "viaforge.MixinGuiConnecting",
     "viaforge.MixinGuiDisconnected",
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
     "viaforge.MixinNetworkManagerChInit"
-  ],
-  "client": [
-    "MixinFontRenderer",
-    "accessor.AccessorNetHandlerPlayClient"
   ]
 }

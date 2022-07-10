@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 import java.awt.*;
 
+@SuppressWarnings({"ConstantConditions", "NullableProblems"})
 @Mixin(value = RenderLivingBase.class, priority = 10000)
 public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
     @Shadow protected ModelBase mainModel;

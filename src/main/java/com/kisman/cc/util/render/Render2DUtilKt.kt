@@ -1,7 +1,7 @@
 package com.kisman.cc.util.render
 
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.objects.AbstractGradient
+import com.kisman.cc.util.render.objects.screen.AbstractGradient
 import com.sun.javafx.geom.Vec2d
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer

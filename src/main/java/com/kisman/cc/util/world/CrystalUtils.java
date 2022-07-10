@@ -60,11 +60,6 @@ public class CrystalUtils {
         return false;
     }
 
-    /// Returns a BlockPos object of player's position floored.
-    public static BlockPos GetPlayerPosFloored(final EntityPlayer p_Player) {
-        return new BlockPos(Math.floor(p_Player.posX), Math.floor(p_Player.posY), Math.floor(p_Player.posZ));
-    }
-
     public static List<BlockPos> getSphere(EntityPlayer target, float range, boolean sphere, boolean hollow) {
         ArrayList<BlockPos> blocks = new ArrayList<>();
         int x = target.getPosition().getX() - (int)range;
@@ -156,9 +151,9 @@ public class CrystalUtils {
         if (entity == mc.player && mc.player.capabilities.isCreativeMode) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
-        double dist = entity.getDistanceSq(posX, posY, posZ);
+        double dist = entity.getDistance(posX, posY, posZ);
         
-        if (dist > (doubleExplosionSize * doubleExplosionSize)) return 0f;
+        if (dist > doubleExplosionSize) return 0f;
 
         if (interlopedAmount > 0) {
             Vec3d l_Interloped = EntityUtil.getInterpolatedAmount(entity, interlopedAmount);

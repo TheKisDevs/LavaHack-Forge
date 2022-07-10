@@ -28,6 +28,10 @@ public class VectorUtils {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    public static Vec3d subtract(Vec3d vec1, Vec3d vec2) {
+        return vec1.addVector(-vec2.x, -vec2.y, -vec2.z);
+    }
+
     @SubscribeEvent
     public void updateMatrix(RenderWorldLastEvent event) {
         if (mc.renderViewEntity == null) return;

@@ -4,16 +4,20 @@
 
 package me.yailya.sockets.interfaces
 
+import me.yailya.sockets.Constants
+import me.yailya.sockets.data.SocketMessage
 import java.net.Socket
 import java.net.SocketException
 
+@Suppress("unused")
 interface ISocketWR {
     val socket: Socket
 
-    val connected get() = socket.isConnected &&
-            !socket.isClosed &&
-            !(get(socket.getInputStream(), "impl.isConnectionResetPending") as Boolean) &&
-            !(get(socket.getInputStream(), "impl.isClosedOrPending") as Boolean)
+    val connected
+        get() = socket.isConnected &&
+                !socket.isClosed &&
+                !(get(socket.getInputStream(), "impl.isConnectionResetPending") as Boolean) &&
+                !(get(socket.getInputStream(), "impl.isClosedOrPending") as Boolean)
 
     /**
      * Closes the socket
@@ -25,10 +29,31 @@ interface ISocketWR {
     }
 
     /**
-     * Sends text to the socket
+     * Sends message to the socket
      */
-    fun writeString(text: String) {
-        writeBytes(text.toByteArray(Charsets.UTF_8))
+    fun writeMessage(message: SocketMessage) {
+        writeBytes(message.byteArray)
+    }
+
+    /**
+     * Sends messages to the socket
+     */
+    fun writeMessages(vararg messages: SocketMessage) {
+        messages.forEach { writeMessage(it) }
+    }
+
+    /**
+     * Sends message to the socket
+     */
+    fun writeMessage(block: SocketMessage.() -> Unit) {
+        writeMessage(SocketMessage(ByteArray(0)).apply(block))
+    }
+
+    /**
+     * Sends messages to the socket
+     */
+    fun writeMessages(vararg messages: SocketMessage.() -> Unit) {
+        messages.forEach { writeMessage(it) }
     }
 
     /**
@@ -45,10 +70,14 @@ interface ISocketWR {
     }
 
     /**
-     * Reads text from the socket
+     * Reads message from the socket
      */
-    fun readString(): String? {
-        return readBytes()?.toString(Charsets.UTF_8)
+    fun readMessage(): SocketMessage? {
+        try {
+            return SocketMessage(readBytes() ?: return null)
+        } catch (ex: Exception) {
+            return null
+        }
     }
 
     /**
@@ -57,7 +86,7 @@ interface ISocketWR {
     fun readBytes(): ByteArray? {
         try {
             if (connected) {
-                val buffer = ByteArray(1024)
+                val buffer = ByteArray(Constants.BUFFER_SIZE)
                 val bufferLength = socket.getInputStream().read(buffer)
 
                 return buffer.copyOf(bufferLength)

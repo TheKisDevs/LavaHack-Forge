@@ -18,8 +18,8 @@ class MultiThreaddableModulePattern(
 ) {
     private val group = module.register(SettingGroup(Setting("Multi Thread", module)))
 
-    private val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
-    private val multiThread = module.register(group.add(Setting("Multi Thread", module, false)))
+    val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
+    val multiThread = module.register(group.add(Setting("Multi Thread", module, false)))
 
     private val handler = ThreadHandler(Supplier { delay.valLong }, Supplier { multiThread.valBoolean })
 

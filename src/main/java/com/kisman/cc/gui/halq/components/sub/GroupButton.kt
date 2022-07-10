@@ -8,9 +8,8 @@ import com.kisman.cc.gui.halq.util.LayerMap
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.ColorUtils
-import com.kisman.cc.util.render.objects.AbstractGradient
-import com.kisman.cc.util.render.objects.Vec4d
-import java.awt.Color
+import com.kisman.cc.util.render.objects.screen.AbstractGradient
+import com.kisman.cc.util.render.objects.screen.Vec4d
 
 class GroupButton(
         val setting : SettingGroup,

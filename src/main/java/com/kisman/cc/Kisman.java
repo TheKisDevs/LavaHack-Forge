@@ -8,6 +8,7 @@ import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
+import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
@@ -39,6 +40,7 @@ import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.SidedProxy;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -69,14 +71,14 @@ public class Kisman {
     public static final String imagesName = "Images/";
     public static final String pluginsName = "Plugins/";
 
-    public static Kisman instance;
+    public static final Kisman instance = new Kisman();
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean allowToConfiguredAnotherClients, remapped = false;
+    public static boolean allowToConfiguredAnotherClients, remapped = true;
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
@@ -85,12 +87,6 @@ public class Kisman {
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
-
-        try {
-            Minecraft.class.getDeclaredField("player");
-        } catch (NoSuchFieldException e) {
-            remapped = true;
-        }
     }
 
     public boolean init = false;
@@ -139,9 +135,7 @@ public class Kisman {
     public PluginHandler pluginHandler;
 
 
-    public Kisman() {
-        instance = this;
-    }
+    private Kisman() {}
 
     public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
         try {
@@ -149,6 +143,11 @@ public class Kisman {
         } catch(Exception e) {
             remapped = true;
         }
+    }
+
+    public void coreModInit() {
+        pluginHandler = new PluginHandler();
+        pluginHandler.coreModInit();
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -178,7 +177,6 @@ public class Kisman {
         serverManager = new ServerManager();
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
-        pluginHandler = new PluginHandler();
         pluginHandler.init();
 
         configManager = new ConfigManager("config");

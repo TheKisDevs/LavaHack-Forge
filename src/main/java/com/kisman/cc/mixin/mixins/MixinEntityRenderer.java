@@ -17,10 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"unchecked", "rawtypes", "Guava"})
 @Mixin(value = EntityRenderer.class, priority = 10000)
 public class MixinEntityRenderer {
-    @Mutable
-    @Shadow @Final public int[] lightmapColors;
+    @Mutable @Shadow @Final public int[] lightmapColors;
 
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     public void setupFog(int startCoords, float partialTicks, CallbackInfo ci) {

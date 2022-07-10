@@ -13,10 +13,10 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 @IFMLLoadingPlugin.Name(Kisman.NAME)
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class KismanMixinLoader implements IFMLLoadingPlugin {
-
     public KismanMixinLoader(){
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.Kisman.json");
+        Kisman.instance.coreModInit();
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
 
@@ -40,6 +40,7 @@ public class KismanMixinLoader implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data){
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.Kisman.json");
+        Kisman.instance.pluginHandler.coreModInit();
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
 

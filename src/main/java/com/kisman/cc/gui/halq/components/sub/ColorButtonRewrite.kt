@@ -10,10 +10,9 @@ import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.sliders.HueSlide
 import com.kisman.cc.gui.halq.util.LayerMap
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
-import com.kisman.cc.util.render.objects.AbstractGradient
-import com.kisman.cc.util.render.objects.Vec4d
+import com.kisman.cc.util.render.objects.screen.AbstractGradient
+import com.kisman.cc.util.render.objects.screen.Vec4d
 import java.awt.Color
 
 /**

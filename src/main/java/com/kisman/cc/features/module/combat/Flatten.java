@@ -3,6 +3,8 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -31,6 +33,9 @@ public class Flatten extends Module {
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting antiGlitch = register(new Setting("AntiGlitch", this, false));
+
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
 
     public Flatten(){
         super("Flatten", Category.COMBAT);
@@ -62,10 +67,9 @@ public class Flatten extends Module {
         if(slot == -1)
             return;
 
-        EntityPlayer target = EntityUtil.getTarget(enemyRange.getValFloat());
+        EntityPlayer target = targets.getTarget();//EntityUtil.getTarget(enemyRange.getValFloat());
 
-        if(target == null)
-            return;
+        if(target == null) return;
 
         if(prevTarget != target || overwrite){
             prevTarget = target;
@@ -74,7 +78,7 @@ public class Flatten extends Module {
 
         targetPos = new BlockPos(target.posX, posY + 1.0, target.posZ);
 
-        blockPositions = doPredictions(target );
+        threads.update(() -> mc.addScheduledTask(() -> blockPositions = doPredictions(target)));
 
         int oldSlot = mc.player.inventory.currentItem;
 
@@ -94,6 +98,8 @@ public class Flatten extends Module {
         target = null;
         prevTarget = null;
         overwrite = false;
+        threads.reset();
+        targets.reset();
     }
 
     /*

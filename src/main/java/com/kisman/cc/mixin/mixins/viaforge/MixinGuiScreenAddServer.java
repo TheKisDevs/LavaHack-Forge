@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("ConstantConditions")
 @Mixin(GuiScreenAddServer.class)
 public class MixinGuiScreenAddServer extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))

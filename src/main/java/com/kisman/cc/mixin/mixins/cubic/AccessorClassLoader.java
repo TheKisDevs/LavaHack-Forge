@@ -3,8 +3,6 @@ package com.kisman.cc.mixin.mixins.cubic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.security.ProtectionDomain;
-
 @Mixin(ClassLoader.class)
 public interface AccessorClassLoader {
 

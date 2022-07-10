@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("unused")
 @Mixin(value = Entity.class, priority = 10000)
 public class MixinEntity {
     @Shadow public double posX;

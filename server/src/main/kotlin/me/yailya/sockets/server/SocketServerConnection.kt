@@ -4,26 +4,36 @@
 
 package me.yailya.sockets.server
 
+import me.yailya.sockets.Constants
+import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.interfaces.ISocketWR
-import java.lang.reflect.Field
-import java.lang.reflect.Method
+import me.yailya.sockets.utils.StackTraceUtils
 import java.net.Socket
-import java.net.SocketException
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 
 class SocketServerConnection(
     override val socket: Socket,
     private val server: SocketServer
 ) : ISocketWR {
-    var onMessageReceived: (String) -> Unit = { }
+    var name = "Socket-${AtomicLong(0).get()}"
+
+    private var haveCustomName = !Constants.CUSTOM_SOCKET_NAMES
+
+    var onMessageReceived: (SocketMessage) -> Unit = { }
+
+    init {
+        socket.sendBufferSize = Constants.BUFFER_SIZE
+        socket.receiveBufferSize = Constants.BUFFER_SIZE
+    }
 
     init {
         thread {
             while (connected) {
-                val message = readString()
+                val message = readMessage() ?: continue
 
-                if (message == null || message.isEmpty()) {
-                    continue
+                if(!haveCustomName && message.type == SocketMessage.Type.Text) {
+                    name = message.text
                 }
 
                 onMessageReceived(message)

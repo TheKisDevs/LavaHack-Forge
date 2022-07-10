@@ -1,17 +1,15 @@
 package com.kisman.cc.util.render;
 
-import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.math.vectors.Vec3dColored;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.objects.world.Vectors;
 import net.minecraft.client.renderer.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-
-import static java.lang.Math.*;
-import static org.lwjgl.opengl.GL11.*;
 
 public class RenderUtil2 implements Globals {
     public static void drawNametag(String text, AxisAlignedBB interpolated, double scale, int color, boolean rectangle) {
@@ -20,27 +18,6 @@ public class RenderUtil2 implements Globals {
         double z = (interpolated.minZ + interpolated.maxZ) / 2.0;
 
         drawNametag(text, x, y, z, scale, color, rectangle);
-    }
-
-    public static void drawFadeESP(Entity entity, Colour color, Colour color2) {
-        glPushMatrix ();
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glBegin(GL_LINE_STRIP);
-        for (int i = 0; i <= 360; ++i){
-            color.glColor();
-            glVertex3d(entity.posX, entity.posY, entity.posZ);
-            color2.getColor();
-            glVertex3d(entity.posX - sin(toRadians(i)), entity.posY, entity.posZ + cos(toRadians(i)));
-        }
-        glEnd();
-        glEnable(GL_TEXTURE_2D);
-        glEnable (GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glColor4f (1,1,1,1);
-        glPopMatrix ();
     }
 
     public static Entity getEntity() {

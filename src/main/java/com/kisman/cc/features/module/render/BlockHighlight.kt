@@ -11,9 +11,9 @@ import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.enums.BoxRenderModes
-import com.kisman.cc.util.render.objects.Box
-import com.kisman.cc.util.render.objects.BoxObject
-import com.kisman.cc.util.render.objects.TextOnBlockObject
+import com.kisman.cc.util.render.objects.world.Box
+import com.kisman.cc.util.render.objects.world.BoxObject
+import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult

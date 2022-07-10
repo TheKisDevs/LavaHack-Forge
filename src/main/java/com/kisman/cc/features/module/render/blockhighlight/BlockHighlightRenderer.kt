@@ -4,8 +4,8 @@ import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
-import com.kisman.cc.util.render.objects.Box
-import com.kisman.cc.util.render.objects.BoxObject
+import com.kisman.cc.util.render.objects.world.Box
+import com.kisman.cc.util.render.objects.world.BoxObject
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.Vec3d

@@ -1,5 +1,6 @@
 package the.kis.devs.server.command.commands
 
+import me.yailya.sockets.data.SocketMessage
 import the.kis.devs.server.command.Command
 import the.kis.devs.server.keyauth.KeyAuthApp
 
@@ -26,15 +27,15 @@ import the.kis.devs.server.keyauth.KeyAuthApp
 object AuthCommand : Command(
     "auth"
 ) {
-    override fun execute(line: String, args: List<String>) : String {
+    override fun execute(line: String, args: List<String>) : List<SocketMessage> {
         if(args.size == 3) {
             return if(KeyAuthApp.keyAuth.license(args[1], args[2])) {
-                "2"
+                listOf(SocketMessage("2"))
             } else {
-                "1"
+                listOf(SocketMessage("1"))
             }
         }
 
-        return "0"
+        return listOf(SocketMessage("0"))
     }
 }
