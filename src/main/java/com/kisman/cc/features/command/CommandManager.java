@@ -23,6 +23,7 @@ public class CommandManager extends ChatHandler {
 		add(new ConfigCommand());
 		add(new DDOSCommand());
 		add(new Flip());
+		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new Help());
 		add(new LoadConfigCommand());

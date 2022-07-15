@@ -170,6 +170,7 @@ public class ModuleManager {
 		modules.add(new AntiVanish());
 		modules.add(new BookFormatModule());
 		modules.add(new BowExploit());
+		modules.add(new ChorusBypass());
 		modules.add(new CowDupe());
 		modules.add(new DamageLeave());
 		modules.add(new FakePearl());
