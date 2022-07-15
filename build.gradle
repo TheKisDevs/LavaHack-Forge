@@ -259,6 +259,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
 
         include "com/kisman/cc/loader/**"
+        include "com/kisman/cc/sockets/**"
         exclude 'com/kisman/cc/ai/**'
         exclude 'com/kisman/cc/api/**'
         exclude 'com/kisman/cc/event/**'

@@ -4,7 +4,9 @@ import me.yailya.sockets.client.SocketClient
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.example.ADDRESS
 import me.yailya.sockets.example.PORT
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -23,15 +25,11 @@ fun main() {
 
             println("File from server (name: ${file.name}, description: ${file.description})")
             if(file.description != "CANT_BE_OPENED") {
-                println(file.byteArray.toString(Charsets.UTF_8))
+//                println(file.byteArray.toString(Charsets.UTF_8))
+            } else {
             }
-
-            Files.createFile(Paths.get("server\\files\\client${file.name}"))
-            val file1 = File(Paths.get("server\\files\\client${file.name}").toUri())
-            val stream = file1.outputStream()
-
-            stream.write(file.byteArray)
-            stream.close()
+            Files.createFile(Paths.get("server\\files\\client\\${file.name}"))
+            File("server\\files\\client\\${file.name}").writeBytes(file.byteArray)
         }
     }
 

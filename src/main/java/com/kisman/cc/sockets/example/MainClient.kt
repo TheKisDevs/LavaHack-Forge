@@ -2,10 +2,10 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.example
+package com.kisman.cc.sockets.example
 
-import me.yailya.sockets.client.SocketClient
-import me.yailya.sockets.data.SocketMessage
+import com.kisman.cc.sockets.client.SocketClient
+import com.kisman.cc.sockets.data.SocketMessage
 
 /** Server Address - **127.0.0.1**:1234 */
 const val ADDRESS = "127.0.0.1"

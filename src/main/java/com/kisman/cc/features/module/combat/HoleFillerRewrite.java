@@ -2,8 +2,12 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.combat.holefillerrewrite.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.Timer;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.TargetFinder;
@@ -11,11 +15,14 @@ import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 
@@ -25,26 +32,36 @@ import java.util.*;
  */
 public class HoleFillerRewrite extends Module {
     public static HoleFillerRewrite instance;
+    
+    private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
+    private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
 
-    private final Setting obsidianHoles = register(new Setting("ObsidianHoles", this, true));
-    private final Setting bedrockHoles = register(new Setting("BedrockHoles", this, true));
-    private final Setting singleHoles = register(new Setting("SingleHoles", this, true));
-    private final Setting doubleHoles = register(new Setting("DoubleHoles", this, true));
-    private final Setting customHoles = register(new Setting("CustomHoles", this, true));
-    private final Setting blocks = register(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
-    private final Setting swap = register(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent")));
-    private final Setting rotate = register(new Setting("Rotate", this, false));
-    private final Setting packet = register(new Setting("Packet", this, false));
-    private final Setting place = register(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay")));
-    private final Setting delay = register(new Setting("DelayMS", this, 50, 0, 500, true).setVisible(() -> place.getValString().equals("Delay")));
-    private final Setting placeMode = register(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target")));
-    private final Setting enemyRange = register(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target")));
-    private final Setting aroundEnemyRange = register(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target")));
-    private final Setting holeRange = register(new Setting("HoleRange", this, 5, 1, 10, false));
-    private final Setting limit = register(new Setting("Limit", this, 0, 0, 50, true));
+    private final Setting obsidianHoles = register(logic.add(new Setting("ObsidianHoles", this, true)));
+    private final Setting bedrockHoles = register(logic.add(new Setting("BedrockHoles", this, true)));
+    private final Setting singleHoles = register(logic.add(new Setting("SingleHoles", this, true)));
+    private final Setting doubleHoles = register(logic.add(new Setting("DoubleHoles", this, true)));
+    private final Setting customHoles = register(logic.add(new Setting("CustomHoles", this, true)));
+    private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
+    private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
+    private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
+    private final Setting packet = register(logic.add(new Setting("Packet", this, false)));
+    private final Setting place = register(logic.add(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay"))));
+    private final Setting delay = register(logic.add(new Setting("DelayMS", this, 50, 0, 500, true).setVisible(() -> place.getValString().equals("Delay"))));
+    private final Setting placeMode = register(logic.add(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target"))));
+    private final Setting enemyRange = register(logic.add(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target"))));
+    private final Setting aroundEnemyRange = register(logic.add(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target"))));
+    private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
+    private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
+
+    private final Setting render = register(render_.add(new Setting("Render", this, true)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
 
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
+
+    private final HoleFillerRewriteRenderer renderer = new HoleFillerRewriteRenderer();
 
     private Entity entity = null;
 
@@ -63,11 +80,15 @@ public class HoleFillerRewrite extends Module {
 
     private int lim = 0;
 
+    private PlaceInfo placeInfo = null;
+
     @Override
     public void onEnable() {
         super.onEnable();
         targets.reset();
         threads.reset();
+        renderer.reset();
+        placeInfo = null;
     }
 
     @Override
@@ -83,6 +104,18 @@ public class HoleFillerRewrite extends Module {
         });
 
         placeHoleBlocks(entity);
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(render.getValBoolean()) {
+            renderer.onRenderWorld(
+                    movingLength.getValFloat(),
+                    fadeLength.getValFloat(),
+                    renderer_,
+                    placeInfo
+            );
+        }
     }
 
     private void placeHoleBlocks(Entity entity){
@@ -111,6 +144,7 @@ public class HoleFillerRewrite extends Module {
             if(placed.contains(pos))
                 continue;
             if(!mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isEmpty()) continue;
+            placeInfo = new PlaceInfo((EntityLivingBase) entity, pos);
             place(pos, slot);
             placed.add(pos);
             clear = false;

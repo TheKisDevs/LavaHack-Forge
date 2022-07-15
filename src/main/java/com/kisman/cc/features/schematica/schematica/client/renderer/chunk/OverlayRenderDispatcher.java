@@ -35,14 +35,13 @@ public class OverlayRenderDispatcher extends ChunkRenderDispatcher {
         }
 
         try {
-            Method method = Class.forName("ChunkRenderDispatcher").getMethod("uploadDisplayList", BufferBuilder.class, Integer.class, CompiledChunk.class, RenderChunk.class);
+            Method method = Class.forName("net.minecraft.client.renderer.chunk.ChunkRenderDispatcher")
+                    .getMethod("uploadDisplayList", BufferBuilder.class, Integer.class, CompiledChunk.class, RenderChunk.class);
             method.setAccessible(true);
             method.invoke(this, buffer, ((RenderOverlayList) renderChunk).getDisplayList(layer, compiledChunk), renderChunk);
         } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-
-//        uploadDisplayList(buffer, ((RenderOverlayList) renderChunk).getDisplayList(layer, compiledChunk), renderChunk);
 
         buffer.setTranslation(0.0, 0.0, 0.0);
         return Futures.immediateFuture(null);

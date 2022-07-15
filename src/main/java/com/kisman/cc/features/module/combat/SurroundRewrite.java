@@ -310,7 +310,7 @@ public class SurroundRewrite extends Module {
     }
 
     private boolean isReplaceable(BlockPos pos){
-        return mc.world.getBlockState(pos).getMaterial().isReplaceable();
+        return pos != null && mc.world != null && mc.world.getBlockState(pos).getMaterial().isReplaceable();
     }
 
     private List<BlockPos> getAntiFacePlaceBlocks(){

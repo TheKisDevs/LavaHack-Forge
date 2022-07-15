@@ -9,17 +9,20 @@ import com.kisman.cc.util.enums.GlowModes
 import java.awt.Color
 import java.util.function.Supplier
 
-class GlowRendererPattern(val module: Module, val visible: Supplier<Boolean>) {
+class GlowRendererPattern(
+    val module: Module,
+    val visible: Supplier<Boolean>
+) {
     val mode = Setting("Glow Mode", module, GlowModes.Default).setVisible {visible.get()}
     val offset = Setting("Glow Offset", module, 6.0, 1.0, 20.0, true).setVisible {mode.valEnum.equals(GlowModes.Default) && visible.get()}
     val radius = Setting("Glow Radius", module, 15.0, 0.0, 20.0, true).setVisible {mode.valEnum.equals(GlowModes.Shader) && visible.get()}
     val boxSize = Setting("Glow Box Size", module, 0.0, 0.0, 20.0, true).setVisible {mode.valEnum.equals(GlowModes.Shader) && visible.get()}
 
     fun init() {
-        Kisman.instance.settingsManager.rSetting(mode)
-        Kisman.instance.settingsManager.rSetting(offset)
-        Kisman.instance.settingsManager.rSetting(radius)
-        Kisman.instance.settingsManager.rSetting(boxSize)
+        module.register(mode)
+        module.register(offset)
+        module.register(radius)
+        module.register(boxSize)
     }
 
     fun draw(ticks: Float, color: Colour, x: Int, y: Int, width: Int, height: Int) {
@@ -31,7 +34,7 @@ class GlowRendererPattern(val module: Module, val visible: Supplier<Boolean>) {
                     (y - offset).toDouble(),
                     (x + width).toDouble(),
                     (y + height + offset).toDouble(),
-                color.rgb
+                    color.rgb
                 )
             }
             GlowModes.Shader ->

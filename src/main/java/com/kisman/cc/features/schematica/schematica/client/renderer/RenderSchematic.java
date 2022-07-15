@@ -573,18 +573,7 @@ public class RenderSchematic extends RenderGlobal {
 
         this.profiler.endStartSection("culling");
         final BlockPos posEye = new BlockPos(posX, posY + viewEntity.getEyeHeight(), posZ);
-        RenderChunk renderChunkCurrent;
-
-
-        try {
-            Method method = Class.forName("ViewFrustumOverlay")
-                    .getMethod("getRenderChunk", BlockPos.class);
-            method.setAccessible(true);
-            renderChunkCurrent = (RenderChunk) method.invoke(viewFrustum, posEye);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            e.printStackTrace();
-            renderChunkCurrent = null;
-        }
+        final RenderChunk renderChunkCurrent = viewFrustum.getRenderChunk(posEye);
 
         final RenderOverlay renderOverlayCurrent = this.viewFrustum.getRenderOverlay(posEye);
 
@@ -609,16 +598,7 @@ public class RenderSchematic extends RenderGlobal {
                 for (int chunkX = -this.renderDistanceChunks; chunkX <= this.renderDistanceChunks; chunkX++) {
                     for (int chunkZ = -this.renderDistanceChunks; chunkZ <= this.renderDistanceChunks; chunkZ++) {
                         final BlockPos pos = new BlockPos((chunkX << 4) + 8, chunkY, (chunkZ << 4) + 8);
-                        RenderChunk renderChunk;
-                        try {
-                            Method method = Class.forName("ViewFrustumOverlay")
-                                    .getMethod("getRenderChunk", BlockPos.class);
-                            method.setAccessible(true);
-                            renderChunk = (RenderChunk) method.invoke(viewFrustum, posEye);
-                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                            renderChunk = null;
-                        }
+                        final RenderChunk renderChunk = viewFrustum.getRenderChunk(posEye);
 
                         final RenderOverlay renderOverlay = this.viewFrustum.getRenderOverlay(pos);
 
@@ -734,15 +714,7 @@ public class RenderSchematic extends RenderGlobal {
             return null;
         }
 
-        try {
-            Method method = Class.forName("ViewFrustumOverlay")
-                    .getMethod("getRenderChunk", BlockPos.class);
-            method.setAccessible(true);
-            return (RenderChunk) method.invoke(viewFrustum, posEye);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return viewFrustum.getRenderChunk(posEye);
     }
 
     private RenderOverlay getNeighborRenderOverlay(final BlockPos posEye, final RenderChunk renderChunkBase, final EnumFacing side) {

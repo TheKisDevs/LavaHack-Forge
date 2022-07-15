@@ -262,7 +262,7 @@ public class Colour {
     }
 
     public void glColor() {
-        GlStateManager.color(r1, g1, b1, a1);
+        GlStateManager.color(r1, g1, b1, getA());
     }
 
     public Colour withAlpha(int alpha) {

@@ -92,15 +92,13 @@ public class ModuleManager {
 		modules.add(new DiscordRPCModule());
 		modules.add(new GuiModule());
 		modules.add(new NotEnoughCoinsModule());
-//		modules.add(new ExampleModule());
-//		modules.add(new Test());
-		modules.add(new VegaGui());
 		//render
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
 		modules.add(new CameraClip());
 		modules.add(new Charms());
+		modules.add(CharmsRewrite.INSTANCE);
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
 		modules.add(new CrystalModifier());

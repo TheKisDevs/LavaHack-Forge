@@ -7,10 +7,10 @@ package me.yailya.sockets.interfaces
 import me.yailya.sockets.Constants
 import me.yailya.sockets.data.SocketMessage
 import java.net.Socket
-import java.net.SocketException
+import java.nio.ByteBuffer
 
 @Suppress("unused")
-interface ISocketWR {
+interface ISocketRW {
     val socket: Socket
 
     val connected
@@ -59,12 +59,17 @@ interface ISocketWR {
     /**
      * Sends bytes to the socket
      */
-    fun writeBytes(bytes: ByteArray) {
+    fun writeBytes(byteArray: ByteArray) {
         try {
             if (connected) {
-                socket.getOutputStream().write(bytes)
+                socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(byteArray.size).array())
+                socket.getOutputStream().flush()
+                socket.getOutputStream().write(byteArray)
+                socket.getOutputStream().flush()
             }
-        } catch (ex: SocketException) {
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+
             close()
         }
     }
@@ -73,12 +78,9 @@ interface ISocketWR {
      * Reads message from the socket
      */
     fun readMessage(): SocketMessage? {
-        try {
-            return SocketMessage(readBytes() ?: return null)
-        } catch (ex: Exception) {
-            return null
-        }
+        return SocketMessage(readBytes() ?: return null)
     }
+
 
     /**
      * Reads bytes from the socket
@@ -86,13 +88,39 @@ interface ISocketWR {
     fun readBytes(): ByteArray? {
         try {
             if (connected) {
-                val buffer = ByteArray(Constants.BUFFER_SIZE)
-                val bufferLength = socket.getInputStream().read(buffer)
+                val sizeBuffer = ByteArray(4)
 
-                return buffer.copyOf(bufferLength)
+                if (socket.getInputStream().read(sizeBuffer) != 4) {
+                    return null
+                }
+
+                var totalBufferSize = ByteBuffer.wrap(sizeBuffer).int
+
+                if (totalBufferSize > Constants.MAX_PACKET_SIZE) {
+                    val buffers = mutableListOf<ByteArray>()
+                    var buffer = ByteArray(totalBufferSize)
+                    var bufferSize: Int
+
+                    while (socket.getInputStream().read(buffer).also { bufferSize = it } != -1) {
+                        totalBufferSize -= bufferSize
+                        buffers.add(buffer.copyOf(bufferSize))
+                        buffer = ByteArray(bufferSize)
+
+                        if (totalBufferSize == 0) {
+                            break
+                        }
+                    }
+
+                    return buffers.flatMap { it.asIterable() }.toByteArray()
+                } else {
+                    val buffer = ByteArray(totalBufferSize)
+                    socket.getInputStream().read(buffer)
+
+                    return buffer
+                }
             }
-        } catch (ex: SocketException) {
-            close()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
 
         return null
@@ -104,27 +132,27 @@ interface ISocketWR {
 
         path.split(".").forEach { pathPart ->
             when {
-                currentClazz().fields.any { it.name == pathPart } -> {
-                    currentInstance = currentClazz()
-                        .getField(pathPart)
-                        .apply { isAccessible = true }
-                        .get(currentInstance)
-                }
                 currentClazz().declaredFields.any { it.name == pathPart } -> {
                     currentInstance = currentClazz()
                         .getDeclaredField(pathPart)
                         .apply { isAccessible = true }
                         .get(currentInstance)
                 }
-                currentClazz().methods.any { it.name == pathPart } -> {
-                    currentInstance = currentClazz()
-                        .getMethod(pathPart)
-                        .apply { isAccessible = true }
-                        .invoke(currentInstance)
-                }
                 currentClazz().declaredMethods.any { it.name == pathPart } -> {
                     currentInstance = currentClazz()
                         .getDeclaredMethod(pathPart)
+                        .apply { isAccessible = true }
+                        .invoke(currentInstance)
+                }
+                currentClazz().fields.any { it.name == pathPart } -> {
+                    currentInstance = currentClazz()
+                        .getField(pathPart)
+                        .apply { isAccessible = true }
+                        .get(currentInstance)
+                }
+                currentClazz().methods.any { it.name == pathPart } -> {
+                    currentInstance = currentClazz()
+                        .getMethod(pathPart)
                         .apply { isAccessible = true }
                         .invoke(currentInstance)
                 }

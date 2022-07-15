@@ -2,6 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
+import com.kisman.cc.features.module.render.CharmsRewrite;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
@@ -48,8 +49,7 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
     }
 
     /**
-     * @author kshk
-     * @reason charms
+     * @author _kisman_
      */
     @Overwrite
     protected void renderModel(T p_renderModel_1_, float p_renderModel_2_, float p_renderModel_3_, float p_renderModel_4_, float p_renderModel_5_, float p_renderModel_6_, float p_renderModel_7_) {
@@ -58,42 +58,24 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
 
         if (flag || flag1) {
             if (!this.bindEntityTexture(p_renderModel_1_)) return;
-            if (flag1) GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
-            if(Charms.instance.isToggled() && p_renderModel_1_ instanceof EntityPlayer) {
-                glPushMatrix();
+            if(CharmsRewrite.INSTANCE.isToggled()) {
+                CharmsRewrite.INSTANCE.getPattern().doRender(
+                        p_renderModel_1_,
+                        mainModel,
+                        p_renderModel_2_,
+                        p_renderModel_3_,
+                        p_renderModel_4_,
+                        p_renderModel_5_,
+                        p_renderModel_6_,
+                        p_renderModel_7_
+                );
+            } else {
+                if (flag1) GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
 
-                if(Charms.instance.wallHack.getValBoolean()) {
-                    glEnable(GL_POLYGON_OFFSET_LINE);
-                    glPolygonOffset(1.0f, 1000000);
-                }
+                mainModel.render(p_renderModel_1_, p_renderModel_2_, p_renderModel_3_, p_renderModel_4_, p_renderModel_5_, p_renderModel_6_, p_renderModel_7_);
 
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_LIGHTING);
-
-                if(Charms.instance.customColor.getValBoolean()) {
-                    final Setting color = Charms.instance.color;
-                    if(Charms.instance.targetRender.getValBoolean()) {
-                        if(AutoRer.currentTarget == p_renderModel_1_ || KillAuraRewrite.Companion.getTarget() == p_renderModel_1_ || AutoCrystal.instance.target == p_renderModel_1_) glColor4f(0.6f, 0, 1, color.getColour().a1);
-                        else color.getColour().glColor();
-                    } else if(FriendManager.instance.isFriend((EntityPlayer) p_renderModel_1_) && Charms.instance.friends.getValBoolean()) ColorUtils.glColor(ColorUtils.injectAlpha(Color.CYAN, color.getColour().getAlpha()));
-                    else color.getColour().glColor();
-                }
-
-                glDisable(GL_DEPTH_TEST);
-                this.mainModel.render(p_renderModel_1_, p_renderModel_2_, p_renderModel_3_, p_renderModel_4_, p_renderModel_5_, p_renderModel_6_, p_renderModel_7_);
-                glEnable(GL_DEPTH_TEST);
-                this.mainModel.render(p_renderModel_1_, p_renderModel_2_, p_renderModel_3_, p_renderModel_4_, p_renderModel_5_, p_renderModel_6_, p_renderModel_7_);
-
-                if(Charms.instance.customColor.getValBoolean()) ColorUtils.glColor(Color.WHITE);
-
-                glEnable(GL_TEXTURE_2D);
-                glEnable(GL_LIGHTING);
-                glDisable(GL_POLYGON_OFFSET_LINE);
-                glPopMatrix();
-
-            } else this.mainModel.render(p_renderModel_1_, p_renderModel_2_, p_renderModel_3_, p_renderModel_4_, p_renderModel_5_, p_renderModel_6_, p_renderModel_7_);
-
-            if (flag1) GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+                if (flag1) GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
+            }
         }
     }
 

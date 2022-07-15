@@ -1,14 +1,16 @@
+@file:Suppress("NON_EXHAUSTIVE_WHEN")
+
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.loader.antidump.CookieFuckery
+import com.kisman.cc.sockets.client.SocketClient
+import com.kisman.cc.sockets.data.SocketFile
+import com.kisman.cc.sockets.data.SocketMessage.Type.*
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
-import java.net.URLClassLoader
-import java.nio.file.Files
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -21,7 +23,8 @@ import kotlin.random.Random
  * @since 12:33 of 04.07.2022
  */
 
-private const val clientUrl = "C:/Users/Admin/AppData/Roaming/.minecraft/mods/crystal pvp/kisman.cc-b0.1.6.5-plus-release.jar"
+private const val address = "127.0.0.1"
+private const val port = 1234
 
 fun load() {
     if(Utility.runningFromIntelliJ()) {
@@ -36,7 +39,7 @@ fun load() {
     CookieFuckery.setPackageNameFilter()
     CookieFuckery.dissasembleStructs()
 
-    println("Falcon is downloading classes...")
+    println("LavaFalcon is downloading classes...")
 
     @Suppress("UNCHECKED_CAST")
     val resourceCache = LaunchClassLoader::class.java.getDeclaredField("resourceCache").let {
@@ -44,13 +47,45 @@ fun load() {
         it[Launch.classLoader] as MutableMap<String, ByteArray>
     }
 
-    val stream = File(clientUrl).toURL().openConnection().also {
-        it.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)")
-    }.getInputStream()
+    val client = SocketClient(address, port)
+
+    var lastAnswer = ""
+    var lastFile : SocketFile? = null
+
+    client.onMessageReceived = {
+        when(it.type) {
+            Text -> {
+                lastAnswer = it.text!!
+            }
+            File -> {
+                lastFile = it.file!!
+            }
+        }
+    }
+
+    client.connect()
+    client.writeMessage { text = "LavaHack-Client" }
+    client.writeMessage { text = "getpublicjar" }
+
+    var waitingForFile = false
+
+    while(true) {
+        if(lastAnswer == "2") {
+            waitingForFile = true
+        }
+
+        if(waitingForFile) {
+            if(lastFile != null) {
+                if(lastFile?.name == "publicJar.jar" && lastFile?.description == "LavaHack") {
+                    break
+                }
+            }
+        }
+    }
 
     val resources = HashMap<String, ByteArray>()
 
-    ZipInputStream(stream).use { zipStream ->
+    ZipInputStream(lastFile?.byteArray?.inputStream()!!).use { zipStream ->
         var zipEntry: ZipEntry?
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
@@ -59,7 +94,7 @@ fun load() {
                 name = name.replace('/', '.')
 
                 resourceCache[name] = zipStream.readBytes()
-            } else {
+            } else if(Utility.allowedFileSuffixes.contains(name.split(".")[name.split(".").size - 1])) {
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
             }
         }

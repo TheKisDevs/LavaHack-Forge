@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
-@SuppressWarnings("ForLoopReplaceableByForEach")
+@SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions"})
 public class AutoRer extends Module {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
@@ -294,8 +294,10 @@ public class AutoRer extends Module {
             lastThreadMode = threadMode.getValString();
         }
 
-        if(currentTarget == null) return;
-        else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + "]");
+        if(currentTarget == null) {
+            placePos = null;
+            return;
+        } else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + "]");
 
         calc: {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
@@ -511,7 +513,7 @@ public class AutoRer extends Module {
             }
         }
 
-        if(render.getValBoolean()) if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
+        if(render.getValBoolean() && placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
     }
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
@@ -736,12 +738,8 @@ public class AutoRer extends Module {
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         if(placePos != null && mc.player.connection != null) {
             if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
-            if(packetPlace.getValBoolean()) {
-
-                mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, getPlaceHand(offhand), 0, 0, 0));
-            } else {
-                mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));
-            }
+            if(packetPlace.getValBoolean() && mc.player.connection != null) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, getPlaceHand(offhand), 0, 0, 0));
+            else mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));
             if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         }
         placeTimer.reset();
@@ -882,7 +880,7 @@ public class AutoRer extends Module {
         if(syns.getValBoolean()) {
             BlockPos toRemove = null;
 
-            for(int i = 0; i < placedList.size(); i++) if(crystal.get().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
+            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && crystal.get().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
 
             if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }

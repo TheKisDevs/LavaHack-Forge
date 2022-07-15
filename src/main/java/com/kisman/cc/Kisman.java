@@ -8,7 +8,6 @@ import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.event.*;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
-import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
@@ -26,7 +25,6 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
-import com.kisman.cc.gui.vega.Gui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
@@ -40,7 +38,6 @@ import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.SidedProxy;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -101,7 +98,6 @@ public class Kisman {
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
     public ConsoleGui consoleGui;
-    public Gui gui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
     public MainGui.SelectionBar selectionBar;
@@ -132,8 +128,7 @@ public class Kisman {
     public ConfigManager configManager;
 
     //Phobos Plugins
-    public PluginHandler pluginHandler;
-
+    public final PluginHandler pluginHandler = new PluginHandler();
 
     private Kisman() {}
 
@@ -146,7 +141,6 @@ public class Kisman {
     }
 
     public void coreModInit() {
-        pluginHandler = new PluginHandler();
         pluginHandler.coreModInit();
     }
 
@@ -187,17 +181,14 @@ public class Kisman {
         ShaderShell.init();
 
         //catlua
-        catlua: {
-            eventProcessorLua = new EventProcessorLua();
-            remapper3000 = new Remapper3000();
-            remapper3000.init();
-            luaRotation = new LuaRotation();
-            scriptManager = new ScriptManager();
-        }
+        eventProcessorLua = new EventProcessorLua();
+        remapper3000 = new Remapper3000();
+        remapper3000.init();
+        luaRotation = new LuaRotation();
+        scriptManager = new ScriptManager();
 
         //gui's
         clickGuiNew = new ClickGuiNew();
-        gui = new Gui();
         halqGui = new HalqGui();
         halqHudGui = new HalqHudGui();
 

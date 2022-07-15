@@ -2,9 +2,9 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.utils
+package com.kisman.cc.sockets.utils
 
-import me.yailya.sockets.server.SocketServerConnection
+import com.kisman.cc.sockets.server.SocketServerConnection
 
 @Suppress("unused")
 object StackTraceUtils {

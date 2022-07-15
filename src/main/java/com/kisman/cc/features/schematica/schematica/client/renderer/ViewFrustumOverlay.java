@@ -4,11 +4,13 @@ import com.kisman.cc.features.schematica.schematica.client.renderer.chunk.overla
 import com.kisman.cc.features.schematica.schematica.client.renderer.chunk.overlay.RenderOverlay;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.ViewFrustum;
+import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
 @SideOnly(Side.CLIENT)
 public class ViewFrustumOverlay extends ViewFrustum {
@@ -32,6 +34,12 @@ public class ViewFrustumOverlay extends ViewFrustum {
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    protected RenderChunk getRenderChunk(BlockPos pos) {
+        return super.getRenderChunk(pos);
     }
 
     @Override

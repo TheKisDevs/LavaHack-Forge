@@ -3,12 +3,30 @@ package com.kisman.cc.loader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author _kisman_
  * @since 12:51 of 04.07.2022
  */
 public class Utility {
+    public static List<String> allowedFileSuffixes = Arrays.asList(
+            ".png",//images
+            ".glsl",//shaders
+            ".shader",//shaders
+            ".frag",//shaders
+            ".vert",//shaders
+            ".jpg",//images
+            ".ttf",//fonts
+            ".json",//lang files, shaders
+            ".csv",//plugin mappings
+            ".ScriptEngineFactory",//META_INF service
+            ".fsh",//shaders
+            ".vsh"//shaders
+
+    );
+
     public static boolean runningFromIntelliJ() {
         return System.getProperty("java.class.path").contains("idea_rt.jar");
     }

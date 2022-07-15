@@ -2,9 +2,9 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.data
+package com.kisman.cc.sockets.data
 
-import me.yailya.sockets.utils.ConvertUtils
+import com.kisman.cc.sockets.utils.ConvertUtils
 import java.io.File
 
 @Suppress("unused")

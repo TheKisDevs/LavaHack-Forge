@@ -54,10 +54,10 @@ class AutoRerRenderer {
         update(placeInfo)
 
         prevPos?.let { prevPos ->
-            currentPos?.let { currentPos ->
+            (currentPos ?: prevPos).let { currentPos ->
                 val multiplier = Easing.OUT_QUART.inc(Easing.toDelta(lastUpdateTime, movingLength))
                 val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier.toDouble()))
-                scale = if (placeInfo != null) {
+                scale = if (this.currentPos != null) {
                     Easing.OUT_CUBIC.inc(Easing.toDelta(startTime, fadeLength))
                 } else {
                     Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
@@ -67,9 +67,7 @@ class AutoRerRenderer {
 
                 lastRenderPos = renderPos
 
-
-                //Text
-                if(text && placeInfo != null) {
+                if(text) {
                     val text_ = buildString {
                         append("%.1f".format(lastTargetDamage))
                         if (this.isNotEmpty()) append('/')
@@ -77,9 +75,9 @@ class AutoRerRenderer {
                     }
 
                     TextOnBlockObject(
-                            text_,
-                            placeInfo.blockPos,
-                            (if (scale == 1.0f) Colour(255, 255, 255) else Colour(255, 255, 255, (255.0f * scale).toInt()))
+                        text_,
+                        BlockPos(currentPos),
+                        Colour(255, 255, 255, (255.0f * scale).toInt())
                     )
                 }
             }
@@ -94,19 +92,22 @@ class AutoRerRenderer {
         )
     }
 
-    fun update(placeInfo: PlaceInfo?) {
-        val newBlockPos = placeInfo?.blockPos
+    fun update(placeInfo: PlaceInfo) {
+        val newBlockPos = placeInfo.blockPos
         if (newBlockPos != lastBlockPos) {
-            currentPos = AutoRerUtil.toVec3dCenter(placeInfo?.blockPos!!)
+            currentPos = if(newBlockPos != null) AutoRerUtil.toVec3dCenter(newBlockPos) else null
             prevPos = lastRenderPos ?: currentPos
             lastUpdateTime = System.currentTimeMillis()
             if (lastBlockPos == null) startTime = System.currentTimeMillis()
 
             lastBlockPos = newBlockPos
         }
-        if(placeInfo != null) {
+        if(!placeInfo.selfDamage.isNaN() && !placeInfo.targetDamage.isNaN()) {
             lastSelfDamage = placeInfo.selfDamage
             lastTargetDamage = placeInfo.targetDamage
+        } else {
+            lastSelfDamage = 0f
+            lastTargetDamage = 0f
         }
     }
 }

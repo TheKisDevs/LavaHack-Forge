@@ -10,10 +10,12 @@ import org.spongepowered.asm.mixin.Mixins
  * @since 13:49 of 08.06.2022
  */
 class PluginHandler {
-    fun coreModInit() {
+    init {
         Environment.loadEnvironment()
         PluginManager.getInstance().createPluginConfigs(PluginManager::class.java.classLoader)
+    }
 
+    fun coreModInit() {
         for(config in PluginManager.getInstance().configs.values) {
             Mixins.addConfigurations(config.mixinConfig)
         }

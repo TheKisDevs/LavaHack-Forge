@@ -1,8 +1,7 @@
 package com.kisman.cc.settings.util
 
-import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.settings.EntitySetting
+import com.kisman.cc.settings.EntityESPSetting
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
@@ -20,7 +19,7 @@ class EntityESPRendererPattern(
         val module : Module
 ) {
     val groups = ArrayList<SettingGroup>()
-    val settings = ArrayList<EntitySetting>()
+    val settings = ArrayList<EntityESPSetting>()
 
     private val threads = MultiThreaddableModulePattern(module)
 
@@ -44,16 +43,16 @@ class EntityESPRendererPattern(
         }
     }
 
-    private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup) : ArrayList<EntitySetting> {
+    private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup) : ArrayList<EntityESPSetting> {
         val mode = Setting("${typeE.name} Mode", module, EntityESPModes.None)
         val pattern = RenderingRewritePattern(module, Supplier{ mode.valEnum == EntityESPModes.Cubic }, "${typeE.name} Cubic")
         return ArrayList(listOf(
-                EntitySetting(group.add(mode), typeE, SettingTypes.Mode),
-                EntitySetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),
-                EntitySetting(group.add(pattern.mode), typeE, SettingTypes.CubicMode),
-                EntitySetting(group.add(pattern.lineWidth), typeE, SettingTypes.CubicLineWidth),
-                EntitySetting(group.add(pattern.color1), typeE, SettingTypes.CubicColor1),
-                EntitySetting(group.add(pattern.color2), typeE, SettingTypes.CubicColor2)
+                EntityESPSetting(group.add(mode), typeE, SettingTypes.Mode),
+                EntityESPSetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),
+                EntityESPSetting(group.add(pattern.mode), typeE, SettingTypes.CubicMode),
+                EntityESPSetting(group.add(pattern.lineWidth), typeE, SettingTypes.CubicLineWidth),
+                EntityESPSetting(group.add(pattern.color1), typeE, SettingTypes.CubicColor1),
+                EntityESPSetting(group.add(pattern.color2), typeE, SettingTypes.CubicColor2)
         ))
     }
 

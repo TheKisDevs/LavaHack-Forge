@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.combat.autorer
+package com.kisman.cc.features.module.combat.holefillerrewrite
 
 import com.kisman.cc.features.module.combat.autorer.math.Vec3f
 import net.minecraft.client.Minecraft
@@ -11,42 +11,35 @@ import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
+/**
+ * @author _kisman_
+ * @since 12:42 of 11.07.2022
+ */
 open class PlaceInfo(
     open var target: EntityLivingBase,
-    open var blockPos: BlockPos?,
-    open var selfDamage: Float,
-    open var targetDamage: Float,
-    open var side: EnumFacing?,
-    open var hitVecOffset: Vec3f?,
-    open var hitVec: Vec3d?
+    open var blockPos: BlockPos
 ) {
     open var mc: Minecraft = Minecraft.getMinecraft()
 
     class Mutable(
         target: EntityLivingBase,
         minDamage: Float
-    ) : PlaceInfo(target, BlockPos.ORIGIN, Float.MAX_VALUE, minDamage, EnumFacing.UP, Vec3f.ZERO, Vec3d.ZERO) {
+    ) : PlaceInfo(target, BlockPos.ORIGIN) {
         inline fun update(
             target: EntityLivingBase,
-            blockPos: BlockPos,
-            selfDamage: Float,
-            targetDamage: Float
+            blockPos: BlockPos
         ) {
             this.target = target
             this.blockPos = blockPos
-            this.selfDamage = selfDamage
-            this.targetDamage = targetDamage
         }
 
         inline fun clear(player: EntityPlayerSP) {
-            update(player, BlockPos.ORIGIN, Float.MAX_VALUE, targetDamage)
+            update(player, BlockPos.ORIGIN)
         }
 
         inline fun takeValid(damage: Float): Mutable? {
             return this.takeIf {
                 target != mc.player
-                        && selfDamage != Float.MAX_VALUE
-                        && targetDamage != damage
             }
         }
     }
@@ -74,6 +67,6 @@ open class PlaceInfo(
             override fun getPrimaryHand(): EnumHandSide {
                 return EnumHandSide.RIGHT
             }
-        }, BlockPos.ORIGIN, Float.NaN, Float.NaN, EnumFacing.UP, Vec3f.ZERO, Vec3d.ZERO)
+        }, BlockPos.ORIGIN)
     }
 }

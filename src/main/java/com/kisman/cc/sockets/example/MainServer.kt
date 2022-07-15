@@ -2,10 +2,10 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.example
+package com.kisman.cc.sockets.example
 
-import me.yailya.sockets.data.SocketMessage
-import me.yailya.sockets.server.SocketServer
+import com.kisman.cc.sockets.data.SocketMessage
+import com.kisman.cc.sockets.server.SocketServer
 
 const val CUSTOM_SOCKET_NAMES = false
 

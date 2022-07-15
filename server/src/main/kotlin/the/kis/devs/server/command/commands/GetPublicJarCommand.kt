@@ -35,7 +35,7 @@ import java.io.File
  * @since 17:33 of 05.07.2022
  */
 object GetPublicJarCommand : Command(
-    "getpubluicjar"
+    "getpublicjar"
 ) {
     init {
         permissions.add(
@@ -64,6 +64,10 @@ object GetPublicJarCommand : Command(
             }
 
             return listOf(SocketMessage("1"))
+        }
+
+        if(args.size == 1) {
+            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "CANT_BE_OPENED")))
         }
 
         return listOf(SocketMessage("0"))

@@ -27,7 +27,7 @@ fun main() {
             if(it.type == SocketMessage.Type.Text) {
                 println("Message from socket: ${it.text}")
 
-                CommandManager.execute(it.text, connection)
+                CommandManager.execute(it.text!!, connection)
             }
         }
     }

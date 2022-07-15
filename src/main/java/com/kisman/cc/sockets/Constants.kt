@@ -2,7 +2,7 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets
+package com.kisman.cc.sockets
 
 object Constants {
     /**

@@ -2,10 +2,10 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.server
+package com.kisman.cc.sockets.server
 
-import me.yailya.sockets.data.SocketMessage
-import me.yailya.sockets.interfaces.ISocketRW
+import com.kisman.cc.sockets.data.SocketMessage
+import com.kisman.cc.sockets.interfaces.ISocketRW
 import java.net.Socket
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread

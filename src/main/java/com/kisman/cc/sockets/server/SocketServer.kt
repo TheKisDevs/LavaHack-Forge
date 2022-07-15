@@ -2,9 +2,9 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 
-package me.yailya.sockets.server
+package com.kisman.cc.sockets.server
 
-import me.yailya.sockets.Constants
+import com.kisman.cc.sockets.Constants
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.util.*

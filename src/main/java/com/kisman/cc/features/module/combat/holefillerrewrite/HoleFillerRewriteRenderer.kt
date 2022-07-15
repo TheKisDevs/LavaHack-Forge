@@ -1,11 +1,8 @@
 package com.kisman.cc.features.module.combat.holefillerrewrite
 
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
-import com.kisman.cc.features.module.combat.autorer.PlaceInfo
 import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.settings.util.RenderingRewritePattern
-import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -36,12 +33,6 @@ class HoleFillerRewriteRenderer {
     @JvmField
     var scale = 0.0f
 
-    @JvmField
-    var lastSelfDamage = 0.0f
-
-    @JvmField
-    var lastTargetDamage = 0.0f
-
     fun reset() {
         lastBlockPos = null
         prevPos = null
@@ -50,11 +41,14 @@ class HoleFillerRewriteRenderer {
         lastUpdateTime = 0L
         startTime = 0L
         scale = 0.0f
-        lastSelfDamage = 0.0f
-        lastTargetDamage = 0.0f
     }
 
-    fun onRenderWorld(movingLength: Float, fadeLength: Float, renderer : RenderingRewritePattern, placeInfo : PlaceInfo, text : Boolean) {
+    fun onRenderWorld(
+        movingLength: Float,
+        fadeLength: Float,
+        renderer : RenderingRewritePattern,
+        placeInfo : PlaceInfo
+    ) {
         update(placeInfo)
 
         prevPos?.let { prevPos ->
@@ -70,22 +64,6 @@ class HoleFillerRewriteRenderer {
                 renderer.draw(toRenderBox(renderPos, scale))
 
                 lastRenderPos = renderPos
-
-
-                //Text
-                if(text && placeInfo != null) {
-                    val text_ = buildString {
-                        append("%.1f".format(lastTargetDamage))
-                        if (this.isNotEmpty()) append('/')
-                        append("%.1f".format(lastSelfDamage))
-                    }
-
-                    TextOnBlockObject(
-                        text_,
-                        placeInfo.blockPos,
-                        (if (scale == 1.0f) Colour(255, 255, 255) else Colour(255, 255, 255, (255.0f * scale).toInt()))
-                    )
-                }
             }
         }
     }
@@ -107,10 +85,6 @@ class HoleFillerRewriteRenderer {
             if (lastBlockPos == null) startTime = System.currentTimeMillis()
 
             lastBlockPos = newBlockPos
-        }
-        if(placeInfo != null) {
-            lastSelfDamage = placeInfo.selfDamage
-            lastTargetDamage = placeInfo.targetDamage
         }
     }
 }

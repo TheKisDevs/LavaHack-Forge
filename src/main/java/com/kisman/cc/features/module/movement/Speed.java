@@ -308,6 +308,35 @@ public class Speed extends Module {
             speed = Math.max(speed, MovementUtil.getSpeed(slow.getValBoolean(), 0.2873));
             MovementUtil.strafe((float) speed);
             ncpStage++;
+        } else if(speedMode.checkValString("Strafe3")) {
+            if(mc.player.onGround && MovementUtil.isMoving()) {
+                strafe3Stage = 2;
+            }
+
+            if(strafe3Stage == 1 && MovementUtil.isMoving()) {
+                strafe3Stage++;
+//                strafe3MotionSpeed = 1.35 * getBaseMotionSpeed() - 0.01;
+            } else if(strafe3Stage == 2) {
+                strafe3Stage++;
+                if(mc.player.onGround && MovementUtil.isMoving()) {
+                    mc.player.motionY = MovementUtil.getJumpHeight(strict.getValBoolean());
+                    strafe3MotionSpeed *= strafe3Flag ? 1.368 : 1.69;
+                }
+            } else if(stage == 3) {
+                strafe3Stage++;
+//                strafe3MotionSpeed = strafe3Distance * (0.66 * (strafe3Distance - getBaseMotionSpeed()));
+            } else if(stage == 4) {
+                if(collisionCheck() || mc.player.collidedVertically) stage = MovementUtil.isMoving() ? 1 : 0;
+                strafe3MotionSpeed = strafe3Distance - strafe3Distance / 159;
+                strafe3Flag = !strafe3Flag;
+            }
+
+//            strafe3MotionSpeed = Math.max(strafe3MotionSpeed, getBaseMotionSpeed());
+            MovementUtil.strafe((float) strafe3MotionSpeed);
+            if(!MovementUtil.isMoving()) {
+                mc.player.motionX = 0;
+                mc.player.motionY = 0;
+            }
         }
     }
 
