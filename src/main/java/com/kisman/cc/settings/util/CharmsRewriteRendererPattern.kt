@@ -22,8 +22,8 @@ import org.lwjgl.opengl.GL11.*
 class CharmsRewriteRendererPattern(
     val module : Module
 ) {
-    val groups = ArrayList<SettingGroup>()
-    val settings = ArrayList<CharmsRewriteSetting>()
+    private val groups = ArrayList<SettingGroup>()
+    private val settings = ArrayList<CharmsRewriteSetting>()
 
     init {
         for(type in CharmsRewriteEntityTypes.values()) {
@@ -126,9 +126,7 @@ class CharmsRewriteRendererPattern(
         headPitch : Float,
         scale : Float
     ) {
-        if(CharmsRewriteEntityTypes.get(entity) == null) return
-
-        if(getSettingByType(CharmsRewriteTypes.Mode, entity)?.valEnum == CharmsRewriteModes.None) {
+        if(CharmsRewriteEntityTypes.get(entity) == null || getSettingByType(CharmsRewriteTypes.Mode, entity)?.valEnum == CharmsRewriteModes.None) {
             model.render(
                 entity,
                 limbSwing,
