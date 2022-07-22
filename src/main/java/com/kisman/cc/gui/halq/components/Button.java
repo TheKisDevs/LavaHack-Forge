@@ -24,7 +24,6 @@ import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -72,13 +71,7 @@ public class Button implements Component {
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
                 for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
-                    if(mod.getName().equalsIgnoreCase("charmsrewrite")) {
-                        System.out.println("Setting in gui " + set.getName() + "{" + set.getTitle() + "}");
-                    }
                     if (set == null || set.parent_ != null) continue;
-                    if(mod.getName().equalsIgnoreCase("charmsrewrite")) {
-                        System.out.println("Setting in gui ^ (post)");
-                    }
                     if (set.isGroup() && set instanceof SettingGroup) {
                         comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
@@ -148,17 +141,8 @@ public class Button implements Component {
 
          if(open && !comps.isEmpty()) {
              for(Component comp : comps) {
-                 boolean flag = false;
-                 if(comp instanceof GroupButton) {
-                     flag = true;
-                     GroupButton group = (GroupButton) comp;
-                     System.out.println("Render Group " + group.getSetting().getName() + "{" + group.getSetting().getTitle() + "}");
-                 }
                  if(!comp.visible()) continue;
                  comp.drawScreen(mouseX, mouseY);
-                 if(flag) {
-                     System.out.println("Render Group ^ (post)");
-                 }
              }
              if(HalqGui.test) {
                  int height = doIterationUpdateComponent(comps, 0);
