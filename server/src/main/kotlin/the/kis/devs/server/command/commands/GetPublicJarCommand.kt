@@ -58,7 +58,7 @@ object GetPublicJarCommand : Command(
                     val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar\\publicJar.jar"))
 
                     if(getFileAnswer[0].text == "2") {
-                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "CANT_BE_OPENED")))
+                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "LavaHack")))
                     }
                 }
             }
@@ -67,7 +67,7 @@ object GetPublicJarCommand : Command(
         }
 
         if(args.size == 1) {
-            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "CANT_BE_OPENED")))
+            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "LavaHack")))
         }
 
         return listOf(SocketMessage("0"))

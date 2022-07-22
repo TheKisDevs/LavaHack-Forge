@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.4-SNAPSHOT",
+  "compatibilityLevel": "JAVA_8",
+  "package": "com.kisman.cc.loader.mixins",
+  "refmap": "mixins.loader.refmap.json",
+  "mixins": []
+}

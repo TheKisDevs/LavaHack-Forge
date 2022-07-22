@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.halq.util.TextUtil;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -27,12 +28,14 @@ public class Slider implements Component {
     private boolean hasDot = false;
     private boolean bool = false;
 
-    public Slider(Setting setting, int x, int y, int offset,  int count) {
+    public Slider(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
         this.offset = offset;
         this.count = count;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class Slider implements Component {
             else setting.setValDouble(roundToPlace(((diff / width) * (max - min) + min), 2));
         }
 
-        String toRender = bool ? customValue + "_" : setting.getName() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble());
+        String toRender = bool ? customValue + "_" : setting.getTitle() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble());
 
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 

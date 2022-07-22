@@ -26,13 +26,11 @@ public class AutoFirework extends Module {
     
     private Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
 
-    private Setting delayLine = new Setting("DLine", this, "Delays");
 
     private Setting delay = new Setting("Delay", this, 1, 0, 20, true);
     private Setting trapDelay = new Setting("PlaceDelay", this, 1000, 1, 10000, true);
 
 
-    private Setting placeLine = new Setting("PlaceLine", this, "Place");
 
     private Setting placeMode = new Setting("PlaceMode", this, "Normal", new ArrayList<>(Arrays.asList("Normal", "Packet")));
     private Setting rotate = new Setting("Rotate", this, true);
@@ -44,14 +42,12 @@ public class AutoFirework extends Module {
     private Setting raytrace = new Setting("RayTrace", this, false);
 
 
-    private Setting switchLine = new Setting("SwitchLine", this, "Switch");
 
     private Setting switchMode = new Setting("SwitchMode", this, InventoryUtil.Switch.NORMAL);
     private Setting switchObbyReturn = new Setting("SwitchReturnObby", this, true);
     private Setting switchFireReturn = new Setting("SwitchReturnFirework", this, true);
 
 
-    private Setting pauseLine = new Setting("PauseLine", this, "Pause");
 
     private Setting minHealthPause = new Setting("MinHealthPause", this, false);
     private Setting requiredHealth = new Setting("RequiredHealth", this, 11, 0, 36, true);
@@ -59,7 +55,6 @@ public class AutoFirework extends Module {
     private Setting pauseIfHittingBlock = new Setting("PauseIfHittingBlock", this, false);
 
 
-    private Setting handLine = new Setting("HandLine", this, "Hand");
     private Setting fireHand = new Setting("FireworkHand", this, "Default", new ArrayList<>(Arrays.asList("Default", "MainHand", "OffHand")));
 
     private TimerUtils trapTimer = new TimerUtils();
@@ -83,11 +78,9 @@ public class AutoFirework extends Module {
 
         setmgr.rSetting(targetRange);
 
-        setmgr.rSetting(delayLine);
         setmgr.rSetting(delay);
         setmgr.rSetting(trapDelay);
 
-        setmgr.rSetting(placeLine);
         setmgr.rSetting(placeMode);
         setmgr.rSetting(rotate);
         setmgr.rSetting(blocksPerTick);
@@ -97,18 +90,15 @@ public class AutoFirework extends Module {
         setmgr.rSetting(range);
         setmgr.rSetting(raytrace);
 
-        setmgr.rSetting(switchLine);
         setmgr.rSetting(switchMode);
         setmgr.rSetting(switchObbyReturn);
         setmgr.rSetting(switchFireReturn);
 
-        setmgr.rSetting(pauseLine);
         setmgr.rSetting(minHealthPause);
         setmgr.rSetting(requiredHealth);
         setmgr.rSetting(pauseWhileEating);
         setmgr.rSetting(pauseIfHittingBlock);
 
-        setmgr.rSetting(handLine);
         setmgr.rSetting(fireHand);
     }
 

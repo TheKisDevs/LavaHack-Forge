@@ -158,7 +158,7 @@ jar {
                 'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',//com.kisman.cc.mixin.KismanMixinLoader
+                'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',
                 'ForceLoadAsMod': 'true',
                 'FMLAT': 'kisman_at.cfg'
         )
@@ -202,23 +202,9 @@ shadowJar {
 
 task privateJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
-        /*include 'com/kisman/cc/**'
-        include 'me/zero/alpine/**'
-        include 'org/cubic/**'
-        include 'org/luaj/**'
-        include 'the/kis/devs/api/**'
-        include 'mixins.Kisman.json'
-        include 'mixins.kisman.refmap.json'
-        include 'mappings/**'
-        include 'darwin/**'
-        include 'linux-x86-64/**'
-        include 'win32-x86/**'
-        include 'win32-x86-64/**'
-        include 'pack.mcmeta'
-        include 'META-INF/services/**'
-        include 'kisman_at.cfg'
-        */
         exclude "com/kisman/cc/loader/**"
+        exclude 'mixins.loader.json'
+        exclude 'mixins.loader.refmap.json'
     }
     baseName = ''
     version = ''
@@ -229,8 +215,7 @@ task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
         include 'com/kisman/cc/**'
         exclude 'me/zero/alpine/**'
-        include 'org/cubic/**'
-        exclude 'org/luaj/**'
+        exclude 'org/**'
         include 'the/kis/devs/api/**'
         include 'mixins.Kisman.json'
         include 'mixins.kisman.refmap.json'
@@ -245,6 +230,9 @@ task publicJar(type : Jar, dependsOn : jar) {
         exclude 'win32-x86/**'
         exclude 'win32-x86-64/**'
         exclude 'pack.mcmeta'
+        exclude 'mcmod.info'
+        exclude 'mixins.loader.json'
+        exclude 'mixins.loader.refmap.json'
 
         exclude 'META-INF/services/**'
         exclude 'kisman_at.cfg'
@@ -272,23 +260,19 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'com/kisman/cc/KismanStatic.class/**'
         exclude 'com/kisman/cc/RPC.class/**'
         include 'me/zero/alpine/**'
-        exclude 'org/cubic/**'
-        include 'org/luaj/**'
+        include 'org/**'
         exclude 'the/kis/devs/api/**'
         exclude 'mixins.Kisman.json'
         exclude 'mixins.kisman.refmap.json'
         exclude 'mappings/**'
-        /*exclude 'darwin/**'
-        exclude 'linux-x86-64/**'
-        exclude 'win32-x86/**'
-        exclude 'win32-x86-64/**'*/
 
+        include 'mcmod.info'
         include 'pack.mcmeta'
         include 'kisman_at.cfg'
+        include 'mixins.loader.json'
+        include 'mixins.loader.refmap.json'
 
         include "team/**"
-//        include "me/robeart/raion/mixin/MixinLoader.class"
-//        include "me/cookiedragon234/**"
         exclude 'assets/**'
         include "org/spongepowered/**"
         include "kotlin/**"
@@ -305,12 +289,13 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
     }
     manifest {
         attributes(
-                'MixinConfigs': 'mixins.Kisman.json',
-                'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'MixinConfigs': 'mixins.loader.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
                 'FMLCorePlugin': 'com.kisman.cc.loader.LavaFalconCoreMod',
                 'ForceLoadAsMod': 'true',
+                'FMLAT': 'kisman_at.cfg'
         )
     }
     baseName = ''

@@ -69,5 +69,5 @@ class BotnetConnection : Module(
     }
 
     var mode = register(Setting("Mode", this, Modes.Optimized))
-    var input_url = register(Setting("Input URL", this, ""))
+    var input_url = /*register*/(Setting("Input URL", this, ""))
 }

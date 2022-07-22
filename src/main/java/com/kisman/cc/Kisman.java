@@ -38,6 +38,7 @@ import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.apache.logging.log4j.*;
 import org.lwjgl.input.Keyboard;
 
@@ -45,6 +46,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
@@ -75,7 +77,7 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean allowToConfiguredAnotherClients, remapped = true;
+    public static boolean allowToConfiguredAnotherClients, remapped = !runningFromIntelliJ();
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
@@ -131,14 +133,6 @@ public class Kisman {
     public final PluginHandler pluginHandler = new PluginHandler();
 
     private Kisman() {}
-
-    public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
-        try {
-            Minecraft.class.getDeclaredField("player");
-        } catch(Exception e) {
-            remapped = true;
-        }
-    }
 
     public void coreModInit() {
         pluginHandler.coreModInit();
@@ -204,29 +198,52 @@ public class Kisman {
 
         init = true;
     }
-    
+
     @SubscribeEvent
     public void key(KeyInputEvent e) {
-    	if (mc.world == null || mc.player == null) return;
-    	try {
+        if (mc.world == null || mc.player == null) return;
+        try {
             if (Keyboard.isCreated()) {
                 if (Keyboard.getEventKeyState()) {
                     int keyCode = Keyboard.getEventKey();
                     if (keyCode <= 1) return;
-                    for (Module m : moduleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                    for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) {
+                    for (Module m : moduleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
+                    for (HudModule m : hudModuleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
+                    for (Setting s : settingsManager.getSettings()) if(s.getKeyboardKey() == keyCode && s.bindType == BindType.Keyboard && s.isCheck()) {
                         s.setValBoolean(!s.getValBoolean());
                         if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
                     }
-                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
+                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey(), false);
             }
         } catch (Exception ignored) {}
     }
 
-    private void onRelease(int key) {
-        for(Module m : moduleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
-        for(HudModule m : hudModuleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
+    @SubscribeEvent
+    public void mouse(InputEvent e) {
+        if (mc.world == null || mc.player == null) return;
+        try {
+            if (Mouse.isCreated()) {
+                if (Mouse.getEventButtonState()) {
+                    int button = Mouse.getEventButton();
+                    if (button <= 1) return;
+                    for (Module m : moduleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
+                    for (HudModule m : hudModuleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
+                    for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == button && s.getType() == BindType.Mouse && s.isCheck()) {
+                        s.setValBoolean(!s.getValBoolean());
+                        if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                    }
+                } else if(Mouse.getEventButton() > 1) onRelease(Mouse.getEventButton(), true);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void onRelease(int key, boolean mouse) {
+        for(Module m : moduleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
+        for(HudModule m : hudModuleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
+        for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == key && s.getType() == BindType.Mouse && s.isCheck()) {
+            s.setValBoolean(!s.getValBoolean());
+            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+        }
     }
 
     public static String getName() {
@@ -304,5 +321,9 @@ public class Kisman {
         if(flag) {
             mc.displayGuiScreen(instance.halqGui);
         }
+    }
+
+    public static boolean runningFromIntelliJ() {
+        return System.getProperty("java.class.path").contains("idea_rt.jar");
     }
 }

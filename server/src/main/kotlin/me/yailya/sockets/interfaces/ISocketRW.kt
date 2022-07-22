@@ -62,7 +62,7 @@ interface ISocketRW {
     fun writeBytes(byteArray: ByteArray) {
         try {
             if (connected) {
-                socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(byteArray.size).array())
+                socket.getOutputStream().write(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(byteArray.size).array())
                 socket.getOutputStream().flush()
                 socket.getOutputStream().write(byteArray)
                 socket.getOutputStream().flush()
@@ -121,6 +121,8 @@ interface ISocketRW {
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
+
+            close()
         }
 
         return null

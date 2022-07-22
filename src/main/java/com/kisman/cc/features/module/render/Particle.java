@@ -15,7 +15,6 @@ public class Particle extends Module {
 
         Kisman.instance.settingsManager.rSetting(new Setting("RenderMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Multy"))));
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Particle", this, "Particle"));
 
         Kisman.instance.settingsManager.rSetting(new Setting("Heart", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("Crit", this, false));

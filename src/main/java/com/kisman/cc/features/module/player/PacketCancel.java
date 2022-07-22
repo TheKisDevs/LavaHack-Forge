@@ -20,8 +20,6 @@ public class PacketCancel extends Module {
     public PacketCancel() {
         super("PacketCancel", "PacketCancel", Category.PLAYER);
 
-        Kisman.instance.settingsManager.rSetting(new Setting("Packets", this, "Packets"));
-
         Kisman.instance.settingsManager.rSetting(new Setting("CPacketInput", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("CPacketPlayer", this, false));
         Kisman.instance.settingsManager.rSetting(new Setting("CPacketEntityAction", this, false));

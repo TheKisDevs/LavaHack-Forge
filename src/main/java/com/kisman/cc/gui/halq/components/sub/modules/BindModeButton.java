@@ -4,6 +4,7 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -17,7 +18,7 @@ public class BindModeButton implements Component {
     private int width = HalqGui.width;
     private int layer;
 
-    public BindModeButton(Module module, int x, int y, int offset, int count) {
+    public BindModeButton(Module module, int x, int y, int offset, int count, int layer) {
         this.module = module;
         this.x = x;
         this.y = y;
@@ -25,6 +26,8 @@ public class BindModeButton implements Component {
         this.count = count;
         this.values = new String[] {"Toggle", "Hold"};
         this.index = module.hold ? 1 : 0;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override

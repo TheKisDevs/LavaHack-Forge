@@ -17,4 +17,10 @@ open class SettingGroup(
         settings.add(setting)
         return setting
     }
+
+    open fun add(group : SettingGroup) : SettingGroup {
+        group.parent_ = this
+        settings.add(group)
+        return group
+    }
 }

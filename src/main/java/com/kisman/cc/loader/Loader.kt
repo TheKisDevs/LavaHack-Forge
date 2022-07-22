@@ -1,11 +1,10 @@
-@file:Suppress("NON_EXHAUSTIVE_WHEN")
+@file:Suppress("NON_EXHAUSTIVE_WHEN", "UNCHECKED_CAST")
 
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.loader.antidump.CookieFuckery
 import com.kisman.cc.sockets.client.SocketClient
-import com.kisman.cc.sockets.data.SocketFile
 import com.kisman.cc.sockets.data.SocketMessage.Type.*
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
@@ -26,6 +25,7 @@ import kotlin.random.Random
 private const val address = "127.0.0.1"
 private const val port = 1234
 
+private const val validAnswer = "2"
 fun load() {
     if(Utility.runningFromIntelliJ()) {
         Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
@@ -39,26 +39,30 @@ fun load() {
     CookieFuckery.setPackageNameFilter()
     CookieFuckery.dissasembleStructs()
 
-    println("LavaFalcon is downloading classes...")
-
-    @Suppress("UNCHECKED_CAST")
-    val resourceCache = LaunchClassLoader::class.java.getDeclaredField("resourceCache").let {
-        it.isAccessible = true
-        it[Launch.classLoader] as MutableMap<String, ByteArray>
-    }
-
     val client = SocketClient(address, port)
 
-    var lastAnswer = ""
-    var lastFile : SocketFile? = null
+    var haveJar = false
+    var haveValidAnswer = false
+
+    var answer : String? = null
+
+    var bytes : ByteArray? = null
 
     client.onMessageReceived = {
         when(it.type) {
             Text -> {
-                lastAnswer = it.text!!
+                if(answer == null) {
+                    answer = it.text!!
+                    if (it.text!! == validAnswer) {
+                        haveValidAnswer = true;
+                    }
+                }
             }
             File -> {
-                lastFile = it.file!!
+                bytes = it.file?.byteArray
+            }
+            Bytes -> {
+                bytes = it.byteArray
             }
         }
     }
@@ -67,38 +71,50 @@ fun load() {
     client.writeMessage { text = "LavaHack-Client" }
     client.writeMessage { text = "getpublicjar" }
 
-    var waitingForFile = false
+    println("LavaFalcon is downloading classes...")
 
-    while(true) {
-        if(lastAnswer == "2") {
-            waitingForFile = true
-        }
+    while(client.connected) {
+        if(bytes != null) {
+            loadIntoClassLoader(bytes!!)
 
-        if(waitingForFile) {
-            if(lastFile != null) {
-                if(lastFile?.name == "publicJar.jar" && lastFile?.description == "LavaHack") {
-                    break
-                }
-            }
+            break
         }
     }
+}
 
+fun loadIntoClassLoader(bytes : ByteArray) {
+    val tempFile = File.createTempFile("LavaHack", ".jar")
+    tempFile.writeBytes(bytes)
+    tempFile.deleteOnExit()
+    Launch.classLoader.addURL(tempFile.toURI().toURL())
+}
+
+fun loadIntoResourceCache(bytes : ByteArray) {
+    val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
+    resourceCacheField.isAccessible = true
+    val resourceCache = resourceCacheField[Launch.classLoader] as MutableMap<String, ByteArray>
     val resources = HashMap<String, ByteArray>()
 
-    ZipInputStream(lastFile?.byteArray?.inputStream()!!).use { zipStream ->
+    println("LavaFalcon is injecting classes...")
+
+    ZipInputStream(bytes.inputStream()).use { zipStream ->
         var zipEntry: ZipEntry?
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
             if (name.endsWith(".class")) {
+                println("Injecting class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
                 resourceCache[name] = zipStream.readBytes()
-            } else if(Utility.allowedFileSuffixes.contains(name.split(".")[name.split(".").size - 1])) {
+            } else if(Utility.validResource(name)) {
+                println("Found new resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
             }
         }
     }
+
+    println("LavaFalcon is injecting resources...")
 
     if(resources.isNotEmpty()) {
         val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
@@ -119,4 +135,10 @@ fun load() {
 
         Launch.classLoader.addURL(tempFile.toURI().toURL())
     }
+
+    println("LavaFalcon is setting resourceCache!")
+
+    resourceCacheField[Launch.classLoader] = resourceCache
+
+    println("LavaFalcon is done!")
 }

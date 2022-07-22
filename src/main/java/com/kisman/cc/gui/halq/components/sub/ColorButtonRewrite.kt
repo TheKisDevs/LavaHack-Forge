@@ -7,7 +7,7 @@ import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.sub.colorpicker.PickerBase
 import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.sliders.AlphaSlider
 import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.sliders.HueSlider
-import com.kisman.cc.gui.halq.util.LayerMap
+import com.kisman.cc.gui.halq.util.getXOffset
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Render2DUtil
@@ -136,7 +136,7 @@ class ColorButtonRewrite(
                 for(comp in comps) {
                     if(!comp.visible()) continue
                     comp.updateComponent(
-                        x + LayerMap.getLayer(comp.layer).modifier / 2,
+                        x + getXOffset(comp.layer),
                         y
                     )
                 }

@@ -50,6 +50,11 @@ public class HalqGui extends GuiScreen {
         this.lastGui = lastGui;
     }
 
+    public HalqGui setLastGui(GuiScreen gui) {
+        this.lastGui = gui;
+        return this;
+    }
+
     public HalqGui(boolean notFullInit) {
         this.particleSystem = new ParticleSystem();
     }

@@ -97,7 +97,6 @@ public class ModuleManager {
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
 		modules.add(new CameraClip());
-		modules.add(new Charms());
 		modules.add(CharmsRewrite.INSTANCE);
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
@@ -150,7 +149,7 @@ public class ModuleManager {
 		modules.add(new Spider());
 		modules.add(new TargetStrafe());
 		//player
-		modules.add(new AntiDesync());
+		modules.add(AntiDesync.INSTANCE);
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());

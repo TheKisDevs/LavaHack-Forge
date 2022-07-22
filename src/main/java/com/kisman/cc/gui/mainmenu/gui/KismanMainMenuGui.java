@@ -2,7 +2,6 @@ package com.kisman.cc.gui.mainmenu.gui;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.gui.alts.AltManagerGUI;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.features.viaforge.gui.GuiProtocolSelector;
 import com.kisman.cc.util.render.ColorUtils;
@@ -46,7 +45,7 @@ public class KismanMainMenuGui extends GuiScreen {
         super.actionPerformed(button);
         switch(button.id) {
             case 1:
-                mc.displayGuiScreen(new HalqGui(this));
+                mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(this));
                 break;
             case 2:
                 Kisman.openLink("https://discord.gg/GRAbsr6Cf4");

@@ -3,6 +3,7 @@ package com.kisman.cc.gui.halq.util
 import com.kisman.cc.gui.api.Draggable
 import com.kisman.cc.util.Globals
 import net.minecraft.client.gui.ScaledResolution
+import com.kisman.cc.util.math.coerceIn
 
 /**
  * @author _kisman_

@@ -14,22 +14,15 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.play.client.CPacketEntityAction;
 
 public class ElytraFly extends Module {
-    private Setting mode = new Setting("Mode", this, Mode.Control);
+    private final Setting mode = new Setting("Mode", this, Mode.Control);
 
-    private Setting speedLine = new Setting("SpeedLine", this, "Speed");
-    private Setting speed = new Setting("Speed", this, 1.82, 0, 10, false);
-    private Setting upSpeed = new Setting("UpSpeed", this, 2, 0, 10, false);
-    private Setting downSpeed = new Setting("DownSpeed", this, 1.82, 0, 10, false);
-    private Setting glideSpeed = new Setting("GlideSpeed", this, 1, 0, 10, false);
+    private final Setting speed = new Setting("Speed", this, 1.82, 0, 10, false);
+    private final Setting downSpeed = new Setting("DownSpeed", this, 1.82, 0, 10, false);
+    private final Setting glideSpeed = new Setting("GlideSpeed", this, 1, 0, 10, false);
 
-    private Setting cancelLine = new Setting("CancelLine", this, "Cancel");
-    private Setting cancelInWater = new Setting("CancelInWater", this, true);
-    private Setting cancelAtHeight = new Setting("CancelAtHeight", this, 5, 0, 10, true);
-
-    private Setting otherLine = new Setting("OtherLine", this, "Other");
-    private Setting instantFly = new Setting("InstantFly", this, false);
-    private Setting equipElytra = new Setting("EquipElytra", this, true);
-    private Setting pitchSpoof = new Setting("PitchSpoof", this, false);
+    private final Setting instantFly = new Setting("InstantFly", this, false);
+    private final Setting equipElytra = new Setting("EquipElytra", this, true);
+    private final Setting pitchSpoof = new Setting("PitchSpoof", this, false);
 
     private final TimerUtils instantFlyTimer = new TimerUtils();
     public static ElytraFly instance;
@@ -43,17 +36,11 @@ public class ElytraFly extends Module {
 
         setmgr.rSetting(mode);
 
-        setmgr.rSetting(speedLine);
         setmgr.rSetting(speed);
-        setmgr.rSetting(upSpeed);
         setmgr.rSetting(downSpeed);
         setmgr.rSetting(glideSpeed);
 
-        setmgr.rSetting(cancelLine);
-        setmgr.rSetting(cancelInWater);
-        setmgr.rSetting(cancelAtHeight);
 
-        setmgr.rSetting(otherLine);
         setmgr.rSetting(instantFly);
         setmgr.rSetting(equipElytra);
         setmgr.rSetting(pitchSpoof);

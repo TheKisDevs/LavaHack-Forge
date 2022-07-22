@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -28,7 +29,7 @@ public class ColorButton implements Component {
     private int width = HalqGui.width;
     private int layer;
 
-    public ColorButton(Setting setting, int x, int y, int offset, int count) {
+    public ColorButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
@@ -36,6 +37,8 @@ public class ColorButton implements Component {
         this.color = setting.getColour();
         this.pickerWidth = width - HalqGui.height;
         this.count = count;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class ColorButton implements Component {
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, getHeight() - HalqGui.offsets * 2, color.getRGB());
 
-        HalqGui.drawString(setting.getName(), x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
 
         if(open) {
             int offsetY = HalqGui.height + 5;

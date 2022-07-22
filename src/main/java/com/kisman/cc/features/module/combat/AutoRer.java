@@ -984,7 +984,7 @@ public class AutoRer extends Module {
                         autoRer.thread.interrupt();
                     }
                     autoRer.threadOngoing.set(true);
-                    autoRer.doAutoRerForThread();
+                    try {autoRer.doAutoRerForThread();} catch(Exception ignored) {}
                     autoRer.threadOngoing.set(false);
                     try {Thread.sleep(autoRer.threadDelay.getValLong());} catch (InterruptedException e) {autoRer.thread.interrupt();}
                 }

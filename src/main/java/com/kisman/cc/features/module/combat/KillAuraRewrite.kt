@@ -53,7 +53,7 @@ class KillAuraRewrite : Module(
     private val checks = register(SettingGroup(Setting("Checks", this)))
     private val cooldownCheck = register(checks.add(Setting("Cooldown Check", this, true)))
     private val ccOnlyCrits = register(checks.add(Setting("CC Only Crits", this, true).setVisible { cooldownCheck.valBoolean }))
-    private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
+//    private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
 
     companion object {
         var target : Entity? = null
@@ -83,11 +83,7 @@ class KillAuraRewrite : Module(
 
         val weaponSlot = getWeaponSlot()
 
-        if(weaponSlot == -1 && weapon.valEnum != KillAuraWeapons.None) {
-            return
-        }
-
-        if(weapon.valEnum == KillAuraWeapons.None && oldSlot != weaponSlot) {
+        if(oldSlot == -1 || (weaponSlot != oldSlot && weapon.valEnum != KillAuraWeapons.None)) {
             return
         }
 
@@ -103,7 +99,7 @@ class KillAuraRewrite : Module(
         when(swing.valEnum as SwingHands) {
             SwingHands.MainHand -> mc.player.swingArm(EnumHand.MAIN_HAND)
             SwingHands.OffHand -> mc.player.swingArm(EnumHand.OFF_HAND)
-            SwingHands.PacketSwing -> mc.player.connection.sendPacket(CPacketAnimation())
+            SwingHands.PacketSwing -> mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
         }
 
         if(resetCooldown.valBoolean) {

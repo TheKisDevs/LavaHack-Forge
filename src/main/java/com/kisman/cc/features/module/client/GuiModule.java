@@ -29,7 +29,7 @@ public class GuiModule extends Module {
     }
 
     public void onEnable() {
-        mc.displayGuiScreen(Kisman.instance.halqGui);
+        mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(null));
         super.setToggled(false);
         if(Config.instance.guiBlur.getValBoolean()) mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
     }

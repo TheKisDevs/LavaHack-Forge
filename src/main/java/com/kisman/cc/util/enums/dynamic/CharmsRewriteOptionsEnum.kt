@@ -23,7 +23,8 @@ class CharmsRewriteOptionsEnum {
         val beginIfFalse : AbstractTask<Void>,
         val afterIfTrue : AbstractTask<Void>,
         val afterIfFalse : AbstractTask<Void>,
-        val type : CharmsRewriteTypes
+        val typeW : CharmsRewriteTypes,
+        val typeM : CharmsRewriteTypes
     ) {
         Depth(
             task.task {
@@ -42,7 +43,8 @@ class CharmsRewriteOptionsEnum {
                 enableDepth()
                 return@task null
             },
-            CharmsRewriteTypes.Depth
+            CharmsRewriteTypes.WireDepth,
+            CharmsRewriteTypes.ModelDepth
         ),
         Lighting(
             task.task {
@@ -61,7 +63,8 @@ class CharmsRewriteOptionsEnum {
                 enableLighting()
                 return@task null
             },
-            CharmsRewriteTypes.Lighting
+            CharmsRewriteTypes.WireLighting,
+            CharmsRewriteTypes.ModelLighting
         ),
         Culling(
             task.task {
@@ -80,7 +83,8 @@ class CharmsRewriteOptionsEnum {
                 enableCull()
                 return@task null
             },
-            CharmsRewriteTypes.Culling
+            CharmsRewriteTypes.WireCulling,
+            CharmsRewriteTypes.ModelCulling
         ),
         Blend(
             task.task {
@@ -99,7 +103,8 @@ class CharmsRewriteOptionsEnum {
                 enableBlend()
                 return@task null
             },
-            CharmsRewriteTypes.Blend
+            CharmsRewriteTypes.WireBlend,
+            CharmsRewriteTypes.ModelBlend
         ),
         Translucent(
             task.task {
@@ -109,7 +114,8 @@ class CharmsRewriteOptionsEnum {
             voidTask,
             voidTask,
             voidTask,
-            CharmsRewriteTypes.Translucent
+            CharmsRewriteTypes.WireTranslucent,
+            CharmsRewriteTypes.ModelTranslucent
         ),
         Texture2D(
             task.task {
@@ -128,7 +134,8 @@ class CharmsRewriteOptionsEnum {
                 enableTexture2D()
                 return@task null
             },
-            CharmsRewriteTypes.Texture2D
+            CharmsRewriteTypes.WireTexture2D,
+            CharmsRewriteTypes.ModelTexture2D
         )
     }
 }

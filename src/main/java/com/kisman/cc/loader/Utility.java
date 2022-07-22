@@ -27,6 +27,11 @@ public class Utility {
 
     );
 
+    public static boolean validResource(String name) {
+        for(String suffix : allowedFileSuffixes) if(name.endsWith(suffix)) return true;
+        return false;
+    }
+
     public static boolean runningFromIntelliJ() {
         return System.getProperty("java.class.path").contains("idea_rt.jar");
     }

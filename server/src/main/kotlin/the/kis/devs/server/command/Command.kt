@@ -1,5 +1,6 @@
 package the.kis.devs.server.command
 
+import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServerConnection
 import the.kis.devs.server.permission.IPermission
 
@@ -15,6 +16,7 @@ abstract class Command(
     fun runCommand(line : String, args : List<String>, connection : SocketServerConnection) {
         Thread {
             for(message in execute(line, args)) {
+                println("Answer by command $command is ${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}")
                 connection.writeMessage(message)
             }
         }.start()

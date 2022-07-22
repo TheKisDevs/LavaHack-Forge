@@ -1,8 +1,6 @@
 package the.kis.devs.server
 
 import me.yailya.sockets.data.SocketMessage
-import me.yailya.sockets.example.ADDRESS
-import me.yailya.sockets.example.PORT
 import me.yailya.sockets.server.SocketServer
 import the.kis.devs.server.command.CommandManager
 
@@ -16,6 +14,9 @@ const val DEFAULT_PATH = "server\\files\\server"
 const val LAVAHACK_CLIENT_NAME = "LavaHack-Client"
 const val DISCORD_BOT_NAME = "LavaHack-DiscordBot"
 const val OP_NAME = "OP"
+
+const val ADDRESS = "localhost"
+const val PORT = 1234
 
 fun main() {
     val server = SocketServer(ADDRESS, PORT)

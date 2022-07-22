@@ -1,63 +1,64 @@
 package com.kisman.cc.gui.halq.components.sub
 
 import com.kisman.cc.features.module.client.GuiModule
-import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.Openable
-import com.kisman.cc.gui.halq.util.LayerMap
+import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.halq.util.getModifiedWidth
+import com.kisman.cc.gui.halq.util.getXOffset
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.ColorUtils
+import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.objects.screen.AbstractGradient
 import com.kisman.cc.util.render.objects.screen.Vec4d
 
+@Suppress("SENSELESS_COMPARISON", "PrivatePropertyName")
 class GroupButton(
         val setting : SettingGroup,
         var x_ : Int,
         var y : Int,
         var offset : Int,
-        var count_ : Int
+        var count_ : Int,
+        var layer_ : Int
 ) : Openable {
     val comps : ArrayList<Component> = ArrayList()
 
-    private var layer_ : Int = 0
-    private var width_ : Int = 0
+    private var width_ : Int = HalqGui.width
 
     var open : Boolean = false
 
     init {
+        width_ = getModifiedWidth(layer_, width_)
+
         if(setting.settings.isNotEmpty()) {
             var offsetY = offset + HalqGui.height
             var count1 = 0
 
             for (setting_ in setting.settings) {
                 if (setting_ == null) continue
+                if (setting_.isGroup && setting_ is SettingGroup) {
+                    comps.add(GroupButton(setting_, x, y, offsetY, count1++, layer_ + 1))
+                    offsetY += HalqGui.height
+                }
                 if (setting_.isCombo) {
-                    comps.add(ModeButton(setting_, x, y, offsetY, count1++))
+                    comps.add(ModeButton(setting_, x, y, offsetY, count1++, layer_ + 1))
                     offsetY += HalqGui.height
                 }
                 if (setting_.isSlider) {
-                    comps.add(Slider(setting_, x, y, offsetY, count1++))
+                    comps.add(Slider(setting_, x, y, offsetY, count1++, layer_ + 1))
                     offsetY += HalqGui.height
                 }
                 if (setting_.isCheck) {
-                    comps.add(CheckBox(setting_, x, y, offsetY, count1++))
+                    comps.add(CheckBox(setting_, x, y, offsetY, count1++, layer_ + 1))
                     offsetY += HalqGui.height
                 }
                 if (setting_.isBind) {
-                    comps.add(BindButton(setting_, x, y, offsetY, count1++))
+                    comps.add(BindButton(setting_, x, y, offsetY, count1++, layer_ + 1))
                     offsetY += HalqGui.height
                 }
                 if (setting_.isColorPicker) {
-                    comps.add(ColorButton(setting_, x, y, offsetY, count1++))
+                    comps.add(ColorButton(setting_, x, y, offsetY, count1++, layer_ + 1))
                     offsetY += HalqGui.height
-                }
-            }
-
-            if(comps.isNotEmpty()) {
-                for(comp in comps) {
-                    comp.layer = 2
-                    comp.setWidth(80)
                 }
             }
         }
@@ -136,7 +137,7 @@ class GroupButton(
                 HalqGui.getGradientColour(count).rgb
         )
 
-        HalqGui.drawString("${setting.name}...", x, y + offset, width_, HalqGui.height)
+        HalqGui.drawString("${setting.title}...", x, y + offset, width_, HalqGui.height)
 
         if(open) {
             if(comps.isNotEmpty()) {
@@ -180,7 +181,7 @@ class GroupButton(
                 for(comp in comps) {
                     if(!comp.visible()) continue
                     comp.updateComponent(
-                            x + LayerMap.getLayer(comp.layer).modifier / 2,
+                            (x - getXOffset(layer)) + getXOffset(comp.layer),
                             y
                     )
                 }
@@ -212,8 +213,17 @@ class GroupButton(
     private fun getHeight1() : Int {
         var height = HalqGui.height
         if(open && comps.isNotEmpty()) {
-            for(comp in comps) {
-                height += comp.height
+            height = doIterationFullHeight(comps, HalqGui.height)
+        }
+        return height
+    }
+
+    private fun doIterationFullHeight(components : ArrayList<Component>, oldHeight : Int) : Int {
+        var height = oldHeight
+        for(component in components) {
+            height += component.height
+            if(component is Openable) {
+                height = doIterationFullHeight(component.getComponents(), height)
             }
         }
         return height

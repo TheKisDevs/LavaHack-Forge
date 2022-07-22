@@ -3,28 +3,18 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderEntityName;
 import com.kisman.cc.features.module.render.CharmsRewrite;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.features.module.combat.*;
-import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.features.module.misc.Optimizer;
-import com.kisman.cc.features.module.render.Charms;
-import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.entity.*;
-import static org.lwjgl.opengl.GL11.*;
-
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 
 @SuppressWarnings({"ConstantConditions", "NullableProblems"})
 @Mixin(value = RenderLivingBase.class, priority = 10000)

@@ -24,7 +24,7 @@ public class PvpResources extends HudModule {
     }
 
     public static int getItemCount(Item item) {
-        return mc.player.inventory.mainInventory.stream().filter(itemStack -> itemStack.getItem() == item).mapToInt(ItemStack::getCount).sum();
+        return mc.player.inventory.mainInventory.stream().filter(itemStack -> itemStack.getItem() == item).mapToInt(ItemStack::getCount).sum() + ((mc.player.getHeldItemOffhand().getItem() == item) ? mc.player.getHeldItemOffhand().getCount() : 0);
     }
 
     @SubscribeEvent

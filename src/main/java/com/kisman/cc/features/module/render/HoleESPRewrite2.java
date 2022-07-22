@@ -44,7 +44,7 @@ public class HoleESPRewrite2 extends Module {
     private final RenderPattern bRender = new ModulePrefixRenderPattern(this, "Bedrock").init();
     private final Setting bHeight = register(new Setting("HeightBedrock", this, 1.0, 0.0, 1.0, false));
 
-    private final Setting customRender = register(new Setting("RenderCustom", this, "RenderObsidian"));
+    private final Setting customRender = register(new Setting("RenderCustom", this, true));
     private final RenderPattern cRender = new ModulePrefixRenderPattern(this, "Custom").init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 

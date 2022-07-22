@@ -23,25 +23,23 @@ class SocketServer(address: String, port: Int) {
 
     fun start() {
         thread {
-            server.use { server ->
-                onStart()
+            onStart()
 
-                while (run) {
-                    val socket = server.accept()
+            while (run) {
+                val socket = server.accept()
 
-                    try {
-                        val connection = SocketServerConnection(socket, this)
-                        connections.add(connection)
-                        onSocketConnected(connection)
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
+                try {
+                    val connection = SocketServerConnection(socket, this)
+                    connections.add(connection)
+                    onSocketConnected(connection)
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
 
-                        socket.close()
-                    }
+                    socket.close()
                 }
-
-                stop()
             }
+
+            stop()
         }
     }
 

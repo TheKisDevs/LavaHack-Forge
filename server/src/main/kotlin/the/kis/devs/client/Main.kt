@@ -2,13 +2,13 @@ package the.kis.devs.client
 
 import me.yailya.sockets.client.SocketClient
 import me.yailya.sockets.data.SocketMessage
-import me.yailya.sockets.example.ADDRESS
-import me.yailya.sockets.example.PORT
-import java.io.BufferedWriter
+import the.kis.devs.server.ADDRESS
+import the.kis.devs.server.PORT
 import java.io.File
-import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 /**
  * @author _kisman_
@@ -16,6 +16,7 @@ import java.nio.file.Paths
  */
 fun main() {
     val client = SocketClient(ADDRESS, PORT)
+    var bytes : ByteArray? = null
     client.connect()
     client.onMessageReceived = {
         if (it.type == SocketMessage.Type.Text) {
@@ -28,8 +29,20 @@ fun main() {
 //                println(file.byteArray.toString(Charsets.UTF_8))
             } else {
             }
-            Files.createFile(Paths.get("server\\files\\client\\${file.name}"))
-            File("server\\files\\client\\${file.name}").writeBytes(file.byteArray)
+//            Files.createFile(Paths.get("server\\files\\client\\${file.name}"))
+//            File("server\\files\\client\\${file.name}").writeBytes(file.byteArray)
+            if(file.name.endsWith(".jar")) {
+                bytes = file.byteArray
+                ZipInputStream(file.byteArray.inputStream()).use { zipStream ->
+                    var zipEntry: ZipEntry?
+                    while (zipStream.nextEntry.also { zipEntry = it } != null) {
+                        val name = zipEntry!!.name
+                        if (name.endsWith(".class")) {
+                            println("Found new class \"${name.replace('/', '.').removeSuffix(".class")}\"")
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -37,8 +50,24 @@ fun main() {
     client.writeMessage {
         text = "OP"
     }
+    
+    while(bytes == null) {}
+
+    ZipInputStream(bytes?.inputStream()!!).use { zipStream ->
+        var zipEntry: ZipEntry?
+        while (zipStream.nextEntry.also { zipEntry = it } != null) {
+            val name = zipEntry!!.name
+            if (name.endsWith(" .class")) {
+                println("Found new class \"${name.replace('/', '.').removeSuffix(".class")}\"")
+            }
+        }
+    }
 
     while (client.connected) {
+        if(bytes == null) {
+        } else {
+        }
+
         val line = readLine() ?: continue
 
         if (line.isEmpty()) {

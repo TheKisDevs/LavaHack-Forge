@@ -2,6 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.Command;
+import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.Module;
 
 import org.lwjgl.input.Keyboard;
@@ -30,15 +31,16 @@ public class Bind extends Command{
             if(args.length == 1 && isList.equalsIgnoreCase("list")) {
                 message("----------------------------------");
                 message("Bind List:");
-                for(Module mod : Kisman.instance.moduleManager.modules) if(Keyboard.KEY_NONE != mod.getKey()) message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
+//                for(Module mod : Kisman.instance.moduleManager.modules) if(Keyboard.KEY_NONE != mod.getKey()) message(mod.getName() + " | " + Keyboard.getKeyName(mod.getKey()));
                 message("----------------------------------");
                 return;
             }
 
             for(Module mod : Kisman.instance.moduleManager.modules) {
                 if(mod.getName().equalsIgnoreCase(args[1])) {
-                    mod.setKey(Keyboard.getKeyIndex((key.toUpperCase())));
-                    message(mod.getName() + " binned to " + Keyboard.getKeyName(mod.getKey()));
+                    mod.setType(BindType.Keyboard);
+                    mod.setKeyboardKey(Keyboard.getKeyIndex((key.toUpperCase())));
+                    message(mod.getName() + " binned to " + Keyboard.getKeyName(mod.getKeyboardKey()));
                 }
             }
         } catch(Exception e) {error("Usage: " + getSyntax());}

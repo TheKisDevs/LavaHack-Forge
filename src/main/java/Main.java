@@ -10,9 +10,4 @@ public class Main {
     public void init(FMLInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
         Kisman.instance.init();
     }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) throws IOException, NoSuchFieldException, IllegalAccessException {
-        Kisman.instance.preInit();
-    }
 }

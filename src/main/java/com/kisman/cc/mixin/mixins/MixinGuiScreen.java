@@ -16,7 +16,6 @@ import java.util.List;
 @Mixin(GuiScreen.class)
 public class MixinGuiScreen extends Gui implements GuiYesNoCallback {
     @Shadow public Minecraft mc;
-    @Shadow protected FontRenderer fontRenderer;
     @Shadow protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {}
     @Shadow public List<String> getItemToolTip(ItemStack p_191927_1_) {return null;}
 
@@ -30,9 +29,8 @@ public class MixinGuiScreen extends Gui implements GuiYesNoCallback {
         if(!event.isCancelled()) {
             x = event.x;
             y = event.y;
-            FontRenderer font = stack.getItem().getFontRenderer(stack);
             GuiUtils.preItemToolTip(stack);
-            drawHoveringText(getItemToolTip(stack), x, y, font == null ? fontRenderer : font);
+            drawHoveringText(getItemToolTip(stack), x, y, mc.fontRenderer);
             GuiUtils.postItemToolTip();
         }
         ci.cancel();

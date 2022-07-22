@@ -1,16 +1,16 @@
 [
   {
-  "modid": "lavafalcon",
-  "name": "LavaFalcon",
-  "description": "LavaHack Loader",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://github.com/TheKisDevs/LavaHack",
-  "updateUrl": "",
-  "authorList": ["_kisman_"],
-  "credits": ["https://github.com/TheKisDevs/LavaHack"],
-  "logoFile": "assets/kismancc/banner.png",
-  "screenshots": [],
-  "dependencies": []
+    "modid": "lavafalcon",
+    "name": "LavaFalcon",
+    "description": "LavaHack Loader",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/TheKisDevs/LavaHack",
+    "updateUrl": "",
+    "authorList": ["_kisman_"],
+    "credits": ["https://github.com/TheKisDevs/LavaHack"],
+    "logoFile": "assets/kismancc/banner.png",
+    "screenshots": [],
+    "dependencies": []
   }
 ]

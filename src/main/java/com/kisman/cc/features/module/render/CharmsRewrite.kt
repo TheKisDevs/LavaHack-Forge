@@ -13,5 +13,9 @@ object CharmsRewrite : Module(
     "Modify entity renderer.",
     Category.RENDER
 ) {
-    val pattern = CharmsRewriteRendererPattern(this).init()
+    val pattern = CharmsRewriteRendererPattern(this)
+
+    init {
+        pattern.init()
+    }
 }

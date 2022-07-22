@@ -41,7 +41,6 @@ public class CommandManager extends ChatHandler {
 	}
 
 	private void add(Command command) {
-		if(commands.get(command.getCommand()) != null) throw new SimilarCommandNamesException(command, commands.get(command.getCommand()));
 		commands.put(command.getCommand(), command);
 	}
 

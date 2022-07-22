@@ -39,10 +39,10 @@
    * @author Cubic
    */
   @Inject(method = "runTick", at = @At("RETURN"))
-  public void runTickPost(CallbackInfo ci){
+  public void runTickPost(CallbackInfo ci) {
    EventClientTick.Post eventClientTick = new EventClientTick.Post();
    Kisman.EVENT_BUS.post(eventClientTick);
-   AntiDesync.INSTANCE.onClientTickPost();
+   if(AntiDesync.INSTANCE.isToggled()) AntiDesync.INSTANCE.onClientTickPost();
   }
 
   @Inject( method = "processKeyBinds", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2 ) )

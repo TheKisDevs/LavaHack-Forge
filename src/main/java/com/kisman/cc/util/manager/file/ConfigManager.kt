@@ -1,6 +1,10 @@
 package com.kisman.cc.util.manager.file
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.features.module.BindType
+import com.kisman.cc.features.module.Category
+import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.ColourUtilKt
 import java.io.*
@@ -71,22 +75,49 @@ class ConfigManager(
                                 }
                                 "key" -> {
                                     try {
-                                        module.key = Integer.parseInt(split1[1])
+                                        module.setKeyboardKey(Integer.parseInt(split1[1]))
+                                    } catch(ignored : Exception) {}
+                                }
+                                "button" -> {
+                                    try {
+                                        module.setMouseButton(Integer.parseInt(split1[1]))
+                                    } catch(ignored : Exception) {}
+                                }
+                                "mouseBind" -> {
+                                    try {
+                                        module.setType(if(java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
                                     } catch(ignored : Exception) {}
                                 }
                                 config.settingsPrefix -> {
                                     if(split2[3].contains(":")) {
                                         val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0], true)
 
-                                        if(setting != null && split2[3].split(":")[1].equals("key", true)) {
+                                        if(setting != null && !setting.isGroup) {
+                                            val split3 = split2[3].split(":")
+
                                             if(setting.isCheck) {
-                                                try {
-                                                    setting.key = Integer.parseInt(split1[1])
-                                                } catch (e : Exception) {}
+                                                when (split3[1]) {
+                                                    "key" -> {
+                                                        try {
+                                                            setting.setKeyboardKey(Integer.parseInt(split1[1]))
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                    "button" -> {
+                                                        try {
+                                                            setting.setMouseButton(Integer.parseInt(split1[1]))
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                    "mouseBind" -> {
+                                                        try {
+                                                            setting.setType(if(java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                }
                                             }
                                         }
                                     } else {
                                         val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3], true)
+
                                         if (setting != null && !setting.isGroup) {
                                             try {
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
@@ -96,6 +127,7 @@ class ConfigManager(
                                             } catch (e: Exception) {}
                                         }
                                     }
+
                                 }
                             }
                         }
@@ -122,7 +154,17 @@ class ConfigManager(
                                 }
                                 "key" -> {
                                     try {
-                                        hud.key = Integer.parseInt(split1[1])
+                                        hud.setKeyboardKey(Integer.parseInt(split1[1]))
+                                    } catch(ignored : Exception) {}
+                                }
+                                "button" -> {
+                                    try {
+                                        hud.setMouseButton(Integer.parseInt(split1[1]))
+                                    } catch(ignored : Exception) {}
+                                }
+                                "mouseBind" -> {
+                                    try {
+                                        hud.setType(if(java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
                                     } catch(ignored : Exception) {}
                                 }
                                 "x" -> {
@@ -139,22 +181,39 @@ class ConfigManager(
                                     if(split2[3].contains(":")) {
                                         val setting = Kisman.instance.settingsManager.getSettingByName(hud, split2[3].split(":")[0], true)
 
-                                        if(setting != null && split2[3].split(":")[1].equals("key", true)) {
+                                        if(setting != null && !setting.isGroup) {
+                                            val split3 = split2[3].split(":")
+
                                             if(setting.isCheck) {
-                                                try {
-                                                    setting.key = Integer.parseInt(split1[1])
-                                                } catch (e : Exception) {}
+                                                when (split3[1]) {
+                                                    "key" -> {
+                                                        try {
+                                                            setting.setKeyboardKey(Integer.parseInt(split1[1]))
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                    "button" -> {
+                                                        try {
+                                                            setting.setMouseButton(Integer.parseInt(split1[1]))
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                    "mouseBind" -> {
+                                                        try {
+                                                            setting.setType(if(java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
+                                                        } catch (ignored : Exception) {}
+                                                    }
+                                                }
                                             }
                                         }
                                     } else {
                                         val setting = Kisman.instance.settingsManager.getSettingByName(hud, split2[3], true)
+
                                         if (setting != null && !setting.isGroup) {
                                             try {
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
                                                 if (setting.isCombo) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
                                                 if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
-                                            } catch (e: Exception) {}
+                                            } catch (e: Exception) { }
                                         }
                                     }
                                 }
@@ -191,13 +250,19 @@ class ConfigManager(
         @Throws(IOException::class)
         private fun save(writer : BufferedWriter) {
             for(module in Kisman.instance.moduleManager.modules) {
+                if(module.category == Category.LUA) continue
+
                 writer.write("${config.modulesPrefix}.${module.name}.toggle=${module.isToggled}")
                 writer.newLine()
                 writer.write("${config.modulesPrefix}.${module.name}.hold=${module.hold}")
                 writer.newLine()
                 writer.write("${config.modulesPrefix}.${module.name}.visible=${module.isVisible}")
                 writer.newLine()
-                writer.write("${config.modulesPrefix}.${module.name}.key=${module.key}")
+                writer.write("${config.modulesPrefix}.${module.name}.key=${module.getKeyboardKey()}")
+                writer.newLine()
+                writer.write("${config.modulesPrefix}.${module.name}.button=${module.getMouseButton()}")
+                writer.newLine()
+                writer.write("${config.modulesPrefix}.${module.name}.mouseBind=${module.getType() == BindType.Mouse}")
                 writer.newLine()
                 if(Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
                     for(setting in Kisman.instance.settingsManager.getSettingsByMod(module)) {
@@ -205,8 +270,16 @@ class ConfigManager(
                             if(setting.isCheck) {
                                 writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${setting.valBoolean}")
                                 writer.newLine()
-                                if(setting.key != -1) {
-                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}:key=${setting.key}")
+                                if(setting.getKeyboardKey() != -1) {
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}:key=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if(setting.getMouseButton() != -1) {
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if(IBindable.valid(setting)) {
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}:mouseBind=${setting.getType() == BindType.Mouse}")
                                     writer.newLine()
                                 }
                             }
@@ -235,6 +308,12 @@ class ConfigManager(
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.key}")
                 writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.getKeyboardKey()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.button=${hud.getMouseButton()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.mouseBind=${hud.getType() == BindType.Mouse}")
+                writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.x=${hud.getX()}")
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.y=${hud.getY()}")
@@ -247,6 +326,14 @@ class ConfigManager(
                                 writer.newLine()
                                 if(setting.key != -1) {
                                     writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:key=${setting.key}")
+                                    writer.newLine()
+                                }
+                                if(setting.getMouseButton() != -1) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if(IBindable.valid(setting)) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:mouseBind=${setting.getType() == BindType.Mouse}")
                                     writer.newLine()
                                 }
                             }

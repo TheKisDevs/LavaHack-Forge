@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
-import com.kisman.cc.gui.halq.util.LayerMap;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -28,15 +28,15 @@ public class CheckBox implements Openable {
     private final BindButton bind;
     private boolean open;
 
-    public CheckBox(Setting setting, int x, int y, int offset, int count) {
+    public CheckBox(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
         this.offset = offset;
         this.count = count;
-        this.bind = new BindButton(setting, x, y, offset + HalqGui.height, count);
-        this.bind.setLayer(2);
-        this.bind.setWidth(80);
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
+        this.bind = new BindButton(setting, x, y, offset + HalqGui.height, count, layer + 1);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CheckBox implements Openable {
             }
         } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(setting.getName() + (Config.instance.guiShowBinds.getValBoolean() && setting.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(setting.getKey()) + "]" : ""), x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle() + (Config.instance.guiShowBinds.getValBoolean() && setting.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(setting.getKey()) + "]" : ""), x, y + offset, width, HalqGui.height);
 
         if(open) bind.drawScreen(mouseX, mouseY);
     }
@@ -78,7 +78,7 @@ public class CheckBox implements Openable {
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
-        if(open) bind.updateComponent(x + LayerMap.getLayer(bind.getLayer()).modifier / 2, y);
+        if(open) bind.updateComponent((x - LayerControllerKt.getXOffset(layer)) + LayerControllerKt.getXOffset(bind.getLayer()), y);
     }
 
     @Override
