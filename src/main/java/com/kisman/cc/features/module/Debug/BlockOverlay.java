@@ -2,9 +2,11 @@ package com.kisman.cc.features.module.Debug;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.util.RainbowUtil;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.cubic.ModuleRenderPattern;
 import com.kisman.cc.util.render.cubic.RenderPattern;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -39,7 +41,17 @@ public class BlockOverlay extends Module {
         if(pos == null)
             return;
 
-        Rendering.drawChromaOutline(Rendering.correct(new AxisAlignedBB(pos)), mc.objectMouseOver.sideHit, 3.5f, new Color(255, 0, 0), new Color(255, 255, 0), new Color(0, 255, 0), new Color(0, 0, 255));
+        AxisAlignedBB aabb = Rendering.correct(new AxisAlignedBB(pos));
+        EnumFacing facing = mc.objectMouseOver.sideHit;
+
+        long millis = System.currentTimeMillis();
+
+        Color c1 = RainbowUtil.rainbow3(millis, 0, 100, 50, 255, 2.0).getColor();
+        Color c2 = RainbowUtil.rainbow3(millis, 90, 100, 50, 255, 2.0).getColor();
+        Color c3 = RainbowUtil.rainbow3(millis, 180, 100, 50, 255, 2.0).getColor();
+        Color c4 = RainbowUtil.rainbow3(millis, 270, 100, 50, 255, 2.0).getColor();
+
+        Rendering.drawChrome(aabb, facing, c1, c2, c3, c4);
 
         //Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2f, RainbowUtil.rainbow2(0, 100, 50, 120, 1.0), RainbowUtil.rainbow2(50, 100, 50, 120, 1.0), Rendering.Mode.BOTH_GRADIENT);
         //render.getRenderBuilder().pos(pos).render();
