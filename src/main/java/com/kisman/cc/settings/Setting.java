@@ -243,6 +243,12 @@ public class Setting implements IBindable {
 	public boolean isVisible() {
 		return visibleSupplier.get();
 	}
+	
+	public Setting setVisible(Setting setting) {
+		visibleSupplier = setting::getValBoolean;
+
+		return this;
+	}
 
 	public Setting setVisible(Supplier<Boolean> suppliner) {
 		visibleSupplier = suppliner;
@@ -258,6 +264,10 @@ public class Setting implements IBindable {
 	public String[] getStringValues() {
 		if(!enumCombo) return options.toArray(new String[options.size()]);
 		else return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+	}
+
+	public ArrayList<String> getStringArray() {
+		return new ArrayList<>(Arrays.asList(getStringValues()));
 	}
 
 	public String getStringFromIndex(int index) {
@@ -369,7 +379,11 @@ public class Setting implements IBindable {
 	}
 
 	public Enum<?> getValEnum() {
-		return optionEnum.valueOf(optionEnum.getClass(), sval);
+		try {
+			return optionEnum.valueOf(optionEnum.getClass(), sval);
+		} catch(Exception ignored) {
+			return optionEnum;
+		}
 	}
 
 	public void setValEnum(Enum<?> enum_) {

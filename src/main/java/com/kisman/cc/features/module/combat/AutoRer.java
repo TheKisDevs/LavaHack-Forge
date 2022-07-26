@@ -6,6 +6,7 @@ import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.RenderingRewriteModes;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.client.Config;
@@ -130,10 +131,9 @@ public class AutoRer extends Module {
     private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"))));
     private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"))));
 
-    private final Setting render = register(render_.add(new Setting("Render", this, true)));
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, () -> true, null, render_).preInit().init();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(() -> renderer_.getMode().getValEnum() != RenderingRewriteModes.None)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(() -> renderer_.getMode().getValEnum() != RenderingRewriteModes.None)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -513,7 +513,7 @@ public class AutoRer extends Module {
             }
         }
 
-        if(render.getValBoolean() && placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
+        if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
     }
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {

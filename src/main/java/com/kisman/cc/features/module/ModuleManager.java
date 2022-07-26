@@ -50,6 +50,7 @@ public class ModuleManager {
 		modules.add(new Meow());
 		modules.add(new NoMove());
 		modules.add(new PacketIDGetterTest());
+		modules.add(new SmoothRenderer());
 		modules.add(new TextFieldTest());
 		modules.add(new Triangulation());
 
@@ -110,7 +111,8 @@ public class ModuleManager {
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());
-		modules.add(new LogoutSpots());
+//		modules.add(new LogoutSpots());
+		modules.add(new MotionBlur());
 		modules.add(new NameTags());
 		modules.add(new NameTagsRewrite());
 		modules.add(new NoRender());
@@ -182,7 +184,7 @@ public class ModuleManager {
 		modules.add(new Teleport());
 		modules.add(new TickShift());
 		modules.add(new TickShiftTeleport());
-		modules.add(new Timer());
+		modules.add(new TraceTeleport());
 		modules.add(new WaterLeave());
 		modules.add(new WebLeave());
 		//misc

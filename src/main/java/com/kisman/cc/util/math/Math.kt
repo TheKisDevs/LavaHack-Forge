@@ -11,3 +11,7 @@ fun Double.coerceIn(minimumValue: Double, maximumValue: Double): Double {
     if (this > maximumValue) return maximumValue
     return this
 }
+
+fun Float.max(second : Float): Float {
+    return kotlin.math.max(this, second)
+}

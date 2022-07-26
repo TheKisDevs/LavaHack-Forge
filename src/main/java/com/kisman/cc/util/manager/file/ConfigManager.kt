@@ -121,7 +121,7 @@ class ConfigManager(
                                         if (setting != null && !setting.isGroup) {
                                             try {
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
-                                                if (setting.isCombo) setting.valString = split1[1].split("\"")[1]
+                                                if (setting.isCombo && setting.stringArray.contains(split1[1].split("\"")[1])) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
                                                 if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
                                             } catch (e: Exception) {}

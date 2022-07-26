@@ -1,12 +1,10 @@
 package com.kisman.cc.util.render
 
-import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.konas.TessellatorUtil
 import com.kisman.cc.util.render.objects.world.Vectors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.math.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 
 /**
