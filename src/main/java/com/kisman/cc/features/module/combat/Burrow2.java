@@ -10,10 +10,14 @@ import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Burrow2 extends Module {
 
@@ -25,6 +29,8 @@ public class Burrow2 extends Module {
     private final Setting packet = new Setting("Packet", this, false);
     private final Setting centerPlayer = new Setting("Center", this, false);
     private final Setting floorY = new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean);
+    private final Setting smart = new Setting("Smart", this, false);
+    private final Setting smartRange = new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean);
     private final Setting smartOnGround = new Setting("SmartOnGround", this, false);
     private final Setting keepOn = new Setting("KeepOn", this, false);
 
@@ -38,6 +44,8 @@ public class Burrow2 extends Module {
         setmgr.rSetting(packet);
         setmgr.rSetting(centerPlayer);
         setmgr.rSetting(floorY);
+        setmgr.rSetting(smart);
+        setmgr.rSetting(smartRange);
         setmgr.rSetting(smartOnGround);
         setmgr.rSetting(keepOn);
     }
@@ -132,6 +140,9 @@ public class Burrow2 extends Module {
                 toggle();
             return;
         }
+
+        if(smart.getValBoolean() && mc.world.playerEntities.stream().noneMatch(player -> mc.player.getDistanceSq(player) <= smartRange.getValDouble()))
+            return;
 
         fakeJump();
 

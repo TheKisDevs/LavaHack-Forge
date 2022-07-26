@@ -565,6 +565,10 @@ public class Rendering {
         release();
     }
 
+    /**
+     * WIP
+     * @author Cubic
+     */
     public static void drawChromaOutline(AxisAlignedBB bb, EnumFacing facing, float lineWidth, Color c1, Color c2, Color c3, Color c4){
         setup();
         prepare();
@@ -652,6 +656,54 @@ public class Rendering {
                 buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
                 break;
         }
+        tessellator.draw();
+        restore();
+        release();
+    }
+
+    public static void drawChromaBox(AxisAlignedBB bb, Color c1, Color c2, Color c3, Color c4){
+        setup();
+        prepare();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buf = tessellator.getBuffer();
+        buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+
+        // Up
+        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
+        // Down
+        buf.pos(bb.minX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
+        // North
+        buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
+        // South
+        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
+        // East
+        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
+        // West
+        buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
+
         tessellator.draw();
         restore();
         release();

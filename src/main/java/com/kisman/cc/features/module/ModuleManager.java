@@ -125,6 +125,7 @@ public class ModuleManager {
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
+		modules.add(new Tracers2());
 		modules.add(new Trails());
 		modules.add(new Trajectories());
 		modules.add(new TrajectoriesRewrite());
