@@ -112,7 +112,7 @@ public class ModuleManager {
 		modules.add(new ItemESPRewrite());
 		modules.add(new JumpCircle());
 //		modules.add(new LogoutSpots());
-		modules.add(new MotionBlur());
+//		modules.add(new MotionBlur());
 		modules.add(new NameTags());
 		modules.add(new NameTagsRewrite());
 		modules.add(new NoRender());
