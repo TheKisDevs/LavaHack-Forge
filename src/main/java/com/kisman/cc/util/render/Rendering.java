@@ -65,13 +65,13 @@ public class Rendering {
         GlStateManager.popMatrix();
     }
 
-    private static void prepare(){
+    public static void prepare(){
         GlStateManager.disableCull();
         GlStateManager.disableAlpha();
         GlStateManager.shadeModel(GL_SMOOTH);
     }
 
-    private static void restore(){
+    public static void restore(){
         GlStateManager.enableCull();
         GlStateManager.enableAlpha();
         GlStateManager.shadeModel(GL_FLAT);

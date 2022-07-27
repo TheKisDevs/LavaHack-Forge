@@ -97,6 +97,7 @@ public class ModuleManager {
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
+		modules.add(new Breadcrumbs());
 		modules.add(new CameraClip());
 		modules.add(CharmsRewrite.INSTANCE);
 		modules.add(new CityESP());
