@@ -57,6 +57,7 @@ public class Breadcrumbs extends Module {
 
     @Override
     public void onDisable(){
+        super.onDisable();
         smoothTimer.reset();
     }
 
