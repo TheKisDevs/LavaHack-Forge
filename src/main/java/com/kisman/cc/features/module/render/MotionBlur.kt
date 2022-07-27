@@ -4,21 +4,16 @@ package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.render.motionblur.MotionBlurResourceManager
-import com.kisman.cc.mixin.mixins.accessor.AccessorSimpleReloadableResourceManager
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.chat.cubic.ChatUtility
-import net.minecraft.client.resources.FallbackResourceManager
-import net.minecraft.client.resources.SimpleReloadableResourceManager
-import net.minecraft.util.ResourceLocation
-import org.cubic.Environment
+import com.kisman.cc.util.minecraft.EntityRendererUtil
 import java.lang.reflect.Field
 
 /**
  * @author _kisman_
  * @since 15:56 of 23.07.2022
  */
-const val MOTION_BLUR_SHADER = "" +
+const val MOTION_BLUR_SHADER =
         "{" +
             "\\\"targets\\\":[" +
                 "\\\"swap\\\"," +
@@ -56,11 +51,12 @@ const val MOTION_BLUR_SHADER = "" +
             "]" +
         "}"
 
-class MotionBlur : Module(
+class  MotionBlur : Module(
     "MotionBlur",
     Category.RENDER
 ) {
-    val amount = register(Setting("Amount", this, 1.0, 1.0, 7.0, true))
+    private val amount = register(Setting("Amount", this, 1.0, 1.0, 7.0, true))
+    private var lastAmount = 0
 
     private val cachedFastRender : Field? = try {
         mc.gameSettings::class.java.getDeclaredField("ofFastRender")
@@ -68,12 +64,9 @@ class MotionBlur : Module(
         null
     }
 
-    init {
-        registerDomain()
-    }
-
     override fun onEnable() {
-        if(mc.player == null || mc.world == null ||fastRenderCheck()) {
+        if(mc.player == null || mc.world == null || fastRenderCheck()) {
+            super.setToggled(false)
             return
         }
 
@@ -82,15 +75,23 @@ class MotionBlur : Module(
         }
 
         if(amount.valInt > 0) {
-            mc.entityRenderer.loadShader(ResourceLocation("motionblur", "motionblur"))
+            EntityRendererUtil.load("motionblur", MOTION_BLUR_SHADER.format(amount.valInt, amount.valInt, amount.valInt))
+            ChatUtility.complete().printClientModuleMessage("Enabled motion blur with ${amount.valInt} amount!")
             mc.entityRenderer.getShaderGroup().createBindFramebuffers(mc.displayWidth, mc.displayHeight)
         }
     }
 
-    private fun registerDomain() {
-        if(!(mc.resourceManager as AccessorSimpleReloadableResourceManager).domainResourceManagers().containsKey("motionblur")) {
-            (mc.resourceManager as AccessorSimpleReloadableResourceManager).domainResourceManagers()["motionblur"] = MotionBlurResourceManager(mc.metadataSerializer_)
+    override fun update() {
+        if(mc.player == null || mc.world == null || fastRenderCheck()) {
+            super.setToggled(false)
+            return
         }
+
+        if(amount.valInt != lastAmount) {
+            onEnable()
+        }
+
+        lastAmount = amount.valInt
     }
 
     private fun fastRenderCheck() : Boolean {
@@ -98,7 +99,6 @@ class MotionBlur : Module(
             if (mc.player != null || mc.world != null) {
                 ChatUtility.error().printClientModuleMessage("Motion Blur is not compatible with OptiFine's Fast Render.")
             }
-            super.setToggled(false)
             return true
         }
         return false
@@ -108,7 +108,7 @@ class MotionBlur : Module(
         if(cachedFastRender != null) {
             try {
                 return cachedFastRender[mc.gameSettings] as Boolean
-            } catch (ignored: Exception) {}
+            } catch (ignored : Exception) {}
         }
         return false
     }

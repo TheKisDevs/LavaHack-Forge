@@ -12,7 +12,7 @@ import com.kisman.cc.util.enums.CharmsRewriteTypeModes
 import com.kisman.cc.util.enums.CharmsRewriteTypes
 import com.kisman.cc.util.enums.dynamic.CharmsRewriteOptionsEnum
 import net.minecraft.client.model.ModelBase
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11.*
 
 /**
@@ -28,8 +28,8 @@ class CharmsRewriteRendererPattern(
     init {
         for(type in CharmsRewriteEntityTypes.values()) {
             val group = SettingGroup(Setting(type.name, module))
-            val wireGroup = group.add(SettingGroup(Setting("${type.name} Wire", module).setTitle("Wire")))
-            val modelGroup = group.add(SettingGroup(Setting("${type.name} Model", module).setTitle("Model")))
+            val wireGroup = group.add(SettingGroup(Setting("Wire", module)))
+            val modelGroup = group.add(SettingGroup(Setting("Model", module)))
             groups.add(group)
             groups.add(wireGroup)
             groups.add(modelGroup)
@@ -106,7 +106,7 @@ class CharmsRewriteRendererPattern(
         return list
     }
 
-    private fun getSettingByType(type : CharmsRewriteTypes, entity : EntityLivingBase) : Setting? {
+    private fun getSettingByType(type : CharmsRewriteTypes, entity : Entity) : Setting? {
         for(setting in settings) {
             if(setting.typeE == CharmsRewriteEntityTypes.get(entity) && setting.typeS == type) {
                 return setting.setting
@@ -116,8 +116,11 @@ class CharmsRewriteRendererPattern(
         return null
     }
 
+    /**
+     * For players, monsters, animals, crystals
+     */
     fun doRender(
-        entity : EntityLivingBase,
+        entity : Entity,
         model : ModelBase,
         limbSwing : Float,
         limbSwingAmount: Float,
@@ -199,7 +202,12 @@ class CharmsRewriteRendererPattern(
         glPopMatrix()
     }
 
-    private fun doOptions(entity : EntityLivingBase, end : Boolean, mode : CharmsRewriteTypeModes, exclude : Boolean) {
+    private fun doOptions(
+        entity : Entity,
+        end : Boolean,
+        mode : CharmsRewriteTypeModes,
+        @Suppress("SameParameterValue") exclude : Boolean
+    ) {
         for(setting in settings) {
             if(setting.option != null && (if(exclude) (setting.typeS.mode != mode) else (setting.typeS.mode == mode)) && setting.typeE == CharmsRewriteEntityTypes.get(entity)) {
                 if(end) {

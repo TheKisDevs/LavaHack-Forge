@@ -6,7 +6,14 @@ package com.kisman.cc.util.math
  */
 
 //Fixed coerceIn method
-fun Double.coerceIn(minimumValue: Double, maximumValue: Double): Double {
+fun Double.coerceIn(minimumValue : Double, maximumValue : Double) : Double {
+    if (this < minimumValue) return minimumValue
+    if (this > maximumValue) return maximumValue
+    return this
+}
+
+//Fixed coerceIn method
+fun Float.coerceIn(minimumValue : Float, maximumValue : Float): Float {
     if (this < minimumValue) return minimumValue
     if (this > maximumValue) return maximumValue
     return this
@@ -14,4 +21,20 @@ fun Double.coerceIn(minimumValue: Double, maximumValue: Double): Double {
 
 fun Float.max(second : Float): Float {
     return kotlin.math.max(this, second)
+}
+
+fun lerp(
+    from : Double,
+    to : Double,
+    delta : Double
+) : Double {
+    return from + (to - from) * delta
+}
+
+fun lerp(
+    from : Int,
+    to : Int,
+    delta : Int
+) : Int {
+    return from + (to - from) * delta
 }

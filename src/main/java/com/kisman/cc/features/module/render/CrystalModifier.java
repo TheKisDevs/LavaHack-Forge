@@ -2,69 +2,95 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.Colour;
 import net.minecraft.entity.item.EntityEnderCrystal;
 
 public class CrystalModifier extends Module {
     public static CrystalModifier instance;
 
-    public Setting mode = new Setting("Mode", this, Modes.Fill);
-    public Setting preview = new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world));
 
-    public Setting scale = new Setting("Scale", this,false);
-    public Setting scaleVal = new Setting("ScaleVal", this, 1, 0.1, 2, false);
+    /**
+     * front - 0
+     * back - 1
+     * top - 2
+     * bottom - 3
+     * left - 4
+     * right - 5
+     */
+    public static int rotatingSide = 0;
 
-    public Setting translateX = new Setting("TranslateX", this, 0, -2, 2, false);
-    public Setting translateY = new Setting("TranslateY", this, 0, -2, 2, false);
-    public Setting translateZ = new Setting("TranslateZ", this, 0, -2, 2, false);
-
-    public Setting insideCube = new Setting("InsideCube", this, true);
-    public Setting outsideCube = new Setting("OutsideCube", this, true);
-    public Setting outsideCube2 = new Setting("OutsideCube2", this, true);
-    public Setting texture = new Setting("Texture", this, false);
-    public Setting customColor = new Setting("CustomColor", this, false);
-    public Setting crystalColor = new Setting("CrystalColor", this, "Color", new Colour(0, 0, 255));
-
-    public Setting outline = new Setting("Outline", this, false);
-    public Setting outlineMode = new Setting("OutlineMode", this, OutlineModes.Wire);
-    public Setting lineWidth = new Setting("LineWidth", this, 3, 0.5, 5, false);
-    public Setting color = new Setting("Outline Color", this, "Color", new Colour(255, 0, 0));
+    public static long lastTime = 0;
 
 
-    public Setting speed = new Setting("CrystalSpeed", this, 3, 0, 50, false);
-    public Setting bounce = new Setting("CrystalBounce", this, 0.2f, 0, 10, false);
+    public static final int ANIMATION_LENGTH = 400;
+    public static final double CUBELET_SCALE = 0.4;
+
+    public Setting mode = /*register*/(new Setting("Mode", this, Modes.Fill));
+    public Setting preview = /*register*/(new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world)));
+
+    private final SettingGroup model = register(new SettingGroup(new Setting("Model", this)));
+    private final SettingGroup render = register(new SettingGroup(new Setting("Render", this)));
+
+    private final SettingGroup rubiksCrystalGroup = register(model.add(new SettingGroup(new Setting("Rubiks Crystal", this))));
+    public Setting rubiksCrystal = register(rubiksCrystalGroup.add(new Setting("Rubiks Crystal", this, false)));
+    public Setting rubiksCrystalRotationDirection = register(rubiksCrystalGroup.add(new Setting("Rubiks Crystal Rotation Direction", this, RubiksCrystalRotationDirection.Left).setVisible(rubiksCrystal).setTitle("Rotation Dir")));
+
+    private final SettingGroup scaleGroup = register(model.add(new SettingGroup(new Setting("Scale", this))));
+    public Setting scale = register(scaleGroup.add(new Setting("Scale", this,false)));
+    public Setting scaleX = register(scaleGroup.add(new Setting("Scale X", this, 1, 0.1, 2, false).setVisible(scale).setTitle("X")));
+    public Setting scaleY = register(scaleGroup.add(new Setting("Scale Y", this, 1, 0.1, 2, false).setVisible(scale).setTitle("Y")));
+    public Setting scaleZ = register(scaleGroup.add(new Setting("Scale Z", this, 1, 0.1, 2, false).setVisible(scale).setTitle("Z")));
+
+    private final SettingGroup translateGroup = register(model.add(new SettingGroup(new Setting("Translate", this))));
+    public Setting translate = register(translateGroup.add(new Setting("Translate", this,false)));
+    public Setting translateX = register(translateGroup.add(new Setting("Translate X", this, 0, -2, 2, false).setVisible(translate).setTitle("X")));
+    public Setting translateY = register(translateGroup.add(new Setting("Translate Y", this, 0, -2, 2, false).setVisible(translate).setTitle("Y")));
+    public Setting translateZ = register(translateGroup.add(new Setting("Translate Z", this, 0, -2, 2, false).setVisible(translate).setTitle("Z")));
+
+    private final SettingGroup elements = register(model.add(new SettingGroup(new Setting("Elements", this))));
+
+    private final SettingGroup baseGroup = register(elements.add(new SettingGroup(new Setting("Base", this))));
+    public Setting base = register(baseGroup.add(new Setting("Base", this, true)));
+    public Setting alwaysBase = register(baseGroup.add(new Setting("Always Base", this, false).setVisible(base).setTitle("Always")));
+
+    private final SettingGroup cubes = register(elements.add(new SettingGroup(new Setting("Cubes", this))));
+
+    public Setting insideCube = register(cubes.add(new Setting("Inside", this, CubeModes.Cube).setTitle("In")));
+    public Setting outsideCube = register(cubes.add(new Setting("Outside", this, CubeModes.Glass).setTitle("Out")));
+    public Setting outsideCube2 = register(cubes.add(new Setting("Outside 2", this, CubeModes.Glass).setTitle("Out 2")));
+
+
+    public Setting texture = /*register*/(render.add(new Setting("Texture", this, false)));
+
+    public Setting outline = /*register*/(new Setting("Outline", this, false));
+    public Setting outlineMode = /*register*/(new Setting("OutlineMode", this, OutlineModes.Wire));
+    public Setting lineWidth = /*register*/(new Setting("LineWidth", this, 3, 0.5, 5, false));
+    public Setting color = /*register*/(new Setting("Outline Color", this, "Color", new Colour(255, 0, 0)));
+    
+    public Setting speed = register(render.add(new Setting("Crystal Speed", this, 3, 0, 50, false)));
+    public Setting bounce = register(render.add(new Setting("Crystal Bounce", this, 0.2f, 0, 10, false)));
 
     public CrystalModifier() {
-        super("CrystalCharms", "r", Category.RENDER);
-        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
+        super("CrystalModifier", "Modify crystal model renderer", Category.RENDER);
+        super.setDisplayInfo(
+                () ->
+                        "[" +
+                                (rubiksCrystal.getValBoolean() ? "Rubik's Mode | " : "") +
+                                "C: " +
+                                    (insideCube.getValBoolean() ? "I" : "") +
+                                    (outsideCube.getValBoolean() ? "O" : "") +
+                                    (outsideCube2.getValBoolean() ? "O" : "") +
+                                "S: " + speed.getNumberType().getFormatter().apply(speed.getValDouble()) +
+                                "B: " + bounce.getNumberType().getFormatter().apply(bounce.getValDouble()) +
+                        "]"
+        );
 
         instance = this;
-
-        setmgr.rSetting(mode);
-
-        setmgr.rSetting(scale);
-        setmgr.rSetting(scaleVal);
-
-        setmgr.rSetting(translateX);
-        setmgr.rSetting(translateY);
-        setmgr.rSetting(translateZ);
-
-        setmgr.rSetting(insideCube);
-        setmgr.rSetting(outsideCube);
-        setmgr.rSetting(outsideCube2);
-        setmgr.rSetting(texture);
-        setmgr.rSetting(customColor);
-        setmgr.rSetting(crystalColor);
-
-        setmgr.rSetting(outline);
-        setmgr.rSetting(outlineMode);
-        setmgr.rSetting(lineWidth);
-        setmgr.rSetting(color);
-
-        setmgr.rSetting(speed);
-        setmgr.rSetting(bounce);
     }
 
     public enum OutlineModes {Wire, Flat}
-    public enum Modes {Fill, Wireframe,}
+    public enum Modes {Fill, Wireframe}
+    public enum RubiksCrystalRotationDirection {Left, Right}
+    public enum CubeModes {Off, Cube, Glass}
 }

@@ -21,6 +21,7 @@ public class SettingsManager {
 	}
 
 	public void rSetting(Setting in){
+		if(in == null) return;
 		this.settings.add(in);
 	}
 
