@@ -22,8 +22,10 @@ import kotlin.math.sin
 class CrystalModelHandler(
     private val renderBase : Boolean
 ) : ModelEnderCrystal(0f, renderBase) {
-    private val inside = ModelRenderer(this, "cube").setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
-    private val outside = ModelRenderer(this, "glass").setTextureOffset(32, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
+    private val insideCube = ModelRenderer(this, "cube").setTextureOffset(32, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
+    private val insideGlass = ModelRenderer(this, "glass").setTextureOffset(32, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
+    private val outsideCube = ModelRenderer(this, "cube").setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
+    private val outsideGlass = ModelRenderer(this, "glass").setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8)
     private val bottom = ModelRenderer(this, "base").setTextureOffset(0, 16).addBox(-6.0F, 0.0F, -6.0F, 12, 4, 12)
 
     override fun render(
@@ -56,15 +58,15 @@ class CrystalModelHandler(
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
             translate(getTranslateX(), 0.8f + bounceSpeed + getTranslateY(), getTranslateZ())
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
-            if (CrystalModifier.instance.outsideCube.valEnum != CrystalModifier.CubeModes.Off) getOutsideBox()?.render(scale)
+            if (CrystalModifier.instance.outsideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox()!!, 2, scale)//getOutsideBox()?.render(scale)
             scale(0.875f * getScaleX(), 0.875f * getScaleY(), 0.875f * getScaleZ())
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
-            if (CrystalModifier.instance.outsideCube2.valEnum != CrystalModifier.CubeModes.Off) getOutsideBox2()?.render(scale)
+            if (CrystalModifier.instance.outsideCube2.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox2()!!, 3, scale)//getOutsideBox2()?.render(scale)
             scale(0.875f * getScaleX(), 0.875f * getScaleY(), 0.875f * getScaleZ())
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
-            if (CrystalModifier.instance.insideCube.valEnum != CrystalModifier.CubeModes.Off) drawInsideBox(getInsideBox()!!, scale)
+            if (CrystalModifier.instance.insideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getInsideBox()!!, 1, scale)//drawRubiksBox(getInsideBox()!!, scale)
             popMatrix()
         } else {
             super.render(
@@ -80,23 +82,40 @@ class CrystalModelHandler(
     }
 
     private fun getInsideBox() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.insideCube.valEnum as CrystalModifier.CubeModes)
+        return getRenderer(CrystalModifier.instance.insideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.insideModel.valEnum as CrystalModifier.ModelModes)
     }
 
     private fun getOutsideBox() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.outsideCube.valEnum as CrystalModifier.CubeModes)
+        return getRenderer(CrystalModifier.instance.outsideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel.valEnum as CrystalModifier.ModelModes)
     }
 
     private fun getOutsideBox2() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.outsideCube2.valEnum as CrystalModifier.CubeModes)
+        return getRenderer(CrystalModifier.instance.outsideCube2.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel2.valEnum as CrystalModifier.ModelModes)
     }
 
-    private fun drawInsideBox(cube : ModelRenderer, scale : Float) {
+    /**
+     * cubeID:
+     *
+     * 1 - inside cube
+     *
+     * 2 - first outside cube
+     *
+     * 3 - second outside cube
+     */
+    private fun drawCube(cube : ModelRenderer, cubeID : Int, scale : Float) {
+        if(CrystalModifier.instance.rubiksCrystal.valBoolean && (if(cubeID == 2) CrystalModifier.instance.rubiksCrystalOutside.valBoolean else if(cubeID == 3) CrystalModifier.instance.rubiksCrystalOutside2.valBoolean else CrystalModifier.instance.rubiksCrystalInside.valBoolean)) {
+            drawRubiksBox(cube, scale)
+        } else {
+            cube.render(scale)
+        }
+    }
+
+    private fun drawRubiksBox(cube : ModelRenderer, scale : Float) {
         if (CrystalModifier.instance.rubiksCrystal.valBoolean) {
             scale(
-                CrystalModifier.CUBELET_SCALE + getTranslateX(),
-                CrystalModifier.CUBELET_SCALE + getTranslateY(),
-                CrystalModifier.CUBELET_SCALE + getTranslateZ()
+                CrystalModifier.CUBELET_SCALE,
+                CrystalModifier.CUBELET_SCALE,
+                CrystalModifier.CUBELET_SCALE
             )
             val scaleNew = scale * (CrystalModifier.CUBELET_SCALE * 2).toFloat()
 
@@ -180,10 +199,10 @@ class CrystalModelHandler(
         } else cube.render(scale)
     }
 
-    private fun getRenderer(mode : CrystalModifier.CubeModes) : ModelRenderer? {
-        return when(mode) {
-            CrystalModifier.CubeModes.Cube -> inside
-            CrystalModifier.CubeModes.Glass -> outside
+    private fun getRenderer(tex : CrystalModifier.CubeModes, model : CrystalModifier.ModelModes) : ModelRenderer? {
+        return when(tex) {
+            CrystalModifier.CubeModes.In -> if(model == CrystalModifier.ModelModes.Cube) insideCube else insideGlass
+            CrystalModifier.CubeModes.Out -> if(model == CrystalModifier.ModelModes.Cube) outsideCube else outsideGlass
             CrystalModifier.CubeModes.Off -> null
         }
     }

@@ -29,26 +29,27 @@ public class CrystalModifier extends Module {
     public Setting mode = /*register*/(new Setting("Mode", this, Modes.Fill));
     public Setting preview = /*register*/(new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world)));
 
-    private final SettingGroup model = register(new SettingGroup(new Setting("Model", this)));
-    private final SettingGroup render = register(new SettingGroup(new Setting("Render", this)));
-
-    private final SettingGroup rubiksCrystalGroup = register(model.add(new SettingGroup(new Setting("Rubiks Crystal", this))));
+    private final SettingGroup rubiksCrystalGroup = register(new SettingGroup(new Setting("Rubiks Crystal", this)));
     public Setting rubiksCrystal = register(rubiksCrystalGroup.add(new Setting("Rubiks Crystal", this, false)));
     public Setting rubiksCrystalRotationDirection = register(rubiksCrystalGroup.add(new Setting("Rubiks Crystal Rotation Direction", this, RubiksCrystalRotationDirection.Left).setVisible(rubiksCrystal).setTitle("Rotation Dir")));
+    private final SettingGroup rubiksCrystalCubes = register(rubiksCrystalGroup.add(new SettingGroup(new Setting("Cubes", this))));
+    public Setting rubiksCrystalInside = register(rubiksCrystalCubes.add(new Setting("Rubiks Crystal Inside", this, true).setTitle("In")));
+    public Setting rubiksCrystalOutside = register(rubiksCrystalCubes.add(new Setting("Rubiks Crystal Outside", this, false).setTitle("Out")));
+    public Setting rubiksCrystalOutside2 = register(rubiksCrystalCubes.add(new Setting("Rubiks Crystal Outside 2", this, false).setTitle("Out 2")));
 
-    private final SettingGroup scaleGroup = register(model.add(new SettingGroup(new Setting("Scale", this))));
+    private final SettingGroup scaleGroup = register(new SettingGroup(new Setting("Scale", this)));
     public Setting scale = register(scaleGroup.add(new Setting("Scale", this,false)));
     public Setting scaleX = register(scaleGroup.add(new Setting("Scale X", this, 1, 0.1, 2, false).setVisible(scale).setTitle("X")));
     public Setting scaleY = register(scaleGroup.add(new Setting("Scale Y", this, 1, 0.1, 2, false).setVisible(scale).setTitle("Y")));
     public Setting scaleZ = register(scaleGroup.add(new Setting("Scale Z", this, 1, 0.1, 2, false).setVisible(scale).setTitle("Z")));
 
-    private final SettingGroup translateGroup = register(model.add(new SettingGroup(new Setting("Translate", this))));
+    private final SettingGroup translateGroup = register(new SettingGroup(new Setting("Translate", this)));
     public Setting translate = register(translateGroup.add(new Setting("Translate", this,false)));
     public Setting translateX = register(translateGroup.add(new Setting("Translate X", this, 0, -2, 2, false).setVisible(translate).setTitle("X")));
     public Setting translateY = register(translateGroup.add(new Setting("Translate Y", this, 0, -2, 2, false).setVisible(translate).setTitle("Y")));
     public Setting translateZ = register(translateGroup.add(new Setting("Translate Z", this, 0, -2, 2, false).setVisible(translate).setTitle("Z")));
 
-    private final SettingGroup elements = register(model.add(new SettingGroup(new Setting("Elements", this))));
+    private final SettingGroup elements = register(new SettingGroup(new Setting("Elements", this)));
 
     private final SettingGroup baseGroup = register(elements.add(new SettingGroup(new Setting("Base", this))));
     public Setting base = register(baseGroup.add(new Setting("Base", this, true)));
@@ -56,20 +57,20 @@ public class CrystalModifier extends Module {
 
     private final SettingGroup cubes = register(elements.add(new SettingGroup(new Setting("Cubes", this))));
 
-    public Setting insideCube = register(cubes.add(new Setting("Inside", this, CubeModes.Cube).setTitle("In")));
-    public Setting outsideCube = register(cubes.add(new Setting("Outside", this, CubeModes.Glass).setTitle("Out")));
-    public Setting outsideCube2 = register(cubes.add(new Setting("Outside 2", this, CubeModes.Glass).setTitle("Out 2")));
+    private final SettingGroup insideGroup = register(cubes.add(new SettingGroup(new Setting("Inside", this))));
+    public Setting insideCube = register(insideGroup.add(new Setting("Inside Tex", this, CubeModes.In).setTitle("Tex")));
+    public Setting insideModel = register(insideGroup.add(new Setting("Inside Model", this, ModelModes.Cube).setTitle("Model")));
+    private final SettingGroup outsideGroup = register(cubes.add(new SettingGroup(new Setting("Outside", this))));
+    public Setting outsideCube = register(outsideGroup.add(new Setting("Outside Tex", this, CubeModes.Out).setTitle("Tex")));
+    public Setting outsideModel = register(outsideGroup.add(new Setting("Outside Model", this, ModelModes.Glass).setTitle("Model")));
+    private final SettingGroup outsideGroup2 = register(cubes.add(new SettingGroup(new Setting("Outside 2", this))));
+    public Setting outsideCube2 = register(outsideGroup2.add(new Setting("Outside 2 Tex", this, CubeModes.Out).setTitle("Tex")));
+    public Setting outsideModel2 = register(outsideGroup2.add(new Setting("Outside 2 Model", this, ModelModes.Glass).setTitle("Model")));
 
 
-    public Setting texture = /*register*/(render.add(new Setting("Texture", this, false)));
-
-    public Setting outline = /*register*/(new Setting("Outline", this, false));
-    public Setting outlineMode = /*register*/(new Setting("OutlineMode", this, OutlineModes.Wire));
-    public Setting lineWidth = /*register*/(new Setting("LineWidth", this, 3, 0.5, 5, false));
-    public Setting color = /*register*/(new Setting("Outline Color", this, "Color", new Colour(255, 0, 0)));
-    
-    public Setting speed = register(render.add(new Setting("Crystal Speed", this, 3, 0, 50, false)));
-    public Setting bounce = register(render.add(new Setting("Crystal Bounce", this, 0.2f, 0, 10, false)));
+    private final SettingGroup speeds = register(new SettingGroup(new Setting("Speeds", this)));
+    public Setting speed = register(speeds.add(new Setting("Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
+    public Setting bounce = register(speeds.add(new Setting("Bounce Speed", this, 0.2f, 0, 10, false).setTitle("Bounce")));
 
     public CrystalModifier() {
         super("CrystalModifier", "Modify crystal model renderer", Category.RENDER);
@@ -92,5 +93,6 @@ public class CrystalModifier extends Module {
     public enum OutlineModes {Wire, Flat}
     public enum Modes {Fill, Wireframe}
     public enum RubiksCrystalRotationDirection {Left, Right}
-    public enum CubeModes {Off, Cube, Glass}
+    public enum CubeModes {Off, In, Out}
+    public enum ModelModes {Cube, Glass}
 }
