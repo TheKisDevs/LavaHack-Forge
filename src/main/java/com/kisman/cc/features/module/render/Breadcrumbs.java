@@ -31,11 +31,18 @@ public class Breadcrumbs extends Module {
 
     public Breadcrumbs(){
         super("Breadcrumbs", Category.RENDER);
+        lastX = 0;
+        lastY = 0;
+        lastZ = 0;
     }
 
     private final Queue<AxisAlignedBB> lines = new ConcurrentLinkedQueue<>();
 
     private final Timer smoothTimer = new Timer();
+
+    private double lastX;
+    private double lastY;
+    private double lastZ;
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
@@ -62,7 +69,7 @@ public class Breadcrumbs extends Module {
     }
 
     private void draw(){
-        AxisAlignedBB aabb = new AxisAlignedBB(mc.player.lastTickPosX, mc.player.lastTickPosY, mc.player.lastTickPosZ, mc.player.posX, mc.player.posY, mc.player.posZ);
+        AxisAlignedBB aabb = new AxisAlignedBB(lastX, lastY, lastZ, mc.player.posX, mc.player.posY, mc.player.posZ);
         lines.offer(aabb);
 
         int r = color.getColour().getRed();
@@ -103,6 +110,10 @@ public class Breadcrumbs extends Module {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
+
+        lastX = mc.player.posX;
+        lastY = mc.player.posY;
+        lastZ = mc.player.posZ;
     }
 
     private void drawSmooth(float partialTicks){
