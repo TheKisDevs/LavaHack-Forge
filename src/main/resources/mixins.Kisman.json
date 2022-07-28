@@ -45,13 +45,10 @@
     "MixinTileEntity",
     "MixinVisGraph",
     "MixinWorld",
-    "accessor.AccessorCPacketUseEntity",
     "accessor.AccessorEntityPlayer",
     "accessor.AccessorNetHandlerPlayClient",
-    "accessor.AccessorPlayerControllerMP",
+    "accessor.AccessorRenderEnderCrystal",
     "accessor.AccessorShaderGroup",
-    "accessor.ICPacketPlayer",
-    "accessor.IEntityPlayerSP",
     "accessor.ISession",
     "accessor.ITemplate",
     "cubic.AccessorClassLoader",
@@ -60,10 +57,5 @@
     "viaforge.MixinGuiScreenAddServer",
     "viaforge.MixinGuiScreenServerList",
     "viaforge.MixinNetworkManagerChInit"
-  ],
-  "client": [
-    "accessor.AccessorModelEnderCrystal",
-    "accessor.AccessorRenderEnderCrystal",
-    "accessor.AccessorSimpleReloadableResourceManager"
   ]
 }
