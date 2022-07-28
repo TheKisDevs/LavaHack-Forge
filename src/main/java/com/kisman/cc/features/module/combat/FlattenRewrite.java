@@ -80,7 +80,6 @@ public class FlattenRewrite extends Module {
     }
 
     private void checkDown(){
-
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
