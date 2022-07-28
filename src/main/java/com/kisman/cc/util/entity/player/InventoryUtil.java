@@ -1,5 +1,6 @@
 package com.kisman.cc.util.entity.player;
 
+import com.kisman.cc.util.enums.SoftBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -22,10 +23,12 @@ public class InventoryUtil {
     public static int findSoftBlocks(int min, int max) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
-            Block block = Block.getBlockFromItem(stack.getItem());
+            Item currentItem = stack.getItem();
+            Block currentBlock = Block.getBlockFromItem(stack.getItem());
 
-            if(!block.isCollidable() || !block.isTopSolid(block.getDefaultState())) {
-                return i;
+            for(SoftBlocks softBlock : SoftBlocks.values()) {
+                if(!softBlock.getItems().isEmpty()) for (Item item : softBlock.getItems()) if(currentItem.equals(item)) return i;
+                if(!softBlock.getBlocks().isEmpty()) for (Block block : softBlock.getBlocks()) if(currentBlock.equals(block)) return i;
             }
         }
 

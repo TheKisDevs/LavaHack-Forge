@@ -14,6 +14,7 @@ import com.kisman.cc.util.enums.SprintModes
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.init.Blocks
+import net.minecraft.init.MobEffects
 import net.minecraft.network.play.client.CPacketPlayer
 
 /**
@@ -57,7 +58,13 @@ class MoveModifier : Module(
     private val iceSpeedVal = register(iceSpeedGroup.add(Setting("Ice Speed Val", this, 0.4, 0.2, 1.5, false).setVisible(iceSpeed).setTitle("Speed")))
     private val fastSwim = register(move.add(Setting("Fast Swim", this, false)))
     private val fastLadder = register(move.add(Setting("Fast Ladder", this, false)))
-    private val entityControl = register(move.add(Setting("Entity Control", this, false)))
+    private val controls = register(move.add(SettingGroup(Setting("Controls", this))))
+    private val entityControl = register(controls.add(Setting("Entity Control", this, false).setTitle("Entity")))
+    private val levitationControlGroup = register(controls.add(SettingGroup(Setting("Levitation", this))))
+    private val levitationControl = register(levitationControlGroup.add(Setting("Levitation Control", this, false).setTitle("Levitation")))
+    private val levitationControlUpSpeed = register(levitationControlGroup.add(Setting("Levitation Control Up Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Up")))
+    private val levitationControlDownSpeed = register(levitationControlGroup.add(Setting("Levitation Control Down Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Down")))
+
 
     private val delays = register(SettingGroup(Setting("Delays", this)))
 
@@ -119,6 +126,27 @@ class MoveModifier : Module(
         doFastSwim()
         doParkour()
         doFastLadder()
+        doLevitationControl()
+    }
+
+    private fun doLevitationControl() {
+        if(levitationControl.valBoolean && mc.player.getActivePotionEffect(MobEffects.LEVITATION) != null) {
+            var flag = true
+
+            if(mc.gameSettings.keyBindJump.isPressed) {
+                mc.player.motionY = levitationControlUpSpeed.valDouble
+                flag = false
+            }
+
+            if(mc.gameSettings.keyBindSneak.isPressed) {
+                mc.player.motionY = levitationControlDownSpeed.valDouble
+                flag = false
+            }
+
+            if(flag) {
+                mc.player.motionY = 0.0
+            }
+        }
     }
 
     private fun doFastLadder() {
