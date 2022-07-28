@@ -2,18 +2,26 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.combat.flattenrewrite.FlattenRewriteRenderer;
+import com.kisman.cc.features.module.combat.flattenrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.Timer;
-import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.util.ArrayList;
@@ -49,6 +57,17 @@ public class FlattenRewrite extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting processPackets = register(new Setting("ProcessPackets", this, false));
 
+    private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
+    private final Setting render = register(render_.add(new Setting("Render", this, true)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
+
+    private final FlattenRewriteRenderer renderer = new FlattenRewriteRenderer();
+
     private static FlattenRewrite instance;
 
     private Queue<BlockPos> blocks = new ConcurrentLinkedQueue<>();
@@ -59,6 +78,8 @@ public class FlattenRewrite extends Module {
     private Entity enemy = null;
 
     private double enemyY;
+
+    private final PlaceInfo placeInfo = new PlaceInfo(null, null);
 
     public FlattenRewrite() {
         super("FlattenRewrite", Category.COMBAT);
@@ -93,8 +114,8 @@ public class FlattenRewrite extends Module {
 
         boolean alreadyCheckedDown = false;
 
-        if(enemy == null || (swapEnemy.getValBoolean() && mc.player.getDistanceSq(enemy) > enemyRange.getValDouble())){
-            enemy = EntityUtil.getTarget(enemyRange.getValFloat());
+        if(enemy == null || swapEnemy.getValBoolean()){
+            enemy = targets.getTarget(enemyRange.getValFloat());//EntityUtil.getTarget(enemyRange.getValFloat());
 
             if(enemy == null)
                 return;
@@ -143,11 +164,29 @@ public class FlattenRewrite extends Module {
         }
     }
 
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(render.getValBoolean()) {
+            renderer.onRenderWorld(
+                    movingLength.getValFloat(),
+                    fadeLength.getValFloat(),
+                    renderer_,
+                    placeInfo
+            );
+        }
+    }
+
     @Override
-    public void onDisable(){
+    public void onEnable() {
+        super.onEnable();
         blocks = new ConcurrentLinkedQueue<>();
+        placeInfo.setBlockPos(null);
+        placeInfo.setTarget(null);
         enemy = null;
         enemyY = 0.0;
+        targets.reset();
+        threads.reset();
+        renderer.reset();
     }
 
     private boolean checkDown(Vec3d vec){
@@ -167,6 +206,8 @@ public class FlattenRewrite extends Module {
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
+        placeInfo.setBlockPos(pos);
+        placeInfo.setTarget((EntityLivingBase) enemy);
         if(mc.player.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > placeRange.getValDouble())
             return;
         swap(slot, false, SwapWhen.Place);
