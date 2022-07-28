@@ -17,7 +17,6 @@ import net.minecraft.util.math.Vec3d;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -40,6 +39,7 @@ public class FlattenRewrite extends Module {
     private final Setting keepY = register(new Setting("KeepY", this, true));
 
     private final Setting checkDown = register(new Setting("CheckDown", this, 2, 1, 8, true));
+    private final Setting alwaysCheckDown = register(new Setting("AlwaysCheckDown", this, false));
 
     private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 15, false));
     private final Setting swapEnemy = register(new Setting("SwapEnemy", this, false));
@@ -50,10 +50,14 @@ public class FlattenRewrite extends Module {
 
     private static FlattenRewrite instance;
 
-    private final Queue<BlockPos> blocks = new ConcurrentLinkedQueue<>();
+    private Queue<BlockPos> blocks = new ConcurrentLinkedQueue<>();
 
     // handle custom delay in separate thread
     private final Thread placeThread;
+
+    private Entity enemy = null;
+
+    private double enemyY;
 
     public FlattenRewrite() {
         super("FlattenRewrite", Category.COMBAT);
@@ -74,12 +78,85 @@ public class FlattenRewrite extends Module {
                 int oldSlot = mc.player.inventory.currentItem;
                 if(blocks.size() > 0)
                     placeBlock(blocks.poll(), oldSlot, slot);
+                blocks.poll();
                 toggled = this.isToggled();
             }
         });
+        placeThread.start();
     }
 
-    private void checkDown(){
+    @Override
+    public void update(){
+        if(mc.player == null || mc.world == null)
+            return;
+
+        boolean alreadyCheckedDown = false;
+
+        if(enemy == null || (swapEnemy.getValBoolean() && mc.player.getDistanceSq(enemy) > enemyRange.getValDouble())){
+            enemy = EntityUtil.getTarget(enemyRange.getValFloat());
+
+            if(enemy == null)
+                return;
+
+            enemyY = enemy.posY;
+
+            if(!checkDown(new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY : enemy.posY, enemy.posZ)))
+                return;
+
+            alreadyCheckedDown = true;
+        }
+
+        if(enemy == null)
+            return;
+
+        Vec3d vec = new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY : enemy.posY, enemy.posZ);
+
+        if(alwaysCheckDown.getValBoolean() && !alreadyCheckedDown)
+            if(!checkDown(vec))
+                return;
+
+        ((PlaceModeEnum.Modes) placeMode.getValEnum()).getTask().doTask(vec, enemy);
+
+        int slot = InventoryUtil.getBlockInHotbar(((BlockEnum.Blocks) block.getValEnum()).getTask().doTask());
+
+        int oldSlot = mc.player.inventory.currentItem;
+
+        swap(slot, false, SwapWhen.Tick);
+
+        if(placeDelay.getValEnum() == PlaceDelay.None){
+            for(BlockPos pos : blocks){
+                placeBlock(pos, oldSlot, slot);
+            }
+            blocks = new ConcurrentLinkedQueue<>();
+        } else if(blocks.size() > 0) {
+            placeBlock(blocks.poll(), oldSlot, slot);
+        }
+
+        swap(oldSlot, true, SwapWhen.Tick);
+
+        if(processPackets.getValBoolean()){
+            if (mc.player.connection.getNetworkManager().isChannelOpen())
+                mc.player.connection.getNetworkManager().processReceivedPackets();
+            else
+                mc.player.connection.getNetworkManager().checkDisconnected();
+
+        }
+    }
+
+    private boolean checkDown(Vec3d vec){
+        int beginAdd = -1;
+        for(int i = 0; i < checkDown.getValInt(); i++){
+            BlockPos pos = new BlockPos(vec.x, vec.y - i - 1, vec.z);
+            if(BlockUtil.getPossibleSides(pos).isEmpty())
+                continue;
+            beginAdd = i + 1;
+        }
+        if(beginAdd == -1)
+            return false;
+        for(int i = beginAdd; i >= 1; i--){
+            addIfAbsentAndReplaceable(new BlockPos(vec.x, vec.y - i, vec.z));
+        }
+        return true;
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
@@ -243,7 +320,7 @@ public class FlattenRewrite extends Module {
 
     private static final class SwapModeEnum {
 
-        private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(Void.class, int.class, boolean.class);
+        private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(Void.class, Integer.class, Boolean.class);
 
         public enum SwapModes {
             Vanilla(task.task(args -> {
