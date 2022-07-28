@@ -25,6 +25,7 @@ public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
     private final Setting placeMode = register(placeGroup.add(new Setting("PlaceMode", this, PlaceModeEnum.Modes.Sides)));
+    private final Setting placeRange = register(placeGroup.add(new Setting("PlaceRange", this, 5, 1, 10, false)));
     private final Setting placeDelay = register(placeGroup.add(new Setting("PlaceDelay", this, PlaceDelay.None)));
     private final Setting placeDelayMS = register(placeGroup.add(new Setting("PlaceDelayMS", this, 50, 0, 500, true).setVisible(() -> placeDelay.getValEnum() == PlaceDelay.DelayMS)));
 
@@ -109,7 +110,7 @@ public class FlattenRewrite extends Module {
         if(enemy == null)
             return;
 
-        Vec3d vec = new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY : enemy.posY, enemy.posZ);
+        Vec3d vec = new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY - 1.0 : enemy.posY - 1.0, enemy.posZ);
 
         if(alwaysCheckDown.getValBoolean() && !alreadyCheckedDown)
             if(!checkDown(vec))
@@ -139,8 +140,14 @@ public class FlattenRewrite extends Module {
                 mc.player.connection.getNetworkManager().processReceivedPackets();
             else
                 mc.player.connection.getNetworkManager().checkDisconnected();
-
         }
+    }
+
+    @Override
+    public void onDisable(){
+        blocks = new ConcurrentLinkedQueue<>();
+        enemy = null;
+        enemyY = 0.0;
     }
 
     private boolean checkDown(Vec3d vec){
@@ -160,9 +167,11 @@ public class FlattenRewrite extends Module {
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
+        if(mc.player.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > placeRange.getValDouble())
+            return;
         swap(slot, false, SwapWhen.Place);
         BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
-        swap(slot, true, SwapWhen.Place);
+        swap(oldSlot, true, SwapWhen.Place);
     }
 
     private void swap(int slot, boolean swapBack, SwapWhen when){
@@ -258,7 +267,7 @@ public class FlattenRewrite extends Module {
                 addAllIfAbsent(blocks);
                 return null;
             })),
-            PlayerPosition(false, task.task(args -> {
+            PlayerPosition(true, task.task(args -> {
                 Vec3d vec = args.fetch(0);
                 Entity entity = args.fetch(1);
                 BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
@@ -275,7 +284,7 @@ public class FlattenRewrite extends Module {
                 }
                 return null;
             })),
-            Player(false, task.task(args -> {
+            Player(true, task.task(args -> {
                 Vec3d vec = args.fetch(0);
                 Entity entity = args.fetch(1);
                 BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
