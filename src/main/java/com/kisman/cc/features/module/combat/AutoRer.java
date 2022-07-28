@@ -282,7 +282,6 @@ public class AutoRer extends Module {
         if(renderTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
             renderTimer.reset();
-            renderPos = null;
         }
 
         AutoRerUtil.Companion.getTargetFinder().update();

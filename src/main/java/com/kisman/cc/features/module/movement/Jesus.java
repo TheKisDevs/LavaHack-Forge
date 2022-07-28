@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.movement.MovementUtil;
 import me.zero.alpine.listener.*;
@@ -11,23 +12,19 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Jesus extends Module {
-    private final Setting mode = new Setting("Mode", this, "Matrix", new ArrayList<>(Arrays.asList("Matrix", "Matrix 6.3", "MatrixPixel", "Solid")));
-    private final Setting speedPixel = new Setting("Speed Pixel", this, 4, 3, 10, true);
+    private final Setting mode = register(new Setting("Mode", this, "Matrix", Arrays.asList("Matrix", "Matrix 6.3", "MatrixPixel", "Solid", "Entity")));
+    private final SettingGroup speeds = register(new SettingGroup(new Setting("Speeds", this)));
+    private final Setting speedPixel = register(speeds.add(new Setting("Speed Pixel", this, 4, 1, 10, true)));
+    private final Setting speedMatrix = register(speeds.add(new Setting("Speed Matrix", this, 0.6f, 0, 1, false)));
+    private final Setting speedSolid = register(speeds.add(new Setting("Speed Solid", this, 1, 0, 2, false)));
 
     public Jesus() {
         super("Jesus", Category.MOVEMENT);
-
-        setmgr.rSetting(mode);
-
-        Kisman.instance.settingsManager.rSetting(new Setting("Speed Matrix", this, 0.6f, 0, 1, false));
-        Kisman.instance.settingsManager.rSetting(new Setting("Speed Solid", this, 1, 0, 2, false));
-        setmgr.rSetting(speedPixel);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 
     public void onEnable() {
@@ -42,39 +39,33 @@ public class Jesus extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
-        super.setDisplayInfo("[" + mode.getValString() + TextFormatting.GRAY + "]");
-
-        if(mode.getValString().equalsIgnoreCase("Matrix")) {
-            float speed = (float) Kisman.instance.settingsManager.getSettingByName(this, "Speed Matrix").getValDouble();
-
+        if(mode.checkValString("Matrix")) {
             if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY - -0.37f, mc.player.posZ)).getBlock() == Blocks.WATER) {
                 mc.player.jump();
                 mc.player.jumpMovementFactor = 0;
 
-                mc.player.motionX *= speed;
-                mc.player.motionZ *= speed;
+                mc.player.motionX *= speedMatrix.getValDouble();
+                mc.player.motionZ *= speedMatrix.getValDouble();
                 mc.player.onGround = false;
 
                 if(mc.player.isInWater() || mc.player.isInLava()) mc.player.onGround = false;
             }
-        } else if(mode.getValString().equalsIgnoreCase("Solid")) {
-            float speed = (float) Kisman.instance.settingsManager.getSettingByName(this, "Speed Solid").getValDouble();
-
+        } else if(mode.checkValString("Solid")) {
             if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + 1, mc.player.posZ)).getBlock() == Block.getBlockById(9)) mc.player.motionY = 0.18f;
             else if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + 0.0000001, mc.player.posZ)).getBlock() == Block.getBlockById(9)) {
                 mc.player.fallDistance = 0.0f;
                 mc.player.motionX = 0.0;
-                mc.player.jumpMovementFactor = speed;
+                mc.player.jumpMovementFactor = speedSolid.getValFloat();
                 mc.player.motionY = 0;
             }
-        } else if(mode.getValString().equalsIgnoreCase("Matrix 6.3")) {
-            if (mc.player.isInWater())
-                if (mc.player.collidedHorizontally || mc.gameSettings.keyBindJump.isPressed()) {
-                    mc.player.motionY = 0.09;
-                    return;
-                }
+        } else if(mode.checkValString("Matrix 6.3")) {
+            if (mc.player.isInWater() && (mc.player.collidedHorizontally || mc.gameSettings.keyBindJump.isPressed())) {
+                mc.player.motionY = 0.09;
+                return;
+            }
+
             if (EntityUtil.isFluid(0.3)) mc.player.motionY = 0.1;
             else if (EntityUtil.isFluid(0.2)) {
                 EntityUtil.resetTimer();
@@ -85,7 +76,7 @@ public class Jesus extends Module {
                 mc.player.motionX = 0;
                 mc.player.motionZ = 0;
             }
-        } else {
+        } else if(mode.checkValString("MatrixPixel")) {
             if (EntityUtil.isFluid(-0.1)) MovementUtil.strafe(speedPixel.getValInt());
             if (EntityUtil.isFluid(0.0000001)) {
                 mc.player.fallDistance = 0.0f;
@@ -94,8 +85,11 @@ public class Jesus extends Module {
                 mc.player.motionY = 0.06f;
                 mc.player.jumpMovementFactor = 0.01f;
             }
+        } else if(mode.checkValString("Entity") && mc.player.isRiding() && EntityUtil.isInLiquid()) {
+            mc.player.motionY = 0.08500000238418583F;
+            mc.player.ridingEntity.motionY = 0.08500000238418583F;
         }
     }
 
-    @EventHandler private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {if((mode.getValString().equalsIgnoreCase("Matrix 6.3") || mode.getValString().equalsIgnoreCase("MatrixPixel")) && event.getPacket() instanceof CPacketPlayer && EntityUtil.isFluid(0.3)) ((CPacketPlayer) event.getPacket()).onGround = false;});
+    @EventHandler private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {if((mode.checkValString("Matrix 6.3") || mode.checkValString("MatrixPixel")) && event.getPacket() instanceof CPacketPlayer && EntityUtil.isFluid(0.3)) ((CPacketPlayer) event.getPacket()).onGround = false;});
 }

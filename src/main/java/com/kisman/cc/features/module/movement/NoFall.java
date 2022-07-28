@@ -17,14 +17,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.*;
 
 public class NoFall extends Module {
-    private Setting mode = new Setting("Mode", this, Mode.Packet);
+    private final Setting mode = register(new Setting("Mode", this, Mode.Packet));
 
-    private TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = new TimerUtils();
 
     public NoFall() {
         super("NoFall", Category.MOVEMENT);
-
-        setmgr.rSetting(mode);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 
     public void onEnable() {

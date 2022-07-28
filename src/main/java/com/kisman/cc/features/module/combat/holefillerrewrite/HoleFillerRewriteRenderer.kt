@@ -47,7 +47,8 @@ class HoleFillerRewriteRenderer {
         movingLength: Float,
         fadeLength: Float,
         renderer : RenderingRewritePattern,
-        placeInfo : PlaceInfo
+        placeInfo : PlaceInfo,
+        needTarget : Boolean
     ) {
         update(placeInfo)
 
@@ -55,7 +56,7 @@ class HoleFillerRewriteRenderer {
             currentPos?.let { currentPos ->
                 val multiplier = Easing.OUT_QUART.inc(Easing.toDelta(lastUpdateTime, movingLength))
                 val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier.toDouble()))
-                scale = if (placeInfo != null) {
+                scale = if (placeInfo.blockPos != null && (!needTarget || placeInfo.target != null)) {
                     Easing.OUT_CUBIC.inc(Easing.toDelta(startTime, fadeLength))
                 } else {
                     Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
@@ -76,10 +77,10 @@ class HoleFillerRewriteRenderer {
         )
     }
 
-    fun update(placeInfo: PlaceInfo?) {
-        val newBlockPos = placeInfo?.blockPos
+    fun update(placeInfo: PlaceInfo) {
+        val newBlockPos = placeInfo.blockPos
         if (newBlockPos != lastBlockPos) {
-            currentPos = AutoRerUtil.toVec3dCenter(placeInfo?.blockPos!!)
+            currentPos = if(placeInfo.blockPos != null) AutoRerUtil.toVec3dCenter(placeInfo.blockPos!!) else null
             prevPos = lastRenderPos ?: currentPos
             lastUpdateTime = System.currentTimeMillis()
             if (lastBlockPos == null) startTime = System.currentTimeMillis()

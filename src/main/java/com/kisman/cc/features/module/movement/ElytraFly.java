@@ -14,36 +14,21 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.play.client.CPacketEntityAction;
 
 public class ElytraFly extends Module {
-    private final Setting mode = new Setting("Mode", this, Mode.Control);
+    private final Setting mode = register(new Setting("Mode", this, Mode.Control));
 
-    private final Setting speed = new Setting("Speed", this, 1.82, 0, 10, false);
-    private final Setting downSpeed = new Setting("DownSpeed", this, 1.82, 0, 10, false);
-    private final Setting glideSpeed = new Setting("GlideSpeed", this, 1, 0, 10, false);
+    private final Setting speed = register(new Setting("Speed", this, 1.82, 0, 10, false));
+    private final Setting downSpeed = register(new Setting("DownSpeed", this, 1.82, 0, 10, false));
+    private final Setting glideSpeed = register(new Setting("GlideSpeed", this, 1, 0, 10, false));
 
-    private final Setting instantFly = new Setting("InstantFly", this, false);
-    private final Setting equipElytra = new Setting("EquipElytra", this, true);
-    private final Setting pitchSpoof = new Setting("PitchSpoof", this, false);
+    private final Setting instantFly = register(new Setting("InstantFly", this, false));
+    private final Setting equipElytra = register(new Setting("EquipElytra", this, true));
 
     private final TimerUtils instantFlyTimer = new TimerUtils();
-    public static ElytraFly instance;
     private int elytraSlot = -1;
 
     public ElytraFly() {
         super("ElytraFly", "ElytraFly", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + " | " + speed.getValInt() + "]");
-
-        instance = this;
-
-        setmgr.rSetting(mode);
-
-        setmgr.rSetting(speed);
-        setmgr.rSetting(downSpeed);
-        setmgr.rSetting(glideSpeed);
-
-
-        setmgr.rSetting(instantFly);
-        setmgr.rSetting(equipElytra);
-        setmgr.rSetting(pitchSpoof);
     }
 
     public void onEnable() {

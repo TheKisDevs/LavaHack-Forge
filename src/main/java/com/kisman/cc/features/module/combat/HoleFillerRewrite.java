@@ -80,7 +80,7 @@ public class HoleFillerRewrite extends Module {
 
     private int lim = 0;
 
-    private PlaceInfo placeInfo = null;
+    private final PlaceInfo placeInfo = new PlaceInfo(null, null);
 
     @Override
     public void onEnable() {
@@ -88,7 +88,6 @@ public class HoleFillerRewrite extends Module {
         targets.reset();
         threads.reset();
         renderer.reset();
-        placeInfo = null;
     }
 
     @Override
@@ -113,45 +112,35 @@ public class HoleFillerRewrite extends Module {
                     movingLength.getValFloat(),
                     fadeLength.getValFloat(),
                     renderer_,
-                    placeInfo
+                    placeInfo,
+                    !placeMode.getValString().equals("All")
             );
         }
     }
 
     private void placeHoleBlocks(Entity entity){
         int slot = getBlockSlot();
-        if(slot == -1)
-            return;
-        if(place.getValString().equals("Instant")){
-            holes.forEach(blockPos -> place(blockPos, slot));
-            placeTimer.reset();
-            return;
-        }
-        if(place.getValString().equals("Tick")){
-            placeHoleBlocksChained(entity, slot);
-            placeTimer.reset();
-            return;
-        }
-        if(place.getValString().equals("Delay") && placeTimer.passedMs(delay.getValInt())){
-            placeHoleBlocksChained(entity, slot);
-            placeTimer.reset();
-        }
+        if(slot == -1) return;
+        if(place.getValString().equals("Instant")) holes.forEach(blockPos -> place(blockPos, slot));
+        else if(place.getValString().equals("Tick")) placeHoleBlocksChained(entity, slot);
+        else if(place.getValString().equals("Delay") && placeTimer.passedMs(delay.getValInt())) placeHoleBlocksChained(entity, slot);
+
+        placeTimer.reset();
     }
 
     private void placeHoleBlocksChained(Entity entity, int slot){
         boolean clear = true;
         for(BlockPos pos : holes){
-            if(placed.contains(pos))
-                continue;
+            if(placed.contains(pos)) continue;
             if(!mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isEmpty()) continue;
-            placeInfo = new PlaceInfo((EntityLivingBase) entity, pos);
+            placeInfo.setTarget((EntityLivingBase) entity);
+            placeInfo.setBlockPos(pos);
             place(pos, slot);
             placed.add(pos);
             clear = false;
             break;
         }
-        if(clear)
-            placed.clear();
+        if(clear) placed.clear();
     }
 
     private List<BlockPos> getHoleBlocks(Entity entity){
@@ -159,12 +148,9 @@ public class HoleFillerRewrite extends Module {
         float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
         Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
         lim = 0;
-        if(singleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
-        if(doubleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
-        if(customHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
+        if(singleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
+        if(doubleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
+        if(customHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
         return holes;
     }
 

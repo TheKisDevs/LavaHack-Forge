@@ -16,33 +16,10 @@ import net.minecraft.util.math.Vec3d
  * @since 12:42 of 11.07.2022
  */
 open class PlaceInfo(
-    open var target: EntityLivingBase,
-    open var blockPos: BlockPos
+    open var target: EntityLivingBase?,
+    open var blockPos: BlockPos?
 ) {
     open var mc: Minecraft = Minecraft.getMinecraft()
-
-    class Mutable(
-        target: EntityLivingBase,
-        minDamage: Float
-    ) : PlaceInfo(target, BlockPos.ORIGIN) {
-        inline fun update(
-            target: EntityLivingBase,
-            blockPos: BlockPos
-        ) {
-            this.target = target
-            this.blockPos = blockPos
-        }
-
-        inline fun clear(player: EntityPlayerSP) {
-            update(player, BlockPos.ORIGIN)
-        }
-
-        inline fun takeValid(damage: Float): Mutable? {
-            return this.takeIf {
-                target != mc.player
-            }
-        }
-    }
 
     companion object {
         fun getElementFromListByPos(list : List<PlaceInfo>, pos : BlockPos): PlaceInfo? {
