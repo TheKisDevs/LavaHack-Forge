@@ -38,6 +38,7 @@ public class SurroundRewrite extends Module {
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting feetBlocks = register(new Setting("FeetBlocks", this, false));
+    private final Setting heightLimit = register(new Setting("HeightLimit", this, 256, 0, 256, true));
 
     private final Setting breakCrystals = register(new Setting("BreakCrystals", this, false));
 
@@ -227,6 +228,8 @@ public class SurroundRewrite extends Module {
                 return;
         }
         for(BlockPos pos : blocks){
+            if(pos.getY() > heightLimit.getValInt())
+                continue;
             if(!isReplaceable(pos)) continue;
             if(checkEntities(pos)) continue;
             swap.doSwap(slot, false);

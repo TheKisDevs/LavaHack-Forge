@@ -38,6 +38,7 @@ public class FlattenRewrite extends Module {
     private final Setting placeDelay = register(placeGroup.add(new Setting("PlaceDelay", this, PlaceDelay.None)));
     private final Setting placeDelayMS = register(placeGroup.add(new Setting("PlaceDelayMS", this, 50, 0, 500, true).setVisible(() -> placeDelay.getValEnum() == PlaceDelay.DelayMS)));
     private final Setting placeRetry = register(placeGroup.add(new Setting("PlaceRetry", this, false)));
+    private final Setting placeHeightLimit = register(placeGroup.add(new Setting("PlaceHeightLimit", this, 256, 0, 256, true)));
 
     private final SettingGroup swapGroup = register(new SettingGroup(new Setting("Swap", this)));
     private final Setting swapMode = register(swapGroup.add(new Setting("SwapMode", this, SwapModeEnum.SwapModes.Silent)));
@@ -106,11 +107,15 @@ public class FlattenRewrite extends Module {
                     continue;
                 }
                 BlockPos pos = blocks.peek();
-                if(entityCheck(pos) && !placeRetry.getValBoolean()){
-                    blocks.poll();
-                } else {
-                    placeBlock(pos, oldSlot, slot);
-                    blocks.poll();
+                place: {
+                    if(pos.getY() > placeHeightLimit.getValInt())
+                        break place;
+                    if(entityCheck(pos) && !placeRetry.getValBoolean()){
+                        blocks.poll();
+                    } else {
+                        placeBlock(pos, oldSlot, slot);
+                        blocks.poll();
+                    }
                 }
                 toggled = this.isToggled();
             }
@@ -159,6 +164,8 @@ public class FlattenRewrite extends Module {
         if(placeDelay.getValEnum() == PlaceDelay.None){
             List<BlockPos> placed = new ArrayList<>(blocks.size());
             for(BlockPos pos : blocks){
+                if(pos.getY() > placeHeightLimit.getValInt())
+                    continue;
                 if(entityCheck(pos)){
                     if(placeRetry.getValBoolean())
                         continue;
@@ -171,11 +178,15 @@ public class FlattenRewrite extends Module {
             blocks.removeAll(placed);
         } else if(blocks.size() > 0) {
             BlockPos pos = blocks.peek();
-            if(entityCheck(pos) && !placeRetry.getValBoolean()){
-                blocks.poll();
-            } else {
-                placeBlock(pos, oldSlot, slot);
-                blocks.poll();
+            place: {
+                if(pos.getY() > placeHeightLimit.getValInt())
+                    break place;
+                if(entityCheck(pos) && !placeRetry.getValBoolean()){
+                    blocks.poll();
+                } else {
+                    placeBlock(pos, oldSlot, slot);
+                    blocks.poll();
+                }
             }
         }
 
