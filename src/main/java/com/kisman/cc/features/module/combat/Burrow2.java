@@ -117,6 +117,10 @@ public class Burrow2 extends Module {
 
     @Override
     public void onEnable(){
+        if(mc.player == null){
+            this.setToggled(false);
+            return;
+        }
         oldPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
         if(centerPlayer.getValBoolean())
             centerPlayer();
