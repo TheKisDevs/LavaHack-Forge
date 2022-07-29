@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -36,6 +37,7 @@ public class FlattenRewrite extends Module {
     private final Setting placeRange = register(placeGroup.add(new Setting("PlaceRange", this, 5, 1, 10, false)));
     private final Setting placeDelay = register(placeGroup.add(new Setting("PlaceDelay", this, PlaceDelay.None)));
     private final Setting placeDelayMS = register(placeGroup.add(new Setting("PlaceDelayMS", this, 50, 0, 500, true).setVisible(() -> placeDelay.getValEnum() == PlaceDelay.DelayMS)));
+    private final Setting placeRetry = register(placeGroup.add(new Setting("PlaceRetry", this, false)));
 
     private final SettingGroup swapGroup = register(new SettingGroup(new Setting("Swap", this)));
     private final Setting swapMode = register(swapGroup.add(new Setting("SwapMode", this, SwapModeEnum.SwapModes.Silent)));
@@ -52,6 +54,7 @@ public class FlattenRewrite extends Module {
 
     private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 15, false));
     private final Setting swapEnemy = register(new Setting("SwapEnemy", this, false));
+    private final Setting predictCycles = register(new Setting("PredictCycles", this, 0, 0, 10, true).setVisible(() -> ((PlaceModeEnum.Modes) placeMode.getValEnum()).isPredictSupported()));
     private final Setting predictTicks = register(new Setting("PredictTicks", this, 2, 0, 20, true).setVisible(() -> ((PlaceModeEnum.Modes) placeMode.getValEnum()).isPredictSupported()));
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
@@ -98,9 +101,17 @@ public class FlattenRewrite extends Module {
                 if(slot == -1)
                     continue;
                 int oldSlot = mc.player.inventory.currentItem;
-                if(blocks.size() > 0)
-                    placeBlock(blocks.poll(), oldSlot, slot);
-                blocks.poll();
+                if(blocks.size() <= 0) {
+                    toggled = this.isToggled();
+                    continue;
+                }
+                BlockPos pos = blocks.peek();
+                if(entityCheck(pos) && !placeRetry.getValBoolean()){
+                    blocks.poll();
+                } else {
+                    placeBlock(pos, oldSlot, slot);
+                    blocks.poll();
+                }
                 toggled = this.isToggled();
             }
         });
@@ -146,12 +157,26 @@ public class FlattenRewrite extends Module {
         swap(slot, false, SwapWhen.Tick);
 
         if(placeDelay.getValEnum() == PlaceDelay.None){
+            List<BlockPos> placed = new ArrayList<>(blocks.size());
             for(BlockPos pos : blocks){
+                if(entityCheck(pos)){
+                    if(placeRetry.getValBoolean())
+                        continue;
+                    placed.add(pos);
+                    continue;
+                }
                 placeBlock(pos, oldSlot, slot);
+                placed.add(pos);
             }
-            blocks = new ConcurrentLinkedQueue<>();
+            blocks.removeAll(placed);
         } else if(blocks.size() > 0) {
-            placeBlock(blocks.poll(), oldSlot, slot);
+            BlockPos pos = blocks.peek();
+            if(entityCheck(pos) && !placeRetry.getValBoolean()){
+                blocks.poll();
+            } else {
+                placeBlock(pos, oldSlot, slot);
+                blocks.poll();
+            }
         }
 
         swap(oldSlot, true, SwapWhen.Tick);
@@ -203,6 +228,10 @@ public class FlattenRewrite extends Module {
             addIfAbsentAndReplaceable(new BlockPos(vec.x, vec.y - i, vec.z));
         }
         return true;
+    }
+
+    private boolean entityCheck(BlockPos pos){
+        return !mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos)).isEmpty();
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
@@ -316,7 +345,8 @@ public class FlattenRewrite extends Module {
                 double x = vec.x;
                 double y = vec.y;
                 double z = vec.z;
-                for(int i = 0; i < instance.predictTicks.getValInt(); i++){
+                int predictAmount = instance.predictCycles.getValInt() * 20 + instance.predictTicks.getValInt();
+                for(int i = 0; i < predictAmount; i++){
                     x += entity.motionX;
                     if(!instance.keepY.getValBoolean()) y += entity.motionY;
                     z += entity.motionZ;
@@ -333,7 +363,8 @@ public class FlattenRewrite extends Module {
                 double x = vec.x;
                 double y = vec.y;
                 double z = vec.z;
-                for(int i = 0; i < instance.predictTicks.getValInt(); i++){
+                int predictAmount = instance.predictCycles.getValInt() * 20 + instance.predictTicks.getValInt();
+                for(int i = 0; i < predictAmount; i++){
                     x += entity.motionX;
                     if(!instance.keepY.getValBoolean()) y += entity.motionY;
                     z += entity.motionZ;
