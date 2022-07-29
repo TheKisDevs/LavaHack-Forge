@@ -117,7 +117,7 @@ public class Burrow2 extends Module {
 
     @Override
     public void onEnable(){
-        if(mc.player == null){
+        if(mc.player == null || mc.world == null){
             this.setToggled(false);
             return;
         }
