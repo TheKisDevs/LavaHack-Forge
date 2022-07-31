@@ -50,6 +50,7 @@ public class ModuleManager {
 		modules.add(new Meow());
 		modules.add(new NoMove());
 		modules.add(new PacketIDGetterTest());
+		modules.add(new RectTest());
 		modules.add(new SmoothRenderer());
 		modules.add(new TextFieldTest());
 		modules.add(new Triangulation());
@@ -122,6 +123,7 @@ public class ModuleManager {
 //		modules.add(new PearlTracer());
 		modules.add(new PopCharms());
 		modules.add(new RangeVisualisator());
+		modules.add(new ScreenTint());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new SpawnsESP());

@@ -387,6 +387,6 @@ public class MathUtil {
     }
 
     public static double curve2(double a){
-        return Math.sqrt(2.0 - (a * a) - 2.0 * a);
+        return Math.sqrt(-(a * a) - 2 * a);
     }
 }
