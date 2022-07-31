@@ -380,4 +380,13 @@ public class MathUtil {
         }
         return blocks;
     }
+
+    public static double curve(double a){
+        double x = a - 1.0;
+        return Math.sqrt(1.0 - (x * x));
+    }
+
+    public static double curve2(double a){
+        return Math.sqrt(-(a * a) - 2 * a);
+    }
 }
