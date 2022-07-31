@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,7 +18,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glLineWidth;
 
 public class Breadcrumbs extends Module {
 
@@ -38,21 +37,20 @@ public class Breadcrumbs extends Module {
 
     private final Queue<AxisAlignedBB> lines = new ConcurrentLinkedQueue<>();
 
-    private final Timer smoothTimer = new Timer();
+    private final TimerUtils smoothTimer = new TimerUtils();
 
     private double lastX;
     private double lastY;
     private double lastZ;
 
-    @SubscribeEvent
-    public void onRender(RenderWorldLastEvent event){
-        if(mc.player == null || mc.world == null){
-            smoothTimer.reset();
-            return;
-        }
+    public void update() {
+        if(mc.player == null || mc.world == null) smoothTimer.reset();
+    }
 
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event) {
         if(smooth.getValBoolean()){
-            if(!smoothTimer.passedMs(50))
+            if(!smoothTimer.passedMillis(50))
                 return;
             smoothTimer.reset();
             draw();
@@ -63,8 +61,8 @@ public class Breadcrumbs extends Module {
     }
 
     @Override
-    public void onDisable(){
-        super.onDisable();
+    public void onEnable(){
+        super.onEnable();
         smoothTimer.reset();
     }
 

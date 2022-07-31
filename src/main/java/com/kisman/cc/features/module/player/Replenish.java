@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.player;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.Item;
@@ -27,7 +27,7 @@ public class Replenish extends Module {
         super("Replenish", Category.PLAYER);
     }
 
-    private final Timer timer = new Timer();
+    private final TimerUtils timer = new TimerUtils();
 
     @Override
     public void onEnable(){
@@ -41,7 +41,7 @@ public class Replenish extends Module {
 
         int delay = this.delay.getValInt();
 
-        if(delay > 0 && !timer.passedMs(delay)){
+        if(delay > 0 && !timer.passedMillis(delay)){
             return;
         } else {
             timer.reset();

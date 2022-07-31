@@ -45,7 +45,7 @@ class EntityESPRendererPattern(
 
     private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup) : ArrayList<EntityESPSetting> {
         val mode = Setting("${typeE.name} Mode", module, EntityESPModes.None)
-        val pattern = RenderingRewritePattern(module, Supplier{ mode.valEnum == EntityESPModes.Cubic }, "${typeE.name} Cubic")
+        val pattern = RenderingRewritePattern(module).visible(Supplier{ mode.valEnum == EntityESPModes.Cubic }).prefix("${typeE.name} Cubic")
         return ArrayList(listOf(
                 EntityESPSetting(group.add(mode), typeE, SettingTypes.Mode),
                 EntityESPSetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),

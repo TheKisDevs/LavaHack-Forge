@@ -2,13 +2,14 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.combat.holefillerrewrite.*;
+import com.kisman.cc.features.module.combat.holefillerrewrite.HoleFillerRewriteRenderer;
+import com.kisman.cc.features.module.combat.holefillerrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -36,11 +37,12 @@ public class HoleFillerRewrite extends Module {
     private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
 
-    private final Setting obsidianHoles = register(logic.add(new Setting("ObsidianHoles", this, true)));
-    private final Setting bedrockHoles = register(logic.add(new Setting("BedrockHoles", this, true)));
-    private final Setting singleHoles = register(logic.add(new Setting("SingleHoles", this, true)));
-    private final Setting doubleHoles = register(logic.add(new Setting("DoubleHoles", this, true)));
-    private final Setting customHoles = register(logic.add(new Setting("CustomHoles", this, true)));
+    private final SettingGroup holesGroup = register(logic.add(new SettingGroup(new Setting("Holes", this))));
+    private final Setting obsidianHoles = register(holesGroup.add(new Setting("ObsidianHoles", this, true).setTitle("Obby")));
+    private final Setting bedrockHoles = register(holesGroup.add(new Setting("BedrockHoles", this, true).setTitle("Bebrock")));
+    private final Setting singleHoles = register(holesGroup.add(new Setting("SingleHoles", this, true).setTitle("1x1")));
+    private final Setting doubleHoles = register(holesGroup.add(new Setting("DoubleHoles", this, true).setTitle("2x1")));
+    private final Setting customHoles = register(holesGroup.add(new Setting("CustomHoles", this, true).setTitle("Custom")));
     private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
     private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
     private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
@@ -53,10 +55,9 @@ public class HoleFillerRewrite extends Module {
     private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
     private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
 
-    private final Setting render = register(render_.add(new Setting("Render", this, true)));
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
 
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
@@ -74,7 +75,7 @@ public class HoleFillerRewrite extends Module {
 
     private List<BlockPos> holes = new ArrayList<>();
 
-    private final Timer placeTimer = new Timer();
+    private final TimerUtils placeTimer = new TimerUtils();
 
     private final Set<BlockPos> placed = new HashSet<>(512);
 
@@ -107,7 +108,7 @@ public class HoleFillerRewrite extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(render.getValBoolean()) {
+        if(renderer_.isActive()) {
             renderer.onRenderWorld(
                     movingLength.getValFloat(),
                     fadeLength.getValFloat(),
@@ -123,7 +124,7 @@ public class HoleFillerRewrite extends Module {
         if(slot == -1) return;
         if(place.getValString().equals("Instant")) holes.forEach(blockPos -> place(blockPos, slot));
         else if(place.getValString().equals("Tick")) placeHoleBlocksChained(entity, slot);
-        else if(place.getValString().equals("Delay") && placeTimer.passedMs(delay.getValInt())) placeHoleBlocksChained(entity, slot);
+        else if(place.getValString().equals("Delay") && placeTimer.passedMillis(delay.getValInt())) placeHoleBlocksChained(entity, slot);
 
         placeTimer.reset();
     }

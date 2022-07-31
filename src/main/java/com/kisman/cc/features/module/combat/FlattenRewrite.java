@@ -9,9 +9,10 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.RenderingRewriteModes;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.Entity;
@@ -33,18 +34,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
-    private final Setting placeMode = register(placeGroup.add(new Setting("PlaceMode", this, PlaceModeEnum.Modes.Sides)));
-    private final Setting placeRange = register(placeGroup.add(new Setting("PlaceRange", this, 5, 1, 10, false)));
-    private final Setting placeDelay = register(placeGroup.add(new Setting("PlaceDelay", this, PlaceDelay.None)));
-    private final Setting placeDelayMS = register(placeGroup.add(new Setting("PlaceDelayMS", this, 50, 0, 500, true).setVisible(() -> placeDelay.getValEnum() == PlaceDelay.DelayMS)));
-    private final Setting placeRetry = register(placeGroup.add(new Setting("PlaceRetry", this, false)));
-    private final Setting placeHeightLimit = register(placeGroup.add(new Setting("PlaceHeightLimit", this, 256, 0, 256, true)));
+    private final Setting placeMode = register(placeGroup.add(new Setting("PlaceMode", this, PlaceModeEnum.Modes.Sides).setTitle("Mode")));
+    private final Setting placeRange = register(placeGroup.add(new Setting("PlaceRange", this, 5, 1, 10, false).setTitle("Range")));
+    private final Setting placeDelay = register(placeGroup.add(new Setting("PlaceDelay", this, PlaceDelay.None).setTitle("Delay Mode")));
+    private final Setting placeDelayMS = register(placeGroup.add(new Setting("PlaceDelayMS", this, 50, 0, 500, NumberType.TIME).setVisible(() -> placeDelay.getValEnum() == PlaceDelay.DelayMS).setTitle("Delay")));
+    private final Setting placeRetry = register(placeGroup.add(new Setting("PlaceRetry", this, false).setTitle("Retry")));
+    private final Setting placeHeightLimit = register(placeGroup.add(new Setting("PlaceHeightLimit", this, 256, 0, 256, true).setTitle("Height Limit")));
 
     private final SettingGroup swapGroup = register(new SettingGroup(new Setting("Swap", this)));
-    private final Setting swapMode = register(swapGroup.add(new Setting("SwapMode", this, SwapModeEnum.SwapModes.Silent)));
-    private final Setting swapWhen = register(swapGroup.add(new Setting("SwapWhen", this, SwapWhen.Place)));
-    private final Setting swapSyncItem = register(swapGroup.add(new Setting("SyncItem", this, false)));
-    private final Setting swapSyncItemWhen = register(swapGroup.add(new Setting("SyncItemWhen", this, SyncItemWhen.AfterSwap).setVisible(swapSyncItem::getValBoolean)));
+    private final Setting swapMode = register(swapGroup.add(new Setting("SwapMode", this, SwapModeEnum.SwapModes.Silent).setTitle("Mode")));
+    private final Setting swapWhen = register(swapGroup.add(new Setting("SwapWhen", this, SwapWhen.Place).setTitle("When")));
+    private final SettingGroup syncItemGroup = register(swapGroup.add(new SettingGroup(new Setting("Sync Item", this))));
+    private final Setting swapSyncItem = register(syncItemGroup.add(new Setting("SyncItem", this, false).setTitle("Sync")));
+    private final Setting swapSyncItemWhen = register(syncItemGroup.add(new Setting("SyncItemWhen", this, SyncItemWhen.AfterSwap).setVisible(swapSyncItem::getValBoolean).setTitle("When")));
 
     private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
 
@@ -62,10 +64,9 @@ public class FlattenRewrite extends Module {
     private final Setting processPackets = register(new Setting("ProcessPackets", this, false));
 
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
-    private final Setting render = register(render_.add(new Setting("Render", this, true)));
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, render::getValBoolean, null, render_).preInit();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(render::getValBoolean)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
 
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
@@ -89,12 +90,12 @@ public class FlattenRewrite extends Module {
         super("FlattenRewrite", Category.COMBAT);
         instance = this;
         placeThread = new Thread(() -> {
-            Timer timer = new Timer();
+            TimerUtils timer = new TimerUtils();
             boolean toggled = this.isToggled();
             while(toggled){
                 if(placeDelay.getValEnum() != PlaceDelay.DelayMS)
                     continue;
-                if(!timer.passedMs(placeDelayMS.getValInt())){
+                if(!timer.passedMillis(placeDelayMS.getValInt())){
                     toggled = this.isToggled();
                     continue;
                 }
@@ -110,12 +111,10 @@ public class FlattenRewrite extends Module {
                 place: {
                     if(pos.getY() > placeHeightLimit.getValInt())
                         break place;
-                    if(entityCheck(pos) && !placeRetry.getValBoolean()){
-                        blocks.poll();
-                    } else {
+                    if(!entityCheck(pos) && placeRetry.getValBoolean()){
                         placeBlock(pos, oldSlot, slot);
-                        blocks.poll();
                     }
+                    blocks.poll();
                 }
                 toggled = this.isToggled();
             }
@@ -125,33 +124,25 @@ public class FlattenRewrite extends Module {
 
     @Override
     public void update(){
-        if(mc.player == null || mc.world == null)
-            return;
+        if(mc.player == null || mc.world == null) return;
 
         boolean alreadyCheckedDown = false;
 
         if(enemy == null || swapEnemy.getValBoolean()){
-            enemy = targets.getTarget(enemyRange.getValFloat());//EntityUtil.getTarget(enemyRange.getValFloat());
+            enemy = targets.getTarget(enemyRange.getValFloat());
 
-            if(enemy == null)
-                return;
+            if(enemy == null) return;
 
             enemyY = enemy.posY;
 
-            if(!checkDown(new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY : enemy.posY, enemy.posZ)))
-                return;
+            if(!checkDown(new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY : enemy.posY, enemy.posZ))) return;
 
             alreadyCheckedDown = true;
         }
 
-        if(enemy == null)
-            return;
-
         Vec3d vec = new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY - 1.0 : enemy.posY - 1.0, enemy.posZ);
 
-        if(alwaysCheckDown.getValBoolean() && !alreadyCheckedDown)
-            if(!checkDown(vec))
-                return;
+        if(alwaysCheckDown.getValBoolean() && !alreadyCheckedDown && !checkDown(vec))             return;
 
         ((PlaceModeEnum.Modes) placeMode.getValEnum()).getTask().doTask(vec, enemy);
 
@@ -164,12 +155,9 @@ public class FlattenRewrite extends Module {
         if(placeDelay.getValEnum() == PlaceDelay.None){
             List<BlockPos> placed = new ArrayList<>(blocks.size());
             for(BlockPos pos : blocks){
-                if(pos.getY() > placeHeightLimit.getValInt())
-                    continue;
+                if(pos.getY() > placeHeightLimit.getValInt()) continue;
                 if(entityCheck(pos)){
-                    if(placeRetry.getValBoolean())
-                        continue;
-                    placed.add(pos);
+                    if(!placeRetry.getValBoolean()) placed.add(pos);
                     continue;
                 }
                 placeBlock(pos, oldSlot, slot);
@@ -179,30 +167,23 @@ public class FlattenRewrite extends Module {
         } else if(blocks.size() > 0) {
             BlockPos pos = blocks.peek();
             place: {
-                if(pos.getY() > placeHeightLimit.getValInt())
-                    break place;
-                if(entityCheck(pos) && !placeRetry.getValBoolean()){
-                    blocks.poll();
-                } else {
-                    placeBlock(pos, oldSlot, slot);
-                    blocks.poll();
-                }
+                if(pos.getY() > placeHeightLimit.getValInt()) break place;
+                if (!entityCheck(pos) || placeRetry.getValBoolean()) placeBlock(pos, oldSlot, slot);
+                blocks.poll();
             }
         }
 
         swap(oldSlot, true, SwapWhen.Tick);
 
         if(processPackets.getValBoolean()){
-            if (mc.player.connection.getNetworkManager().isChannelOpen())
-                mc.player.connection.getNetworkManager().processReceivedPackets();
-            else
-                mc.player.connection.getNetworkManager().checkDisconnected();
+            if (mc.player.connection.getNetworkManager().isChannelOpen()) mc.player.connection.getNetworkManager().processReceivedPackets();
+            else mc.player.connection.getNetworkManager().checkDisconnected();
         }
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(render.getValBoolean()) {
+        if(renderer_.getMode().getValEnum() != RenderingRewriteModes.None) {
             renderer.onRenderWorld(
                     movingLength.getValFloat(),
                     fadeLength.getValFloat(),

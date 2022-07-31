@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.Debug;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 
 /**
@@ -15,7 +15,7 @@ public class ChatPrint extends Module {
         // init chat utility
     }
 
-    private final Timer timer = new Timer();
+    private final TimerUtils timer = new TimerUtils();
 
     @Override
     public void onEnable(){
@@ -26,7 +26,7 @@ public class ChatPrint extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        if(timer.passedMs(5000)){
+        if(timer.passedMillis(5000)){
             ChatUtility.info().printClientModuleMessage("5000 ms passed");
             ChatUtility.complete().printClassMessage("5000 ms complete");
             ChatUtility.message().printModuleMessage("5000 ms");

@@ -9,7 +9,6 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.*
  * @author _kisman_
  * @since 12:13 of 04.07.2022
  */
-@Name(LavaFalconMod.NAME)
 @MCVersion("1.12.2")
 class LavaFalconCoreMod : IFMLLoadingPlugin {
     private val lavahackMixinLoader : Any
@@ -19,7 +18,7 @@ class LavaFalconCoreMod : IFMLLoadingPlugin {
             Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
         } else {
             load()
-
+            LavaFalconMod.lavahack = Class.forName("com.kisman.cc.Kisman")
         }
 
         lavahackMixinLoader = Class.forName("com.kisman.cc.mixin.KismanMixinLoader").newInstance()
@@ -30,11 +29,6 @@ class LavaFalconCoreMod : IFMLLoadingPlugin {
             e.printStackTrace()
             exit()
         }*/
-    }
-
-    private fun exit() {
-        println("Cant find main class of lavahack or preInit/init method or instance field! Shutdown!")
-        Minecraft.getMinecraft().shutdown()
     }
 
     override fun getModContainerClass(): String? = null

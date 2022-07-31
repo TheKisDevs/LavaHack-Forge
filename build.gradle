@@ -211,32 +211,58 @@ task privateJar(type : Jar, dependsOn : jar) {
     classifier = 'kisman.cc-b0.1.6.5-plus'
 }
 
+task kismanClass(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        include 'Main.class'
+    }
+
+    baseName = ''
+    version = ''
+    classifier = 'KismanClass'
+}
+
 task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
-        include 'com/kisman/cc/**'
-        exclude 'me/zero/alpine/**'
-        exclude 'org/**'
+//        exclude "com/kisman/cc/loader/**"
+        include "com/kisman/cc/sockets/**"
+
+        include 'com/kisman/cc/ai/**'
+        include 'com/kisman/cc/api/**'
+        include 'com/kisman/cc/event/**'
+        include 'com/kisman/cc/features/**'
+        include 'com/kisman/cc/gui/**'
+        include 'com/kisman/cc/mixin/**'
+        include 'com/kisman/cc/settings/**'
+        include 'com/kisman/cc/util/**'
+        include 'com/kisman/cc/Kisman.class'
+        include 'com/kisman/cc/KismanStatic.class'
+        include 'com/kisman/cc/RPC.class'
+
+//        exclude 'me/zero/alpine/**'
+        include 'org/cubic/**'
         include 'the/kis/devs/api/**'
         include 'mixins.Kisman.json'
         include 'mixins.kisman.refmap.json'
-        include 'mappings/**'
-        include 'Main.class'
-        include 'assets/**'
+//        include 'mappings/**'
+//        include 'Main.class'
+        include 'assets/kismancc'
+        include 'net/**'
+        include 'sun/**'
 
-        exclude 'kotlin/**'
-        exclude 'kotlinx/**'
-        exclude 'darwin/**'
-        exclude 'linux-x86-64/**'
-        exclude 'win32-x86/**'
-        exclude 'win32-x86-64/**'
-        exclude 'pack.mcmeta'
-        exclude 'mcmod.info'
-        exclude 'mixins.loader.json'
-        exclude 'mixins.loader.refmap.json'
+//        exclude 'us/myles/**'
+//        exclude 'kotlin/**'
+//        exclude 'kotlinx/**'
+//        exclude 'darwin/**'
+//        exclude 'linux-x86-64/**'
+//        exclude 'win32-x86/**'
+//        exclude 'win32-x86-64/**'
+//        exclude 'pack.mcmeta'
+//        exclude 'mcmod.info'
+//        exclude 'mixins.loader.json'
+//        exclude 'mixins.loader.refmap.json'
 
-        exclude 'META-INF/services/**'
-        exclude 'kisman_at.cfg'
-        exclude "com/kisman/cc/loader/**"
+//        exclude 'META-INF/services/**'
+//        exclude 'kisman_at.cfg'
     }
     baseName = ''
     version = ''
@@ -246,8 +272,10 @@ task publicJar(type : Jar, dependsOn : jar) {
 task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
 
-        include "com/kisman/cc/loader/**"
-        include "com/kisman/cc/sockets/**"
+//        include "com/kisman/cc/loader/**"
+//        include "com/kisman/cc/sockets/**"
+
+
         exclude 'com/kisman/cc/ai/**'
         exclude 'com/kisman/cc/api/**'
         exclude 'com/kisman/cc/event/**'
@@ -256,36 +284,46 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'com/kisman/cc/mixin/**'
         exclude 'com/kisman/cc/settings/**'
         exclude 'com/kisman/cc/util/**'
-        exclude 'com/kisman/cc/Kisman.class/**'
-        exclude 'com/kisman/cc/KismanStatic.class/**'
-        exclude 'com/kisman/cc/RPC.class/**'
-        include 'me/zero/alpine/**'
-        include 'org/**'
+        exclude 'com/kisman/cc/Kisman.class'
+        exclude 'com/kisman/cc/KismanStatic.class'
+        exclude 'com/kisman/cc/RPC.class'
+//        include 'me/zero/alpine/**'
+//        include 'org/**'
         exclude 'the/kis/devs/api/**'
         exclude 'mixins.Kisman.json'
         exclude 'mixins.kisman.refmap.json'
-        exclude 'mappings/**'
 
-        include 'mcmod.info'
-        include 'pack.mcmeta'
-        include 'kisman_at.cfg'
-        include 'mixins.loader.json'
-        include 'mixins.loader.refmap.json'
+//        exclude 'mappings/**'
 
-        include "team/**"
-        exclude 'assets/**'
-        include "org/spongepowered/**"
-        include "kotlin/**"
-        include "kotlinx/**"
-        include "win32-x86-64/**"
-        include "win32-x86/**"
-        include "linux-x86-64/**"
-        include "darwin/**"
-        include "club/**"
-        include "com/**"
-        include "META-INF/**"
-        exclude "META-INF/fml_cache_class_versions.json"
-        exclude "META-INF/fml_cache_annotation.json"
+//        include 'mcmod.info'
+//        include 'pack.mcmeta'
+//        include 'kisman_at.cfg'
+//        include 'mixins.loader.json'
+//        include 'mixins.loader.refmap.json'
+//        include 'mixins.baritone.json'
+//        include 'mixins.baritone.refmap.json'
+
+        exclude 'assets/kismancc/**'
+
+//        include "us/myles/**"
+//        include "team/**"
+//        include 'assets/schmatica/**'
+//        include 'assets/viabackwards/**'
+//        include 'assets/viaversion/**'
+//        include "org/spongepowered/**"
+        exclude 'org/cubic/**'
+        exclude 'Main.class'
+//        include "kotlin/**"
+//        include "kotlinx/**"
+//        include "win32-x86-64/**"
+//        include "win32-x86/**"
+//        include "linux-x86-64/**"
+//        include "darwin/**"
+//        include "club/**"
+//        include "com/**"
+//        include "META-INF/**"
+//        exclude "META-INF/fml_cache_class_versions.json"
+//        exclude "META-INF/fml_cache_annotation.json"
     }
     manifest {
         attributes(

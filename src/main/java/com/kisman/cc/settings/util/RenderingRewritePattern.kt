@@ -14,13 +14,27 @@ import java.util.function.Supplier
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "HasPlatformType")
 class RenderingRewritePattern(
-    val module : Module,
-    val visible : Supplier<Boolean> = (Supplier { true }),
-    val prefix : String?,
-    val group : SettingGroup? = null
+    val module : Module
 ) {
-    constructor(module : Module, visible : Supplier<Boolean>, prefix : String) : this(module, visible, prefix, null)
-    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null, null)
+    var visible : Supplier<Boolean> = (Supplier { true })
+    var prefix : String? = null
+    var group : SettingGroup? = null
+
+    fun visible(visible : Supplier<Boolean>) : RenderingRewritePattern {
+        this.visible = visible
+        return this
+    }
+
+    fun prefix(prefix : String) : RenderingRewritePattern {
+        this.prefix = prefix
+        return this
+    }
+
+    fun group(group : SettingGroup) : RenderingRewritePattern {
+        this.group = group
+        return this
+    }
+
 
     val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.None).setVisible { visible.get() }.setTitle("Mode")
     val abyss = Setting("Abyss", module, false)
@@ -31,9 +45,9 @@ class RenderingRewritePattern(
     val rainbowGroup = SettingGroup(Setting("Rainbow", module))
     val rainbow = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Rainbow", module, false))
     val rainbowSpeed = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Rainbow Speed", module, 1.0, 0.25, 5.0, false).setTitle("Speed"))
-    val rainbowSat = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}.setTitle("Sat"))
-    val rainbowBright = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}.setTitle("Bright"))
-    val rainbowGlow = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}.setTitle("Glow"))
+    val rainbowSat = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat"))
+    val rainbowBright = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright"))
+    val rainbowGlow = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible(rainbow).setTitle("Glow"))
 
     //Colors
     val colorGroup = SettingGroup(Setting("Colors", module))
@@ -49,14 +63,14 @@ class RenderingRewritePattern(
     })
 
     fun preInit() : RenderingRewritePattern {
-        if(group == null) {
-            return this
+        if(group != null) {
+            group!!.add(mode)
+            group!!.add(abyss)
+            group!!.add(lineWidth)
+            group!!.add(rainbowGroup)
+            group!!.add(colorGroup)
         }
-        group.add(mode)
-        group.add(abyss)
-        group.add(lineWidth)
-        group.add(rainbowGroup)
-        group.add(colorGroup)
+
         return this
     }
 
@@ -77,8 +91,17 @@ class RenderingRewritePattern(
         return this
     }
 
-    fun draw(aabb : AxisAlignedBB) {
-        if(mode.valEnum == RenderingRewriteModes.None) {
+    fun isActive() : Boolean {
+        return mode.valEnum != RenderingRewriteModes.None
+    }
+
+    fun draw(
+        aabb : AxisAlignedBB,
+        color1: Colour,
+        color2 : Colour,
+        mode : Rendering.Mode?
+    ) {
+        if(!isActive() || mode == null) {
             return
         }
 
@@ -105,6 +128,29 @@ class RenderingRewritePattern(
         Rendering.draw(
             Rendering.correct(a),
             lineWidth.valFloat,
+            color1,
+            color2,
+            mode
+        )
+    }
+
+    fun draw(
+        aabb : AxisAlignedBB,
+        color1: Colour,
+        color2 : Colour,
+        mode : RenderingRewriteModes
+    ) {
+        draw(
+            aabb,
+            color1,
+            color2,
+            mode.mode
+        )
+    }
+
+    fun draw(aabb : AxisAlignedBB) {
+        draw(
+            aabb,
             getColor1(),
             getColor2(),
             (mode.valEnum as RenderingRewriteModes).mode

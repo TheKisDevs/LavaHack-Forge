@@ -1,15 +1,15 @@
 [
   {
-    "modid": "lavafalcon",
-    "name": "LavaFalcon",
+    "modid": "loader",
+    "name": "Loader",
     "description": "LavaHack Loader",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://github.com/TheKisDevs/LavaHack",
     "updateUrl": "",
-    "authorList": ["_kisman_"],
-    "credits": ["https://github.com/TheKisDevs/LavaHack"],
-    "logoFile": "assets/kismancc/banner.png",
+    "authorList": ["_kisman_", "maywr"],
+    "credits": "meraki-loader",
+    "logoFile": "",
     "screenshots": [],
     "dependencies": []
   }

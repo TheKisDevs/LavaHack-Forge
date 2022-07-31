@@ -1,8 +1,12 @@
 package com.kisman.cc.loader;
 
+import net.minecraft.client.Minecraft;
+import sun.misc.Unsafe;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,5 +45,23 @@ public class Utility {
         byte[] buffer = new byte[0xFFFF];
         for (int len = is.read(buffer); len != -1; len = is.read(buffer)) os.write(buffer, 0, len);
         return os.toByteArray();
+    }
+
+    public static void unsafeCrash() {
+        Unsafe unsafe = null;
+        try {
+            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
+            f.setAccessible( true );
+            unsafe = ( Unsafe ) f.get( null );
+        } catch (Exception e) {
+            System.exit( -1 );
+            for (Field f : Minecraft.class.getDeclaredFields()) {
+                try {
+                    f.set( null, null );
+                } catch (IllegalAccessException ignored) {}
+            }
+        }
+        unsafe.putAddress(0L, 0L);
+        unsafe.freeMemory(0L);
     }
 }

@@ -4,10 +4,10 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.RotationUtils;
-import com.kisman.cc.util.Timer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -53,7 +53,7 @@ public class SurroundRewrite extends Module {
 
     private static SurroundRewrite instance;
 
-    private final Timer timer = new Timer();
+    private final TimerUtils timer = new TimerUtils();
 
     private double lastY = -1;
 
@@ -120,7 +120,7 @@ public class SurroundRewrite extends Module {
     }
 
     private void breakCrystals(List<BlockPos> blocks){
-        if(!timer.passedMs(cbDelay.getValInt()))
+        if(!timer.passedMillis(cbDelay.getValInt()))
             return;
         //List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};

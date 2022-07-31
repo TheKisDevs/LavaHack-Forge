@@ -1,44 +1,60 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
-import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.enums.RenderingRewriteModes;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.event.events.EventPlayerMotionUpdate;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.features.module.combat.autorer.*;
+import com.kisman.cc.features.module.combat.autorer.AutoRerUtil;
+import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.*;
-import com.kisman.cc.util.enums.ShaderModes;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.entity.RotationSaver;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.RotationLogic;
+import com.kisman.cc.util.enums.ShaderModes;
+import com.kisman.cc.util.enums.dynamic.RotationEnum;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.thread.kisman.ThreadHandler;
-import com.kisman.cc.util.world.*;
-import me.zero.alpine.listener.*;
+import com.kisman.cc.util.world.CrystalUtils;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.network.play.server.*;
-import net.minecraft.util.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.network.play.server.SPacketSpawnObject;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,7 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
-@SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions"})
+@SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
@@ -90,50 +106,56 @@ public class AutoRer extends Module {
     private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, true)));
     private final Setting sound = register(helpers.add(new Setting("Sound", this, true)));
     public final Setting syns = register(helpers.add(new Setting("Syns", this, true)));
-    private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Place)));
-    private final Setting rotateMode = register(helpers.add(new Setting("Rotate Mode", this, RotateMode.Silent).setVisible(() -> !rotate.checkValString("None"))));
+    private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
+    private final Setting rotateMode = register(helpers.add(new Setting("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None"))));
     private final Setting calcDistSort = register(helpers.add(new Setting("Calc Dist Sort", this, false)));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
     private final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
     public final Setting armorBreaker = register(place_.add(new Setting("Armor Breaker", this, 100, 0, 100, NumberType.PERCENT).setVisible(place::getValBoolean)));
-    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, false).setVisible(place::getValBoolean)));
-    private final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setVisible(place::getValBoolean)));
-    private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setVisible(place::getValBoolean)));
+    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, false).setTitle("Multi").setVisible(place::getValBoolean)));
+    private final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
+    private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet").setVisible(place::getValBoolean)));
 
     private final Setting break_ = register(break__.add(new Setting("Break", this, true)));
-    private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setVisible(break_::getValBoolean)));
+    private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
     private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop).setVisible(break_::getValBoolean)));
     private final Setting clientSide = register(break__.add(new Setting("Client Side", this, false).setVisible(break_::getValBoolean)));
-    private final Setting manualBreaker = register(break__.add(new Setting("Manual Breaker", this, false).setVisible(break_::getValBoolean)));
+    private final Setting manualBreaker = register(break__.add(new Setting("Manual Breaker", this, false).setTitle("Manual").setVisible(break_::getValBoolean)));
     private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false).setVisible(break_::getValBoolean)));
-    private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setVisible(break_::getValBoolean)));
-    private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setVisible(break_::getValBoolean)));
+    private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break").setVisible(break_::getValBoolean)));
+    private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setTitle("Packet").setVisible(break_::getValBoolean)));
 
-    private final Setting placeDelay = register(delay.add(new Setting("Place Delay", this, 0, 0, 2000, NumberType.TIME).setVisible(place::getValBoolean)));
-    private final Setting breakDelay = register(delay.add(new Setting("Break Delay", this, 0, 0, 2000, NumberType.TIME).setVisible(break_::getValBoolean)));
-    private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME)));
-    private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME)));
-    private final Setting multiplication = register(delay.add(new Setting("Multiplication", this, 1, 1, 10, true)));
+    private final Setting delayMode = register(delay.add(new Setting("Delay Mode", this, DelayMode.Default).setTitle("Mode")));
+    private final Setting pingSmartMultiplier = register(delay.add(new Setting("Ping Smart Multi", this, 0, 0, 3, false)));
+    private final SettingGroup defaultDelayGroup = register(delay.add(new SettingGroup(new Setting("Default", this))));
+    private final Setting placeDelay = register(defaultDelayGroup.add(new Setting("Place Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Place")));
+    private final Setting breakDelay = register(defaultDelayGroup.add(new Setting("Break Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Break")));
+    private final SettingGroup fromToDelayGroup = register(delay.add(new SettingGroup(new Setting("From To", this))));
+    private final Setting fromPlaceToBreakDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From P To B")));
+    private final Setting fromBreakToPlaceDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From B To P")));
+    private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
+    private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
+    private final Setting multiplication = register(delay.add(new Setting("Multiplication", this, 1, 1, 10, true).setTitle("Multi")));
 
-    public final Setting minDMG = register(damage.add(new Setting("Min DMG", this, 6, 0, 37, true)));
-    public final Setting maxSelfDMG = register(damage.add(new Setting("Max Self DMG", this, 18, 0, 37, true)));
-    private final Setting maxFriendDMG = register(damage.add(new Setting("Max Friend DMG", this, 10, 0, 37, true)));
+    public final Setting minDMG = register(damage.add(new Setting("Min DMG", this, 6, 0, 37, true).setTitle("Min")));
+    public final Setting maxSelfDMG = register(damage.add(new Setting("Max Self DMG", this, 18, 0, 37, true).setTitle("Max Self")));
+    private final Setting maxFriendDMG = register(damage.add(new Setting("Max Friend DMG", this, 10, 0, 37, true).setTitle("Max Friend")));
     public final Setting lethalMult = register(damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false)));
     private final Setting noSuicide = register(damage.add(new Setting("No Suicide", this, true)));
 
     public final Setting threadMode = register(thread_.add(new Setting("Thread Mode", this, ThreadMode.None)));
-    public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()))));
-    public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()))));
-    public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()))));
-    private final Setting threadPacketRots = register(thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.getValString().equalsIgnoreCase(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()))));
+    public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    private final Setting threadPacketRots = register(thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()))));
     private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"))));
     private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"))));
 
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this, () -> true, null, render_).preInit().init();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(() -> renderer_.getMode().getValEnum() != RenderingRewriteModes.None)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(() -> renderer_.getMode().getValEnum() != RenderingRewriteModes.None)));
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
+    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
+    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -162,6 +184,8 @@ public class AutoRer extends Module {
     public final List<PlaceInfo> placedList = new ArrayList<>();
     private final TimerUtils placeTimer = new TimerUtils();
     private final TimerUtils breakTimer = new TimerUtils();
+    private final TimerUtils fromPlaceToBreakTimer = new TimerUtils();
+    private final TimerUtils fromBreakToPlaceTimer = new TimerUtils();
     private final TimerUtils calcTimer = new TimerUtils();
     private final TimerUtils renderTimer = new TimerUtils();
     private final TimerUtils predictTimer = new TimerUtils();
@@ -193,24 +217,30 @@ public class AutoRer extends Module {
     public void onEnable() {
         super.onEnable();
         AutoRerUtil.Companion.onEnable();
-        renderer.reset();
-        placedList.clear();
-        breakTimer.reset();
-        placeTimer.reset();
-        renderTimer.reset();
-        predictTimer.reset();
-        manualTimer.reset();
-        currentTarget = null;
-        rotating = false;
-        renderPos = null;
+        reset();
 
-        if(!threadMode.getValString().equalsIgnoreCase("None")) processMultiThreading();
+        if(!threadMode.checkValString("None")) processMultiThreading();
 
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
 
         subscribed = true;
+    }
+
+    private void reset() {
+        renderer.reset();
+        placedList.clear();
+        placeTimer.reset();
+        breakTimer.reset();
+        fromPlaceToBreakTimer.reset();
+        fromBreakToPlaceTimer.reset();
+        renderTimer.reset();
+        predictTimer.reset();
+        manualTimer.reset();
+        currentTarget = null;
+        rotating = false;
+        renderPos = null;
     }
 
     public void onDisable() {
@@ -223,21 +253,13 @@ public class AutoRer extends Module {
 
         if(thread != null) shouldInterrupt.set(false);
         if(executor != null) executor.shutdown();
-        placedList.clear();
-        breakTimer.reset();
-        placeTimer.reset();
-        renderTimer.reset();
-        predictTimer.reset();
-        manualTimer.reset();
-        currentTarget = null;
-        rotating = false;
-        renderPos = null;
-        renderer.reset();
+
+        reset();
     }
 
     private void processMultiThreading() {
-        if(threadMode.getValString().equalsIgnoreCase("While")) handleWhile();
-        else if(!threadMode.getValString().equalsIgnoreCase("None")) handlePool(false);
+        if(threadMode.checkValString("While")) handleWhile();
+        else if(!threadMode.checkValString("None")) handlePool(false);
     }
 
     private ScheduledExecutorService getExecutor() {
@@ -300,20 +322,53 @@ public class AutoRer extends Module {
 
         calc: {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-                if (threadCalc.getValBoolean() && !threadMode.getValString().equalsIgnoreCase("None")) break calc;
+                if (threadCalc.getValBoolean() && !threadMode.checkValString("None")) break calc;
                 doCalculatePlace();
                 if (placePos != null) if (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos = null;
                 calcTimer.reset();
             }
         }
 
-        if(threadMode.getValString().equalsIgnoreCase("None")) {
+        if(threadMode.checkValString("None")) {
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
             if (manualBreaker.getValBoolean()) manualBreaker();
             if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
             else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
         } else processMultiThreading();
+    }
+
+    /**
+     * fromPlaceToBreakTimer like breakTimer
+     *
+     * fromBreakToPlaceTimer like placeTimer
+     *
+     * @param break_
+     * @return current timer
+     */
+    private TimerUtils getTimer(boolean break_) {
+        return break_ ? (delayMode.getValEnum() == DelayMode.Default ? breakTimer : fromPlaceToBreakTimer) : (delayMode.getValEnum() == DelayMode.Default ? placeTimer : fromBreakToPlaceTimer);
+    }
+
+    /**
+     *
+     * @param break_
+     * @return current delay
+     */
+    private int getDelay(boolean break_) {
+        return pingSmartMultiplier.getValInt() == 0 ? getNonSmartDelay(break_) : (int) (UtilityKt.getPing() * pingSmartMultiplier.getValDouble());
+    }
+
+    /**
+     * fromPlaceToBreakTimer like breakTimer
+     *
+     * fromBreakToPlaceTimer like placeTimer
+     *
+     * @param break_
+     * @return current non smart delay
+     */
+    private int getNonSmartDelay(boolean break_) {
+        return delayMode.getValEnum() == DelayMode.Default ? (break_ ? breakDelay.getValInt() : placeDelay.getValInt()) : (break_ ? fromPlaceToBreakDelay.getValInt() : fromBreakToPlaceDelay.getValInt());
     }
 
     public synchronized void doAutoRerForThread() {
@@ -356,7 +411,7 @@ public class AutoRer extends Module {
     });
 
     private void doAutoRerLogic(EventPlayerMotionUpdate event, boolean thread) {
-        if(logic.getValString().equalsIgnoreCase("PlaceBreak")) {
+        if(logic.checkValString("PlaceBreak")) {
             doPlace(event, thread);
             doBreak();
         } else {
@@ -516,17 +571,25 @@ public class AutoRer extends Module {
     }
 
     private void attackCrystalPredict(int entityID, BlockPos pos) {
-        if(instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All"))) {
-            float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
-        }
+        boolean flag = instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.checkValString("Break") || rotate.checkValString("All"));
+        RotationSaver saver = new RotationSaver().save();
+        if(flag) rotateToEntity(entityID);
         CPacketUseEntity packet = new CPacketUseEntity();
         packet.entityId = entityID;
         packet.action = CPacketUseEntity.Action.ATTACK;
         mc.player.connection.sendPacket(packet);
         breakTimer.reset();
         predictTimer.reset();
+        if(flag) loadSaver(saver);
+    }
+
+    private void rotateToEntity(int entityID) {
+        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
+        rotator.getTaskR().doTask(rotator.getTaskCEntity().doTask(entityID, RotationLogic.Default), false);
+    }
+
+    private void loadSaver(RotationSaver saver) {
+        ((RotationEnum.Rotation) rotateMode.getValEnum()).getTaskRFromSaver().doTask(saver, true);
     }
 
     @EventHandler
@@ -685,7 +748,7 @@ public class AutoRer extends Module {
     }
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
-        if(!place.getValBoolean() || !placeTimer.passedMillis(placeDelay.getValLong()) || (placePos == null && fastCalc.getValBoolean())) return;
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
         if(placePos == null || (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK))) return;
         if(syns.getValBoolean() && placedList.contains(placePos)) return;
@@ -713,15 +776,15 @@ public class AutoRer extends Module {
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
-        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+        RotationSaver saver = new RotationSaver().save();
+        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
 
-        if(rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All") && currentTarget != null) {
+        if(rotate.checkValString("Place") || rotate.checkValString("All")) {
             try {
-                float[] rots = RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
+                float[] rots = rotator.getTaskCBlock().doTask(placePos.getBlockPos());//RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
                 if (!thread) {
                     if (!motionCrystal.getValBoolean()) {
-                        mc.player.rotationYaw = rots[0];
-                        mc.player.rotationPitch = rots[1];
+                        rotator.getTaskR().doTask(rots, false);
                     } else if (event != null) {
                         event.setYaw(rots[0]);
                         event.setPitch(rots[1]);
@@ -741,16 +804,13 @@ public class AutoRer extends Module {
             else mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));
             if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         }
-        placeTimer.reset();
+        getTimer(false).reset();
 
         renderPos = placePos;
 
-        if((rotate.getValString().equalsIgnoreCase("Place") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
-            mc.player.rotationYaw = oldRots[0];
-            mc.player.rotationPitch = oldRots[1];
-        }
+        if((rotate.checkValString("Place") || rotate.checkValString("All"))) loadSaver(saver);
         if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1) if (switch_.getValString().equals(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+        if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
     }
 
     private EnumHand getPlaceHand(boolean offhand) {
@@ -759,10 +819,9 @@ public class AutoRer extends Module {
 
     private Entity getCrystalForAntiCevBreaker() {
         Entity crystal = null;
-        String mode = antiCevBreakerMode.getValString();
 
-        if(!mode.equals("None")) {
-            if(mode.equals("Cev") || mode.equals("Both")) {
+        if(!antiCevBreakerMode.checkValString("None")) {
+            if(antiCevBreakerMode.checkValString("Cev") || antiCevBreakerMode.checkValString("Both")) {
                 for(Vec3i vec : AntiCevBreakerVectors.Cev.vectors) {
                     BlockPos pos = mc.player.getPosition().add(vec);
                     for(Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
@@ -772,7 +831,7 @@ public class AutoRer extends Module {
                     }
                 }
             }
-            if(mode.equals("Civ") || mode.equals("Both")) {
+            if(antiCevBreakerMode.checkValString("Civ") || antiCevBreakerMode.checkValString("Both")) {
                 for(Vec3i vec : AntiCevBreakerVectors.Civ.vectors) {
                     BlockPos pos = mc.player.getPosition().add(vec);
                     for(Entity entity : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos))) {
@@ -800,8 +859,8 @@ public class AutoRer extends Module {
                     Friend friend = getNearFriendWithMaxDamage(entity);
                     double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
-                    if (friend != null && !friend_.getValString().equalsIgnoreCase(FriendMode.None.name())) {
-                        if (friend_.getValString().equalsIgnoreCase(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
+                    if (friend != null && !friend_.checkValString(FriendMode.None.name())) {
+                        if (friend_.checkValString(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
                         else if (friend.isTotemFailed) return null;
                         if (friend.damage >= maxFriendDMG.getValInt()) return null;
                     }
@@ -826,7 +885,7 @@ public class AutoRer extends Module {
     }
 
     private void doBreak() {
-        if(!break_.getValBoolean() || !breakTimer.passedMillis(breakDelay.getValLong())) return;
+        if(!break_.getValBoolean() || !getTimer(true).passedMillis(getDelay(true))) return;
 
         AtomicReference<Entity> crystal = new AtomicReference<>();
         AtomicReference<Entity> crystalWithMaxDamage = new AtomicReference<>();
@@ -842,7 +901,7 @@ public class AutoRer extends Module {
         
         if(crystalTHandler.getThreadded().get()) crystalWithMaxDamage.set(atomicCrystal.get());
         
-        if(breakPriority.getValString().equals("Damage")) crystal.set(crystalWithMaxDamage.get());
+        if(breakPriority.checkValString("Damage")) crystal.set(crystalWithMaxDamage.get());
         else {
             crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
             crystal.set(getCrystalForAntiCevBreaker());
@@ -853,11 +912,10 @@ public class AutoRer extends Module {
 
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
 
-        if(rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) {
-            float[] rots = RotationUtils.getRotation(crystal.get());
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
-        }
+        RotationSaver saver = new RotationSaver().save();
+        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
+
+        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(crystal.get().getEntityId());
 
         lastHitEntity = crystal.get();
 
@@ -868,13 +926,9 @@ public class AutoRer extends Module {
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().entityId);} catch (Exception ignored) {}
-        breakTimer.reset();
+        getTimer(true).reset();
 
-        if((rotate.getValString().equalsIgnoreCase("Break") || rotate.getValString().equalsIgnoreCase("All")) && rotateMode.getValString().equalsIgnoreCase("Silent")) {
-            mc.player.rotationYaw = oldRots[0];
-            mc.player.rotationPitch = oldRots[1];
-        }
-
+        if((rotate.checkValString("Break") || rotate.checkValString("All")) && rotateMode.checkValString("Silent")) loadSaver(saver);
 
         if(syns.getValBoolean()) {
             BlockPos toRemove = null;
@@ -887,8 +941,8 @@ public class AutoRer extends Module {
 
     private void swing() {
         if(swing.checkValString(SwingMode.None.name())) return;
-        if(swing.getValString().equals(SwingMode.PacketSwing.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
-        else mc.player.swingArm(swing.getValString().equals(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        if(swing.checkValString(SwingMode.PacketSwing.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.checkValString(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+        else mc.player.swingArm(swing.checkValString(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
     }
 
     private Friend getNearFriendWithMaxDamage(Entity entity) {
@@ -918,7 +972,7 @@ public class AutoRer extends Module {
 
     public enum ThreadMode {None, Pool, Sound, While}
     public enum Render {None, Default, Advanced}
-    public enum Rotate {Off, Place, Break, All}
+    public enum Rotate {Off, Place/*, Break, All*/}
     public enum Raytrace {None, Place, Break, Both}
     public enum SwitchMode {None, Normal, Silent}
     public enum SwingMode {MainHand, OffHand, PacketSwing, None}
@@ -928,6 +982,7 @@ public class AutoRer extends Module {
     public enum RotateMode {Normal, Silent}
     public enum AntiCevBreakerMode {None, Cev, Civ, Both}
     public enum BreakPriority {Damage, CevBreaker}
+    public enum DelayMode {Default, FromTo}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),
@@ -975,8 +1030,8 @@ public class AutoRer extends Module {
 
         @Override
         public void run() {
-            if(autoRer.threadMode.getValString().equalsIgnoreCase("While")) {
-                while (autoRer.isToggled() && autoRer.threadMode.getValString().equalsIgnoreCase("While")) {
+            if(autoRer.threadMode.checkValString("While")) {
+                while (autoRer.isToggled() && autoRer.threadMode.checkValString("While")) {
                     if(autoRer.shouldInterrupt.get()) {
                         autoRer.shouldInterrupt.set(false);
                         autoRer.synsTimer.reset();
@@ -987,7 +1042,7 @@ public class AutoRer extends Module {
                     autoRer.threadOngoing.set(false);
                     try {Thread.sleep(autoRer.threadDelay.getValLong());} catch (InterruptedException e) {autoRer.thread.interrupt();}
                 }
-            } else if(!autoRer.threadMode.getValString().equalsIgnoreCase("None")) {
+            } else if(!autoRer.threadMode.checkValString("None")) {
                 autoRer.threadOngoing.set(true);
                 autoRer.doAutoRerForThread();
                 autoRer.threadOngoing.set(false);

@@ -3,7 +3,8 @@ package com.kisman.cc.util.manager;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.util.TimerUtils;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -11,7 +12,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class ServerManager {
     private Minecraft mc = Minecraft.getMinecraft();
@@ -100,11 +100,11 @@ public class ServerManager {
     }
 
     public int getPing() {
-        if (mc.player == null && mc.world == null) {
+        if (mc.player == null || mc.world == null) {
             return 0;
         }
         try {
-            return Objects.requireNonNull(mc.getConnection()).getPlayerInfo(mc.getConnection().getGameProfile().getId()).getResponseTime();
+            return mc.player.connection.getPlayerInfo(mc.player.connection.getGameProfile().getId()).getResponseTime();
         }
         catch (Exception e) {
             return 0;

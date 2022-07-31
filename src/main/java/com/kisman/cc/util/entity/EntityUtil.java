@@ -21,12 +21,6 @@ import net.minecraft.util.math.*;
 
 import java.util.*;
 
-/**
- * @author 086
- * @author Crystallinqq/Auto
- * @author _kisman_
- */
-
 public class EntityUtil {
     private static final DamageSource EXPLOSION_SOURCE;
 

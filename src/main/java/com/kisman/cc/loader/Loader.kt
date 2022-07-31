@@ -3,7 +3,6 @@
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.loader.antidump.CookieFuckery
 import com.kisman.cc.sockets.client.SocketClient
 import com.kisman.cc.sockets.data.SocketMessage.Type.*
 import net.minecraft.launchwrapper.Launch
@@ -16,8 +15,6 @@ import java.util.zip.ZipInputStream
 import kotlin.random.Random
 
 /**
- * TODO: I will rewrite it when i will have website or vds host
- *
  * @author _kisman_
  * @since 12:33 of 04.07.2022
  */
@@ -31,13 +28,6 @@ fun load() {
         Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
         return
     }
-    
-    // NOTE: These WILL break when debug tools such as IntelliJ are attached to the process
-    // THIS IS PURPOSEFUL
-    CookieFuckery.checkLaunchFlags()
-    CookieFuckery.disableJavaAgents()
-    CookieFuckery.setPackageNameFilter()
-    CookieFuckery.dissasembleStructs()
 
     val client = SocketClient(address, port)
 
@@ -75,8 +65,8 @@ fun load() {
 
     while(client.connected) {
         if(bytes != null) {
-            loadIntoClassLoader(bytes!!)
-
+            loadIntoResourceCache(bytes!!)
+            bytes = null
             break
         }
     }

@@ -1,21 +1,23 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.RenderUtil;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
@@ -103,8 +105,7 @@ public class  NameTags extends Module {
         int pingy = -1;
         try {pingy = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ignored) {}
         String playerPing = pingy + "ms  ";
-        final boolean pings = this.ping.getValBoolean();
-        if (!pings) playerPing = "";
+        if (!ping.getValBoolean()) playerPing = "";
         final int health = MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
         final boolean damageDisplay = this.damageDisplay.getValBoolean();
         if (health > 16) clr = TextFormatting.GREEN;

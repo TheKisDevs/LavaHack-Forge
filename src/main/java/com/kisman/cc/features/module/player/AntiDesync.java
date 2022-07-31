@@ -21,7 +21,7 @@ public class AntiDesync extends Module {
 
     public static final AntiDesync INSTANCE = new AntiDesync();
 
-    private AntiDesync(){
+    public AntiDesync(){
         super("AntiDesync", Category.PLAYER);
     }
 
