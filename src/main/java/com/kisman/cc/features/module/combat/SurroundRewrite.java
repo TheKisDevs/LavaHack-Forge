@@ -25,11 +25,16 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.*;
 
 public class SurroundRewrite extends Module {
 
+    private final Setting runMode = register(new Setting("RunMode", this, RunMode.Update));
     private final Setting mode = register(new Setting("Mode", this, Vectors.Normal));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final Setting swap = register(new Setting("Switch", this, Swap.Silent));
@@ -65,15 +70,72 @@ public class SurroundRewrite extends Module {
         instance = this;
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onTick(TickEvent event){
+        if(runMode.getValEnum() != RunMode.Tick)
+            return;
+
+        if(mc.player == null || mc.world == null) return;
+
+        double y = mc.player.posY;
+
+        if(toggleMode() == Toggle.OffGround && !mc.player.onGround){
+            toggle();
+            return;
+        }
+
+        if(toggleMode() == Toggle.YChange && ((lastY - y) != 0.0)){
+            toggle();
+            return;
+        }
+
+        if(toggleMode() == Toggle.PositiveYChange && ((lastY - y) > toggleHeight.getValDouble())){
+            toggle();
+            return;
+        }
+
+        if(toggleMode() == Toggle.Combo && ((lastY - y) > toggleHeight.getValDouble() || !mc.player.onGround)){
+            toggle();
+            return;
+        }
+
+        List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
+
+        if(breakCrystals.getValBoolean())
+            breakCrystals(blocks);
+
+        int slot = getBlockSlot();
+        if(slot == -1) return;
+        int oldSlot = mc.player.inventory.currentItem;
+
+        Swap swap = (Swap) this.swap.getValEnum();
+
+        swap.doSwap(slot, false, SwapWhen.RunSurround);
+
+        placeBlocks(blocks);
+
+        swap.doSwap(oldSlot, true, SwapWhen.RunSurround);
+
+        lastY = y;
+
+        if(toggleMode() == Toggle.OnComplete){
+            toggle();
+        }
+    }
+
     @Override
     public void onEnable(){
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         if(center.getValBoolean()) centerPlayer();
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void update(){
+        if(runMode.getValEnum() != RunMode.Update)
+            return;
+
         if(mc.player == null || mc.world == null) return;
 
         double y = mc.player.posY;
@@ -130,6 +192,7 @@ public class SurroundRewrite extends Module {
     public void onDisable(){
         lastY = -1;
         timer.reset();
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     private void breakCrystals(List<BlockPos> blocks){
@@ -566,5 +629,10 @@ public class SurroundRewrite extends Module {
     private enum SwapWhen {
         Place,
         RunSurround
+    }
+
+    private enum RunMode {
+        Update,
+        Tick
     }
 }
