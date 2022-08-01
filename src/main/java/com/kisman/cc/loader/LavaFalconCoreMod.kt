@@ -12,23 +12,16 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.*
 @MCVersion("1.12.2")
 class LavaFalconCoreMod : IFMLLoadingPlugin {
     private val lavahackMixinLoader : Any
-
     init {
         if(Utility.runningFromIntelliJ()) {
             Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
         } else {
-            load()
+            initLoader()
+            suspend()
             LavaFalconMod.lavahack = Class.forName("com.kisman.cc.Kisman")
         }
 
         lavahackMixinLoader = Class.forName("com.kisman.cc.mixin.KismanMixinLoader").newInstance()
-
-        /*try {
-            Class.forName("com.kisman.cc.Kisman").getMethod("init").invoke(Class.forName("com.kisman.cc.Kisman").getDeclaredField("instance")[null])
-        } catch (e: Exception) {
-            e.printStackTrace()
-            exit()
-        }*/
     }
 
     override fun getModContainerClass(): String? = null
@@ -38,4 +31,10 @@ class LavaFalconCoreMod : IFMLLoadingPlugin {
         lavahackMixinLoader::class.java.getMethod("injectData", Map::class.java).invoke(lavahackMixinLoader, data)
     }
     override fun getAccessTransformerClass(): String? = null
+
+    companion object {
+        @JvmStatic private val thread = Thread.currentThread()
+        @JvmStatic fun resume() { thread.resume() }
+        @JvmStatic fun suspend() { thread.suspend() }
+    }
 }
