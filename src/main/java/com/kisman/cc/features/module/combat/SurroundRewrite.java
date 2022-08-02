@@ -40,6 +40,7 @@ public class SurroundRewrite extends Module {
     private final Setting swap = register(new Setting("Switch", this, Swap.Silent));
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
+    private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -75,59 +76,17 @@ public class SurroundRewrite extends Module {
         if(runMode.getValEnum() != RunMode.Tick)
             return;
 
-        if(mc.player == null || mc.world == null) return;
-
-        double y = mc.player.posY;
-
-        if(toggleMode() == Toggle.OffGround && !mc.player.onGround){
-            toggle();
-            return;
-        }
-
-        if(toggleMode() == Toggle.YChange && ((lastY - y) != 0.0)){
-            toggle();
-            return;
-        }
-
-        if(toggleMode() == Toggle.PositiveYChange && ((lastY - y) > toggleHeight.getValDouble())){
-            toggle();
-            return;
-        }
-
-        if(toggleMode() == Toggle.Combo && ((lastY - y) > toggleHeight.getValDouble() || !mc.player.onGround)){
-            toggle();
-            return;
-        }
-
-        List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
-
-        if(breakCrystals.getValBoolean())
-            breakCrystals(blocks);
-
-        int slot = getBlockSlot();
-        if(slot == -1) return;
-        int oldSlot = mc.player.inventory.currentItem;
-
-        Swap swap = (Swap) this.swap.getValEnum();
-
-        swap.doSwap(slot, false, SwapWhen.RunSurround);
-
-        placeBlocks(blocks);
-
-        swap.doSwap(oldSlot, true, SwapWhen.RunSurround);
-
-        lastY = y;
-
-        if(toggleMode() == Toggle.OnComplete){
-            toggle();
-        }
+        doSurround();
     }
 
     @Override
     public void onEnable(){
         timer.reset();
         if(mc.player == null || mc.world == null) return;
-        if(center.getValBoolean()) centerPlayer();
+        if(center.getValBoolean() && !centerPlayer()){
+            setToggled(false);
+            return;
+        }
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -136,6 +95,10 @@ public class SurroundRewrite extends Module {
         if(runMode.getValEnum() != RunMode.Update)
             return;
 
+        doSurround();
+    }
+
+    private void doSurround(){
         if(mc.player == null || mc.world == null) return;
 
         double y = mc.player.posY;
@@ -198,7 +161,6 @@ public class SurroundRewrite extends Module {
     private void breakCrystals(List<BlockPos> blocks){
         if(!timer.passedMillis(cbDelay.getValInt()))
             return;
-        //List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
         Set<EntityEnderCrystal> alreadyHit = new HashSet<>(64);
         if(cbMode.getValString().equals("Area")){
@@ -211,24 +173,6 @@ public class SurroundRewrite extends Module {
             double z2 = mc.player.posZ + range;
             AxisAlignedBB aabb = new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb)){
-                /*
-                if(cbRotate.getValBoolean()){
-                    float[] rots = RotationUtils.getRotation(crystal);
-                    mc.player.rotationYaw = rots[0];
-                    mc.player.rotationPitch = rots[1];
-                }
-                if(cbPacket.getValBoolean())
-                    mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-                else
-                    mc.playerController.attackEntity(mc.player, crystal);
-                mc.player.swingArm(EnumHand.MAIN_HAND);
-                if(clientSide.getValBoolean())
-                    mc.world.removeEntityFromWorld(crystal.entityId);
-                if(cbRotate.getValBoolean()){
-                    mc.player.rotationYaw = oldRots[0];
-                    mc.player.rotationPitch = oldRots[1];
-                }
-                 */
                 breakCrystal(crystal, oldRots);
             }
             return;
@@ -236,24 +180,6 @@ public class SurroundRewrite extends Module {
         for(BlockPos pos : blocks){
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(pos))){
                 if(alreadyHit.contains(crystal)) continue;
-                /*
-                if(cbRotate.getValBoolean()){
-                    float[] rots = RotationUtils.getRotation(crystal);
-                    mc.player.rotationYaw = rots[0];
-                    mc.player.rotationPitch = rots[1];
-                }
-                if(cbPacket.getValBoolean())
-                    mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
-                else
-                    mc.playerController.attackEntity(mc.player, crystal);
-                mc.player.swingArm(EnumHand.MAIN_HAND);
-                if(clientSide.getValBoolean())
-                    mc.world.removeEntityFromWorld(crystal.entityId);
-                if(cbRotate.getValBoolean()){
-                    mc.player.rotationYaw = oldRots[0];
-                    mc.player.rotationPitch = oldRots[1];
-                }
-                 */
                 breakCrystal(crystal, oldRots);
                 alreadyHit.add(crystal);
             }
@@ -263,8 +189,6 @@ public class SurroundRewrite extends Module {
     private void breakCrystal(EntityEnderCrystal crystal, float[] oldRots){
         if(cbRotate.getValBoolean()){
             float[] rots = RotationUtils.getRotation(crystal);
-            //mc.player.rotationYaw = rots[0];
-            //mc.player.rotationPitch = rots[1];
             cbRotate(rots);
         }
         if(cbPacket.getValBoolean())
@@ -275,8 +199,6 @@ public class SurroundRewrite extends Module {
         if(clientSide.getValBoolean())
             mc.world.removeEntityFromWorld(crystal.entityId);
         if(cbRotate.getValBoolean()){
-            //mc.player.rotationYaw = oldRots[0];
-            //mc.player.rotationPitch = oldRots[1];
             cbRotate(oldRots);
         }
     }
@@ -290,8 +212,40 @@ public class SurroundRewrite extends Module {
         }
     }
 
-    private void centerPlayer(){
-        Vec3d setCenter = new Vec3d(Math.floor(mc.player.posX) + 0.5D, Math.floor(mc.player.posY), Math.floor(mc.player.posZ) + 0.5D);
+    private BlockPos findClosestSolid(BlockPos pos){
+        List<BlockPos> possiblePositions = new ArrayList<>();
+        if(mc.world.getBlockState(pos.north().down()).getMaterial().isSolid())
+            possiblePositions.add(pos.north());
+        if(mc.world.getBlockState(pos.east().down()).getMaterial().isSolid())
+            possiblePositions.add(pos.east());
+        if(mc.world.getBlockState(pos.south().down()).getMaterial().isSolid())
+            possiblePositions.add(pos.south());
+        if(mc.world.getBlockState(pos.west().down()).getMaterial().isSolid())
+            possiblePositions.add(pos.west());
+        return possiblePositions.stream().min(Comparator.comparingDouble(o -> mc.player.getDistance(o.getX() + 0.5, o.getY(), o.getZ() + 0.5))).orElse(null);
+    }
+
+    private boolean centerPlayer(){
+        if(smartCenter.getValBoolean()){
+            BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+            if(isReplaceable(pos))
+                pos = findClosestSolid(pos);
+            if(pos == null)
+                return false;
+            centerAt(pos);
+            return true;
+        }
+        centerAt(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ));
+        //Vec3d setCenter = new Vec3d(Math.floor(mc.player.posX) + 0.5D, Math.floor(mc.player.posY), Math.floor(mc.player.posZ) + 0.5D);
+        //mc.player.motionX = 0;
+        //mc.player.motionZ = 0;
+        //mc.player.connection.sendPacket(new CPacketPlayer.Position(setCenter.x, setCenter.y, setCenter.z, true));
+        //mc.player.setPosition(setCenter.x, setCenter.y, setCenter.z);
+        return true;
+    }
+
+    private void centerAt(BlockPos pos){
+        Vec3d setCenter = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         mc.player.motionX = 0;
         mc.player.motionZ = 0;
         mc.player.connection.sendPacket(new CPacketPlayer.Position(setCenter.x, setCenter.y, setCenter.z, true));
