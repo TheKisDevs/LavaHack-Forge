@@ -17,11 +17,9 @@ public class LavaFalconMod {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if(Utility.runningFromIntelliJ()) {
+        if(Utility.runningFromIntelliJ() || !LavaFalconCoreMod.Companion.getLoaded()) {
             return;
         }
-
-        System.out.println("Init Event 1");
 
         try {
             lavahack.getMethod("init").invoke(lavahack.getField("instance").get(null));
@@ -29,7 +27,5 @@ public class LavaFalconMod {
             e.printStackTrace();
             Utility.unsafeCrash();
         }
-
-        System.out.println("Init Event 2");
     }
 }

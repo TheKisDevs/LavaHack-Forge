@@ -1,7 +1,6 @@
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
-import net.minecraft.client.Minecraft
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.*
 
@@ -36,5 +35,7 @@ class LavaFalconCoreMod : IFMLLoadingPlugin {
         @JvmStatic private val thread = Thread.currentThread()
         @JvmStatic fun resume() { thread.resume() }
         @JvmStatic fun suspend() { thread.suspend() }
+
+        @JvmStatic var loaded = false
     }
 }
