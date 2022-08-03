@@ -14,10 +14,7 @@ interface ISocketRW {
     val socket: Socket
 
     val connected
-        get() = socket.isConnected &&
-                !socket.isClosed &&
-                !(get(socket.getInputStream(), "impl.isConnectionResetPending") as Boolean) &&
-                !(get(socket.getInputStream(), "impl.isClosedOrPending") as Boolean)
+        get() = socket.isConnected && !socket.isClosed
 
     /**
      * Closes the socket

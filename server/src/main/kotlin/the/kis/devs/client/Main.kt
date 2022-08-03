@@ -51,7 +51,7 @@ fun main() {
         text = "OP"
     }
     
-    while(bytes == null) {}
+    /*while(bytes == null) {}
 
     ZipInputStream(bytes?.inputStream()!!).use { zipStream ->
         var zipEntry: ZipEntry?
@@ -61,7 +61,7 @@ fun main() {
                 println("Found new class \"${name.replace('/', '.').removeSuffix(".class")}\"")
             }
         }
-    }
+    }*/
 
     while (client.connected) {
         if(bytes == null) {

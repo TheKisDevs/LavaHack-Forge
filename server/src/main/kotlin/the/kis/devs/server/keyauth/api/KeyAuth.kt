@@ -50,7 +50,7 @@ class KeyAuth(
         }
     }
 
-    private fun init(): Boolean {
+    fun init(): Boolean {
         val response: HttpResponse<String>
         try {
             response = Unirest.post(url).field("type", "init").field("ver", version).field("name", appname)

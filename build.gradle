@@ -125,6 +125,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.github.cabaletta:baritone:1.2.14'
     compile 'cabaletta:baritone-api:1.2'
+    compile 'com.formdev:flatlaf:2.2'
 }
 
 processResources {
@@ -194,6 +195,7 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"))
         include(dependency("org.jsoup:jsoup:1.11.3"))
         include(dependency('cabaletta:baritone-api'))
+        include(dependency('com.formdev:flatlaf:2.2'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
@@ -202,9 +204,12 @@ shadowJar {
 
 task privateJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
+        exclude 'assets/loader/**'
         exclude "com/kisman/cc/loader/**"
         exclude 'mixins.loader.json'
         exclude 'mixins.loader.refmap.json'
+
+        exclude 'com/formdev/**'
     }
     baseName = ''
     version = ''

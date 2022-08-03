@@ -4,10 +4,13 @@ import me.yailya.sockets.data.SocketFile
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServerConnection
 import the.kis.devs.server.DEFAULT_PATH
+import the.kis.devs.server.LATEST_CLIENT_VERSION
 import the.kis.devs.server.LAVAHACK_CLIENT_NAME
 import the.kis.devs.server.OP_NAME
 import the.kis.devs.server.command.Command
+import the.kis.devs.server.hwid.HWID
 import the.kis.devs.server.permission.IPermission
+import the.kis.devs.server.util.versions
 import java.io.File
 
 /**
@@ -23,6 +26,8 @@ import java.io.File
  *
  * `args[4]` - Available Processors for HWID generation
  *
+ * `args[5]` - Version of LavaHack
+ *
  * Answers:
  *
  * `0` - Invalid Arguments
@@ -30,6 +35,8 @@ import java.io.File
  * `1` - Invalid Key or HWID | Client is outdated
  *
  * `2` - Valid Key, HWID, Client is latest
+ *
+ * `3` - Illegal access for selected version
  *
  * @author _kisman_
  * @since 17:33 of 05.07.2022
@@ -48,17 +55,20 @@ object GetPublicJarCommand : Command(
     }
 
     override fun execute(line: String, args: List<String>): List<SocketMessage> {
-        if(args.size == 5) {
-            val authAnswer = AuthCommand.execute("", listOf("auth", args[1], args[2]))
+        if(args.size == 6) {
+            val authAnswer = AuthCommand.execute("", listOf("auth", args[1], HWID(args[4], args[4].toInt()).hwid))//TODO: need try catch
 
             if(authAnswer[0].text == "2") {
-                val checkVersionAnswer = CheckVersionCommand.execute("", listOf("checkversion", args[3]))
+                val checkVersionAnswer = CheckVersionCommand.execute("", listOf("checkversion", args[2]))
 
                 if(checkVersionAnswer[0].text == "2") {
-                    val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar\\publicJar.jar"))
+                    val versionIndex = args[5].replace("_", " ")
+                    val versionFile = versions[args[2]]?.get(versionIndex)
+
+                    val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar\\$versionFile"))
 
                     if(getFileAnswer[0].text == "2") {
-                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "LavaHack")))
+                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\$versionFile"), "LavaHack")))
                     }
                 }
             }
@@ -66,8 +76,8 @@ object GetPublicJarCommand : Command(
             return listOf(SocketMessage("1"))
         }
 
-        if(args.size == 1) {
-            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\publicJar.jar"), "LavaHack")))
+        if(args.size == 1) {//TODO: remove it!!!
+            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\${versions[LATEST_CLIENT_VERSION]?.get("b0.1.6.5 beta")}"), "LavaHack")))
         }
 
         return listOf(SocketMessage("0"))

@@ -14,10 +14,7 @@ interface ISocketRW {
     val socket: Socket
 
     val connected
-        get() = socket.isConnected &&
-                !socket.isClosed &&
-                !(get(socket.getInputStream(), "impl.isConnectionResetPending") as Boolean) &&
-                !(get(socket.getInputStream(), "impl.isClosedOrPending") as Boolean)
+        get() = socket.isConnected && !socket.isClosed
 
     /**
      * Closes the socket
@@ -68,7 +65,9 @@ interface ISocketRW {
                 socket.getOutputStream().flush()
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            if (ex.message != "Connection reset") {
+                ex.printStackTrace()
+            }
 
             close()
         }
@@ -120,7 +119,9 @@ interface ISocketRW {
                 }
             }
         } catch (ex: Exception) {
-            ex.printStackTrace()
+            if (ex.message != "Connection reset") {
+                ex.printStackTrace()
+            }
 
             close()
         }

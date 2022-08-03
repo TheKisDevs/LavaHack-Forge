@@ -13,7 +13,8 @@ object CommandManager {
         CheckVersionCommand,
         CreateFileCommand,
         GetFileCommand,
-        GetPublicJarCommand
+        GetPublicJarCommand,
+        GetVersionsCommand
     )
 
     fun execute(line : String, connection : SocketServerConnection) {

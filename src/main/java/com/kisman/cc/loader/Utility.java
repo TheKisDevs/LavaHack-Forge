@@ -52,13 +52,13 @@ public class Utility {
         Unsafe unsafe = null;
         try {
             Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
-            f.setAccessible( true );
-            unsafe = ( Unsafe ) f.get( null );
+            f.setAccessible(true);
+            unsafe = (Unsafe) f.get(null);
         } catch (Exception e) {
-            System.exit( -1 );
+            System.exit(-1);
             for (Field f : Minecraft.class.getDeclaredFields()) {
                 try {
-                    f.set( null, null );
+                    f.set(null, null);
                 } catch (IllegalAccessException ignored) {}
             }
         }
@@ -81,6 +81,10 @@ public class Utility {
             }
         }
 
-        return properties.toString();
+        return stringFixer(properties);
+    }
+    
+    public static String stringFixer(Object toFix) {
+        return toFix.toString().replaceAll(" ", "_");
     }
 }

@@ -17,6 +17,8 @@ public class HWID {
 		this.availableProcessors = availableProcessors;
 		this.properties = new HashMap<>();
 
+		properties = properties.replaceAll("_", " ");
+
 		String[] split1 = properties.split("&");
 
 		for(String rawProperty : split1) {

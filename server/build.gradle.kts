@@ -24,6 +24,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpcore:4.4.14")
     implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.apache.httpcomponents:httpasyncclient:4.1.4")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation(kotlin("test"))

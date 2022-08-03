@@ -2,12 +2,15 @@
 
 package com.kisman.cc.loader
 
+import com.formdev.flatlaf.FlatDarkLaf
 import com.kisman.cc.Kisman
-import com.kisman.cc.loader.gui.controller.GuiRoot
+import com.kisman.cc.loader.gui.Gui
 import com.kisman.cc.sockets.client.SocketClient
 import com.kisman.cc.sockets.data.SocketMessage.Type.*
-import net.minecraft.launchwrapper.Launch
+import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
+import java.awt.Font
+import java.awt.GraphicsEnvironment
 import java.io.File
 import java.io.FileOutputStream
 import java.util.jar.JarOutputStream
@@ -20,18 +23,28 @@ import kotlin.random.Random
  * @since 12:33 of 04.07.2022
  */
 
-private const val address = "127.0.0.1"
-private const val port = 1234
+private const val address = "localhost"
+private const val port = 4321
 
 const val version = "1.0"
 
 val client = SocketClient(address, port)
-
+var gui : Gui? = null
 var answer : String? = null
+var loaded = false
+var versions = emptyArray<String>()
+
+var oldLogs = ArrayList<String>()
 
 var status = "Idling"
-
-var loaded = false
+    set(value) {
+        if(gui != null) {
+            gui?.log(value)
+        } else {
+            oldLogs.add(value)
+        }
+        field = value
+    }
 
 private const val validAnswer = "2"
 
@@ -39,7 +52,8 @@ fun load(
     key : String,
     version : String,
     properties : String,
-    processors : String
+    processors : String,
+    versionToLoad : String
 ) {
     if(Utility.runningFromIntelliJ()) {
         Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
@@ -68,7 +82,11 @@ fun load(
                             status = "Invalid key or HWID | Loader is outdated!"
                             needToBreak = true
                         }
-                        "2" -> status = "Valid!"
+                        "2" -> status = "Key and HWID is valid!"
+                        "3" -> {
+                            status = "You have no access for selected version!"
+                            needToBreak = true
+                        }
                     }
                 }
             }
@@ -83,7 +101,7 @@ fun load(
 
 
     state = 1
-    client.writeMessage { text = "getpublicjar $key $version $properties $processors" }
+    client.writeMessage { text = "getpublicjar $key $version $properties $processors $versionToLoad" }
 
     println("LavaFalcon is downloading classes...")
 
@@ -94,7 +112,9 @@ fun load(
             loadIntoResourceCache(bytes!!)
             bytes = null
             loaded = true
+            LavaFalconCoreMod.loaded = true
             LavaFalconCoreMod.resume()
+            gui?.isVisible = false
             break
         }
 
@@ -108,65 +128,126 @@ fun load(
 
 fun createGui() {
     println("Creating the gui")
-    GuiRoot.main()
+    val font = Font.createFont(Font.TRUETYPE_FONT, classLoader.getResourceAsStream("assets/loader/font.ttf"))
+    GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font)
+    FlatDarkLaf.setup()
+    gui = Gui(355, 270, "LavaHack Loader | $version", Font(font.fontName, 0, 18))
+    for(log in oldLogs) {
+        gui?.log(log)
+    }
+    gui?.isVisible = true
 }
 
 fun initLoader() {
     Thread {
-        setupServer()
+        setupSocketClient()
         versionCheck(version)
+        versions(version)
         createGui()
     } .start()
 }
 
-fun setupServer() {
+fun setupSocketClient(client : SocketClient) {
     client.connect()
     client.writeMessage { text = "LavaHack-Client" }
+}
+
+fun setupSocketClient() {
+    setupSocketClient(client)
 }
 
 fun versionCheck(version : String) {
     println("VersionCheck was started!")
 
-    var answer : String? = null
+    Thread {
+        val client = SocketClient(address, port)
+
+        setupSocketClient(client)
+
+        client.onMessageReceived = {
+            when(it.type) {
+                Text -> {
+                    val answer = it.text!!
+                    println("VersionCheck: raw answer is \"$answer\"")
+                    when (answer) {
+                        "0" -> status = "Invalid arguments of \"checkversion\" command!"
+                        "1" -> status = "Your loader is outdated! Please update it!"
+                        "2" -> status = "Loader is on latest version!"
+                    }
+                    println("VersionCheck: answer is \"$status\"")
+
+                    client.close()
+                }
+            }
+        }
+
+        client.writeMessage { text = "checkversion $version" }
+    } .start()
+
+    println("VersionCheck finished creating new thread")
+}
+
+fun versions(version : String) {
+    println("VersionsList was started!")
+
+    val client = SocketClient(address, port)
+
+    setupSocketClient(client)
 
     client.onMessageReceived = {
         when(it.type) {
             Text -> {
-                answer = it.text!!
-                println("VersionCheck get raw answer($answer)")
+                val answer = it.text!!
+                var flag = true
+                println("VersionsList: raw answer is \"$answer\"")
+                when (answer) {
+                    "0" -> status = "Invalid arguments of \"getversions\" command!"
+                    "1" -> status = "Invalid loader version!"
+                    else -> {
+                        if(answer.startsWith("2")) {
+                            status = "Successfully received version list"
+                            versions = answer.split("|")[1].split("&").toTypedArray()
+                            for(version in versions) {
+                                println(version)
+                            }
+                            flag = false
+                        }
+                    }
+                }
+
+                println("VersionsList: answer is \"$status\"")
+
+                if(flag) {
+                    Utility.unsafeCrash()
+                } else {
+                    client.close()
+                }
             }
         }
     }
 
-    client.writeMessage { text = "checkversion $version" }
+    client.writeMessage { text = "getversions $version" }
 
     while(client.connected) {
-        println("meow")
-        if(answer != null) {
+        if(versions.isNotEmpty()) {
             break
         }
     }
 
-    when (answer) {
-        "0" -> status = "Invalid arguments of \"checkversion\" command!"
-        "1" -> status = "Your loader is outdated! Please update it!"
-        "2" -> status = "Loader is nice!"
-    }
-
-    println("VersionCheck: answer is $status")
+    println("VersionsList finished")
 }
 
 fun loadIntoClassLoader(bytes : ByteArray) {
     val tempFile = File.createTempFile("LavaHack", ".jar")
     tempFile.writeBytes(bytes)
     tempFile.deleteOnExit()
-    Launch.classLoader.addURL(tempFile.toURI().toURL())
+    classLoader.addURL(tempFile.toURI().toURL())
 }
 
 fun loadIntoResourceCache(bytes : ByteArray) {
     val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
     resourceCacheField.isAccessible = true
-    val resourceCache = resourceCacheField[Launch.classLoader] as MutableMap<String, ByteArray>
+    val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
     val resources = HashMap<String, ByteArray>()
 
     println("LavaFalcon is injecting classes...")
@@ -187,7 +268,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
 
                 resourceCache[name] = zipStream.readBytes()
                 classesCount++
-                status = "Injected ${name.split(".")[name.split("").size - 1]} class."
+                status = "Injecting $name"
             } else if(Utility.validResource(name)) {
                 println("Found new resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
@@ -219,13 +300,13 @@ fun loadIntoResourceCache(bytes : ByteArray) {
 
         tempFile.deleteOnExit()
 
-        Launch.classLoader.addURL(tempFile.toURI().toURL())
+        classLoader.addURL(tempFile.toURI().toURL())
     }
 
     println("LavaFalcon is setting resourceCache!")
     status = "Setting \"resourceCache\""
 
-    resourceCacheField[Launch.classLoader] = resourceCache
+    resourceCacheField[classLoader] = resourceCache
 
     status = "Done!"
 

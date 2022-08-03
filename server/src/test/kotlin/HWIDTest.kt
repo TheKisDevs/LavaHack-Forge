@@ -25,11 +25,12 @@ internal class HWIDTest {
     }
 
     @Test fun test() {
-        for(env in System.getenv().keys) {
+        println(getProperties().replace(" ", "_"))
+        /*for(env in System.getenv().keys) {
             if(env is String && env != "line.separator") {
                 println("$env | ${System.getenv(env)}&")
             }
-        }
+        }*/
     }
 
     @Test fun getHWIDTest() {

@@ -3,6 +3,7 @@ package the.kis.devs.server
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServer
 import the.kis.devs.server.command.CommandManager
+import the.kis.devs.server.keyauth.KeyAuthApp
 
 /**
  * @author _kisman_
@@ -16,9 +17,11 @@ const val DISCORD_BOT_NAME = "LavaHack-DiscordBot"
 const val OP_NAME = "OP"
 
 const val ADDRESS = "localhost"
-const val PORT = 1234
+const val PORT = 4321
 
 fun main() {
+    KeyAuthApp.keyAuth.init()
+
     val server = SocketServer(ADDRESS, PORT)
     server.start()
     server.onSocketConnected = { connection ->
@@ -55,4 +58,6 @@ fun main() {
             }
         }
     }
+
+    server.stop()
 }
