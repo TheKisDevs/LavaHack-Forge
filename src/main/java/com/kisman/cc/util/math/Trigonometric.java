@@ -1,5 +1,7 @@
 package com.kisman.cc.util.math;
 
+import com.kisman.cc.util.world.BlockUtil;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
 /**

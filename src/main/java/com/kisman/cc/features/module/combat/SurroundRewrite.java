@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -35,6 +36,7 @@ import java.util.*;
 public class SurroundRewrite extends Module {
 
     private final Setting runMode = register(new Setting("RunMode", this, RunMode.Update));
+    private final Setting threadDelay = register(new Setting("ThreadDelay", this, 50, 0, 500, true));
     private final Setting mode = register(new Setting("Mode", this, Vectors.Normal));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final Setting swap = register(new Setting("Switch", this, Swap.Silent));
@@ -66,16 +68,31 @@ public class SurroundRewrite extends Module {
 
     private double lastY = -1;
 
+    private final Thread thread;
+
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT);
         instance = this;
+        this.thread = new Thread(() -> {
+            TimerUtils timer = new TimerUtils();
+            while(true){
+                if(runMode.getValEnum() != RunMode.Thread)
+                    return;
+                if(!timer.passedMillis(threadDelay.getValInt()))
+                    continue;
+                doSurround();
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if(thread.isAlive())
+                thread.stop();
+        }));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTick(TickEvent event){
         if(runMode.getValEnum() != RunMode.Tick)
             return;
-
         doSurround();
     }
 
@@ -83,11 +100,13 @@ public class SurroundRewrite extends Module {
     public void onEnable(){
         timer.reset();
         if(mc.player == null || mc.world == null) return;
+        lastY = mc.player.posY;
         if(center.getValBoolean() && !centerPlayer()){
             setToggled(false);
             return;
         }
         MinecraftForge.EVENT_BUS.register(this);
+        thread.start();
     }
 
     @Override
@@ -108,17 +127,17 @@ public class SurroundRewrite extends Module {
             return;
         }
 
-        if(toggleMode() == Toggle.YChange && ((lastY - y) != 0.0)){
+        if(toggleMode() == Toggle.YChange && y > lastY){
             toggle();
             return;
         }
 
-        if(toggleMode() == Toggle.PositiveYChange && ((lastY - y) > toggleHeight.getValDouble())){
+        if(toggleMode() == Toggle.PositiveYChange && y - toggleHeight.getValDouble() > lastY){
             toggle();
             return;
         }
 
-        if(toggleMode() == Toggle.Combo && ((lastY - y) > toggleHeight.getValDouble() || !mc.player.onGround)){
+        if(toggleMode() == Toggle.Combo && y - toggleHeight.getValDouble() > lastY || !mc.player.onGround){
             toggle();
             return;
         }
@@ -153,6 +172,12 @@ public class SurroundRewrite extends Module {
 
     @Override
     public void onDisable(){
+        thread.stop();
+        try {
+            thread.join();
+        } catch (InterruptedException e){
+            Kisman.LOGGER.debug("Thread was interrupted", e);
+        }
         lastY = -1;
         timer.reset();
         MinecraftForge.EVENT_BUS.unregister(this);
@@ -236,16 +261,11 @@ public class SurroundRewrite extends Module {
             return true;
         }
         centerAt(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ));
-        //Vec3d setCenter = new Vec3d(Math.floor(mc.player.posX) + 0.5D, Math.floor(mc.player.posY), Math.floor(mc.player.posZ) + 0.5D);
-        //mc.player.motionX = 0;
-        //mc.player.motionZ = 0;
-        //mc.player.connection.sendPacket(new CPacketPlayer.Position(setCenter.x, setCenter.y, setCenter.z, true));
-        //mc.player.setPosition(setCenter.x, setCenter.y, setCenter.z);
         return true;
     }
 
     private void centerAt(BlockPos pos){
-        Vec3d setCenter = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        Vec3d setCenter = new Vec3d(pos.getX() + 0.5, mc.player.posY, pos.getZ() + 0.5);
         mc.player.motionX = 0;
         mc.player.motionZ = 0;
         mc.player.connection.sendPacket(new CPacketPlayer.Position(setCenter.x, setCenter.y, setCenter.z, true));
@@ -255,7 +275,6 @@ public class SurroundRewrite extends Module {
     private void placeBlocks(List<BlockPos> blocks){
         int slot = getBlockSlot();
         if(slot == -1) return;
-        //List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
         Swap swap = (Swap) this.swap.getValEnum();
         int oldSlot = mc.player.inventory.currentItem;
         if(swap == Swap.None){
@@ -571,7 +590,7 @@ public class SurroundRewrite extends Module {
         YChange,
         PositiveYChange,
         Combo,
-        OnComplete
+        OnComplete,
     }
 
     private enum CBRotateMode {
@@ -587,6 +606,7 @@ public class SurroundRewrite extends Module {
 
     private enum RunMode {
         Update,
-        Tick
+        Tick,
+        Thread
     }
 }
