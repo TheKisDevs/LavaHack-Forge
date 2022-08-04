@@ -5,6 +5,7 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.RenderUtil;
+import com.kisman.cc.util.render.Rendering;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -93,8 +94,9 @@ public class  NameTags extends Module {
     }
 
     public void renderNametag(final EntityPlayer player, final double x, final double y, final double z) {
-        GL11.glPushMatrix();
-        RenderUtil.enableDefaults();
+//        GL11.glPushMatrix();
+//        RenderUtil.enableDefaults();
+        Rendering.setup();
         TextFormatting clr;
         TextFormatting clrf = TextFormatting.WHITE;
         String cross = "";
@@ -165,13 +167,14 @@ public class  NameTags extends Module {
                 xOffset += 8;
             }
         }
-        GL11.glEnable(3553);
-        GL11.glEnable(2929);
-        GL11.glDepthMask(true);
-        GL11.glDisable(3042);
-        GL11.glPopMatrix();
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderUtil.disableDefaults();
+//        GL11.glEnable(3553);
+//        GL11.glEnable(2929);
+//        GL11.glDepthMask(true);
+//        GL11.glDisable(3042);
+//        GL11.glPopMatrix();
+//        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//        RenderUtil.disableDefaults();
+        Rendering.release();
     }
 
     public float getNametagSize(final EntityLivingBase player) {

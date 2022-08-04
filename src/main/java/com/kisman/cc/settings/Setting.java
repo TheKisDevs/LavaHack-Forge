@@ -1,20 +1,22 @@
 package com.kisman.cc.settings;
 
-import java.util.*;
-import java.util.List;
-import java.util.function.Supplier;
-
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.*;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.ColourUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class Setting implements IBindable {
 	public Supplier<Boolean> visibleSupplier = () -> true;
@@ -33,7 +35,7 @@ public class Setting implements IBindable {
 	public boolean hold = false;
 	
 	private String name;
-	private Module parent;
+	public Module parent;
 	public Setting parent_ = null;
 	public String mode;
 

@@ -12,28 +12,32 @@ import java.util.function.Supplier
  * @since 19:21 of 25.07.2022
  */
 class EntityCullingPattern(
-    val module : Module,
-    val visible : Supplier<Boolean>,
-    val group : SettingGroup?
+    module : Module,
+    private val customGroup : Boolean
+) : AbstractPattern<EntityCullingPattern>(
+    module
 ) {
-    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null)
-    constructor(module : Module) : this(module, Supplier { true })
-    constructor(module : Module, group : SettingGroup) : this(module, Supplier { true }, group)
+    private val customGroup_ = setupGroup(SettingGroup(Setting("Culling", module)))
 
     val culling = Setting("Culling", module, false)
 
-    fun preInit() : EntityCullingPattern {
-        if(group == null) {
-            return this
+    override fun preInit() : EntityCullingPattern {
+        if(group != null) {
+            if(customGroup) {
+                customGroup_.add(culling)
+                group?.add(customGroup_)
+            } else {
+                group?.add(culling)
+            }
         }
-
-        group.add(culling)
 
         return this
     }
 
-    fun init() : EntityCullingPattern {
-        module.register(group)
+    override fun init() : EntityCullingPattern {
+        if(customGroup) {
+            module.register(customGroup_)
+        }
         module.register(culling)
 
         return this

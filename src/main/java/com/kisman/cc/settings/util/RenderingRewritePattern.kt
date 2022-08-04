@@ -10,59 +10,36 @@ import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import java.util.function.Supplier
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "HasPlatformType")
 class RenderingRewritePattern(
-    val module : Module
+    module : Module
+) : AbstractPattern<RenderingRewritePattern>(
+    module
 ) {
-    var visible : Supplier<Boolean> = (Supplier { true })
-    var prefix : String? = null
-    var group : SettingGroup? = null
+    val mode = setupSetting(Setting("Render Mode", module, RenderingRewriteModes.None).setTitle("Mode"))
+    val abyss = setupSetting(Setting("Abyss", module, false))
+    val lineWidth = setupSetting(Setting("Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible { mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient }.setTitle("Width"))
 
-    fun visible(visible : Supplier<Boolean>) : RenderingRewritePattern {
-        this.visible = visible
-        return this
-    }
-
-    fun prefix(prefix : String) : RenderingRewritePattern {
-        this.prefix = prefix
-        return this
-    }
-
-    fun group(group : SettingGroup) : RenderingRewritePattern {
-        this.group = group
-        return this
-    }
-
-
-    val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.None).setVisible { visible.get() }.setTitle("Mode")
-    val abyss = Setting("Abyss", module, false)
-    val lineWidth = Setting((if(prefix != null) "$prefix " else "") + "Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
-        visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
-    }.setTitle("Width")
-
-    val rainbowGroup = SettingGroup(Setting("Rainbow", module))
-    val rainbow = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Rainbow", module, false))
-    val rainbowSpeed = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Rainbow Speed", module, 1.0, 0.25, 5.0, false).setTitle("Speed"))
-    val rainbowSat = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat"))
-    val rainbowBright = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright"))
-    val rainbowGlow = rainbowGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible(rainbow).setTitle("Glow"))
+    val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
+    val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
+    val rainbowSpeed = setupSetting(rainbowGroup.add(Setting("Rainbow Speed", module, 1.0, 0.25, 5.0, false).setVisible(rainbow).setTitle("Speed")))
+    val rainbowSat = setupSetting(rainbowGroup.add(Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat")))
+    val rainbowBright = setupSetting(rainbowGroup.add(Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright")))
+    val rainbowGlow = setupSetting(rainbowGroup.add(Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible(rainbow).setTitle("Glow")))
 
     //Colors
-    val colorGroup = SettingGroup(Setting("Colors", module))
-    val color1 = colorGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, "First Color", Colour(255, 0, 0, 255)).setVisible { visible.get() })
-    val color2 = colorGroup.add(Setting((if(prefix != null) "$prefix " else "") + "Render Second Color", module, "Second Color", Colour(0, 120, 255, 255)).setVisible {
-        visible.get() && (
-                mode.valEnum == RenderingRewriteModes.FilledGradient ||
-                        mode.valEnum == RenderingRewriteModes.OutlineGradient ||
-                        mode.valEnum == RenderingRewriteModes.BothGradient ||
-                        mode.valEnum == RenderingRewriteModes.GlowOutline ||
-                        mode.valEnum == RenderingRewriteModes.Glow
-                )
-    })
+    val colorGroup = setupGroup(SettingGroup(Setting("Colors", module)))
+    val color1 = setupSetting(colorGroup.add(Setting("Render Color", module, "First", Colour(255, 0, 0, 255))))
+    val color2 = setupSetting(colorGroup.add(Setting("Render Second Color", module, "Second", Colour(0, 120, 255, 255)).setVisible {
+        mode.valEnum == RenderingRewriteModes.FilledGradient ||
+        mode.valEnum == RenderingRewriteModes.OutlineGradient ||
+        mode.valEnum == RenderingRewriteModes.BothGradient ||
+        mode.valEnum == RenderingRewriteModes.GlowOutline ||
+        mode.valEnum == RenderingRewriteModes.Glow
+    }))
 
-    fun preInit() : RenderingRewritePattern {
+    override fun preInit() : RenderingRewritePattern {
         if(group != null) {
             group!!.add(mode)
             group!!.add(abyss)
@@ -74,7 +51,7 @@ class RenderingRewritePattern(
         return this
     }
 
-    fun init() : RenderingRewritePattern {
+    override fun init() : RenderingRewritePattern {
         module.register(mode)
         module.register(abyss)
         module.register(lineWidth)

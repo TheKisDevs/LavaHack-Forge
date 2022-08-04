@@ -10,14 +10,13 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FreeLook extends Module {
-    private final Setting autoThirdPerson = new Setting("Auto Third Person", this, false);
+    private final Setting autoThirdPerson = register(new Setting("Auto Third Person", this, false));
+    private final Setting onlyThirdPerson = register(new Setting("Only Third Person", this, false));
 
     private float dYaw, dPitch;
 
     public FreeLook() {
         super("FreeLook", Category.MISC);
-
-        setmgr.rSetting(autoThirdPerson);
     }
 
     public void onEnable() {
@@ -38,7 +37,7 @@ public class FreeLook extends Module {
 
     @SubscribeEvent
     public void onCameraSetup(EntityViewRenderEvent.CameraSetup event) {
-        if (mc.gameSettings.thirdPersonView > 0) {
+        if (mc.gameSettings.thirdPersonView > 0 || !onlyThirdPerson.getValBoolean()) {
             event.setYaw(event.getYaw() + dYaw);
             event.setPitch(event.getPitch() + dPitch);
         }
@@ -46,7 +45,7 @@ public class FreeLook extends Module {
 
     @EventHandler
     private final Listener<TurnEvent> listener = new Listener<>(event -> {
-        if (mc.gameSettings.thirdPersonView > 0) {
+        if (mc.gameSettings.thirdPersonView > 0 || !onlyThirdPerson.getValBoolean()) {
             dYaw = (float) ((double) dYaw + (double) event.yaw * 0.15D);
             dPitch = (float) ((double) dPitch - (double) event.pitch * 0.15D);
             dPitch = MathHelper.clamp(dPitch, -90.0F, 90.0F);

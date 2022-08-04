@@ -6,7 +6,7 @@ import com.kisman.cc.features.module.combat.holefillerrewrite.HoleFillerRewriteR
 import com.kisman.cc.features.module.combat.holefillerrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
@@ -56,8 +56,7 @@ public class HoleFillerRewrite extends Module {
     private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
 
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
+    private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
@@ -110,8 +109,8 @@ public class HoleFillerRewrite extends Module {
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(renderer_.isActive()) {
             renderer.onRenderWorld(
-                    movingLength.getValFloat(),
-                    fadeLength.getValFloat(),
+                    movable.movingLength.getValFloat(),
+                    movable.fadeLength.getValFloat(),
                     renderer_,
                     placeInfo,
                     !placeMode.getValString().equals("All")

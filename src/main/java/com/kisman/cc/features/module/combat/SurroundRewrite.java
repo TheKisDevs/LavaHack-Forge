@@ -1,10 +1,11 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
@@ -26,20 +27,19 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.cubic.dynamictask.AbstractTask;
 
 import java.util.*;
 
 public class SurroundRewrite extends Module {
-
-    private final Setting runMode = register(new Setting("RunMode", this, RunMode.Update));
-    private final Setting threadDelay = register(new Setting("ThreadDelay", this, 50, 0, 500, true));
-    private final Setting mode = register(new Setting("Mode", this, Vectors.Normal));
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
+    private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
+    private final SettingEnum<Vectors> mode = new SettingEnum<Vectors>("Mode", this, Vectors.Normal).register();
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
-    private final Setting swap = register(new Setting("Switch", this, Swap.Silent));
+    private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
@@ -54,13 +54,13 @@ public class SurroundRewrite extends Module {
 
     private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
 
-    private final Setting cbMode = register(crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area"))));
-    private final Setting cbRange = register(crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area"))));
-    private final Setting cbDelay = register(crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true)));
-    private final Setting cbRotate = register(crystalBreaker.add(new Setting("CBRotate", this, false)));
-    private final Setting cbRotateMode = register(crystalBreaker.add(new Setting("CBRotateMode", this, CBRotateMode.Packet)).setVisible(cbRotate::getValBoolean));
-    private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false)));
-    private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false)));
+    private final Setting cbMode = register(crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area")).setTitle("Mode")));
+    private final Setting cbRange = register(crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area")).setTitle("Range")));
+    private final Setting cbDelay = register(crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true).setTitle("Delay")));
+    private final Setting cbRotate = register(crystalBreaker.add(new Setting("CBRotate", this, false).setTitle("Rotate")));
+    private final Setting cbRotateMode = register(crystalBreaker.add(new Setting("CBRotateMode", this, CBRotateMode.Packet)).setVisible(cbRotate).setTitle("Rotate Mode"));
+    private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false).setTitle("Packet")));
+    private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false).setTitle("Client Side")));
 
     private static SurroundRewrite instance;
 
@@ -68,12 +68,12 @@ public class SurroundRewrite extends Module {
 
     private double lastY = -1;
 
-    private final Thread thread;
+//    private final Thread thread;
 
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT);
         instance = this;
-        this.thread = new Thread(() -> {
+        /*this.thread = new Thread(() -> {
             TimerUtils timer = new TimerUtils();
             while(true){
                 if(runMode.getValEnum() != RunMode.Thread)
@@ -86,35 +86,38 @@ public class SurroundRewrite extends Module {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if(thread.isAlive())
                 thread.stop();
-        }));
+        }));*/
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTick(TickEvent event){
-        if(runMode.getValEnum() != RunMode.Tick)
-            return;
-        doSurround();
+        if(eventMode.getValEnum() == RunMode.Tick) doThreaddedSurround();
     }
 
     @Override
     public void onEnable(){
+        super.onEnable();
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
         if(center.getValBoolean() && !centerPlayer()){
             setToggled(false);
-            return;
+//            return;
         }
-        MinecraftForge.EVENT_BUS.register(this);
-        thread.start();
+//        thread.start();
     }
 
     @Override
     public void update(){
-        if(runMode.getValEnum() != RunMode.Update)
-            return;
+        if(eventMode.getValEnum() == RunMode.Update) doThreaddedSurround();
 
-        doSurround();
+//        doSurround();
+    }
+
+    private void doThreaddedSurround() {
+        threads.update(() -> {
+            doSurround();
+        });
     }
 
     private void doSurround(){
@@ -122,65 +125,45 @@ public class SurroundRewrite extends Module {
 
         double y = mc.player.posY;
 
-        if(toggleMode() == Toggle.OffGround && !mc.player.onGround){
+        if(
+                (toggle.getValEnum() == Toggle.OffGround && !mc.player.onGround)
+                        || (toggle.getValEnum() == Toggle.YChange && y > lastY)
+                        || (toggle.getValEnum() == Toggle.PositiveYChange && y - toggleHeight.getValDouble() > lastY)
+                        || (toggle.getValEnum() == Toggle.Combo &&(y - toggleHeight.getValDouble() > lastY || !mc.player.onGround))
+        ){
             toggle();
             return;
         }
-
-        if(toggleMode() == Toggle.YChange && y > lastY){
-            toggle();
-            return;
-        }
-
-        if(toggleMode() == Toggle.PositiveYChange && y - toggleHeight.getValDouble() > lastY){
-            toggle();
-            return;
-        }
-
-        if(toggleMode() == Toggle.Combo && y - toggleHeight.getValDouble() > lastY || !mc.player.onGround){
-            toggle();
-            return;
-        }
-
-        List<BlockPos> blocks = ((Vectors) mode.getValEnum()).getBlocks();
 
         if(breakCrystals.getValBoolean())
-            breakCrystals(blocks);
+            breakCrystals(mode.getValEnum().getBlocks());
 
         int slot = getBlockSlot();
         if(slot == -1) return;
         int oldSlot = mc.player.inventory.currentItem;
 
-        Swap swap = (Swap) this.swap.getValEnum();
+        swap.getValEnum().doSwap(slot, false, SwapWhen.RunSurround);
 
-        swap.doSwap(slot, false, SwapWhen.RunSurround);
+        placeBlocks(mode.getValEnum().getBlocks());
 
-        placeBlocks(blocks);
-
-        swap.doSwap(oldSlot, true, SwapWhen.RunSurround);
+        swap.getValEnum().doSwap(oldSlot, true, SwapWhen.RunSurround);
 
         lastY = y;
 
-        if(toggleMode() == Toggle.OnComplete){
-            toggle();
-        }
-    }
-
-    private Toggle toggleMode(){
-        return (Toggle) toggle.getValEnum();
+        if(toggle.getValEnum() == Toggle.OnComplete) toggle();
     }
 
     @Override
     public void onDisable(){
-        thread.stop();
+        super.onDisable();
+        /*thread.stop();
         try {
             thread.join();
         } catch (InterruptedException e){
             Kisman.LOGGER.debug("Thread was interrupted", e);
-        }
+        }*/
         lastY = -1;
         timer.reset();
-        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     private void breakCrystals(List<BlockPos> blocks){
@@ -275,9 +258,8 @@ public class SurroundRewrite extends Module {
     private void placeBlocks(List<BlockPos> blocks){
         int slot = getBlockSlot();
         if(slot == -1) return;
-        Swap swap = (Swap) this.swap.getValEnum();
         int oldSlot = mc.player.inventory.currentItem;
-        if(swap == Swap.None){
+        if(swap.getValEnum() == SwapEnum.Swap.None){
             ItemStack stack = mc.player.inventory.getStackInSlot(oldSlot);
             Item item = stack.getItem();
             if(!(item instanceof ItemBlock))
@@ -292,9 +274,9 @@ public class SurroundRewrite extends Module {
                 continue;
             if(!isReplaceable(pos)) continue;
             if(checkEntities(pos)) continue;
-            swap.doSwap(slot, false, SwapWhen.Place);
+            swap.getValEnum().doSwap(slot, false, SwapWhen.Place);
             BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
-            swap.doSwap(oldSlot, true, SwapWhen.Place);
+            swap.getValEnum().doSwap(oldSlot, true, SwapWhen.Place);
         }
     }
 
@@ -504,68 +486,48 @@ public class SurroundRewrite extends Module {
         }
     }
 
-    private enum Swap {
-        None(new AbstractSwap() { @Override public void doSwap(int slot, boolean swapBack) { } }),
-        Vanilla(new VanillaSwap()),
-        Packet(new PacketSwap()),
-        Silent(new SilentSwap());
 
-        private final AbstractSwap swap;
 
-        Swap(AbstractSwap swap){
-            this.swap = swap;
-        }
+    private static class SwapEnum {
+        private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(
+                Void.class,
+                Integer.class,//Slot
+                Boolean.class//Swap back(Silent)
+        );
 
-        public void doSwap(int slot, boolean swapBack, SwapWhen when){
-            if(instance.swapWhen.getValEnum() != when)
-                return;
-            if(mc.player.inventory.currentItem == slot) return;
-            swap.doSwap(slot, swapBack);
-        }
-    }
+        private enum Swap {
+            None(task.task(arg -> null)),
+            Vanilla(task.task(arg -> {
+                if(arg.fetch(1)) return null;
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
+                mc.player.inventory.currentItem = arg.fetch(0);
+                return null;
+            })),
+            Packet(task.task(arg -> {
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
+                if(arg.fetch(1)) mc.playerController.updateController();
+                return null;
+            })),
+            Silent(task.task(arg -> {
+                mc.player.connection.sendPacket(new CPacketHeldItemChange(arg.fetch(0)));
+                mc.player.inventory.currentItem = arg.fetch(0);
+                if(arg.fetch(1)) mc.playerController.updateController();
+                return null;
+            }));
 
-    private static abstract class AbstractSwap {
+            private final AbstractTask<Void> abstractTask;
+            Swap(AbstractTask<Void> task) {
+                this.abstractTask = task;}
 
-        public AbstractSwap(){
-
-        }
-
-        public abstract void doSwap(int slot, boolean swapBack);
-    }
-
-    private static class VanillaSwap extends AbstractSwap {
-
-        @Override
-        public void doSwap(int slot, boolean swapBack) {
-            if(swapBack) return;
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-            mc.player.inventory.currentItem = slot;
-        }
-    }
-
-    private static class PacketSwap extends AbstractSwap {
-
-        @Override
-        public void doSwap(int slot, boolean swapBack) {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-            if(swapBack)
-                mc.playerController.updateController();
-        }
-    }
-
-    private static class SilentSwap extends AbstractSwap {
-
-        @Override
-        public void doSwap(int slot, boolean swapBack) {
-            mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-            mc.player.inventory.currentItem = slot;
-            if(swapBack)
-                mc.playerController.updateController();
+            public void doSwap(int slot, boolean swapBack, SwapWhen when){
+                if(instance.swapWhen.getValEnum() != when) return;
+                if(mc.player.inventory.currentItem == slot) return;
+                abstractTask.doTask(slot, swapBack);
+            }
         }
     }
 
     private static class BlockPosOffset {
-
         private final BlockPos pos;
 
         private final EnumFacing facing;
@@ -606,7 +568,6 @@ public class SurroundRewrite extends Module {
 
     private enum RunMode {
         Update,
-        Tick,
-        Thread
+        Tick
     }
 }

@@ -30,20 +30,31 @@ class CharmsRewriteRendererPattern(
             val group = SettingGroup(Setting(type.name, module))
             val wireGroup = group.add(SettingGroup(Setting("Wire", module)))
             val modelGroup = group.add(SettingGroup(Setting("Model", module)))
+            val wireColorGroup = wireGroup.add(SettingGroup(Setting("Color", module)))
+            val modelColorGroup = modelGroup.add(SettingGroup(Setting("Color", module)))
             groups.add(group)
             groups.add(wireGroup)
             groups.add(modelGroup)
-            settings.addAll(getSettingsByType(type, group, wireGroup, modelGroup))
+            groups.add(wireColorGroup)
+            groups.add(modelColorGroup)
+            settings.addAll(getSettingsByType(
+                type,
+                group,
+                wireGroup,
+                modelGroup,
+                wireColorGroup,
+                modelColorGroup
+            ))
         }
     }
 
     fun init() : CharmsRewriteRendererPattern {
         for(setting in settings) {
-            Kisman.instance.settingsManager.rSetting(setting.setting)
+            module.register(setting.setting)
         }
 
         for(group in groups) {
-            Kisman.instance.settingsManager.rSetting(group)
+            module.register(group)
         }
 
         return this
@@ -53,7 +64,9 @@ class CharmsRewriteRendererPattern(
         type : CharmsRewriteEntityTypes,
         group : SettingGroup,
         wireGroup : SettingGroup,
-        modelGroup : SettingGroup
+        modelGroup : SettingGroup,
+        wireColorGroup : SettingGroup,
+        modelColorGroup : SettingGroup
     ) : ArrayList<CharmsRewriteSetting> {
         val list = ArrayList<CharmsRewriteSetting>()
         val mode = group.add(Setting("${type.name} Mode", module, CharmsRewriteModes.None).setTitle("Mode"))
@@ -71,13 +84,13 @@ class CharmsRewriteRendererPattern(
         }
 
         list.add(CharmsRewriteSetting(
-            wireGroup.add(Setting("${type.name} Wire Custom Color", module, false).setTitle("Custom Color")),
+            wireGroup.add(wireColorGroup.add(Setting("${type.name} Wire Custom Color", module, false).setTitle("Custom"))),
             type,
             CharmsRewriteTypes.WireCustomColor
         ))
 
         list.add(CharmsRewriteSetting(
-            wireGroup.add(Setting("${type.name} Wire Color", module, Colour(255, 255, 255, 255)).setTitle("Color")),
+            wireGroup.add(wireColorGroup.add(Setting("${type.name} Wire Color", module, Colour(255, 255, 255, 255)).setTitle("Custom"))),
             type,
             CharmsRewriteTypes.WireColor
         ))
@@ -92,13 +105,13 @@ class CharmsRewriteRendererPattern(
         }
 
         list.add(CharmsRewriteSetting(
-            modelGroup.add(Setting("${type.name} Model Custom Color", module, false).setTitle("Custom Color")),
+            modelGroup.add(modelColorGroup.add(Setting("${type.name} Model Custom Color", module, false).setTitle("Custom"))),
             type,
             CharmsRewriteTypes.ModelCustomColor
         ))
 
         list.add(CharmsRewriteSetting(
-            modelGroup.add(Setting("${type.name} Model Color", module, Colour(255, 255, 255, 255)).setTitle("Color")),
+            modelGroup.add(modelColorGroup.add(Setting("${type.name} Model Color", module, Colour(255, 255, 255, 255)).setTitle("Custom"))),
             type,
             CharmsRewriteTypes.ModelColor
         ))

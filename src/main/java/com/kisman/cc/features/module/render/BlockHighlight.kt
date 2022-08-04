@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.features.module.render.blockhighlight.BlockHighlightRenderer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.settings.types.number.NumberType
+import com.kisman.cc.settings.util.MovableRendererPattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.enums.BoxRenderModes
@@ -40,8 +40,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     //Advanced renderer
     private val adGroup = register(SettingGroup(Setting("Advanced Renderer", this)))
     private val advancedRenderer = register(adGroup.add(Setting("Advanced Renderer", this, false)))
-    private val movingLength = register(adGroup.add(Setting("Moving Length", this, 400.0, 0.0, 1000.0, NumberType.TIME)))
-    private val fadeLength = register(adGroup.add(Setting("Fade Length", this, 200.0, 0.0, 1000.0, NumberType.TIME)))
+    private val movable = MovableRendererPattern(this).group(adGroup).preInit().init()
 
     private val renderer = BlockHighlightRenderer()
 
@@ -100,8 +99,8 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
 
         if(advancedRenderer.valBoolean) {
             renderer.onRenderWorld(
-                movingLength.valFloat,
-                fadeLength.valFloat,
+                movable.movingLength.valFloat,
+                movable.fadeLength.valFloat,
                 bb,
                 color.colour,
                 mode.valEnum as BoxRenderModes,

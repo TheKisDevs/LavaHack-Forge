@@ -58,6 +58,7 @@ public class Rendering {
 
     public static void release(){
         glDisable(GL_LINE_SMOOTH);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.depthMask(true);
         GlStateManager.enableDepth();
         GlStateManager.enableTexture2D();
@@ -156,6 +157,18 @@ public class Rendering {
         double y2 = (pos.getY() + 0.5) + s;
         double z2 = (pos.getZ() + 0.5) + s;
         return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+    }
+
+    public static AxisAlignedBB scale(AxisAlignedBB bb, double scale) {
+        double s = scale * 0.5;
+        return new AxisAlignedBB(
+                bb.minX - s,
+                bb.minY - s,
+                bb.minZ - s,
+                bb.maxX + s,
+                bb.maxY + s,
+                bb.maxZ + s
+        );
     }
 
     public static BoundingBox animateMove(BoundingBox origin, BoundingBox destination, float partialTicks, float lengthPartialTicks){

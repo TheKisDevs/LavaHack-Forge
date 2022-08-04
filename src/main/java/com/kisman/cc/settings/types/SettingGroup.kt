@@ -1,6 +1,7 @@
 package com.kisman.cc.settings.types
 
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingEnum
 
 open class SettingGroup(
         setting : Setting
@@ -22,5 +23,11 @@ open class SettingGroup(
         group.parent_ = this
         settings.add(group)
         return group
+    }
+
+    open fun add(enum : SettingEnum<*>) : SettingEnum<*> {
+        enum.parent_ = this
+        settings.add(enum)
+        return enum
     }
 }

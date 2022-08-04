@@ -1,34 +1,40 @@
 package com.kisman.cc.features.module.movement;
 
-import java.util.*;
-
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
+import com.kisman.cc.event.events.EventPlayerUpdate;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.settings.*;
-
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.movement.MovementUtil;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("ConstantConditions")
 public class Speed extends Module {
     public static Speed instance;
 
-    private float yPortSpeed;
-
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3", "Strafe4")));
+    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3"/*, "Strafe4"*/)));
 
     private final Setting flagDetect = new Setting("Flag Detect", this, true);
 
@@ -44,6 +50,7 @@ public class Speed extends Module {
     public final Setting scaleCap = new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
     public final Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
 
+    private final Setting yPortSpeed = new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort"));
     private final Setting yWater = new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort"));
     private final Setting yLava = new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort"));
 
@@ -79,7 +86,7 @@ public class Speed extends Module {
     private double strafe4PrevMotion = 0;
     private boolean strafe4Flag = false;
 
-    private TimerUtils velocityTimer = new TimerUtils();
+    private final TimerUtils velocityTimer = new TimerUtils();
     private double maxVelocity = 0;
 
     public Speed() {
@@ -124,6 +131,8 @@ public class Speed extends Module {
     private void reset() {
         EntityUtil.resetTimer();
 
+        velocityTimer.reset();
+
         stage = 4;
         ncpStage = 0;
         strafe3Stage = 4;
@@ -144,14 +153,12 @@ public class Speed extends Module {
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(playerUpdate);
         Kisman.EVENT_BUS.unsubscribe(receive);
-
         reset();
     }
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
         dist = MovementUtil.getDistance2D();
 
         if((speedMode.checkValString("Strafe New") || speedMode.checkValString("Strafe4")) && useTimer.getValBoolean() && Managers.instance.passed(250)) EntityUtil.setTimer(1.0808f + (0.008f * timerFactor.getValFloat()));
@@ -304,6 +311,12 @@ public class Speed extends Module {
                 mc.player.motionY = 0;
             }
         } else if(speedMode.checkValString("Strafe4")) {
+            if(MovementUtil.isMoving()) {
+                double dX = mc.player.posX - mc.player.prevPosX;
+                double dZ = mc.player.posZ - mc.player.prevPosZ;
+                strafe4PrevMotion = Math.sqrt(dX * dX + dZ * dZ);
+            }
+
             if (strafe4Stage != 1 || (mc.player.moveForward == 0.0f || mc.player.moveStrafing == 0.0f)) {
                 if (strafe4Stage == 2 && (mc.player.moveForward != 0.0f || mc.player.moveStrafing != 0.0f)) {
                     double jumpSpeed = 0.0D;
@@ -358,7 +371,7 @@ public class Speed extends Module {
         if(mc.player.onGround) {
             EntityUtil.setTimer(1.15f);
             mc.player.jump();
-            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + this.yPortSpeed);
+            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + yPortSpeed.getValInt());
         } else {
             mc.player.motionY = -1;
             EntityUtil.resetTimer();

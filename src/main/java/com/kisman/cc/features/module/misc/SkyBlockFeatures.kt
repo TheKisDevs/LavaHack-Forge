@@ -42,7 +42,7 @@ class SkyBlockFeatures : Module(
     private val crackedStoneBricks = register(esp.add(Setting("Cracked Stone Bricks", this, false)))
     private val crackedStoneBricksColor = register(esp.add(Setting("Cracked Stone Bricks Color", this, Colour(255, 0, 255, 255)).setVisible { crackedStoneBricks.valBoolean }))
 
-    private val renderer = BoxRendererPattern(this).initWithGroup(render)
+    private val renderer = BoxRendererPattern(this).group(render).preInit().init()
 
     private val hyperionExploit = register(hyperionExploitG.add(Setting("Hyperion Exploit", this, false)))
     private val heAOTESlot = register(hyperionExploitG.add(Setting("HE AOTE Slot", this, 3.0, 1.0, 9.0, true)))

@@ -1,5 +1,6 @@
 package com.kisman.cc.util.world;
 
+import com.kisman.cc.settings.util.ScalingPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.block.Block;
@@ -18,8 +19,8 @@ import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
 public class BlockUtil2 {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    public static float getBreakingProgress(BlockPos pos, ItemStack stack, long start) {
-        return (float) MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
+    public static double getBreakingProgress(BlockPos pos, ItemStack stack, long start) {
+        return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
     }
 
     public static AxisAlignedBB getProgressBB(BlockPos pos, ItemStack stack, long start) {
@@ -29,7 +30,14 @@ public class BlockUtil2 {
         );
     }
 
-    public static AxisAlignedBB getProgressBB(AxisAlignedBB fullBB, float progress) {
+    public static AxisAlignedBB getMutableProgressBB(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier) {
+        return getProgressBB(
+                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
+                scalier.mutateProgress(getBreakingProgress(pos, stack, start))
+        );
+    }
+
+    public static AxisAlignedBB getProgressBB(AxisAlignedBB fullBB, double progress) {
         return new AxisAlignedBB(
             (fullBB.minX + (fullBB.getCenter().x - fullBB.minX) * progress),
             (fullBB.minY + (fullBB.getCenter().y - fullBB.minY) * progress),
