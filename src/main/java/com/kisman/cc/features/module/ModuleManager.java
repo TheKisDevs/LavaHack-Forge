@@ -53,6 +53,8 @@ public class ModuleManager {
 		modules.add(new RectTest());
 		modules.add(new SmoothRenderer());
 		modules.add(new TextFieldTest());
+		modules.add(new TowerTest());
+		modules.add(new TracerTest());
 		modules.add(new Triangulation());
 
 		//combat
