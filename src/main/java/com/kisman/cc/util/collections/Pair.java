@@ -1,5 +1,7 @@
 package com.kisman.cc.util.collections;
 
+import java.util.Objects;
+
 public class Pair<T> {
 
     private final T first;
@@ -24,6 +26,6 @@ public class Pair<T> {
         if(!(other instanceof Pair))
             return false;
         Pair<?> pair = (Pair<?>) other;
-        return first.equals(pair.first) && second.equals(pair.second);
+        return Objects.equals(first, pair.first) && Objects.equals(second, pair.second);
     }
 }
