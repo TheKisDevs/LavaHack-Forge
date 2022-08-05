@@ -142,13 +142,13 @@ processResources {
 }
 
 mixin {
-    defaultObfuscationEnv searge
+    defaultObfuscationEnv notch
     add sourceSets.main, 'mixins.kisman.refmap.json'
 }
 
 reobf {
     shadowJar {
-        mappingType = 'SEARGE'
+        mappingType = 'NOTCH'
         classpath = sourceSets.main.compileClasspath
     }
 }

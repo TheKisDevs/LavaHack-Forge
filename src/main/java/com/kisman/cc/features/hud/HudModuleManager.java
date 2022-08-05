@@ -25,6 +25,7 @@ public class HudModuleManager {
 		modules.add(new CurrentConfig());
 		modules.add(new Fps());
 		modules.add(new Indicators());
+		modules.add(new InventoryHud());
 		modules.add(new Logo());
 		modules.add(new PacketChat());
 		modules.add(new PearlCooldown());

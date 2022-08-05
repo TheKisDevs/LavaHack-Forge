@@ -19,3 +19,14 @@ fun getPing() : Int {
 fun getPing(id : UUID) : Int {
     return if(mc.isSingleplayer) 0 else try { mc.player.connection.getPlayerInfo(id).responseTime } catch(ignored : Exception) { -1 }
 }
+
+//It's useless for java, but useful for kotlin - _kisman_
+fun createDoubleArray(vararg elements : Double) : DoubleArray {
+    val array = DoubleArray(elements.size)
+
+    for(i in 0..elements.size) {
+        array[i] = elements[i]
+    }
+
+    return array
+}
