@@ -46,7 +46,7 @@ public class OffHand extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null && mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
+        if(mc.player == null || mc.world == null || (mc.currentScreen != null && !(mc.currentScreen instanceof GuiInventory))) return;
 
         threads.update(() -> {
             needTotem.set(totemIfNoNearbyPlayers.getValBoolean() && !mode.getValString().equalsIgnoreCase("Totem") && mc.world.playerEntities.stream().noneMatch(e -> !(e == mc.player || FriendManager.instance.isFriend(e) || mc.player.getDistance(e) > 15)));

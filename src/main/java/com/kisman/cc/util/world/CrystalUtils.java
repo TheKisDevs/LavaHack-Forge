@@ -1,9 +1,5 @@
 package com.kisman.cc.util.world;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.kisman.cc.util.entity.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -26,6 +22,10 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CrystalUtils {
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -300,12 +300,28 @@ public class CrystalUtils {
         } else return null;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static float getBlastReduction(EntityLivingBase entity, float damage, Explosion explosion) {
         if (entity instanceof EntityPlayer) {
             EntityPlayer ep = (EntityPlayer) entity;
             DamageSource ds = DamageSource.causeExplosionDamage(explosion);
-            damage = CombatRules.getDamageAfterAbsorb(damage, (float) ep.getTotalArmorValue(), (float) ep.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
-            int k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+
+            try {
+                damage = CombatRules.getDamageAfterAbsorb(damage, (float) ep.getTotalArmorValue(), (float) ep.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
+            } catch (NullPointerException nullpointer) {
+                damage = 0;
+            }
+
+            int k;
+
+            k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+
+            try {
+                k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+            } catch (NullPointerException nullpointer) {
+                return 0;
+            }
+
             float f = MathHelper.clamp(k, 0.0F, 20.0F);
             damage *= 1.0F - f / 25.0F;
             if (entity.isPotionActive(Potion.getPotionById(11))) damage -= damage / 4;

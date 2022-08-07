@@ -97,8 +97,10 @@ public class AutoRer extends Module {
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
     private final Setting recalc = register(calc.add(new Setting("ReCalc", this, false)));
     private final Setting cubicCalc = register(calc.add(new Setting("Cubic Calc", this, false)));
-    private final Setting motionCrystal = register(helpers.add(new Setting("Motion Crystal", this, false)));
-    private final Setting motionCalc = register(helpers.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)));
+    private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
+    private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
+    private final Setting motionCalc = register(motionGroup.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)).setTitle("Calc"));
+    private final Setting timingMode = register(helpers.add(new Setting("Timings", this, TimingMode.Adaptive)));
     private final Setting swing = register(main.add(new Setting("Swing", this, SwingMode.PacketSwing)));
     private final Setting swingLogic = register(main.add(new Setting("Swing Logic", this, SwingLogic.Pre).setVisible(() -> swing.getValEnum() != SwingMode.None)));
     private final Setting instant = register(helpers.add(new Setting("Instant", this, true)));
@@ -138,6 +140,9 @@ public class AutoRer extends Module {
     private final Setting fromBreakToPlaceDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From B To P")));
     private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
     private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
+    private final SettingGroup sequentialGroup = register(delay.add(new SettingGroup(new Setting("Sequential", this))));
+//    private final Setting sequentialPlaceDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Place")));
+    private final Setting sequentialBreakDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Break")));
     private final Setting multiplication = register(delay.add(new Setting("Multiplication", this, 1, 1, 10, true).setTitle("Multi")));
 
     public final Setting minDMG = register(damage.add(new Setting("Min DMG", this, 6, 0, 37, true).setTitle("Min")));
@@ -910,9 +915,7 @@ public class AutoRer extends Module {
             if(crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
         }
 
-        if(crystal.get() == null) return;
-
-        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
+        if(crystal.get() == null || (timingMode.getValEnum() != TimingMode.Adaptive && crystal.get().ticksExisted < sequentialBreakDelay.getValInt())) return;
 
         RotationSaver saver = new RotationSaver().save();
         RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
@@ -985,6 +988,7 @@ public class AutoRer extends Module {
     public enum AntiCevBreakerMode {None, Cev, Civ, Both}
     public enum BreakPriority {Damage, CevBreaker}
     public enum DelayMode {Default, FromTo}
+    public enum TimingMode {Sequential, Adaptive}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

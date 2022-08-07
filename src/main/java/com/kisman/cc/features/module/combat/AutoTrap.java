@@ -21,23 +21,23 @@ import java.util.*;
 
 public class AutoTrap extends Module {
     public static AutoTrap instance;
-    protected final Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
-    protected final Setting disableOnComplete = new Setting("Disable On Complete", this, false);
-    protected final Setting placeDelay = new Setting("Delay", this, 50, 0, 100, true);
-    protected final Setting rotate = new Setting("Rotate", this, true);
-    protected final Setting blocksPerTick = new Setting("Blocks Per Tick", this, 8, 1, 30, true);
-    protected final Setting antiScaffold = new Setting("Anti Scaffold", this, false);
-    protected final Setting antiStep = new Setting("Anti Step", this, false);
-    protected final Setting surroundPlacing = new Setting("Surround Placing", this, true);
-    protected final Setting range = new Setting("Range", this, 4, 1, 5, false);
-    protected final Setting raytrace = new Setting("RayTrace", this, false);
-    protected final Setting packet = new Setting("Packet Place", this, true);
-    protected final Setting rewrite = new Setting("Rewrite", this, false);
-    protected final Setting dynamic = new Setting("Rewrite Dynamic", this, false);
-    protected final Setting supportBlocks = new Setting("Rewrite Support Blocks", this, SurroundSupportModes.Dynamic);
-    protected final Setting rewriteRetries = new Setting("Rewrite Retries", this, 0, 0, 20, true);
-    protected final Setting switch_ = new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent);
-    protected final Setting rotateMode = new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent);
+    protected final Setting targetRange = register(new Setting("Target Range", this, 10, 1, 20, true));
+    protected final Setting disableOnComplete = register(new Setting("Disable On Complete", this, false));
+    protected final Setting placeDelay = register(new Setting("Delay", this, 50, 0, 100, true));
+    protected final Setting rotate = register(new Setting("Rotate", this, true));
+    protected final Setting blocksPerTick = register(new Setting("Blocks Per Tick", this, 8, 1, 30, true));
+    protected final Setting antiScaffold = register(new Setting("Anti Scaffold", this, false));
+    protected final Setting antiStep = register(new Setting("Anti Step", this, false));
+    protected final Setting surroundPlacing = register(new Setting("Surround Placing", this, true));
+    protected final Setting range = register(new Setting("Range", this, 4, 1, 5, false));
+    protected final Setting raytrace = register(new Setting("RayTrace", this, false));
+    protected final Setting packet = register(new Setting("Packet Place", this, true));
+    protected final Setting rewrite = register(new Setting("Rewrite", this, false));
+    protected final Setting dynamic = register(new Setting("Rewrite Dynamic", this, false));
+    protected final Setting supportBlocks = register(new Setting("Rewrite Support Blocks", this, SurroundSupportModes.Dynamic));
+    protected final Setting rewriteRetries = register(new Setting("Rewrite Retries", this, 0, 0, 20, true));
+    protected final Setting switch_ = register(new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent));
+    protected final Setting rotateMode = register(new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent));
 
     protected TimerUtils timer = new TimerUtils();
     protected Map<BlockPos, Integer> retries = new HashMap<>();
@@ -57,30 +57,13 @@ public class AutoTrap extends Module {
         super.setToggled(false);
 
         instance = this;
-
-        setmgr.rSetting(targetRange);
-        setmgr.rSetting(disableOnComplete);
-        setmgr.rSetting(placeDelay);
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(blocksPerTick);
-        setmgr.rSetting(antiScaffold);
-        setmgr.rSetting(antiStep);
-        setmgr.rSetting(surroundPlacing);
-        setmgr.rSetting(range);
-        setmgr.rSetting(raytrace);
-        setmgr.rSetting(packet);
-        setmgr.rSetting(rewrite);
-        setmgr.rSetting(dynamic);
-        setmgr.rSetting(supportBlocks);
-        setmgr.rSetting(rewriteRetries);
-        setmgr.rSetting(rotateMode);
     }
 
     /**
      * see <code>com.kisman.cc.features.module.combat.SelfTrap
      */
-    public AutoTrap(String name, Category category) {
-        super(name, category);
+    public AutoTrap(String name) {
+        super(name, Category.COMBAT);
     }
 
     public void onEnable() {

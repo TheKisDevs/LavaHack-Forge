@@ -61,6 +61,7 @@ public class  NameTags extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         for(EntityPlayer p : mc.world.playerEntities) {
+            if(p == mc.player) continue;
             if (p != mc.getRenderViewEntity() && p.isEntityAlive()) {
                 if (damageDisplay.getValBoolean()) {
                     if (!this.tagList.containsKey(p.getName())) {
@@ -115,13 +116,18 @@ public class  NameTags extends Module {
         else if (health > 8) clr = TextFormatting.GOLD;
         else if (health > 5) clr = TextFormatting.RED;
         else clr = TextFormatting.DARK_RED;
-        final int lasthealth = this.tagList.get(player.getName());
-        if (player != mc.player && damageDisplay) {
+        int lasthealth = 0;
+        try {
+            lasthealth = this.tagList.get(player.getName());
+        } catch(Exception ignored) {}
+        if (damageDisplay) {
             if (lasthealth > health) this.damageList.put(player.getName(), TextFormatting.RED + " -" + (lasthealth - health));
             this.tagList.put(player.getName(), health);
         }
         String dmgtext = "";
-        if (damageDisplay) dmgtext = this.damageList.get(player.getName());
+        try {
+            if (damageDisplay) dmgtext = this.damageList.get(player.getName());
+        } catch(Exception ignored) {}
         String name = cross + clrf + playerPing + player.getName() + " " + clr + health + dmgtext;
         name = name.replace(".0", "");
         final float var14 = 0.016666668f * this.getNametagSize(player);

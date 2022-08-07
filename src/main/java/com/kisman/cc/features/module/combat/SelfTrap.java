@@ -1,33 +1,16 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Category;
+import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
 
 public class SelfTrap extends AutoTrap {
     public SelfTrap() {
-        super("SelfTrap", Category.COMBAT);
-
-        setmgr.rSetting(disableOnComplete);
-        setmgr.rSetting(placeDelay);
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(blocksPerTick);
-        setmgr.rSetting(antiScaffold);
-        setmgr.rSetting(antiStep);
-        setmgr.rSetting(surroundPlacing);
-        setmgr.rSetting(range);
-        setmgr.rSetting(raytrace);
-        setmgr.rSetting(packet);
-        setmgr.rSetting(rewrite);
-        setmgr.rSetting(dynamic);
-        setmgr.rSetting(supportBlocks);
-        setmgr.rSetting(rewriteRetries);
-        setmgr.rSetting(rotateMode);
+        super("SelfTrap");
     }
 
     @Override

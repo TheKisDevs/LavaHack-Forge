@@ -1,10 +1,5 @@
 package com.kisman.cc.features.module;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -19,7 +14,13 @@ import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.*;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -82,6 +83,7 @@ public class ModuleManager {
 		modules.add(new HoleFillerRewrite());
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
+		modules.add(new Quiver());
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
 		modules.add(new Surround());

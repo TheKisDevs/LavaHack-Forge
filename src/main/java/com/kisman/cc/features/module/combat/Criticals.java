@@ -9,15 +9,12 @@ import net.minecraft.entity.*;
 import net.minecraft.network.play.client.*;
 
 public class Criticals extends Module {
-    private final Setting strict = new Setting("Strict", this, false);
-    private final Setting onlyKillAura = new Setting("OnlyKillAura", this, false);
+    private final Setting strict = register(new Setting("Strict", this, false));
+    private final Setting onlyKillAura = register(new Setting("OnlyKillAura", this, false));
 
     public Criticals() {
         super("Criticals", "", Category.COMBAT);
         super.setDisplayInfo(() -> strict.getValBoolean() ? ("[Strict]") : "");
-
-        setmgr.rSetting(strict);
-        setmgr.rSetting(onlyKillAura);
     }
 
     public void onEnable() {

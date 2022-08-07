@@ -39,6 +39,7 @@ public class SilentXp extends Module {
             
             if(xpSlot == -1) {
                 ChatUtility.error().printClientModuleMessage("No XP in hotbar! Disabling!");
+                super.setToggled(false);
                 return;
             }
 
