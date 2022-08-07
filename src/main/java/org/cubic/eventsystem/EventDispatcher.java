@@ -2,6 +2,7 @@ package org.cubic.eventsystem;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +35,10 @@ class EventDispatcher implements EventBus {
             Listener listener = Listener.newListener(wrapper);
             if(listener == null)
                 continue;
+            Subscribe subscribe = m.getAnnotation(Subscribe.class);
             List<Listener> listeners = LISTENER.computeIfAbsent(listener.eventType(), t -> new ArrayList<>(64));
             listeners.add(listener);
+            listeners.sort(Comparator.comparingInt(o -> o.getSubscribe().priority()));
             CACHE.put(wrapper, listener);
         }
     }
