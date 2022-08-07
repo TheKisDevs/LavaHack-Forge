@@ -51,6 +51,7 @@ public class ModuleManager {
 		modules.add(new NoMove());
 		modules.add(new PacketIDGetterTest());
 		modules.add(new RectTest());
+		modules.add(new ScaffoldTest());
 		modules.add(new SmoothRenderer());
 		modules.add(new TextFieldTest());
 		modules.add(new TowerTest());

@@ -12,7 +12,9 @@ class Listener {
 
     private final Object instance;
 
-    private Listener(Method method, Object instance) {
+    private final Subscribe subscribe;
+
+    private Listener(Method method, Object instance, Subscribe subscribe) {
         method.setAccessible(true);
         Class<?>[] paramTypes = method.getParameterTypes();
         //if(paramTypes.length != 1)
@@ -23,6 +25,7 @@ class Listener {
         this.declaringClass = method.getDeclaringClass();
         this.eventType = paramTypes[0];
         this.instance = instance;
+        this.subscribe = subscribe;
     }
 
     public static Listener newListener(MethodWrapper wrapper){
@@ -30,7 +33,7 @@ class Listener {
         Object instance = wrapper.getInstance();
         if(!isListener(m))
             return null;
-        return new Listener(m, instance);
+        return new Listener(m, instance, m.getAnnotation(Subscribe.class));
     }
 
     public void invoke(Object event){
@@ -51,6 +54,10 @@ class Listener {
 
     public Object getInstance(){
         return instance;
+    }
+
+    public Subscribe getSubscribe(){
+        return subscribe;
     }
 
     public static boolean isListener(Method m){
