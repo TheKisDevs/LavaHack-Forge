@@ -34,6 +34,9 @@ import org.cubic.dynamictask.AbstractTask;
 
 import java.util.*;
 
+/**
+ * @author Cubic
+ */
 public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));

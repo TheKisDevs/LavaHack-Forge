@@ -51,6 +51,7 @@
     "accessor.AccessorShaderGroup",
     "accessor.ISession",
     "accessor.ITemplate",
+    "accessor.ISPacketEntityTeleport",
     "cubic.AccessorClassLoader",
     "viaforge.MixinGuiConnecting",
     "viaforge.MixinGuiDisconnected",

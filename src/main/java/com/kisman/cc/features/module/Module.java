@@ -73,6 +73,10 @@ public class Module implements IBindable {
 		return group;
 	}
 
+	private boolean isBeta0(){
+		return getClass().getAnnotation(Beta.class) != null;
+	}
+
 	private boolean isAddon0() {
 		return getClass().getAnnotation(Addon.class) != null;
 	}
@@ -98,7 +102,7 @@ public class Module implements IBindable {
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
 	public boolean isVisible() {return true;}
-	public boolean isBeta() {return false;}
+	public boolean isBeta() {return isBeta0();}
 	public boolean isAddon() {return isAddon0();}
 	@Override public @NotNull BindType getType() {return bindType;}
 	@Override public void setType(@NotNull BindType type) {this.bindType = type;}
