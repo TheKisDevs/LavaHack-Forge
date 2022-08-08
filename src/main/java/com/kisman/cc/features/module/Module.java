@@ -73,6 +73,10 @@ public class Module implements IBindable {
 		return group;
 	}
 
+	public boolean isInBeta(){
+		return isBeta() || this.getClass().getAnnotation(Beta.class) != null;
+	}
+
 	public String getDescription() {return description;}
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}

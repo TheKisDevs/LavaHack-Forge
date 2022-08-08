@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * @author Cubic
+ */
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));

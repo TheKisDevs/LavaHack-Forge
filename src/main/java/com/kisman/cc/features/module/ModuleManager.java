@@ -43,6 +43,7 @@ public class ModuleManager {
 		modules.add(new BaritoneTest());
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
+		//modules.add(new ChorusTP());
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
 		modules.add(new FutureShader());
