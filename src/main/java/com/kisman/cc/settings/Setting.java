@@ -445,6 +445,11 @@ public class Setting implements IBindable {
 		return this;
 	}
 
+	@Override
+	public @NotNull String getButtonName(){
+		return isBind() ? name : "Bind";
+	}
+
 	public String getName(){
 		return name;
 	}

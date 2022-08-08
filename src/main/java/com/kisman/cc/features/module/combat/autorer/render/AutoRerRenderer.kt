@@ -11,32 +11,15 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class AutoRerRenderer {
-    @JvmField
-    var lastBlockPos: BlockPos? = null
-
-    @JvmField
-    var prevPos: Vec3d? = null
-
-    @JvmField
-    var currentPos: Vec3d? = null
-
-    @JvmField
-    var lastRenderPos: Vec3d? = null
-
-    @JvmField
-    var lastUpdateTime = 0L
-
-    @JvmField
-    var startTime = 0L
-
-    @JvmField
-    var scale = 0.0f
-
-    @JvmField
-    var lastSelfDamage = 0.0f
-
-    @JvmField
-    var lastTargetDamage = 0.0f
+    @JvmField var lastBlockPos: BlockPos? = null
+    @JvmField var prevPos: Vec3d? = null
+    @JvmField var currentPos: Vec3d? = null
+    @JvmField var lastRenderPos: Vec3d? = null
+    @JvmField var lastUpdateTime = 0L
+    @JvmField var startTime = 0L
+    @JvmField var scale = 0.0f
+    @JvmField var lastSelfDamage = 0.0f
+    @JvmField var lastTargetDamage = 0.0f
 
     fun reset() {
         lastBlockPos = null
@@ -84,7 +67,7 @@ class AutoRerRenderer {
         }
     }
 
-    private inline fun toRenderBox(vec3d: Vec3d, scale: Float): AxisAlignedBB {
+    private fun toRenderBox(vec3d: Vec3d, scale: Float): AxisAlignedBB {
         val halfSize = 0.5 * scale
         return AxisAlignedBB(
             vec3d.x - halfSize + 0.5, vec3d.y - halfSize + 0.5, vec3d.z - halfSize + 0.5,

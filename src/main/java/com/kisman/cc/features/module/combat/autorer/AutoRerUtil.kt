@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import java.util.function.Supplier
 
+@Suppress("LocalVariableName")
 class AutoRerUtil {
     companion object {
         private val mc: Minecraft = Minecraft.getMinecraft()
@@ -61,7 +62,7 @@ class AutoRerUtil {
                 armorBreaker : Int,
                 wallRangeUsage : Boolean,
                 noSuicide : Boolean
-        ) : PlaceInfo? {
+        ) : PlaceInfo {
             var maxDamage = 0.5f
             var selfDamage_ = 0.0f
             var placePos : BlockPos? = null
@@ -115,8 +116,7 @@ class AutoRerUtil {
                 ++x
             }
 
-            return if(placePos == null) null
-            else PlaceInfo(target, placePos, selfDamage_, maxDamage, null, null, null)
+            return PlaceInfo(target, placePos, selfDamage_, maxDamage, null, null, null)
         }
     }
 }

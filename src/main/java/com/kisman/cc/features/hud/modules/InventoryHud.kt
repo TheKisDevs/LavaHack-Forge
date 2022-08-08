@@ -175,7 +175,7 @@ class InventoryHud : HudModule(
         )
         mc.getRenderItem().renderItemOverlays(
             mc.fontRenderer,
-            mc.player.inventory.offHandInventory[0],
+            stack,
             x,
             y
         )

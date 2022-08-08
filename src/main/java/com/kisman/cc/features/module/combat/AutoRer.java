@@ -101,6 +101,7 @@ public class AutoRer extends Module {
     private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
     private final Setting motionCalc = register(motionGroup.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)).setTitle("Calc"));
     private final Setting timingMode = register(helpers.add(new Setting("Timings", this, TimingMode.Adaptive)));
+    private final Setting advancedSequential = register(helpers.add(new Setting("Advanced Sequential", this, false).setTitle("Advaned Seq")));
     private final Setting swing = register(main.add(new Setting("Swing", this, SwingMode.PacketSwing)));
     private final Setting swingLogic = register(main.add(new Setting("Swing Logic", this, SwingLogic.Pre).setVisible(() -> swing.getValEnum() != SwingMode.None)));
     private final Setting instant = register(helpers.add(new Setting("Instant", this, true)));
@@ -109,6 +110,7 @@ public class AutoRer extends Module {
     private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, true)));
     private final Setting sound = register(helpers.add(new Setting("Sound", this, true)));
     public final Setting syns = register(helpers.add(new Setting("Syns", this, true)));
+    private final Setting syncMode = register(helpers.add(new Setting("Sync Mode", this, SyncMode.None).setTitle("Sync")));
     private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
     private final Setting rotateMode = register(helpers.add(new Setting("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None"))));
     private final Setting calcDistSort = register(helpers.add(new Setting("Calc Dist Sort", this, false)));
@@ -208,6 +210,7 @@ public class AutoRer extends Module {
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
     private boolean subscribed = false;
+    private boolean lastBroken = false;
 
     private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay::getValLong, multiThreaddedCrystalGetter::getValBoolean);
 
@@ -248,6 +251,7 @@ public class AutoRer extends Module {
         currentTarget = null;
         rotating = false;
         renderPos = null;
+        lastBroken = false;
     }
 
     public void onDisable() {
@@ -418,13 +422,15 @@ public class AutoRer extends Module {
     });
 
     private void doAutoRerLogic(EventPlayerMotionUpdate event, boolean thread) {
-        if(logic.checkValString("PlaceBreak")) {
-            doPlace(event, thread);
-            doBreak();
-        } else {
-            doBreak();
-            doPlace(event, thread);
-        }
+        try {
+            if (logic.checkValString("PlaceBreak")) {
+                doPlace(event, thread);
+                doBreak();
+            } else {
+                doBreak();
+                doPlace(event, thread);
+            }
+        } catch(NullPointerException ignored) {}
     }
 
     @SubscribeEvent
@@ -568,7 +574,7 @@ public class AutoRer extends Module {
                 } catch (Exception ignored) {
                     if(Config.instance.antiOpenGLCrash.getValBoolean() || lagProtect.getValBoolean()) {
                         super.setToggled(false);
-                        ChatUtility.error().printClientModuleMessage("[AutoRer] Error, Config -> AntiOpenGLCrash disabled AutoRer");
+                        ChatUtility.error().printClientModuleMessage("Error, Config -> AntiOpenGLCrash disabled AutoRer");
                     }
                 }
             }
@@ -577,7 +583,7 @@ public class AutoRer extends Module {
         if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
     }
 
-    private void attackCrystalPredict(int entityID, BlockPos pos) {
+    private void attackCrystalPredict(int entityID) {
         boolean flag = instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.checkValString("Break") || rotate.checkValString("All"));
         RotationSaver saver = new RotationSaver().save();
         if(flag) rotateToEntity(entityID);
@@ -599,6 +605,16 @@ public class AutoRer extends Module {
         ((RotationEnum.Rotation) rotateMode.getValEnum()).getTaskRFromSaver().doTask(saver, true);
     }
 
+    private BlockPos doInstant(int entityID, BlockPos pos) {
+        if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(entityID);} catch (Exception ignored) {}
+        if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
+        attackCrystalPredict(entityID);
+        if(swingLogic.getValEnum() == SwingLogic.Post) swing();
+        lastBroken = true;
+        if(syncMode.getValEnum() == SyncMode.Merge) getTimer(false).reset();
+        return pos;
+    }
+
     @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketSpawnObject && instant.getValBoolean()) {
@@ -615,22 +631,9 @@ public class AutoRer extends Module {
                         float targetDamage = CrystalUtils.calculateDamage(pos, currentTarget, terrain.getValBoolean());
                         if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
                             float selfDamage = CrystalUtils.calculateDamage(pos, mc.player, terrain.getValBoolean());
-                            if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
-                                toRemove = pos;
-                                if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(packet.getEntityID());} catch (Exception ignored) {}
-                                if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
-                                attackCrystalPredict(packet.getEntityID(), pos);
-                                if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-                            }
+                            if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) toRemove = doInstant(packet.getEntityID(), pos);
                         }
-                    } else {
-                        toRemove = pos;
-                        if (inhibit.getValBoolean()) try {lastHitEntity = mc.world.getEntityByID(packet.getEntityID());} catch (Exception ignored) {}
-                        attackCrystalPredict(packet.getEntityID(), pos);
-                        if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
-                        attackCrystalPredict(packet.getEntityID(), pos);
-                        if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-                    }
+                    } else toRemove = doInstant(packet.getEntityID(), pos);
 
                     break;
                 }
@@ -683,11 +686,12 @@ public class AutoRer extends Module {
                         wallRangeUsage.getValBoolean(),
                         noSuicide.getValBoolean()
                 );
-            } else {
-                calculatePlace();
-            }
-            if(recalc.getValBoolean() && placePos == null) recalculatePlace();
-        } catch (Exception e) {if(lagProtect.getValBoolean()) super.setToggled(false);}
+            } else calculatePlace();
+            if(recalc.getValBoolean() && placePos.getBlockPos() == null) recalculatePlace();
+            if(placePos.getBlockPos() == null && Crystals.INSTANCE.getState()) placePos.setBlockPos(Crystals.INSTANCE.getPos());
+            else Crystals.INSTANCE.setState(false);
+            if(mc.world.isOutsideBuildHeight(placePos.getBlockPos())) placePos.setBlockPos(null);
+        } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
     }
 
     private void recalculatePlace() {
@@ -747,7 +751,7 @@ public class AutoRer extends Module {
                 }
             }
         }
-        this.placePos = placePos == null ? null : new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
+        this.placePos = /*placePos == null ? null : */new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
     }
 
     private boolean isPosValid(BlockPos pos) {
@@ -818,6 +822,8 @@ public class AutoRer extends Module {
         if((rotate.checkValString("Place") || rotate.checkValString("All"))) loadSaver(saver);
         if(hand != null) mc.player.setActiveHand(hand);
         if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+
+        lastBroken = false;
     }
 
     private EnumHand getPlaceHand(boolean offhand) {
@@ -860,9 +866,9 @@ public class AutoRer extends Module {
         try {
             for (int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
                 Entity entity = mc.world.loadedEntityList.get(i);
-                if (entity == null) continue;
+                if (entity == null || !(entity instanceof EntityEnderCrystal) || (advancedSequential.getValBoolean() && timingMode.getValEnum() == TimingMode.Sequential && entity.ticksExisted < sequentialBreakDelay.getValInt())) continue;
 
-                if (entity instanceof EntityEnderCrystal && mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
+                if (mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
                     Friend friend = getNearFriendWithMaxDamage(entity);
                     double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
@@ -892,7 +898,11 @@ public class AutoRer extends Module {
     }
 
     private void doBreak() {
-        if(!break_.getValBoolean() || !getTimer(true).passedMillis(getDelay(true))) return;
+        if(
+                !break_.getValBoolean()
+                || !getTimer(true).passedMillis(getDelay(true))
+                || (syncMode.getValEnum() == SyncMode.Strict && lastBroken)
+        ) return;
 
         AtomicReference<Entity> crystal = new AtomicReference<>();
         AtomicReference<Entity> crystalWithMaxDamage = new AtomicReference<>();
@@ -942,6 +952,8 @@ public class AutoRer extends Module {
 
             if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }
+
+        lastBroken = true;
     }
 
     private void swing() {
@@ -989,6 +1001,7 @@ public class AutoRer extends Module {
     public enum BreakPriority {Damage, CevBreaker}
     public enum DelayMode {Default, FromTo}
     public enum TimingMode {Sequential, Adaptive}
+    public enum SyncMode {None, Merge, Strict}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

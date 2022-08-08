@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module
 
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 
 /**
  * @author _kisman_
@@ -18,6 +19,8 @@ interface IBindable {
 
     fun isHold() : Boolean
     fun setHold(hold : Boolean)
+
+    fun getButtonName() : String
 
     companion object {
         fun getKey(bindable : IBindable) : Int {
@@ -38,6 +41,13 @@ interface IBindable {
             return when(bindable.getType()) {
                 BindType.Keyboard -> bindable.getKeyboardKey() != Keyboard.KEY_NONE && bindable.getKeyboardKey() != Keyboard.KEY_ESCAPE
                 BindType.Mouse -> bindable.getMouseButton() > 1
+            }
+        }
+
+        fun isPressed(bindable : IBindable) : Boolean {
+            return when(bindable.getType()) {
+                BindType.Keyboard -> Keyboard.isKeyDown(bindable.getKeyboardKey())
+                BindType.Mouse -> Mouse.isButtonDown(bindable.getMouseButton())
             }
         }
     }

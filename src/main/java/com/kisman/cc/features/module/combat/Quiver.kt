@@ -29,7 +29,7 @@ class Quiver : Module(
 
         val oldPitch = mc.player.rotationPitch
 
-        mc.player.rotationPitch = 90f
+        mc.player.rotationPitch = -90f
 
         mc.player.connection.sendPacket(CPacketPlayerDigging(
             CPacketPlayerDigging.Action.RELEASE_USE_ITEM,

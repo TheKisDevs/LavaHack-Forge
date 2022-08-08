@@ -2,29 +2,26 @@ package com.kisman.cc.gui.halq.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.module.ModuleScript;
+import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.plugins.ModulePlugin;
+import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.hud.DraggableBox;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
-import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
-import com.kisman.cc.features.hud.HudModule;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
@@ -125,31 +122,21 @@ public class Button implements Component {
 
         HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
 
-        if(mod.isBeta()) {
-            GL11.glPushMatrix();
-            GL11.glScaled(0.5, 0.5, 1);
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("beta", (x + CustomFontUtil.getStringWidth(mod.getName()) + 5) * 2, (y + offset) * 2, HalqGui.getGradientColour(count).getRGB());
-            GL11.glPopMatrix();
-        }
+        if(mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 1);
+        if(mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 2);
+        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 3);
 
-        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) {
-            GL11.glPushMatrix();
-            GL11.glScaled(0.5, 0.5, 1);
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(mod.Companion.getName(mod), (x + CustomFontUtil.getStringWidth(mod.getName()) + 5) * 2, (y + offset + HalqGui.height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, HalqGui.getGradientColour(count).getRGB());
-            GL11.glPopMatrix();
+        if(open && !comps.isEmpty()) {
+            for(Component comp : comps) {
+                if(!comp.visible()) continue;
+                comp.drawScreen(mouseX, mouseY);
+            }
+            if(HalqGui.test) {
+                int height = doIterationUpdateComponent(comps, 0);
+                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());
+                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height + height - 1, HalqGui.width, 1, HalqGui.getGradientColour(getLastColorCount()).getRGB());
+            }
         }
-
-         if(open && !comps.isEmpty()) {
-             for(Component comp : comps) {
-                 if(!comp.visible()) continue;
-                 comp.drawScreen(mouseX, mouseY);
-             }
-             if(HalqGui.test) {
-                 int height = doIterationUpdateComponent(comps, 0);
-                 Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());
-                 Render2DUtil.drawRectWH(x, y + offset + HalqGui.height + height - 1, HalqGui.width, 1, HalqGui.getGradientColour(getLastColorCount()).getRGB());
-             }
-         }
     }
 
     private int doIterationUpdateComponent(ArrayList<Component> components, int height) {

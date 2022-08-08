@@ -50,7 +50,7 @@ public class BindButton implements Component {
             }
         } else if(HalqGui.test2 || changing) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, changing ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(changing ? "Press a key..." : "Bind: " + bindable.Companion.getName(bindable) , x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(changing ? "Press a key..." : bindable.getButtonName() + ": " + bindable.Companion.getName(bindable) , x, y + offset, width, HalqGui.height);
     }
 
     @Override

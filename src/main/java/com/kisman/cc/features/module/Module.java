@@ -73,6 +73,10 @@ public class Module implements IBindable {
 		return group;
 	}
 
+	private boolean isAddon0() {
+		return getClass().getAnnotation(Addon.class) != null;
+	}
+
 	public String getDescription() {return description;}
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}
@@ -95,7 +99,8 @@ public class Module implements IBindable {
 	@Override public String toString() {return getName();}
 	public boolean isVisible() {return true;}
 	public boolean isBeta() {return false;}
-	@NotNull @Override public BindType getType() {return bindType;}
+	public boolean isAddon() {return isAddon0();}
+	@Override public @NotNull BindType getType() {return bindType;}
 	@Override public void setType(@NotNull BindType type) {this.bindType = type;}
 	@Override public boolean isHold() {return hold;}
 	@Override public void setHold(boolean hold) {this.hold = hold;}
@@ -103,4 +108,5 @@ public class Module implements IBindable {
 	@Override public void setKeyboardKey(int key) {this.key = key;}
 	@Override public int getMouseButton() {return mouse;}
 	@Override public void setMouseButton(int button) {this.mouse = button;}
+	@Override public @NotNull String getButtonName() {return "Bind";}
 }

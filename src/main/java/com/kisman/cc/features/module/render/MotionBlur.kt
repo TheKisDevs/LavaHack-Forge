@@ -75,7 +75,7 @@ class  MotionBlur : Module(
         }
 
         if(amount.valInt > 0) {
-            EntityRendererUtil.load("motionblur", MOTION_BLUR_SHADER.format(amount.valInt, amount.valInt, amount.valInt))
+            EntityRendererUtil.load("motionblur", MOTION_BLUR_SHADER.format(amount.valFloat, amount.valFloat, amount.valFloat))
             ChatUtility.complete().printClientModuleMessage("Enabled motion blur with ${amount.valInt} amount!")
             mc.entityRenderer.getShaderGroup().createBindFramebuffers(mc.displayWidth, mc.displayHeight)
         }
