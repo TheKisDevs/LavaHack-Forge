@@ -1,6 +1,6 @@
 package com.kisman.cc.features.schematica.schematica.client.renderer.chunk.overlay;
 
-import com.kisman.cc.features.schematica.core.client.renderer.GeometryMasks;
+import com.kisman.cc.util.render.GeometryMasks;
 import com.kisman.cc.features.schematica.core.client.renderer.GeometryTessellator;
 import com.kisman.cc.features.schematica.schematica.client.renderer.chunk.CompiledOverlay;
 import com.kisman.cc.features.schematica.schematica.client.world.SchematicWorld;

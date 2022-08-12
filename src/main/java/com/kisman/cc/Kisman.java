@@ -36,7 +36,7 @@ import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
-import com.kisman.cc.util.protect.HWID;
+import com.kisman.cc.util.protect.keyauth.util.HWID;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.world.RotationUtils;
 import me.zero.alpine.bus.EventManager;
@@ -53,9 +53,11 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import sun.misc.Unsafe;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -116,7 +118,6 @@ public class Kisman {
     public MainMenuController mainMenuController;
     public CommandManager commandManager;
     public RPC discord;
-    public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ServerManager serverManager;
     public SandBoxShaders sandBoxShaders;
@@ -168,7 +169,6 @@ public class Kisman {
         consoleGui = new ConsoleGui();
         commandManager = new CommandManager();
         discord = new RPC();
-        rotationUtils = new RotationUtils();
         serverManager = new ServerManager();
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
@@ -332,5 +332,23 @@ public class Kisman {
 
     public static boolean runningFromIntelliJ() {
         return System.getProperty("java.class.path").contains("idea_rt.jar");
+    }
+
+    public static void unsafeCrash() {
+        Unsafe unsafe = null;
+        try {
+            Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            unsafe = (Unsafe) f.get(null);
+        } catch (Exception e) {
+            System.exit(-1);
+            for (Field f : Minecraft.class.getDeclaredFields()) {
+                try {
+                    f.set(null, null);
+                } catch (IllegalAccessException ignored) {}
+            }
+        }
+        unsafe.putAddress(0, 0);
+        unsafe.freeMemory(0);
     }
 }

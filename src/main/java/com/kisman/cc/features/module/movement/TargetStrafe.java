@@ -1,71 +1,44 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.entity.Entity;
-import net.minecraft.potion.Potion;
-
-import java.util.*;
 
 public class TargetStrafe extends Module {
-    private Setting radius = new Setting("Radius", this, 3.6f, 0.1f, 7, false);
-    private Setting speed = new Setting("Speed", this, 3.19, 0.15f, 50, false);
-    private Setting autoJump = new Setting("Auto Jump", this, false);
-    private Entity target;
-    private TimerUtils timer = new TimerUtils();
+    private Setting radius = register(new Setting("Radius", this, 3.6f, 0.1f, 7, false));
+    private Setting speed = register(new Setting("Speed", this, 3.19, 0.15f, 50, false));
+    private Setting autoJump = register(new Setting("Auto Jump", this, false));
+
     private int direction;
 
     public TargetStrafe() {
         super("TargetStrafe", "TargetStrafe", Category.MOVEMENT);
-
-        setmgr.rSetting(radius);
-        setmgr.rSetting(speed);
-        setmgr.rSetting(autoJump);
-    }
-
-    public double getMovementSpeed() {
-        double speed = 0.2873;
-        if (mc.player.isPotionActive(Objects.requireNonNull(Potion.getPotionById(1)))) {
-            final int n = Objects.requireNonNull(mc.player.getActivePotionEffect(Objects.requireNonNull(Potion.getPotionById(1)))).getAmplifier();
-            speed *= 1.0 + 0.2 * (n + 1);
-        }
-        return speed;
     }
 
     public void update() {
         if(mc.player == null || mc.world == null || !Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled()) return;
 
-        target = EntityUtil.getTarget(6);
+        Entity target = EntityUtil.getTarget(6);
 
         if(target == null) {
             super.setDisplayInfo("[Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
             return;
         } else super.setDisplayInfo("[" + target.getName() + " | Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
 
-        if(mc.player.collidedHorizontally) {
-            timer.reset();
-            invertStrafe();
-        }
+        if(mc.player.collidedHorizontally) direction = -direction;
 
         if(autoJump.getValBoolean() && mc.player.onGround) mc.player.jump();
         if(mc.gameSettings.keyBindLeft.isKeyDown()) direction = 1;
         if(mc.gameSettings.keyBindRight.isKeyDown()) direction = -1;
 
         mc.player.movementInput.moveForward = 0;
-        doTargetStrafe(getMovementSpeed());
-    }
 
-    private void doTargetStrafe(double speed) {
-        if (mc.player.getDistance(target) <= radius.getValDouble()) setSpeed(speed - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 0.0);
-        else setSpeed(speed - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 1.0);
-    }
-
-    private void invertStrafe() {
-        this.direction = -this.direction;
+        if (mc.player.getDistance(target) <= radius.getValDouble()) setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 0.0);
+        else setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 1.0);
     }
 
     private void setSpeed(final double d, final float f, final double d2, final double d3) {

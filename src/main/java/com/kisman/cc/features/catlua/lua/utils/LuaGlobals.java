@@ -3,9 +3,9 @@ package com.kisman.cc.features.catlua.lua.utils;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.ModuleManager;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.Globals;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -176,7 +176,7 @@ public class LuaGlobals implements Globals {
     }
 
     public void sendLocalMessage(String message) {
-        ChatUtils.message(message);
+        ChatUtility.message().printClientModuleMessage(message);
     }
 
     public void sendGlobalMessage(String message) {

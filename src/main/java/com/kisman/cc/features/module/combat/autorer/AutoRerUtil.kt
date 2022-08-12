@@ -59,7 +59,6 @@ class AutoRerUtil {
                 maxSelfDamage : Int,
                 lethalMult : Float,
                 terrain : Boolean,
-                armorBreaker : Int,
                 wallRangeUsage : Boolean,
                 noSuicide : Boolean
         ) : PlaceInfo {
@@ -94,16 +93,13 @@ class AutoRerUtil {
                                 ) {
                                     val targetDamage : Float = getDamageByCrystal(target, terrain, pos)
 
-                                    if(maxDamage <= targetDamage) {
+                                    if ((AutoRer.instance.needToFacePlace() && (AutoRer.instance.facePlaceDamageCheck(targetDamage) || AutoRer.instance.facePlaceArmorBreakerCheck())) || targetDamage > minDamage || targetDamage * lethalMult > target.health + target.absorptionAmount) {
+                                        val selfDamage = getSelfDamageByCrystal(terrain, pos)
 
-                                        if (targetDamage > minDamage || targetDamage * lethalMult > target.health + target.absorptionAmount || InventoryUtil.isArmorUnderPercent(target, armorBreaker.toFloat())) {
-                                            val selfDamage = getSelfDamageByCrystal(terrain, pos)
-
-                                            if (selfDamage <= maxSelfDamage && (selfDamage + 2 < mc.player.health + mc.player.absorptionAmount || !noSuicide) && selfDamage < targetDamage) {
-                                                maxDamage = targetDamage
-                                                selfDamage_ = selfDamage
-                                                placePos = pos
-                                            }
+                                        if (selfDamage <= maxSelfDamage && (selfDamage + 2 < mc.player.health + mc.player.absorptionAmount || !noSuicide) && selfDamage < targetDamage) {
+                                            maxDamage = targetDamage
+                                            selfDamage_ = selfDamage
+                                            placePos = pos
                                         }
                                     }
                                 }

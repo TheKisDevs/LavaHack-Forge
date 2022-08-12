@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.SurroundSupportModes;
@@ -11,7 +12,6 @@ import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.RotationUtils;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
@@ -192,7 +192,7 @@ public class AutoTrap extends Module {
             retryTimer.reset();
         }
         if (obbySlot3 == -1) {
-            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
+            ChatUtility.error().printClientModuleMessage(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
             setToggled(false);
             return true;
         }

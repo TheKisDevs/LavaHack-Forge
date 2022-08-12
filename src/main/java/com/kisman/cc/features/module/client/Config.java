@@ -34,25 +34,32 @@ public class Config extends Module {
     public Setting horizontalScroll = register(main.add(new Setting("Horizontal Scroll", this, true)));
     public Setting keyForHorizontalScroll = register(main.add(new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_LSHIFT).setVisible(() -> horizontalScroll.getValBoolean())));
     public Setting notification = register(main.add(new Setting("Notification", this, true)));
-    public Setting guiGlow = register(gui.add(new Setting("Gui Glow", this, false)));
-    public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true)));
-    public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true)));
-    public Setting guiGradient = register(gui.add(new Setting("Gui Gradient", this, GradientModes.None)));
-    public Setting guiGradientDiff = register(gui.add(new Setting("Gui Gradient Diff", this, 1, 0, 1000, NumberType.TIME).setVisible(() -> guiGradient.getValEnum() != GradientModes.None)));
+    public Setting guiGlow = register(gui.add(new Setting("Gui Glow", this, false).setTitle("Glow")));
+    public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true).setTitle("Radius")));
+    public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true).setTitle("Size")));
     public Setting guiDesc = register(gui.add(new Setting("Gui Desc", this, false)));
     public Setting guiParticles = register(gui.add(new Setting("Gui Particles", this, true)));
-    public Setting guiGradientBackground = register(gui.add(new Setting("Gui Gradient Background", this, false)));
-    public Setting ggbStartColorMode = register(gui.add(new Setting("GGB Start Color Mode", this, GGBColorMode.Custom).setVisible(guiGradientBackground::getValBoolean)));
-    public Setting ggbStartColor = register(gui.add(new Setting("GGB Start Color", this, new Colour(0, 0, 0, 30)).setVisible(() -> guiGradientBackground.getValBoolean() && ggbStartColorMode.getValEnum() == GGBColorMode.Custom)));
-    public Setting ggbEndColorMode = register(gui.add(new Setting("GGB End Color Mode", this, GGBColorMode.Custom).setVisible(guiGradientBackground::getValBoolean)));
-    public Setting ggbEndColor = register(gui.add(new Setting("GGB End Color", this, new Colour(0, 0, 0, 30)).setVisible(() -> guiGradientBackground.getValBoolean() && ggbEndColorMode.getValEnum() == GGBColorMode.Custom)));
-    public Setting guiOutline = register(gui.add(new Setting("Gui Outline", this, true)));
-    public Setting guiAstolfo = register(gui.add(new Setting("Gui Astolfo", this, false)));
-    public Setting guiRenderSize = register(gui.add(new Setting("Gui Render Size", this, false)));
-    public Setting guiBetterCheckBox = register(gui.add(new Setting("Gui Better CheckBox", this, false)));
-    public Setting guiBlur = register(gui.add(new Setting("Gui Blur", this, true)));
-    public Setting guiVisualPreview = register(gui.add(new Setting("Gui Visual Preview", this, false)));
-    public Setting guiShowBinds = register(gui.add(new Setting("Gui Show Binds", this, false)));
+
+    private final SettingGroup gradientGroup = register(gui.add(new SettingGroup(new Setting("Gradient", this))));
+    private final SettingGroup colorGradientGroup = register(gradientGroup.add(new SettingGroup(new Setting("Color", this))));
+    public Setting guiGradient = register(colorGradientGroup.add(new Setting("Gui Gradient", this, GradientModes.None).setTitle("Mode")));
+    public Setting guiGradientDiff = register(colorGradientGroup.add(new Setting("Gui Gradient Diff", this, 1, 0, 1000, NumberType.TIME).setTitle("Diff").setVisible(() -> guiGradient.getValEnum() != GradientModes.None)));
+    private final SettingGroup backgroundGradientGroup = register(gradientGroup.add(new SettingGroup(new Setting("Background", this))));
+    public Setting guiGradientBackground = register(backgroundGradientGroup.add(new Setting("Gui Gradient Background", this, false).setTitle("State")));
+    private final SettingGroup backgroundGradientStartColorGroup = register(backgroundGradientGroup.add(new SettingGroup(new Setting("Start", this))));
+    private final SettingGroup backgroundGradientEndColourGroup = register(backgroundGradientGroup.add(new SettingGroup(new Setting("End", this))));
+    public Setting ggbStartColorMode = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color Mode", this, GGBColorMode.Custom).setTitle("Mode").setVisible(guiGradientBackground::getValBoolean)));
+    public Setting ggbStartColor = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color", this, new Colour(0, 0, 0, 30)).setTitle("Color").setVisible(() -> guiGradientBackground.getValBoolean() && ggbStartColorMode.getValEnum() == GGBColorMode.Custom)));
+    public Setting ggbEndColorMode = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color Mode", this, GGBColorMode.Custom).setTitle("Mode").setVisible(guiGradientBackground::getValBoolean)));
+    public Setting ggbEndColor = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color", this, new Colour(0, 0, 0, 30)).setTitle("Color").setVisible(() -> guiGradientBackground.getValBoolean() && ggbEndColorMode.getValEnum() == GGBColorMode.Custom)));
+
+    public Setting guiOutline = register(gui.add(new Setting("Gui Outline", this, true).setTitle("Outline")));
+    public Setting guiAstolfo = register(gui.add(new Setting("Gui Astolfo", this, false).setTitle("Astolfo")));
+    public Setting guiRenderSize = register(gui.add(new Setting("Gui Render Size", this, false).setTitle("Render Size")));
+    public Setting guiBetterCheckBox = register(gui.add(new Setting("Gui Better CheckBox", this, false).setTitle("Better CheckBox")));
+    public Setting guiBlur = register(gui.add(new Setting("Gui Blur", this, true).setTitle("Blur")));
+    public Setting guiVisualPreview = register(gui.add(new Setting("Gui Visual Preview", this, false).setTitle("Visual Preview")));
+    public Setting guiShowBinds = register(gui.add(new Setting("Gui Show Binds", this, false).setTitle("Show Binds")));
     public Setting pulseMin = register(other.add(new Setting("Pulse Min", this, 255, 0, 255, true)));
     public Setting pulseMax = register(other.add(new Setting("Pulse Max", this, 110, 0, 255, true)));
     public Setting pulseSpeed = register(other.add(new Setting("Pulse Speed", this, 1.5, 0.1, 10, false)));
@@ -60,26 +67,30 @@ public class Config extends Module {
     public Setting loadConfig = register(main.add(new Setting("Load Config", this, false)));
     public Setting configurate = register(other.add(new Setting("Configurate", this, true)));
 
-    public Setting particlesRenderPoints = register(particles.add(new Setting("Particles Render Points", this, true)));
+    public Setting particlesRenderPoints = register(particles.add(new Setting("Particles Render Points", this, true).setTitle("Render Points")));
 
-    public Setting particlesColor = register(particles.add(new Setting("Particles Color", this, "Particles Dots Color", new Colour(0, 0, 255)).setVisible(particlesRenderPoints::getValBoolean)));
+    public Setting particlesColor = register(particles.add(new Setting("Particles Color", this, "Dots Color", new Colour(0, 0, 255)).setVisible(particlesRenderPoints::getValBoolean)));
 
     public Setting particlesRenderLine = register(particles.add(new Setting("Particles Render Lines", this, true)));
 
     public Setting particlesGradientMode = register(particles.add(new Setting("Particles Gradient Mode", this, ParticlesGradientMode.None).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean())));
 
-    public Setting particlesGStartColor = register(particles.add(new Setting("Particles Gradient StartColor", this, "Particles Gradient Start Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean())));
-    public Setting particlesGMiddleColor = register(particles.add(new Setting("Particles Gradient MiddleColor", this, "Particles Gradient Middle Color", new Colour(255, 0, 0, 200)).setVisible(() -> guiParticles.getValBoolean() && particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.ThreeGradient.name()) && particlesRenderLine.getValBoolean())));
-    public Setting particlesGEndColor = register(particles.add(new Setting("Particles Gradient EndColor", this, "Particles Gradient End Color", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean())));
+    private final SettingGroup particlesColorsGroup = register(particles.add(new SettingGroup(new Setting("Colors", this))));
 
-    public Setting particlesWidth = register(particles.add(new Setting("Particles Width", this, 0.5, 0.0, 5, false).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean())));
+    public Setting particlesGStartColor = register(particlesColorsGroup.add(new Setting("Particles Gradient StartColor", this, "Start", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean())));
+    public Setting particlesGMiddleColor = register(particlesColorsGroup.add(new Setting("Particles Gradient MiddleColor", this, "Middle", new Colour(255, 0, 0, 200)).setVisible(() -> guiParticles.getValBoolean() && particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.ThreeGradient.name()) && particlesRenderLine.getValBoolean())));
+    public Setting particlesGEndColor = register(particlesColorsGroup.add(new Setting("Particles Gradient EndColor", this, "End", new Colour(0, 0, 255)).setVisible(() -> guiParticles.getValBoolean() && !particlesGradientMode.getValString().equalsIgnoreCase(ParticlesGradientMode.None.name()) && particlesRenderLine.getValBoolean())));
 
-    public Setting particleTest = register(particles.add(new Setting("Particle Test", this, true).setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean())));
+    public Setting particlesWidth = register(particles.add(new Setting("Particles Width", this, 0.5, 0.0, 5, false).setTitle("Width").setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean())));
 
-    public Setting particlePointsRandomAlpha = register(particles.add(new Setting("Particle Points Random Alpha", this, false).setVisible(particlesRenderPoints::getValBoolean)));
-    public Setting particlePointSizeModifier = register(particles.add(new Setting("Particle Point Size Modifier", this, 1, 0.5, 3, false).setVisible(particlesRenderPoints::getValBoolean)));
+    public Setting particleTest = register(particles.add(new Setting("Particle Test", this, true).setTitle("Test").setVisible(() -> guiParticles.getValBoolean() && particlesRenderLine.getValBoolean())));
 
-    public Setting particlesStartPointsCount = register(particles.add(new Setting("Particles Start Points Count", this, 300, 100, 500, true)));
+    private final SettingGroup particlesPointsGroup = register(particles.add(new SettingGroup(new Setting("Points", this))));
+
+    public Setting particlePointsRandomAlpha = register(particlesPointsGroup.add(new Setting("Particle Points Random Alpha", this, false).setTitle("Alpha").setVisible(particlesRenderPoints::getValBoolean)));
+    public Setting particlePointSizeModifier = register(particlesPointsGroup.add(new Setting("Particle Point Size Modifier", this, 1, 0.5, 3, false).setTitle("Size Mod").setVisible(particlesRenderPoints::getValBoolean)));
+
+    public Setting particlesStartPointsCount = register(particlesPointsGroup.add(new Setting("Particles Start Points Count", this, 300, 100, 500, true).setTitle("Start Count")));
 
     public Setting slowRender = register(other.add(new Setting("Slow Render", this, false)));
     public Setting antiOpenGLCrash = register(other.add(new Setting("Anti OpenGL Crash", this, false)));

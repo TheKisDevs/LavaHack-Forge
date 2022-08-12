@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.RenderEntityEvent;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.mixin.mixins.accessor.AccessorShaderGroup;
 import com.kisman.cc.features.module.*;
@@ -14,7 +15,6 @@ import com.kisman.cc.features.module.render.shader.shaders.troll.ShaderHelper;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.enums.ShaderModes;
 import com.kisman.cc.util.render.ColorUtils;
 import me.zero.alpine.listener.EventHandler;
@@ -473,7 +473,7 @@ public class ShaderCharms extends Module {
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {
                 super.setToggled(false);
-                ChatUtils.error("[ShaderCharms] Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
+                ChatUtility.error().printClientModuleMessage("[ShaderCharms] Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
             }
         }
     }

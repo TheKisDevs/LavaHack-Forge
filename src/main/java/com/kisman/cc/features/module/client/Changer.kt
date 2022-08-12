@@ -61,7 +61,7 @@ class Changer : Module("Changer", "Changes your minecraft", Category.CLIENT) {
     private val animationSpeed = register(animationGroup.add(Setting("Animation Speed", this, 13.0, 1.0, 20.0, true).setVisible(animation).setTitle("Speed")))
 
     //Shadow Text Modifier settings
-    private val shadowTextModifierGroup = register(SettingGroup(Setting("Shadow Text Modifier", this)))
+    private val shadowTextModifierGroup = register(SettingGroup(Setting("Shadow Text Mod", this)))
     val shadowTextModifier = register(shadowTextModifierGroup.add(Setting("Shadow Text Modifier", this, false).setTitle("Modify")))
     val shadowX = register(shadowTextModifierGroup.add(Setting("Shadow X", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))
     val shadowY = register(shadowTextModifierGroup.add(Setting("Shadow Y", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))

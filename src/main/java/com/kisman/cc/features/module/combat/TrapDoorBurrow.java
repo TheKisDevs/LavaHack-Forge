@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import net.minecraft.init.Blocks;
@@ -53,7 +53,7 @@ public class TrapDoorBurrow extends Module {
         if(!mc.world.getBlockState(pos).getBlock().equals(Blocks.TRAPDOOR)) {
             int trapDoorSlot = InventoryUtil.findBlock(Blocks.TRAPDOOR, 0, 9), oldSlot = mc.player.inventory.currentItem;
             if(trapDoorSlot == -1) {
-                ChatUtils.error("[TrapDoorBurrow] Cant found trap door in your hotbar");
+                ChatUtility.error().printClientModuleMessage("[TrapDoorBurrow] Cant found trap door in your hotbar");
                 super.setToggled(false);
                 return;
             }
@@ -66,12 +66,12 @@ public class TrapDoorBurrow extends Module {
             Vec3d facing = new Vec3d(pos).add(new Vec3d(0.5, 1, 0.5));
             if(!opened) {
                 interactTrapdoor(facing);
-                ChatUtils.complete("[TrapDoorBurrow] Done!");
+                ChatUtility.complete().printClientModuleMessage("[TrapDoorBurrow] Done!");
                 super.setToggled(false);
                 opened = true;
             } else if(mc.player.onGround) {
                 interactTrapdoor(facing);
-                ChatUtils.complete("[TrapDoorBurrow] Done!");
+                ChatUtility.complete().printClientModuleMessage("[TrapDoorBurrow] Done!");
                 super.setToggled(false);
             } else mc.player.motionY = -fallSpeed.getValDouble();
         }

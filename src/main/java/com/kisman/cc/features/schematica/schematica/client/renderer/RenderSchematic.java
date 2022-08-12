@@ -1,6 +1,7 @@
 package com.kisman.cc.features.schematica.schematica.client.renderer;
 
-import com.kisman.cc.features.schematica.core.client.renderer.GeometryMasks;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.kisman.cc.features.schematica.core.client.renderer.GeometryTessellator;
 import com.kisman.cc.features.schematica.core.util.math.MBlockPos;
 import com.kisman.cc.features.schematica.core.util.vector.Vector3d;
@@ -17,19 +18,13 @@ import com.kisman.cc.features.schematica.schematica.client.renderer.shader.Shade
 import com.kisman.cc.features.schematica.schematica.client.world.SchematicWorld;
 import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
 import com.kisman.cc.features.schematica.schematica.proxy.ClientProxy;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.kisman.cc.util.render.GeometryMasks;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.client.renderer.chunk.CompiledChunk;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -63,14 +58,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @SideOnly(Side.CLIENT)
 @MethodsReturnNonnullByDefault

@@ -1,11 +1,11 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
-
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.settings.*;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -50,7 +50,7 @@ public class Module implements IBindable {
 	public void setToggled(boolean toggled) {
 		if(block) return;
 		this.toggled = toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtils.message(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (this.toggled) onEnable();
 		else onDisable();
 	}
@@ -58,7 +58,7 @@ public class Module implements IBindable {
 	public void toggle() {
 		if(block) return;
 		toggled = !toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtils.message(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (toggled) onEnable();
 		else onDisable();
 	}

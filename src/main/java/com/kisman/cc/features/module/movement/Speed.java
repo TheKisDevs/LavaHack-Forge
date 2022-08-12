@@ -34,36 +34,36 @@ import java.util.Objects;
 public class Speed extends Module {
     public static Speed instance;
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3"/*, "Strafe4"*/)));
+    public Setting speedMode = register(new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3"/*, "Strafe4"*/))));
 
-    private final Setting flagDetect = new Setting("Flag Detect", this, true);
+    private final Setting flagDetect = register(new Setting("Flag Detect", this, true));
 
-    public final Setting useTimer = new Setting("Use Timer", this, false);
-    public final Setting timerFactor = new Setting("Timer Factor", this, 1, 0, 10, true).setVisible(useTimer::getValBoolean);
+    public final Setting useTimer = register(new Setting("Use Timer", this, false));
+    public final Setting timerFactor = register(new Setting("Timer Factor", this, 1, 0, 10, true).setVisible(useTimer::getValBoolean));
 
-    public final Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
-    public final Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
+    public final Setting motionXmodifier = register(new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2")));
+    public final Setting motionZmodifier = register(new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2")));
 
-    public final Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting slow = new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New") || speedMode.checkValString("YPort"));
-    public final Setting cap = new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting scaleCap = new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
+    public final Setting strafeSpeed = register(new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting slow = register(new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New") || speedMode.checkValString("YPort")));
+    public final Setting cap = register(new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting scaleCap = register(new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting lagTime = register(new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New")));
 
-    private final Setting yPortSpeed = new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort"));
-    private final Setting yWater = new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort"));
-    private final Setting yLava = new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort"));
+    private final Setting yPortSpeed = register(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort")));
+    private final Setting yWater = register(new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort")));
+    private final Setting yLava = register(new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort")));
 
-    private final Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true).setVisible(() -> speedMode.checkValString("Sti"));
+    private final Setting stiSpeed = register(new Setting("StiSpeed", this, 4, 0.1, 10, true).setVisible(() -> speedMode.checkValString("Sti")));
 
-    public final Setting useMotion = new Setting("Use Motion", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting useMotionInAir = new Setting("Use Motion In Air", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting jumpMovementFactorSpeed = new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting jumpMovementFactor = new Setting("Jump Movement Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting boostSpeed = new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4"));
-    public final Setting boostFactor = new Setting("Boost Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4"));
+    public final Setting useMotion = register(new Setting("Use Motion", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting useMotionInAir = register(new Setting("Use Motion In Air", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting jumpMovementFactorSpeed = register(new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting jumpMovementFactor = register(new Setting("Jump Movement Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting boostSpeed = register(new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4")));
+    public final Setting boostFactor = register(new Setting("Boost Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4")));
 
-    private final Setting strict = new Setting("Strict", this, false).setVisible(() -> speedMode.checkValString("Strafe3") || speedMode.checkValString("Strafe4"));
+    private final Setting strict = register(new Setting("Strict", this, false).setVisible(() -> speedMode.checkValString("Strafe3") || speedMode.checkValString("Strafe4")));
 
     private int stage;
     private double speed;
@@ -94,32 +94,6 @@ public class Speed extends Module {
         super.setDisplayInfo(() -> "[" + speedMode.getValString() + "]");
 
         instance = this;
-
-        setmgr.rSetting(speedMode);
-
-        setmgr.rSetting(useTimer);
-
-        setmgr.rSetting(motionXmodifier);
-        setmgr.rSetting(motionZmodifier);
-
-        setmgr.rSetting(strafeSpeed);
-        setmgr.rSetting(slow);
-        setmgr.rSetting(cap);
-        setmgr.rSetting(scaleCap);
-        setmgr.rSetting(lagTime);
-
-        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort")));
-        setmgr.rSetting(yWater);
-        setmgr.rSetting(yLava);
-
-        setmgr.rSetting(stiSpeed);
-
-        setmgr.rSetting(useMotion);
-        setmgr.rSetting(useMotionInAir);
-        setmgr.rSetting(jumpMovementFactor);
-        setmgr.rSetting(jumpMovementFactorSpeed);
-        setmgr.rSetting(boostSpeed);
-        setmgr.rSetting(boostFactor);
     }
 
     public void onEnable() {

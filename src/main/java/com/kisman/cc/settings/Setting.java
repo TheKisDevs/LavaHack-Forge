@@ -37,7 +37,7 @@ public class Setting implements IBindable {
 	private String name;
 	public Module parent;
 	public Setting parent_ = null;
-	public String mode;
+	public String mode = "";
 
 	private String title;
 
@@ -607,4 +607,13 @@ public class Setting implements IBindable {
 	@Override public void setKeyboardKey(int key) {this.key = key;}
 	@Override public int getMouseButton() {return mouse;}
 	@Override public void setMouseButton(int button) {this.mouse = button;}
+
+	public Supplier<String> getSupplierString() {return () -> sval;}
+	public Supplier<Integer> getSupplierInt() {return () -> getValInt();}
+	public Supplier<Double> getSupplierDouble() {return () -> dval;}
+	public Supplier<Float> getSupplierFloat() {return () -> getValFloat();}
+	public Supplier<Long> getSupplierLong() {return () -> getValLong();}
+	public Supplier<Enum<?>> getSupplierEnum() {return () -> getValEnum();}
+	public Supplier<Boolean> getSupplierBoolean() {return () -> bval;}
+
 }

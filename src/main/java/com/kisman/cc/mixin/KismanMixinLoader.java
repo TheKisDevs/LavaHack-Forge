@@ -1,21 +1,20 @@
 package com.kisman.cc.mixin;
 
-import java.util.Map;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
-import com.kisman.cc.Kisman;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.*;
-
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-
-@IFMLLoadingPlugin.Name(Kisman.NAME)
+@IFMLLoadingPlugin.Name("kys")
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 public class KismanMixinLoader implements IFMLLoadingPlugin {
     public KismanMixinLoader(){
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.Kisman.json");
+        Mixins.addConfiguration/*s*/("mixins.Kisman.json"/*,*/ /*"mixins.baritone.json"*/);
+//        Mixins.addConfiguration("mixins.baritone.json");
 //        Kisman.instance.coreModInit();
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
@@ -38,10 +37,11 @@ public class KismanMixinLoader implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data){
-        MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.Kisman.json");
+//        MixinBootstrap.init();
+//        Mixins.addConfiguration("mixins.Kisman.json");
+//        Mixins.addConfiguration("mixins.baritone.json");
 //        Kisman.instance.pluginHandler.coreModInit();
-        MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
+//        MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
 
     @Override

@@ -1,15 +1,15 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.settings.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.BoxRendererPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.ColourUtilKt;
-
+import net.minecraft.tileentity.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.tileentity.*;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ public class StorageESP extends Module{
     private final Setting hopper = register(blocks.add(new Setting("Hopper", this, false)));
     private final Setting dropper = register(blocks.add(new Setting("Dropper", this, false)));
     private final BoxRendererPattern renderer = new BoxRendererPattern(this).init();
-    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this).init();
 
     private ArrayList<TileEntity> list = new ArrayList<>();
 

@@ -1,22 +1,25 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
@@ -186,7 +189,7 @@ public class AutoFirework extends Module {
             retryTimer.reset();
         }
         if (obbySlot3 == -1) {
-            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
+            ChatUtility.error().printClientModuleMessage(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
             setToggled(false);
             return true;
         }

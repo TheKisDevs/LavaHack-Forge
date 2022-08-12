@@ -1,10 +1,9 @@
 package com.kisman.cc.features.command;
 
 import com.kisman.cc.features.command.commands.*;
-import com.kisman.cc.features.command.exceptions.SimilarCommandNamesException;
 import com.kisman.cc.util.chat.ChatHandler;
 
-import java.util.*;
+import java.util.HashMap;
 
 public class CommandManager extends ChatHandler {
     public static HashMap<String, Command> commands = new HashMap<>();
@@ -22,7 +21,6 @@ public class CommandManager extends ChatHandler {
 		add(new Bind());
 		add(new ConfigCommand());
 		add(new DDOSCommand());
-		add(new Flip());
 		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new Help());
@@ -34,9 +32,7 @@ public class CommandManager extends ChatHandler {
 		add(new RollBackCommand());
 		add(new RollBackDupeCommand());
         add(new SaveConfigCommand());
-		add(new SetKey());
         add(new Toggle());
-		add(new Tp());
 		add(new MusicCommand());
 	}
 

@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 class RotationLock : Module(
     "RotationLock",
-    "Locks your yaw and pitch.",
+    "Locks your yaw and/or pitch.",
     Category.PLAYER
 ) {
     private val yaw = register(Setting("Yaw", this, false))

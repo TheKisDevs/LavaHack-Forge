@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil2;
@@ -55,7 +55,7 @@ public class SelfTrap extends AutoTrap {
             retryTimer.reset();
         }
         if (obbySlot3 == -1) {
-            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, SelfTrap disabling...");
+            ChatUtility.error().printClientModuleMessage(ChatFormatting.RED + "No Obsidian in hotbar, SelfTrap disabling...");
             setToggled(false);
             return true;
         }

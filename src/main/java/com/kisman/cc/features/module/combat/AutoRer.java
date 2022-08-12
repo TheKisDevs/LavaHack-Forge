@@ -6,20 +6,25 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.module.combat.autorer.AutoRerDamageSyncHandler;
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil;
+import com.kisman.cc.features.module.combat.autorer.BreakInfo;
 import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.settings.util.DamageSyncPattern;
 import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.RotationSaver;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -32,6 +37,7 @@ import com.kisman.cc.util.thread.kisman.ThreadHandler;
 import com.kisman.cc.util.world.CrystalUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -78,19 +84,21 @@ public class AutoRer extends Module {
     private final SettingGroup tc = register(new SettingGroup(new Setting("Target Charms", this)));
     private final SettingGroup optimization = register(new SettingGroup(new Setting("Optimization", this)));
 
-    public final Setting multiThreaddedSphereGetter = register(optimization.add(new Setting("MT Sphere Getter", this, false)));
-    public final Setting multiThreaddedTargetGetter = register(optimization.add(new Setting("MT Target Getter", this, false)));
-    private final Setting multiThreaddedCrystalGetter = register(optimization.add(new Setting("MT Crystal Getter", this, false)));
-    private final Setting mtcgDelay = register(optimization.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME)));
+    private final SettingGroup multiThreadGroup = register(optimization.add(new SettingGroup(new Setting("Multi Thread", this))));
+    private final SettingGroup multiThreadGettersGroup = register(optimization.add(new SettingGroup(new Setting("Getters", this))));
+    public final Setting multiThreaddedSphereGetter = register(multiThreadGettersGroup.add(new Setting("MT Sphere Getter", this, false).setTitle("Sphere")));
+    public final Setting multiThreaddedTargetGetter = register(multiThreadGettersGroup.add(new Setting("MT Target Getter", this, false).setTitle("Target")));
+    private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
+    private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
-    public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false)));
-    private final Setting recalcPlaceRange = register(ranges.add(new Setting("Recalc Place Range", this, 4, 0, 6, false)));
-    private final Setting placeWallRange = register(ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false)));
-    private final Setting breakRange = register(ranges.add(new Setting("Break Range", this, 6, 0, 6, false)));
-    private final Setting breakWallRange = register(ranges.add(new Setting("Break Wall Range", this, 4.5f, 0, 6, false)));
-    public final Setting targetRange = register(ranges.add(new Setting("Target Range", this, 9, 0, 20, false)));
+    public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false).setTitle("Place")));
+    private final Setting recalcPlaceRange = register(ranges.add(new Setting("Recalc Place Range", this, 4, 0, 6, false).setTitle("Recalc")));
+    private final Setting placeWallRange = register(ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false).setTitle("Place Wall")));
+    private final Setting breakRange = register(ranges.add(new Setting("Break Range", this, 6, 0, 6, false).setTitle("Break")));
+    private final Setting breakWallRange = register(ranges.add(new Setting("Break Wall Range", this, 4.5f, 0, 6, false).setTitle("Break Wall")));
+    public final Setting targetRange = register(ranges.add(new Setting("Target Range", this, 9, 0, 20, false).setTitle("Target")));
     private final Setting logic = register(main.add(new Setting("Logic", this, LogicMode.PlaceBreak)));
     public final Setting terrain = register(main.add(new Setting("Terrain", this, false)));
     private final Setting switch_ = register(main.add(new Setting("Switch", this, SwitchMode.None)));
@@ -112,16 +120,28 @@ public class AutoRer extends Module {
     public final Setting syns = register(helpers.add(new Setting("Syns", this, true)));
     private final Setting syncMode = register(helpers.add(new Setting("Sync Mode", this, SyncMode.None).setTitle("Sync")));
     private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
-    private final Setting rotateMode = register(helpers.add(new Setting("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None"))));
+    private final SettingEnum<RotationEnum.Rotation> rotateMode = new SettingEnum("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None")).group(helpers).register();
     private final Setting calcDistSort = register(helpers.add(new Setting("Calc Dist Sort", this, false)));
+    private final DamageSyncPattern damageSync = new DamageSyncPattern(this).group(helpers).preInit().init();
+    private final Setting damageSyncPlace = register(damageSync.getGroup_().add(new Setting("Damage Sync Place", this, DamageSyncMode.None).setTitle("Place")));
+    private final Setting damageSyncBreak = register(damageSync.getGroup_().add(new Setting("Damage Sync Break", this, DamageSyncMode.None).setTitle("Break")));
+    private final Setting damageSyncSelf = register(damageSync.getGroup_().add(new Setting("Damage Sync Self", this, false).setTitle("Self")));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
     private final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
-    public final Setting armorBreaker = register(place_.add(new Setting("Armor Breaker", this, 100, 0, 100, NumberType.PERCENT).setVisible(place::getValBoolean)));
-    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, false).setTitle("Multi").setVisible(place::getValBoolean)));
+    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi").setVisible(place::getValBoolean)));
     private final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
     private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet").setVisible(place::getValBoolean)));
+    private final SettingGroup facePlaceGroup = register(place_.add(new SettingGroup(new Setting("Face", this))));
+    private final Setting facePlace = register(facePlaceGroup.add(new Setting("Face Place", this, FacePlaceMode.None).setTitle("Mode")));
+    private final SettingGroup facePlaceTriggersGroup = register(facePlaceGroup.add(new SettingGroup(new Setting("Triggers", this))));
+    private final SettingGroup facePlaceArmorBreakerGroup = register(facePlaceTriggersGroup.add(new SettingGroup(new Setting("Armor", this))));
+    private final Setting armorBreakerState = register(facePlaceArmorBreakerGroup.add(new Setting("Armor Breaker State", this, false).setTitle("State")));
+    public final Setting armorBreaker = register(facePlaceArmorBreakerGroup.add(new Setting("Armor Breaker", this, 100, 0, 100, NumberType.PERCENT).setTitle("Value")));
+    private final SettingGroup facePlaceMinFacePlaceDamageGroup = register(facePlaceTriggersGroup.add(new SettingGroup(new Setting("Damage", this))));
+    private final Setting minFacePlaceDamageState = register(facePlaceMinFacePlaceDamageGroup.add(new Setting("Min Damage State", this, false).setTitle("State")));
+    private final Setting minFacePlaceDMG = register(facePlaceMinFacePlaceDamageGroup.add(new Setting("Min Face Place DMG", this, 7.0, 1.0, 37.0, true).setTitle("Min")));
 
     private final Setting break_ = register(break__.add(new Setting("Break", this, true)));
     private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
@@ -143,8 +163,8 @@ public class AutoRer extends Module {
     private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
     private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
     private final SettingGroup sequentialGroup = register(delay.add(new SettingGroup(new Setting("Sequential", this))));
-//    private final Setting sequentialPlaceDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Place")));
-    private final Setting sequentialBreakDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Break")));
+    //    private final Setting sequentialPlaceDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Place")));
+    private final Setting sequentialBreakDelay = register(sequentialGroup.add(new Setting("Sequential Break Delay", this, 0, 0, 20, true).setTitle("Break")));
     private final Setting multiplication = register(delay.add(new Setting("Multiplication", this, 1, 1, 10, true).setTitle("Multi")));
 
     public final Setting minDMG = register(damage.add(new Setting("Min DMG", this, 6, 0, 37, true).setTitle("Min")));
@@ -153,18 +173,16 @@ public class AutoRer extends Module {
     public final Setting lethalMult = register(damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false)));
     private final Setting noSuicide = register(damage.add(new Setting("No Suicide", this, true)));
 
-    public final Setting threadMode = register(thread_.add(new Setting("Thread Mode", this, ThreadMode.None)));
-    public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    private final Setting threadPacketRots = register(thread_.add(new Setting("Thread Packet Rots", this, false).setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()))));
-    private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setVisible(() -> threadMode.checkValString("Sound"))));
-    private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setVisible(() -> !threadMode.checkValString("None"))));
+    public final Setting threadMode = register(thread_.add(new Setting("Thread Mode", this, ThreadMode.None).setTitle("Mode")));
+    public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setTitle("Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setTitle("Sync").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setTitle("Sync Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
+    private final Setting threadPacketRots = register(thread_.add(new Setting("Thread Packet Rots", this, false).setTitle("Rotations").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()))));
+    private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setTitle("Sound Player").setVisible(() -> threadMode.checkValString("Sound"))));
+    private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setTitle("Calc").setVisible(() -> !threadMode.checkValString("None"))));
 
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
     private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
-    private final Setting movingLength = register(render_.add(new Setting("Moving Length", this, 400, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
-    private final Setting fadeLength = register(render_.add(new Setting("Fade Length", this, 200, 0, 1000, NumberType.TIME).setVisible(renderer_::isActive)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -211,10 +229,13 @@ public class AutoRer extends Module {
     private String lastThreadMode = threadMode.getValString();
     private boolean subscribed = false;
     private boolean lastBroken = false;
+    private BlockPos lastTargetPos = null;
 
-    private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay::getValLong, multiThreaddedCrystalGetter::getValBoolean);
+    private final AutoRerDamageSyncHandler damageSyncHandler = new AutoRerDamageSyncHandler(damageSync.getHandler(), () -> damageSyncPlace.getValEnum() != DamageSyncMode.None, () -> damageSyncBreak.getValEnum() != DamageSyncMode.None);
 
-    private final AtomicReference<Entity> atomicCrystal = new AtomicReference<>();
+    private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay.getSupplierLong(), multiThreaddedCrystalGetter.getSupplierBoolean());
+
+    private final AtomicReference<BreakInfo> atomicCrystal = new AtomicReference<>();
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
@@ -240,6 +261,7 @@ public class AutoRer extends Module {
 
     private void reset() {
         renderer.reset();
+        damageSyncHandler.reset();
         placedList.clear();
         placeTimer.reset();
         breakTimer.reset();
@@ -335,7 +357,7 @@ public class AutoRer extends Module {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
                 if (threadCalc.getValBoolean() && !threadMode.checkValString("None")) break calc;
                 doCalculatePlace();
-                if (placePos != null) if (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos = null;
+                if (placePos != null) if (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos = null;
                 calcTimer.reset();
             }
         }
@@ -347,6 +369,14 @@ public class AutoRer extends Module {
             if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
             else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
         } else processMultiThreading();
+    }
+
+    private IBlockState getBlockState(BlockPos pos) {
+        try {
+            return mc.world.getBlockState(pos);
+        } catch(Exception e) {
+            return Blocks.AIR.getDefaultState();
+        }
     }
 
     /**
@@ -580,7 +610,13 @@ public class AutoRer extends Module {
             }
         }
 
-        if(placePos != null) renderer.onRenderWorld(movingLength.getValFloat(), fadeLength.getValFloat(), renderer_, placePos, text.getValBoolean());
+        if(placePos != null) renderer.onRenderWorld(
+                movable.movingLength.getValFloat(),
+                movable.fadeLength.getValFloat(),
+                renderer_,
+                placePos,
+                text.getValBoolean()
+        );
     }
 
     private void attackCrystalPredict(int entityID) {
@@ -597,12 +633,11 @@ public class AutoRer extends Module {
     }
 
     private void rotateToEntity(int entityID) {
-        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
-        rotator.getTaskR().doTask(rotator.getTaskCEntity().doTask(entityID, RotationLogic.Default), false);
+        rotateMode.getValEnum().getTaskR().doTask(rotateMode.getValEnum().getTaskCEntity().doTask(entityID, RotationLogic.Default), false);
     }
 
     private void loadSaver(RotationSaver saver) {
-        ((RotationEnum.Rotation) rotateMode.getValEnum()).getTaskRFromSaver().doTask(saver, true);
+        rotateMode.getValEnum().getTaskRFromSaver().doTask(saver, true);
     }
 
     private BlockPos doInstant(int entityID, BlockPos pos) {
@@ -674,7 +709,7 @@ public class AutoRer extends Module {
                         placeRange.getValFloat(),
                         placeWallRange.getValFloat(),
                         currentTarget,
-                        multiPlace.getValBoolean(),
+                        needToMultiPlace(),
                         firePlace.getValBoolean(),
                         secondCheck.getValBoolean(),
                         thirdCheck.getValBoolean(),
@@ -682,7 +717,6 @@ public class AutoRer extends Module {
                         maxSelfDMG.getValInt(),
                         lethalMult.getValFloat(),
                         terrain.getValBoolean(),
-                        armorBreaker.getValInt(),
                         wallRangeUsage.getValBoolean(),
                         noSuicide.getValBoolean()
                 );
@@ -690,7 +724,6 @@ public class AutoRer extends Module {
             if(recalc.getValBoolean() && placePos.getBlockPos() == null) recalculatePlace();
             if(placePos.getBlockPos() == null && Crystals.INSTANCE.getState()) placePos.setBlockPos(Crystals.INSTANCE.getPos());
             else Crystals.INSTANCE.setState(false);
-            if(mc.world.isOutsideBuildHeight(placePos.getBlockPos())) placePos.setBlockPos(null);
         } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
     }
 
@@ -720,6 +753,26 @@ public class AutoRer extends Module {
         this.placePos = placePos[0] == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
     }
 
+    private boolean needToMultiPlace() {
+        return multiPlace.getValEnum() != MultiPlaceMode.None ? multiPlace.getValEnum() == MultiPlaceMode.Stupid || isTargetMoving() : false;
+    }
+
+    public boolean needToFacePlace() {
+        return facePlace.getValEnum() != FacePlaceMode.None ? facePlace.getValEnum() == FacePlaceMode.Stupid || isTargetMoving() : false;
+    }
+
+    private boolean isTargetMoving() {
+        return currentTarget != null && !lastTargetPos.equals(currentTarget.getPosition());
+    }
+
+    public boolean facePlaceDamageCheck(float currentDamage) {
+        return minFacePlaceDamageState.getValBoolean() && currentDamage <= minFacePlaceDMG.getValInt();
+    }
+
+    public boolean facePlaceArmorBreakerCheck() {
+        return armorBreakerState.getValBoolean() && InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt());
+    }
+
     private void calculatePlace() {
         double maxDamage = 0.5;
         double selfDamage_ = 0;
@@ -735,13 +788,19 @@ public class AutoRer extends Module {
             BlockPos pos = sphere.get(i);
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
-            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiPlace.getValBoolean(), firePlace.getValBoolean())) {
+            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, needToMultiPlace(), firePlace.getValBoolean())) {
                 float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
 
-                if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
+                Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
+
+                if(damageSyncPlace.getValEnum() == DamageSyncMode.Smart) targetDamage = targetResult.getSecond();
+                if(targetResult.getFirst() && ((needToFacePlace() && (facePlaceDamageCheck(targetDamage) || facePlaceArmorBreakerCheck())) || targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount())) {
                     float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean());
 
-                    if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
+                    Bind<Boolean, Float> selfResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
+
+                    if(damageSyncPlace.getValEnum() == DamageSyncMode.Smart && damageSyncSelf.getValBoolean()) selfDamage = selfResult.getSecond();
+                    if(selfResult.getFirst() && selfDamage <= maxSelfDMG.getValInt() && (selfDamage + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount() || !noSuicide.getValBoolean()) && selfDamage < targetDamage) {
                         if(maxDamage <= targetDamage) {
                             maxDamage = targetDamage;
                             selfDamage_ = selfDamage;
@@ -751,7 +810,7 @@ public class AutoRer extends Module {
                 }
             }
         }
-        this.placePos = /*placePos == null ? null : */new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
+        this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
     }
 
     private boolean isPosValid(BlockPos pos) {
@@ -761,8 +820,7 @@ public class AutoRer extends Module {
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
         if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
-        if(placePos == null || (!mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !mc.world.getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK))) return;
-        if(syns.getValBoolean() && placedList.contains(placePos)) return;
+        if(placePos == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (syns.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
         EnumHand hand = null;
         boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
@@ -788,14 +846,13 @@ public class AutoRer extends Module {
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
         RotationSaver saver = new RotationSaver().save();
-        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
 
         if(rotate.checkValString("Place") || rotate.checkValString("All")) {
             try {
-                float[] rots = rotator.getTaskCBlock().doTask(placePos.getBlockPos());//RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
+                float[] rots = rotateMode.getValEnum().getTaskCBlock().doTask(placePos.getBlockPos());//RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
                 if (!thread) {
                     if (!motionCrystal.getValBoolean()) {
-                        rotator.getTaskR().doTask(rots, false);
+                        rotateMode.getValEnum().getTaskR().doTask(rots, false);
                     } else if (event != null) {
                         event.setYaw(rots[0]);
                         event.setPitch(rots[1]);
@@ -830,7 +887,7 @@ public class AutoRer extends Module {
         return offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
     }
 
-    private Entity getCrystalForAntiCevBreaker() {
+    private BreakInfo getCrystalForAntiCevBreaker() {
         Entity crystal = null;
 
         if(!antiCevBreakerMode.checkValString("None")) {
@@ -856,12 +913,13 @@ public class AutoRer extends Module {
             }
         }
 
-        return crystal;
+        return crystal != null ? new BreakInfo((EntityEnderCrystal) crystal, 0, 0, true) : null;
     }
 
-    private Entity getCrystalWithMaxDamage() {
+    private BreakInfo getCrystalWithMaxDamage() {
         Entity crystal = null;
-        double maxDamage = 0.5;
+        float maxDamage = 0.5f;
+        float selfDamage_ = 0.5f;
 
         try {
             for (int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
@@ -870,20 +928,27 @@ public class AutoRer extends Module {
 
                 if (mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
                     Friend friend = getNearFriendWithMaxDamage(entity);
-                    double targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                    float targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
 
+                    Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
+
+                    if(damageSyncBreak.getValEnum() == DamageSyncMode.Smart) targetDamage = targetResult.getSecond();
                     if (friend != null && !friend_.checkValString(FriendMode.None.name())) {
                         if (friend_.checkValString(FriendMode.AntiTotemPop.name()) && friend.isTotemPopped) return null;
                         else if (friend.isTotemFailed) return null;
                         if (friend.damage >= maxFriendDMG.getValInt()) return null;
                     }
 
-                    if (targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
-                        double selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
+                    if (targetResult.getFirst() && (targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt()))) {
+                        float selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
 
-                        if (selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
+                        Bind<Boolean, Float> selfResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
+
+                        if(damageSyncBreak.getValEnum() == DamageSyncMode.Smart && damageSyncSelf.getValBoolean()) selfDamage = selfResult.getSecond();
+                        if (selfResult.getFirst() && selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) {
                             if (maxDamage <= targetDamage) {
                                 maxDamage = targetDamage;
+                                selfDamage_ = selfDamage;
                                 crystal = entity;
                             }
                         }
@@ -894,18 +959,18 @@ public class AutoRer extends Module {
             if(lagProtect.getValBoolean()) super.setToggled(false);
         }
 
-        return crystal;
+        return crystal == null ? null : new BreakInfo((EntityEnderCrystal) crystal, selfDamage_, maxDamage, false);
     }
 
     private void doBreak() {
         if(
                 !break_.getValBoolean()
-                || !getTimer(true).passedMillis(getDelay(true))
-                || (syncMode.getValEnum() == SyncMode.Strict && lastBroken)
+                        || !getTimer(true).passedMillis(getDelay(true))
+                        || (syncMode.getValEnum() == SyncMode.Strict && lastBroken)
         ) return;
 
-        AtomicReference<Entity> crystal = new AtomicReference<>();
-        AtomicReference<Entity> crystalWithMaxDamage = new AtomicReference<>();
+        AtomicReference<BreakInfo> crystal = new AtomicReference<>();
+        AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
 
         crystalTHandler.update(
                 () -> mc.addScheduledTask(
@@ -915,9 +980,9 @@ public class AutoRer extends Module {
                         }
                 )
         );
-        
+
         if(crystalTHandler.getThreadded().get()) crystalWithMaxDamage.set(atomicCrystal.get());
-        
+
         if(breakPriority.checkValString("Damage")) crystal.set(crystalWithMaxDamage.get());
         else {
             crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
@@ -925,30 +990,29 @@ public class AutoRer extends Module {
             if(crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
         }
 
-        if(crystal.get() == null || (timingMode.getValEnum() != TimingMode.Adaptive && crystal.get().ticksExisted < sequentialBreakDelay.getValInt())) return;
+        if(crystal.get() == null || (timingMode.getValEnum() != TimingMode.Adaptive && crystal.get().getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(crystal.get().getTargetDamage(), currentTarget).getFirst()) return;
 
         RotationSaver saver = new RotationSaver().save();
-        RotationEnum.Rotation rotator = (RotationEnum.Rotation) rotateMode.getValEnum();
 
-        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(crystal.get().getEntityId());
+        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(crystal.get().getCrystal().getEntityId());
 
-        lastHitEntity = crystal.get();
+        lastHitEntity = crystal.get().getCrystal();
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
 
-        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(crystal.get()));
-        else mc.playerController.attackEntity(mc.player, crystal.get());
+        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(crystal.get().getCrystal()));
+        else mc.playerController.attackEntity(mc.player, crystal.get().getCrystal());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().entityId);} catch (Exception ignored) {}
+        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().getCrystal().entityId);} catch (Exception ignored) {}
         getTimer(true).reset();
 
-        if((rotate.checkValString("Break") || rotate.checkValString("All")) && rotateMode.checkValString("Silent")) loadSaver(saver);
+        if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
 
         if(syns.getValBoolean()) {
             BlockPos toRemove = null;
 
-            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && crystal.get().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
+            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && crystal.get().getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
 
             if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }
@@ -1002,6 +1066,9 @@ public class AutoRer extends Module {
     public enum DelayMode {Default, FromTo}
     public enum TimingMode {Sequential, Adaptive}
     public enum SyncMode {None, Merge, Strict}
+    public enum MultiPlaceMode {None, Stupid, Smart}
+    public enum FacePlaceMode {None, Stupid, Smart}
+    public enum DamageSyncMode {None, Stupid, Smart}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

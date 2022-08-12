@@ -7,10 +7,8 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import me.zero.alpine.listener.*;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 

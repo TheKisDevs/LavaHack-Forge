@@ -35,8 +35,6 @@ class CharmsRewriteRendererPattern(
             groups.add(group)
             groups.add(wireGroup)
             groups.add(modelGroup)
-            groups.add(wireColorGroup)
-            groups.add(modelColorGroup)
             settings.addAll(getSettingsByType(
                 type,
                 group,

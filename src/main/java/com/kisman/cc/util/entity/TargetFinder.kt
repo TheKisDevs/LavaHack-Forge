@@ -1,6 +1,7 @@
 package com.kisman.cc.util.entity
 
 import com.kisman.cc.features.module.combat.AntiBot
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.thread.kisman.ThreadHandler
 import net.minecraft.client.Minecraft
@@ -17,6 +18,15 @@ class TargetFinder(
     delay : Supplier<Long>,
     threadded : Supplier<Boolean>
 ) {
+    constructor(
+        range : Supplier<Double>,
+        threads : MultiThreaddableModulePattern
+    ) : this(
+        range,
+        Supplier { threads.delay.valLong },
+        Supplier { threads.multiThread.valBoolean }
+    )
+
     private val mc: Minecraft = Minecraft.getMinecraft()
     var target : EntityPlayer? = null
 

@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.combat
 
+import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import net.minecraft.item.ItemBow
@@ -11,6 +12,7 @@ import net.minecraft.util.math.BlockPos
  * @author _kisman_
  * @since 15:31 of 07.08.2022
  */
+@Beta
 class Quiver : Module(
     "Quiver",
     "Helps with bow",

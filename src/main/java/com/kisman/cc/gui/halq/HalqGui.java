@@ -30,7 +30,7 @@ public class HalqGui extends GuiScreen {
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false, test2 = true;
-    public static int diff = 0, offsets = 0;
+    public static int diff = 0, offsets = 0, textOffsetX = 5;
 
     //constants
     public static final int height = 13;
@@ -58,7 +58,7 @@ public class HalqGui extends GuiScreen {
         return this;
     }
 
-    public HalqGui(boolean notFullInit) {
+    public HalqGui(@SuppressWarnings("unused") boolean notFullInit) {
         this.particleSystem = new ParticleSystem();
     }
 
@@ -98,6 +98,7 @@ public class HalqGui extends GuiScreen {
         offsets = GuiModule.instance.offsets.getValInt();
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
         test2 = GuiModule.instance.test2.getValBoolean();
+        textOffsetX = GuiModule.instance.textOffsetX.getValInt();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -180,7 +181,7 @@ public class HalqGui extends GuiScreen {
                 CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
             case Left:
-                CustomFontUtil.drawStringWithShadow(text, x + 5, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
+                CustomFontUtil.drawStringWithShadow(text, x + textOffsetX, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
         }
     }
@@ -206,13 +207,13 @@ public class HalqGui extends GuiScreen {
             case Left:
                 switch(step) {
                     case 1 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + 5) * 2, y * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, y * 2, colour.getRGB());
                         break;
                     case 2 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + 5) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2f, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2f)) * 2f, colour.getRGB());
                         break;
                     case 3 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + 5) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
                         break;
                 }
                 break;

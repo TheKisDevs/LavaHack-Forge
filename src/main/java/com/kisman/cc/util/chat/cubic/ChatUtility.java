@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.ReflectUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,5 +63,9 @@ public class ChatUtility {
     public static AbstractChatMessage warning(){
         WARNING.updateCaller(ReflectUtil.getCallerClass());
         return WARNING;
+    }
+
+    public static void cleanMessage(String message) {
+        mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation(message));
     }
 }

@@ -68,9 +68,9 @@ public class PacketUtil implements Globals {
 
         if ( event ) {
             mc.player.connection.sendPacket(confirm);
-            Kisman.instance.rotationUtils.setBlocking(true);
+//            Kisman.instance.rotationUtils.setBlocking(true);
             mc.player.connection.sendPacket(posRot);
-            Kisman.instance.rotationUtils.setBlocking(false);
+//            Kisman.instance.rotationUtils.setBlocking(false);
         } else {
             mc.player.connection.sendPacket(confirm);
             mc.player.connection.sendPacket(posRot);

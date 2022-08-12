@@ -1,6 +1,7 @@
 package com.kisman.cc.settings
 
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.settings.types.SettingGroup
 import java.util.function.Supplier
 
 /**
@@ -29,7 +30,15 @@ class SettingEnum<T : Enum<*>>(
         return super.setVisible(visible) as SettingEnum<T>
     }
 
+    fun getSupplierEnum0(): Supplier<T> {
+        return Supplier { valEnum }
+    }
+
     fun register() : SettingEnum<T> {
         return super.parent.register(this) as SettingEnum<T>
+    }
+
+    fun group(group : SettingGroup) : SettingEnum<T> {
+        return group.add(this) as SettingEnum<T>
     }
 }

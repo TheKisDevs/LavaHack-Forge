@@ -1,7 +1,10 @@
 package com.kisman.cc.util
 
 import com.kisman.cc.util.Globals.mc
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Blocks
+import net.minecraft.util.math.BlockPos
 import java.util.*
 
 /**
@@ -29,4 +32,8 @@ fun createDoubleArray(vararg elements : Double) : DoubleArray {
     }
 
     return array
+}
+
+fun getBlockStateSafe(pos : BlockPos) : IBlockState {
+    return try { mc.world.getBlockState(pos) } catch (ignored : Exception) { Blocks.AIR.defaultBlockState }
 }

@@ -12,7 +12,7 @@ public class KonasRenderer implements Globals {
 
         if (mode.equalsIgnoreCase("FULL")) {
             TessellatorUtil.prepare();
-            TessellatorUtil.drawBox(axisAlignedBB, true, 1, color, color.a, sides ? FaceMasks.Quad.NORTH | FaceMasks.Quad.SOUTH | FaceMasks.Quad.WEST | FaceMasks.Quad.EAST : FaceMasks.Quad.ALL);
+            TessellatorUtil.drawBox(axisAlignedBB, true, 1, color, color.a, sides ? GeometryMasks.Quad.NORTH | GeometryMasks.Quad.SOUTH | GeometryMasks.Quad.WEST | GeometryMasks.Quad.EAST : GeometryMasks.Quad.ALL);
             TessellatorUtil.release();
         }
 
@@ -38,7 +38,7 @@ public class KonasRenderer implements Globals {
                 GlStateManager.enableDepth();
                 tBB = tBB.shrink(0.01D);
             }
-            TessellatorUtil.drawBox(tBB, true, height, color, fadeAlpha, sides ? FaceMasks.Quad.NORTH | FaceMasks.Quad.SOUTH | FaceMasks.Quad.WEST | FaceMasks.Quad.EAST : FaceMasks.Quad.ALL);
+            TessellatorUtil.drawBox(tBB, true, height, color, fadeAlpha, sides ? GeometryMasks.Quad.NORTH | GeometryMasks.Quad.SOUTH | GeometryMasks.Quad.WEST | GeometryMasks.Quad.EAST : GeometryMasks.Quad.ALL);
             if (width >= 0.1F) {
                 if (lines.equalsIgnoreCase("BOTTOM")) tBB = new AxisAlignedBB(tBB.minX, tBB.minY, tBB.minZ, tBB.maxX, tBB.minY, tBB.maxZ);
                 else if (lines.equalsIgnoreCase("TOP")) tBB = new AxisAlignedBB(tBB.minX, tBB.maxY, tBB.minZ, tBB.maxX, tBB.maxY, tBB.maxZ);

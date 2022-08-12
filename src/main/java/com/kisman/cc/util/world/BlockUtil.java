@@ -304,8 +304,7 @@ public class BlockUtil {
     public static EnumFacing getFirstFacing(final BlockPos pos) {
         final Iterator<EnumFacing> iterator = getPossibleSides(pos).iterator();
         if (iterator.hasNext()) {
-            final EnumFacing facing = iterator.next();
-            return facing;
+            return iterator.next();
         }
         return null;
     }

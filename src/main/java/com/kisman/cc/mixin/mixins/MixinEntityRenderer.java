@@ -1,5 +1,8 @@
 package com.kisman.cc.mixin.mixins;
 
+import baritone.api.BaritoneAPI;
+import baritone.api.IBaritone;
+import baritone.api.event.events.RenderEvent;
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
@@ -84,5 +87,19 @@ public class MixinEntityRenderer {
         EventAspect event = new EventAspect((float) Minecraft.getMinecraft().displayWidth / Minecraft.getMinecraft().displayHeight);
         Kisman.EVENT_BUS.post(event);
         Project.gluPerspective(fovy, event.getAspect(), zNear, zFar);
+    }
+
+    @Inject(
+            method = "renderWorldPass",
+            at = @At(
+                    value = "INVOKE_STRING",
+                    target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V",
+                    args = {"ldc=hand"}
+            )
+    )
+    private void renderWorldPass(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
+            ibaritone.getGameEventHandler().onRenderPass(new RenderEvent(partialTicks));
+        }
     }
 }

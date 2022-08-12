@@ -3,8 +3,8 @@ package com.kisman.cc.features.module.misc;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.process.web.TCPDDos;
-import com.kisman.cc.util.chat.other.ChatUtils;
 
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -38,7 +38,7 @@ public class DDOSModule extends Module {
     }
 
     public void onEnable() {
-        if(mc.player == null || mc.world == null) ChatUtils.message("DDos started");
+        if(mc.player == null || mc.world == null) ChatUtility.message().printClientModuleMessage("DDos started");
         threadPool = Executors.newScheduledThreadPool(threads.getValInt());
         for (int i = 0; i < threads.getValInt(); i++) {
             threadPool.scheduleWithFixedDelay(new TCPDDos(), 1, timeOut.getValLong(), TimeUnit.SECONDS);
@@ -50,7 +50,7 @@ public class DDOSModule extends Module {
         threadPool = null;
         super.setDisplayInfo("");
         if(mc.player == null || mc.world == null) return;
-        ChatUtils.message("DDos stopped");
+        ChatUtility.message().printClientModuleMessage("DDos stopped");
     }
 
     public void update() {

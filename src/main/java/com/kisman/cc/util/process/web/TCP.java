@@ -26,7 +26,7 @@
 package com.kisman.cc.util.process.web;
 
 import com.kisman.cc.features.module.misc.DDOSModule;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -64,7 +64,7 @@ public abstract class TCP extends DDOS {
         connectToSocket();
         while(!Thread.currentThread().isInterrupted() && (socket.isConnected() && !socket.isClosed())) {
             writeLineToSocket("meow");
-            if(DDOSModule.instance.debug.getValBoolean()) ChatUtils.error("We do a little trolling =  )");
+            if(DDOSModule.instance.debug.getValBoolean()) ChatUtility.error().printClientModuleMessage("We do a little trolling =  )");
             try {
                 Thread.sleep(DDOSModule.instance.delay.getValLong());
             } catch (InterruptedException ex) {
@@ -97,14 +97,14 @@ public abstract class TCP extends DDOS {
         try {
             if(socket != null) socket.connect(getAddress());
         } catch(UnknownHostException ex) {
-            ChatUtils.error("Host "+getAddress()+" doesnt exist!");
+            ChatUtility.error().printClientModuleMessage("Host "+getAddress()+" doesnt exist!");
             ex.printStackTrace();
         } catch(SocketException ex) {
-            ChatUtils.error("Error while creating or accessing a Socket!");
+            ChatUtility.error().printClientModuleMessage("Error while creating or accessing a Socket!");
             closeSocket();
             ex.printStackTrace();
         } catch (IOException ex) {
-            ChatUtils.error("Error while connecting a Socket!");
+            ChatUtility.error().printClientModuleMessage("Error while connecting a Socket!");
             ex.printStackTrace();
         }
     }

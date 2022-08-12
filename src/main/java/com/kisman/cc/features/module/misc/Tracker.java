@@ -1,14 +1,20 @@
 package com.kisman.cc.features.module.misc;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.features.module.combat.*;
+import com.kisman.cc.event.events.EventPlayerMotionUpdate;
+import com.kisman.cc.event.events.EventSpawnEntity;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.combat.AntiTrap;
+import com.kisman.cc.features.module.combat.AutoRer;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
-import me.zero.alpine.listener.*;
-import net.minecraft.entity.item.*;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityExpBottle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -18,7 +24,9 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class Tracker extends Module {
     private Setting autoEnable = new Setting("AutoEnable", this, false);
@@ -81,12 +89,12 @@ public class Tracker extends Module {
 
         if (this.usedStacks != this.usedExp / 64) {
             this.usedStacks = this.usedExp / 64;
-            ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.");
+            ChatUtility.message().printClientModuleMessage(this.trackedPlayer.getName() + " used: " + this.usedStacks + " Stacks of EXP.");
         }
 
         if (this.usedCStacks != this.usedCrystals / 64) {
             this.usedCStacks = this.usedCrystals / 64;
-            ChatUtils.message(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.");
+            ChatUtility.message().printClientModuleMessage(this.trackedPlayer.getName() + " used: " + this.usedCStacks + " Stacks of Crystals.");
         }
     }
 
@@ -127,7 +135,7 @@ public class Tracker extends Module {
             final SPacketChat packet = (SPacketChat)event.getPacket();
             final String message = packet.getChatComponent().getFormattedText();
             if (this.autoEnable.getValBoolean() && (message.contains("has accepted your duel request") || message.contains("Accepted the duel request from")) && !message.contains("<")) {
-                ChatUtils.message("Tracker will enable in 5 seconds.");
+                ChatUtility.message().printClientModuleMessage("Tracker will enable in 5 seconds.");
                 this.timer.reset();
                 this.shouldEnable = true;
             }

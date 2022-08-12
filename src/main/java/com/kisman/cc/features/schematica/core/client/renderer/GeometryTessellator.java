@@ -1,5 +1,6 @@
 package com.kisman.cc.features.schematica.core.client.renderer;
 
+import com.kisman.cc.util.render.GeometryMasks;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;

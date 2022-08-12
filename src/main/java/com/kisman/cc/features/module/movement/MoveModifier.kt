@@ -11,6 +11,9 @@ import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.movement.MovementUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.enums.SprintModes
+import com.kisman.cc.util.movement.active
+import com.kisman.cc.util.movement.gotoXZInverted
+import com.kisman.cc.util.movement.stop
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.init.Blocks
@@ -42,15 +45,16 @@ class MoveModifier : Module(
     val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("RStep")))
     private val reverseStepVal = register(reverseStepGroup.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible(reverseStep).setTitle("Height")))
     private val reverseStepLagTimeGroup = register(reverseStepGroup.add(SettingGroup(Setting("Lag Time", this))))
-    private val reverseStepLagTime = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time", this, false).setVisible(reverseStep).setTitle("Lag Time")))
-    private val reverseStepLagTimeVal = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setVisible { reverseStep.valBoolean && reverseStepLagTime.valBoolean }.setTitle("Time")))
+    private val reverseStepLagTime = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time", this, false).setTitle("State")))
+    private val reverseStepLagTimeVal = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setTitle("Value")))
     private val parkour = register(blocks.add(Setting("Parkour", this, false)))
 
     private val move = register(SettingGroup(Setting("Move", this)))
     private val sprintGroup = register(move.add(SettingGroup(Setting("Sprint", this))))
     val sprint : Setting = register(sprintGroup.add(Setting("Sprint", this, SprintModes.None)))
     private val sprintOnlyWhileMoving = register(sprintGroup.add(Setting("Sprint Only While Moving", this, false).setVisible { sprint.valEnum != SprintModes.None }.setTitle("While Move")))
-    private val autoWalk = register(move.add(Setting("Auto Walk", this, false)))
+    val keepSprint = register(move.add(Setting("Keep Sprint", this, false)))
+    private val autoWalk = register(move.add(Setting("Auto Walk", this, AutoWalkMode.None)))
     private val autoJump = register(move.add(Setting("Auto Jump", this, false)))
     private val autoSneak = register(move.add(Setting("Auto Sneak", this, false)))
     private val iceSpeedGroup = register(move.add(SettingGroup(Setting("Ice Speed", this))))
@@ -101,10 +105,14 @@ class MoveModifier : Module(
         }
 
         onDisableIceSpeed()
+
+        if(active()) {
+            stop()
+        }
     }
 
     override fun update() {
-        if(mc.player == null || mc.world == null) return
+        if(mc.player == null || mc.world == null || mc.playerController == null) return
 
         mc.player.stepHeight = (if(step.valBoolean) stepVal.valFloat else 0.5f)
 
@@ -216,12 +224,21 @@ class MoveModifier : Module(
 
     private fun doAutoMoving() {
         if(autoJump.valBoolean) {
-            ++mc.player.movementInput.moveForward
-            mc.player.movementInput.forwardKeyDown = true
-//            mc.gameSettings.keyBindJump.pressed = true
+            mc.gameSettings.keyBindJump.pressed = true
         }
-        if(autoWalk.valBoolean) {
-            mc.gameSettings.keyBindForward.pressed = true
+        if(autoWalk.valEnum != AutoWalkMode.None) {
+            if(autoWalk.valEnum == AutoWalkMode.Stupid) {
+                mc.gameSettings.keyBindForward.pressed = true
+                if(active()) {
+                    stop()
+                }
+            } else if(!active()) {
+                gotoXZInverted(0, 0)
+            }
+        } else {
+            if(active()) {
+                stop()
+            }
         }
         if(autoSneak.valBoolean) {
             mc.gameSettings.keyBindSneak.pressed = true
@@ -256,4 +273,6 @@ class MoveModifier : Module(
             it.cancel()
         }
     })
+
+    private enum class AutoWalkMode {None, Stupid, Smart}
 }

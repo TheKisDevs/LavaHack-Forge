@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render.konas;
 
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.render.GeometryMasks;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.*;
@@ -109,7 +110,7 @@ public class TessellatorUtil implements Globals {
     }
 
     public static void drawBox(AxisAlignedBB bb, Colour color) {
-        drawBox(bb, true, 1, color, color.a, FaceMasks.Quad.ALL);
+        drawBox(bb, true, 1, color, color.a, GeometryMasks.Quad.ALL);
     }
 
     public static void drawBox(AxisAlignedBB bb, double height, Colour color, int sides) {
@@ -189,42 +190,42 @@ public class TessellatorUtil implements Globals {
     }
 
     public static void doVerticies(AxisAlignedBB axisAlignedBB, Colour color, int alpha, BufferBuilder bufferbuilder, int sides, boolean five) {
-        if ((sides & FaceMasks.Quad.EAST) != 0) {
+        if ((sides & GeometryMasks.Quad.EAST) != 0) {
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             if (five) colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
         }
-        if ((sides & FaceMasks.Quad.WEST) != 0) {
+        if ((sides & GeometryMasks.Quad.WEST) != 0) {
             colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             if (five) colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
         }
-        if ((sides & FaceMasks.Quad.NORTH) != 0) {
+        if ((sides & GeometryMasks.Quad.NORTH) != 0) {
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             if (five) colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
         }
-        if ((sides & FaceMasks.Quad.SOUTH) != 0) {
+        if ((sides & GeometryMasks.Quad.SOUTH) != 0) {
             colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             if (five) colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
         }
-        if ((sides & FaceMasks.Quad.UP) != 0) {
+        if ((sides & GeometryMasks.Quad.UP) != 0) {
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ,color, alpha, bufferbuilder);
             if (five) colorVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ,color, alpha, bufferbuilder);
         }
-        if ((sides & FaceMasks.Quad.DOWN) != 0) {
+        if ((sides & GeometryMasks.Quad.DOWN) != 0) {
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);
             colorVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ,color,color.a, bufferbuilder);

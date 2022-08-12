@@ -1,5 +1,6 @@
 package com.kisman.cc.util.thread.kisman
 
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.TimerUtils
 import java.util.function.Supplier
 
@@ -11,6 +12,13 @@ class ThreadHandler(
     val delay : Supplier<Long>,
     val threadded : Supplier<Boolean>
 ) : GlobalThreads {
+    constructor(
+        threads : MultiThreaddableModulePattern
+    ) : this(
+        threads.delay.supplierLong,
+        threads.multiThread.supplierBoolean
+    )
+
     private val timer = TimerUtils()
 
     fun reset() {

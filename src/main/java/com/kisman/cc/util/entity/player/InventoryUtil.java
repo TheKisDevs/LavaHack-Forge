@@ -20,11 +20,27 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static int findValidScaffoldBlockHotbarSlot() {
+        for(int i = 0; i <= 9; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            Item currentItem = stack.getItem();
+            if(!(currentItem instanceof ItemBlock)) continue;
+            Block currentBlock = Block.getBlockFromItem(stack.getItem());
+            if (!Block.getBlockFromItem(stack.getItem()).getDefaultState().isFullBlock()) continue;
+            if (currentBlock instanceof BlockFalling) continue;
+
+            return i;
+        }
+
+        return -1;
+    }
+
     public static int findSoftBlocks(int min, int max) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
             Item currentItem = stack.getItem();
-            Block currentBlock = Block.getBlockFromItem(stack.getItem());
+            if(!(currentItem instanceof ItemBlock)) continue;
+            Block currentBlock = Block.getBlockFromItem(currentItem);
 
             for(SoftBlocks softBlock : SoftBlocks.values()) {
                 if(!softBlock.getItems().isEmpty()) for (Item item : softBlock.getItems()) if(currentItem.equals(item)) return i;

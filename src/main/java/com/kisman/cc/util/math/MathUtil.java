@@ -1,16 +1,20 @@
 package com.kisman.cc.util.math;
 
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.math.vectors.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.math.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.*;
 
 public class MathUtil {
     public static double[] getCircleCentre(double[] coord, double radius) {
@@ -277,12 +281,12 @@ public class MathUtil {
 
         if(Math.abs(a1 - a2) < 1) {
             if(debug) {
-                ChatUtils.error("The angles cannot be equal");
+                ChatUtility.warning().printClientModuleMessage("The angles cannot be equal");
                 return null;
             }
         } else if((((a1 < 0) && (a2 > 0)) || ((a1 > 0) && (a2 < 0))) && (Math.abs(Math.abs(Math.abs(a1) - 180) - Math.abs(a2)) < 1)) {
             if(debug) {
-                ChatUtils.error("The angles cannot be opposite");
+                ChatUtility.warning().printClientModuleMessage("The angles cannot be opposite");
                 return null;
             }
         } else {

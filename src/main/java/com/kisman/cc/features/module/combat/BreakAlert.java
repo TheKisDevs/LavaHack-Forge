@@ -6,9 +6,9 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.ScaledResolution;
@@ -44,7 +44,7 @@ public class BreakAlert extends Module {
     public void update() {
         if(mc.player == null || mc.world == null || blocksBeginBroken.isEmpty()) return;
 
-        for(int i = 0; i < blocksBeginBroken.size(); i++) if(messageType.getValString().equalsIgnoreCase(MessageType.Chat.name())) ChatUtils.warning(TextFormatting.DARK_PURPLE + "Break Alert! " + TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!");
+        for(int i = 0; i < blocksBeginBroken.size(); i++) if(messageType.getValString().equalsIgnoreCase(MessageType.Chat.name())) ChatUtility.warning().printClientModuleMessage(TextFormatting.DARK_PURPLE + "Break Alert! " + TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!");
     }
 
     @SubscribeEvent

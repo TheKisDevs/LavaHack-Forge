@@ -4,6 +4,7 @@
 //file:noinspection JCenterRepository
 //file:noinspection GroovyUnusedAssignment
 //file:noinspection DifferentKotlinGradleVersion
+//file:noinspection GrUnresolvedAccess
 ext.kotlin_version = '1.3.50'
 ext.annotations_version = '16.0.3'
 ext.coroutines_version = '1.3.1'
@@ -129,8 +130,6 @@ dependencies {
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: "$coroutines_version"
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: "$coroutines_version"
     compile 'org.jsoup:jsoup:1.11.3'
-    compile 'com.github.cabaletta:baritone:1.2.14'
-    compile 'cabaletta:baritone-api:1.2'
     compile 'com.formdev:flatlaf:2.2'
 }
 
@@ -200,7 +199,6 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"))
         include(dependency("org.jsoup:jsoup:1.11.3"))
-        include(dependency('cabaletta:baritone-api'))
         include(dependency('com.formdev:flatlaf:2.2'))
     }
     exclude 'dummyThing'
@@ -234,9 +232,8 @@ task kismanClass(type : Jar, dependsOn : jar) {
 
 task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
-//        exclude "com/kisman/cc/loader/**"
+        include 'baritone/**'
         include "com/kisman/cc/sockets/**"
-
         include 'com/kisman/cc/ai/**'
         include 'com/kisman/cc/api/**'
         include 'com/kisman/cc/event/**'
@@ -248,32 +245,13 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'com/kisman/cc/Kisman.class'
         include 'com/kisman/cc/KismanStatic.class'
         include 'com/kisman/cc/RPC.class'
-
-//        exclude 'me/zero/alpine/**'
         include 'org/cubic/**'
         include 'the/kis/devs/api/**'
         include 'mixins.Kisman.json'
         include 'mixins.kisman.refmap.json'
-//        include 'mappings/**'
-//        include 'Main.class'
         include 'assets/kismancc'
         include 'net/**'
         include 'sun/**'
-
-//        exclude 'us/myles/**'
-//        exclude 'kotlin/**'
-//        exclude 'kotlinx/**'
-//        exclude 'darwin/**'
-//        exclude 'linux-x86-64/**'
-//        exclude 'win32-x86/**'
-//        exclude 'win32-x86-64/**'
-//        exclude 'pack.mcmeta'
-//        exclude 'mcmod.info'
-//        exclude 'mixins.loader.json'
-//        exclude 'mixins.loader.refmap.json'
-
-//        exclude 'META-INF/services/**'
-//        exclude 'kisman_at.cfg'
     }
     baseName = ''
     version = ''
@@ -282,11 +260,7 @@ task publicJar(type : Jar, dependsOn : jar) {
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
-
-//        include "com/kisman/cc/loader/**"
-//        include "com/kisman/cc/sockets/**"
-
-
+        exclude 'baritone'
         exclude 'com/kisman/cc/ai/**'
         exclude 'com/kisman/cc/api/**'
         exclude 'com/kisman/cc/event/**'
@@ -298,43 +272,12 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'com/kisman/cc/Kisman.class'
         exclude 'com/kisman/cc/KismanStatic.class'
         exclude 'com/kisman/cc/RPC.class'
-//        include 'me/zero/alpine/**'
-//        include 'org/**'
         exclude 'the/kis/devs/api/**'
         exclude 'mixins.Kisman.json'
         exclude 'mixins.kisman.refmap.json'
-
-//        exclude 'mappings/**'
-
-//        include 'mcmod.info'
-//        include 'pack.mcmeta'
-//        include 'kisman_at.cfg'
-//        include 'mixins.loader.json'
-//        include 'mixins.loader.refmap.json'
-//        include 'mixins.baritone.json'
-//        include 'mixins.baritone.refmap.json'
-
         exclude 'assets/kismancc/**'
-
-//        include "us/myles/**"
-//        include "team/**"
-//        include 'assets/schmatica/**'
-//        include 'assets/viabackwards/**'
-//        include 'assets/viaversion/**'
-//        include "org/spongepowered/**"
         exclude 'org/cubic/**'
         exclude 'Main.class'
-//        include "kotlin/**"
-//        include "kotlinx/**"
-//        include "win32-x86-64/**"
-//        include "win32-x86/**"
-//        include "linux-x86-64/**"
-//        include "darwin/**"
-//        include "club/**"
-//        include "com/**"
-//        include "META-INF/**"
-//        exclude "META-INF/fml_cache_class_versions.json"
-//        exclude "META-INF/fml_cache_annotation.json"
     }
     manifest {
         attributes(

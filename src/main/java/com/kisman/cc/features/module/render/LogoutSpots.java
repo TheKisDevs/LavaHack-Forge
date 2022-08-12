@@ -2,19 +2,22 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.*;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.render.RenderUtil2;
 import com.mojang.authlib.GameProfile;
-import com.kisman.cc.util.chat.other.ChatUtils;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketPlayerListItem;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
@@ -75,7 +78,7 @@ public class LogoutSpots extends Module {
                     case ADD_PLAYER:
                         if(get(data.getProfile().getId()) != null) {
                             LogoutSpot spot = get(data.getProfile().getId());
-                            if(chatNotify.getValBoolean()) ChatUtils.warning(spot.name + " is back at " + spot.pos.getX() + " " + spot.pos.getY() + " " + spot.pos.getZ());
+                            if(chatNotify.getValBoolean()) ChatUtility.warning().printClientModuleMessage(spot.name + " is back at " + spot.pos.getX() + " " + spot.pos.getY() + " " + spot.pos.getZ());
                             spots.remove(spot);
                         }
                         break;
@@ -83,7 +86,7 @@ public class LogoutSpots extends Module {
                         System.out.println("1");
                         EntityPlayer player = mc.world.getPlayerEntityByUUID(data.getProfile().getId());
                         if(player == null) return;
-                        if(chatNotify.getValBoolean()) ChatUtils.warning(player.getName() + " just logout at " + player.getPosition().getX() + " " + player.getPosition().getY() + " " + player.getPosition().getZ());
+                        if(chatNotify.getValBoolean()) ChatUtility.warning().printClientModuleMessage(player.getName() + " just logout at " + player.getPosition().getX() + " " + player.getPosition().getY() + " " + player.getPosition().getZ());
                         spots.add(new LogoutSpot(player, color.getColour()));
                         break;
                 }

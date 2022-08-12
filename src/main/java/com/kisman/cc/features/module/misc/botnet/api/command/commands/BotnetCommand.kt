@@ -1,12 +1,11 @@
 package com.kisman.cc.features.module.misc.botnet.api.command.commands
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.features.module.ModuleManager
 import com.kisman.cc.features.module.misc.botnet.BotnetConnection
 import com.kisman.cc.features.module.misc.botnet.api.WebsiteConnection
 import com.kisman.cc.features.module.misc.botnet.api.command.BotCommand
 import com.kisman.cc.features.module.misc.botnet.api.command.ExecutingType
-import com.kisman.cc.util.chat.other.ChatUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 
 class BotnetCommand: BotCommand(
     "botnet", ExecutingType.ARGS
@@ -17,7 +16,7 @@ class BotnetCommand: BotCommand(
 
             "stop" -> {
                 Kisman.instance.moduleManager.getModule("BotnetConnection").toggled = false
-                ChatUtils.message("Left the botnet")
+                ChatUtility.message().printClientModuleMessage("Left the botnet")
             }
 
             "changeURL" ->

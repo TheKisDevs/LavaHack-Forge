@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.misc.botnet.api.command
 
-import com.kisman.cc.util.chat.other.ChatUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 
 object CommandExecutor {
     fun execute(command: String) {
@@ -34,6 +34,6 @@ object CommandExecutor {
             }
         }
 
-        ChatUtils.message("Bot command " + cmd[0] + " not found")
+        ChatUtility.message().printClientModuleMessage("Bot command " + cmd[0] + " not found")
     }
 }

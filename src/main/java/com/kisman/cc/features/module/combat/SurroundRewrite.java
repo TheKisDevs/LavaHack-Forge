@@ -52,6 +52,7 @@ public class SurroundRewrite extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting feetBlocks = register(new Setting("FeetBlocks", this, false));
     private final Setting heightLimit = register(new Setting("HeightLimit", this, 256, 0, 256, true));
+    private final Setting down = register(new Setting("Down", this, false));
 
     private final Setting breakCrystals = register(new Setting("BreakCrystals", this, false));
 
@@ -71,25 +72,9 @@ public class SurroundRewrite extends Module {
 
     private double lastY = -1;
 
-//    private final Thread thread;
-
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT);
         instance = this;
-        /*this.thread = new Thread(() -> {
-            TimerUtils timer = new TimerUtils();
-            while(true){
-                if(runMode.getValEnum() != RunMode.Thread)
-                    return;
-                if(!timer.passedMillis(threadDelay.getValInt()))
-                    continue;
-                doSurround();
-            }
-        });
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if(thread.isAlive())
-                thread.stop();
-        }));*/
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -103,18 +88,12 @@ public class SurroundRewrite extends Module {
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
-        if(center.getValBoolean() && !centerPlayer()){
-            setToggled(false);
-//            return;
-        }
-//        thread.start();
+        if(center.getValBoolean() && !centerPlayer()) setToggled(false);
     }
 
     @Override
     public void update(){
         if(eventMode.getValEnum() == RunMode.Update) doThreaddedSurround();
-
-//        doSurround();
     }
 
     private void doThreaddedSurround() {
@@ -159,12 +138,6 @@ public class SurroundRewrite extends Module {
     @Override
     public void onDisable(){
         super.onDisable();
-        /*thread.stop();
-        try {
-            thread.join();
-        } catch (InterruptedException e){
-            Kisman.LOGGER.debug("Thread was interrupted", e);
-        }*/
         lastY = -1;
         timer.reset();
     }
@@ -475,14 +448,12 @@ public class SurroundRewrite extends Module {
 
         public List<BlockPos> getBlocks(){
             List<BlockPos> list = new ArrayList<>(64);
-            if(this == Dynamic)
-                return instance.getDynamicBlocks();
-            if(this == AntiFacePlace)
-                return instance.getAntiFacePlaceBlocks();
-            if(instance.feetBlocks.getValBoolean())
-                list.addAll(instance.getDynamicBlocksOffset(-1));
+            if(this == Dynamic) return instance.getDynamicBlocks();
+            if(this == AntiFacePlace) return instance.getAntiFacePlaceBlocks();
+            if(instance.feetBlocks.getValBoolean()) list.addAll(instance.getDynamicBlocksOffset(-1));
+            if(instance.down.getValBoolean()) list.addAll(instance.getDynamicBlocksOffset(-2));
             Vec3d posVec = mc.player.getPositionVector();
-            for(Vec3d vec : vec3d){
+            for(Vec3d vec : vec3d) {
                 list.add(new BlockPos(vec.add(posVec)));
             }
             return list;

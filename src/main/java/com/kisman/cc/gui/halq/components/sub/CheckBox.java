@@ -4,17 +4,16 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,20 @@ public class CheckBox implements Openable {
             }
         } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(setting.getTitle() + (Config.instance.guiShowBinds.getValBoolean() && setting.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(setting.getKey()) + "]" : ""), x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+
+        if(Config.instance.guiShowBinds.getValBoolean() && setting.Companion.valid(setting)) {
+            HalqGui.drawSuffix(
+                    setting.Companion.getName(setting),
+                    setting.getTitle(),
+                    x,
+                    y + offset,
+                    width,
+                    HalqGui.height,
+                    count,
+                    3
+            );
+        }
 
         if(open) bind.drawScreen(mouseX, mouseY);
     }

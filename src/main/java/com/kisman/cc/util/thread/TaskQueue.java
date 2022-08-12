@@ -1,6 +1,5 @@
 package com.kisman.cc.util.thread;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.BooleanSupplier;
@@ -76,5 +75,9 @@ public class TaskQueue implements Runnable {
 
     public Runnable[] getRemainingTasks(){
         return queue.toArray(new Runnable[0]);
+    }
+
+    public void clear() {
+        queue.clear();
     }
 }

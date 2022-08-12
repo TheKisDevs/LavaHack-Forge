@@ -8,10 +8,9 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 
 public class HudModuleManager {
-    public ArrayList<HudModule> modules;
+    public ArrayList<HudModule> modules = new ArrayList<>();
 	
 	public HudModuleManager() {
-		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
 		init();
 	}
@@ -27,7 +26,6 @@ public class HudModuleManager {
 		modules.add(new Indicators());
 		modules.add(new InventoryHud());
 		modules.add(new Logo());
-		modules.add(new PacketChat());
 		modules.add(new PearlCooldown());
 		modules.add(new Ping());
 		modules.add(new PotionHud());
