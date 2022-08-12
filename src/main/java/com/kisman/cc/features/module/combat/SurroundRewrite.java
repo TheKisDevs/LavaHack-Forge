@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -10,18 +11,22 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.RotationUtils;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -40,12 +45,14 @@ import java.util.*;
 public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
+    private final Setting syncronized = register(new Setting("Syncronized", this, false));
     private final SettingEnum<Vectors> mode = new SettingEnum<Vectors>("Mode", this, Vectors.Normal).register();
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
+    private final Setting fightCA = register(new Setting("FightCA", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -74,7 +81,7 @@ public class SurroundRewrite extends Module {
 //    private final Thread thread;
 
     public SurroundRewrite(){
-        super("SurroundRewrite", Category.COMBAT);
+        super("SurroundRewrite", Category.COMBAT, true);
         instance = this;
         /*this.thread = new Thread(() -> {
             TimerUtils timer = new TimerUtils();
@@ -94,7 +101,13 @@ public class SurroundRewrite extends Module {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTick(TickEvent event){
-        if(eventMode.getValEnum() == RunMode.Tick) doThreaddedSurround();
+        if(eventMode.getValEnum() != RunMode.Tick)
+            return;
+
+        if(syncronized.getValBoolean())
+            doThreaddedSyncronizedSurround();
+        else
+            doThreaddedSurround();
     }
 
     @Override
@@ -103,7 +116,7 @@ public class SurroundRewrite extends Module {
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
-        if(center.getValBoolean() && !centerPlayer()){
+        if(center.getValBoolean() && !centerPlayer()) {
             setToggled(false);
 //            return;
         }
@@ -112,12 +125,24 @@ public class SurroundRewrite extends Module {
 
     @Override
     public void update(){
-        if(eventMode.getValEnum() == RunMode.Update) doThreaddedSurround();
+        if(eventMode.getValEnum() != RunMode.Update)
+            return;
+
+        if(syncronized.getValBoolean())
+            doThreaddedSyncronizedSurround();
+        else
+            doThreaddedSurround();
 
 //        doSurround();
     }
 
     private void doThreaddedSurround() {
+        threads.update(() -> {
+            doSurround();
+        });
+    }
+
+    private synchronized void doThreaddedSyncronizedSurround(){
         threads.update(() -> {
             doSurround();
         });
@@ -281,6 +306,35 @@ public class SurroundRewrite extends Module {
             BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
             swap.getValEnum().doSwap(oldSlot, true, SwapWhen.Place);
         }
+    }
+
+    @EventHandler
+    private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
+        if(!fightCA.getValBoolean())
+            return;
+
+        if(!(event.getPacket() instanceof SPacketSoundEffect))
+            return;
+
+        SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
+        if(packet.getSound() != SoundEvents.ENTITY_GENERIC_EXPLODE)
+            return;
+
+        Vec3d vec3d = new Vec3d(packet.getX(), packet.getY(), packet.getZ());
+        List<BlockPos> blocks = mode.getValEnum().getBlocks();
+        if(!isInAnyBlocks(vec3d, blocks))
+            return;
+        if(syncronized.getValBoolean())
+            doThreaddedSyncronizedSurround();
+        else
+            doThreaddedSurround();
+    });
+
+    private boolean isInAnyBlocks(Vec3d vec, List<BlockPos> list){
+        for(BlockPos pos : list)
+            if(new AxisAlignedBB(pos).contains(vec))
+                return true;
+        return false;
     }
 
     private boolean checkEntities(BlockPos pos){
