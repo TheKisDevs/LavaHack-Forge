@@ -24,7 +24,7 @@ class ConfigCommand : Command("config") {
             } else if(args[0] == "list") {
                 val configs = ArrayList<String>()
 
-                for(file in (File(Kisman.fileName + Kisman.pluginsName).listFiles() ?: throw IllegalArgumentException("meow"))) {
+                for (file in (File(Kisman.fileName).listFiles() ?: throw IllegalArgumentException("meow"))) {
                     if(file.name.endsWith(".kis")) {
                         configs.add(file.name)
                     }
@@ -39,6 +39,10 @@ class ConfigCommand : Command("config") {
                         } else {
                             TextFormatting.RED
                         }
+                    }${
+                        config.split(".")[0]
+                    }${
+                        TextFormatting.GRAY
                     }${
                         if(i != configs.size - 1) {
                             ", "
