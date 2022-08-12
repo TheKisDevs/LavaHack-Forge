@@ -158,6 +158,7 @@ public class ModuleManager {
 		modules.add(new TargetStrafe());
 		//player
 		modules.add(AntiDesync.INSTANCE);
+		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());

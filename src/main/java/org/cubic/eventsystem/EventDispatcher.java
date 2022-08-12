@@ -18,7 +18,6 @@ class EventDispatcher implements EventBus {
         CACHE = new ConcurrentHashMap<>(256);
     }
 
-
     @Override
     public void subscribe(Class<?> cls) {
         subscribe(cls, null);
@@ -35,7 +34,6 @@ class EventDispatcher implements EventBus {
             Listener listener = Listener.newListener(wrapper);
             if(listener == null)
                 continue;
-            Subscribe subscribe = m.getAnnotation(Subscribe.class);
             List<Listener> listeners = LISTENER.computeIfAbsent(listener.eventType(), t -> new ArrayList<>(64));
             listeners.add(listener);
             listeners.sort(Comparator.comparingInt(o -> o.getSubscribe().priority()));

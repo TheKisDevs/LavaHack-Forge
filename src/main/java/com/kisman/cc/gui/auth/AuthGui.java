@@ -71,10 +71,10 @@ public class AuthGui extends GuiScreen {
                 break;
             case 1:
                 if(KeyAuthApp.keyAuth.license(keyField.getText())) {
-                    System.out.println("bebra");
                     Kisman.isOpenAuthGui = false;
                     mc.displayGuiScreen(new GuiMainMenu());
                 }
+
                 statusTime = 50;
                 break;
         }
