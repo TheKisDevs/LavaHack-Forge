@@ -20,7 +20,7 @@ class ShaderHelper(shaderIn: ResourceLocation) {
 
     val shader: ShaderGroup? =
         if (!OpenGlHelper.shadersSupported) {
-            ChatUtility.warning().printClientMessage("Shaders are unsupported by OpenGL!")
+            println("Shaders are unsupported by OpenGL!")
             null
         } else {
             try {
@@ -30,7 +30,7 @@ class ShaderHelper(shaderIn: ResourceLocation) {
                     it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                 }
             } catch (e: Exception) {
-                ChatUtility.warning().printClientMessage("Failed to load shaders")
+                println("Failed to load shaders")
                 e.printStackTrace()
                 null
             }
