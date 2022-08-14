@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.misc;
+package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
@@ -15,7 +15,7 @@ public class AntiHunger extends Module {
     public static AntiHunger INSTANCE;
 
     public AntiHunger() {
-        super("AntiHunger", "Attempts to negate hunger loss", Category.MISC);
+        super("AntiHunger", "Attempts to negate hunger loss", Category.PLAYER);
         INSTANCE = this;
     }
 
