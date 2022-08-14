@@ -29,9 +29,11 @@ public class CommandManager extends ChatHandler {
         add(new Slider());
 		add(new TestCommand());
         add(new OpenDir());
+        //add(new Panic());
 		add(new RollBackCommand());
 		add(new RollBackDupeCommand());
         add(new SaveConfigCommand());
+        //add(new ShutdownCommand());
         add(new Toggle());
 		add(new MusicCommand());
 	}

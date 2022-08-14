@@ -212,6 +212,7 @@ public class ModuleManager {
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
+		//modules.add(new PacketDelay());
 		modules.add(new PortalsModifier());
 		modules.add(new Printer());
 		modules.add(new Reverse());
