@@ -191,6 +191,7 @@ public class ModuleManager {
 		//misc
 		modules.add(new AntiRegear());
 		modules.add(new AntiSpammer());
+		modules.add(new AntiHunger());
 		modules.add(new AutoEZ());
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
