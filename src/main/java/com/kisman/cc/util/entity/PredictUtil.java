@@ -1,10 +1,9 @@
 package com.kisman.cc.util.entity;
 
-import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import com.mojang.authlib.GameProfile;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -27,14 +26,14 @@ public class PredictUtil {
         // entity motions
         double motionX = entity.posX - entity.prevPosX;
         double motionY = entity.posY - entity.prevPosY;
-        if (settings.debug) ChatUtils.warning("Motion Y:" + motionY);
+        if (settings.debug) ChatUtility.warning().printClientModuleMessage("Motion Y:" + motionY);
         double motionZ = entity.posZ - entity.prevPosZ;
         // Y Prediction stuff
         boolean goingUp = false;
         boolean start = true;
         int up = 0, down = 0;
         if (settings.debug)
-            ChatUtils.warning(String.format("Values: %f %f %f", newPosVec[0], newPosVec[1], newPosVec[2]));
+            ChatUtility.warning().printClientModuleMessage(String.format("Values: %f %f %f", newPosVec[0], newPosVec[1], newPosVec[2]));
 
         // If he want manual out hole
         boolean isHole = false;
@@ -49,7 +48,7 @@ public class PredictUtil {
         int stairPredicted = 0;
         if (settings.stairPredict) {
             allowPredictStair = Math.abs(entity.posX - entity.prevPosX) + Math.abs(entity.posZ - entity.prevPosZ) > settings.speedActivationStairs;
-            if (settings.debug) ChatUtils.warning(String.format("Speed: %.2f Activation speed Stairs: %.2f", Math.abs(entity.posX - entity.prevPosX) + Math.abs(entity.posZ - entity.prevPosZ), settings.speedActivationStairs));
+            if (settings.debug) ChatUtility.warning().printClientModuleMessage(String.format("Speed: %.2f Activation speed Stairs: %.2f", Math.abs(entity.posX - entity.prevPosX) + Math.abs(entity.posZ - entity.prevPosZ), settings.speedActivationStairs));
         }
 
         for(int i = 0; i < settings.tick; i++) {
@@ -124,7 +123,7 @@ public class PredictUtil {
                         // Check if we are going up or down. We say > because of motionY
                         goingUp = false;
                         start = false;
-                        if (settings.debug) ChatUtils.warning("Start motionY: " + motionY);
+                        if (settings.debug) ChatUtility.warning().printClientModuleMessage("Start motionY: " + motionY);
                     }
                     // Lets just add values to our motionY
                     double increasePowY = settings.increaseY / Math.pow(10, settings.exponentIncreaseY);
@@ -155,9 +154,9 @@ public class PredictUtil {
                 }
             }
 
-            if (settings.show) ChatUtils.warning(String.format("Values: %f %f %f", posVec[0], posVec[1], posVec[2]));
+            if (settings.show) ChatUtility.warning().printClientModuleMessage(String.format("Values: %f %f %f", posVec[0], posVec[1], posVec[2]));
         }
-        if (settings.debug) ChatUtils.warning(String.format("Player: %s Total ticks: %d Up: %d Down: %d", entity.getGameProfile().getName(), settings.tick, up, down));
+        if (settings.debug) ChatUtility.warning().printClientModuleMessage(String.format("Player: %s Total ticks: %d Up: %d Down: %d", entity.getGameProfile().getName(), settings.tick, up, down));
         EntityOtherPlayerMP clonedPlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("fdee323e-7f0c-4c15-8d1c-0f277442342a"), entity.getName()));
         clonedPlayer.setPosition(posVec[0], posVec[1], posVec[2]);
         clonedPlayer.inventory.copyInventory(entity.inventory);

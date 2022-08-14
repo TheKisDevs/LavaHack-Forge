@@ -19,11 +19,10 @@ public class AntiDesync extends Module {
     private final Setting processPackets = register(new Setting("ProcessPackets", this, true));
     private final Setting sneak = register(new Setting("Sneak", this, SneakModeEnum.SneakModes.Off));
 
-    public static AntiDesync INSTANCE;
+    public static final AntiDesync INSTANCE = new AntiDesync();
 
     public AntiDesync(){
         super("AntiDesync", Category.PLAYER);
-        INSTANCE = this;
     }
 
     /**

@@ -6,7 +6,7 @@ import com.kisman.cc.features.module.misc.botnet.api.command.CommandExecutor
 import com.kisman.cc.features.module.misc.botnet.api.WebsiteConnection
 import com.kisman.cc.features.module.misc.botnet.api.command.BotCommandManager
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.chat.other.ChatUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,7 +37,7 @@ class BotnetConnection : Module(
                     wc = WebsiteConnection("https://telegra.ph/botnet-input-${SimpleDateFormat("MM/dd").format(Date())}-$i")
                     if(wc!!.checkConnection()) i++
                     else {
-                        ChatUtils.message("Connected to the botnet ${wc!!.getURL().replace("https://telegra.ph/", "")}")
+                        ChatUtility.message().printClientModuleMessage("Connected to the botnet ${wc!!.getURL().replace("https://telegra.ph/", "")}")
                         break
                     }
                 }
@@ -54,7 +54,7 @@ class BotnetConnection : Module(
     }
 
     override fun onDisable() {
-        ChatUtils.message("Left the botnet")
+        ChatUtility.message().printClientModuleMessage("Left the botnet")
         wc = null
     }
 
@@ -69,5 +69,5 @@ class BotnetConnection : Module(
     }
 
     var mode = register(Setting("Mode", this, Modes.Optimized))
-    var input_url = register(Setting("Input URL", this, ""))
+    var input_url = /*register*/(Setting("Input URL", this, ""))
 }

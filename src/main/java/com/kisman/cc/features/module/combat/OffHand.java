@@ -1,125 +1,77 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.world.CrystalUtils;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
 import org.lwjgl.input.Mouse;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+@SuppressWarnings("SimplifyStreamApiCallChains")
 public class OffHand extends Module {
-    public static OffHand instance;
+    private final Setting health = register(new Setting("Health", this, 11, 0, 36, true));
 
-    private final Setting health = new Setting("Health", this, 11, 0, 20, true);
+    private final Setting mode = register(new Setting("Mode", this, "Totem", Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
+    private final Setting fallingMode = register(new Setting("Falling Mode", this, "Totem", Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
+    private final Setting fallDistance = register(new Setting("Fall Distance", this, 15, 0, 100, true));
+    private final Setting totemOnElytra = register(new Setting("Totem On Elytra", this, true));
+    private final Setting offhandGapOnSword = register(new Setting("Gap On Sword", this, true));
+    private final Setting rightClickGap = register(new Setting("Right Click Gap", this, false));
+    private final Setting totemIfNoNearbyPlayers = register(new Setting("Totem If No Nearby Players", this, false));
+    private final Setting hotbarFirst = register(new Setting("Hotbar First", this, false));
+    private final Setting useUpdateController = register(new Setting("Use UpdateController", this, true));
+    private final Setting antiTotemFail = register(new Setting("Anti Totem Fail", this, true));
+    private final Setting terrain = register(new Setting("Terrain", this, true));
 
-    private final Setting mode = new Setting("Mode", this, "Totem", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
-    private final Setting fallBackMode = new Setting("FallBackMode", this, "Crystal", new ArrayList<>(Arrays.asList("Totem", "Crystal", "Gap", "Pearl", "Chorus", "Strength", "Shield")));
-    private final Setting fallBackDistance = new Setting("FallBackDistance", this, 15, 0, 100, true);
-    private final Setting totemOnElytra = new Setting("TotemOnElytra", this, true);
-    private final Setting offhandGapOnSword = new Setting("GapOnSword", this, true);
-    private final Setting rightClickGap = new Setting("Right Click Gap", this, false);
-    private final Setting hotbarFirst = new Setting("HotbarFirst", this, false);
-    private final Setting useUpdateController = new Setting("Use UpdateController", this, true);
-    private final Setting antiTotemFail = new Setting("Anti Totem Fail", this, true);
-    private final Setting terrain = new Setting("Terrain", this, true);
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+
+    private final AtomicBoolean needTotem = new AtomicBoolean(false);
 
     public OffHand() {
         super("OffHand", "gg", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
+    }
 
-        instance = this;
-
-        setmgr.rSetting(health);
-        setmgr.rSetting(mode);
-        setmgr.rSetting(fallBackMode);
-        setmgr.rSetting(fallBackDistance);
-        setmgr.rSetting(totemOnElytra);
-        setmgr.rSetting(offhandGapOnSword);
-        setmgr.rSetting(rightClickGap);
-        setmgr.rSetting(hotbarFirst);
-        setmgr.rSetting(useUpdateController);
-        setmgr.rSetting(antiTotemFail);
-        setmgr.rSetting(terrain);
+    public void onEnable() {
+        threads.reset();
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
-        if (mc.currentScreen != null && (!(mc.currentScreen instanceof GuiInventory))) return;
+        if(mc.player == null || mc.world == null || (mc.currentScreen != null && !(mc.currentScreen instanceof GuiInventory))) return;
 
-        super.setDisplayInfo("[" + mode.getValString() + "]");
+        threads.update(() -> {
+            needTotem.set(totemIfNoNearbyPlayers.getValBoolean() && !mode.getValString().equalsIgnoreCase("Totem") && mc.world.playerEntities.stream().noneMatch(e -> !(e == mc.player || FriendManager.instance.isFriend(e) || mc.player.getDistance(e) > 15)));
+            needTotem.set(needTotem.get() || (antiTotemFail.getValBoolean() && !mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) && mc.world.loadedEntityList.stream().anyMatch(e -> e instanceof EntityEnderCrystal && mc.player.getDistanceSq(e) <= (12 * 12) && CrystalUtils.calculateDamage(mc.world, e.posX + 0.5, e.posY, e.posZ + 0.5, mc.player, terrain.getValBoolean()) >= mc.player.getHealth() + mc.player.getAbsorptionAmount())));
+        });
 
-        if(antiTotemFail.getValBoolean() && canTotemFail()) {
-            switchOffHandIfNeed("Totem");
-            return;
-        }
+        String name = mode.getValString();
 
-        if (!mc.player.getHeldItemMainhand().isEmpty()) {
-            if (health.getValDouble() <= (mc.player.getHealth() + mc.player.getAbsorptionAmount()) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) {
-                switchOffHandIfNeed("Gap");
-                return;
-            }
-        }
+        if (needTotem.get() || health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallDistance.getValDouble() && !mc.player.isElytraFlying())) name = "Totem";
+        if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) || (rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && !mc.player.getHeldItemMainhand().getItem().equals(Items.GOLDEN_APPLE))) name = "Gap";
 
-        if (health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallBackDistance.getValDouble() && !mc.player.isElytraFlying()) || noNearbyPlayers()) {
-            switchOffHandIfNeed("Totem");
-            return;
-        }
-
-        if(rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && !mc.player.getHeldItemMainhand().getItem().equals(Items.GOLDEN_APPLE) && !mc.player.getHeldItemOffhand().getItem().equals(Items.GOLDEN_APPLE)) {
-            switchOffHandIfNeed("Gap");
-            return;
-        }
-
-        switchOffHandIfNeed(mode.getValString());
-    }
-
-    private boolean canTotemFail() {
-        try {
-            if (!mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) && !mc.player.getHeldItemOffhand().getItem().equals(Items.TOTEM_OF_UNDYING)) {
-                for (Entity entity : mc.world.loadedEntityList) {
-                    if (entity instanceof EntityEnderCrystal) {
-                        EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
-                        double selfDamage = CrystalUtils.calculateDamage(mc.world, crystal.posX + 0.5, crystal.posY, crystal.posZ + 0.5, mc.player, terrain.getValBoolean());
-                        if (selfDamage >= mc.player.getHealth() + mc.player.getAbsorptionAmount()) return true;
-                    }
-                }
-            }
-        } catch (Exception ignored) {}
-        return false;
+        switchOffHandIfNeed(name);
     }
 
     private void switchOffHandIfNeed(String mode) {
         Item item = getItemFromModeVal(mode);
+        Item fallback = getItemFromModeVal(fallingMode.getValString());
 
         if (mc.player.getHeldItemOffhand().getItem() != item) {
             int slot = hotbarFirst.getValBoolean() ? PlayerUtil.GetRecursiveItemSlot(item) : PlayerUtil.GetItemSlot(item);
 
-            Item fallback = getItemFromModeVal(fallBackMode.getValString());
-
-            String display = getItemNameFromModeVal(mode);
-
             if (slot == -1 && item != fallback && mc.player.getHeldItemOffhand().getItem() != fallback) {
                 slot = PlayerUtil.GetRecursiveItemSlot(fallback);
-                display = getItemNameFromModeVal(fallBackMode.getValString());
 
-                if (slot == -1 && fallback != Items.TOTEM_OF_UNDYING) {
-                    fallback = Items.TOTEM_OF_UNDYING;
-
-                    if (item != fallback && mc.player.getHeldItemOffhand().getItem() != fallback) {
-                        slot = PlayerUtil.GetRecursiveItemSlot(fallback);
-                        display = "Emergency Totem";
-                    }
-                }
+                if ((slot == -1 && fallback != Items.TOTEM_OF_UNDYING) || item != Items.TOTEM_OF_UNDYING && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) slot = PlayerUtil.GetRecursiveItemSlot(Items.TOTEM_OF_UNDYING);
             }
 
             if (slot != -1) {
@@ -127,16 +79,8 @@ public class OffHand extends Module {
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 45, 0, ClickType.PICKUP, mc.player);
                 mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player);
                 if(useUpdateController.getValBoolean()) mc.playerController.updateController();
-
-                ChatUtils.complete(ChatFormatting.BLUE + "Offhand now has a " + display);
             }
         }
-    }
-
-    private boolean isValidTarget(EntityPlayer player) {
-        if (player == mc.player) return false;
-        if (mc.player.getDistance(player) > 15) return false;
-        return !FriendManager.instance.isFriend(player);
     }
 
     public Item getItemFromModeVal(String mode) {
@@ -150,18 +94,4 @@ public class OffHand extends Module {
             default: return Items.TOTEM_OF_UNDYING;
         }
     }
-
-    private String getItemNameFromModeVal(String mode) {
-        switch (mode) {
-            case "Crystal": return "End Crystal";
-            case "Gap": return "Gap";
-            case "Pearl": return "Pearl";
-            case "Chorus": return "Chorus";
-            case "Strength": return "Strength";
-            case "Shield": return "Shield";
-            default: return "Totem";
-        }
-    }
-
-    private boolean noNearbyPlayers() {return mode.getValString().equalsIgnoreCase("Crystal") && mc.world.playerEntities.stream().noneMatch(e -> e != mc.player && isValidTarget(e));}
 }

@@ -11,7 +11,7 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.render.customfont.AbstractFontRenderer;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.util.render.objects.Vec3dSimple;
+import com.kisman.cc.util.math.vectors.Vec3dSimple;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.*;
 import net.minecraft.client.renderer.entity.RenderManager;

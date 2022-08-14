@@ -1,14 +1,11 @@
 package com.kisman.cc.util.manager;
 
-import com.kisman.cc.util.math.vectors.Rotation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-
-import javax.annotation.Nonnull;
 
 public class RotationManager {
     private static Minecraft mc = Minecraft.getMinecraft();
@@ -34,17 +31,6 @@ public class RotationManager {
             mc.player.rotationPitch = pitch;
         }
     }
-
-    public static Rotation calcRotation(@Nonnull BlockPos bp) {
-        float[] angles = calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d(bp.getX() + .5f, bp.getY() + .5f, bp.getZ() + .5f));
-        return new Rotation(angles[ 0 ], angles[ 1 ]);
-    }
-
-    public static Rotation calcRotation(@Nonnull Entity e) {
-        float[] angles = calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), e.getPositionEyes(mc.getRenderPartialTicks()));
-        return new Rotation(angles[ 0 ], angles[ 1 ]);
-    }
-
     public static float[] look(BlockPos bp, boolean packet) {
         return look(bp, packet, true);
     }

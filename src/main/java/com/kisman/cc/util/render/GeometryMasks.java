@@ -5,7 +5,6 @@ import net.minecraft.util.EnumFacing;
 import java.util.HashMap;
 
 public final class GeometryMasks {
-
     public static final HashMap<EnumFacing, Integer> FACEMAP = new HashMap<>();
 
     static {

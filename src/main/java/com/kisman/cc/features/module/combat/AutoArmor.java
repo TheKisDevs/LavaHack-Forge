@@ -1,23 +1,26 @@
  package com.kisman.cc.features.module.combat;
 
- import com.kisman.cc.Kisman;
- import com.kisman.cc.features.module.*;
- import com.kisman.cc.settings.types.number.NumberType;
- import com.kisman.cc.util.entity.player.InventoryUtil;
- import com.kisman.cc.settings.*;
+ import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 
- import com.kisman.cc.util.TimerUtils;
- import net.minecraft.client.gui.inventory.GuiContainer;
- import net.minecraft.client.renderer.InventoryEffectRenderer;
- import net.minecraft.enchantment.*;
- import net.minecraft.init.Items;
- import net.minecraft.inventory.ClickType;
- import net.minecraft.item.*;
-
- import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
  public class AutoArmor extends Module {
-     private final Setting delay = new Setting("Delay", this, 0, 0, 100, NumberType.TIME);
+     private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, NumberType.TIME));
+     private final Setting noThorns = register(new Setting("No Thorns", this, true));
 
      public static AutoArmor instance;
      private final TimerUtils timer = new TimerUtils();
@@ -26,9 +29,6 @@
          super("AutoArmor", "ebate srate lox!", Category.COMBAT);
 
          instance = this;
-
-         setmgr.rSetting(delay);
-         Kisman.instance.settingsManager.rSetting(new Setting("NoThorns", this, false));
      }
 
      public void onEnable() {
@@ -41,8 +41,6 @@
          if(!timer.passedMillis(delay.getValLong())) return; else timer.reset();
          if (mc.player.ticksExisted % 2 == 0) return;
          if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;
-
-         boolean noThorns = Kisman.instance.settingsManager.getSettingByName(this, "NoThorns").getValBoolean();
 
          List<ItemStack> armorInventory = mc.player.inventory.armorInventory;
          List<ItemStack> inventory = mc.player.inventory.mainInventory;
@@ -61,7 +59,7 @@
 
          for (Integer slot : slots) {
              ItemStack item = inventory.get(slot);
-             if (noThorns && EnchantmentHelper.getEnchantments(item).containsKey(Enchantment.getEnchantmentByID(7))) thorns.put(slot, item);
+             if (noThorns.getValBoolean() && EnchantmentHelper.getEnchantments(item).containsKey(Enchantment.getEnchantmentByID(7))) thorns.put(slot, item);
              else armour.put(slot, item);
          }
 
@@ -76,7 +74,7 @@
              }
          }));
 
-         if (noThorns) {
+         if (noThorns.getValBoolean()) {
              thorns.forEach(((integer, itemStack) -> {
                  ItemArmor itemArmor = (ItemArmor) itemStack.getItem();
                  int armorType = itemArmor.armorType.ordinal() - 2;

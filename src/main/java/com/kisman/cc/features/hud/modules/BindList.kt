@@ -2,6 +2,7 @@ package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
+import com.kisman.cc.features.module.IBindable
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
@@ -34,25 +35,25 @@ class BindList : HudModule(
 
         if(modules.valBoolean) {
             for (module in Kisman.instance.moduleManager.modules) {
-                if (module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
-                    list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
+                if (IBindable.valid(module)) {
+                    list += Element("${module.name} [${IBindable.getName(module)}]", module.isToggled)
                 }
             }
         }
 
         if(hudModules.valBoolean) {
             for (module in Kisman.instance.hudModuleManager.modules) {
-                if (module.key != Keyboard.KEY_NONE && module.key != Keyboard.KEY_ESCAPE) {
-                    list += Element("${module.name} [${Keyboard.getKeyName(module.key)}]", module.isToggled)
+                if (IBindable.valid(module)) {
+                    list += Element("${module.name} [${IBindable.getName(module)}]", module.isToggled)
                 }
             }
         }
 
         if(checkBoxes.valBoolean) {
             for (setting in Kisman.instance.settingsManager.settings) {
-                if (setting.key != Keyboard.KEY_NONE && setting.isCheck) {
+                if (IBindable.valid(setting) && setting.isCheck) {
                     list += Element(
-                        "${setting.parentMod.name}->${setting.name} [${Keyboard.getKeyName(setting.key)}]",
+                        "${setting.parentMod.name}->${setting.name} [${IBindable.getName(setting)}]",
                         setting.valBoolean
                     )
                 }
@@ -75,7 +76,7 @@ class BindList : HudModule(
             )
         }
 
-        setW(CustomFontUtil.getStringWidth(list[0].text).toDouble())
+        setW(if(list.isNotEmpty()) CustomFontUtil.getStringWidth(list[0].text).toDouble() else 0.0)
         setH(list.size.toDouble() * (CustomFontUtil.getFontHeight().toDouble() + offsets.valInt))
     }
 

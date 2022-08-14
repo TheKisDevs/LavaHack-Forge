@@ -82,9 +82,9 @@ public class AutoCrystal extends Module implements Runnable {
             if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) for (Entity e : Minecraft.getMinecraft().world.loadedEntityList) if (e instanceof EntityEnderCrystal && e.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) e.setDead();
         }
     });
-    private final Timer threadDelay = new Timer();
+    private final TimerUtils threadDelay = new TimerUtils();
 
-    private final Timer placeTimer = new Timer(), breakTimer = new Timer();
+    private final TimerUtils placeTimer = new TimerUtils(), breakTimer = new TimerUtils();
     public EntityPlayer target;
     Thread thread;
     private AutoCrystal autoCrystal;
@@ -200,9 +200,9 @@ public class AutoCrystal extends Module implements Runnable {
     });
 
     private void breakProcess(Entity entity) {
-        if (breakTimer.passedDms(breakDelay.getValDouble())) {
+        if (breakTimer.passedDMillis(breakDelay.getValDouble())) {
             if (mc.player.getDistance(entity) < breakRange.getValDouble()) {
-                if (breakTimer.passedMs(breakDelay.getValLong())) {
+                if (breakTimer.passedMillis(breakDelay.getValLong())) {
                     float[] rot = RotationUtils.getRotationToPos(entity.getPosition());
                     newRotate(rot[1], rot[0]);
                     for (int i = 0; i <= 1; i++) {
@@ -232,13 +232,13 @@ public class AutoCrystal extends Module implements Runnable {
 
         float[] old = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
         if (bestCrystalPos.getBlockPos() != BlockPos.ORIGIN) {
-            if (placeTimer.passedDms(placeDelay.getValLong())) {
+            if (placeTimer.passedDMillis(placeDelay.getValLong())) {
                 int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9), oldSlot = mc.player.inventory.currentItem;
                 boolean canSwitch = true, offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
                 if (crystalSlot != mc.player.inventory.currentItem && switchMode.getValString().equalsIgnoreCase("None") && !offhand) return;
                 if (crystalSlot == mc.player.inventory.currentItem || offhand) canSwitch = false;
                 if (canSwitch) InventoryUtil.switchToSlot(crystalSlot, switchMode.getValString().equalsIgnoreCase("Silent"));
-                if (placeTimer.passedMs(placeDelay.getValLong())) {
+                if (placeTimer.passedMillis(placeDelay.getValLong())) {
                     if (packetPlace.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0, 0, 0));
                     else mc.playerController.processRightClickBlock(mc.player, mc.world, bestCrystalPos.getBlockPos(), AI.getEnumFacing(raytrace.getValBoolean(), bestCrystalPos.getBlockPos()), new Vec3d(0, 0, 0), mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL) ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND);
                     placeTimer.reset();
@@ -292,7 +292,7 @@ public class AutoCrystal extends Module implements Runnable {
 
     public void newThread() {
         for (int i = 0; i <= MultiThreadValue.getValInt(); i++) {
-            if (threadDelay.passedMs(MultiThreadDelay.getValLong())) {
+            if (threadDelay.passedMillis(MultiThreadDelay.getValLong())) {
                 if (thread == null)
                     thread = new Thread(AutoCrystal.get(this));
                 if (thread != null && (thread.isInterrupted() || thread.isAlive()))

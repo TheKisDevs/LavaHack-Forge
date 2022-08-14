@@ -1,26 +1,24 @@
 package com.kisman.cc.settings;
 
-import java.util.*;
+import com.kisman.cc.Kisman;
+import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
+import com.kisman.cc.features.module.BindType;
+import com.kisman.cc.features.module.IBindable;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.ColourUtilKt;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-
-/**
- *  Made by HeroCode
- *  it's free to use
- *  but you have to credit him
- *
- *  @author HeroCode
- */
-public class Setting {
+public class Setting implements IBindable {
 	public Supplier<Boolean> visibleSupplier = () -> true;
 
 	public boolean haveDisplayInfo = false;
@@ -32,11 +30,14 @@ public class Setting {
 
 	private int index = 0;
 	private int key = Keyboard.KEY_NONE;
+	public int mouse = -1;
+	public BindType bindType = BindType.Keyboard;
+	public boolean hold = false;
 	
 	private String name;
-	private Module parent;
+	public Module parent;
 	public Setting parent_ = null;
-	public String mode;
+	public String mode = "";
 
 	private String title;
 
@@ -70,6 +71,7 @@ public class Setting {
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.key = key;
 		this.mode = "Bind";
 	}
@@ -77,6 +79,7 @@ public class Setting {
 	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.sval = sval;
 		this.dString = dString;
 		this.onlyOneWord = false;
@@ -87,6 +90,7 @@ public class Setting {
 	public Setting(String name, Module parent, String sval, String dString, boolean opening, boolean onlyOneWord) {
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.sval = sval;
 		this.dString = dString;
 		this.onlyOneWord = onlyOneWord;
@@ -94,16 +98,10 @@ public class Setting {
 		this.mode = "String";
 	}
 
-	public Setting(String name, Module parent, String title) {
-		this.name = name;
-		this.title = title;
-		this.parent = parent;
-		this.mode = "Line";
-	}
-
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.sval = sval;
 		this.options = options;
 		this.optionEnum = null;
@@ -113,6 +111,7 @@ public class Setting {
 	public Setting(String name, Module parent, String sval, List<String> options){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.sval = sval;
 		this.options = new ArrayList<>(options);
 		this.optionEnum = null;
@@ -122,6 +121,7 @@ public class Setting {
 	public Setting(String name, Module parent, Enum options){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.sval = options.name();
 		this.options = null;
 		this.optionEnum = options;
@@ -132,6 +132,7 @@ public class Setting {
 	public Setting(String name, Module parent, boolean bval){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.bval = bval;
 		this.mode = "Check";
 	}
@@ -139,6 +140,7 @@ public class Setting {
 	public Setting(String name, Module parent, double dval, double min, double max, NumberType numberType){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.dval = dval;
 		this.min = min;
 		this.max = max;
@@ -150,6 +152,7 @@ public class Setting {
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
 		this.parent = parent;
+		this.title = name;
 		this.dval = dval;
 		this.min = min;
 		this.max = max;
@@ -187,8 +190,13 @@ public class Setting {
 	}
 
 	public Setting(String name, Module parent) {
+		this(name, parent, name);
+	}
+
+	public Setting(String name, Module parent, String title) {
 		this.name = name;
 		this.parent = parent;
+		this.title = title;
 	}
 
 	public Setting setDisplayInfo(Supplier<String> displayInfoSupplier) {
@@ -237,6 +245,12 @@ public class Setting {
 	public boolean isVisible() {
 		return visibleSupplier.get();
 	}
+	
+	public Setting setVisible(Setting setting) {
+		visibleSupplier = setting::getValBoolean;
+
+		return this;
+	}
 
 	public Setting setVisible(Supplier<Boolean> suppliner) {
 		visibleSupplier = suppliner;
@@ -252,6 +266,10 @@ public class Setting {
 	public String[] getStringValues() {
 		if(!enumCombo) return options.toArray(new String[options.size()]);
 		else return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+	}
+
+	public ArrayList<String> getStringArray() {
+		return new ArrayList<>(Arrays.asList(getStringValues()));
 	}
 
 	public String getStringFromIndex(int index) {
@@ -363,7 +381,11 @@ public class Setting {
 	}
 
 	public Enum<?> getValEnum() {
-		return optionEnum.valueOf(optionEnum.getClass(), sval);
+		try {
+			return optionEnum.valueOf(optionEnum.getClass(), sval);
+		} catch(Exception ignored) {
+			return optionEnum;
+		}
 	}
 
 	public void setValEnum(Enum<?> enum_) {
@@ -418,8 +440,14 @@ public class Setting {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public Setting setTitle(String title) {
 		this.title = title;
+		return this;
+	}
+
+	@Override
+	public @NotNull String getButtonName(){
+		return isBind() ? name : "Bind";
 	}
 
 	public String getName(){
@@ -570,4 +598,22 @@ public class Setting {
 	public boolean onlyInt(){
 		return this.onlyint;
 	}
+
+	@NotNull @Override public BindType getType() {return bindType;}
+	@Override public void setType(@NotNull BindType type) {this.bindType = type;}
+	@Override public boolean isHold() {return hold;}
+	@Override public void setHold(boolean hold) {this.hold = hold;}
+	@Override public int getKeyboardKey() {return key;}
+	@Override public void setKeyboardKey(int key) {this.key = key;}
+	@Override public int getMouseButton() {return mouse;}
+	@Override public void setMouseButton(int button) {this.mouse = button;}
+
+	public Supplier<String> getSupplierString() {return () -> sval;}
+	public Supplier<Integer> getSupplierInt() {return () -> getValInt();}
+	public Supplier<Double> getSupplierDouble() {return () -> dval;}
+	public Supplier<Float> getSupplierFloat() {return () -> getValFloat();}
+	public Supplier<Long> getSupplierLong() {return () -> getValLong();}
+	public Supplier<Enum<?>> getSupplierEnum() {return () -> getValEnum();}
+	public Supplier<Boolean> getSupplierBoolean() {return () -> bval;}
+
 }

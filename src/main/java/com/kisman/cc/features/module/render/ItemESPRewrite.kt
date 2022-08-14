@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.render.Rendering
-import com.kisman.cc.util.render.objects.TextOnBoundingBox
+import com.kisman.cc.util.render.objects.world.TextOnBoundingBox
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.math.AxisAlignedBB

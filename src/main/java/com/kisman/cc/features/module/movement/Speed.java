@@ -1,61 +1,69 @@
 package com.kisman.cc.features.module.movement;
 
-import java.util.*;
-
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
-import com.kisman.cc.features.module.movement.speed.ISpeedMode;
+import com.kisman.cc.event.events.EventPlayerUpdate;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.settings.*;
-
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.movement.MovementUtil;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+@SuppressWarnings("ConstantConditions")
 public class Speed extends Module {
     public static Speed instance;
 
-    private float yPortSpeed;
+    public Setting speedMode = register(new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3"/*, "Strafe4"*/))));
 
-    public Setting speedMode = new Setting("SpeedMode", this, "Strafe", new ArrayList<>(Arrays.asList("Strafe", "Strafe New", "YPort", "Sti", "Matrix 6.4", "Matrix Bhop", "Sunrise Strafe", "Bhop", "Strafe2", "Matrix", "NCP", "Strafe3")));
+    private final Setting flagDetect = register(new Setting("Flag Detect", this, true));
 
-    public final Setting useTimer = new Setting("Use Timer", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe New"));
+    public final Setting useTimer = register(new Setting("Use Timer", this, false));
+    public final Setting timerFactor = register(new Setting("Timer Factor", this, 1, 0, 10, true).setVisible(useTimer::getValBoolean));
 
-    public final Setting motionXmodifier = new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
-    public final Setting motionZmodifier = new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2"));
+    public final Setting motionXmodifier = register(new Setting("Motion X Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2")));
+    public final Setting motionZmodifier = register(new Setting("Motion Z Modifier", this, 0, 0, 0.5, false).setVisible(() -> speedMode.checkValString("Strafe2")));
 
-    private final Setting strafeNewLine = new Setting("StrafeNewLine", this, "Strafe New").setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting strafeSpeed = new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting slow = new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New") || speedMode.checkValString("YPort"));
-    public final Setting cap = new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting scaleCap = new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New"));
-    public final Setting lagTime = new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New"));
+    public final Setting strafeSpeed = register(new Setting("Strafe Speed", this, 0.2873f, 0.1f, 1, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting slow = register(new Setting("Slow", this, false).setVisible(() -> speedMode.checkValString("Strafe New") || speedMode.checkValString("YPort")));
+    public final Setting cap = register(new Setting("Cap", this, 10, 0, 10, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting scaleCap = register(new Setting("Scale Cap", this, false).setVisible(() -> speedMode.checkValString("Strafe New")));
+    public final Setting lagTime = register(new Setting("Lag Time", this, 500, 0, 1000, NumberType.TIME).setVisible(() -> speedMode.checkValString("Strafe New")));
 
-    private final Setting yPortLine = new Setting("YPortLine", this, "YPort").setVisible(() -> speedMode.checkValString("YPort"));
-    private final Setting yWater = new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort"));
-    private final Setting yLava = new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort"));
+    private final Setting yPortSpeed = register(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort")));
+    private final Setting yWater = register(new Setting("Water", this, false).setVisible(() -> speedMode.checkValString("YPort")));
+    private final Setting yLava = register(new Setting("Lava", this, false).setVisible(() -> speedMode.checkValString("YPort")));
 
-    private final Setting stiLine = new Setting("StiLine", this, "Sti").setVisible(() -> speedMode.checkValString("Sti"));
-    private final Setting stiSpeed = new Setting("StiSpeed", this, 4, 0.1, 10, true).setVisible(() -> speedMode.checkValString("Sti"));
+    private final Setting stiSpeed = register(new Setting("StiSpeed", this, 4, 0.1, 10, true).setVisible(() -> speedMode.checkValString("Sti")));
 
-    private final Setting bhopLine = new Setting("BhopLine", this, "Bhop").setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting useMotion = new Setting("Use Motion", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting useMotionInAir = new Setting("Use Motion In Air", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting jumpMovementFactorSpeed = new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting jumpMovementFactor = new Setting("Jump Movement Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting boostSpeed = new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop"));
-    public final Setting boostFactor = new Setting("Boost Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop"));
+    public final Setting useMotion = register(new Setting("Use Motion", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting useMotionInAir = register(new Setting("Use Motion In Air", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting jumpMovementFactorSpeed = register(new Setting("Jump Movement Factor Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting jumpMovementFactor = register(new Setting("Jump Movement Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop")));
+    public final Setting boostSpeed = register(new Setting("Boost Speed", this, 0.265f, 0.01f, 10, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4")));
+    public final Setting boostFactor = register(new Setting("Boost Factor", this, false).setVisible(() -> speedMode.checkValString("Bhop") || speedMode.checkValString("Strafe4")));
 
-    private final Setting strict = new Setting("Strict", this, false).setVisible(() -> speedMode.checkValString("Strafe3"));
+    private final Setting strict = register(new Setting("Strict", this, false).setVisible(() -> speedMode.checkValString("Strafe3") || speedMode.checkValString("Strafe4")));
 
     private int stage;
     private double speed;
@@ -73,121 +81,61 @@ public class Speed extends Module {
     private double strafe3Distance;
     private boolean strafe3Flag;
 
+    private int strafe4Stage = 0;
+    private double strafe4CurrentSpeed = 0;
+    private double strafe4PrevMotion = 0;
+    private boolean strafe4Flag = false;
+
+    private final TimerUtils velocityTimer = new TimerUtils();
+    private double maxVelocity = 0;
+
     public Speed() {
         super("Speed", "speed", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + speedMode.getValString() + "]");
 
         instance = this;
-
-        setmgr.rSetting(speedMode);
-
-        setmgr.rSetting(useTimer);
-
-        setmgr.rSetting(motionXmodifier);
-        setmgr.rSetting(motionZmodifier);
-
-        setmgr.rSetting(strafeNewLine);
-        setmgr.rSetting(strafeSpeed);
-        setmgr.rSetting(slow);
-        setmgr.rSetting(cap);
-        setmgr.rSetting(scaleCap);
-        setmgr.rSetting(lagTime);
-
-        setmgr.rSetting(yPortLine);
-        Kisman.instance.settingsManager.rSetting(new Setting("YPortSpeed", this, 0.06f, 0.01f, 0.15f, false).setVisible(() -> speedMode.checkValString("YPort")));
-        setmgr.rSetting(yWater);
-        setmgr.rSetting(yLava);
-
-        setmgr.rSetting(stiLine);
-        setmgr.rSetting(stiSpeed);
-
-        setmgr.rSetting(bhopLine);
-        setmgr.rSetting(useMotion);
-        setmgr.rSetting(useMotionInAir);
-        setmgr.rSetting(jumpMovementFactor);
-        setmgr.rSetting(jumpMovementFactorSpeed);
-        setmgr.rSetting(boostSpeed);
-        setmgr.rSetting(boostFactor);
     }
 
     public void onEnable() {
-        Kisman.EVENT_BUS.subscribe(listener);
-        Kisman.EVENT_BUS.subscribe(listener1);
-        Kisman.EVENT_BUS.subscribe(move);
-        Kisman.EVENT_BUS.subscribe(motion);
-        if(mc.player == null || mc.world == null) return;
+        Kisman.EVENT_BUS.subscribe(playerUpdate);
+        Kisman.EVENT_BUS.subscribe(receive);
+        reset();
+    }
+
+    private void reset() {
+        EntityUtil.resetTimer();
+
+        velocityTimer.reset();
+
         stage = 4;
-        dist = MovementUtil.getDistance2D();
-        speed = MovementUtil.getSpeed();
         ncpStage = 0;
         strafe3Stage = 4;
         strafe3MotionSpeed = 0;
         strafe3Distance = 0;
         strafe3Flag = false;
+        strafe4Stage = 4;
+        strafe4PrevMotion = 0;
+        strafe4CurrentSpeed = 0;
+
+        maxVelocity = 0;
+
+        if(mc.player == null || mc.world == null) return;
+        dist = MovementUtil.getDistance2D();
+        speed = MovementUtil.getSpeed();
     }
 
     public void onDisable() {
-        Kisman.EVENT_BUS.unsubscribe(listener);
-        Kisman.EVENT_BUS.unsubscribe(listener1);
-        Kisman.EVENT_BUS.unsubscribe(move);
-        Kisman.EVENT_BUS.unsubscribe(motion);
-
-        EntityUtil.resetTimer();
+        Kisman.EVENT_BUS.unsubscribe(playerUpdate);
+        Kisman.EVENT_BUS.unsubscribe(receive);
+        reset();
     }
-
-    @EventHandler
-    private final Listener<EventPlayerMove> move = new Listener<>(event -> {
-        if(speedMode.checkValString("Strafe3")) {
-            double diffX = mc.player.posX - mc.player.lastTickPosX;
-            double diffZ = mc.player.posZ - mc.player.lastTickPosZ;
-            strafe3Distance = Math.sqrt(diffX * diffX + diffZ * diffZ);
-        }
-    });
-
-    @EventHandler
-    private final Listener<EventPlayerMotionUpdate> motion = new Listener<>(event -> {
-        if(speedMode.checkValString("Strafe3")) {
-            if(mc.player.onGround && MovementUtil.isMoving()) {
-                strafe3Stage = 2;
-            }
-
-            if(strafe3Stage == 1 && MovementUtil.isMoving()) {
-                strafe3Stage++;
-//                strafe3MotionSpeed = 1.35 * getBaseMotionSpeed() - 0.01;
-            } else if(strafe3Stage == 2) {
-                strafe3Stage++;
-                if(mc.player.onGround && MovementUtil.isMoving()) {
-                    double jumpHeight = MovementUtil.getJumpHeight(strict.getValBoolean());
-                    mc.player.motionY = jumpHeight;
-                    event.setY(jumpHeight);
-                    strafe3MotionSpeed *= strafe3Flag ? 1.368 : 1.69;
-                }
-            } else if(stage == 3) {
-                strafe3Stage++;
-//                strafe3MotionSpeed = strafe3Distance * (0.66 * (strafe3Distance - getBaseMotionSpeed()));
-            } else if(stage == 4) {
-                if(collisionCheck() || mc.player.collidedVertically) stage = MovementUtil.isMoving() ? 1 : 0;
-                strafe3MotionSpeed = strafe3Distance - strafe3Distance / 159;
-                strafe3Flag = !strafe3Flag;
-            }
-
-//            strafe3MotionSpeed = Math.max(strafe3MotionSpeed, getBaseMotionSpeed());
-            MovementUtil.strafe((float) strafe3MotionSpeed);
-            if(MovementUtil.isMoving()) {
-                event.setX(mc.player.motionX);
-                event.setY(mc.player.motionY);
-            } else {
-                event.setX(0.0);
-                event.setZ(0.0);
-            }
-        }
-    });
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
 
-        yPortSpeed = (float) Kisman.instance.settingsManager.getSettingByName(this, "YPortSpeed").getValDouble();
         dist = MovementUtil.getDistance2D();
+
+        if((speedMode.checkValString("Strafe New") || speedMode.checkValString("Strafe4")) && useTimer.getValBoolean() && Managers.instance.passed(250)) EntityUtil.setTimer(1.0808f + (0.008f * timerFactor.getValFloat()));
 
         if(mc.player.moveForward > 0 && mc.player.hurtTime < 5 && speedMode.getValString().equalsIgnoreCase("Strafe")) {
             if(mc.player.onGround) {
@@ -206,7 +154,6 @@ public class Speed extends Module {
             }
         } else if(speedMode.getValString().equalsIgnoreCase("YPort")) doYPortSpeed();
         else if(speedMode.getValString().equalsIgnoreCase("Strafe New") && !mc.player.isElytraFlying()) {
-            if(useTimer.getValBoolean() && Managers.instance.passed(250)) EntityUtil.setTimer(1.0888f);
             if(!Managers.instance.passed(lagTime.getValInt())) return;
             if(stage == 1 && PlayerUtil.isMoving(mc.player)) speed = 1.35 * MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()) - 0.01;
             else if(stage == 2 && PlayerUtil.isMoving(mc.player) && mc.player.onGround) {
@@ -308,7 +255,81 @@ public class Speed extends Module {
             speed = Math.max(speed, MovementUtil.getSpeed(slow.getValBoolean(), 0.2873));
             MovementUtil.strafe((float) speed);
             ncpStage++;
+        } else if(speedMode.checkValString("Strafe3")) {
+            if(mc.player.onGround && MovementUtil.isMoving()) {
+                strafe3Stage = 2;
+            }
+
+            if(strafe3Stage == 1 && MovementUtil.isMoving()) {
+                strafe3Stage++;
+//                strafe3MotionSpeed = 1.35 * getBaseMotionSpeed() - 0.01;
+            } else if(strafe3Stage == 2) {
+                strafe3Stage++;
+                if(mc.player.onGround && MovementUtil.isMoving()) {
+                    mc.player.motionY = MovementUtil.getJumpHeight(strict.getValBoolean());
+                    strafe3MotionSpeed *= strafe3Flag ? 1.368 : 1.69;
+                }
+            } else if(stage == 3) {
+                strafe3Stage++;
+//                strafe3MotionSpeed = strafe3Distance * (0.66 * (strafe3Distance - getBaseMotionSpeed()));
+            } else if(stage == 4) {
+                if(collisionCheck() || mc.player.collidedVertically) stage = MovementUtil.isMoving() ? 1 : 0;
+                strafe3MotionSpeed = strafe3Distance - strafe3Distance / 159;
+                strafe3Flag = !strafe3Flag;
+            }
+
+//            strafe3MotionSpeed = Math.max(strafe3MotionSpeed, getBaseMotionSpeed());
+            MovementUtil.strafe((float) strafe3MotionSpeed);
+            if(!MovementUtil.isMoving()) {
+                mc.player.motionX = 0;
+                mc.player.motionY = 0;
+            }
+        } else if(speedMode.checkValString("Strafe4")) {
+            if(MovementUtil.isMoving()) {
+                double dX = mc.player.posX - mc.player.prevPosX;
+                double dZ = mc.player.posZ - mc.player.prevPosZ;
+                strafe4PrevMotion = Math.sqrt(dX * dX + dZ * dZ);
+            }
+
+            if (strafe4Stage != 1 || (mc.player.moveForward == 0.0f || mc.player.moveStrafing == 0.0f)) {
+                if (strafe4Stage == 2 && (mc.player.moveForward != 0.0f || mc.player.moveStrafing != 0.0f)) {
+                    double jumpSpeed = 0.0D;
+
+                    if (mc.player.isPotionActive(MobEffects.JUMP_BOOST)) jumpSpeed += (mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F;
+
+                    mc.player.motionY = (0.3999D) + jumpSpeed;
+                    strafe4CurrentSpeed *= strafe4Flag ? 1.6835D : 1.395D;
+                } else if (strafe4Stage == 3) {
+                    double adjustedMotion = 0.66D * (strafe4PrevMotion - MovementUtil.getBaseMoveSpeed());
+                    strafe4CurrentSpeed = strafe4PrevMotion - adjustedMotion;
+                    strafe4Flag = !strafe4Flag;
+                } else {
+                    List<AxisAlignedBB> collisionBoxes = mc.world.getCollisionBoxes(mc.player, mc.player.getEntityBoundingBox().offset(0.0, mc.player.motionY, 0.0));
+                    if ((collisionBoxes.size() > 0 || mc.player.collidedVertically) && strafe4Stage > 0) strafe4Stage = mc.player.moveForward == 0.0f && mc.player.moveStrafing == 0.0f ? 0 : 1;
+                    strafe4CurrentSpeed = strafe4PrevMotion - strafe4PrevMotion / 159.0;
+                }
+            } else strafe4CurrentSpeed = 1.35D * MovementUtil.getBaseMoveSpeed() - 0.01D;
+
+            strafe4CurrentSpeed = Math.max(strafe4CurrentSpeed, MovementUtil.getBaseMoveSpeed());
+
+            if (maxVelocity > 0 && boostFactor.getValBoolean() && !velocityTimer.passedMillis(75) && !mc.player.collidedHorizontally) {
+                strafe4CurrentSpeed = Math.max(strafe4CurrentSpeed, maxVelocity);
+            } else if (strict.getValBoolean()) strafe4CurrentSpeed = Math.min(strafe4CurrentSpeed, 0.433D);
+
+            if (!MovementUtil.isMoving()) {
+                mc.player.motionX = 0;
+                mc.player.motionY = 0;
+            } else forward(strafe4CurrentSpeed);
+            if (MovementUtil.isMoving()) return;
+
+            strafe4Stage++;
         }
+    }
+
+    private void forward(double speed) {
+        double[] motions = MovementUtil.forward(speed);
+        mc.player.motionX = motions[0];
+        mc.player.motionZ = motions[1];
     }
 
     public boolean isBoxColliding() {
@@ -324,7 +345,7 @@ public class Speed extends Module {
         if(mc.player.onGround) {
             EntityUtil.setTimer(1.15f);
             mc.player.jump();
-            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + this.yPortSpeed);
+            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + yPortSpeed.getValInt());
         } else {
             mc.player.motionY = -1;
             EntityUtil.resetTimer();
@@ -346,26 +367,6 @@ public class Speed extends Module {
         }
 
         return ret;
-    }
-
-    public static double[] directionSpeed(double speed) {
-        float forward = mc.player.movementInput.moveForward;
-        float side = mc.player.movementInput.moveStrafe;
-        float yaw = mc.player.prevRotationYaw + (mc.player.rotationYaw - mc.player.prevRotationYaw) * mc.getRenderPartialTicks();
-
-        if (forward != 0.0f) {
-            if (side > 0.0f) yaw += ((forward > 0.0f) ? -45 : 45);
-            else if (side < 0.0f) yaw += ((forward > 0.0f) ? 45 : -45);
-            side = 0.0f;
-            if (forward > 0.0f) forward = 1.0f;
-            else if (forward < 0.0f) forward = -1.0f;
-        }
-
-        final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
-        final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
-        final double posX = forward * speed * cos + side * speed * sin;
-        final double posZ = forward * speed * sin - side * speed * cos;
-        return new double[]{posX, posZ};
     }
 
     private void doBhop() {
@@ -394,9 +395,6 @@ public class Speed extends Module {
                 EntityUtil.resetTimer();
                 if(useTimer.getValBoolean()) Managers.instance.timerManager.updateTimer(this, 2, 1.3f);
                 mc.player.jump();
-//                double[] dirSpeed = directionSpeed((getBaseMotionSpeed() * boostSpeed.getValDouble()) + (boostFactor.getValBoolean() ? 0.3 : 0));
-//                mc.player.motionX = dirSpeed[0];
-//                mc.player.motionZ = dirSpeed[1];
             } else {
                 if(jumpMovementFactor.getValBoolean()) mc.player.jumpMovementFactor = jumpMovementFactorSpeed.getValFloat();
                 if(y == 1) y = mc.player.getPositionVector().y;
@@ -452,20 +450,18 @@ public class Speed extends Module {
     public enum Motion {X,Y,mX,mY}
 
     @EventHandler
-    private final Listener<PacketEvent.Receive> listener1 = new Listener<>(event -> {
+    private final Listener<PacketEvent.Receive> receive = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketPlayerPosLook) {
-            if(mc.player != null) dist = 0;
-            speed = 0;
-            stage = 4;
-            EntityUtil.setTimer(1);
-
-            strafe3Stage = 4;
-            strafe3MotionSpeed = 0;
-            strafe3Distance = 0;
-            strafe3Flag = false;
+            if(flagDetect.getValBoolean()) {
+                reset();
+            }
+        } else if(event.getPacket() instanceof SPacketExplosion) {
+            SPacketExplosion explosion = (SPacketExplosion) event.getPacket();
+            maxVelocity = Math.sqrt(explosion.getMotionX() * explosion.getMotionX() + explosion.getMotionZ() * explosion.getMotionZ());
+            velocityTimer.reset();
         }
-    });
+    }, 1000);
 
-    @EventHandler private final Listener<EventPlayerUpdate> listener = new Listener<>(event -> {if(speedMode.getValString().equalsIgnoreCase("Sti")) mc.timer.tickLength = 50 / getSpeed();});
+    @EventHandler private final Listener<EventPlayerUpdate> playerUpdate = new Listener<>(event -> {if(speedMode.getValString().equalsIgnoreCase("Sti")) mc.timer.tickLength = 50 / getSpeed();});
     private float getSpeed() {return Math.max((float) stiSpeed.getValDouble(), 0.1f);}
 }

@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.render
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.BoxRendererPattern
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.world.CrystalUtils
@@ -20,17 +21,21 @@ class BlockESP : Module(
 
     private val mtPattern = MultiThreaddableModulePattern(this)
 
-    private val web : Setting = register(Setting("Web", this, false))
-    private val webRenderer = BoxRendererPattern(this, Supplier { web.valBoolean }, "Web", true).init()
+    private val webGroup = register(SettingGroup(Setting("Web", this)))
+    private val web = register(webGroup.add(Setting("Web", this, false)))
+    private val webRenderer = BoxRendererPattern(this).group(webGroup).visible(Supplier { web.valBoolean }).prefix("Web").preInit().init()
 
-    private val burrow : Setting = register(Setting("Burrow", this, false))
-    private val burrowRenderer = BoxRendererPattern(this, Supplier { burrow.valBoolean }, "Burrow", true).init()
+    private val burrowGroup = register(SettingGroup(Setting("Burrow", this)))
+    private val burrow = register(burrowGroup.add(Setting("Burrow", this, false)))
+    private val burrowRenderer = BoxRendererPattern(this).group(burrowGroup).visible(Supplier { burrow.valBoolean }).prefix("Burrow").preInit().init()
 
-    private val portal : Setting = register(Setting("Portal", this, false))
-    private val portalRenderer = BoxRendererPattern(this, Supplier { portal.valBoolean }, "Portal", true).init()
+    private val portalGroup = register(SettingGroup(Setting("Portal", this)))
+    private val portal = register(portalGroup.add(Setting("Portal", this, false)))
+    private val portalRenderer = BoxRendererPattern(this).group(portalGroup).visible(Supplier { portal.valBoolean }).prefix("Portal").preInit().init()
 
-    private val endPortal : Setting = register(Setting("End Portal", this, false))
-    private val endPortalRenderer = BoxRendererPattern(this, Supplier { endPortal.valBoolean }, "End Portal", true).init()
+    private val endPortalGroup = register(SettingGroup(Setting("End Portal", this)))
+    private val endPortal = register(endPortalGroup.add(Setting("End Portal", this, false)))
+    private val endPortalRenderer = BoxRendererPattern(this).group(endPortalGroup).visible(Supplier { endPortal.valBoolean }).prefix("End Portal").preInit().init()
 
     private var list = java.util.ArrayList<BlockPos>()
 

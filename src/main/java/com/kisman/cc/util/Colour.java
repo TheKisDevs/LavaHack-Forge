@@ -196,6 +196,14 @@ public class Colour {
     public static Colour fromHSB(float[] hsb, int alpha) {
         return new Colour(ColorUtils.injectAlpha(Color.getHSBColor(hsb[0], hsb[1], hsb[2]), alpha));
     }
+    
+    public static Colour fromHSB(float hue, float sat, float bright) {
+        return fromHSB(new float[] {hue, sat, bright});
+    }
+    
+    public static Colour fromHSB(float[] hsb) {
+        return new Colour(Color.getHSBColor(hsb[0], hsb[1], hsb[2]));
+    }
 
     public float getHue() {return RGBtoHSB()[0];}
     public float getSaturation() {return RGBtoHSB()[1];}
@@ -262,7 +270,7 @@ public class Colour {
     }
 
     public void glColor() {
-        GlStateManager.color(r1, g1, b1, a1);
+        GlStateManager.color(r1, g1, b1, getA());
     }
 
     public Colour withAlpha(int alpha) {

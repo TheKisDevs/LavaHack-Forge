@@ -1,22 +1,25 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemTool;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
@@ -24,49 +27,44 @@ import java.util.*;
 public class AutoFirework extends Module {
     public static AutoFirework instance;
     
-    private Setting targetRange = new Setting("Target Range", this, 10, 1, 20, true);
-
-    private Setting delayLine = new Setting("DLine", this, "Delays");
-
-    private Setting delay = new Setting("Delay", this, 1, 0, 20, true);
-    private Setting trapDelay = new Setting("PlaceDelay", this, 1000, 1, 10000, true);
+    private final Setting targetRange = register(new Setting("Target Range", this, 10, 1, 20, true));
 
 
-    private Setting placeLine = new Setting("PlaceLine", this, "Place");
-
-    private Setting placeMode = new Setting("PlaceMode", this, "Normal", new ArrayList<>(Arrays.asList("Normal", "Packet")));
-    private Setting rotate = new Setting("Rotate", this, true);
-    private Setting blocksPerTick = new Setting("BlocksPerTick", this, 8, 1, 30, true);
-    private Setting antiScaffold = new Setting("AntiScaffold", this, false);
-    private Setting antiStep = new Setting("AntiStep", this, false);
-    private Setting surroundPlacing = new Setting("SurroundPlacing", this, true);
-    private Setting range = new Setting("Range", this, 4, 1, 5, false);
-    private Setting raytrace = new Setting("RayTrace", this, false);
+//    private final Setting delay = register(new Setting("Delay", this, 1, 0, 20, true));
+    private final Setting trapDelay = register(new Setting("PlaceDelay", this, 1000, 1, 10000, true));
 
 
-    private Setting switchLine = new Setting("SwitchLine", this, "Switch");
 
-    private Setting switchMode = new Setting("SwitchMode", this, InventoryUtil.Switch.NORMAL);
-    private Setting switchObbyReturn = new Setting("SwitchReturnObby", this, true);
-    private Setting switchFireReturn = new Setting("SwitchReturnFirework", this, true);
-
-
-    private Setting pauseLine = new Setting("PauseLine", this, "Pause");
-
-    private Setting minHealthPause = new Setting("MinHealthPause", this, false);
-    private Setting requiredHealth = new Setting("RequiredHealth", this, 11, 0, 36, true);
-    private Setting pauseWhileEating = new Setting("PauseWhileEating", this, false);
-    private Setting pauseIfHittingBlock = new Setting("PauseIfHittingBlock", this, false);
+//    private final Setting placeMode = register(new Setting("PlaceMode", this, "Normal", new ArrayList<>(Arrays.asList("Normal", "Packet"))));
+    private final Setting rotate = register(new Setting("Rotate", this, true));
+    private final Setting blocksPerTick = register(new Setting("BlocksPerTick", this, 8, 1, 30, true));
+    private final Setting antiScaffold = register(new Setting("AntiScaffold", this, false));
+    private final Setting antiStep = register(new Setting("AntiStep", this, false));
+    private final Setting surroundPlacing = register(new Setting("SurroundPlacing", this, true));
+    private final Setting range = register(new Setting("Range", this, 4, 1, 5, false));
+    private final Setting raytrace = register(new Setting("RayTrace", this, false));
 
 
-    private Setting handLine = new Setting("HandLine", this, "Hand");
-    private Setting fireHand = new Setting("FireworkHand", this, "Default", new ArrayList<>(Arrays.asList("Default", "MainHand", "OffHand")));
 
-    private TimerUtils trapTimer = new TimerUtils();
-    private TimerUtils delayTimer = new TimerUtils();
+    private final Setting switchMode = register(new Setting("SwitchMode", this, InventoryUtil.Switch.NORMAL));
+//    private final Setting switchObbyReturn = register(new Setting("SwitchReturnObby", this, true));
+    private final Setting switchFireReturn = register(new Setting("SwitchReturnFirework", this, true));
 
-    private Map<BlockPos, Integer> retries = new HashMap<>();
-    private TimerUtils retryTimer = new TimerUtils();
+
+
+    private final Setting minHealthPause = register(new Setting("MinHealthPause", this, false));
+    private final Setting requiredHealth = register(new Setting("RequiredHealth", this, 11, 0, 36, true));
+    private final Setting pauseWhileEating = register(new Setting("PauseWhileEating", this, false));
+    private final Setting pauseIfHittingBlock = register(new Setting("PauseIfHittingBlock", this, false));
+
+
+    private final Setting fireHand = register(new Setting("FireworkHand", this, "Default", new ArrayList<>(Arrays.asList("Default", "MainHand", "OffHand"))));
+
+    private final TimerUtils trapTimer = new TimerUtils();
+    private final TimerUtils delayTimer = new TimerUtils();
+
+    private final Map<BlockPos, Integer> retries = new HashMap<>();
+    private final TimerUtils retryTimer = new TimerUtils();
     private boolean didPlace = false;
     private boolean isSneaking;
     private int lastHotbarSlot;
@@ -80,48 +78,15 @@ public class AutoFirework extends Module {
         super("AutoFirework", "", Category.COMBAT);
 
         instance = this;
-
-        setmgr.rSetting(targetRange);
-
-        setmgr.rSetting(delayLine);
-        setmgr.rSetting(delay);
-        setmgr.rSetting(trapDelay);
-
-        setmgr.rSetting(placeLine);
-        setmgr.rSetting(placeMode);
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(blocksPerTick);
-        setmgr.rSetting(antiScaffold);
-        setmgr.rSetting(antiStep);
-        setmgr.rSetting(surroundPlacing);
-        setmgr.rSetting(range);
-        setmgr.rSetting(raytrace);
-
-        setmgr.rSetting(switchLine);
-        setmgr.rSetting(switchMode);
-        setmgr.rSetting(switchObbyReturn);
-        setmgr.rSetting(switchFireReturn);
-
-        setmgr.rSetting(pauseLine);
-        setmgr.rSetting(minHealthPause);
-        setmgr.rSetting(requiredHealth);
-        setmgr.rSetting(pauseWhileEating);
-        setmgr.rSetting(pauseIfHittingBlock);
-
-        setmgr.rSetting(handLine);
-        setmgr.rSetting(fireHand);
     }
 
     public void onEnable() {
-//        if(!aimBot.isToggled()) aimBot.setToggled(true);
-//        aimBot.rotationSpoof = null;
         startPos = EntityUtil.getRoundedBlockPos(mc.player);
         lastHotbarSlot = mc.player.inventory.currentItem;
         retries.clear();
     }
 
     public void onDisable() {
-//        aimBot.rotationSpoof = null;
         isSneaking = EntityUtil.stopSneaking(isSneaking);
     }
 
@@ -146,18 +111,6 @@ public class AutoFirework extends Module {
                     //switch
                     final int oldSlot = mc.player.inventory.getBestHotbarSlot();
 
-                    //rotate
-                    if (rotate.getValBoolean()) {
-                        final double[] pos =  EntityUtil.calculateLookAt(target.posX + 0.5, target.posY - 0.5, target.posZ + 0.5, mc.player);
-
-//                        aimBot.rotationSpoof = new RotationSpoof((float) pos[0], (float) pos[1]);
-
-                        Random rand = new Random(2);
-
-//                        aimBot.rotationSpoof.yaw += (rand.nextFloat() / 100);
-//                        aimBot.rotationSpoof.pitch += (rand.nextFloat() / 100);
-                    }
-
                     //place
                     EnumFacing facing = null;
 
@@ -167,7 +120,7 @@ public class AutoFirework extends Module {
                         else facing = result.sideHit;
                     }
 
-                    mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing, fireHand.getValString().equalsIgnoreCase("Default") ? mc.player.getHeldItemOffhand().getItem() == Items.FIREWORKS ? EnumHand.OFF_HAND : EnumHand.OFF_HAND : fireHand.getValString().equalsIgnoreCase("MainHand") ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, 0, 0, 0));
+                    mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing, fireHand.getValString().equalsIgnoreCase("Default") ? EnumHand.OFF_HAND : fireHand.getValString().equalsIgnoreCase("MainHand") ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, 0, 0, 0));
 
                     //switch return
                     if(switchFireReturn.getValBoolean()) InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
@@ -236,7 +189,7 @@ public class AutoFirework extends Module {
             retryTimer.reset();
         }
         if (obbySlot3 == -1) {
-            ChatUtils.error(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
+            ChatUtility.error().printClientModuleMessage(ChatFormatting.RED + "No Obsidian in hotbar, AutoTrap disabling...");
             setToggled(false);
             return true;
         }

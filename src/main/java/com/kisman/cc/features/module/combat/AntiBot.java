@@ -2,26 +2,30 @@ package com.kisman.cc.features.module.combat;
 
 import com.google.common.collect.Ordering;
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.mixin.util.GuiPlayerTabOverlayUtil;
-import com.kisman.cc.util.chat.other.ChatUtils;
 import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.math.RayTraceResult;
 import org.lwjgl.input.Mouse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AntiBot extends Module {
-    public Setting mode = new Setting("Mode", this, "WellMore", Arrays.asList("Matrix 6.3", "Classic", "Vanish", "Zamorozka"));
+    public Setting mode = register(new Setting("Mode", this, "WellMore", Arrays.asList("Matrix 6.3", "Classic", "Vanish", "Zamorozka")));
 
-    private List<EntityPlayer> bots = new ArrayList<>();
+    private final List<EntityPlayer> bots = new ArrayList<>();
     public static AntiBot instance;
     private boolean clicked = false;
 
@@ -29,8 +33,6 @@ public class AntiBot extends Module {
 		super("AntiBot", "Prevents you from targetting bots", Category.COMBAT);
 
         instance = this;
-
-        setmgr.rSetting(mode);
 	}
 
 	public void update() {
@@ -42,9 +44,9 @@ public class AntiBot extends Module {
                 RayTraceResult result = mc.objectMouseOver;
                 if(result == null || result.typeOfHit != RayTraceResult.Type.ENTITY) return;
                 Entity entity = mc.objectMouseOver.entityHit;
-                if(entity == null || !(entity instanceof EntityPlayer)) return;
+                if(!(entity instanceof EntityPlayer)) return;
                 Kisman.target_by_click = (EntityPlayer) entity;
-                ChatUtils.complete("[AntiBot] Current target is " + entity.getName());
+                ChatUtility.complete().printClientModuleMessage("Current target is " + entity.getName());
             } else clicked = false;
         }
 
@@ -61,14 +63,14 @@ public class AntiBot extends Module {
                         if (!contains || !speedAnalysis || entity.isDead) continue;
                     } else if(!entity.isInvisible()) continue;
                     entity.isDead = true;
-                    ChatUtils.complete(entity.getName() + " was been deleted!");
+                    ChatUtility.complete().printClientModuleMessage(entity.getName() + " was been deleted!");
                 }
             }
         }
 
         if(mode.getValString().equalsIgnoreCase("Classic")) for(EntityPlayer bot : bots) {
             bot.isDead = true;
-            ChatUtils.complete(bot.getName() + " was been deleted!");
+            ChatUtility.complete().printClientModuleMessage(bot.getName() + " was been deleted!");
         }
 	}
 

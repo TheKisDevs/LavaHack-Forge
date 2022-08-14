@@ -5,14 +5,12 @@ import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
-import com.kisman.cc.gui.halq.util.LayerMap;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
-
-import java.awt.*;
 
 public class ModeButton implements Component {
     private final Setting setting;
@@ -22,7 +20,7 @@ public class ModeButton implements Component {
     private int width = HalqGui.width;
     private int layer;
 
-    public ModeButton(Setting setting, int x, int y, int offset, int count) {
+    public ModeButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
@@ -30,6 +28,8 @@ public class ModeButton implements Component {
         this.values = setting.getStringValues();
         this.index = setting.getSelectedIndex();
         this.count = count;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ModeButton implements Component {
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());
 
-        HalqGui.drawString(setting.getName() + ": " + values[index], x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle() + ": " + values[index], x, y + offset, width, HalqGui.height);
 
         if(open) {
             int offsetY = offset + HalqGui.height;

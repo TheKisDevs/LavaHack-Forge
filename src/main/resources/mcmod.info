@@ -1,16 +1,16 @@
 [
   {
-  "modid": "kisman",
-  "name": "kisman.cc+",
-  "description": "Minecraft UTILITY mod aimed on crystal pvp/anarchy servers",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://github.com/TheKisDevs/LavaHack",
-  "updateUrl": "",
-  "authorList": ["_kisman_", "PunCakeCat", "Skarlord99", "Cubic"],
-  "credits": ["https://github.com/TheKisDevs/LavaHack"],
-  "logoFile": "assets/kismancc/banner.png",
-  "screenshots": [],
-  "dependencies": []
+    "modid": "loader",
+    "name": "Loader",
+    "description": "LavaHack Loader",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/TheKisDevs/LavaHack",
+    "updateUrl": "",
+    "authorList": ["_kisman_", "maywr"],
+    "credits": "meraki-loader",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
   }
 ]

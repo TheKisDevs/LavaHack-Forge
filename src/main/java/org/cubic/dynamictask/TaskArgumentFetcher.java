@@ -16,8 +16,8 @@ class TaskArgumentFetcher implements ArgumentFetcher {
         Class<?> type = types[i];
         Object o = args[i];
         Class<?> oClass = o.getClass();
-        if(type != oClass)
-            throw new IllegalArgumentException("Argument types don't match");
+        if(!type.isAssignableFrom(oClass))
+            throw new IllegalArgumentException("Argument types don't match: " + type.getName() + " " + oClass.getName());
         return (T) type.cast(o);
     }
 }

@@ -2,18 +2,28 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.combat.holefillerrewrite.HoleFillerRewriteRenderer;
+import com.kisman.cc.features.module.combat.holefillerrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.Timer;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.MovableRendererPattern;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 
@@ -23,91 +33,114 @@ import java.util.*;
  */
 public class HoleFillerRewrite extends Module {
     public static HoleFillerRewrite instance;
+    
+    private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
+    private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
 
-    private final Setting obsidianHoles = register(new Setting("ObsidianHoles", this, true));
-    private final Setting bedrockHoles = register(new Setting("BedrockHoles", this, true));
-    private final Setting singleHoles = register(new Setting("SingleHoles", this, true));
-    private final Setting doubleHoles = register(new Setting("DoubleHoles", this, true));
-    private final Setting customHoles = register(new Setting("CustomHoles", this, true));
-    private final Setting blocks = register(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
-    private final Setting swap = register(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent")));
-    private final Setting rotate = register(new Setting("Rotate", this, false));
-    private final Setting packet = register(new Setting("Packet", this, false));
-    private final Setting place = register(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay")));
-    private final Setting delay = register(new Setting("DelayMS", this, 50, 0, 500, true).setVisible(() -> place.getValString().equals("Delay")));
-    private final Setting placeMode = register(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target")));
-    private final Setting enemyRange = register(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target")));
-    private final Setting aroundEnemyRange = register(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target")));
-    private final Setting holeRange = register(new Setting("HoleRange", this, 5, 1, 10, false));
-    private final Setting limit = register(new Setting("Limit", this, 0, 0, 50, true));
+    private final SettingGroup holesGroup = register(logic.add(new SettingGroup(new Setting("Holes", this))));
+    private final Setting obsidianHoles = register(holesGroup.add(new Setting("ObsidianHoles", this, true).setTitle("Obby")));
+    private final Setting bedrockHoles = register(holesGroup.add(new Setting("BedrockHoles", this, true).setTitle("Bebrock")));
+    private final Setting singleHoles = register(holesGroup.add(new Setting("SingleHoles", this, true).setTitle("1x1")));
+    private final Setting doubleHoles = register(holesGroup.add(new Setting("DoubleHoles", this, true).setTitle("2x1")));
+    private final Setting customHoles = register(holesGroup.add(new Setting("CustomHoles", this, true).setTitle("Custom")));
+    private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
+    private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
+    private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
+    private final Setting packet = register(logic.add(new Setting("Packet", this, false)));
+    private final Setting place = register(logic.add(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay"))));
+    private final Setting delay = register(logic.add(new Setting("DelayMS", this, 50, 0, 500, true).setVisible(() -> place.getValString().equals("Delay"))));
+    private final Setting placeMode = register(logic.add(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target"))));
+    private final Setting enemyRange = register(logic.add(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target"))));
+    private final Setting aroundEnemyRange = register(logic.add(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target"))));
+    private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
+    private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
+
+    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
+    private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
+
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
+
+    private final HoleFillerRewriteRenderer renderer = new HoleFillerRewriteRenderer();
+
+    private Entity entity = null;
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
+        super.setDisplayInfo(() -> entity == null ? "" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
 
         instance = this;
     }
 
     private List<BlockPos> holes = new ArrayList<>();
 
-    private final Timer placeTimer = new Timer();
+    private final TimerUtils placeTimer = new TimerUtils();
 
     private final Set<BlockPos> placed = new HashSet<>(512);
 
     private int lim = 0;
 
+    private final PlaceInfo placeInfo = new PlaceInfo(null, null);
+
     @Override
-    public void update(){
-        if(mc.world == null || mc.player == null)
-            return;
+    public void onEnable() {
+        super.onEnable();
+        targets.reset();
+        threads.reset();
+        renderer.reset();
+    }
 
-        Entity entity = placeMode.getValString().equals("All") ? mc.player : EntityUtil.getTarget(enemyRange.getValFloat());
+    @Override
+    public void update() {
+        if(mc.world == null || mc.player == null) return;
 
-        if(entity == null) {
-            super.setDisplayInfo("");
-            return;
-        }
+        entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
 
-        super.setDisplayInfo("[" + (entity != mc.player ? entity.getName() : "Self") + "]");
+        if(entity == null) return;
+
+        threads.update(() -> {
+            mc.addScheduledTask(() -> holes = getHoleBlocks(entity));
+        });
 
         placeHoleBlocks(entity);
     }
 
-    private void placeHoleBlocks(Entity entity){
-        int slot = getBlockSlot();
-        if(slot == -1)
-            return;
-        if(place.getValString().equals("Instant")){
-            holes.clear();
-            holes = getHoleBlocks(entity);
-            holes.forEach(blockPos -> place(blockPos, slot));
-            placeTimer.reset();
-            return;
-        }
-        if(place.getValString().equals("Tick")){
-            placeHoleBlocksChained(entity, slot);
-            placeTimer.reset();
-            return;
-        }
-        if(place.getValString().equals("Delay") && placeTimer.passedMs(delay.getValInt())){
-            placeHoleBlocksChained(entity, slot);
-            placeTimer.reset();
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        if(renderer_.isActive()) {
+            renderer.onRenderWorld(
+                    movable.movingLength.getValFloat(),
+                    movable.fadeLength.getValFloat(),
+                    renderer_,
+                    placeInfo,
+                    !placeMode.getValString().equals("All")
+            );
         }
     }
 
+    private void placeHoleBlocks(Entity entity){
+        int slot = getBlockSlot();
+        if(slot == -1) return;
+        if(place.getValString().equals("Instant")) holes.forEach(blockPos -> place(blockPos, slot));
+        else if(place.getValString().equals("Tick")) placeHoleBlocksChained(entity, slot);
+        else if(place.getValString().equals("Delay") && placeTimer.passedMillis(delay.getValInt())) placeHoleBlocksChained(entity, slot);
+
+        placeTimer.reset();
+    }
+
     private void placeHoleBlocksChained(Entity entity, int slot){
-        holes = getHoleBlocks(entity);
         boolean clear = true;
         for(BlockPos pos : holes){
-            if(placed.contains(pos))
-                continue;
+            if(placed.contains(pos)) continue;
             if(!mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isEmpty()) continue;
+            placeInfo.setTarget((EntityLivingBase) entity);
+            placeInfo.setBlockPos(pos);
             place(pos, slot);
             placed.add(pos);
             clear = false;
             break;
         }
-        if(clear)
-            placed.clear();
+        if(clear) placed.clear();
     }
 
     private List<BlockPos> getHoleBlocks(Entity entity){
@@ -115,12 +148,9 @@ public class HoleFillerRewrite extends Module {
         float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
         Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
         lim = 0;
-        if(singleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
-        if(doubleHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
-        if(customHoles.getValBoolean())
-            holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
+        if(singleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
+        if(doubleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
+        if(customHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
         return holes;
     }
 

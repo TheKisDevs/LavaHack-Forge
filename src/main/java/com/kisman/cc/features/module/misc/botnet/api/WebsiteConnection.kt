@@ -1,16 +1,16 @@
 package com.kisman.cc.features.module.misc.botnet.api
 
-import com.kisman.cc.util.chat.other.ChatUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 import org.jsoup.Jsoup
 
 class WebsiteConnection(private var input_url: String) {
     fun checkConnection(): Boolean {
         return try {
             var test = getInput()
-            ChatUtils.message("Joined the botnet successfully!")
+            ChatUtility.message().printClientModuleMessage("Joined the botnet successfully!")
             true
         } catch (e: Exception) {
-            ChatUtils.message("Error joining botnet!")
+            ChatUtility.message().printClientModuleMessage("Error joining botnet!")
             false
         }
     }

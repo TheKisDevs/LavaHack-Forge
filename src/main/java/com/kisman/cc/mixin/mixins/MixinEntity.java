@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("unused")
 @Mixin(value = Entity.class, priority = 10000)
 public class MixinEntity {
     @Shadow public double posX;
@@ -36,8 +37,22 @@ public class MixinEntity {
 
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void onTurn(float yaw, float pitch, CallbackInfo ci) {
-        TurnEvent event = new TurnEvent(yaw, pitch);
+        TurnEvent event = new TurnEvent(
+                yaw,
+                pitch,
+                rotationYaw,
+                rotationPitch,
+                prevRotationYaw,
+                prevRotationPitch
+        );
         Kisman.EVENT_BUS.post(event);
-        if (event.isCancelled()) ci.cancel();
+        if (event.isCancelled()) {
+            ci.cancel();
+
+            rotationYaw = event.rotationYaw;
+            rotationPitch = event.rotationPitch;
+            prevRotationYaw = event.prevYaw;
+            prevRotationPitch = event.prevPitch;
+        }
     }
 }

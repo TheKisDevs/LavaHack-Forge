@@ -1,9 +1,13 @@
 package com.kisman.cc.util.world;
 
+import com.kisman.cc.settings.util.ScalingPattern;
+import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -14,6 +18,42 @@ import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
 
 public class BlockUtil2 {
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static double getBreakingProgress(BlockPos pos, ItemStack stack, long start) {
+        return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
+    }
+
+    public static AxisAlignedBB getProgressBB(BlockPos pos, ItemStack stack, long start) {
+        return getProgressBB(
+                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
+                getBreakingProgress(pos, stack, start)
+        );
+    }
+
+    public static AxisAlignedBB getMutableProgressBB(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier) {
+        return getProgressBB(
+                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
+                scalier.mutateProgress(getBreakingProgress(pos, stack, start))
+        );
+    }
+
+    public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier, boolean inverse) {
+        return getProgressBB(
+                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
+                inverse ? 1.0 - scalier.mutateProgress(getBreakingProgress(pos, stack, start)) : scalier.mutateProgress(getBreakingProgress(pos, stack, start))
+        );
+    }
+
+    public static AxisAlignedBB getProgressBB(AxisAlignedBB fullBB, double progress) {
+        return new AxisAlignedBB(
+            (fullBB.minX + (fullBB.getCenter().x - fullBB.minX) * progress),
+            (fullBB.minY + (fullBB.getCenter().y - fullBB.minY) * progress),
+            (fullBB.minZ + (fullBB.getCenter().z - fullBB.minZ) * progress),
+            (fullBB.maxX + (fullBB.getCenter().x - fullBB.maxX) * progress),
+            (fullBB.maxY + (fullBB.getCenter().y - fullBB.maxY) * progress),
+            (fullBB.maxZ + (fullBB.getCenter().z - fullBB.maxZ) * progress)
+        );
+    }
 
     public static float getHardness(BlockPos pos) {
         return mc.world.getBlockState(pos).getPlayerRelativeBlockHardness(mc.player, mc.world, pos);

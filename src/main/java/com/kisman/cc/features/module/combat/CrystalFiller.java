@@ -26,15 +26,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class CrystalFiller extends Module {
-    private final Setting range = new Setting("Range", this, 4.8, 1, 6, false);
-    private final Setting placeMode = new Setting("PlaceMode", this, PlaceMode.Always);
-    private final Setting delay = new Setting("Delay", this, 2, 0, 20, true);
-    private final Setting targetHoleRange = new Setting("TargetHoleRange", this, 4.8, 1, 6, false);
-    private final Setting switchMode = new Setting("SwitchMode", this, SwitchMode.Silent);
-    private final Setting crystalDMGCheck = new Setting("CrystalDMGCheck", this, false);
-    private final Setting minDMG = new Setting("MinDMG", this, 5, 0, 36, true);
-    private final Setting maxSelfDMG = new Setting("MaxSelfDMG", this, 15, 0, 36, true);
-    private final Setting render = new Setting("Render", this, true);
+    private final Setting range = register(new Setting("Range", this, 4.8, 1, 6, false));
+    private final Setting placeMode = register(new Setting("PlaceMode", this, PlaceMode.Always));
+    private final Setting delay = register(new Setting("Delay", this, 2, 0, 20, true));
+    private final Setting targetHoleRange = register(new Setting("TargetHoleRange", this, 4.8, 1, 6, false));
+    private final Setting switchMode = register(new Setting("SwitchMode", this, SwitchMode.Silent));
+    private final Setting crystalDMGCheck = register(new Setting("CrystalDMGCheck", this, false));
+    private final Setting minDMG = register(new Setting("MinDMG", this, 5, 0, 36, true));
+    private final Setting maxSelfDMG = register(new Setting("MaxSelfDMG", this, 15, 0, 36, true));
+    private final Setting render = register(new Setting("Render", this, true));
 
     public static CrystalFiller instance;
 
@@ -51,30 +51,12 @@ public class CrystalFiller extends Module {
         super("CrystalFiller", "HoleFiller but crystal", Category.COMBAT);
 
         instance = this;
-
-        setmgr.rSetting(range);
-        setmgr.rSetting(placeMode);
-        setmgr.rSetting(delay);
-        setmgr.rSetting(targetHoleRange);
-        setmgr.rSetting(switchMode);
-        setmgr.rSetting(crystalDMGCheck);
-        setmgr.rSetting(minDMG);
-        setmgr.rSetting(maxSelfDMG);
-        setmgr.rSetting(render);
     }
 
     public boolean isBeta() {return true;}
 
     public void onEnable() {
-        target = null;
-        targetHole = null;
-        delayTicks = 0;
-        holes.clear();
-        blackHoleList.clear();
-        crystals.clear();
-    }
-
-    public void onDisable() {
+        super.onEnable();
         target = null;
         targetHole = null;
         delayTicks = 0;

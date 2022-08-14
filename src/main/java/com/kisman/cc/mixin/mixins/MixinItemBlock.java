@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 
+@SuppressWarnings("SameParameterValue")
 @Mixin(ItemBlock.class)
 public class MixinItemBlock {
     @Shadow public boolean placeBlockAt(ItemStack stack,EntityPlayer player,World world,BlockPos pos,EnumFacing facing,float hitX,float hitY,float hitZ,IBlockState state) {return false;}

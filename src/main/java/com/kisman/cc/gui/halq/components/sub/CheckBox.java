@@ -2,19 +2,19 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
-import com.kisman.cc.gui.halq.util.LayerMap;
+import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -24,18 +24,18 @@ public class CheckBox implements Openable {
     private int width = HalqGui.width;
     private int layer;
 
-    private BindButton bind;
+    private final BindButton bind;
     private boolean open;
 
-    public CheckBox(Setting setting, int x, int y, int offset, int count) {
+    public CheckBox(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
         this.offset = offset;
         this.count = count;
-        this.bind = new BindButton(setting, x, y, offset + HalqGui.height, count);
-        this.bind.setLayer(2);
-        this.bind.setWidth(80);
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
+        this.bind = new BindButton(setting, x, y, offset + HalqGui.height, count, layer + 1);
     }
 
     @Override
@@ -58,7 +58,20 @@ public class CheckBox implements Openable {
             }
         } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(setting.getName(), x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+
+        if(Config.instance.guiShowBinds.getValBoolean() && setting.Companion.valid(setting)) {
+            HalqGui.drawSuffix(
+                    setting.Companion.getName(setting),
+                    setting.getTitle(),
+                    x,
+                    y + offset,
+                    width,
+                    HalqGui.height,
+                    count,
+                    3
+            );
+        }
 
         if(open) bind.drawScreen(mouseX, mouseY);
     }
@@ -77,7 +90,7 @@ public class CheckBox implements Openable {
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
-        if(open) bind.updateComponent(x + LayerMap.getLayer(bind.getLayer()).modifier / 2, y);
+        if(open) bind.updateComponent((x - LayerControllerKt.getXOffset(layer)) + LayerControllerKt.getXOffset(bind.getLayer()), y);
     }
 
     @Override

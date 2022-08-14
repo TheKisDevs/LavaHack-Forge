@@ -6,17 +6,16 @@ import com.kisman.cc.settings.Setting;
 import java.util.Arrays;
 
 public class AirJump extends Module {
-    private Setting mode = new Setting("Mode", this, "Vanilla", Arrays.asList("Vanilla", "NCP", "Matrix"));
+    private final Setting mode = register(new Setting("Mode", this, "Vanilla", Arrays.asList("Vanilla", "NCP", "Matrix")));
 
     public AirJump() {
-        super("AirJump", "Category", Category.MOVEMENT);
-
-        setmgr.rSetting(mode);
+        super("AirJump", "Allows to jump in air", Category.MOVEMENT);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 
     public void update() {
         if(mc.player == null && mc.world == null) return;
-        if (mode.getValString().equalsIgnoreCase("Vanilla")) if (mc.gameSettings.keyBindJump.isPressed()) mc.player.motionY = 0.7;
+        if (mode.getValString().equalsIgnoreCase("Vanilla") && mc.gameSettings.keyBindJump.isPressed()) mc.player.motionY = 0.7;
         else if (mode.getValString().equalsIgnoreCase("NCP")) {
             mc.player.onGround = true;
             mc.player.isAirBorne = false;

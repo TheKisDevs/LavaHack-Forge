@@ -13,7 +13,7 @@ import net.minecraft.util.math.Vec3d
 
 open class PlaceInfo(
     open var target: EntityLivingBase,
-    open var blockPos: BlockPos,
+    open var blockPos: BlockPos?,
     open var selfDamage: Float,
     open var targetDamage: Float,
     open var side: EnumFacing?,

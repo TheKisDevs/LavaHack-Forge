@@ -1,48 +1,37 @@
 package com.kisman.cc.gui.halq.components.sub;
 
-import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.BindType;
+import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
-
 public class BindButton implements Component {
-    private final Setting setting;
-    private final Module module;
+    private final IBindable bindable;
     private int x, y, offset, count;
     private boolean changing;
     private int width = HalqGui.width;
     private int layer;
 
-    public BindButton(Setting setting, int x, int y, int offset, int count) {
-        this.setting = setting;
-        this.module = null;
+    public BindButton(IBindable bindable, int x, int y, int offset, int count, int layer) {
+        this.bindable = bindable;
         this.x = x;
         this.y = y;
         this.offset = offset;
         this.count = count;
-    }
-
-    public BindButton(Module module, int x, int y, int offset, int count) {
-        this.setting = null;
-        this.module = module;
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
-        this.count = count;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        if(setting == null && module == null) return;
-
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadowCheckBox) {
             if(changing) {
@@ -61,7 +50,7 @@ public class BindButton implements Component {
             }
         } else if(HalqGui.test2 || changing) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, changing ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString(changing ? "Press a key..." : module != null ? "Bind: " + Keyboard.getKeyName(module.getKey()) : setting.getName() + ": " + Keyboard.getKeyName(setting.getKey()) , x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(changing ? "Press a key..." : bindable.getButtonName() + ": " + bindable.Companion.getName(bindable) , x, y + offset, width, HalqGui.height);
     }
 
     @Override
@@ -69,18 +58,24 @@ public class BindButton implements Component {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) changing = !changing;
         if(isMouseOnButton(mouseX, mouseY) && button == 1) {
             changing = false;
-            if(module != null) module.setKey(Keyboard.KEY_NONE);
-            else setting.setKey(Keyboard.KEY_NONE);
+            bindable.setType(BindType.Keyboard);
+            bindable.setKeyboardKey(Keyboard.KEY_NONE);
+            bindable.setMouseButton(-1);
+        }
+
+        if(button > 1 && changing) {
+            changing = false;
+            bindable.setType(BindType.Mouse);
+            bindable.setMouseButton(button);
         }
     }
 
     @Override
     public void keyTyped(char typedChar, int key) {
         if(changing) {
-            if(module == null && setting == null) return;
-            if(module != null) module.setKey(key);
-            else setting.setKey(key);
             changing = false;
+            bindable.setType(BindType.Keyboard);
+            bindable.setKeyboardKey(key);
         }
     }
 
@@ -100,7 +95,7 @@ public class BindButton implements Component {
         return HalqGui.height;
     }
 
-    public boolean visible() {return setting == null || setting.isVisible();}
+    public boolean visible() {return !(bindable instanceof Setting) || ((Setting) bindable).isVisible();}
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}

@@ -1,6 +1,5 @@
 package com.kisman.cc.settings.util
 
-import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -11,69 +10,78 @@ import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import java.util.function.Supplier
 
+@Suppress("MemberVisibilityCanBePrivate", "unused", "HasPlatformType")
 class RenderingRewritePattern(
-    val module : Module,
-    val visible : Supplier<Boolean>,
-    val prefix : String?,
-    val group : SettingGroup?
+    module : Module
+) : AbstractPattern<RenderingRewritePattern>(
+    module
 ) {
-    constructor(module : Module, visible : Supplier<Boolean>, prefix : String) : this(module, visible, prefix, null)
-    constructor(module : Module, visible : Supplier<Boolean>) : this(module, visible, null, null)
+    val mode = setupSetting(Setting("Render Mode", module, RenderingRewriteModes.None).setTitle("Mode"))
+    val abyss = setupSetting(Setting("Abyss", module, false))
+    val lineWidth = setupSetting(Setting("Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible { mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient }.setTitle("Width"))
 
-    val mode = Setting((if(prefix != null) "$prefix " else "") + "Render Mode", module, RenderingRewriteModes.Filled).setVisible { visible.get() }
-    val abyss = Setting("Abyss", module, false)
-    val lineWidth = Setting((if(prefix != null) "$prefix " else "") + "Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible {
-        visible.get() && mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient
-    }
-
-    val rainbow = Setting((if(prefix != null) "$prefix " else "") + "Rainbow", module, false)
-    val rainbowSpeed = Setting((if(prefix != null) "$prefix " else "") + "RainbowSpeed", module, 1.0, 0.25, 5.0, false)
-    val rainbowSat = Setting((if(prefix != null) "$prefix " else "") + "Saturation", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowBright = Setting((if(prefix != null) "$prefix " else "") + "Brightness", module, 100.0, 0.0, 100.0, true).setVisible{rainbow.valBoolean}
-    val rainbowGlow = Setting((if(prefix != null) "$prefix " else "") + "Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible{rainbow.valBoolean}
+    val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
+    val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
+    val rainbowSpeed = setupSetting(rainbowGroup.add(Setting("Rainbow Speed", module, 1.0, 0.25, 5.0, false).setVisible(rainbow).setTitle("Speed")))
+    val rainbowSat = setupSetting(rainbowGroup.add(Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat")))
+    val rainbowBright = setupSetting(rainbowGroup.add(Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright")))
+    val rainbowGlow = setupSetting(rainbowGroup.add(Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible(rainbow).setTitle("Glow")))
 
     //Colors
-    val color1 = Setting((if(prefix != null) "$prefix " else "") + "Render Color", module, (if(prefix != null) "$prefix " else "") + "Render Color", Colour(255, 0, 0, 255)).setVisible { visible.get() }
-    val color2 = Setting((if(prefix != null) "$prefix " else "") + "Render Second Color", module, (if(prefix != null) "$prefix " else "") + "Render Second Color", Colour(0, 120, 255, 255)).setVisible {
-        visible.get() && (
-                mode.valEnum == RenderingRewriteModes.FilledGradient ||
-                        mode.valEnum == RenderingRewriteModes.OutlineGradient ||
-                        mode.valEnum == RenderingRewriteModes.BothGradient ||
-                        mode.valEnum == RenderingRewriteModes.GlowOutline ||
-                        mode.valEnum == RenderingRewriteModes.Glow
-                )
-    }
+    val colorGroup = setupGroup(SettingGroup(Setting("Colors", module)))
+    val color1 = setupSetting(colorGroup.add(Setting("Render Color", module, "First", Colour(255, 0, 0, 255))))
+    val color2 = setupSetting(colorGroup.add(Setting("Render Second Color", module, "Second", Colour(0, 120, 255, 255)).setVisible {
+        mode.valEnum == RenderingRewriteModes.FilledGradient ||
+        mode.valEnum == RenderingRewriteModes.OutlineGradient ||
+        mode.valEnum == RenderingRewriteModes.BothGradient ||
+        mode.valEnum == RenderingRewriteModes.GlowOutline ||
+        mode.valEnum == RenderingRewriteModes.Glow
+    }))
 
-    fun preInit() : RenderingRewritePattern {
-        group?.add(mode)
-        group?.add(abyss)
-        group?.add(lineWidth)
-        group?.add(rainbow)
-        group?.add(rainbowSpeed)
-        group?.add(rainbowSat)
-        group?.add(rainbowBright)
-        group?.add(rainbowGlow)
-        group?.add(color1)
-        group?.add(color2)
+    override fun preInit() : RenderingRewritePattern {
+        if(group != null) {
+            group!!.add(mode)
+            group!!.add(abyss)
+            group!!.add(lineWidth)
+            group!!.add(rainbowGroup)
+            group!!.add(colorGroup)
+        }
+
         return this
     }
 
-    fun init() {
-        Kisman.instance.settingsManager.rSetting(mode)
-        Kisman.instance.settingsManager.rSetting(abyss)
-        Kisman.instance.settingsManager.rSetting(lineWidth)
-        Kisman.instance.settingsManager.rSetting(rainbow)
-        Kisman.instance.settingsManager.rSetting(rainbowSpeed)
-        Kisman.instance.settingsManager.rSetting(rainbowSat)
-        Kisman.instance.settingsManager.rSetting(rainbowBright)
-        Kisman.instance.settingsManager.rSetting(rainbowGlow)
-        Kisman.instance.settingsManager.rSetting(color1)
-        Kisman.instance.settingsManager.rSetting(color2)
+    override fun init() : RenderingRewritePattern {
+        module.register(mode)
+        module.register(abyss)
+        module.register(lineWidth)
+        module.register(rainbowGroup)
+        module.register(rainbow)
+        module.register(rainbowSpeed)
+        module.register(rainbowSat)
+        module.register(rainbowBright)
+        module.register(rainbowGlow)
+        module.register(colorGroup)
+        module.register(color1)
+        module.register(color2)
+
+        return this
     }
 
-    fun draw(aabb : AxisAlignedBB) {
+    fun isActive() : Boolean {
+        return mode.valEnum != RenderingRewriteModes.None
+    }
+
+    fun draw(
+        aabb : AxisAlignedBB,
+        color1: Colour,
+        color2 : Colour,
+        mode : Rendering.Mode?
+    ) {
+        if(!isActive() || mode == null) {
+            return
+        }
+
         var a = aabb
         if(abyss.valBoolean){
             a = AxisAlignedBB(a.minX, a.minY + 1.0, a.minZ, a.maxX, a.maxY + 0.075, a.maxZ)
@@ -86,9 +94,9 @@ class RenderingRewritePattern(
             var outAlpha2 = 255
             val reverse = rainbowGlow.valString.equals("ReverseGlow")
             if(reverse){
-                outAlpha1 = 0;
+                outAlpha1 = 0
             } else {
-                outAlpha2 = 0;
+                outAlpha2 = 0
             }
             Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
             Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
@@ -97,6 +105,29 @@ class RenderingRewritePattern(
         Rendering.draw(
             Rendering.correct(a),
             lineWidth.valFloat,
+            color1,
+            color2,
+            mode
+        )
+    }
+
+    fun draw(
+        aabb : AxisAlignedBB,
+        color1: Colour,
+        color2 : Colour,
+        mode : RenderingRewriteModes
+    ) {
+        draw(
+            aabb,
+            color1,
+            color2,
+            mode.mode
+        )
+    }
+
+    fun draw(aabb : AxisAlignedBB) {
+        draw(
+            aabb,
             getColor1(),
             getColor2(),
             (mode.valEnum as RenderingRewriteModes).mode
@@ -113,8 +144,8 @@ class RenderingRewritePattern(
     }
 
     private fun getColor1() : Colour {
-        val glow = rainbowGlow.valString;
-        var alpha = color1.colour.a;
+        val glow = rainbowGlow.valString
+        var alpha = color1.colour.a
         if(glow.equals("ReverseGlow")){
             alpha = 0
         }
@@ -126,7 +157,7 @@ class RenderingRewritePattern(
     }
 
     private fun getColor2() : Colour {
-        val glow = rainbowGlow.valString;
+        val glow = rainbowGlow.valString
         var alpha = color2.colour.a
         if(glow.equals("Glow")){
             alpha = 0

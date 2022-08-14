@@ -23,12 +23,12 @@ import java.util.stream.Collectors;
 public class HoleESPRewrite2 extends Module {
     private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this);
 
-    private final Setting oHoles = register(new Setting("Obsidian", this, true));
+    private final Setting oHoles = register(new Setting("Obsidian", this, true).setTitle("Obby"));
     private final Setting bHoles = register(new Setting("Bedrock", this, true));
     private final Setting cHoles = register(new Setting("Custom", this, true));
 
-    private final Setting sHoles = register(new Setting("Single", this, true));
-    private final Setting dHoles = register(new Setting("Double", this, true));
+    private final Setting sHoles = register(new Setting("Single", this, true).setTitle("1x1"));
+    private final Setting dHoles = register(new Setting("Double", this, true).setTitle("2x1"));
 
     private final Setting range = register(new Setting("Range", this, 12.0, 1.0, 20.0, false));
 
@@ -36,15 +36,12 @@ public class HoleESPRewrite2 extends Module {
 
     private final Setting ignoreOwn = register(new Setting("IgnoreOwnHole", this, false));
 
-    private final Setting obsidianRender = register(new Setting("RenderObsidian", this, true));
     private final RenderPattern oRender = new ModulePrefixRenderPattern(this, "Obsidian").init();
     private final Setting oHeight = register(new Setting("HeightObsidian", this, 1.0, 0.0, 1.0, false));
 
-    private final Setting bedrockRender = register(new Setting("RenderBedrock", this, true));
     private final RenderPattern bRender = new ModulePrefixRenderPattern(this, "Bedrock").init();
     private final Setting bHeight = register(new Setting("HeightBedrock", this, 1.0, 0.0, 1.0, false));
 
-    private final Setting customRender = register(new Setting("RenderCustom", this, "RenderObsidian"));
     private final RenderPattern cRender = new ModulePrefixRenderPattern(this, "Custom").init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
@@ -74,12 +71,10 @@ public class HoleESPRewrite2 extends Module {
         for(Map.Entry<BoundingBox, Type> entry : map.entrySet()){
             BoundingBox bb = entry.getKey();
             Type type = entry.getValue();
-            if(type == Type.OBSIDIAN && !obsidianRender.getValBoolean()) continue;
-            if(type == Type.BEDROCK && !bedrockRender.getValBoolean()) continue;
-            if(type == Type.CUSTOM && !customRender.getValBoolean()) continue;
             RenderBuilder renderBuilder = renderBuilderFor(type);
             renderBuilder.pos(bb).render();
         }
+
     }
 
     private Map<BoundingBox, Type> getHoles(){

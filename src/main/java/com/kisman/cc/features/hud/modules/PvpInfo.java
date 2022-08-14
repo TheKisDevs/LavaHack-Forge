@@ -33,7 +33,7 @@ public class PvpInfo extends HudModule {
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "FA: " + (AutoFirework.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "OFF: " + (OffHand.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "OFF: " + (Kisman.instance.moduleManager.getModule("OffHand").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HR: " + (Kisman.instance.moduleManager.getModule("HandRewrite").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;

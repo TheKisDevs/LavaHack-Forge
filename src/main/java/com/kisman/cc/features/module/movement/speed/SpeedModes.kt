@@ -188,7 +188,7 @@ enum class SpeedModes(
                     EntityUtil.resetTimer()
                     if (SpeedRewrite.instance?.useTimer!!.valBoolean) Managers.instance.timerManager.updateTimer(Speed.instance, 2, 1.3f)
                     mc.player.jump()
-                    val dirSpeed = Speed.directionSpeed(MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED) * SpeedRewrite.instance?.boostSpeed!!.valDouble + (if (SpeedRewrite.instance?.boostFactor!!.valBoolean) 0.3 else 0.0))
+                    val dirSpeed = MovementUtil.forward(MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED) * SpeedRewrite.instance?.boostSpeed!!.valDouble + (if (SpeedRewrite.instance?.boostFactor!!.valBoolean) 0.3 else 0.0))
                     mc.player.motionX = dirSpeed[0]
                     mc.player.motionZ = dirSpeed[1]
                 } else {

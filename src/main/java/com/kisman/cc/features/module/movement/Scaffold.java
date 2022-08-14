@@ -1,24 +1,31 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.event.events.EventPlayerJump;
+import com.kisman.cc.event.events.EventPlayerMove;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
-import com.kisman.cc.util.entity.player.PlayerUtil;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.PredictUtil;
+import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.movement.MovementUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
-import me.zero.alpine.listener.*;
-import net.minecraft.block.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.*;
-import net.minecraft.network.play.client.*;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
 
 public class Scaffold extends Module {
     private Setting placeLogic = new Setting("Place Logic", this, PlaceLogic.Predict);
@@ -116,7 +123,7 @@ public class Scaffold extends Module {
 
         if (newSlot == -1) {
             newSlot = 1;
-            ChatUtils.error("[Scaffold] Out of valid blocks. Disabling!");
+            ChatUtility.error().printClientModuleMessage("[Scaffold] Out of valid blocks. Disabling!");
             super.setToggled(false);
         }
 

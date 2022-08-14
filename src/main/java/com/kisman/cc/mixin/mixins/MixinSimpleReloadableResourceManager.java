@@ -29,7 +29,7 @@ public class MixinSimpleReloadableResourceManager {
     @Redirect(method = "getAllResources", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/IResourceManager;getAllResources(Lnet/minecraft/util/ResourceLocation;)Ljava/util/List;"))
     private List<IResource> getAllResourcesHook(IResourceManager iResourceManager, ResourceLocation location) throws IOException {
         List<IResource> list = iResourceManager.getAllResources(location);
-        list.addAll(PluginResourceManager.getInstance().getPluginResources(location));
+        list.addAll(PluginResourceManager.getPluginResources(location));
         return list;
     }
 
@@ -43,10 +43,7 @@ public class MixinSimpleReloadableResourceManager {
             ClassLoader classLoader = PluginManager.getInstance().getPluginClassLoader();
             if (classLoader == null) throw new IllegalStateException("PluginClassLoader was null!");
             supplier = new PluginResourceSupplier(loc, this.rmMetadataSerializer, classLoader);
-        } else {
-            supplier = PluginResourceManager.getInstance()
-                    .getSingleResource(location);
-        }
+        } else supplier = PluginResourceManager.getSingleResource(location);
 
         if (supplier != null) {
             Kisman.LOGGER.info("Custom Resource detected: " + location);
@@ -65,5 +62,4 @@ public class MixinSimpleReloadableResourceManager {
         Set<String> domains = this.setResourceDomains;
         domains.add("kismancc");
     }
-
 }

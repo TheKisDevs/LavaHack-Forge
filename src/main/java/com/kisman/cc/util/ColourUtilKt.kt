@@ -37,6 +37,34 @@ class ColourUtilKt {
 
     class BlockColors {
         companion object {
+            fun getCoalOreColor() : Colour {
+                return Colour(Color(0f, 0f, 0f))
+            }
+
+            fun getIronOreColor() : Colour {
+                return Colour(Color(0.99f, 0.52f, 0.01f))
+            }
+
+            fun getGoldOreColor() : Colour {
+                return Colour(Color(0.99f, 0.75f, 0.01f))
+            }
+
+            fun getRedstoneOreColor() : Colour {
+                return Colour(Color(0.99f, 0.01f, 0.01f))
+            }
+
+            fun getLapisOreColor() : Colour {
+                return Colour(Color(0.01f, 0.11f, 0.99f))
+            }
+
+            fun getDiamondOreColor() : Colour {
+                return Colour(Color(0.01f, 0.56f, 0.99f))
+            }
+
+            fun getEmeraldOreColor() : Colour {
+                return Colour(Color(0.01f, 0.99f, 0.69f))
+            }
+
             fun getChestColor(): Colour {
                 return Colour(Color(0.94f, 0.6f, 0.11f))
             }

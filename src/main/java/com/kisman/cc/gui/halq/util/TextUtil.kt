@@ -1,5 +1,7 @@
 package com.kisman.cc.gui.halq.util
 
+import org.lwjgl.input.Keyboard
+
 class TextUtil {
     companion object {
         val doubleRegex = "[0-9]*+.?+[0-9]*"

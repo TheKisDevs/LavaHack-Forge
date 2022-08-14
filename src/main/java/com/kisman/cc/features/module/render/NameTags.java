@@ -1,22 +1,24 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.util.render.customfont.AbstractFontRenderer;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.RenderUtil;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import com.kisman.cc.util.render.Rendering;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
@@ -59,6 +61,7 @@ public class  NameTags extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         for(EntityPlayer p : mc.world.playerEntities) {
+            if(p == mc.player) continue;
             if (p != mc.getRenderViewEntity() && p.isEntityAlive()) {
                 if (damageDisplay.getValBoolean()) {
                     if (!this.tagList.containsKey(p.getName())) {
@@ -92,8 +95,9 @@ public class  NameTags extends Module {
     }
 
     public void renderNametag(final EntityPlayer player, final double x, final double y, final double z) {
-        GL11.glPushMatrix();
-        RenderUtil.enableDefaults();
+//        GL11.glPushMatrix();
+//        RenderUtil.enableDefaults();
+        Rendering.setup();
         TextFormatting clr;
         TextFormatting clrf = TextFormatting.WHITE;
         String cross = "";
@@ -104,8 +108,7 @@ public class  NameTags extends Module {
         int pingy = -1;
         try {pingy = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ignored) {}
         String playerPing = pingy + "ms  ";
-        final boolean pings = this.ping.getValBoolean();
-        if (!pings) playerPing = "";
+        if (!ping.getValBoolean()) playerPing = "";
         final int health = MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
         final boolean damageDisplay = this.damageDisplay.getValBoolean();
         if (health > 16) clr = TextFormatting.GREEN;
@@ -113,13 +116,18 @@ public class  NameTags extends Module {
         else if (health > 8) clr = TextFormatting.GOLD;
         else if (health > 5) clr = TextFormatting.RED;
         else clr = TextFormatting.DARK_RED;
-        final int lasthealth = this.tagList.get(player.getName());
-        if (player != mc.player && damageDisplay) {
+        int lasthealth = 0;
+        try {
+            lasthealth = this.tagList.get(player.getName());
+        } catch(Exception ignored) {}
+        if (damageDisplay) {
             if (lasthealth > health) this.damageList.put(player.getName(), TextFormatting.RED + " -" + (lasthealth - health));
             this.tagList.put(player.getName(), health);
         }
         String dmgtext = "";
-        if (damageDisplay) dmgtext = this.damageList.get(player.getName());
+        try {
+            if (damageDisplay) dmgtext = this.damageList.get(player.getName());
+        } catch(Exception ignored) {}
         String name = cross + clrf + playerPing + player.getName() + " " + clr + health + dmgtext;
         name = name.replace(".0", "");
         final float var14 = 0.016666668f * this.getNametagSize(player);
@@ -131,8 +139,7 @@ public class  NameTags extends Module {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
         GL11.glDisable(2929);
-        final AbstractFontRenderer font = CustomFontUtil.sfui19;
-        final int width = font.getStringWidth(name) / 2;
+        final int width = mc.fontRenderer.getStringWidth(name) / 2;
         final double widthBackGround = bgAlpha.getValDouble();
         final int[] counter = { 1 };
         this.color1 = twoColorEffect(new Color(255, 50, 50), new Color(79, 9, 9), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + 6.0 * (counter[0] * 2.55) / 60.0).getRGB();
@@ -140,7 +147,7 @@ public class  NameTags extends Module {
         final int[] array = counter;
         final int n = 0;
         ++array[n];//9 + 14 / 2 - font.fontHeight / 2
-        font.drawString(name, -width, 9 + 7 - (font.getHeight()) / 2, Color.red.getRGB());
+        mc.fontRenderer.drawStringWithShadow(name, -width, 9 + 7 - (mc.fontRenderer.FONT_HEIGHT) / 2, Color.red.getRGB());
         boolean item = this.items.getValBoolean();
         if (item) {
             int xOffset = -8;
@@ -166,13 +173,14 @@ public class  NameTags extends Module {
                 xOffset += 8;
             }
         }
-        GL11.glEnable(3553);
-        GL11.glEnable(2929);
-        GL11.glDepthMask(true);
-        GL11.glDisable(3042);
-        GL11.glPopMatrix();
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderUtil.disableDefaults();
+//        GL11.glEnable(3553);
+//        GL11.glEnable(2929);
+//        GL11.glDepthMask(true);
+//        GL11.glDisable(3042);
+//        GL11.glPopMatrix();
+//        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//        RenderUtil.disableDefaults();
+        Rendering.release();
     }
 
     public float getNametagSize(final EntityLivingBase player) {
@@ -192,8 +200,8 @@ public class  NameTags extends Module {
         mc.getRenderItem().zLevel = -100.0f;
         GlStateManager.scale(1.0f, 1.0f, 0.01f);
         mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y / 2 - 12);
-        if (stack.getItem() == Items.GOLDEN_APPLE) RenderUtil.renderItemOverlays(CustomFontUtil.consolas16, stack, x - 5, y / 2 - 28);
-        else RenderUtil.renderItemOverlays(CustomFontUtil.consolas16, stack, x, y / 2 - 8);
+        if (stack.getItem() == Items.GOLDEN_APPLE) mc.renderItem.renderItemOverlays(mc.fontRenderer, stack, x - 5, y / 2 - 28);
+        else mc.renderItem.renderItemOverlays(mc.fontRenderer, stack, x, y / 2 - 8);
         mc.getRenderItem().zLevel = 0.0f;
         GlStateManager.scale(1.0f, 1.0f, 1.0f);
         RenderHelper.disableStandardItemLighting();
@@ -223,12 +231,11 @@ public class  NameTags extends Module {
                     encName = encName + level;
                     GL11.glPushMatrix();
                     GL11.glScalef(1.0f, 1.0f, 0.0f);
-                    AbstractFontRenderer font = CustomFontUtil.futura20;
-                    if (level == 1) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(202, 202, 202, 255).getRGB());
-                    else if (level == 2) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(246, 218, 45, 255).getRGB());
-                    else if (level == 3) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(229, 128, 0, 255).getRGB());
-                    else if (level == 4) font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(156, 59, 253, 255).getRGB());
-                    else font.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(239, 0, 0, 255).getRGB());
+                    if (level == 1) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(202, 202, 202, 255).getRGB());
+                    else if (level == 2) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(246, 218, 45, 255).getRGB());
+                    else if (level == 3) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(229, 128, 0, 255).getRGB());
+                    else if (level == 4) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(156, 59, 253, 255).getRGB());
+                    else mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(239, 0, 0, 255).getRGB());
                     GL11.glScalef(1.0f, 1.0f, 1.0f);
                     GL11.glPopMatrix();
                     encY += 8;

@@ -1,9 +1,5 @@
 package com.kisman.cc.util.world;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.kisman.cc.util.entity.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -26,6 +22,10 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CrystalUtils {
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -60,12 +60,7 @@ public class CrystalUtils {
         return false;
     }
 
-    /// Returns a BlockPos object of player's position floored.
-    public static BlockPos GetPlayerPosFloored(final EntityPlayer p_Player) {
-        return new BlockPos(Math.floor(p_Player.posX), Math.floor(p_Player.posY), Math.floor(p_Player.posZ));
-    }
-
-    public static List<BlockPos> getSphere(EntityPlayer target, float range, boolean sphere, boolean hollow) {
+    public static List<BlockPos> getSphere(Entity target, float range, boolean sphere, boolean hollow) {
         ArrayList<BlockPos> blocks = new ArrayList<>();
         int x = target.getPosition().getX() - (int)range;
         while ((float)x <= (float) target.getPosition().getX() + range) {
@@ -124,10 +119,10 @@ public class CrystalUtils {
             int z = mc.player.getPosition().getZ() - (int)range;
             while ((float)z <= (float) mc.player.getPosition().getZ() + range) {
                 int y;
-                int n = y = sphere != false ? mc.player.getPosition().getY() - (int)range : mc.player.getPosition().getY();
+                int n = y = sphere ? mc.player.getPosition().getY() - (int)range : mc.player.getPosition().getY();
                 while ((float)y < (float) mc.player.getPosition().getY() + range) {
                     double distance = ( mc.player.getPosition().getX() - x) * (mc.player.getPosition().getX() - x) + (mc.player.getPosition().getZ() - z) * (mc.player.getPosition().getZ() - z) + (sphere != false ? (mc.player.getPosition().getY() - y) * (mc.player.getPosition().getY() - y) : 0);
-                    if (distance < (double)(range * range) && (hollow == false || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
+                    if (distance < (double)(range * range) && (!hollow || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
                         blocks.add(new BlockPos(x, y, z));
                     }
                     ++y;
@@ -153,11 +148,11 @@ public class CrystalUtils {
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
-        if (entity == mc.player) if (mc.player.capabilities.isCreativeMode) return 0.0f;
+        if (entity == mc.player && mc.player.capabilities.isCreativeMode) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
         double dist = entity.getDistance(posX, posY, posZ);
-        
+
         if (dist > doubleExplosionSize) return 0f;
 
         if (interlopedAmount > 0) {
@@ -305,12 +300,28 @@ public class CrystalUtils {
         } else return null;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static float getBlastReduction(EntityLivingBase entity, float damage, Explosion explosion) {
         if (entity instanceof EntityPlayer) {
             EntityPlayer ep = (EntityPlayer) entity;
             DamageSource ds = DamageSource.causeExplosionDamage(explosion);
-            damage = CombatRules.getDamageAfterAbsorb(damage, (float) ep.getTotalArmorValue(), (float) ep.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
-            int k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+
+            try {
+                damage = CombatRules.getDamageAfterAbsorb(damage, (float) ep.getTotalArmorValue(), (float) ep.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
+            } catch (NullPointerException nullpointer) {
+                damage = 0;
+            }
+
+            int k;
+
+            k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+
+            try {
+                k = EnchantmentHelper.getEnchantmentModifierDamage(ep.getArmorInventoryList(), ds);
+            } catch (NullPointerException nullpointer) {
+                return 0;
+            }
+
             float f = MathHelper.clamp(k, 0.0F, 20.0F);
             damage *= 1.0F - f / 25.0F;
             if (entity.isPotionActive(Potion.getPotionById(11))) damage -= damage / 4;
@@ -322,7 +333,7 @@ public class CrystalUtils {
         return damage;
     }
 
-    private static float getDamageMultiplied(final World p_World, float damage) {
+    public static float getDamageMultiplied(final World p_World, float damage) {
         int diff = p_World.getDifficulty().getDifficultyId();
         return damage * (diff == 0 ? 0 : (diff == 2 ? 1 : (diff == 1 ? 0.5f : 1.5f)));
     }

@@ -2,33 +2,30 @@ package com.kisman.cc.gui.halq.components;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.module.ModuleScript;
+import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.plugins.ModulePlugin;
+import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.hud.DraggableBox;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
-import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
-import com.kisman.cc.gui.halq.util.LayerMap;
-import com.kisman.cc.features.hud.HudModule;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("UnusedAssignment")
 public class Button implements Component {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
@@ -52,58 +49,51 @@ public class Button implements Component {
         int count1 = 0;
 
         if(mod instanceof ModuleScript) {
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++, 1));
         } else if(mod instanceof ModulePlugin) {
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
         } else {
-            comps.add(new BindButton(mod, x, y, offsetY, count1++));
+            comps.add(new BindButton(mod, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
-            comps.add(new VisibleBox(mod, x, y, offsetY, count1++));
+            comps.add(new VisibleBox(mod, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
-            comps.add(new BindModeButton(mod, x, y, offsetY, count1++));
+            comps.add(new BindModeButton(mod, x, y, offsetY, count1++, 1));
             offsetY += HalqGui.height;
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
                 for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
                     if (set == null || set.parent_ != null) continue;
                     if (set.isGroup() && set instanceof SettingGroup) {
-                        comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++));
+                        comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isSlider()) {
-                        comps.add(new Slider(set, x, y, offsetY, count1++));
+                        comps.add(new Slider(set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isCheck()) {
-                        comps.add(new CheckBox(set, x, y, offsetY, count1++));
+                        comps.add(new CheckBox(set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isBind()) {
-                        comps.add(new BindButton(set, x, y, offsetY, count1++));
+                        comps.add(new BindButton(set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isCombo()) {
-                        comps.add(new ModeButton(set, x, y, offsetY, count1++));
+                        comps.add(new ModeButton(set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isColorPicker()) {
-                        comps.add(new ColorButton(set, x, y, offsetY, count1++));
+                        comps.add(new ColorButton(set, x, y, offsetY, count1++, 1));
                         offsetY += HalqGui.height;
                     }
                 }
-            }
-        }
-
-        if(!comps.isEmpty()) {
-            for(Component comp : comps) {
-                comp.setLayer(1);
-                comp.setWidth(90);
             }
         }
     }
@@ -130,45 +120,36 @@ public class Button implements Component {
             }
         } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, HalqGui.width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
-        String text = mod.getName() + (Config.instance.guiShowBinds.getValBoolean() && mod.getKey() != Keyboard.KEY_NONE ? " [" + Keyboard.getKeyName(mod.getKey()) + "]" : "");
+        HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
 
-        HalqGui.drawString(text, x, y + offset, HalqGui.width, HalqGui.height);
+        if(mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 1);
+        if(mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 2);
+        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 3);
 
-        if(mod.isBeta()) {
-            GL11.glPushMatrix();
-            GL11.glScaled(0.5, 0.5, 1);
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("beta", (x + CustomFontUtil.getStringWidth(text)) * 2, (y + offset) * 2, HalqGui.getGradientColour(count).getRGB());
-            GL11.glPopMatrix();
+        if(open && !comps.isEmpty()) {
+            for(Component comp : comps) {
+                if(!comp.visible()) continue;
+                comp.drawScreen(mouseX, mouseY);
+            }
+            if(HalqGui.test) {
+                int height = doIterationUpdateComponent(comps, 0);
+                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());
+                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height + height - 1, HalqGui.width, 1, HalqGui.getGradientColour(getLastColorCount()).getRGB());
+            }
+        }
+    }
+
+    private int doIterationUpdateComponent(ArrayList<Component> components, int height) {
+        for(Component component : components) {
+            if(!component.visible()) continue;
+            height += component.getHeight();
+            if(component instanceof Openable) {
+                Openable openable = (Openable) component;
+                if(openable.isOpen()) height = doIterationUpdateComponent(openable.getComponents(), height);
+            }
         }
 
-         if(open && !comps.isEmpty()) {
-             int height = 0;
-             for(Component comp : comps) {
-                 if(!comp.visible()) continue;
-                 comp.drawScreen(mouseX, mouseY);
-                 height += comp.getHeight();
-                 if(comp instanceof Openable) {
-                     Openable openable = (Openable) comp;
-                     if(openable.isOpen()) {
-                         for(Component comp1 : openable.getComponents()) {
-                             height += comp1.getHeight();
-                             if(comp1 instanceof Openable) {
-                                 Openable openable1 = (Openable) comp1;
-                                 if(openable1.isOpen()) {
-                                     for(Component comp2 : openable1.getComponents()) {
-                                         height += comp2.getHeight();
-                                     }
-                                 }
-                             }
-                         }
-                     }
-                 }
-             }
-             if(HalqGui.test) {
-                 Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());
-                 Render2DUtil.drawRectWH(x, y + offset + HalqGui.height + height - 1, HalqGui.width, 1, HalqGui.getGradientColour(getLastColorCount()).getRGB());
-             }
-         }
+        return height;
     }
 
     private int getLastColorCount() {
@@ -193,7 +174,7 @@ public class Button implements Component {
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
-        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x + LayerMap.getLayer(comp.getLayer()).modifier, y);
+        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x + LayerControllerKt.getXOffset(comp.getLayer()), y);
     }
 
     @Override

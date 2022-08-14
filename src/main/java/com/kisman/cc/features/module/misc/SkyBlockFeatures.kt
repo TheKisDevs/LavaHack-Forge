@@ -10,7 +10,6 @@ import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.settings.util.BoxRendererPattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.hypixel.dungeonrooms.RoomDetectionUtil
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.init.Blocks
@@ -42,7 +41,7 @@ class SkyBlockFeatures : Module(
     private val crackedStoneBricks = register(esp.add(Setting("Cracked Stone Bricks", this, false)))
     private val crackedStoneBricksColor = register(esp.add(Setting("Cracked Stone Bricks Color", this, Colour(255, 0, 255, 255)).setVisible { crackedStoneBricks.valBoolean }))
 
-    private val renderer = BoxRendererPattern(this).initWithGroup(render)
+    private val renderer = BoxRendererPattern(this).group(render).preInit().init()
 
     private val hyperionExploit = register(hyperionExploitG.add(Setting("Hyperion Exploit", this, false)))
     private val heAOTESlot = register(hyperionExploitG.add(Setting("HE AOTE Slot", this, 3.0, 1.0, 9.0, true)))
@@ -96,7 +95,7 @@ class SkyBlockFeatures : Module(
     private val renderBlock = Listener<EventRenderBlock>(EventHook {
         if(
             mc.world.getBlockState(it.pos).block == Blocks.LEVER && espLever.valBoolean
-            || RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(it.pos)) && crackedStoneBricks.valBoolean
+//            || RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(it.pos)) && crackedStoneBricks.valBoolean
         ) {
             toRender.add(it.pos)
             renderer.draw(1f, espLeverColor.colour, it.pos, espLeverColor.colour.a)
@@ -107,7 +106,7 @@ class SkyBlockFeatures : Module(
         for(pos in ArrayList(toRender)) {
             val block = mc.world.getBlockState(pos).block
             if(block == Blocks.LEVER && espLever.valBoolean) renderer.draw(event.partialTicks, espLeverColor.colour, pos, espLeverColor.colour.a)
-            if(RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(pos))) renderer.draw(event.partialTicks, crackedStoneBricksColor.colour, pos, crackedStoneBricksColor.colour.a)
+//            if(RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(pos))) renderer.draw(event.partialTicks, crackedStoneBricksColor.colour, pos, crackedStoneBricksColor.colour.a)
         }
         toRender.clear()
     }

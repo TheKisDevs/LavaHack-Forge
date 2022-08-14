@@ -16,30 +16,21 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
 public class Burrow2 extends Module {
-
-    private final Setting offset = new Setting("Offset", this, 7, -20, 20, false);
-    private final Setting smartOffset = new Setting("SmartOffset", this, false);
-    private final Setting block = new Setting("Block", this, BlockEnum.Blocks.Obsidian);
-    private final Setting swap = new Setting("Switch", this, SwapEnum2.Swap.Silent);
-    private final Setting rotate = new Setting("Rotate", this, false);
-    private final Setting packet = new Setting("Packet", this, false);
-    private final Setting centerPlayer = new Setting("Center", this, false);
-    private final Setting floorY = new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean);
-    private final Setting smartOnGround = new Setting("SmartOnGround", this, false);
-    private final Setting keepOn = new Setting("KeepOn", this, false);
+    private final Setting offset = register(new Setting("Offset", this, 7, -20, 20, false));
+    private final Setting smartOffset = register(new Setting("SmartOffset", this, false));
+    private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
+    private final Setting swap = register(new Setting("Switch", this, SwapEnum2.Swap.Silent));
+    private final Setting rotate = register(new Setting("Rotate", this, false));
+    private final Setting packet = register(new Setting("Packet", this, false));
+    private final Setting centerPlayer = register(new Setting("Center", this, false));
+    private final Setting floorY = register(new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean));
+    private final Setting smart = register(new Setting("Smart", this, false));
+    private final Setting smartRange = register(new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean));
+    private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
+    private final Setting keepOn = register(new Setting("KeepOn", this, false));
 
     public Burrow2(){
         super("Burrow", Category.COMBAT);
-        setmgr.rSetting(offset);
-        setmgr.rSetting(smartOffset);
-        setmgr.rSetting(block);
-        setmgr.rSetting(swap);
-        setmgr.rSetting(rotate);
-        setmgr.rSetting(packet);
-        setmgr.rSetting(centerPlayer);
-        setmgr.rSetting(floorY);
-        setmgr.rSetting(smartOnGround);
-        setmgr.rSetting(keepOn);
     }
 
     private BlockPos oldPos = null;
@@ -109,6 +100,10 @@ public class Burrow2 extends Module {
 
     @Override
     public void onEnable(){
+        if(mc.player == null || mc.world == null){
+            this.setToggled(false);
+            return;
+        }
         oldPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
         if(centerPlayer.getValBoolean())
             centerPlayer();
@@ -132,6 +127,9 @@ public class Burrow2 extends Module {
                 toggle();
             return;
         }
+
+        if(smart.getValBoolean() && mc.world.playerEntities.stream().noneMatch(player -> mc.player.getDistanceSq(player) <= smartRange.getValDouble()))
+            return;
 
         fakeJump();
 

@@ -21,12 +21,6 @@ import net.minecraft.util.math.*;
 
 import java.util.*;
 
-/**
- * @author 086
- * @author Crystallinqq/Auto
- * @author _kisman_
- */
-
 public class EntityUtil {
     private static final DamageSource EXPLOSION_SOURCE;
 
@@ -465,10 +459,14 @@ public class EntityUtil {
     }
 
     public static double getDistance(double p_X, double p_Y, double p_Z, double x, double y, double z) {
+        return MathHelper.sqrt(getDistanceSq(p_X, p_Y, p_Z, x, y, z));
+    }
+
+    public static double getDistanceSq(double p_X, double p_Y, double p_Z, double x, double y, double z) {
         double d0 = p_X - x;
         double d1 = p_Y - y;
         double d2 = p_Z - z;
-        return MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+        return (d0 * d0 + d1 * d1 + d2 * d2);
     }
 
     static {

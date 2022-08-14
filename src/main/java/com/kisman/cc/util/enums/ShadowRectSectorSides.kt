@@ -1,6 +1,6 @@
 package com.kisman.cc.util.enums
 
-import com.kisman.cc.util.render.objects.CornerObject
+import com.kisman.cc.util.render.objects.screen.CornerObject
 import com.sun.javafx.geom.Vec2d
 
 enum class ShadowRectSectorSides(

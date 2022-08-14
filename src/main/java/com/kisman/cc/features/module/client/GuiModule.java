@@ -19,6 +19,7 @@ public class GuiModule extends Module {
     public final Setting uwu = register(new Setting("UwU Locate Mod", this, HalqGui.LocateMode.Left));
     public final Setting test2 = register(new Setting("Test 2", this, true));
     public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));
+    public final Setting textOffsetX = register(new Setting("Text X Offset", this, 5, 0, 10, true));
 
     public static GuiModule instance;
 
@@ -29,7 +30,7 @@ public class GuiModule extends Module {
     }
 
     public void onEnable() {
-        mc.displayGuiScreen(Kisman.instance.halqGui);
+        mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(null));
         super.setToggled(false);
         if(Config.instance.guiBlur.getValBoolean()) mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
     }

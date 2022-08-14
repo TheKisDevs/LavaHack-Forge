@@ -7,13 +7,12 @@ import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.sub.colorpicker.PickerBase
 import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.sliders.AlphaSlider
 import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.sliders.HueSlider
-import com.kisman.cc.gui.halq.util.LayerMap
+import com.kisman.cc.gui.halq.util.getXOffset
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
-import com.kisman.cc.util.render.objects.AbstractGradient
-import com.kisman.cc.util.render.objects.Vec4d
+import com.kisman.cc.util.render.objects.screen.AbstractGradient
+import com.kisman.cc.util.render.objects.screen.Vec4d
 import java.awt.Color
 
 /**
@@ -137,7 +136,7 @@ class ColorButtonRewrite(
                 for(comp in comps) {
                     if(!comp.visible()) continue
                     comp.updateComponent(
-                        x + LayerMap.getLayer(comp.layer).modifier / 2,
+                        x + getXOffset(comp.layer),
                         y
                     )
                 }

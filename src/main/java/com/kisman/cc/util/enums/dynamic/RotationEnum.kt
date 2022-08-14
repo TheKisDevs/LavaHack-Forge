@@ -3,9 +3,11 @@ package com.kisman.cc.util.enums.dynamic
 import com.kisman.cc.util.entity.RotationSaver
 import com.kisman.cc.util.enums.RotationLogic
 import net.minecraft.client.Minecraft
+import net.minecraft.util.math.Vec3d
 import org.cubic.dynamictask.*
 import net.minecraft.network.play.client.*
 import com.kisman.cc.util.world.*
+import net.minecraft.util.math.BlockPos
 
 /**
  * @author _kisman_
@@ -31,13 +33,20 @@ class RotationEnum {
             RotationLogic::class.java//Rotation logic
         )
 
+        private val taskCBlock : AbstractTask.DelegateAbstractTask<FloatArray> = AbstractTask.types(
+            FloatArray::class.java,
+            BlockPos::class.java//block
+        )
+
         private val mc = Minecraft.getMinecraft()
     }
 
+    @Suppress("unused")
     enum class Rotation(
         val taskR : AbstractTask<Void>,
         val taskRFromSaver : AbstractTask<Void>,
-        val taskCEntity : AbstractTask<FloatArray>
+        val taskCEntity : AbstractTask<FloatArray>,
+        val taskCBlock : AbstractTask<FloatArray>
     ) {
         None(
             taskR.task {
@@ -47,6 +56,9 @@ class RotationEnum {
                 return@task null
             },
             taskCEntity.task {
+                return@task FloatArray(0)
+            },
+            taskCBlock.task {
                 return@task FloatArray(0)
             }
         ),
@@ -77,6 +89,10 @@ class RotationEnum {
                             RotationLogic.WellMore -> RotationUtils.lookAtRandomed(mc.world.getEntityByID(arg.fetch(0)))
                         }
                 )
+            },
+            taskCBlock.task { arg: ArgumentFetcher ->
+                val block = arg.fetch<BlockPos>(0)
+                return@task RotationUtils.calcAngle(mc.player.getPositionEyes(mc.renderPartialTicks), Vec3d(block.x.toDouble() + 0.5, block.y.toDouble(), block.z.toDouble() + 0.5))
             }
         ),
         ClientFull(
@@ -213,7 +229,7 @@ class RotationEnum {
             }
         );
 
-        constructor(taskR : AbstractTask<Void>) : this(taskR, Client.taskRFromSaver, Client.taskCEntity)
-        constructor(taskR : AbstractTask<Void>, taskRFromSaver : AbstractTask<Void>) : this(taskR, taskRFromSaver, Client.taskCEntity)
+        constructor(taskR : AbstractTask<Void>) : this(taskR, Client.taskRFromSaver, Client.taskCEntity, Client.taskCBlock)
+        constructor(taskR : AbstractTask<Void>, taskRFromSaver : AbstractTask<Void>) : this(taskR, taskRFromSaver, Client.taskCEntity, Client.taskCBlock)
     }
 }

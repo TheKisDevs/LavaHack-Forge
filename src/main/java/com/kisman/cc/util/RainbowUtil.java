@@ -23,6 +23,16 @@ public class RainbowUtil {
         return new Colour(rgb).withAlpha(alpha);
     }
 
+    public static Colour rainbow3(long millis, int hOffset, final int sat, final int bright, final int alpha, double speed){
+        double mod = 11529L / speed;
+        double div = mod / 360;
+        int hue = (int) ((millis % mod) / div) + hOffset;
+        if(hue > 360)
+            hue = hue - 360;
+        int rgb = fromHSB(hue, sat, bright);
+        return new Colour(rgb).withAlpha(alpha);
+    }
+
     /**
      * Color space conversion from HSB to RGB
      * @author Cubic

@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.render.shader.shaders.troll
 
-import com.kisman.cc.util.chat.other.ChatUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.ShaderGroup
@@ -20,7 +20,7 @@ class ShaderHelper(shaderIn: ResourceLocation) {
 
     val shader: ShaderGroup? =
         if (!OpenGlHelper.shadersSupported) {
-            ChatUtils.warning("Shaders are unsupported by OpenGL!")
+            println("Shaders are unsupported by OpenGL!")
             null
         } else {
             try {
@@ -30,7 +30,7 @@ class ShaderHelper(shaderIn: ResourceLocation) {
                     it.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
                 }
             } catch (e: Exception) {
-                ChatUtils.warning("Failed to load shaders")
+                println("Failed to load shaders")
                 e.printStackTrace()
                 null
             }

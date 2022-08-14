@@ -4,11 +4,11 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
-
-import java.awt.*;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 
 public class VisibleBox implements Component {
     private final Module module;
@@ -16,12 +16,14 @@ public class VisibleBox implements Component {
     private int width = HalqGui.width;
     private int layer;
 
-    public VisibleBox(Module module, int x, int y, int offset, int count) {
+    public VisibleBox(Module module, int x, int y, int offset, int count, int layer) {
         this.module = module;
         this.x = x;
         this.y = y;
         this.offset = offset;
         this.count = count;
+        this.layer = layer;
+        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override

@@ -6,65 +6,44 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
-import com.kisman.cc.util.render.objects.Box
-import com.kisman.cc.util.render.objects.BoxObject
+import com.kisman.cc.util.render.objects.world.Box
+import com.kisman.cc.util.render.objects.world.BoxObject
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.BlockPos
 import java.util.function.Supplier
 
 class BoxRendererPattern(
-    val module: Module,
-    val visible : Supplier<Boolean>,
-    val prefix : String?,
-    val canColor : Boolean
+    module: Module
+) : AbstractPattern<BoxRendererPattern>(
+    module
 ) {
-    constructor(
-            module : Module
-    ) : this(
-            module,
-            Supplier { true },
-            null,
-            false
-    )
+    private val mode = setupSetting(Setting("Mode", module, BoxRenderModes.Filled).setVisible { visible.get() }.setTitle("Mode"))
+    private val depth = setupSetting(Setting("Depth", module, false).setVisible { visible.get() }.setTitle("Depth"))
+    private val alpha = setupSetting(Setting("Alpha", module, true).setVisible { visible.get() }.setTitle("Alpha"))
+    private val width = setupSetting(Setting("Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) && visible.get() }.setTitle("Width"))
+    private val offset = setupSetting(Setting("Offset", module, 0.002, 0.002, 0.2, false).setVisible { visible.get() }.setTitle("Offset"))
+    private val color = setupSetting(Setting("Color", module, "${(if (prefix != null) "$prefix " else "")}Color", Colour(255, 255, 255, 255)).setVisible { visible.get() }.setTitle("Color"))
 
-    constructor(
-            module : Module,
-            canColor : Boolean
-    ) : this(
-            module,
-            Supplier { true },
-            null,
-            canColor
-    )
-
-    val mode = Setting("${(if (prefix != null) "$prefix " else "")}Mode", module, BoxRenderModes.Filled).setVisible { visible.get() }
-    val depth = Setting("${(if (prefix != null) "$prefix " else "")}Depth", module, false).setVisible { visible.get() }
-    val alpha = Setting("${(if (prefix != null) "$prefix " else "")}Alpha", module, true).setVisible { visible.get() }
-    val width = Setting("${(if (prefix != null) "$prefix " else "")}Width", module, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) && visible.get() }
-    val offset = Setting("${(if (prefix != null) "$prefix " else "")}Offset", module, 0.002, 0.002, 0.2, false).setVisible { visible.get() }
-
-    val color = Setting("${(if (prefix != null) "$prefix " else "")}Color", module, "${(if (prefix != null) "$prefix " else "")}Color", Colour(255, 255, 255, 255)).setVisible { visible.get() }
-
-    fun init() : BoxRendererPattern {
-        Kisman.instance.settingsManager.rSetting(mode)
-        Kisman.instance.settingsManager.rSetting(depth)
-        Kisman.instance.settingsManager.rSetting(alpha)
-        Kisman.instance.settingsManager.rSetting(width)
-        Kisman.instance.settingsManager.rSetting(offset)
-
-        if(canColor) Kisman.instance.settingsManager.rSetting(color)
+    override fun preInit() : BoxRendererPattern {
+        if(group != null) {
+            group?.add(mode)
+            group?.add(depth)
+            group?.add(alpha)
+            group?.add(width)
+            group?.add(offset)
+            group?.add(color)
+        }
 
         return this
     }
-    
-    fun initWithGroup(group : SettingGroup) : BoxRendererPattern {
-        Kisman.instance.settingsManager.rSetting(group.add(mode))
-        Kisman.instance.settingsManager.rSetting(group.add(depth))
-        Kisman.instance.settingsManager.rSetting(group.add(alpha))
-        Kisman.instance.settingsManager.rSetting(group.add(width))
-        Kisman.instance.settingsManager.rSetting(group.add(offset))
 
-        if(canColor) Kisman.instance.settingsManager.rSetting(group.add(color))
+    override fun init() : BoxRendererPattern {
+        module.register(mode)
+        module.register(depth)
+        module.register(alpha)
+        module.register(width)
+        module.register(offset)
+        module.register(color)
 
         return this
     }

@@ -1,23 +1,24 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.plugins.ModulePlugin;
-import com.kisman.cc.gui.api.Openable;
-import com.kisman.cc.gui.halq.components.sub.ColorButton;
-import com.kisman.cc.gui.halq.components.sub.ModeButton;
-import com.kisman.cc.gui.halq.util.LayerMap;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.Button;
-import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.gui.halq.components.sub.ColorButton;
+import com.kisman.cc.gui.halq.components.sub.ModeButton;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.enums.RectSides;
-import com.kisman.cc.util.render.objects.AbstractGradient;
-import com.kisman.cc.util.render.objects.ShadowRectObject;
-import com.kisman.cc.util.render.objects.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.ShadowRectObject;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -124,7 +125,21 @@ public class Frame {
             if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30)));
         }
 
-        HalqGui.drawString((hud ? "Hud Editor" : cat.getName()) + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (hud ? Kisman.instance.hudModuleManager.modules.size() : (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() + Kisman.instance.moduleManager.getModulesInCategory(cat).size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size())) + "]": ""), x, y, HalqGui.width, HalqGui.height);
+        HalqGui.drawString((hud ? "Hud Editor" : cat.getName()), x, y, HalqGui.width, HalqGui.height);
+
+        // + (Config.instance.guiRenderSize.getValBoolean() ? " [" + (hud ? Kisman.instance.hudModuleManager.modules.size() : (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() + Kisman.instance.moduleManager.getModulesInCategory(cat).size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size())) + "]": "")
+        if(Config.instance.guiRenderSize.getValBoolean()) {
+            HalqGui.drawSuffix(
+                    "[" + (hud ? Kisman.instance.hudModuleManager.modules.size() : (cat.equals(Category.LUA) ? Kisman.instance.scriptManager.scripts.size() + Kisman.instance.moduleManager.getModulesInCategory(cat).size() : Kisman.instance.moduleManager.getModulesInCategory(cat).size())) + "]",
+                    (hud ? "Hud Editor" : cat.getName()),
+                    x,
+                    y,
+                    HalqGui.width,
+                    HalqGui.height,
+                    new Colour(255, 255, 255, 255),
+                    2
+            );
+        }
     }
 
     public void renderPost(int mouseX, int mouseY) {
@@ -144,11 +159,11 @@ public class Frame {
                 if(button.open) for(Component comp1 : button.comps) if(comp1.visible()) {
                     if(HalqGui.shadowRects) {
                         new ShadowRectObject(comp1.getX(), startY, comp1.getX() + 1.5, startY + comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()), HalqGui.getGradientColour(comp1.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
-                        double x__ = comp1.getX() + (HalqGui.width - (LayerMap.getLayer(comp1.getLayer()).modifier * 2)) - 1.5;
+                        double x__ = comp1.getX() + (HalqGui.width - (LayerControllerKt.getXOffset(comp1.getLayer()) * 2)) - 1.5;
                         new ShadowRectObject(x__, startY, x + 1.5, startY + comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()), HalqGui.getGradientColour(comp1.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
                     } else {
                         Render2DUtil.drawRectWH(comp1.getX(), startY, 1.5, comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
-                        Render2DUtil.drawRectWH(comp1.getX() + (HalqGui.width - (LayerMap.getLayer(comp1.getLayer()).modifier * 2)) - 1.5, startY, 1.5, comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
+                        Render2DUtil.drawRectWH(comp1.getX() + (HalqGui.width - (LayerControllerKt.getXOffset(comp1.getLayer()) * 2)) - 1.5, startY, 1.5, comp1.getHeight(), HalqGui.getGradientColour(comp1.getCount()).getRGB());
                     }
                     startY += comp1.getHeight();
 
@@ -160,11 +175,11 @@ public class Frame {
                                 boolean open1 = (comp2 instanceof ModeButton && ((ModeButton) comp2).open) || (comp2 instanceof ColorButton && ((ColorButton) comp2).open);
                                 if(HalqGui.shadowRects) {
                                     new ShadowRectObject(comp2.getX(), startY, comp2.getX() + 1.5 + (open1 ? 0.5 : 0), startY + comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()), HalqGui.getGradientColour(comp2.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
-                                    double x__ = comp2.getX() + (HalqGui.width - (LayerMap.getLayer(comp2.getLayer()).modifier * 2)) - 1.5 - (open1 ? 0.5 : 0);
+                                    double x__ = comp2.getX() + (HalqGui.width - (LayerControllerKt.getXOffset(comp2.getLayer()) * 2)) - 1.5 - (open1 ? 0.5 : 0);
                                     new ShadowRectObject(x__, startY, x + 1.5 + (open1 ? 0.5 : 0), startY + comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()), HalqGui.getGradientColour(comp2.getCount()).withAlpha(0), 5, Arrays.asList(RectSides.Top, RectSides.Bottom));
                                 } else {
                                     Render2DUtil.drawRectWH(comp2.getX(), startY, 1.5 + (open1 ? 0.5 : 0), comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()).getRGB());
-                                    Render2DUtil.drawRectWH(comp2.getX() + (HalqGui.width - (LayerMap.getLayer(comp2.getLayer()).modifier * 2)) - 1.5 - (open1 ? 0.5 : 0), startY, 1.5 + (open1 ? 0.5 : 0), comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()).getRGB());
+                                    Render2DUtil.drawRectWH(comp2.getX() + (HalqGui.width - (LayerControllerKt.getXOffset(comp2.getLayer()) * 2)) - 1.5 - (open1 ? 0.5 : 0), startY, 1.5 + (open1 ? 0.5 : 0), comp2.getHeight(), HalqGui.getGradientColour(comp2.getCount()).getRGB());
                                 }
                                 startY += comp2.getHeight();
                             }
@@ -179,6 +194,32 @@ public class Frame {
         if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : mods) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
     }
 
+    private int[] doRefreshIteration(ArrayList<Component> components, int[] data) {
+        int offsetY = data[0];
+        int count = data[1];
+
+        for(Component component : components) {
+            if(!component.visible()) continue;
+
+            component.setOff(offsetY);
+            component.setCount(count);
+
+            offsetY += component.getHeight();
+            count++;
+
+            if(component instanceof Openable) {
+                Openable openable = (Openable) component;
+                if(openable.isOpen()) {
+                    int[] dataNew = doRefreshIteration(openable.getComponents(), new int[]{offsetY, count});
+                    offsetY = dataNew[0];
+                    count = dataNew[1];
+                }
+            }
+        }
+
+        return new int[] {offsetY, count};
+    }
+
     public void refresh() {
         int offsetY = HalqGui.height;
         int count1 = count + 1;
@@ -191,7 +232,10 @@ public class Frame {
             if(comp instanceof Button) {
                 Button button = (Button) comp;
                 if(button.open) {
-                    for (Component comp1 : button.comps) {
+                    int[] data = doRefreshIteration(button.comps, new int[] {offsetY, count1});
+                    offsetY = data[0];
+                    count1 = data[1];
+                    /*for (Component comp1 : button.comps) {
                         if(!comp1.visible()) continue;
                         comp1.setCount(count1);
                         comp1.setOff(offsetY);
@@ -220,7 +264,7 @@ public class Frame {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }

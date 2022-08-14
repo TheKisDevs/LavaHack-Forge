@@ -1,5 +1,6 @@
 package com.kisman.cc.util.entity.player;
 
+import com.kisman.cc.util.enums.SoftBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,13 +20,31 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static int findValidScaffoldBlockHotbarSlot() {
+        for(int i = 0; i <= 9; i++) {
+            ItemStack stack = mc.player.inventory.getStackInSlot(i);
+            Item currentItem = stack.getItem();
+            if(!(currentItem instanceof ItemBlock)) continue;
+            Block currentBlock = Block.getBlockFromItem(stack.getItem());
+            if (!Block.getBlockFromItem(stack.getItem()).getDefaultState().isFullBlock()) continue;
+            if (currentBlock instanceof BlockFalling) continue;
+
+            return i;
+        }
+
+        return -1;
+    }
+
     public static int findSoftBlocks(int min, int max) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
-            Block block = Block.getBlockFromItem(stack.getItem());
+            Item currentItem = stack.getItem();
+            if(!(currentItem instanceof ItemBlock)) continue;
+            Block currentBlock = Block.getBlockFromItem(currentItem);
 
-            if(!block.isCollidable() || !block.isTopSolid(block.getDefaultState())) {
-                return i;
+            for(SoftBlocks softBlock : SoftBlocks.values()) {
+                if(!softBlock.getItems().isEmpty()) for (Item item : softBlock.getItems()) if(currentItem.equals(item)) return i;
+                if(!softBlock.getBlocks().isEmpty()) for (Block block : softBlock.getBlocks()) if(currentBlock.equals(block)) return i;
             }
         }
 

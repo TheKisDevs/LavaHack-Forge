@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.*;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.Rendering;
@@ -86,7 +86,7 @@ public class AutoObsidian extends Module {
         if(singlePlace.getValBoolean()){
             BlockUtil.placeBlockSmartRotate(blockPos.get(0), EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);
             last = blockPos.get(0);
-            ChatUtils.message(last.getX() + " " + last.getY() + " " + last.getZ());
+            ChatUtility.message().printClientModuleMessage(last.getX() + " " + last.getY() + " " + last.getZ());
         } else {
             for(BlockPos pos : blockPos){
                 BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);

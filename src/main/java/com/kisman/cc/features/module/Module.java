@@ -1,23 +1,26 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
-
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.settings.*;
+import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public class Module {
+public class Module implements IBindable {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 
 	private String name, description, displayInfo;
 	private int key;
+	public int mouse = -1;
+	public BindType bindType = BindType.Keyboard;
 	private int priority;
 	private final Category category;
 	public boolean toggled;
@@ -25,7 +28,7 @@ public class Module {
 	public boolean visible = true;
 	public boolean hold = false;
 	public boolean block = false;
-	private Supplier<String> fun = null;
+	private Supplier<String> displayInfoSupplier = null;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -47,7 +50,7 @@ public class Module {
 	public void setToggled(boolean toggled) {
 		if(block) return;
 		this.toggled = toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtils.message(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (this.toggled) onEnable();
 		else onDisable();
 	}
@@ -55,7 +58,7 @@ public class Module {
 	public void toggle() {
 		if(block) return;
 		toggled = !toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtils.message(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (toggled) onEnable();
 		else onDisable();
 	}
@@ -70,6 +73,14 @@ public class Module {
 		return group;
 	}
 
+	private boolean isBeta0(){
+		return getClass().getAnnotation(Beta.class) != null;
+	}
+
+	private boolean isAddon0() {
+		return getClass().getAnnotation(Addon.class) != null;
+	}
+
 	public String getDescription() {return description;}
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}
@@ -81,10 +92,9 @@ public class Module {
 	public void onDisable() {if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);}
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}
-	public String getCategoryName() {return this.category.name();} //lua
-	public String getDisplayInfo() {return fun == null ? displayInfo : fun.get();}
+	public String getDisplayInfo() {return displayInfoSupplier == null ? displayInfo : displayInfoSupplier.get();}
 	public void setDisplayInfo(String displayInfo) {this.displayInfo = displayInfo;}
-	public void setDisplayInfo(Supplier<String> fun) {this.fun = fun;}
+	public void setDisplayInfo(Supplier<String> displayInfoSupplier) {this.displayInfoSupplier = displayInfoSupplier;}
 	public void update(){}
 	public void render(){}
 	public void key() {}
@@ -92,5 +102,15 @@ public class Module {
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
 	public boolean isVisible() {return true;}
-	public boolean isBeta() {return false;}
+	public boolean isBeta() {return isBeta0();}
+	public boolean isAddon() {return isAddon0();}
+	@Override public @NotNull BindType getType() {return bindType;}
+	@Override public void setType(@NotNull BindType type) {this.bindType = type;}
+	@Override public boolean isHold() {return hold;}
+	@Override public void setHold(boolean hold) {this.hold = hold;}
+	@Override public int getKeyboardKey() {return key;}
+	@Override public void setKeyboardKey(int key) {this.key = key;}
+	@Override public int getMouseButton() {return mouse;}
+	@Override public void setMouseButton(int button) {this.mouse = button;}
+	@Override public @NotNull String getButtonName() {return "Bind";}
 }

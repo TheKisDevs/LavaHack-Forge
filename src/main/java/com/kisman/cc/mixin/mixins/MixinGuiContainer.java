@@ -3,17 +3,15 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.gui.other.container.ItemESP;
 import com.kisman.cc.features.module.render.ContainerModifier;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.*;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.inventory.*;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.awt.*;
 import java.util.Set;
 
+@SuppressWarnings({"unused", "IntegerDivisionInFloatingPointContext", "CommentedOutCode"})
 @Mixin(value = GuiContainer.class, priority = 10000)
 public class MixinGuiContainer extends GuiScreen {
     @Shadow protected int guiLeft, guiTop, xSize, ySize;

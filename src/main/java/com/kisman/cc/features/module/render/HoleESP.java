@@ -35,17 +35,14 @@ public class HoleESP extends Module {
     private Setting notSelf = new Setting("Not Self", this, true).setVisible(() -> mode.checkValString("Konas") && konasMode.checkValString("FADE"));
     private Setting sides = new Setting("Sides", this, false).setVisible(() -> mode.checkValString("Konas") && (konasMode.checkValString("FULL") || konasMode.checkValString("FADE")));
 
-    private Setting obby = new Setting("_ObsidianHoles", this, "ObsidianHoles");
     private Setting obbyHoles = new Setting("ObsidianHoles", this, true);
     private Setting obbyColor = new Setting("ObbyColor", this, "ObbyColor", new Colour(255, 0, 0)).setVisible(obbyHoles::getValBoolean);
 
 
-    private Setting bedrock = new Setting("_BedrockHoles", this, "BedrockHoles");
     private Setting bedrockHoles = new Setting("BedrockHoles", this, true);
     private Setting bedrockColor = new Setting("BedrockColor", this, "BedrockColor", new Colour(0, 255, 0)).setVisible(bedrockHoles::getValBoolean);
 
 
-    private Setting custom = new Setting("Custom", this, "CustomHoles");
     private Setting customMode = new Setting("CustomMode", this, "Single", new ArrayList<>(Arrays.asList("Single", "Double", "Custom")));
     private final Setting customColor = new Setting("Custom Color", this, "Custom Color", new Colour(255, 255, 255, 255));
 
@@ -71,15 +68,12 @@ public class HoleESP extends Module {
         setmgr.rSetting(notSelf);
         setmgr.rSetting(sides);
 
-        setmgr.rSetting(obby);
         setmgr.rSetting(obbyHoles);
         setmgr.rSetting(obbyColor);
 
-        setmgr.rSetting(bedrock);
         setmgr.rSetting(bedrockHoles);
         setmgr.rSetting(bedrockColor);
 
-        setmgr.rSetting(custom);
         setmgr.rSetting(customMode);
         setmgr.rSetting(customColor);
     }

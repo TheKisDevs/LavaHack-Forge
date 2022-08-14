@@ -1,57 +1,67 @@
 package com.kisman.cc;
 
 import com.kisman.cc.api.cape.CapeAPI;
+import com.kisman.cc.event.EventProcessor;
+import com.kisman.cc.event.EventProcessorLua;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
-import com.kisman.cc.features.catlua.mapping.*;
+import com.kisman.cc.features.catlua.mapping.ForgeMappings;
+import com.kisman.cc.features.catlua.mapping.Remapper3000;
 import com.kisman.cc.features.command.CommandManager;
-import com.kisman.cc.event.*;
-import com.kisman.cc.features.plugins.PluginHandler;
-import com.kisman.cc.features.plugins.managers.PluginManager;
-import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
-import com.kisman.cc.gui.other.music.MusicGui;
-import com.kisman.cc.gui.other.search.SearchGui;
-import com.kisman.cc.util.manager.ServerManager;
-import com.kisman.cc.util.manager.file.ConfigManager;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.gui.MainGui;
-import com.kisman.cc.gui.console.ConsoleGui;
-import com.kisman.cc.gui.halq.Frame;
-import com.kisman.cc.gui.halq.HalqHudGui;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.hud.HudModuleManager;
+import com.kisman.cc.features.module.BindType;
+import com.kisman.cc.features.module.IBindable;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.plugins.PluginHandler;
+import com.kisman.cc.features.plugins.managers.PluginManager;
+import com.kisman.cc.gui.MainGui;
+import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
+import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.halq.HalqHudGui;
+import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
-import com.kisman.cc.gui.vega.Gui;
+import com.kisman.cc.gui.other.music.MusicGui;
+import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.manager.Managers;
+import com.kisman.cc.util.manager.ServerManager;
+import com.kisman.cc.util.manager.file.ConfigManager;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
-import com.kisman.cc.util.protect.*;
-import com.kisman.cc.util.manager.Managers;
+import com.kisman.cc.util.protect.keyauth.util.HWID;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.world.RotationUtils;
 import me.zero.alpine.bus.EventManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.logging.log4j.*;
-import org.lwjgl.input.Keyboard;
-
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import sun.misc.Unsafe;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.*;
-import java.nio.file.*;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Kisman {
@@ -69,14 +79,14 @@ public class Kisman {
     public static final String imagesName = "Images/";
     public static final String pluginsName = "Plugins/";
 
-    public static Kisman instance;
+    public static final Kisman instance = new Kisman();
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean allowToConfiguredAnotherClients, remapped = false;
+    public static boolean allowToConfiguredAnotherClients, remapped = !runningFromIntelliJ();
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
@@ -85,12 +95,6 @@ public class Kisman {
 
     static {
         allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
-
-        try {
-            Minecraft.class.getDeclaredField("player");
-        } catch (NoSuchFieldException e) {
-            remapped = true;
-        }
     }
 
     public boolean init = false;
@@ -105,7 +109,6 @@ public class Kisman {
     public SettingsManager settingsManager;
     public ClickGuiNew clickGuiNew;
     public ConsoleGui consoleGui;
-    public Gui gui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
     public MainGui.SelectionBar selectionBar;
@@ -115,7 +118,6 @@ public class Kisman {
     public MainMenuController mainMenuController;
     public CommandManager commandManager;
     public RPC discord;
-    public RotationUtils rotationUtils;
     public EventProcessor eventProcessor;
     public ServerManager serverManager;
     public SandBoxShaders sandBoxShaders;
@@ -136,19 +138,12 @@ public class Kisman {
     public ConfigManager configManager;
 
     //Phobos Plugins
-    public PluginHandler pluginHandler;
+    public final PluginHandler pluginHandler = new PluginHandler();
 
+    private Kisman() {}
 
-    public Kisman() {
-        instance = this;
-    }
-
-    public void preInit() throws IOException, NoSuchFieldException, IllegalAccessException {
-        try {
-            Minecraft.class.getDeclaredField("player");
-        } catch(Exception e) {
-            remapped = true;
-        }
+    public void coreModInit() {
+        pluginHandler.coreModInit();
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -174,11 +169,9 @@ public class Kisman {
         consoleGui = new ConsoleGui();
         commandManager = new CommandManager();
         discord = new RPC();
-        rotationUtils = new RotationUtils();
         serverManager = new ServerManager();
         sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
-        pluginHandler = new PluginHandler();
         pluginHandler.init();
 
         configManager = new ConfigManager("config");
@@ -189,17 +182,14 @@ public class Kisman {
         ShaderShell.init();
 
         //catlua
-        catlua: {
-            eventProcessorLua = new EventProcessorLua();
-            remapper3000 = new Remapper3000();
-            remapper3000.init();
-            luaRotation = new LuaRotation();
-            scriptManager = new ScriptManager();
-        }
+        eventProcessorLua = new EventProcessorLua();
+        remapper3000 = new Remapper3000();
+        remapper3000.init();
+        luaRotation = new LuaRotation();
+        scriptManager = new ScriptManager();
 
         //gui's
         clickGuiNew = new ClickGuiNew();
-        gui = new Gui();
         halqGui = new HalqGui();
         halqHudGui = new HalqHudGui();
 
@@ -215,29 +205,52 @@ public class Kisman {
 
         init = true;
     }
-    
+
     @SubscribeEvent
     public void key(KeyInputEvent e) {
-    	if (mc.world == null || mc.player == null) return;
-    	try {
+        if (mc.world == null || mc.player == null) return;
+        try {
             if (Keyboard.isCreated()) {
                 if (Keyboard.getEventKeyState()) {
                     int keyCode = Keyboard.getEventKey();
                     if (keyCode <= 1) return;
-                    for (Module m : moduleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                    for (HudModule m : hudModuleManager.modules) if (m.getKey() == keyCode) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) if(s.getKey() == keyCode && s.isCheck()) {
+                    for (Module m : moduleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
+                    for (HudModule m : hudModuleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
+                    for (Setting s : settingsManager.getSettings()) if(s.getKeyboardKey() == keyCode && s.bindType == BindType.Keyboard && s.isCheck()) {
                         s.setValBoolean(!s.getValBoolean());
                         if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
                     }
-                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey());
+                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey(), false);
             }
         } catch (Exception ignored) {}
     }
 
-    private void onRelease(int key) {
-        for(Module m : moduleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
-        for(HudModule m : hudModuleManager.modules) if(m.getKey() == key) if(m.hold) m.toggle();
+    @SubscribeEvent
+    public void mouse(InputEvent e) {
+        if (mc.world == null || mc.player == null) return;
+        try {
+            if (Mouse.isCreated()) {
+                if (Mouse.getEventButtonState()) {
+                    int button = Mouse.getEventButton();
+                    if (button <= 1) return;
+                    for (Module m : moduleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
+                    for (HudModule m : hudModuleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
+                    for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == button && s.getType() == BindType.Mouse && s.isCheck()) {
+                        s.setValBoolean(!s.getValBoolean());
+                        if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                    }
+                } else if(Mouse.getEventButton() > 1) onRelease(Mouse.getEventButton(), true);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void onRelease(int key, boolean mouse) {
+        for(Module m : moduleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
+        for(HudModule m : hudModuleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
+        for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == key && s.getType() == BindType.Mouse && s.isCheck()) {
+            s.setValBoolean(!s.getValBoolean());
+            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+        }
     }
 
     public static String getName() {
@@ -315,5 +328,27 @@ public class Kisman {
         if(flag) {
             mc.displayGuiScreen(instance.halqGui);
         }
+    }
+
+    public static boolean runningFromIntelliJ() {
+        return System.getProperty("java.class.path").contains("idea_rt.jar");
+    }
+
+    public static void unsafeCrash() {
+        Unsafe unsafe = null;
+        try {
+            Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            f.setAccessible(true);
+            unsafe = (Unsafe) f.get(null);
+        } catch (Exception e) {
+            System.exit(-1);
+            for (Field f : Minecraft.class.getDeclaredFields()) {
+                try {
+                    f.set(null, null);
+                } catch (IllegalAccessException ignored) {}
+            }
+        }
+        unsafe.putAddress(0, 0);
+        unsafe.freeMemory(0);
     }
 }

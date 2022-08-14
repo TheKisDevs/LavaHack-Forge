@@ -5,16 +5,24 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.catlua.lua.LuaCallback;
 import com.kisman.cc.features.catlua.lua.functions.*;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.features.catlua.lua.tables.*;
+import com.kisman.cc.features.catlua.lua.tables.ColorTable;
+import com.kisman.cc.features.catlua.lua.tables.GuiBuilder;
+import com.kisman.cc.features.catlua.lua.tables.HudModuleLua;
+import com.kisman.cc.features.catlua.lua.tables.ModuleLua;
 import com.kisman.cc.features.catlua.lua.utils.*;
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.client.Minecraft;
-import org.luaj.vm2.*;
+import org.luaj.vm2.LuaClosure;
+import org.luaj.vm2.LuaValue;
 
-import javax.script.*;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +58,7 @@ public class ModuleScript extends Module {
             engine.eval(script);
             engine.eval("main()");
         } catch (Exception e) {
-            ChatUtils.error(e.getMessage());
+            ChatUtility.error().printClientModuleMessage(e.getMessage());
         }
         if (cache.has("__toggled")) setToggled(cache.get("__toggled").getAsBoolean());
         cache = new JsonObject();

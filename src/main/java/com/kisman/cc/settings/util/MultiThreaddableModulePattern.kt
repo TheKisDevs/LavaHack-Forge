@@ -14,14 +14,32 @@ import java.util.function.Supplier
  * @since 13:31 of 18.06.2022
  */
 class MultiThreaddableModulePattern(
-    val module : Module
+    module : Module
+) : AbstractPattern<MultiThreaddableModulePattern>(
+    module
 ) {
-    private val group = module.register(SettingGroup(Setting("Multi Thread", module)))
+    val group_ = setupGroup(SettingGroup(Setting("Multi Thread", module)))
 
-    private val delay = module.register(group.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
-    private val multiThread = module.register(group.add(Setting("Multi Thread", module, false)))
+    val delay = setupSetting(group_.add(Setting("Delay", module, 15.0, 0.0, 100.0, NumberType.TIME)))
+    val multiThread = setupSetting(group_.add(Setting("Multi Thread", module, false)))
 
     private val handler = ThreadHandler(Supplier { delay.valLong }, Supplier { multiThread.valBoolean })
+
+    override fun preInit(): MultiThreaddableModulePattern {
+        if(group != null) {
+            group?.add(group_)
+        }
+        
+        return this
+    }
+
+    override fun init(): MultiThreaddableModulePattern {
+        module.register(group_)
+        module.register(delay)
+        module.register(multiThread)
+        
+        return this
+    }
 
     fun reset() {
         handler.reset()

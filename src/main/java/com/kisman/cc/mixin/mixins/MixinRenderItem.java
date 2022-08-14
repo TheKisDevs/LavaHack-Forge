@@ -36,7 +36,7 @@ public class MixinRenderItem {
             } else {
                 renderModel(model, ViewModel.instance.isToggled() && ViewModel.instance.useAlpha.getValBoolean() ? new Color(255, 255, 255, ViewModel.instance.alpha.getValInt()).getRGB() : -1, stack);
                 if (stack.hasEffect()) {
-                    if(NoRender.instance.isToggled() && NoRender.instance.enchantGlint.getValBoolean()) {} else renderEffect(model);
+                    if(!(NoRender.instance.isToggled() && NoRender.instance.enchantGlint.getValBoolean())) renderEffect(model);
                 }
             }
 

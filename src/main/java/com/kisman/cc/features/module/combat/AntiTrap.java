@@ -3,31 +3,34 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.*;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
-import com.kisman.cc.util.world.RotationUtils;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
-import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.*;
 
 public class AntiTrap extends Module {
     public static AntiTrap instance;
 
-    private final Setting mode = register(new Setting("Mode", this, "MotionTick", new ArrayList<>(Arrays.asList("MotionTick", "ClientTick"))));
+    private final Setting mode = register(new Setting("Mode", this, "MotionTick", Arrays.asList("MotionTick", "ClientTick")));
     private final Setting delay = register(new Setting("Delay", this, 400, 0, 1000, true));
     private final Setting switchMode = register(new Setting("SwitchMode", this, SwitchModes.None));
-    private final Setting rotate = register(new Setting("Rotate", this, Rotate.NONE));
     private final Setting sortY = register(new Setting("SortY", this, true));
     private final Setting onlyInHole = register(new Setting("OnlyInHole", this, true));
 
@@ -40,6 +43,7 @@ public class AntiTrap extends Module {
 
     public AntiTrap() {
         super("AntiTrap", "", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
 
         instance = this;
     }
@@ -59,12 +63,10 @@ public class AntiTrap extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
-        super.setDisplayInfo("[" + mode.getValString() + "]");
-        if(mode.getValString().equalsIgnoreCase("ClientTick")) doAntiTrap();
+        if(mc.player != null && mc.world != null && mode.checkValString("ClientTick")) doAntiTrap();
     }
 
-    @EventHandler private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {if(event.getEra() == Event.Era.PRE && mode.getValString().equalsIgnoreCase("MotionTick")) doAntiTrap();});
+    @EventHandler private final Listener<EventPlayerMotionUpdate> listener = new Listener<>(event -> {if(event.getEra() == Event.Era.PRE && mode.checkValString("MotionTick")) doAntiTrap();});
 
     private void doAntiTrap() {
         if(timer.passedMillis(delay.getValInt())) timer.reset();
@@ -97,17 +99,6 @@ public class AntiTrap extends Module {
 
         final RayTraceResult result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5));
         final EnumFacing facing = (result == null || result.sideHit == null) ? EnumFacing.UP : result.sideHit;
-        final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((pos.getX() + 0.5f), (pos.getY() - 0.5f), (pos.getZ() + 0.5f)));
-        switch (this.rotate.getValString()) {
-            case "NORMAL": {
-                RotationUtils.setPlayerRotations(angle[0], angle[1]);
-                break;
-            }
-            case "PACKET": {
-                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(angle[0], (float) MathHelper.normalizeAngle((int)angle[1], 360), AntiTrap.mc.player.onGround));
-                break;
-            }
-        }
         placedPos.add(pos);
         mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, facing, this.offhand ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND, 0.0f, 0.0f, 0.0f));
         mc.player.swingArm(EnumHand.MAIN_HAND);
@@ -134,12 +125,6 @@ public class AntiTrap extends Module {
         if (mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.OBSIDIAN || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK || mc.world.getBlockState(blockpos.add(0, 0, -1)).getBlock() == Blocks.ENDER_CHEST) ++holeblocks;
 
         return holeblocks >= 9;
-    }
-
-    public enum Rotate {
-        NONE,
-        NORMAL,
-        PACKET
     }
 
     public enum SwitchModes {

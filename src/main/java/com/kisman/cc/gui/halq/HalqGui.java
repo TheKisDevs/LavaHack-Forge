@@ -1,33 +1,36 @@
 package com.kisman.cc.gui.halq;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
+import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * @author made by _kisman_ for Halq with love <3
  */
+@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class HalqGui extends GuiScreen {
     //variables for main gui settings
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false, test2 = true;
-    public static int diff = 0, offsets = 0;
+    public static int diff = 0, offsets = 0, textOffsetX = 5;
 
     //constants
     public static final int height = 13;
@@ -50,7 +53,12 @@ public class HalqGui extends GuiScreen {
         this.lastGui = lastGui;
     }
 
-    public HalqGui(boolean notFullInit) {
+    public HalqGui setLastGui(GuiScreen gui) {
+        this.lastGui = gui;
+        return this;
+    }
+
+    public HalqGui(@SuppressWarnings("unused") boolean notFullInit) {
         this.particleSystem = new ParticleSystem();
     }
 
@@ -90,6 +98,7 @@ public class HalqGui extends GuiScreen {
         offsets = GuiModule.instance.offsets.getValInt();
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
         test2 = GuiModule.instance.test2.getValBoolean();
+        textOffsetX = GuiModule.instance.textOffsetX.getValInt();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -172,9 +181,58 @@ public class HalqGui extends GuiScreen {
                 CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
             case Left:
-                CustomFontUtil.drawStringWithShadow(text, x + 5, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
+                CustomFontUtil.drawStringWithShadow(text, x + textOffsetX, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
         }
+    }
+
+    public static void drawSuffix(String suffix, String parentText, int x, int y, int width, int height, Colour colour, int step) {
+        GL11.glPushMatrix();
+        GL11.glScaled(0.5, 0.5, 1);
+
+        switch (stringLocateMode) {
+            case Center:
+                switch(step) {
+                    case 1 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, y * 2, colour.getRGB());
+                        break;
+                    case 2 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2)) * 2f, colour.getRGB());
+                        break;
+                    case 3 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        break;
+                }
+                break;
+            case Left:
+                switch(step) {
+                    case 1 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, y * 2, colour.getRGB());
+                        break;
+                    case 2 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2f)) * 2f, colour.getRGB());
+                        break;
+                    case 3 :
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        break;
+                }
+                break;
+        }
+
+        GL11.glPopMatrix();
+    }
+
+    public static void drawSuffix(String suffix, String parentText, int x, int y, int width, int height, int count, int step) {
+        drawSuffix(
+                suffix,
+                parentText,
+                x,
+                y,
+                width,
+                height,
+                HalqGui.getGradientColour(count),
+                step
+        );
     }
 
     public static void drawCenteredString(String text, int x, int y, int width, int height) {

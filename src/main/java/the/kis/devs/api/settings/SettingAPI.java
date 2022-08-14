@@ -56,7 +56,7 @@ public class SettingAPI extends Setting {
     public int getIndex() {return super.getIndex();}
     public void setIndex(int index) {super.setIndex(index);}
     public String getTitle() {return super.getTitle();}
-    public void setTitle(String title) {super.setTitle(title);}
+    public Setting setTitle(String title) {return super.setTitle(title);}
     public String getName() {return super.getName();}
     public Setting setName(String name) {return super.setName(name);}
     public Module getParentMod() {return super.getParentMod();}

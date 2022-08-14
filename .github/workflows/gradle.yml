@@ -32,7 +32,11 @@ jobs:
 
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --no-daemon
+          arguments: setupdecompworkspace
+          
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
 
       - uses: actions/upload-artifact@v2
         with:

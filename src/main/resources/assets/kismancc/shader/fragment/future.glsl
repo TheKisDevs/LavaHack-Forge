@@ -13,31 +13,21 @@ uniform vec4 filledColor;
 uniform sampler2D filledImage;
 uniform float filledBlend;
 
-void main(void) {
-    if(outline) {
-        doOutline();
-    }
-
-    if(filled) {
-        doFilledColor();
-    }
-}
-
-void doFilledImage(void) {
+void doFilledImage() {
 
 }
 
-void doFilledColor(void) {
+void doFilledColor() {
     vec2 texCoord0 = gl_MultiTexCoord0.xy;
     vec4 sampleTexel = texture2D(texture, texCoord0.xy);
     gl_FragColor = vec4(color.rgb * filledColor.a, sampleTexel.a != 0.0f ? color.a : 0.0f);
 }
 
-void doFilledRainbow(void) {
+void doFilledRainbow() {
 
 }
 
-void doOutline(void) {
+void doOutline() {
     vec2 texCoord0 = gl_MultiTexCoord0.xy;
 
     vec4 centerTexel = texture2D(texture, texCoord0);
@@ -57,3 +47,19 @@ void doOutline(void) {
     alphaSum += sampleTexel7.a - centerTexel.a;
     gl_FragColor = vec4((colorSum / alphaSum) * outlineOpacity, clamp(alphaSum, 0.0f, 1.0f) * outlineOpacity);
 }
+
+void main() {
+
+                                                                                                                                }
+
+                                                                                                                                }
+
+void main() {
+                    if(outline) {
+                                    doOutline();
+                                }
+
+                    if(filled) {
+                                   doFilledColor();
+                               }
+                }

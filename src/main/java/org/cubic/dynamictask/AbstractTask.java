@@ -22,6 +22,10 @@ public abstract class AbstractTask<R> {
         return new DelegateAbstractTask<>(cls);
     }
 
+    public static <T> DelegateAbstractTask<T> typesResolve(Class<?>... cls){
+        return new DelegateAbstractTask<>(cls);
+    }
+
     public static <T> AbstractTask<T> directTask(Class<T> ret, T retValue){
         return new AbstractTask<T>() {
             @Override

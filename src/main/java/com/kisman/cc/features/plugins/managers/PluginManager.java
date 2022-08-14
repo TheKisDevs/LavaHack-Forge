@@ -49,7 +49,7 @@ public class PluginManager
         }
 
         this.classLoader = pluginClassLoader;
-        Kisman.LOGGER.info("PluginManager: Scanning for PluginConfigs.");
+        System.out.println("PluginManager: Scanning for PluginConfigs.");
 
         File d = new File(PATH);
         Map<String, File> remap = scanPlugins(d.listFiles(), pluginClassLoader);
@@ -77,7 +77,7 @@ public class PluginManager
             {
                 if (file.getName().endsWith(".jar"))
                 {
-                    Kisman.LOGGER.info("PluginManager: Scanning "
+                    System.out.println("PluginManager: Scanning "
                             + file.getName());
                     try
                     {
@@ -105,13 +105,13 @@ public class PluginManager
         {
             if (plugins.containsKey(config))
             {
-                Kisman.LOGGER.error("Can't register Plugin "
+                System.out.println("Can't register Plugin "
                         + config.getName()
                         + ", a plugin with that name is already registered.");
                 continue;
             }
 
-            Kisman.LOGGER.info("Instantiating: "
+            System.out.println("Instantiating: "
                     + config.getName()
                     + ", MainClass: "
                     + config.getMainClass());
@@ -125,7 +125,7 @@ public class PluginManager
             }
             catch (Throwable e)
             {
-                Kisman.LOGGER.error("Error instantiating : "
+                System.out.println("Error instantiating : "
                         + config.getName() + ", caused by:");
 
                 e.printStackTrace();
@@ -156,7 +156,7 @@ public class PluginManager
             case VANILLA:
                 if (vanilla == null || vanilla.equals("false"))
                 {
-                    Kisman.LOGGER.info("Found Plugin to remap!");
+                    System.out.println("Found Plugin to remap!");
                     remap.put(configName, file);
                     return;
                 }
@@ -188,7 +188,7 @@ public class PluginManager
                     + ": Found a PluginConfig, but couldn't instantiate it.");
         }
 
-        Kisman.LOGGER.info("Found PluginConfig: "
+        System.out.println("Found PluginConfig: "
                 + config.getName()
                 + ", MainClass: "
                 + config.getMainClass()

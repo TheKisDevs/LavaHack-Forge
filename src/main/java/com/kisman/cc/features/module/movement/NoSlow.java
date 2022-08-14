@@ -24,20 +24,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
-    private final Setting mode = new Setting("Mode", this, Mode.None);
+    private final Setting mode = register(new Setting("Mode", this, Mode.None));
 
-    private final Setting items = new Setting("Items", this, true);
-    private final Setting ncpStrict = new Setting("NCPStrict", this, true);
-    private final Setting slimeBlocks = new Setting("SlimeBlocks", this, true);
+    private final Setting items = register(new Setting("Items", this, true));
+    private final Setting ncpStrict = register(new Setting("NCPStrict", this, true));
+    private final Setting slimeBlocks = register(new Setting("SlimeBlocks", this, true));
 
-    private final Setting sneak = new Setting("Sneak", this, false);
+    private final Setting sneak = register(new Setting("Sneak", this, false));
 
-    private final SettingGroup invMoveGroup = new SettingGroup(new Setting("Inv Move", this));
+    private final SettingGroup invMoveGroup = register(new SettingGroup(new Setting("Inv Move", this)));
 
-    private final Setting invMove = invMoveGroup.add(new Setting("InvMove", this, true));
-    private final Setting ignoreChat = invMoveGroup.add(new Setting("IgnoreChat", this, true).setVisible(invMove::getValBoolean));
-    private final Setting ignoreConsole = invMoveGroup.add(new Setting("IgnoreConsole", this, true).setVisible(invMove::getValBoolean));
-    private final Setting ignoreClickGui = invMoveGroup.add(new Setting("IgnoreClickGui", this, false).setVisible(invMove::getValBoolean));
+    private final Setting invMove = invMoveGroup.add(register(new Setting("InvMove", this, true)));
+    private final Setting ignoreChat = invMoveGroup.add(register(new Setting("IgnoreChat", this, true).setVisible(invMove::getValBoolean)));
+    private final Setting ignoreConsole = invMoveGroup.add(register(new Setting("IgnoreConsole", this, true).setVisible(invMove::getValBoolean)));
+    private final Setting ignoreClickGui = invMoveGroup.add(register(new Setting("IgnoreClickGui", this, false).setVisible(invMove::getValBoolean)));
 
     public static NoSlow instance;
 
@@ -45,20 +45,6 @@ public class NoSlow extends Module {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
 
         instance = this;
-
-        setmgr.rSetting(mode);
-
-        setmgr.rSetting(items);
-        setmgr.rSetting(ncpStrict);
-        setmgr.rSetting(slimeBlocks);
-
-        setmgr.rSetting(sneak);
-
-        setmgr.rSetting(invMoveGroup);
-        setmgr.rSetting(invMove);
-        setmgr.rSetting(ignoreChat);
-        setmgr.rSetting(ignoreConsole);
-        setmgr.rSetting(ignoreClickGui);
     }
 
     public void onEnable() {

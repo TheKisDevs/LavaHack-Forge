@@ -1,3 +1,10 @@
+//file:noinspection GroovyAssignabilityCheck
+//file:noinspection GradlePackageUpdate
+//file:noinspection DifferentStdlibGradleVersion
+//file:noinspection JCenterRepository
+//file:noinspection GroovyUnusedAssignment
+//file:noinspection DifferentKotlinGradleVersion
+//file:noinspection GrUnresolvedAccess
 ext.kotlin_version = '1.3.50'
 ext.annotations_version = '16.0.3'
 ext.coroutines_version = '1.3.1'
@@ -123,8 +130,7 @@ dependencies {
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: "$coroutines_version"
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: "$coroutines_version"
     compile 'org.jsoup:jsoup:1.11.3'
-    compile 'com.github.cabaletta:baritone:1.2.14'
-    compile 'cabaletta:baritone-api:1.2'
+    compile 'com.formdev:flatlaf:2.2'
 }
 
 processResources {
@@ -158,7 +164,7 @@ jar {
                 'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',//com.kisman.cc.mixin.KismanMixinLoader
+                'FMLCorePlugin': 'com.kisman.cc.mixin.KismanMixinLoader',
                 'ForceLoadAsMod': 'true',
                 'FMLAT': 'kisman_at.cfg'
         )
@@ -193,14 +199,103 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"))
         include(dependency("org.jsoup:jsoup:1.11.3"))
-        include(dependency('cabaletta:baritone-api'))
+        include(dependency('com.formdev:flatlaf:2.2'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
     classifier = 'release'
 }
 
-build.dependsOn(shadowJar)
+task privateJar(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        exclude 'assets/loader/**'
+        exclude "com/kisman/cc/loader/**"
+        exclude 'mixins.loader.json'
+        exclude 'mixins.loader.refmap.json'
+
+        exclude 'com/formdev/**'
+    }
+    baseName = ''
+    version = ''
+    classifier = 'kisman.cc-b0.1.6.5-plus'
+}
+
+task kismanClass(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        include 'Main.class'
+    }
+
+    baseName = ''
+    version = ''
+    classifier = 'KismanClass'
+}
+
+task publicJar(type : Jar, dependsOn : jar) {
+    from(zipTree(shadowJar.archivePath)) {
+        include 'baritone/**'
+        include "com/kisman/cc/sockets/**"
+        include 'com/kisman/cc/ai/**'
+        include 'com/kisman/cc/api/**'
+        include 'com/kisman/cc/event/**'
+        include 'com/kisman/cc/features/**'
+        include 'com/kisman/cc/gui/**'
+        include 'com/kisman/cc/mixin/**'
+        include 'com/kisman/cc/settings/**'
+        include 'com/kisman/cc/util/**'
+        include 'com/kisman/cc/Kisman.class'
+        include 'com/kisman/cc/KismanStatic.class'
+        include 'com/kisman/cc/RPC.class'
+        include 'org/cubic/**'
+        include 'the/kis/devs/api/**'
+        include 'mixins.Kisman.json'
+        include 'mixins.kisman.refmap.json'
+        include 'assets/kismancc'
+        include 'net/**'
+        include 'sun/**'
+    }
+    baseName = ''
+    version = ''
+    classifier = 'LavaHack-b0.1.6.5-plus'
+}
+
+task loaderJar(type: Jar, dependsOn: shadowJar) {
+    from(zipTree(shadowJar.archivePath)) {
+        exclude 'baritone'
+        exclude 'com/kisman/cc/ai/**'
+        exclude 'com/kisman/cc/api/**'
+        exclude 'com/kisman/cc/event/**'
+        exclude 'com/kisman/cc/features/**'
+        exclude 'com/kisman/cc/gui/**'
+        exclude 'com/kisman/cc/mixin/**'
+        exclude 'com/kisman/cc/settings/**'
+        exclude 'com/kisman/cc/util/**'
+        exclude 'com/kisman/cc/Kisman.class'
+        exclude 'com/kisman/cc/KismanStatic.class'
+        exclude 'com/kisman/cc/RPC.class'
+        exclude 'the/kis/devs/api/**'
+        exclude 'mixins.Kisman.json'
+        exclude 'mixins.kisman.refmap.json'
+        exclude 'assets/kismancc/**'
+        exclude 'org/cubic/**'
+        exclude 'Main.class'
+    }
+    manifest {
+        attributes(
+                'MixinConfigs': 'mixins.loader.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'com.kisman.cc.loader.LavaFalconCoreMod',
+                'ForceLoadAsMod': 'true',
+                'FMLAT': 'kisman_at.cfg'
+        )
+    }
+    baseName = ''
+    version = ''
+    classifier = 'LavaHackLoader-1.0'
+}
+
+build.dependsOn(privateJar, publicJar, loaderJar)
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

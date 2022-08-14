@@ -3,8 +3,9 @@ package com.kisman.cc.util.enums
 import com.kisman.cc.util.render.Rendering
 
 enum class RenderingRewriteModes(
-    val mode : Rendering.Mode
+    val mode : Rendering.Mode?
 ) {
+    None(null),
     Filled(Rendering.Mode.BOX),
     Outline(Rendering.Mode.OUTLINE),
     Both(Rendering.Mode.BOTH),

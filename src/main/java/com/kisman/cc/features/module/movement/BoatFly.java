@@ -10,26 +10,17 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Keyboard;
 
 public class BoatFly extends Module {
-    private final Setting speed = new Setting("Speed", this, 2, 0, 10, true);
-    private final Setting verticalSpeed = new Setting("Vertical Speed", this, 1, 0, 10, true);
-    private final Setting downKey = new Setting("Down Key", this, Keyboard.KEY_LCONTROL).setVisible(verticalSpeed.getValInt() != 0);
-    private final Setting glideSpeed = new Setting("Glide Speed", this, 0, -10, 10, true);
-    private final Setting staticY = new Setting("Static Y", this, true);
-    private final Setting hover = new Setting("Hover", this, false);
-    private final Setting bypass = new Setting("Bypass", this, false);
-    private final Setting extraCalc = new Setting("Extra Calc", this, false);
+    private final Setting speed = register(new Setting("Speed", this, 2, 0, 10, true));
+    private final Setting verticalSpeed = register(new Setting("Vertical Speed", this, 1, 0, 10, true));
+    private final Setting downKey = register(new Setting("Down Key", this, Keyboard.KEY_LCONTROL).setVisible(verticalSpeed.getValInt() != 0));
+    private final Setting glideSpeed = register(new Setting("Glide Speed", this, 0, -10, 10, true));
+    private final Setting staticY = register(new Setting("Static Y", this, true));
+    private final Setting hover = register(new Setting("Hover", this, false));
+    private final Setting bypass = register(new Setting("Bypass", this, false));
+    private final Setting extraCalc = register(new Setting("Extra Calc", this, false));
 
     public BoatFly() {
         super("BoatFly", Category.MOVEMENT);
-
-        setmgr.rSetting(speed);
-        setmgr.rSetting(verticalSpeed);
-        setmgr.rSetting(downKey);
-        setmgr.rSetting(glideSpeed);
-        setmgr.rSetting(staticY);
-        setmgr.rSetting(hover);
-        setmgr.rSetting(bypass);
-        setmgr.rSetting(extraCalc);
     }
 
     public void update() {

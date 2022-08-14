@@ -16,7 +16,7 @@ class BaritoneTest : Module(
 ) {
     override fun onEnable() {
         if(mc.player == null || mc.world == null) {
-            return;
+            return
         }
 
         BaritoneAPI.getProvider().primaryBaritone.customGoalProcess.setGoalAndPath(GoalXZ(1000, 1000))

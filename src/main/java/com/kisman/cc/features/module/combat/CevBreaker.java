@@ -1,21 +1,23 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.settings.*;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.enums.RotationModes;
 import com.kisman.cc.util.enums.SurroundSupportModes;
 import com.kisman.cc.util.enums.SwitchModes;
-import com.kisman.cc.util.process.*;
-
-import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.other.ChatUtils;
+//import com.kisman.cc.util.process.DynamicTrapUtil;
+//import com.kisman.cc.util.process.PacketMineUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.play.client.*;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -57,8 +59,8 @@ public class CevBreaker extends Module {
 
     private CevBreakerStage stage;
 
-    private DynamicTrapUtil trap = new DynamicTrapUtil();
-    private PacketMineUtil mine = new PacketMineUtil();
+//    private DynamicTrapUtil trap = new DynamicTrapUtil();
+//    private PacketMineUtil mine = new PacketMineUtil();
     private EntityPlayer target;
     private boolean canTopTrap;
     private BlockPos posToUse;
@@ -85,8 +87,8 @@ public class CevBreaker extends Module {
     }
 
     public void onEnable() {
-        trap = new DynamicTrapUtil();
-        mine = new PacketMineUtil();
+//        trap = new DynamicTrapUtil();
+//        mine = new PacketMineUtil();
         stage = CevBreakerStage.Trap;
         canTopTrap = true;
         rebreakCount = 0;
@@ -96,8 +98,8 @@ public class CevBreaker extends Module {
     }
 
     public void onDisable() {
-        trap = null;
-        mine = null;
+//        trap = null;
+//        mine = null;
     }
 
     public void update() {
@@ -106,14 +108,14 @@ public class CevBreaker extends Module {
         target = EntityUtil.getTarget(targetRange.getValFloat());
         if(target == null) return;
 
-        if(trap == null) trap = new DynamicTrapUtil();
+//        if(trap == null) trap = new DynamicTrapUtil();
         if(stage == CevBreakerStage.Trap){
-            trap.update(target, dynamic.getValBoolean(), packet.getValBoolean(), rotateMode.getValString(), supportBlocks.getValString(), surroundPlacing.getValBoolean(), antiStep.getValBoolean(), rewriteRetries.getValInt(), switch_.getValString(), canTopTrap);
+//            trap.update(target, dynamic.getValBoolean(), packet.getValBoolean(), rotateMode.getValString(), supportBlocks.getValString(), surroundPlacing.getValBoolean(), antiStep.getValBoolean(), rewriteRetries.getValInt(), switch_.getValString(), canTopTrap);
             canTopTrap = !canTopTrap;
         } else {
             BlockPos pos = PlayerUtil.getPlayerPos(target).up(2);
             if(!BlockUtil.canBlockBeBroken(pos)) {
-                ChatUtils.error("block for break cant be broken :( shutdown!");
+                ChatUtility.error().printClientModuleMessage("block for break cant be broken :( shutdown!");
                 super.setToggled(false);
                 return;
             }

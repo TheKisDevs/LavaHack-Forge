@@ -3,7 +3,7 @@ package com.kisman.cc.features.catlua.lua.utils;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.Globals;
-import com.kisman.cc.util.chat.other.ChatUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import org.luaj.vm2.LuaClosure;
 import org.luaj.vm2.LuaValue;
 
@@ -16,7 +16,7 @@ public class LuaUtils implements Globals {
             if (values == null) closure.invoke();
             else closure.invoke(values);
         } catch (Throwable e) {
-            if(mc.player != null && mc.world != null && script != null) ChatUtils.error(script.getName() + " -> " + e.getMessage());
+            if(mc.player != null && mc.world != null && script != null) ChatUtility.error().printClientModuleMessage(script.getName() + " -> " + e.getMessage());
             e.printStackTrace();
             if (script != null && !ScriptManager.strict) {
                 script.setToggled(false);

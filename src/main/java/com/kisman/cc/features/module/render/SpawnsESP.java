@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.Rendering;
 import me.zero.alpine.listener.*;
@@ -14,7 +15,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
-import java.util.concurrent.*;
 
 public class SpawnsESP extends Module {
     private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
@@ -24,10 +24,9 @@ public class SpawnsESP extends Module {
     private final Setting boats = register(new Setting("Boats", this, false));
     private final Setting duration = register(new Setting("Duration", this, 1, 0.1f, 5, false));
     private final Setting width = register(new Setting("Width", this, 2.5f, 0.1, 10, false));
-    private final Setting multiThreading = register(new Setting("Multi Threading", this, false));
+    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
 
-    private final CopyOnWriteArrayList<VecCircle> circles = new CopyOnWriteArrayList();
-    private final ConcurrentHashMap<BlockPos, Long> blocks = new ConcurrentHashMap();
+    private final ArrayList<VecCircle> circles = new ArrayList<>();
 
     public SpawnsESP() {
         super("SpawnsESP", "        super(\"SpawnsESP\", )", Category.RENDER);
@@ -36,6 +35,7 @@ public class SpawnsESP extends Module {
     public void onEnable() {
         super.onEnable();
         Kisman.EVENT_BUS.subscribe(listener);
+        threads.reset();
     }
 
     public void onDisable() {
@@ -49,35 +49,35 @@ public class SpawnsESP extends Module {
                 this.circles.remove(circle);
                 continue;
             }
-            Rendering.setup();
 
-            ArrayList<Vec3d> vertexes = new ArrayList<>();
-            double deltaX = VecCircle.getVector(circle).x - mc.getRenderManager().renderPosX;
-            double deltaY = VecCircle.getVector(circle).y - mc.getRenderManager().renderPosY;
-            double deltaZ = VecCircle.getVector(circle).z - mc.getRenderManager().renderPosZ;
-            GL11.glLineWidth((float) width.getValDouble());
-            GL11.glEnable(2848);
-            GL11.glHint(3154, 4354);
-            GL11.glBegin(1);
-            for (int i = 0; i <= 360; ++i) {
-                Vec3d vec3d = new Vec3d(deltaX + Math.sin((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle), deltaY + (double)(VecCircle.getYaw(circle) * ((float)(System.currentTimeMillis() - VecCircle.getTime(circle)) / (1000.0f * duration.getValDouble()))), deltaZ + Math.cos((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle));
-                vertexes.add(vec3d);
-            }
-            for (int n = 0; n < vertexes.size() - 1; ++n) {
-                color.getColour().glColor();
-                GL11.glVertex3d(vertexes.get(n).x, vertexes.get(n).y, vertexes.get(n).z);
-                GL11.glVertex3d(vertexes.get(n + 1).x, vertexes.get(n + 1).y, vertexes.get(n + 1).z);
-            }
-            GL11.glEnd();
+            mc.addScheduledTask(() -> {
+                Rendering.setup();
 
-            Rendering.release();
+                ArrayList<Vec3d> vertexes = new ArrayList<>();
+                double deltaX = VecCircle.getVector(circle).x - mc.getRenderManager().renderPosX;
+                double deltaY = VecCircle.getVector(circle).y - mc.getRenderManager().renderPosY;
+                double deltaZ = VecCircle.getVector(circle).z - mc.getRenderManager().renderPosZ;
+                GL11.glLineWidth(width.getValFloat());
+                GL11.glBegin(1);
+                for (int i = 0; i <= 360; ++i) {
+                    Vec3d vec3d = new Vec3d(deltaX + Math.sin((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle), deltaY + (double)(VecCircle.getYaw(circle) * ((float)(System.currentTimeMillis() - VecCircle.getTime(circle)) / (1000.0f * duration.getValDouble()))), deltaZ + Math.cos((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle));
+                    vertexes.add(vec3d);
+                }
+                for (int n = 0; n < vertexes.size() - 1; ++n) {
+                    color.getColour().glColor();
+                    GL11.glVertex3d(vertexes.get(n).x, vertexes.get(n).y, vertexes.get(n).z);
+                    GL11.glVertex3d(vertexes.get(n + 1).x, vertexes.get(n + 1).y, vertexes.get(n + 1).z);
+                }
+                GL11.glEnd();
+
+                Rendering.release();
+            });
         }
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(multiThreading.getValBoolean()) new Thread(this::doSpawnsESP).start();
-        else doSpawnsESP();
+        threads.update(() -> mc.addScheduledTask(this::doSpawnsESP));
     }
 
     @EventHandler
