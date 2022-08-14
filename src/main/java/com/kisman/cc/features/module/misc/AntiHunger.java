@@ -4,8 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.mixin.mixins.accessor.ICPacketPlayer;
-import com.kisman.cc.mixin.mixins.accessor.IEntityPlayerSP;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -31,10 +29,9 @@ public class AntiHunger extends Module {
     @Override
     public void onEnable() {
 
-        if (mc.player.isSprinting() || ((IEntityPlayerSP) (mc.player)).getServerSprintState()) {
+        if (mc.player.isSprinting() || mc.player.isSprinting()) {
             previousSprint = true;
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
-            mc.player.onGround = false;
 
         }
 
@@ -45,6 +42,7 @@ public class AntiHunger extends Module {
 
     @Override
     public void onDisable() {
+        if(mc.player == null || mc.world == null) return;
         super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(send);
 
