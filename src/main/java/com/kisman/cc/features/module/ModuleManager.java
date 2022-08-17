@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -143,6 +145,7 @@ public class ModuleManager {
 		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
+		modules.add(new FrostWalk());
 		modules.add(new Jesus());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());
@@ -227,6 +230,12 @@ public class ModuleManager {
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
+
+		//modules = modules.stream().filter(module -> {
+		//	if(module.getClass().getAnnotation(OnlyDebug.class) == null)
+		//		return true;
+		//	return Kisman.MODULE_DEBUG;
+		//}).collect(Collectors.toList());
 	}
 	
 	public Module getModule(String name) {

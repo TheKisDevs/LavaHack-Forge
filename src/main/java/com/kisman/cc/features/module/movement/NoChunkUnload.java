@@ -4,7 +4,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.minecraft.PacketProcessor;
+import com.kisman.cc.util.minecraft.Packets;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
@@ -37,7 +37,7 @@ public class NoChunkUnload extends Module {
     public void onDisable(){
         super.onDisable();
         for(SPacketUnloadChunk packet : packets)
-            PacketProcessor.processPacket(packet);
+            Packets.processPacket(packet);
         packets.clear();
     }
 

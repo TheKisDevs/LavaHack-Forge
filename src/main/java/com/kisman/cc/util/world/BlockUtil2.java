@@ -40,7 +40,7 @@ public class BlockUtil2 {
     public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier, boolean inverse) {
         return getProgressBB(
                 mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
-                inverse ? 1.0 - scalier.mutateProgress(getBreakingProgress(pos, stack, start)) : scalier.mutateProgress(getBreakingProgress(pos, stack, start))
+                inverse ? scalier.mutateProgress(getBreakingProgress(pos, stack, start)) : scalier.mutateProgress(getBreakingProgress(pos, stack, start))
         );
     }
 

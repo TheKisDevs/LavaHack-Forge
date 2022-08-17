@@ -5,7 +5,10 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.RotationMoveEvent;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
+import com.kisman.cc.features.module.movement.FrostWalk;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
@@ -14,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -109,5 +113,15 @@ public class MixinEntityLivingBase extends Entity {
         this.rotationYaw = motionUpdateRotationEvent.getYaw();
         this.moveRelative(strafe, up, forward, friction);
         this.rotationYaw = originalYaw;
+    }
+
+    @Inject(method = "frostWalk", at = @At("HEAD"), cancellable = true)
+    public void frostWalk(BlockPos pos, CallbackInfo ci){
+        if(!FrostWalk.INSTANCE.isToggled())
+            return;
+
+        EnchantmentFrostWalker.freezeNearby(Minecraft.getMinecraft().player, this.world, pos, FrostWalk.INSTANCE.level.getValInt());
+
+        ci.cancel();
     }
 }
