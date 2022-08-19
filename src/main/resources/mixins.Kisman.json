@@ -46,6 +46,7 @@
     "MixinVisGraph",
     "MixinWorld",
     "accessor.AccessorEntityPlayer",
+    "accessor.AccessorMinecraft",
     "accessor.AccessorNetHandlerPlayClient",
     "accessor.AccessorRenderEnderCrystal",
     "accessor.AccessorShaderGroup",

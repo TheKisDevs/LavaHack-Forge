@@ -167,6 +167,7 @@ public class ModuleManager {
 		modules.add(new FreeCamBypass());
 		modules.add(new FreeCamRewrite());
 		modules.add(new Interaction());
+		modules.add(new Octopus());
 		modules.add(new PacketCancel());
 		modules.add(new PacketLogger());
 		modules.add(new Refill());
