@@ -11,7 +11,7 @@ public class Octopus extends Module {
 
     private static final Mode DEFAULT = Mode.LeftClick;
 
-    private final SettingGroup slot1 = register(new SettingGroup(new Setting("Slot 1")));
+    private final SettingGroup slot1 = register(new SettingGroup(new Setting("Slot 1", this)));
     private final Setting slot1Active = register(slot1.add(new Setting("Slot1Active", this, true).setTitle("Active")));
     private final Setting slot1Mode = register(slot1.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
     private final Setting slot1Key = register(slot1.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
