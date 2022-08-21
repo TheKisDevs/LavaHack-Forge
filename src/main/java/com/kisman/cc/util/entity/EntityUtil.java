@@ -20,6 +20,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EntityUtil {
     private static final DamageSource EXPLOSION_SOURCE;
@@ -467,6 +468,55 @@ public class EntityUtil {
         double d1 = p_Y - y;
         double d2 = p_Z - z;
         return (d0 * d0 + d1 * d1 + d2 * d2);
+    }
+
+    public static List<BlockPos> getDynamicTrapBlocks(boolean feet, boolean support){
+        List<BlockPos> list1 = new ArrayList<>();
+        list1.add(new BlockPos(mc.player.posX + 0.3, mc.player.posY, mc.player.posZ + 0.3));
+        list1.add(new BlockPos(mc.player.posX + 0.3, mc.player.posY, mc.player.posZ - 0.3));
+        list1.add(new BlockPos(mc.player.posX - 0.3, mc.player.posY, mc.player.posZ - 0.3));
+        list1.add(new BlockPos(mc.player.posX - 0.3, mc.player.posY, mc.player.posZ + 0.3));
+        List<BlockPos> list2 = new ArrayList<>();
+        for(BlockPos pos : list1){
+            if(!list2.contains(pos.north()))
+                list2.add(pos.north());
+            if(!list2.contains(pos.east()))
+                list2.add(pos.east());
+            if(!list2.contains(pos.south()))
+                list2.add(pos.south());
+            if(!list2.contains(pos.west()))
+                list2.add(pos.west());
+        }
+        list2.removeAll(list1);
+        double height = mc.player.boundingBox.maxX - mc.player.boundingBox.minY;
+        int h = (int) (height);
+        List<BlockPos> list3 = new ArrayList<>();
+        if(feet){
+            for(BlockPos pos : list1){
+                list3.add(pos.down());
+            }
+        }
+        if(support){
+            for(BlockPos pos : list2){
+                list3.add(pos.down());
+            }
+        }
+        for(int i = 0; i < h; i++){
+            for(BlockPos pos : list2){
+                list3.add(pos.up(i));
+            }
+        }
+        list3.add(list3.get(list3.size() - 1).up());
+        for(BlockPos pos : list1){
+            list3.add(pos.up(h));
+        }
+        List<BlockPos> list4 = new ArrayList<>();
+        for(BlockPos pos : list3){
+            if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos)){
+                list4.add(pos);
+            }
+        }
+        return list4;
     }
 
     static {

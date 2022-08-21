@@ -77,6 +77,8 @@ public class Kisman {
     public static final String imagesName = "Images/";
     public static final String pluginsName = "Plugins/";
 
+    public static final boolean MODULE_DEBUG = false;
+
     public static final Kisman instance = new Kisman();
     public static final EventManager EVENT_BUS = new EventManager();
     public static final Logger LOGGER = LogManager.getLogger(NAME);

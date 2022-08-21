@@ -1,5 +1,7 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -11,7 +13,6 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.RotationUtils;
-import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -53,6 +54,8 @@ public class SurroundRewrite extends Module {
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
     private final Setting fightCA = register(new Setting("FightCA", this, false));
+    private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
+    private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -104,6 +107,8 @@ public class SurroundRewrite extends Module {
         if(center.getValBoolean() && !centerPlayer()) {
             setToggled(false);
         }
+        Kisman.EVENT_BUS.subscribe(listener);
+        Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
     }
 
     @Override
@@ -165,6 +170,8 @@ public class SurroundRewrite extends Module {
     @Override
     public void onDisable(){
         super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(listener);
+        Kisman.EVENT_BUS.unsubscribe(eventEntitySpawnListener);
         lastY = -1;
         timer.reset();
     }
@@ -283,9 +290,11 @@ public class SurroundRewrite extends Module {
         }
     }
 
-    @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
         if(!fightCA.getValBoolean())
+            return;
+
+        if(!detectSound.getValBoolean())
             return;
 
         if(!(event.getPacket() instanceof SPacketSoundEffect))
@@ -305,9 +314,43 @@ public class SurroundRewrite extends Module {
             doThreaddedSurround();
     });
 
+    private final Listener<EventEntitySpawn> eventEntitySpawnListener = new Listener<>(event -> {
+        if(!fightCA.getValBoolean())
+            return;
+
+        if(detectEntity.getValEnum() == FightCAEntityMode.Off)
+            return;
+
+        FightCAEntityMode entityMode = detectEntity.getValEnum();
+
+        Entity entity = event.getEntity();
+
+        List<BlockPos> blocks = mode.getValEnum().getBlocks();
+        if(!isInAnyBlocks(entity.getEntityBoundingBox(), blocks))
+            return;
+
+        if(entityMode == FightCAEntityMode.SetDead || entityMode == FightCAEntityMode.Off)
+            entity.setDead();
+
+        if(entityMode == FightCAEntityMode.RemoveEntity || entityMode == FightCAEntityMode.Both)
+            mc.world.removeEntity(entity);
+
+        if(syncronized.getValBoolean())
+            doThreaddedSyncronizedSurround();
+        else
+            doThreaddedSurround();
+    });
+
     private boolean isInAnyBlocks(Vec3d vec, List<BlockPos> list){
         for(BlockPos pos : list)
             if(new AxisAlignedBB(pos).contains(vec))
+                return true;
+        return false;
+    }
+
+    private boolean isInAnyBlocks(AxisAlignedBB aabb, List<BlockPos> list){
+        for(BlockPos pos : list)
+            if(new AxisAlignedBB(pos).intersects(aabb))
                 return true;
         return false;
     }
@@ -603,5 +646,12 @@ public class SurroundRewrite extends Module {
     private enum RunMode {
         Update,
         Tick
+    }
+
+    private enum FightCAEntityMode {
+        Off,
+        RemoveEntity,
+        SetDead,
+        Both
     }
 }

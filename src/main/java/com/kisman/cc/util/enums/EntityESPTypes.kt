@@ -3,6 +3,7 @@ package com.kisman.cc.util.enums
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityAnimal
@@ -16,7 +17,9 @@ enum class EntityESPTypes(
     Monster(EntityMob::class.java),
     Animal(EntityAnimal::class.java),
     Item(EntityItem::class.java),
-    XPOrb(EntityXPOrb::class.java);
+    XPOrb(EntityXPOrb::class.java),
+    ItemFrame(EntityItemFrame::class.java);
+
 
     companion object {
         fun get(entity : Entity) : EntityESPTypes? {

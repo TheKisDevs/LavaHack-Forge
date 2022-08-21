@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
@@ -32,7 +31,7 @@ public class SwingAnimation extends Module {
 
     public SwingAnimation() {
         super("SwingAnimation", "SwingAnimation", Category.RENDER);
-        super.setDisplayInfo(() -> "[" + (mode.getValString().equalsIgnoreCase("Hand") ? Kisman.instance.settingsManager.getSettingByName(this, "SwingMode").getValString() : strongMode.getValString()) + "]");
+        super.setDisplayInfo(() -> "[" + (mode.getValString().equalsIgnoreCase("Hand") ? handMode.getValString() : strongMode.getValString()) + "]");
 
         instance = this;
     }

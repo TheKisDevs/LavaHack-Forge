@@ -7,6 +7,8 @@ import com.kisman.cc.settings.util.ChromaRenderingPattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.thread.Promise;
+import com.kisman.cc.util.thread.PromiseResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
