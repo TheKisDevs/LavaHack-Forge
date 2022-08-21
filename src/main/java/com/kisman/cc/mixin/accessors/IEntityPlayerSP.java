@@ -1,4 +1,4 @@
-package com.kisman.cc.mixin.mixins.accessor;
+package com.kisman.cc.mixin.accessors;
 
 
 /**

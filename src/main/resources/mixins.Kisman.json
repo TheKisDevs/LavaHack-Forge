@@ -73,7 +73,6 @@
   ],
   "client": [
     "MixinTileEntityRendererDispatcher",
-    "accessor.IEntityPlayerSP",
     "baritone.MixinChatTabCompleter",
     "baritone.MixinChunkProviderClient",
     "baritone.MixinChunkRenderContainer",

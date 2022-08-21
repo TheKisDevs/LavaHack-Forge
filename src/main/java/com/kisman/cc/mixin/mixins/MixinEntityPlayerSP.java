@@ -14,7 +14,7 @@ import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.EventPlayerPushOutOfBlocks;
 import com.kisman.cc.event.events.EventPlayerUpdate;
 import com.kisman.cc.features.module.movement.MoveModifier;
-import com.kisman.cc.mixin.mixins.accessor.IEntityPlayerSP;
+import com.kisman.cc.mixin.accessors.IEntityPlayerSP;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
