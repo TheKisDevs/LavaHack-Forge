@@ -8,15 +8,12 @@ import java.util.Arrays;
 
 public class Weather extends Module {
 
-    private final Setting weatherMode = new Setting("WeatherMode", this, "Mode", Arrays.asList("Mode", "Custom"));
-    private final Setting weather = new Setting("Weather", this, "Sunny", Arrays.asList("Default", "Sunny", "Rain", "Thunder")).setVisible(() -> weatherMode.getValString().equals("Mode"));
-    private final Setting weatherSlider = new Setting("Weather", this, 0, 0, 2, false).setVisible(() -> weatherMode.getValString().equals("Custom"));
+    private final Setting weatherMode = register(new Setting("Type", this, "Mode", Arrays.asList("Mode", "Custom")));
+    private final Setting weather = register(new Setting("Mode", this, "Sunny", Arrays.asList("Default", "Sunny", "Rain", "Thunder")).setVisible(() -> weatherMode.getValString().equals("Mode")));
+    private final Setting weatherSlider = register(new Setting("Custom", this, 0, 0, 2, false).setVisible(() -> weatherMode.getValString().equals("Custom")));
 
-    public Weather(){
+    public Weather() {
         super("Weather", Category.RENDER);
-        setmgr.rSetting(weatherMode);
-        setmgr.rSetting(weather);
-        setmgr.rSetting(weatherSlider);
     }
 
     @Override

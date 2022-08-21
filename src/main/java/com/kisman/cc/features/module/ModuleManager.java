@@ -50,6 +50,7 @@ public class ModuleManager {
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
 		modules.add(new SmoothRenderer());
+		modules.add(SwingTest.INSTANCE);
 		modules.add(new TextFieldTest());
 		modules.add(new TowerTest());
 		modules.add(new TracerTest());
@@ -97,6 +98,9 @@ public class ModuleManager {
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
 		modules.add(new GuiModule());
+		modules.add(NoSpoof.INSTANCE);
+		modules.add(new PauseBaritone());
+		modules.add(PingBypass.INSTANCE);
 		//render
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());
@@ -127,6 +131,7 @@ public class ModuleManager {
 		modules.add(new ScreenTint());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
+		modules.add(new ShaderCharmsRewrite());
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
@@ -149,7 +154,6 @@ public class ModuleManager {
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new NoWeb());
-		modules.add(new Scaffold());
 		modules.add(new ScaffoldRewrite());
 		modules.add(new SoftScaffold());
 		modules.add(new Speed());
@@ -169,7 +173,6 @@ public class ModuleManager {
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());
-//		modules.add(new RotationLock());
 		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit

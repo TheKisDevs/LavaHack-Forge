@@ -1,7 +1,6 @@
 package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
@@ -126,7 +125,6 @@ public class ColorButton implements Component {
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         pickingBase = pickingAlpha = pickingHue = false;
-        Kisman.EVENT_BUS.post(new EventSettingChange.ColorSetting(setting));
 
     }
 

@@ -3,6 +3,7 @@ package com.kisman.cc.features.command;
 import com.kisman.cc.features.command.commands.*;
 import com.kisman.cc.util.chat.ChatHandler;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class CommandManager extends ChatHandler {
@@ -38,6 +39,19 @@ public class CommandManager extends ChatHandler {
 
 	private void add(Command command) {
 		commands.put(command.getCommand(), command);
+	}
+
+	public void runCommand(String... args) {
+		boolean commandResolved = false;
+
+		for(Command command : commands.values()) {
+			if(command.getCommand().trim().equalsIgnoreCase(args[0].trim())) {
+				command.runCommand(Arrays.toString(args), args);
+				commandResolved = true;
+				break;
+			}
+		}
+		if(!commandResolved) error("Cannot resolve internal command: \u00a7c" + args[0]);
 	}
 
 	public void runCommands(String s) {

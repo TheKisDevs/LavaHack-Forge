@@ -8,9 +8,19 @@ public class EventDamageBlock extends Event {
     private BlockPos blockPos;
     private EnumFacing faceDirection;
 
-    public EventDamageBlock(BlockPos blockPos, EnumFacing faceDirection) {
+    private float damage;
+
+    private int delay;
+
+    public EventDamageBlock(BlockPos blockPos, EnumFacing faceDirection, float damage, int delay) {
         this.blockPos = blockPos;
         this.faceDirection = faceDirection;
+        this.damage = damage;
+        this.delay = delay;
+    }
+
+    public EventDamageBlock(BlockPos pos, EnumFacing faceDirection) {
+        this(pos, faceDirection, 0f, 0);
     }
 
     public BlockPos getBlockPos() {
@@ -21,4 +31,12 @@ public class EventDamageBlock extends Event {
         return faceDirection;
     }
 
+
+    public float getDamage() {
+        return damage;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
 }

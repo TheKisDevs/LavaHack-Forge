@@ -36,9 +36,7 @@ import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
-import com.kisman.cc.util.protect.keyauth.util.HWID;
 import com.kisman.cc.util.render.shader.ShaderShell;
-import com.kisman.cc.util.world.RotationUtils;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -94,7 +92,7 @@ public class Kisman {
     public static String currentConfig = null;
 
     static {
-        allowToConfiguredAnotherClients = HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
+        allowToConfiguredAnotherClients = true;//HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
     }
 
     public boolean init = false;

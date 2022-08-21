@@ -4,11 +4,14 @@ package com.kisman.cc.loader
 
 import com.formdev.flatlaf.FlatDarkLaf
 import com.kisman.cc.Kisman
+import com.kisman.cc.loader.LavaHackLoaderCoreMod.Companion.loaded
 import com.kisman.cc.loader.gui.Gui
+import com.kisman.cc.loader.objectweb.Injector
 import com.kisman.cc.sockets.client.SocketClient
 import com.kisman.cc.sockets.data.SocketMessage.Type.*
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
+import net.minecraftforge.fml.common.Loader
 import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.io.File
@@ -112,8 +115,7 @@ fun load(
             loadIntoResourceCache(bytes!!)
             bytes = null
             loaded = true
-            LavaFalconCoreMod.loaded = true
-            LavaFalconCoreMod.resume()
+            LavaHackLoaderCoreMod.resume()
             gui?.isVisible = false
             break
         }
@@ -140,10 +142,15 @@ fun createGui() {
 
 fun initLoader() {
     Thread {
-        setupSocketClient()
-        versionCheck(version)
-        versions(version)
-        createGui()
+        try {
+            setupSocketClient()
+            versionCheck(version)
+            versions(version)
+            createGui()
+        } catch(e : Exception) {
+            e.printStackTrace()
+            Utility.unsafeCrash()
+        }
     } .start()
 }
 
@@ -238,7 +245,7 @@ fun versions(version : String) {
 }
 
 fun loadIntoClassLoader(bytes : ByteArray) {
-    val tempFile = File.createTempFile("LavaHack", ".jar")
+    val tempFile = File.createTempFile("LavaHack-Main-Class", ".jar")
     tempFile.writeBytes(bytes)
     tempFile.deleteOnExit()
     classLoader.addURL(tempFile.toURI().toURL())
@@ -266,7 +273,12 @@ fun loadIntoResourceCache(bytes : ByteArray) {
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
-                resourceCache[name] = zipStream.readBytes()
+                if(name == "Main") {
+                    loadIntoClassLoader(zipStream.readBytes())
+                } else {
+                    resourceCache[name] = zipStream.readBytes()
+                }
+
                 classesCount++
                 status = "Injecting $name"
             } else if(Utility.validResource(name)) {
@@ -311,4 +323,33 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     status = "Done!"
 
     println("LavaFalcon is done!")
+}
+
+fun initLavaHack() {
+    println("uwu")
+
+    if (Utility.runningFromIntelliJ() || !loaded) {
+        return
+    }
+
+    println("owo")
+
+    try {
+        val lavahack = Class.forName("com.kisman.cc.Kisman")
+        lavahack.getMethod("init").invoke(lavahack.getField("instance")[null])
+    } catch (e : Exception) {
+        e.printStackTrace()
+        Utility.unsafeCrash()
+    }
+}
+
+fun initHook() {
+    val injector = Injector(
+        Loader::class.java,
+        "initializeMods"
+    )
+
+    injector.injectTAIL(Runnable {
+        initLavaHack()
+    })
 }

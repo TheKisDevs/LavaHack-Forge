@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test
 import the.kis.devs.server.hwid.HWID
+import the.kis.devs.server.keyauth.KeyAuthApp
 
 /**
  * @author _kisman_
@@ -36,4 +37,10 @@ internal class HWIDTest {
     @Test fun getHWIDTest() {
         println(HWID(getProperties(), Runtime.getRuntime().availableProcessors()).hwid)
     }
+
+    @Test fun test1() {
+        println(formatClassName(KeyAuthApp::class.java))
+    }
+
+    private fun formatClassName(clazz : Class<*>) : String = "/${clazz.name.replace(".", "/")}.class"
 }

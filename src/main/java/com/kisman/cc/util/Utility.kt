@@ -2,9 +2,13 @@ package com.kisman.cc.util
 
 import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
+import java.net.MalformedURLException
+import java.net.URI
+import java.net.URL
 import java.util.*
 
 /**
@@ -19,6 +23,7 @@ fun getPing() : Int {
     return getPing(mc.player.connection.gameProfile.id)
 }
 
+//TODO: PingBypass check
 fun getPing(id : UUID) : Int {
     return if(mc.isSingleplayer) 0 else try { mc.player.connection.getPlayerInfo(id).responseTime } catch(ignored : Exception) { -1 }
 }
@@ -36,4 +41,36 @@ fun createDoubleArray(vararg elements : Double) : DoubleArray {
 
 fun getBlockStateSafe(pos : BlockPos) : IBlockState {
     return try { mc.world.getBlockState(pos) } catch (ignored : Exception) { Blocks.AIR.defaultBlockState }
+}
+
+fun contains(
+    ch : Char,
+    array : CharArray
+) : Boolean {
+    for (c in array) {
+        if (ch == c) {
+            return true
+        }
+    }
+    return false
+}
+
+fun toUrl(url : String) : URL? {
+    return try {
+        URL(url)
+    } catch (e : MalformedURLException) {
+        throw RuntimeException(e)
+    }
+}
+
+fun toUrl(uri : URI) : URL? {
+    return try {
+        uri.toURL()
+    } catch (e : MalformedURLException) {
+        throw RuntimeException(e)
+    }
+}
+
+fun sr() : ScaledResolution {
+    return ScaledResolution(mc)
 }

@@ -20,6 +20,25 @@ import java.util.List;
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
+    public static void put(int slot, ItemStack stack) {
+        if (slot == -2) mc.player.inventory.setItemStack(stack);
+
+        mc.player.inventoryContainer.putStackInSlot(slot, stack);
+
+        int invSlot = containerToSlots(slot);
+
+        if (invSlot != -1) mc.player.inventory.setInventorySlotContents(invSlot, stack);
+    }
+
+    public static int containerToSlots(int containerSlot) {
+        if (containerSlot < 5 || containerSlot > 45) return -1;
+        if (containerSlot <= 9) return 44 - containerSlot;
+        if (containerSlot < 36) return containerSlot;
+        if (containerSlot < 45) return containerSlot - 36;
+        return 40;
+    }
+
+
     public static int findValidScaffoldBlockHotbarSlot() {
         for(int i = 0; i <= 9; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
@@ -402,15 +421,6 @@ public class InventoryUtil {
         return slots;
     }
 
-    public static boolean holdingItem(Class clazz) {
-        boolean result = false;
-        ItemStack stack = mc.player.getHeldItemMainhand();
-
-        result = isInstanceOf(stack, clazz);
-
-        return result;
-    }
-
     //rerhack
     public static boolean isArmorUnderPercent(EntityPlayer player, float percent) {
         for (int i = 3; i >= 0; --i) {
@@ -422,26 +432,6 @@ public class InventoryUtil {
 
     public static int getRoundedDamage(ItemStack stack) {
         return (int)getDamageInPercent(stack);
-    }
-
-    //zero two
-    public static
-    boolean isInstanceOf ( ItemStack stack , Class clazz ) {
-        if ( stack == null ) {
-            return false;
-        }
-
-        Item item = stack.getItem ( );
-        if ( clazz.isInstance ( item ) ) {
-            return true;
-        }
-
-        if ( item instanceof ItemBlock ) {
-            Block block = Block.getBlockFromItem ( item );
-            return clazz.isInstance ( block );
-        }
-
-        return false;
     }
 
     public enum Switch {

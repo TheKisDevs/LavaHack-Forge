@@ -69,11 +69,11 @@ public class LuaRenderer implements Globals {
     }
 
     public double windowWidth() {
-        return sr.getScaledWidth_double();
+        return UtilityKt.sr().getScaledWidth_double();
     }
 
     public double windowHeight() {
-        return sr.getScaledHeight_double();
+        return UtilityKt.sr().getScaledHeight_double();
     }
 
     //3D

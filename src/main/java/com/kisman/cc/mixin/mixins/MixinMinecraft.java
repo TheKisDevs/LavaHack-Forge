@@ -8,9 +8,14 @@
  import baritone.api.event.events.type.EventState;
  import com.kisman.cc.Kisman;
  import com.kisman.cc.event.events.EventClientTick;
+ import com.kisman.cc.event.events.KeyboardEvent;
+ import com.kisman.cc.event.events.MouseEvent;
  import com.kisman.cc.features.module.player.AntiDesync;
  import com.kisman.cc.features.module.player.Interaction;
  import com.kisman.cc.features.viaforge.ViaForge;
+ import com.kisman.cc.pingbypass.server.PingBypassServer;
+ import com.kisman.cc.pingbypass.server.input.Keyboard;
+ import net.minecraft.client.Minecraft;
  import net.minecraft.client.entity.EntityPlayerSP;
  import net.minecraft.client.gui.GuiScreen;
  import net.minecraft.client.main.GameConfiguration;
@@ -21,12 +26,13 @@
  import net.minecraft.util.EnumActionResult;
  import net.minecraft.util.EnumHand;
  import net.minecraft.util.math.BlockPos;
+ import org.lwjgl.input.Mouse;
  import org.spongepowered.asm.lib.Opcodes;
  import org.spongepowered.asm.mixin.Mixin;
-
- import net.minecraft.client.Minecraft;
  import org.spongepowered.asm.mixin.Shadow;
- import org.spongepowered.asm.mixin.injection.*;
+ import org.spongepowered.asm.mixin.injection.At;
+ import org.spongepowered.asm.mixin.injection.Inject;
+ import org.spongepowered.asm.mixin.injection.Redirect;
  import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -58,7 +64,11 @@
   public void runTickPost(CallbackInfo ci) {
    EventClientTick.Post eventClientTick = new EventClientTick.Post();
    Kisman.EVENT_BUS.post(eventClientTick);
-   if(AntiDesync.INSTANCE.isToggled()) AntiDesync.INSTANCE.onClientTickPost();
+   try {
+    if(AntiDesync.INSTANCE.isToggled()) AntiDesync.INSTANCE.onClientTickPost();
+   } catch(Exception e) {
+    e.printStackTrace();
+   }
   }
 
   @Inject( method = "processKeyBinds", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2 ) )
@@ -211,5 +221,40 @@
   private void onBlockUse(CallbackInfo ci, EnumHand var1[], int var2, int var3, EnumHand enumhand, ItemStack itemstack, BlockPos blockpos, int i, EnumActionResult enumactionresult) {
    // rightClickMouse is only for the main player
    BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(blockpos, BlockInteractEvent.Type.USE));
+  }
+
+  @Inject(
+          method = "runTickKeyboard",
+          at = @At(
+                  value = "INVOKE_ASSIGN",
+                  target = "org/lwjgl/input/Keyboard.getEventKeyState()Z",
+                  remap = false))
+  private void runTickKeyboardHook(CallbackInfo callbackInfo) {
+   Kisman.EVENT_BUS.post(new KeyboardEvent(Keyboard.getEventKeyState(),
+           Keyboard.getEventKey(),
+           Keyboard.getEventCharacter()));
+  }
+
+  @Inject(
+          method = "runTick",
+          at = @At(
+                  value = "FIELD",
+                  target = "Lnet/minecraft/client/Minecraft;world" +
+                          ":Lnet/minecraft/client/multiplayer/WorldClient;",
+                  ordinal = 4,
+                  shift = At.Shift.BEFORE))
+  public void post_keyboardTickHook(CallbackInfo info) {
+   if (!PingBypassServer.INSTANCE.getServer()) Kisman.EVENT_BUS.post(new KeyboardEvent.Post());
+  }
+
+  @Inject(
+          method = "runTickMouse",
+          at = @At(
+                  value = "INVOKE",
+                  target = "Lorg/lwjgl/input/Mouse;getEventButton()I",
+                  remap = false))
+  private void runTickMouseHook(CallbackInfo ci) {
+   Kisman.EVENT_BUS.post(new MouseEvent(Mouse.getEventButton(),
+           Mouse.getEventButtonState()));
   }
  }

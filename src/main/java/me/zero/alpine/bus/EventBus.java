@@ -133,4 +133,6 @@ public interface EventBus {
      * @param event Event being called
      */
     void post(Object event);
+
+    void postReversed(Object event);
 }

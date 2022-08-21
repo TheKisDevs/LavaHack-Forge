@@ -12,6 +12,8 @@ public class Locks {
     /** Locks when clicking Items in your Inventory. */
     public static final Lock WINDOW_CLICK_LOCK = new ReentrantLock();
 
+    public static final Lock PINGBYPASS_PACKET_LOCK = new ReentrantLock();
+
     /**
      * Locks the given Lock, runs the given Runnable and finally
      * unlocks the lock.

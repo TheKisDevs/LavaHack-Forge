@@ -5,29 +5,88 @@ import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.AbstractObject;
 import com.kisman.cc.util.render.objects.screen.ObjectWithGlow;
 import com.kisman.cc.util.render.shader.ShaderShell;
-
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
-import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
 /**
 * @author _kisman_
-* @credits github.com/TheKisDevs/loader & NoneCode Free
+* @credits github.com/TheKisDevs/loader
 */
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
     private static final Minecraft mc = Minecraft.getMinecraft();
-    private static HashMap<Integer, Integer> shadowCache = new HashMap<>();
+    
+    public static void drawFace(
+            EntityPlayer player,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
+        drawFace(
+                player,
+                x,
+                y,
+                width,
+                height,
+                1,
+                1,
+                1,
+                1
+        );
+    }
+    
+    public static void drawFace(
+            EntityPlayer player, 
+            int x, 
+            int y, 
+            int width, 
+            int height,
+            float red,
+            float green,
+            float blue,
+            float alpha
+    ) {
+        try {
+            GL11.glPushMatrix();
+            mc.getTextureManager().bindTexture(mc.player.connection.getPlayerInfo(player.getName()).getLocationSkin());
+            GL11.glColor4f(
+                    red,
+                    green,
+                    blue,
+                    alpha
+            );
+            Gui.drawScaledCustomSizeModalRect(
+                    x, 
+                    y, 
+                    8.0F, 
+                    8, 
+                    8, 
+                    8, 
+                    width, 
+                    height, 
+                    64.0F, 
+                    64.0F
+            );
+            GL11.glPopMatrix();
+        } catch (Exception e) {
+            GL11.glPopMatrix();
+        }
+    }
 
     public float getZLevel() {return this.zLevel;}
 

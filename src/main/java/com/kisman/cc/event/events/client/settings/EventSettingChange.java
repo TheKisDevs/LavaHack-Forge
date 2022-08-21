@@ -37,6 +37,12 @@ public class EventSettingChange extends Event {
         }
     }
 
+    public static class Any extends EventSettingChange {
+        public Any(Setting setting) {
+            super(setting, null, null);
+        }
+    }
+
     public enum Type {Boolean, Mode, Color, Number}
     public enum Action {Default, EndFocused, EveryTime}
 }

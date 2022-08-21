@@ -6,6 +6,8 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 public class Event extends Cancellable {
+    private boolean isPingBypass;
+
     private Era era;
     public Event() {}
     public Event(Era era) {this.era = era;}
@@ -24,4 +26,12 @@ public class Event extends Cancellable {
     public boolean isPost() {return era.equals(Era.POST);}
     public String getEraString() {return era.name();}
     public void post() {Kisman.EVENT_BUS.post(this);}
+
+    public boolean isPingBypass() {
+        return isPingBypass;
+    }
+
+    public void setPingBypass(boolean pingBypass) {
+        isPingBypass = pingBypass;
+    }
 }

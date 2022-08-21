@@ -16,6 +16,7 @@ public class HudModuleManager {
 	}
 
 	public void init() {
+		modules.add(new TwoBeeTwoTeeQueue());
 		modules.add(new ArmorHUD());
 		modules.add(ArrayListModule.instance);
 		modules.add(new BindList());

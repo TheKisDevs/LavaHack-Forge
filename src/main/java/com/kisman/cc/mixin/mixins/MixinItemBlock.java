@@ -82,6 +82,7 @@ public class MixinItemBlock {
 
     /**
      * @author _kisman_
+     * @reason kys
      */
     @SideOnly(Side.CLIENT)
     @Overwrite

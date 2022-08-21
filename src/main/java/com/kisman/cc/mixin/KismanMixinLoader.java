@@ -13,9 +13,7 @@ import java.util.Map;
 public class KismanMixinLoader implements IFMLLoadingPlugin {
     public KismanMixinLoader(){
         MixinBootstrap.init();
-        Mixins.addConfiguration/*s*/("mixins.Kisman.json"/*,*/ /*"mixins.baritone.json"*/);
-//        Mixins.addConfiguration("mixins.baritone.json");
-//        Kisman.instance.coreModInit();
+        Mixins.addConfiguration("mixins.Kisman.json");
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
     }
 

@@ -6,6 +6,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;
 
 public class LuaRotation implements Globals {
+    boolean nullCheck(){
+        return mc.player == null || mc.world == null;
+    }
     public void client(float yaw, float pitch) {
         if(nullCheck()) {
             mc.player.rotationYaw = yaw;

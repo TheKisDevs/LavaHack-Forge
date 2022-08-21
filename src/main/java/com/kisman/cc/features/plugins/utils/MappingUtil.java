@@ -1,8 +1,7 @@
 package com.kisman.cc.features.plugins.utils;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import com.kisman.cc.util.UtilityKt;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Type;
 
@@ -241,7 +240,7 @@ public class MappingUtil
         for(int i = 0 ; i < s.length() ; i++)
         {
             char c = s.charAt(i);
-            if (collect && ArrayUtil.contains(c, separators))
+            if (collect && UtilityKt.contains(c, separators))
             {
                 current.append(c);
                 matched.add(current.toString());

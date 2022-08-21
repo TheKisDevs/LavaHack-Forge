@@ -27,3 +27,18 @@ fun setFinalStaticField(
 ) {
     setFinalField(field, null, value)
 }
+
+@Throws(NoSuchFieldException::class)
+fun getField(
+    clazz : Class<*>,
+    vararg mappings : String?
+) : Field? {
+    for (s in mappings) {
+        try {
+            return clazz.getDeclaredField(s)
+        } catch (ignored : NoSuchFieldException) { }
+    }
+    throw NoSuchFieldException(
+        "No Such field: " + clazz.name + "-> " + mappings.contentToString()
+    )
+}

@@ -1,6 +1,7 @@
 package com.kisman.cc.settings;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.IBindable;
@@ -378,6 +379,8 @@ public class Setting implements IBindable {
 
 	public void setColour(Colour colour) {
 		this.colour = colour;
+		EventSettingChange.Any event = new EventSettingChange.Any(this);
+		Kisman.EVENT_BUS.post(event);
 	}
 
 	public Enum<?> getValEnum() {
@@ -469,6 +472,8 @@ public class Setting implements IBindable {
 	
 	public Setting setValString(String in){
 		this.sval = in;
+		EventSettingChange.Any event = new EventSettingChange.Any(this);
+		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
 	
@@ -499,6 +504,8 @@ public class Setting implements IBindable {
 	
 	public Setting setValBoolean(boolean in){
 		this.bval = in;
+		EventSettingChange.Any event = new EventSettingChange.Any(this);
+		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
 	
@@ -527,6 +534,8 @@ public class Setting implements IBindable {
 
 	public Setting setValDouble(double in){
 		this.dval = in;
+		EventSettingChange.Any event = new EventSettingChange.Any(this);
+		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
 	
@@ -609,11 +618,11 @@ public class Setting implements IBindable {
 	@Override public void setMouseButton(int button) {this.mouse = button;}
 
 	public Supplier<String> getSupplierString() {return () -> sval;}
-	public Supplier<Integer> getSupplierInt() {return () -> getValInt();}
+	public Supplier<Integer> getSupplierInt() {return this::getValInt;}
 	public Supplier<Double> getSupplierDouble() {return () -> dval;}
-	public Supplier<Float> getSupplierFloat() {return () -> getValFloat();}
-	public Supplier<Long> getSupplierLong() {return () -> getValLong();}
-	public Supplier<Enum<?>> getSupplierEnum() {return () -> getValEnum();}
+	public Supplier<Float> getSupplierFloat() {return this::getValFloat;}
+	public Supplier<Long> getSupplierLong() {return this::getValLong;}
+	public Supplier<Enum<?>> getSupplierEnum() {return this::getValEnum;}
 	public Supplier<Boolean> getSupplierBoolean() {return () -> bval;}
 
 }

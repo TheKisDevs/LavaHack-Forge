@@ -11,15 +11,17 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class AutoRerRenderer {
-    @JvmField var lastBlockPos: BlockPos? = null
-    @JvmField var prevPos: Vec3d? = null
-    @JvmField var currentPos: Vec3d? = null
-    @JvmField var lastRenderPos: Vec3d? = null
+    @JvmField var lastBlockPos : BlockPos? = null
+    @JvmField var prevPos : Vec3d? = null
+    @JvmField var currentPos : Vec3d? = null
+    @JvmField var lastRenderPos : Vec3d? = null
     @JvmField var lastUpdateTime = 0L
     @JvmField var startTime = 0L
     @JvmField var scale = 0.0f
     @JvmField var lastSelfDamage = 0.0f
     @JvmField var lastTargetDamage = 0.0f
+    @JvmField var timePassed = 0f
+    @JvmField var lastBB : AxisAlignedBB? = null
 
     fun reset() {
         lastBlockPos = null
@@ -31,22 +33,43 @@ class AutoRerRenderer {
         scale = 0.0f
         lastSelfDamage = 0.0f
         lastTargetDamage = 0.0f
+        timePassed = 0f
+        lastBB = null
     }
 
-    fun onRenderWorld(movingLength: Float, fadeLength: Float, renderer : RenderingRewritePattern, placeInfo : PlaceInfo, text : Boolean) {
+    fun onRenderWorld(
+        movingLength : Float,
+        fadeLength : Float,
+        renderer : RenderingRewritePattern,
+        placeInfo : PlaceInfo,
+        text : Boolean,
+        test : Boolean
+    ) {
         update(placeInfo)
 
         prevPos?.let { prevPos ->
             (currentPos ?: prevPos).let { currentPos ->
-                val multiplier = Easing.OUT_QUART.inc(Easing.toDelta(lastUpdateTime, movingLength))
-                val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier.toDouble()))
                 scale = if (this.currentPos != null) {
                     Easing.OUT_CUBIC.inc(Easing.toDelta(startTime, fadeLength))
                 } else {
                     Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
                 }
 
-                renderer.draw(toRenderBox(renderPos, scale))
+                timePassed = if (lastBB == toRenderBox(currentPos, scale)) {
+                    0f
+                } else {
+                    50.0f
+                }
+
+                val multiplier = if(test) {
+                    timePassed / 900f * 0.8f
+                } else {
+                    Easing.OUT_QUART.inc(Easing.toDelta(lastUpdateTime, movingLength))
+                }
+
+                val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier.toDouble()))
+
+                renderer.draw(toRenderBox(renderPos, scale).also { lastBB = it })
 
                 lastRenderPos = renderPos
 

@@ -3,8 +3,6 @@ package com.kisman.cc.features.module.combat.autorer
 import com.kisman.cc.features.module.combat.AutoRer
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.entity.TargetFinder
-import com.kisman.cc.util.entity.player.InventoryUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -18,7 +16,14 @@ class AutoRerUtil {
     companion object {
         private val mc: Minecraft = Minecraft.getMinecraft()
 
-        var targetFinder = TargetFinder(Supplier { AutoRer.instance.targetRange.valDouble } , Supplier { 50L }, Supplier { AutoRer.instance.multiThreaddedSphereGetter.valBoolean || AutoRer.instance.multiThreaddedTargetGetter.valBoolean })
+        var targetFinder = AutoRerTargetFinder(
+            AutoRer.instance.targetLogic.getSupplierEnum0(),
+            AutoRer.instance.placeRange.supplierFloat,
+            AutoRer.instance,
+            AutoRer.instance.targetRange.supplierDouble,
+            Supplier { 50L },
+            Supplier { AutoRer.instance.multiThreaddedSphereGetter.valBoolean || AutoRer.instance.multiThreaddedTargetGetter.valBoolean }
+        )
 
         fun onEnable() {
             targetFinder.reset()

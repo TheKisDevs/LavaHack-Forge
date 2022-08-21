@@ -5,6 +5,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.AnimationUtils
 import com.kisman.cc.util.render.Render2DUtil
+import com.kisman.cc.util.render.cubicgl.CubicGL
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -43,7 +44,9 @@ class GLScissorTest : Module(
             AnimationUtils.animate(0.0, height, speed.valDouble)
         }
 
-        GL11.glScissor(10 * factor, /*translateY.toInt()*/(10 + y).toInt() * factor, width.toInt() * factor, height.toInt() * factor)
+//        GL11.glScissor(10 * factor, /*translateY.toInt()*/(10 + y).toInt() * factor, width.toInt() * factor, height.toInt() * factor)
+
+        CubicGL.scissors(10, 10, width.toInt(), height.toInt())
 
         Render2DUtil.drawRectWH(1.0, 1.0, 600.0, 600.0, Color.RED.rgb)
 

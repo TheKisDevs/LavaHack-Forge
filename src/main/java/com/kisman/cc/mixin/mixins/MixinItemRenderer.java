@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.event.events.EventItemRenderer;
+import com.kisman.cc.features.module.Debug.SwingTest;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.util.entity.player.PlayerUtil;
@@ -21,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinItemRenderer {
     @Shadow @Final public Minecraft mc;
 
+    private float lastSwingProgress = 0f;
+
     @Inject(method = "rotateArm", at = @At("HEAD"), cancellable = true)
     private void doRotateArm(float p_187458_1_, CallbackInfo ci) {
         if(NoRender.instance.isToggled() && NoRender.instance.sway.getValBoolean()) {
@@ -31,14 +34,19 @@ public class MixinItemRenderer {
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", shift = At.Shift.AFTER))
     private void transformSideFirstPersonInvokePushMatrix(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
         if(ViewModel.instance.isToggled() && ViewModel.instance.hands.getValBoolean()) ViewModel.instance.hand(hand.equals(EnumHand.MAIN_HAND) ? player.getPrimaryHand() : player.getPrimaryHand().opposite());
-        Kisman.EVENT_BUS.post(new EventItemRenderer(hand.equals(EnumHand.MAIN_HAND) ? player.getPrimaryHand() : player.getPrimaryHand().opposite()));
+        Kisman.EVENT_BUS.post(new EventItemRenderer(
+                hand.equals(EnumHand.MAIN_HAND) ? player.getPrimaryHand() : player.getPrimaryHand().opposite(),
+                swingProgress
+        ));
+
+        lastSwingProgress = swingProgress;
     }
 
     @Redirect(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformSideFirstPerson(Lnet/minecraft/util/EnumHandSide;F)V"))
     public void transformRedirect(ItemRenderer renderer, EnumHandSide hand, float y) {
         Vec3d translate = new Vec3d((hand == EnumHandSide.RIGHT ? 1 : -1) * 0.56, -0.52 + y * -0.6, -0.72);
         Vec3d rotate = new Vec3d(0.0, 0.0, 0.0);
-        Vec3d scale = new Vec3d(0, 0, 0);
+        Vec3d scale = new Vec3d(1, 1, 1);
 
         boolean isEating = PlayerUtil.IsEating();
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
@@ -85,7 +93,22 @@ public class MixinItemRenderer {
                 case "Knife": {
                     rotate = new Vec3d(43, 130, 230);
                 }
+                case "Custom": {
+                    rotate = new Vec3d(
+                            SwingAnimation.instance.rotateX.getValDouble(),
+                            SwingAnimation.instance.rotateY.getValDouble(),
+                            SwingAnimation.instance.rotateZ.getValDouble()
+                    );
+                }
             }
+
+            if(SwingAnimation.instance.test.getValBoolean()) {
+                rotate = rotate.scale(lastSwingProgress);
+            }
+        }
+
+        if(SwingTest.INSTANCE.toggled) {
+            SwingTest.INSTANCE.rotateItems(hand, lastSwingProgress);
         }
 
         GlStateManager.translate(translate.x, translate.y, translate.z);

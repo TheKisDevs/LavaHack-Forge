@@ -6,6 +6,7 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 
 public class GuiModule extends Module {
     public final Setting primaryColor = register(new Setting("Primary Color", this, "Primary Color", new Colour(255, 0, 0)));
@@ -25,6 +26,8 @@ public class GuiModule extends Module {
 
     public GuiModule() {
         super("Gui", Category.CLIENT);
+        super.setKeyboardKey(Keyboard.KEY_RSHIFT);
+        super.setType(BindType.Keyboard);
 
         instance = this;
     }

@@ -1,15 +1,11 @@
 package com.kisman.cc.features.module.combat.holefillerrewrite
 
-import com.kisman.cc.features.module.combat.autorer.math.Vec3f
 import net.minecraft.client.Minecraft
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.ItemStack
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHandSide
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 
 /**
  * @author _kisman_

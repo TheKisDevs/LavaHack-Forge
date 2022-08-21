@@ -119,4 +119,14 @@ public class EventManager implements EventBus {
             return null;
         }
     }
+
+    @Override
+    public void postReversed(Object event) {
+        if(event instanceof Event && Kisman.instance.scriptManager != null && Kisman.instance.init) Kisman.instance.scriptManager.runCallback("events", (( Event ) event).toLua());
+        List<Listener> listeners = SUBSCRIPTION_MAP.get(event.getClass());
+        if (listeners != null) {
+            Collections.reverse(listeners);
+            listeners.forEach(listener -> listener.invoke(event));
+        }
+    }
 }

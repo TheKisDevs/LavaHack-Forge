@@ -1,7 +1,6 @@
 package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
@@ -80,7 +79,6 @@ public class CheckBox implements Openable {
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) {
             setting.setValBoolean(!setting.getValBoolean());
-            Kisman.EVENT_BUS.post(new EventSettingChange.BooleanSetting(setting));
         }
         if(isMouseOnButton(mouseX, mouseY) && button == 1) open = !open;
         if(open) bind.mouseClicked(mouseX, mouseY, button);

@@ -12,6 +12,9 @@ import net.minecraft.util.text.TextFormatting
 import java.util.*
 import kotlin.math.max
 
+import com.kisman.cc.util.math.max
+
+@Suppress("UNUSED_PARAMETER")
 class Coords : HudModule(
     "Coords",
     "Show your current coords, rotations",
@@ -56,8 +59,8 @@ class Coords : HudModule(
 
         val color = if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1
 
-        var width = 10.0
-        var height = 10.0
+        var width = 0.0
+        var height = 0.0
 
         if(showCoords.valBoolean) {
             val coordString =
@@ -87,7 +90,7 @@ class Coords : HudModule(
                 "${TextFormatting.RESET}Pitch${TextFormatting.GRAY}: " +
                         "[${TextFormatting.RESET}${(mc.player.rotationPitch * nextFloat(false)).toInt()}${TextFormatting.GRAY}]"
 
-            width = max(width, CustomFontUtil.getStringWidth(rotationString).toDouble())
+            width = width.max(CustomFontUtil.getStringWidth(rotationString).toDouble())
 
             CustomFontUtil.drawStringWithShadow(
                 rotationString,

@@ -1,46 +1,221 @@
 package com.kisman.cc.features.module.combat
 
+import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autocrystalpvp.PlaceInfo
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingEnum
+import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.types.number.NumberType
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern
+import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.entity.TargetFinder
+import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.getBlockStateSafe
+import com.kisman.cc.util.movement.MovementUtil
+import com.kisman.cc.util.movement.active
 import com.kisman.cc.util.movement.gotoPos
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.world.HoleUtil
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
+import net.minecraft.init.Items
+import net.minecraft.item.Item
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem
+import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.event.entity.living.LivingEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.stream.Collectors
 
 /**
  * @author _kisman_
  * @since 22:19 of 12.08.2022
  */
+@Beta
 object AutoCrystalPvP : Module(
     "AutoCrystalPvP",
     "crystal pvp go brr",
     Category.COMBAT
 ) {
     private val terrain = register(Setting("Terrain", this, true))
-    private val targetIsUsingMultiPlace = register(Setting("Target Is Using Multi Place", this, false))
-    private val debug = register(Setting("Debug", this, false))
+    private val targetIsUsingMultiPlace = /*register*/(Setting("Target Is Using Multi Place", this, false))
+    private val debug1 = register(Setting("Debug 1", this, false))
+    private val debug2 = register(Setting("Debug 2", this, false))
+    private val moveStateLogic = register(Setting("Move State Logic", this, MoveStateLogic.MovementUtil))
+    private val targetRange = register(Setting("Range", this, 50.0, 1.0, 100.0, true))
 
-    private var lastSpot : PlaceInfo? = null
+    private val autoXPGroup = register(SettingGroup(Setting("Auto XP", this)))
+    private val autoXP = register(autoXPGroup.add(Setting("Auto XP", this, false).setTitle("State")))
+    private val autoXPSmart = register(autoXPGroup.add(Setting("Auto XP Smart", this, false).setTitle("Smart")))
+    private val autoXPMode = SettingEnum("Auto XP Mode", this, AutoXPMode.Vanilla).setTitle("Mode").group(autoXPGroup).register()
+    private val autoXPSilentDelay = register(autoXPGroup.add(Setting("Auto Xp Silent Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME).setTitle("Silent Delay")))
+    private val autoXPArmorPercent = register(autoXPGroup.add(Setting("Auto XP Armor Percent", this, 50.0, 0.0, 100.0, NumberType.PERCENT).setTitle("Armor Percent")))
 
-    @SubscribeEvent fun onLivingUpdate(event : LivingEvent.LivingUpdateEvent) {
-        if(mc.player == null || mc.world == null || event != mc.player) {
+    private val autoEatGroup = register(SettingGroup(Setting("Auto Eat", this)))
+    private val autoEat = register(autoEatGroup.add(Setting("Auto Eat", this, false).setTitle("State")))
+
+    private val threads = MultiThreaddableModulePattern(this).init()
+    private val targets = TargetFinder(targetRange.supplierDouble, threads)
+
+    private val autoXPSilentTimer = TimerUtils()
+
+    private var lastIsMoving = false
+    private var isEating = false
+    private var autoXPOldSlot = -1
+
+    init {
+        super.setDisplayInfo {
+            if(targets.target != null) "[${targets.target?.name}]"
+            else ""
+        }
+    }
+
+    override fun onEnable() {
+        super.onEnable()
+        threads.reset()
+        targets.reset()
+        autoXPSilentTimer.reset()
+        lastIsMoving = false
+        autoXPOldSlot = -1
+        isEating = false
+    }
+
+    override fun update() {
+        if(mc.player == null || mc.world == null || mc.player.isDead) {
             return
         }
 
-        if(AutoRer.currentTarget != null) {
-            gotoSafeSpot(AutoRer.currentTarget)
+        targets.update()
+
+        if(debug2.valBoolean) {
+            println("Update 1")
+        }
+
+        if(targets.target != null) {
+            if(debug2.valBoolean) {
+                println("Update 2")
+            }
+            threads.update(Runnable {
+                if(debug2.valBoolean) {
+                    println("Update 3")
+                }
+                gotoSafeSpot(targets.target!!)
+                autoXP()
+                autoEat()
+            })
         }
     }
+
+    private fun autoEat() {
+        if(autoEat.valBoolean && !isMoving()) {
+            var hand = getHandOfItem(Items.GOLDEN_APPLE)
+
+            if(hand == null) {
+                val gappleSlot = InventoryUtil.findItem(Items.GOLDEN_APPLE, 0, 9)
+
+                if(gappleSlot == -1) {
+                    return
+                }
+
+                mc.player.inventory.currentItem = gappleSlot
+
+                hand = getHandOfItem(Items.GOLDEN_APPLE)
+
+                if(hand == null) {
+                    return
+                }
+            }
+
+            handleAutoEat(hand!!)
+        } else {
+            isEating = false
+        }
+    }
+
+    private fun handleAutoEat(hand : EnumHand) {
+        mc.playerController.processRightClick(mc.player, mc.world, hand)
+        isEating = true
+    }
+
+    private fun autoXP() {
+        if(autoXP.valBoolean && InventoryUtil.isArmorUnderPercent(mc.player, autoXPArmorPercent.valFloat)) {
+            if (getAutoXPMode() == AutoXPMode.Vanilla) {
+                if (lastIsMoving && !isMoving()) {
+                    autoXPOldSlot = mc.player.inventory.currentItem
+                    val xpSlot = InventoryUtil.findItem(Items.EXPERIENCE_BOTTLE, 0, 9)
+
+                    if (xpSlot == -1) {
+                        if (debug1.valBoolean) {
+                            ChatUtility.cleanMessage("Initial-AI >> Auto-XP >> No xp in hotbar")
+                        }
+                    } else {
+                        mc.player.inventory.currentItem = xpSlot
+                    }
+                } else if (!lastIsMoving && !isMoving() && mc.player.heldItemMainhand.item == Items.EXPERIENCE_BOTTLE) {
+                    val oldPitch = mc.player.rotationPitch
+
+                    mc.player.connection.sendPacket(CPacketPlayerTryUseItem(EnumHand.MAIN_HAND))
+
+                    mc.player.rotationPitch = oldPitch
+                } else if (!lastIsMoving && isMoving() && autoXPOldSlot != -1) {
+                    mc.player.inventory.currentItem = autoXPOldSlot
+                }
+
+                autoXPSilentTimer.reset()
+            } else {
+                if(!isMoving()) {
+                    if(autoXPSilentTimer.passedMillis(autoXPSilentDelay.valLong)) {
+                        autoXPSilentTimer.reset()
+
+                        val xpSlot = InventoryUtil.findItem(Items.EXPERIENCE_BOTTLE, 0, 9)
+
+                        if (xpSlot == -1) {
+                            if (debug1.valBoolean) {
+                                ChatUtility.cleanMessage("Initial-AI >> Auto-XP >> No xp in hotbar")
+                            }
+                        } else {
+                            val oldSlot = mc.player.inventory.currentItem
+
+                            mc.player.inventory.currentItem = xpSlot
+
+                            val oldPitch = mc.player.rotationPitch
+
+                            mc.player.connection.sendPacket(CPacketPlayerTryUseItem(EnumHand.MAIN_HAND))
+
+                            mc.player.rotationPitch = oldPitch
+
+                            mc.player.inventory.currentItem = oldSlot
+                        }
+                    }
+                }
+            }
+        }
+
+        lastIsMoving = isMoving()
+    }
+
+    private fun getAutoXPMode() : AutoXPMode {
+        return if(autoXPSmart.valBoolean) {
+            if(isEating) {
+                AutoXPMode.Silent
+            } else {
+                AutoXPMode.Vanilla
+            }
+        } else {
+            autoXPMode.valEnum
+        }
+    }
+
+    private fun isMoving() : Boolean =
+        if(moveStateLogic.valEnum == MoveStateLogic.MovementUtil) MovementUtil.isMoving()
+        else active()
+
+    private fun getHandOfItem(item : Item) : EnumHand? =
+        if(mc.player.heldItemMainhand.item == item) EnumHand.MAIN_HAND
+        else if(mc.player.heldItemOffhand.item == item) EnumHand.OFF_HAND
+        else null
 
     private fun findSpot(target : Entity) : PlaceInfo? {
         val list = ArrayList<PlaceInfo>()
@@ -79,19 +254,21 @@ object AutoCrystalPvP : Module(
     private fun gotoSafeSpot(target : Entity) {
         val spot = findSpotNew(target)
 
+        if(debug2.valBoolean) {
+            println("Spot != null is ${spot != null}")
+        }
+
         if(spot == null) {
-            if(debug.valBoolean && lastSpot != null) {
+            if(debug1.valBoolean) {
                 ChatUtility.cleanMessage("Initial-AI >> No safe spot found.")
             }
         } else {
             val pos = spot?.pos
             gotoPos(pos)
-            if(debug.valBoolean) {
+            if(debug1.valBoolean) {
                 ChatUtility.cleanMessage("Initial-AI >> Going to ${pos.x}, ${pos.y}, ${pos.z}")
             }
         }
-
-        lastSpot = spot
     }
 
     private fun isBadPos(pos : BlockPos) : Boolean {
@@ -224,4 +401,7 @@ object AutoCrystalPvP : Module(
         }
         return possibleHoles
     }
+
+    private enum class AutoXPMode { Vanilla, Silent }
+    private enum class MoveStateLogic { MovementUtil, Baritone }
 }

@@ -13,13 +13,21 @@ fun Double.coerceIn(minimumValue : Double, maximumValue : Double) : Double {
 }
 
 //Fixed coerceIn method
-fun Float.coerceIn(minimumValue : Float, maximumValue : Float): Float {
+fun Float.coerceIn(minimumValue : Float, maximumValue : Float) : Float {
     if (this < minimumValue) return minimumValue
     if (this > maximumValue) return maximumValue
     return this
 }
 
-fun Float.max(second : Float): Float {
+fun Float.max(second : Float) : Float {
+    return kotlin.math.max(this, second)
+}
+
+fun Int.max(second : Int) : Int {
+    return kotlin.math.max(this, second)
+}
+
+fun Double.max(second : Double) : Double {
     return kotlin.math.max(this, second)
 }
 

@@ -15,6 +15,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+//TODO: crystal breaker
 public class Burrow2 extends Module {
     private final Setting offset = register(new Setting("Offset", this, 7, -20, 20, false));
     private final Setting smartOffset = register(new Setting("SmartOffset", this, false));

@@ -40,6 +40,7 @@ class ScaffoldRewrite : Module(
             return
         }
         lastY = mc.player.posY
+        mc.player.jump()
 //        oldPlayerPos = Vec3d(mc.player.posX, mc.player.posY, mc.player.posZ)
     }
 
@@ -116,6 +117,13 @@ class ScaffoldRewrite : Module(
                 false,
                 packet.valBoolean
             )
+
+            if (mc.player.onGround) {
+                mc.player.jump()
+                lastY = BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).y.toDouble()
+            } else {
+                mc.player.motionY = -0.28
+            }
         } else {
             for (pos in queue) {
                 if (!BlockUtil2.isPositionPlaceable(pos, false, true)) continue
@@ -130,15 +138,6 @@ class ScaffoldRewrite : Module(
 
         if (needToSwap) {
             swap.valEnum.task.doTask(oldSlot, true)
-        }
-
-        if(isTowerActive()) {
-            if (mc.player.onGround) {
-                mc.player.jump()
-                lastY = BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).y.toDouble()
-            } else {
-                mc.player.motionY = -0.28
-            }
         }
     }
 

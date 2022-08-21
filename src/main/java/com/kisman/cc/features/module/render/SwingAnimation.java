@@ -14,29 +14,27 @@ import static org.lwjgl.opengl.GL11.*;
 public class SwingAnimation extends Module {
     public static SwingAnimation instance;
 
-    public Setting mode = new Setting("Mode", this, "Strong", new ArrayList<>(Arrays.asList("Hand", "Strong")));
+    public Setting mode = register(new Setting("Mode", this, "Strong", new ArrayList<>(Arrays.asList("Hand", "Strong"))));
 
-    private final Setting handMode = new Setting("Hand Mode", this, "X", Arrays.asList("X", "Y", "Z"));
+    private final Setting handMode = register(new Setting("Hand Mode", this, "X", Arrays.asList("X", "Y", "Z")));
 
-    public Setting ignoreEating = new Setting("IgnoreEating", this, true);
+    public Setting strongMode = register(new Setting("StrongMode", this, StrongMode.Blockhit1));
 
-    public Setting strongMode = new Setting("StrongMode", this, StrongMode.Blockhit1);
+    public Setting ignoreEating = register(new Setting("IgnoreEating", this, true));
 
-    public Setting ifKillAura = new Setting("If KillAura", this, true);
+    public Setting ifKillAura = register(new Setting("If KillAura", this, true));
+
+    public Setting test = register(new Setting("Test", this, false));
+
+    public Setting rotateX = register(new Setting("Rotate X", this, 0, 0, 360, true));
+    public Setting rotateY = register(new Setting("Rotate Y", this, 0, 0, 360, true));
+    public Setting rotateZ = register(new Setting("Rotate Z", this, 0, 0, 360, true));
 
     public SwingAnimation() {
         super("SwingAnimation", "SwingAnimation", Category.RENDER);
+        super.setDisplayInfo(() -> "[" + (mode.getValString().equalsIgnoreCase("Hand") ? Kisman.instance.settingsManager.getSettingByName(this, "SwingMode").getValString() : strongMode.getValString()) + "]");
 
         instance = this;
-
-        setmgr.rSetting(mode);
-        setmgr.rSetting(handMode);
-
-        setmgr.rSetting(strongMode);
-        setmgr.rSetting(ignoreEating);
-        setmgr.rSetting(ifKillAura);
-
-        super.setDisplayInfo(() -> "[" + (mode.getValString().equalsIgnoreCase("Hand") ? Kisman.instance.settingsManager.getSettingByName(this, "SwingMode").getValString() : strongMode.getValString()) + "]");
     }
 
     @SubscribeEvent
@@ -63,6 +61,7 @@ public class SwingAnimation extends Module {
     public enum StrongMode {
         Blockhit1,
         Blockhit2,
-        Knife
+        Knife,
+        Custom
     }
 }

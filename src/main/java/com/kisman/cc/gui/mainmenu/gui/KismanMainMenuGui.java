@@ -1,17 +1,24 @@
 package com.kisman.cc.gui.mainmenu.gui;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.module.client.PingBypass;
+import com.kisman.cc.features.pingbypass.gui.GuiAddPingBypass;
+import com.kisman.cc.features.pingbypass.gui.GuiButtonPingBypassOptions;
 import com.kisman.cc.gui.alts.AltManagerGUI;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.features.viaforge.gui.GuiProtocolSelector;
 import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.util.text.TextFormatting;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
 public class KismanMainMenuGui extends GuiScreen {
     private final GuiScreen lastGui;
+
+    private GuiButton pingBypassButton;
 
     public KismanMainMenuGui(GuiScreen lastGui) {this.lastGui = lastGui;}
 
@@ -41,8 +48,7 @@ public class KismanMainMenuGui extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        super.actionPerformed(button);
+    protected void actionPerformed(@NotNull GuiButton button) throws IOException {
         switch(button.id) {
             case 1:
                 mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(this));
@@ -62,13 +68,25 @@ public class KismanMainMenuGui extends GuiScreen {
             case 6:
                 mc.displayGuiScreen(lastGui);
                 break;
+            case 7:
+                PingBypass.INSTANCE.toggle();
+                pingBypassButton.displayString = getDisplayString();
+                break;
+            case 8:
+                mc.displayGuiScreen(new GuiAddPingBypass(this));
+                break;
         }
+    }
+
+    @Override
+    public void confirmClicked(boolean result, int id) {
+        if(id == 7) mc.displayGuiScreen(this);
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        addButtons(height / 6 + 48 - 6, 72 - 48);
+        addButtons(height / 8 + 48 - 6, 72 - 48);
     }
 
     private void addButtons(int y, int offset) {
@@ -77,6 +95,14 @@ public class KismanMainMenuGui extends GuiScreen {
         buttonList.add(new GuiButton(3, width / 2 - 100, y + offset * 2, "YouTube"));
         buttonList.add(new GuiButton(4, width / 2 - 100, y + offset * 4, 98, 20, "Version"));
         buttonList.add(new GuiButton(5, width / 2 + 2, y + offset * 4, 98, 20, "Alts"));
-        buttonList.add(new GuiButton(6, width / 2 - 100, y + offset * 5, "Back"));
+
+        pingBypassButton = addButton(new GuiButton(7, width / 2 - (122 / 2), y + offset * 5, 100, 20, getDisplayString()));
+        buttonList.add(new GuiButtonPingBypassOptions(8, width / 2 - (122 / 2) + 100 + 2, y + offset * 5));
+
+        buttonList.add(new GuiButton(6, width / 2 - 100, y + offset * 7, "Back"));
+    }
+
+    private String getDisplayString() {
+        return "PingBypass: " + (PingBypass.INSTANCE.isToggled() ? TextFormatting.GREEN + "On" : TextFormatting.RED + "Off");
     }
 }

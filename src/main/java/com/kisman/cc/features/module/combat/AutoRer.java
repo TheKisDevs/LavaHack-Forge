@@ -6,10 +6,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.features.module.combat.autorer.AutoRerDamageSyncHandler;
-import com.kisman.cc.features.module.combat.autorer.AutoRerUtil;
-import com.kisman.cc.features.module.combat.autorer.BreakInfo;
-import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
+import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
@@ -28,6 +25,7 @@ import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.RotationSaver;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.AutoRerTargetFinderLogic;
 import com.kisman.cc.util.enums.RotationLogic;
 import com.kisman.cc.util.enums.ShaderModes;
 import com.kisman.cc.util.enums.dynamic.RotationEnum;
@@ -85,7 +83,7 @@ public class AutoRer extends Module {
     private final SettingGroup optimization = register(new SettingGroup(new Setting("Optimization", this)));
 
     private final SettingGroup multiThreadGroup = register(optimization.add(new SettingGroup(new Setting("Multi Thread", this))));
-    private final SettingGroup multiThreadGettersGroup = register(optimization.add(new SettingGroup(new Setting("Getters", this))));
+    private final SettingGroup multiThreadGettersGroup = register(multiThreadGroup.add(new SettingGroup(new Setting("Getters", this))));
     public final Setting multiThreaddedSphereGetter = register(multiThreadGettersGroup.add(new Setting("MT Sphere Getter", this, false).setTitle("Sphere")));
     public final Setting multiThreaddedTargetGetter = register(multiThreadGettersGroup.add(new Setting("MT Target Getter", this, false).setTitle("Target")));
     private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
@@ -100,6 +98,7 @@ public class AutoRer extends Module {
     private final Setting breakWallRange = register(ranges.add(new Setting("Break Wall Range", this, 4.5f, 0, 6, false).setTitle("Break Wall")));
     public final Setting targetRange = register(ranges.add(new Setting("Target Range", this, 9, 0, 20, false).setTitle("Target")));
     private final Setting logic = register(main.add(new Setting("Logic", this, LogicMode.PlaceBreak)));
+    public final SettingEnum<AutoRerTargetFinderLogic> targetLogic = new SettingEnum<>("Target Logic", this, AutoRerTargetFinderLogic.Distance).group(main).register();
     public final Setting terrain = register(main.add(new Setting("Terrain", this, false)));
     private final Setting switch_ = register(main.add(new Setting("Switch", this, SwitchMode.None)));
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
@@ -120,7 +119,7 @@ public class AutoRer extends Module {
     public final Setting syns = register(helpers.add(new Setting("Syns", this, true)));
     private final Setting syncMode = register(helpers.add(new Setting("Sync Mode", this, SyncMode.None).setTitle("Sync")));
     private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
-    private final SettingEnum<RotationEnum.Rotation> rotateMode = new SettingEnum("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None")).group(helpers).register();
+    private final SettingEnum<RotationEnum.Rotation> rotateMode = new SettingEnum<>("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None")).group(helpers).register();
     private final Setting calcDistSort = register(helpers.add(new Setting("Calc Dist Sort", this, false)));
     private final DamageSyncPattern damageSync = new DamageSyncPattern(this).group(helpers).preInit().init();
     private final Setting damageSyncPlace = register(damageSync.getGroup_().add(new Setting("Damage Sync Place", this, DamageSyncMode.None).setTitle("Place")));
@@ -129,9 +128,9 @@ public class AutoRer extends Module {
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
-    private final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
+    public final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
     private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi").setVisible(place::getValBoolean)));
-    private final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
+    public final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
     private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet").setVisible(place::getValBoolean)));
     private final SettingGroup facePlaceGroup = register(place_.add(new SettingGroup(new Setting("Face", this))));
     private final Setting facePlace = register(facePlaceGroup.add(new Setting("Face Place", this, FacePlaceMode.None).setTitle("Mode")));
@@ -183,6 +182,8 @@ public class AutoRer extends Module {
 
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
     private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
+
+    private final Setting renderTest = register(render_.add(new Setting("Render Test", this, false)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -615,7 +616,8 @@ public class AutoRer extends Module {
                 movable.fadeLength.getValFloat(),
                 renderer_,
                 placePos,
-                text.getValBoolean()
+                text.getValBoolean(),
+                renderTest.getValBoolean()
         );
     }
 
@@ -753,7 +755,7 @@ public class AutoRer extends Module {
         this.placePos = placePos[0] == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
     }
 
-    private boolean needToMultiPlace() {
+    public boolean needToMultiPlace() {
         return multiPlace.getValEnum() != MultiPlaceMode.None ? multiPlace.getValEnum() == MultiPlaceMode.Stupid || isTargetMoving() : false;
     }
 
@@ -813,7 +815,7 @@ public class AutoRer extends Module {
         this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
     }
 
-    private boolean isPosValid(BlockPos pos) {
+    public boolean isPosValid(BlockPos pos) {
         return mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= (EntityUtil.canSee(pos) ?  placeRange.getValDouble() : placeWallRange.getValDouble());
     }
 

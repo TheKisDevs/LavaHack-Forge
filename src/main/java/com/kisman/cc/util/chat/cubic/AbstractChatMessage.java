@@ -21,14 +21,22 @@ public abstract class AbstractChatMessage {
     }
 
     final String formatModule(){
-        Module m = ChatUtility.moduleMapping.get(curCaller);
-        if(m == null)
+        try {
+            Module m = ChatUtility.moduleMapping.get(curCaller);
+            if (m == null)
+                return "null";
+            return m.getName();
+        } catch(Exception ignored) {
             return "null";
-        return m.getName();
+        }
     }
 
     final String callerName(){
-        return this.curCaller.getSimpleName();
+        try {
+            return this.curCaller.getSimpleName();
+        } catch(Exception ignored) {
+            return "null";
+        }
     }
 
     public final void printMessage(ITextComponent textComponent){

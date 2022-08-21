@@ -1,6 +1,5 @@
 package com.kisman.cc.features.plugins.managers;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.plugins.Plugin;
 import com.kisman.cc.features.plugins.PluginConfig;
 import com.kisman.cc.features.plugins.exceptions.BadPluginException;

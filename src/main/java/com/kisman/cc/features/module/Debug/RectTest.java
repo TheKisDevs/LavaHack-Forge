@@ -4,8 +4,8 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.render.GLUtil;
 import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.render.cubicgl.CubicGL;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -87,7 +87,7 @@ public class RectTest extends Module {
             return;
         }
 
-        GLUtil.scissors(x2, y2, x1, (int) (y1 + 200.0 - (progress * 200.0)));
+        CubicGL.scissors(x2, y2, x1, (int) (y1 + 200.0 - (progress * 200.0)));
     }
 
     private double mutateProgress(double progress){

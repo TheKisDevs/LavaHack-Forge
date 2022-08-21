@@ -11,7 +11,7 @@ uniform float maxSample;
 uniform float mixFactor;
 uniform float minAlpha;
 
-uniform vec2 dimensions;
+uniform vec2 resolution;
 
 uniform bool blur;
 
@@ -19,7 +19,7 @@ uniform sampler2D image;
 uniform float imageMix;
 uniform bool useImage;
 
-vec4 blur13(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
+vec4 blur13(sampler2D image, vec2 uv, vec2 direction) {
     vec4 color = vec4(0.0);
     vec2 off1 = vec2(1.411764705882353) * direction;
     vec2 off2 = vec2(3.2941176470588234) * direction;
@@ -44,7 +44,7 @@ void main() {
 
     if (blur) {
         if (centerCol.a != 0) {
-            centerCol = blur13(texture, gl_TexCoord[0].xy, dimensions, vec2(2, 2));
+            centerCol = blur13(texture, gl_TexCoord[0].xy, vec2(2, 2));
         }
     }
 
@@ -65,7 +65,7 @@ void main() {
                 vec4 currentColor = texture2D(texture, gl_TexCoord[0].xy + vec2(texelSize.x * x, texelSize.y * y));
 
                 /*if (blur) {
-                    currentColor = blur13(texture, gl_TexCoord[0].xy + vec2(texelSize.x * x, texelSize.y * y), dimensions, vec2(3, 3));
+                    currentColor = blur13(texture, gl_TexCoord[0].xy + vec2(texelSize.x * x, texelSize.y * y), vec2(3, 3));
                 }*/
 
                 if (currentColor.a != 0)

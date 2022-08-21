@@ -32,9 +32,8 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'com.google.code.gson:gson:2.8.6'
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.9'
+        /*classpath 'com.google.code.gson:gson:2.8.6'
+        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.9'*/
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -43,8 +42,8 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: 'eclipse'
+//apply plugin: 'com.matthewprenger.cursegradle'
+//apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = 'b0.1.6.5-plus'
@@ -157,6 +156,7 @@ reobf {
         classpath = sourceSets.main.compileClasspath
     }
 }
+
 jar {
     manifest {
         attributes(
@@ -249,9 +249,8 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'the/kis/devs/api/**'
         include 'mixins.Kisman.json'
         include 'mixins.kisman.refmap.json'
-        include 'assets/kismancc'
-        include 'net/**'
-        include 'sun/**'
+        include 'assets/kismancc/**'
+        include 'Main.class'
     }
     baseName = ''
     version = ''
@@ -285,7 +284,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
                 'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.kisman.cc.loader.LavaFalconCoreMod',
+                'FMLCorePlugin': 'com.kisman.cc.loader.LavaHackLoaderCoreMod',
                 'ForceLoadAsMod': 'true',
                 'FMLAT': 'kisman_at.cfg'
         )
@@ -296,6 +295,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
 }
 
 build.dependsOn(privateJar, publicJar, loaderJar)
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

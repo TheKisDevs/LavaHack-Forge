@@ -1,6 +1,5 @@
 package com.kisman.cc.util.entity;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.mixin.mixins.accessor.AccessorNetHandlerPlayClient;
 import com.kisman.cc.util.Globals;
 

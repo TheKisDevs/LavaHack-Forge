@@ -15,6 +15,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
+    "MixinGoogleEventBus",
     "MixinGuiBossOverlay",
     "MixinGuiContainer",
     "MixinGuiIngame",
@@ -45,6 +46,8 @@
     "MixinTileEntity",
     "MixinVisGraph",
     "MixinWorld",
+    "accessor.AccessorC00Handshake",
+    "accessor.AccessorContainer",
     "accessor.AccessorEntityPlayer",
     "accessor.AccessorNetHandlerPlayClient",
     "accessor.AccessorRenderEnderCrystal",
@@ -68,6 +71,8 @@
     "viaforge.MixinNetworkManagerChInit"
   ],
   "client": [
+    "MixinTileEntityRendererDispatcher",
+    "accessor.IEntityPlayerSP",
     "baritone.MixinChatTabCompleter",
     "baritone.MixinChunkProviderClient",
     "baritone.MixinChunkRenderContainer",

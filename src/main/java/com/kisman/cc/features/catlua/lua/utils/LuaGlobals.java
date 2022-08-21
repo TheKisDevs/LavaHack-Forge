@@ -62,6 +62,10 @@ public class LuaGlobals implements Globals {
         return nullCheck() ? 0 : (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing());
     }
 
+    boolean nullCheck(){
+        return mc.player == null || mc.world == null;
+    }
+
     public void setTickMultiplier(float tick) {
 
     }

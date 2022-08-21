@@ -4,10 +4,12 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.ReflectUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.util.text.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ChatUtility {
 
@@ -67,5 +69,33 @@ public class ChatUtility {
 
     public static void cleanMessage(String message) {
         mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation(message));
+    }
+
+    public static void sendComponent(ITextComponent component) {
+        sendComponent(component, 0);
+    }
+
+    public static void sendComponent(ITextComponent c, int id) {
+        applyIfPresent(g -> {
+            /*TODO: if (PingBypassServer.isServer()) {
+                TextComponentString string = new TextComponentString("<" + TextFormatting.DARK_RED + "PingBypass" + TextFormatting.WHITE + "> ");
+                string.appendSibling(c);
+                PingBypassServer.sendPacket(new S2CChatPacket(string, ChatType.SYSTEM, id));
+            }*/
+
+            g.printChatMessageWithOptionalDeletion(c, id);
+        });
+    }
+
+    public static void applyIfPresent(Consumer<GuiNewChat> consumer) {
+        GuiNewChat chat = getChatGui();
+
+        if (chat != null) consumer.accept(chat);
+    }
+
+    public static GuiNewChat getChatGui() {
+        if (mc.ingameGUI != null) return mc.ingameGUI.getChatGUI();
+
+        return null;
     }
 }

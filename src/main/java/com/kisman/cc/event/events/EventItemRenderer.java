@@ -9,8 +9,13 @@ import net.minecraft.util.EnumHandSide;
  */
 public class EventItemRenderer extends Event {
     public final EnumHandSide side;
+    public final float progress;
 
-    public EventItemRenderer(EnumHandSide side) {
+    public EventItemRenderer(
+            EnumHandSide side,
+            float progress
+    ) {
         this.side = side;
+        this.progress = progress;
     }
 }

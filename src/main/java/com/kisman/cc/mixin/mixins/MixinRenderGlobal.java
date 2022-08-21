@@ -1,5 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.RenderEntitiesEvent;
 import com.kisman.cc.event.events.RenderEntityEvent;
 import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -18,13 +20,25 @@ public class MixinRenderGlobal {
         if(NoRender.instance.isToggled() && NoRender.instance.defaultBlockHighlight.getValBoolean()) ci.cancel();
     }
 
-    @Inject(method = "renderEntities", at = @At("HEAD"))
+    @Inject(method = "renderEntities", at = @At("HEAD"), cancellable = true)
     public void renderEntitiesHead(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
         RenderEntityEvent.setRenderingEntities(true);
+
+        RenderEntitiesEvent event = new RenderEntitiesEvent.Start();
+
+        Kisman.EVENT_BUS.post(event);
+
+        if(event.isCancelled()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "renderEntities", at = @At("RETURN"))
     public void renderEntitiesReturn(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
+        RenderEntitiesEvent event = new RenderEntitiesEvent.End();
+
+        Kisman.EVENT_BUS.post(event);
+
         RenderEntityEvent.setRenderingEntities(false);
     }
 }
