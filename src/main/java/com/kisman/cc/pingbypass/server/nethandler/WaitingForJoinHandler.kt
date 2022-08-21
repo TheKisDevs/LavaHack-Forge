@@ -1,6 +1,5 @@
 package com.kisman.cc.pingbypass.server.nethandler
 
-import com.kisman.cc.features.pingbypass.server.nethandler.BaseNetHandler
 import com.kisman.cc.pingbypass.server.protocol.ProtocolFactoryImpl
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.client.CPacketChatMessage
@@ -13,7 +12,7 @@ import net.minecraft.network.play.server.SPacketKeepAlive
  * @since 13:29 of 21.08.2022
  */
 class WaitingForJoinHandler(
-    private val manager : NetworkManager
+    manager : NetworkManager
 ) : BaseNetHandler(
     manager,
     100_000
