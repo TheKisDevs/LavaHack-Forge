@@ -1,1 +1,1 @@
-kill yourself with <3
+cubic is the best programmer 
