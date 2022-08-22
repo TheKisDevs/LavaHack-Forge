@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -56,6 +57,7 @@ public class SurroundRewrite extends Module {
     private final Setting fightCA = register(new Setting("FightCA", this, false));
     private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
     private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
+    private final Setting antiCity = register(new Setting("AntiCity", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -109,6 +111,7 @@ public class SurroundRewrite extends Module {
         }
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
+        Kisman.EVENT_BUS.subscribe(packetListener);
     }
 
     @Override
@@ -172,6 +175,7 @@ public class SurroundRewrite extends Module {
         super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(eventEntitySpawnListener);
+        Kisman.EVENT_BUS.unsubscribe(packetListener);
         lastY = -1;
         timer.reset();
     }
@@ -334,6 +338,30 @@ public class SurroundRewrite extends Module {
 
         if(entityMode == FightCAEntityMode.RemoveEntity || entityMode == FightCAEntityMode.Both)
             mc.world.removeEntity(entity);
+
+        if(syncronized.getValBoolean())
+            doThreaddedSyncronizedSurround();
+        else
+            doThreaddedSurround();
+    });
+
+    private final Listener<PacketEvent.Receive> packetListener = new Listener<>(event -> {
+        if(!antiCity.getValBoolean())
+            return;
+
+        if(!(event.getPacket() instanceof SPacketBlockChange))
+            return;
+
+        SPacketBlockChange packet = (SPacketBlockChange) event.getPacket();
+
+        BlockPos pos = packet.getBlockPosition();
+
+        if(!packet.getBlockState().getBlock().isReplaceable(mc.world, pos))
+            return;
+
+        List<BlockPos> blocks = mode.getValEnum().getBlocks();
+        if(!blocks.contains(pos))
+            return;
 
         if(syncronized.getValBoolean())
             doThreaddedSyncronizedSurround();
