@@ -86,6 +86,8 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
+
+
     public static boolean allowToConfiguredAnotherClients, remapped = !runningFromIntelliJ();
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
