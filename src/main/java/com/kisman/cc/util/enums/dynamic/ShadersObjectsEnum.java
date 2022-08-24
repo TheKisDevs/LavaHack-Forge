@@ -1,6 +1,6 @@
 package com.kisman.cc.util.enums.dynamic;
 
-import com.kisman.cc.util.enums.ShaderCharmsRewriteObjectTypes;
+import com.kisman.cc.util.enums.ShadersObjectTypes;
 import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * @author _kisman_
  * @since 13:31 of 16.08.2022
  */
-public class ShaderCharmsObjectsEnum {
+public class ShadersObjectsEnum {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(
@@ -64,163 +64,163 @@ public class ShaderCharmsObjectsEnum {
         );
     }
     
-    public enum ShaderCharmsRewriteObjects {
+    public enum ShadersObjects {
         Hands(task.task(arg -> {
             mc.entityRenderer.renderHand(arg.fetch(0), 2);
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Hand, 0),
+        }), ShadersObjectTypes.Hand, 0),
         Players(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityPlayer) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 1),
+        }), ShadersObjectTypes.Entity, 1),
         Crystals(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityEnderCrystal) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 2),
+        }), ShadersObjectTypes.Entity, 2),
         Monsters(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityMob) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 3),
+        }), ShadersObjectTypes.Entity, 3),
         Animals(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityAnimal) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 4),
+        }), ShadersObjectTypes.Entity, 4),
         Frames(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityItemFrame) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 5),
+        }), ShadersObjectTypes.Entity, 5),
         Items(taskWithEntity.task(arg -> {
             if(arg.fetch(1) instanceof EntityItem) {
                 drawEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.Entity, 6),
+        }), ShadersObjectTypes.Entity, 6),
         Chests(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityChest) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 7),
+        }), ShadersObjectTypes.TileEntity, 7),
         EnderChests(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityEnderChest) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 8),
+        }), ShadersObjectTypes.TileEntity, 8),
         Furnaces(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityFurnace) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 9),
+        }), ShadersObjectTypes.TileEntity, 9),
         EnchantmentTables(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityEnchantmentTable) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 10),
+        }), ShadersObjectTypes.TileEntity, 10),
         Droppers(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityDropper) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 11),
+        }), ShadersObjectTypes.TileEntity, 11),
         Dispensers(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityDispenser) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 12),
+        }), ShadersObjectTypes.TileEntity, 12),
         Hoppers(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityHopper) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 13),
+        }), ShadersObjectTypes.TileEntity, 13),
         Comparators(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityComparator) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 14),
+        }), ShadersObjectTypes.TileEntity, 14),
         DaylightDetectors(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityDaylightDetector) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 15),
+        }), ShadersObjectTypes.TileEntity, 15),
         EndGateway(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityEndGateway) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 16),
+        }), ShadersObjectTypes.TileEntity, 16),
         EndPortals(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityEndPortal) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 17),
+        }), ShadersObjectTypes.TileEntity, 17),
         FlowerPots(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityFlowerPot) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 18),
+        }), ShadersObjectTypes.TileEntity, 18),
         Spawners(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityMobSpawner) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 19),
+        }), ShadersObjectTypes.TileEntity, 19),
         NoteBlocks(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityNote) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 20),
+        }), ShadersObjectTypes.TileEntity, 20),
         Pistons(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityPiston) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 21),
+        }), ShadersObjectTypes.TileEntity, 21),
         Shulkers(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntityShulkerBox) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 22),
+        }), ShadersObjectTypes.TileEntity, 22),
         Signs(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntitySign) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 23),
+        }), ShadersObjectTypes.TileEntity, 23),
         Skull(taskWithTileEntity.task(arg -> {
             if(arg.fetch(1) instanceof TileEntitySkull) {
                 drawTileEntity(arg);
             }
             return null;
-        }), ShaderCharmsRewriteObjectTypes.TileEntity, 24);
+        }), ShadersObjectTypes.TileEntity, 24);
         
         private final AbstractTask<Void> abstractTask;
-        private final ShaderCharmsRewriteObjectTypes type;
+        private final ShadersObjectTypes type;
         private final int index;
 
-        ShaderCharmsRewriteObjects(
+        ShadersObjects(
                 AbstractTask<Void> task,
-                ShaderCharmsRewriteObjectTypes type,
+                ShadersObjectTypes type,
                 int index
         ) {
             this.abstractTask = task;
@@ -229,13 +229,13 @@ public class ShaderCharmsObjectsEnum {
         }
 
         public AbstractTask<Void> getTask() { return abstractTask; }
-        public ShaderCharmsRewriteObjectTypes getType() { return type; }
+        public ShadersObjectTypes getType() { return type; }
         public int getIndex() { return index; }
 
-        public static ArrayList<ShaderCharmsRewriteObjects> byType(ShaderCharmsRewriteObjectTypes type) {
-            ArrayList<ShaderCharmsRewriteObjects> list = new ArrayList<>();
+        public static ArrayList<ShadersObjects> byType(ShadersObjectTypes type) {
+            ArrayList<ShadersObjects> list = new ArrayList<>();
 
-            for(ShaderCharmsRewriteObjects option : values()) {
+            for(ShadersObjects option : values()) {
                 if(option.getType() == type) {
                     list.add(option);
                 }

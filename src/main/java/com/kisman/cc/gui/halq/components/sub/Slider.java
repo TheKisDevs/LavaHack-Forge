@@ -1,16 +1,15 @@
 package com.kisman.cc.gui.halq.components.sub;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.halq.util.TextUtil;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
 import java.math.BigDecimal;
@@ -136,5 +135,15 @@ public class Slider implements Component {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
     }
 }

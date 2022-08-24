@@ -81,6 +81,14 @@ public class Module implements IBindable {
 		return getClass().getAnnotation(Addon.class) != null;
 	}
 
+	private boolean isPingBypassModule0() {
+		return getClass().getAnnotation(PingBypassModule.class) != null;
+	}
+
+	public boolean isPingBypassModule() {
+		return isPingBypassModule0();
+	}
+
 	public String getDescription() {return description;}
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}

@@ -1,33 +1,41 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.*;
+import com.kisman.cc.event.events.EventPlayerUpdateMoveState;
+import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
-import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.movement.MovementUtil;
-import me.zero.alpine.listener.*;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemShield;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 import org.lwjgl.input.Keyboard;
 
 public class NoSlow extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.None));
 
     private final Setting items = register(new Setting("Items", this, true));
-    private final Setting ncpStrict = register(new Setting("NCPStrict", this, true));
+    private final Setting itemsTest = register(new Setting("Items Test", this, false));
+    private final Setting ncpStrict = register(new Setting("NCPStrict", this, false));
+    private final Setting strict = register(new Setting("Strict", this, false));
     private final Setting slimeBlocks = register(new Setting("SlimeBlocks", this, true));
 
     private final Setting sneak = register(new Setting("Sneak", this, false));
@@ -78,7 +86,6 @@ public class NoSlow extends Module {
     }
 
     private void doSneak() {
-        if(mc.player == null || mc.world == null) return;
         if(mc.player.isSneaking()) {
             if(mc.gameSettings.keyBindForward.isKeyDown()) {
                 mc.player.jumpMovementFactor = 0.1f;
@@ -116,7 +123,7 @@ public class NoSlow extends Module {
             mc.player.movementInput.moveForward *= 0.2F;
             mc.player.sprintToggleTimer = 0;
         }
-        if (mc.player.isHandActive() && !mc.player.isRiding()) {
+        if (mc.player.isHandActive() && !mc.player.isRiding() && itemsTest.getValBoolean()) {
             if (mc.player.ticksExisted % 2 == 0) {
                 if (mc.player.onGround) {
                     if (!mc.player.isSprinting()) MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
@@ -178,7 +185,50 @@ public class NoSlow extends Module {
         }
     });
 
-    @EventHandler private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {if(event.getPacket() instanceof CPacketPlayer) if(ncpStrict.getValBoolean()) if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));});
+    @EventHandler private final Listener<PacketEvent.PostSend> listener2 = new Listener<>(event -> {
+        if(
+                event.getPacket() instanceof CPacketPlayer
+                && ncpStrict.getValBoolean()
+                && items.getValBoolean()
+                && mc.player.isHandActive()
+                && !mc.player.isRiding()
+        ) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));
+
+        else if(
+                strict.getValBoolean()
+                &&
+                (
+                        event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock
+                        || event.getPacket() instanceof CPacketPlayerTryUseItem
+                )
+                &&
+                (
+                        (
+                                (
+                                        mc.player.getHeldItemMainhand().getItem() instanceof ItemFood
+                                        || mc.player.getHeldItemMainhand().getItem() instanceof ItemBow
+                                        || mc.player.getHeldItemMainhand().getItem() instanceof ItemShield
+                                )
+                                &&
+                                getHand(event.getPacket()) == EnumHand.MAIN_HAND
+                        )
+                        ||
+                        (
+                                (
+                                        mc.player.getHeldItemOffhand().getItem() instanceof ItemFood
+                                        || mc.player.getHeldItemOffhand().getItem() instanceof ItemBow
+                                        || mc.player.getHeldItemOffhand().getItem() instanceof ItemShield
+                                )
+                                &&
+                                getHand(event.getPacket()) == EnumHand.OFF_HAND
+                        )
+                )
+        ) mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
+    });
+
+    private EnumHand getHand(Packet<?> packet) {
+        return packet instanceof CPacketPlayerTryUseItem ? ((CPacketPlayerTryUseItem) packet).getHand() : ((CPacketPlayerTryUseItemOnBlock) packet).getHand();
+    }
 
     public enum Mode {None, Sunrise}
 }

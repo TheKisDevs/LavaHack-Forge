@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 
+@Deprecated
 public class HoleESPRewrite extends Module {
 
     private final Setting oHoles = register(new Setting("Obsidian", this, true));

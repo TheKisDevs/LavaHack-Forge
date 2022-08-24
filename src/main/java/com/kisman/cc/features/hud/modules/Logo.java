@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 public class Logo extends HudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
+    private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
     private final Setting mode = register(new Setting("Mode", this, LogoMode.CSGO));
     private final Setting image = register(new Setting("Image Mode", this, LogoImage.Old).setVisible(() -> mode.checkValString("Image")));
     private final Setting bold = register(new Setting("Bold", this, false));
@@ -35,18 +36,17 @@ public class Logo extends HudModule {
         String version = Kisman.getVersion();
 
         if(mode.checkValString("Simple")) {
-            if(event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-                int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
+            int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
 
-                if(glow.getValBoolean()) {
-                    int glowOffset = this.glowOffset.getValInt();
-                    Render2DUtil.drawGlow(1 - glowOffset, 1 - glowOffset, 1 + CustomFontUtil.getStringWidth(name + version) + glowOffset, 1 + CustomFontUtil.getFontHeight() + glowOffset, color);
-                }
-
-                CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
+            if(glow.getValBoolean()) {
+                int glowOffset = this.glowOffset.getValInt();
+                Render2DUtil.drawGlow(1 - glowOffset, 1 - glowOffset, 1 + CustomFontUtil.getStringWidth(name + version) + glowOffset, 1 + CustomFontUtil.getFontHeight() + glowOffset, color);
             }
+
+            CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
         } else if(mode.checkValString("CSGO")) {
             String text = name + (csgoVersion.getValBoolean() ? TextFormatting.GRAY + " | " + TextFormatting.RESET + Kisman.getVersion() : "") + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
             int x = 3;
             int y = 8;
             int width = 4 + CustomFontUtil.getStringWidth(text);
@@ -64,15 +64,15 @@ public class Logo extends HudModule {
             Gui.drawRect(x - 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
             Gui.drawRect(x - 1, y - 6, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
             Gui.drawRect(x - 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x, y - 5, x + width, y + height, (ColorUtils.astolfoColors(100, 100)));
+            Gui.drawRect(x, y - 5, x + width, y + height, (color));
             Gui.drawRect(x - 3, y - 1, x + width + 3, y + height + 3, (ColorUtils.getColor(33, 33, 42)));
             Gui.drawRect(x - 2, y - 2, x + width + 2, y + height + 2, (ColorUtils.getColor(45, 45, 55)));
             Gui.drawRect(x - 1, y - 3, x + width + 1, y + height + 1, (ColorUtils.getColor(60, 60, 70)));
             Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
 
-            CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, ColorUtils.astolfoColors(100, 100));
+            CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, color);
         } else if(mode.checkValString("GishCode")) {
-            int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1;
+            int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
 
             GL11.glPushMatrix();
 

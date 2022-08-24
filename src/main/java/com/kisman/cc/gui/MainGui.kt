@@ -24,6 +24,7 @@ class MainGui {
                 Guis.HudEditor -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqHudGui)
                 Guis.Music -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.musicGui)
                 Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
+                Guis.PingBypassGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.pingBypassGui)
             }
         }
     }
@@ -139,6 +140,7 @@ class MainGui {
             val displayName: String
     ) {
         ClickGui("Click Gui"),
+        PingBypassGui("Ping Bypass"),
         CSGOGui("CSGO Gui"),
         HudEditor("Hud Editor"),
         Music("Music"),

@@ -15,6 +15,7 @@
  import com.kisman.cc.features.viaforge.ViaForge;
  import com.kisman.cc.pingbypass.server.PingBypassServer;
  import com.kisman.cc.pingbypass.server.input.Keyboard;
+ import com.kisman.cc.util.minecraft.MouseHandlerKt;
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.entity.EntityPlayerSP;
  import net.minecraft.client.gui.GuiScreen;
@@ -43,8 +44,6 @@
   @Shadow public GameSettings gameSettings;
   @Shadow public EntityPlayerSP player;
   @Shadow public PlayerControllerMP playerController;
-  @Shadow private void clickMouse() {}
-
   private boolean mt_handActive = false;
   private boolean mt_isHittingBlock = false;
 
@@ -73,17 +72,25 @@
 
   @Inject( method = "processKeyBinds", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z", shift = At.Shift.BEFORE, ordinal = 2 ) )
   public void mt_processKeyBinds( CallbackInfo info ) {
-   Interaction module = (Interaction) Kisman.instance.moduleManager.getModule("Interaction");
-   if(module.isToggled() && module.multiTask.getValBoolean()) {
+   if(Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean()) {
     while(gameSettings.keyBindAttack.isPressed())
-     clickMouse();
+        MouseHandlerKt.leftClick();
    }
+  }
+
+  @Inject(
+          method = "clickMouse",
+          at = @At("HEAD"),
+          cancellable = true
+  )
+  private void clickMouseHook(CallbackInfo ci) {
+   MouseHandlerKt.leftClick();
+   ci.cancel();
   }
 
   @Inject( method = "rightClickMouse", at = @At( "HEAD" ) )
   public void mt_rightClickMouse( CallbackInfo info ) {
-   Interaction module = (Interaction) Kisman.instance.moduleManager.getModule("Interaction");
-   if(module.isToggled() && module.multiTask.getValBoolean()) {
+   if(Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean()) {
     mt_isHittingBlock = playerController.getIsHittingBlock();
     playerController.isHittingBlock = false;
    }
@@ -91,14 +98,12 @@
 
   @Inject(method = "rightClickMouse", at = @At("RETURN"))
   public void mt_rightClickMousePost(CallbackInfo ci) {
-   Interaction module = (Interaction) Kisman.instance.moduleManager.getModule("Interaction");
-   if (module.isToggled() && module.multiTask.getValBoolean() && !playerController.getIsHittingBlock()) playerController.isHittingBlock = mt_isHittingBlock;
+   if (Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean() && !playerController.getIsHittingBlock()) playerController.isHittingBlock = mt_isHittingBlock;
   }
 
   @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
   public void mt_sendClickBlockToControllerPre(boolean leftClick, CallbackInfo ci) {
-   Interaction module = (Interaction) Kisman.instance.moduleManager.getModule("Interaction");
-   if (module.isToggled() && module.multiTask.getValBoolean()) {
+   if (Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean()) {
     mt_handActive = player.isHandActive();
     player.handActive = false;
    }
@@ -106,8 +111,7 @@
 
   @Inject(method = "sendClickBlockToController", at = @At("RETURN"))
   public void mt_sendClickBlockToControllerPost(boolean leftClick, CallbackInfo ci) {
-   Interaction module = (Interaction) Kisman.instance.moduleManager.getModule("Interaction");
-   if (module.isToggled() && module.multiTask.getValBoolean() && !player.isHandActive()) player.handActive = mt_handActive;
+   if (Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean() && !player.isHandActive()) player.handActive = mt_handActive;
   }
 
   @Inject(method = "<init>", at = @At("RETURN"))

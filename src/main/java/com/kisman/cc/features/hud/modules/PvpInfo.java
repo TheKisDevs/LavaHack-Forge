@@ -15,9 +15,6 @@ public class PvpInfo extends HudModule {
 
     public PvpInfo() {
         super("PvpInfo", "PvpInfo", true);
-
-        setX(1);
-        setY(1);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -35,13 +32,15 @@ public class PvpInfo extends HudModule {
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "OFF: " + (Kisman.instance.moduleManager.getModule("OffHand").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HR: " + (Kisman.instance.moduleManager.getModule("HandRewrite").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "Hr: " + (Kisman.instance.moduleManager.getModule("HandRewrite").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "SURRr: " + (Kisman.instance.moduleManager.getModule("SurroundRewrite").toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "AT: " + (AutoTrap.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
-        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HFR: " + (HoleFillerRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "HFr: " + (HoleFillerRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+        count++;
+        CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "FLTNr: " + (FlattenRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;
         CustomFontUtil.drawStringWithShadow(TextFormatting.GRAY + "CF: " + (CrystalFiller.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
         count++;

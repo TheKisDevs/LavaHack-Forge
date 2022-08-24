@@ -136,4 +136,14 @@ public class BindModeButton implements Component {
     private boolean isMouseOnButton2(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + getHeight();
     }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
+    }
 }

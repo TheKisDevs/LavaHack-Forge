@@ -20,6 +20,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.network.play.client.CPacketPlayerDigging
+import net.minecraft.network.play.client.CPacketPlayerTryUseItem
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
 import net.minecraft.network.play.client.CPacketUseEntity
 import net.minecraft.util.EnumFacing
@@ -29,7 +30,7 @@ import net.minecraft.util.math.RayTraceResult.Type.*
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-class Interaction : Module(
+object Interaction : Module(
         "Interaction",
         "NoMiningTrace + MultiTask + RoofInteract + FastUse + NoFriendDamage",
         Category.PLAYER
@@ -46,6 +47,7 @@ class Interaction : Module(
     private val roofInteract = register(blocks.add(Setting("Roof Interact", this, false)))
     private val fastBreak = register(blocks.add(Setting("Fast Break", this, false)))
     private val noInteractVal = register(blocks.add(Setting("No Interact", this, false)))
+    private val noInteract = register(blocks.add(SettingGroup(Setting("No Interact", this).setVisible { noInteractVal.valBoolean })))
     @JvmField val reach : Setting = register(blocks.add(Setting("Reach", this, false)))
     @JvmField val reachDistance : Setting = register(blocks.add(Setting("Reach Distance", this, 5.0, 1.0, 10.0, true).setVisible { reach.valBoolean }))
 
@@ -63,14 +65,16 @@ class Interaction : Module(
 
     private val noFriendDamage = register(entities.add(Setting("No Friend Damage", this, false)))
 
-    private val noInteract = register(SettingGroup(Setting("No Interact", this).setVisible { noInteractVal.valBoolean }))
+    private val ntBlocks = register(noInteract.add(SettingGroup(Setting("Blocks", this))))
 
-    private val ntEnderChest = register(noInteract.add(Setting("NT Ender Chest", this, false)))
-    private val ntCraftingTable = register(noInteract.add(Setting("NT Crafting Table", this, false)))
-    private val ntChest = register(noInteract.add(Setting("NT Chest", this, false)))
-    private val ntFurnace = register(noInteract.add(Setting("NT Furnace", this, false)))
-    private val ntAnvil = register(noInteract.add(Setting("NT Anvil", this, false)))
-    private val ntArmorStand = register(noInteract.add(Setting("NT Armor Stand", this, false)))
+    private val ntEnderChest = register(ntBlocks.add(Setting("NT Ender Chest", this, false).setTitle("Ender Chest")))
+    private val ntCraftingTable = register(ntBlocks.add(Setting("NT Crafting Table", this, false).setTitle("Craft")))
+    private val ntChest = register(ntBlocks.add(Setting("NT Chest", this, false).setTitle("Chest")))
+    private val ntFurnace = register(ntBlocks.add(Setting("NT Furnace", this, false).setTitle("Furnace")))
+    private val ntAnvil = register(ntBlocks.add(Setting("NT Anvil", this, false).setTitle("Anvil")))
+    private val ntArmorStand = register(ntBlocks.add(Setting("NT Armor Stand", this, false).setTitle("Armor Stand")))
+
+    private val ntReplacePacket = register(ntBlocks.add(Setting("NT Replace Packet", this, false).setTitle("Replace Packet")))
 
     private var mousePos : BlockPos? = null
 
@@ -155,12 +159,16 @@ class Interaction : Module(
     })
 
     private val send = Listener<PacketEvent.Send>(EventHook {
-        if(it.packet is CPacketPlayerTryUseItemOnBlock && mc.objectMouseOver != null && noInteractVal.valBoolean) {
+        val packet = it.packet
+
+        if(packet is CPacketPlayerTryUseItemOnBlock && mc.objectMouseOver != null && noInteractVal.valBoolean) {
             when(mc.objectMouseOver.typeOfHit!!) {
                 ENTITY -> {
                     if(ntArmorStand.valBoolean && mc.objectMouseOver.entityHit is EntityArmorStand) {
+                        if(ntReplacePacket.valBoolean) {
+                            mc.player.connection.sendPacket(CPacketPlayerTryUseItem(packet.hand))
+                        }
                         it.cancel()
-                        return@EventHook
                     }
                 }
                 BLOCK -> {
@@ -172,16 +180,17 @@ class Interaction : Module(
                             || (block == Blocks.FURNACE && ntFurnace.valBoolean)
                             || (block == Blocks.ANVIL && ntAnvil.valBoolean)
                     ) {
+                        if(ntReplacePacket.valBoolean) {
+                            mc.player.connection.sendPacket(CPacketPlayerTryUseItem(packet.hand))
+                        }
                         it.cancel()
-                        return@EventHook
                     }
                 }
                 MISS -> {}
             }
         }
 
-        if(it.packet is CPacketUseEntity && noFriendDamage.valBoolean) {
-            val packet = it.packet as CPacketUseEntity
+        if(packet is CPacketUseEntity && noFriendDamage.valBoolean) {
             val entity = packet.getEntityFromWorld(mc.world)
             if(entity is EntityPlayer && FriendManager.instance.isFriend(entity.name)) {
                 it.cancel()
@@ -189,8 +198,7 @@ class Interaction : Module(
             }
         }
 
-        if(it.packet is CPacketPlayerTryUseItemOnBlock && roofInteract.valBoolean) {
-            val packet = it.packet as CPacketPlayerTryUseItemOnBlock
+        if(packet is CPacketPlayerTryUseItemOnBlock && roofInteract.valBoolean) {
             if(packet.pos.y >= 255 && packet.direction == EnumFacing.UP) {
                 mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(packet.pos, EnumFacing.DOWN, packet.hand, packet.facingX, packet.facingY, packet.facingZ))
             }

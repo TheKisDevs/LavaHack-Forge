@@ -24,18 +24,18 @@ public class ObjectWithGlow extends AbstractObject {
         GL11.glPushMatrix();
     GL11.glEnable(GL11.GL_BLEND);
     GL11.glDisable(GL11.GL_ALPHA_TEST);
-    ShaderShell.ROUNDED_RECT.attach();
-    ShaderShell.ROUNDED_RECT.set4F("color", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-    ShaderShell.ROUNDED_RECT.set2F("resolution", Minecraft.getMinecraft().displayWidth,
+    ShaderShell.ROUNDED_RECT_ALPHA.attach();
+    ShaderShell.ROUNDED_RECT_ALPHA.set4F("color", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    ShaderShell.ROUNDED_RECT_ALPHA.set2F("resolution", Minecraft.getMinecraft().displayWidth,
             Minecraft.getMinecraft().displayHeight);
-    ShaderShell.ROUNDED_RECT.set2F("center", (vec.getMinX() + (vec.getMaxX() - vec.getMinX()) / 2) * 2,
+    ShaderShell.ROUNDED_RECT_ALPHA.set2F("center", (vec.getMinX() + (vec.getMaxX() - vec.getMinX()) / 2) * 2,
             (vec.getMinY() + (vec.getMaxY() - vec.getMinY()) / 2) * 2);
-    ShaderShell.ROUNDED_RECT.set2F("dst", (vec.getMaxX() - vec.getMinX() - radius) * 2, (vec.getMaxX() - vec.getMinX() - radius) * 2);
-    ShaderShell.ROUNDED_RECT.set1F("radius", radius);
+    ShaderShell.ROUNDED_RECT_ALPHA.set2F("dst", (vec.getMaxX() - vec.getMinX() - radius) * 2, (vec.getMaxX() - vec.getMinX() - radius) * 2);
+    ShaderShell.ROUNDED_RECT_ALPHA.set1F("radius", radius);
     GL11.glBegin(GL11.GL_QUADS);
     vec.setupVectors();
     GL11.glEnd();
-    ShaderShell.ROUNDED_RECT.detach();
+    ShaderShell.ROUNDED_RECT_ALPHA.detach();
     GL11.glEnable(GL11.GL_ALPHA_TEST);
     GL11.glDisable(GL11.GL_BLEND);
     GL11.glPopMatrix();

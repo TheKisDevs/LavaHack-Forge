@@ -17,7 +17,7 @@ import kotlin.math.min
 class AlphaSlider(
     val setting : Setting,
     var x_ : Int,
-    var y : Int,
+    var y_ : Int,
     var offset : Int,
     var count_ : Int
 ) : ColorChanger, ISlider {
@@ -37,32 +37,32 @@ class AlphaSlider(
             if (!left) {
                 Render2DUtil.drawRect(
                     x + squareIndex,
-                    y,
+                    y_,
                     x + squareIndex + checkerBoardSquareSize,
-                    y + height,
+                    y_ + height,
                     -0x1
                 )
                 Render2DUtil.drawRect(
                     x + squareIndex,
-                    y + checkerBoardSquareSize,
+                    y_ + checkerBoardSquareSize,
                     x + squareIndex + checkerBoardSquareSize,
-                    y + height,
+                    y_ + height,
                     -0x6f6f70
                 )
                 if (squareIndex < width_ - checkerBoardSquareSize) {
                     val minX = x + squareIndex + checkerBoardSquareSize
                     val maxX = min(x + width_, x + squareIndex + checkerBoardSquareSize * 2)
-                    Render2DUtil.drawRect(minX, y, maxX, y + height, -0x6f6f70)
-                    Render2DUtil.drawRect(minX, y + checkerBoardSquareSize, maxX, y + height, -0x1)
+                    Render2DUtil.drawRect(minX, y_, maxX, y_ + height, -0x6f6f70)
+                    Render2DUtil.drawRect(minX, y_ + checkerBoardSquareSize, maxX, y_ + height, -0x1)
                 }
             }
             left = !left
             squareIndex += checkerBoardSquareSize
         }
 
-        Render2DUtil.drawLeftGradientRect(x, y, x + width_, y + height, color?.withAlpha(1)?.rgb!!, 0)
+        Render2DUtil.drawLeftGradientRect(x, y_, x + width_, y_ + height, color?.withAlpha(1)?.rgb!!, 0)
         val sliderMinX: Int = (x + width_ - width_ * color?.a1!!).toInt()
-        Render2DUtil.drawRect(sliderMinX - 1, y, sliderMinX + 1, y + height, -1)
+        Render2DUtil.drawRect(sliderMinX - 1, y_, sliderMinX + 1, y_ + height, -1)
 
         if(isMouseOnButton(mouseX, mouseY)) {
             val restrictedX = min(max(x_, mouseX), x_ + width_)
@@ -70,7 +70,7 @@ class AlphaSlider(
         }
 
         val cursorX = x + color?.RGBtoHSB()!![1] * width_
-        val cursorY = (y + offset + width_) - color?.RGBtoHSB()!![2] * width_
+        val cursorY = (y_ + offset + width_) - color?.RGBtoHSB()!![2] * width_
 
         Render2DUtil.drawRectWH(cursorX - 2.0, cursorY - 2.0, 4.0, 4.0, -1)
 
@@ -114,7 +114,7 @@ class AlphaSlider(
     }
 
     private fun isMouseOnButton(x : Int, y : Int) : Boolean {
-        return x >= x_ && x <= x_ + width_ && y >= this.y + offset && y <= this.y + offset + height
+        return x >= x_ && x <= x_ + width_ && y >= this.y_ + offset && y <= this.y_ + offset + height
     }
 
     override fun setPicking(picking: Boolean) {
@@ -127,7 +127,7 @@ class AlphaSlider(
 
     override fun updateComponent(x: Int, y: Int) {
         x_ = x
-        this.y = y
+        this.y_ = y
     }
 
     override fun setOff(newOff: Int) {

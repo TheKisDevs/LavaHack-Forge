@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Arrays;
 
+@PingBypassModule
 public class Velocity extends Module {
     private final Setting mode = register(new Setting("Mode", this, "None", Arrays.asList("None", "Matrix", "Matrix 6.4", "Vanilla")));
 

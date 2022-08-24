@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class HoleESP extends Module {
     private Setting mode = new Setting("Mode", this, "Air", new ArrayList<>(Arrays.asList("Air", "Ground", "Flat", "Slab", "Double", "Konas")));
     private Setting konasMode = new Setting("Konas Mode", this, KonasMode.FULL).setVisible(() -> mode.checkValString("Konas"));

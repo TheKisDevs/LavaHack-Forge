@@ -86,9 +86,29 @@ class ScaffoldRewrite : Module(
 
         //BlockPos oldPos = new BlockPos(oldPlayerPos).down();
 
-        val queue : Queue<BlockPos> = LinkedList()
+        if (needToSwap) {
+            swap.valEnum.task.doTask(slot, false)
+        }
 
-        if(!isTowerActive()) {
+        if(isTowerActive()) {
+            if (BlockUtil2.isPositionPlaceable(mc.player.position.down(), false, true)) {
+                BlockUtil.placeBlock2(
+                    mc.player.position.down(),
+                    EnumHand.MAIN_HAND,
+                    false,
+                    packet.valBoolean
+                )
+            }
+
+            if (mc.player.onGround) {
+                mc.player.jump()
+                lastY = mc.player.posY
+            } else {
+                mc.player.motionY = -0.28
+            }
+        } else {
+            val queue : Queue<BlockPos> = LinkedList()
+
             val oldPos = BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).down()
 
             val playerPos = BlockPos(
@@ -98,33 +118,11 @@ class ScaffoldRewrite : Module(
             ).down()
 
             if (!connected(oldPos, playerPos) && debug2.valBoolean) {
-//            ChatUtility.info().printClientModuleMessage("Unconnected")
                 addConnectingBlocks(oldPos, playerPos, queue)
             }
 
-            //queue.add(playerPos.down());
             queue.add(playerPos)
-        }
 
-        if (needToSwap) {
-            swap.valEnum.task.doTask(slot, false)
-        }
-
-        if(isTowerActive()) {
-            if (BlockUtil2.isPositionPlaceable(mc.player.position, false, true)) BlockUtil.placeBlock2(
-                mc.player.position.down(),
-                EnumHand.MAIN_HAND,
-                false,
-                packet.valBoolean
-            )
-
-            if (mc.player.onGround) {
-                mc.player.jump()
-                lastY = BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).y.toDouble()
-            } else {
-                mc.player.motionY = -0.28
-            }
-        } else {
             for (pos in queue) {
                 if (!BlockUtil2.isPositionPlaceable(pos, false, true)) continue
                 BlockUtil.placeBlock2(

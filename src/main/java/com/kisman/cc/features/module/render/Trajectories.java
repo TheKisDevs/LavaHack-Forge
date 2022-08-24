@@ -23,6 +23,7 @@ import java.util.concurrent.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@Deprecated
 public class Trajectories extends Module {
     private Setting width = new Setting("Width", this, 1, 0, 5, false);
 

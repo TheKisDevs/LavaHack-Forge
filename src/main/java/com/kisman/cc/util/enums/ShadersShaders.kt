@@ -1,6 +1,6 @@
 package com.kisman.cc.util.enums
 
-import com.kisman.cc.settings.util.ShaderCharmsRewritePattern
+import com.kisman.cc.settings.util.ShadersRendererPattern
 import com.kisman.cc.settings.util.shadercharmsrewrite.ShaderCharmsRewriteUniform
 import com.kisman.cc.util.math.vectors.Vec3f
 import com.kisman.cc.util.render.shader.framebuffer.FramebufferShader
@@ -15,7 +15,7 @@ import com.kisman.cc.util.render.shader.uniform.type.types.*
  * @author _kisman_
  * @since 14:46 of 16.08.2022
  */
-enum class ShaderCharmsRewriteShaders(
+enum class ShadersShaders(
     val name_ : String,
     val displayName : String,
     val uniforms : List<ShaderCharmsRewriteUniform<*>>,
@@ -54,7 +54,7 @@ enum class ShaderCharmsRewriteShaders(
         -1
     ) {
         override fun updateUniforms(
-            pattern : ShaderCharmsRewritePattern,
+            pattern : ShadersRendererPattern,
             framebuffer : FramebufferShader
         ) {
 
@@ -79,7 +79,7 @@ enum class ShaderCharmsRewriteShaders(
     ) {
         @Suppress("UNCHECKED_CAST")
         override fun updateUniforms(
-            pattern : ShaderCharmsRewritePattern,
+            pattern : ShadersRendererPattern,
             framebuffer : FramebufferShader
         ) {
             if(pattern.uniforms.contains(index)) {
@@ -131,12 +131,12 @@ enum class ShaderCharmsRewriteShaders(
     };
 
     abstract fun updateUniforms(
-        pattern : ShaderCharmsRewritePattern,
+        pattern : ShadersRendererPattern,
         framebuffer : FramebufferShader
     )
 
     open fun setupUniforms(
-        pattern : ShaderCharmsRewritePattern,
+        pattern : ShadersRendererPattern,
         framebuffer : FramebufferShader
     ) {
         for(uniform in uniforms) {

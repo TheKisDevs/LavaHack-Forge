@@ -36,7 +36,6 @@ class ConfigManager(
             Kisman.initDirs()
 
             if(!Files.exists(Paths.get(config.path + config.name + config.suffix))) {
-                LoadConfig.init()
                 return
             }
 

@@ -133,4 +133,14 @@ public class CheckBox implements Openable {
     public ArrayList<Component> getComponents() {
         return new ArrayList<>(Collections.singletonList(bind));
     }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
+    }
 }

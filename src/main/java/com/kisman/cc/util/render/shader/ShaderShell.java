@@ -1,19 +1,36 @@
 package com.kisman.cc.util.render.shader;
 
+import com.kisman.cc.Kisman;
 import net.minecraft.client.Minecraft;
+import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
 public class ShaderShell {
+    public static ShaderShell ROUNDED_RECT_ALPHA;
     public static ShaderShell ROUNDED_RECT;
+    public static ShaderShell BLUR;
     private int shaderID;
 
-    public ShaderShell(String shaderName, boolean post) {
-        parseShaderFromFile(shaderName, post);
+    public static String defaultPath = "assets/kismancc/shader/fragment/";
+    public static String defaultSuffix = ".shader";
+
+    public ShaderShell(String shaderName) {
+        try {
+            createShaderFromFile(shaderName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void init() {
-        ROUNDED_RECT = new ShaderShell("roundedrect", false);
+        ROUNDED_RECT_ALPHA = new ShaderShell("roundedrect_alpha");
+        ROUNDED_RECT = new ShaderShell("roundedrect");
+        BLUR = new ShaderShell("blur");
     }
 
     public void attach() {
@@ -46,10 +63,19 @@ public class ShaderShell {
         ARBShaderObjects.glUseProgramObjectARB(0);
     }
 
-    private void parseShaderFromFile(String shaderName, boolean post) {
-        if (shaderName.equalsIgnoreCase("roundedrect")) {
+    private void createShaderFromFile(String shaderName) throws IOException {
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(defaultPath + shaderName + defaultSuffix);
 
-            parseShaderFromString("uniform vec4 color;\n" +
+        if(stream == null) {
+            Kisman.LOGGER.error("Error while initializing " + shaderName + " shader!!!");
+            return;
+        }
+
+        createShader(IOUtils.toString(stream, Charset.defaultCharset()));
+
+        /*if (shaderName.equalsIgnoreCase("roundedrect")) {
+
+            createShader("uniform vec4 color;\n" +
                     "uniform vec2 resolution;\n" +
                     "uniform vec2 center;\n" +
                     "uniform vec2 dst;\n" +
@@ -63,16 +89,12 @@ public class ShaderShell {
                     "    vec2 pos = gl_FragCoord.xy;\n" +
                     "\tpos.y = resolution.y - pos.y;\n" +
                     "\tgl_FragColor = vec4(vec3(color), (-rect(pos, center, dst) / radius) * color.a);\n" +
-                    "}", post);
-        }
+                    "}");
+        }*/
 
     }
 
-    private void parseShaderFromString(String str, boolean post) {
-        localInit(str);
-    }
-
-    void localInit(String str) {
+    void createShader(String str) {
         int shaderProgram = ARBShaderObjects.glCreateProgramObjectARB();
         if (shaderProgram == 0) {
             System.out.println("PC Issued");

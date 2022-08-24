@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -12,6 +13,7 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.RotationUtils;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
@@ -43,6 +45,7 @@ import java.util.*;
 /**
  * @author Cubic
  */
+@PingBypassModule
 public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
@@ -75,6 +78,7 @@ public class SurroundRewrite extends Module {
     private final Setting cbRotateMode = register(crystalBreaker.add(new Setting("CBRotateMode", this, CBRotateMode.Packet)).setVisible(cbRotate).setTitle("Rotate Mode"));
     private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false).setTitle("Packet")));
     private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false).setTitle("Client Side")));
+    private final Setting cbNoSuicide = register(crystalBreaker.add(new Setting("CbNoSuicide", this, true).setTitle("No Suicide")));
 
     private static SurroundRewrite instance;
 
@@ -93,7 +97,7 @@ public class SurroundRewrite extends Module {
             return;
 
         if(syncronized.getValBoolean())
-            doThreaddedSyncronizedSurround();
+            doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
     }
@@ -117,21 +121,17 @@ public class SurroundRewrite extends Module {
             return;
 
         if(syncronized.getValBoolean())
-            doThreaddedSyncronizedSurround();
+            doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
     }
 
     private void doThreaddedSurround() {
-        threads.update(() -> {
-            doSurround();
-        });
+        threads.update(this::doSurround);
     }
 
-    private synchronized void doThreaddedSyncronizedSurround(){
-        threads.update(() -> {
-            doSurround();
-        });
+    private synchronized void doThreaddedSynchronizedSurround(){
+        threads.update(this::doSurround);
     }
 
     private void doSurround(){
@@ -191,17 +191,32 @@ public class SurroundRewrite extends Module {
             double z2 = mc.player.posZ + range;
             AxisAlignedBB aabb = new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb)){
+                if(!validCrystal(crystal)) return;
                 breakCrystal(crystal, oldRots);
             }
             return;
         }
         for(BlockPos pos : blocks){
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(pos))){
-                if(alreadyHit.contains(crystal)) continue;
+                if(alreadyHit.contains(crystal) || !validCrystal(crystal)) continue;
                 breakCrystal(crystal, oldRots);
                 alreadyHit.add(crystal);
             }
         }
+    }
+
+    private boolean validCrystal(EntityEnderCrystal crystal) {
+        if(!cbNoSuicide.getValBoolean()) return true;
+
+        float damage = CrystalUtils.calculateDamage(
+                mc.world,
+                crystal.posX,
+                crystal.posY,
+                crystal.posZ,
+                mc.player, true
+        );
+
+        return damage >= mc.player.getHealth() + mc.player.getAbsorptionAmount();
     }
 
     private void breakCrystal(EntityEnderCrystal crystal, float[] oldRots){
@@ -309,7 +324,7 @@ public class SurroundRewrite extends Module {
         if(!isInAnyBlocks(vec3d, blocks))
             return;
         if(syncronized.getValBoolean())
-            doThreaddedSyncronizedSurround();
+            doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
     });
@@ -336,7 +351,7 @@ public class SurroundRewrite extends Module {
             mc.world.removeEntity(entity);
 
         if(syncronized.getValBoolean())
-            doThreaddedSyncronizedSurround();
+            doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
     });

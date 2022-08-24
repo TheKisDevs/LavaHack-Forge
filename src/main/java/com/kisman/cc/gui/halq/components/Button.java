@@ -22,11 +22,12 @@ import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 @SuppressWarnings("UnusedAssignment")
-public class Button implements Component {
+public class Button implements Openable {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
     public final DraggableBox draggable;
@@ -131,29 +132,7 @@ public class Button implements Component {
                 if(!comp.visible()) continue;
                 comp.drawScreen(mouseX, mouseY);
             }
-            if(HalqGui.test) {
-                int height = doIterationUpdateComponent(comps, 0);
-                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height, HalqGui.width, 1, HalqGui.getGradientColour(count).getRGB());
-                Render2DUtil.drawRectWH(x, y + offset + HalqGui.height + height - 1, HalqGui.width, 1, HalqGui.getGradientColour(getLastColorCount()).getRGB());
-            }
         }
-    }
-
-    private int doIterationUpdateComponent(ArrayList<Component> components, int height) {
-        for(Component component : components) {
-            if(!component.visible()) continue;
-            height += component.getHeight();
-            if(component instanceof Openable) {
-                Openable openable = (Openable) component;
-                if(openable.isOpen()) height = doIterationUpdateComponent(openable.getComponents(), height);
-            }
-        }
-
-        return height;
-    }
-
-    private int getLastColorCount() {
-        return comps.get(comps.size() - 1).getCount();
     }
 
     @Override
@@ -207,5 +186,37 @@ public class Button implements Component {
 
     public boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + HalqGui.height + offset;
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open;
+    }
+
+    @Override
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+
+    @NotNull
+    @Override
+    public ArrayList<Component> getComponents() {
+        return comps;
     }
 }

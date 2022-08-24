@@ -3,6 +3,7 @@ package com.kisman.cc.features.pingbypass.serializer.setting
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.settings.EventSettingChange
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.client.PingBypass
 import com.kisman.cc.features.pingbypass.serializer.Serializer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Globals.mc
@@ -85,6 +86,8 @@ class SettingSerializer(
     override fun serializeAndSend(
         setting : Setting
     ) {
-        mc.player.connection.sendPacket(CPacketChatMessage("@Server${setting.parent.name} ${setting.name} $setting"))
+        if(PingBypass.isToggled) {
+            mc.player.connection.sendPacket(CPacketChatMessage("@Server${setting.parent.name} ${setting.name} $setting"))
+        }
     }
 }

@@ -280,4 +280,14 @@ public class ColorButton implements Component {
             GL11.glPopMatrix();
         } else drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
+    }
 }

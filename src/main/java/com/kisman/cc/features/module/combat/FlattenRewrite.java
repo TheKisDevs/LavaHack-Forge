@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.flattenrewrite.FlattenRewriteRenderer;
 import com.kisman.cc.features.module.combat.flattenrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
@@ -35,6 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author Cubic
  */
+@PingBypassModule
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
@@ -76,7 +78,7 @@ public class FlattenRewrite extends Module {
 
     private final FlattenRewriteRenderer renderer = new FlattenRewriteRenderer();
 
-    private static FlattenRewrite instance;
+    public static FlattenRewrite instance;
 
     private Queue<BlockPos> blocks = new ConcurrentLinkedQueue<>();
 

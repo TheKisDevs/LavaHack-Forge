@@ -5,7 +5,7 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.RotationMoveEvent;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
-import com.kisman.cc.features.module.movement.FrostWalk;
+import com.kisman.cc.features.module.Debug.FrostWalk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentFrostWalker;

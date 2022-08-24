@@ -22,7 +22,7 @@ import java.awt.Color
 class ColorButtonRewrite(
     val setting : Setting,
     var x_ : Int,
-    var y : Int,
+    var y_ : Int,
     var offset : Int,
     var count_ : Int
 ) : Openable {
@@ -40,17 +40,17 @@ class ColorButtonRewrite(
         var offsetY = offset + HalqGui.height
         var count1 = 0
 
-        comps.add(PickerBase(setting, x_, y, offset, count1++))
+        comps.add(PickerBase(setting, x_, y_, offset, count1++))
         offsetY += HalqGui.height
-        comps.add(HueSlider(setting, x_, y, offset, count1++))
+        comps.add(HueSlider(setting, x_, y_, offset, count1++))
         offsetY += HalqGui.height
-        comps.add(AlphaSlider(setting, x_, y, offset, count1++))
+        comps.add(AlphaSlider(setting, x_, y_, offset, count1++))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
         Render2DUtil.drawRectWH(
             x.toDouble(),
-            (y + offset).toDouble(),
+            (y_ + offset).toDouble(),
             width_.toDouble(),
             HalqGui.height.toDouble(),
             HalqGui.backgroundColor.rgb
@@ -61,19 +61,19 @@ class ColorButtonRewrite(
                     Vec4d(
                         doubleArrayOf(
                             x.toDouble() + HalqGui.offsets,
-                            (y + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsets
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsets
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
                         ),
                         doubleArrayOf(
                             x.toDouble() + HalqGui.offsets,
-                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
                         )
                     ),
                     Color(HalqGui.backgroundColor.rgb),
@@ -85,19 +85,19 @@ class ColorButtonRewrite(
                     Vec4d(
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsets
                         ),
                         doubleArrayOf(
                             (x + width_).toDouble() - HalqGui.offsets,
-                            (y + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsets
                         ),
                         doubleArrayOf(
                             (x + width_).toDouble() - HalqGui.offsets,
-                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
                         )
                     ),
                     color?.color,
@@ -106,13 +106,13 @@ class ColorButtonRewrite(
             )
         } else Render2DUtil.drawRectWH(
             x.toDouble() + HalqGui.offsets,
-            (y + offset).toDouble() + HalqGui.offsets,
+            (y_ + offset).toDouble() + HalqGui.offsets,
             width_.toDouble() - HalqGui.offsets * 2,
             height.toDouble() - HalqGui.offsets * 2,
             color?.rgb!!
         )
 
-        HalqGui.drawString(setting.title, x, y + offset, width_, HalqGui.height)
+        HalqGui.drawString(setting.title, x, y_ + offset, width_, HalqGui.height)
 
         if(open) {
             if(comps.isNotEmpty()) {
@@ -130,7 +130,7 @@ class ColorButtonRewrite(
 
     override fun updateComponent(x: Int, y: Int) {
         this.x_ = x
-        this.y = y
+        this.y_ = y
         if(open) {
             if(comps.isNotEmpty()) {
                 for(comp in comps) {
@@ -145,11 +145,11 @@ class ColorButtonRewrite(
     }
 
     private fun isMouseOnButton(x: Int, y: Int): Boolean {
-        return x > x_ && x < x_ + width_ && y > this.y + offset && y < this.y + offset + HalqGui.height
+        return x > x_ && x < x_ + width_ && y > this.y_ + offset && y < this.y_ + offset + HalqGui.height
     }
 
     private fun isMouseOnButton2(x: Int, y: Int): Boolean {
-        return x > x_ && x < x_ + width_ && y > this.y + offset && y < this.y + offset + getHeight1()
+        return x > x_ && x < x_ + width_ && y > this.y_ + offset && y < this.y_ + offset + getHeight1()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {

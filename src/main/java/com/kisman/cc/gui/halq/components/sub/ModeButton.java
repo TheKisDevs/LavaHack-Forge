@@ -1,15 +1,14 @@
 package com.kisman.cc.gui.halq.components.sub;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
 
 public class ModeButton implements Component {
     private final Setting setting;
@@ -131,5 +130,15 @@ public class ModeButton implements Component {
 
     private boolean isMouseOnButton2(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + getHeight();
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
     }
 }

@@ -7,11 +7,12 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
  * @author _kisman_
  * @since 12:20 of 04.07.2022
  */
-/*@Mod(
+@Mod(
         name = LavaHackLoaderMod.NAME,
         modid = LavaHackLoaderMod.MODID,
-        version = LavaHackLoaderMod.VERSION
-)*/
+        version = LavaHackLoaderMod.VERSION,
+        useMetadata = true
+)
 public class LavaHackLoaderMod {
     public static final String NAME = "Loader";
     public static final String MODID = "loader";

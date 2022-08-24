@@ -15,7 +15,7 @@ import kotlin.math.min
 class PickerBase(
     val setting : Setting,
     var x_ : Int,
-    var y : Int,
+    var y_ : Int,
     var offset : Int,
     var count_ : Int
 ) : ColorChanger {
@@ -38,23 +38,23 @@ class PickerBase(
         GL11.glBegin(GL11.GL_POLYGON)
 
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GL11.glVertex2f(x_.toFloat(), (y + offset).toFloat())
-        GL11.glVertex2f(x_.toFloat(), (y + width_).toFloat())
+        GL11.glVertex2f(x_.toFloat(), (y_ + offset).toFloat())
+        GL11.glVertex2f(x_.toFloat(), (y_ + width_).toFloat())
         GL11.glColor4f(color?.r1!!, color?.g1!!, color?.b1!!, color?.a1!!)
-        GL11.glVertex2f((x_ + width_).toFloat(), (y + width_).toFloat())
-        GL11.glVertex2f((x_ + width_).toFloat(), (y + offset).toFloat())
+        GL11.glVertex2f((x_ + width_).toFloat(), (y_ + width_).toFloat())
+        GL11.glVertex2f((x_ + width_).toFloat(), (y_ + offset).toFloat())
 
         GL11.glEnd()
         GL11.glDisable(GL11.GL_ALPHA_TEST)
         GL11.glBegin(GL11.GL_POLYGON)
 
         GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.0f)
-        GL11.glVertex2f(x_.toFloat(), (y + offset).toFloat())
+        GL11.glVertex2f(x_.toFloat(), (y_ + offset).toFloat())
         GL11.glColor4f(0.0f, 0.0f, 0.0f, 1.0f)
-        GL11.glVertex2f(x_.toFloat(), (y + width_).toFloat())
-        GL11.glVertex2f((x_ + width_).toFloat(), (y + width_).toFloat())
+        GL11.glVertex2f(x_.toFloat(), (y_ + width_).toFloat())
+        GL11.glVertex2f((x_ + width_).toFloat(), (y_ + width_).toFloat())
         GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.0f)
-        GL11.glVertex2f((x_ + width_).toFloat(), (y + offset).toFloat())
+        GL11.glVertex2f((x_ + width_).toFloat(), (y_ + offset).toFloat())
 
         GL11.glEnd()
         GL11.glEnable(GL11.GL_ALPHA_TEST)
@@ -64,13 +64,13 @@ class PickerBase(
 
         if(isMouseOnButton(mouseX, mouseY)) {
             val restrictedX = min(max(x_, mouseX), x_ + width_)
-            val restrictedY = min(max(y + offset, mouseX), y + offset + width_)
+            val restrictedY = min(max(y_ + offset, mouseX), y_ + offset + width_)
             color?.saturation = ((restrictedX - x_) / width_).toFloat()
-            color?.brightness = 1f - (restrictedY - y) / width_
+            color?.brightness = 1f - (restrictedY - y_) / width_
         }
 
         val cursorX = x + color?.RGBtoHSB()!![1] * width_
-        val cursorY = (y + offset + width_) - color?.RGBtoHSB()!![2] * width_
+        val cursorY = (y_ + offset + width_) - color?.RGBtoHSB()!![2] * width_
 
         Render2DUtil.drawRectWH(cursorX - 2.0, cursorY - 2.0, 4.0, 4.0, -1)
 
@@ -84,7 +84,7 @@ class PickerBase(
     }
 
     private fun isMouseOnButton(x : Int, y : Int) : Boolean {
-        return x >= x_ && x <= x_ + width_ && y >= this.y + offset && y <= this.y + offset + height
+        return x >= x_ && x <= x_ + width_ && y >= this.y_ + offset && y <= this.y_ + offset + height
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -93,7 +93,7 @@ class PickerBase(
 
     override fun updateComponent(x: Int, y: Int) {
         x_ = x
-        this.y = y
+        this.y_ = y
     }
 
     override fun setOff(newOff: Int) {

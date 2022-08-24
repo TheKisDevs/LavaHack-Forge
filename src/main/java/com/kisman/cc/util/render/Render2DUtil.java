@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 
+import static com.kisman.cc.util.UtilityKt.sr;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -406,6 +407,88 @@ public class Render2DUtil extends GuiScreen {
         drawRoundedRect((float) startX, (float) startY, (float) endX, (float) endY, color, radius);
     }
 
+    public static void drawBlur(
+            float startX,
+            float startY,
+            float endX,
+            float endY,
+            float radius,
+            float radiusFactor,
+            float directionX,
+            float directionY
+    ) {
+        GL11.glPushMatrix();
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+        ShaderShell.BLUR.attach();
+
+        ShaderShell.BLUR.attach();
+        ShaderShell.BLUR.set1I("sampler", 0);
+        ShaderShell.BLUR.set1F("radius", radius);
+        ShaderShell.BLUR.set1F("radiusFactor", radiusFactor);
+        ShaderShell.BLUR.set2F("direction", directionX, directionY);
+
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2d(endX, startY);
+        GL11.glVertex2d(startX, startY);
+        GL11.glVertex2d(startX, endY);
+        GL11.glVertex2d(endX, endY);
+        GL11.glEnd();
+
+        ShaderShell.BLUR.detach();
+
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+
+        GL11.glPopMatrix();
+    }
+
+    public static void drawRoundedRect1(
+            float startX,
+            float startY,
+            float endX,
+            float endY,
+            int color,
+            float radius,
+            float alphaFactor
+    ) {
+        GL11.glPushMatrix();
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+        float alpha = ((float) (color >> 24 & 0xFF) / 255F);
+        float red = (float) (color >> 16 & 0xFF) / 255F;
+        float green = (float) (color >> 8 & 0xFF) / 255F;
+        float blue = (float) (color & 0xFF) / 255F;
+
+        ShaderShell.ROUNDED_RECT.attach();
+
+        ShaderShell.ROUNDED_RECT.attach();
+        ShaderShell.ROUNDED_RECT.set4F("color", red, green, blue, alpha);
+        ShaderShell.ROUNDED_RECT.set2F("resolution", sr().getScaledWidth(), sr().getScaledHeight());
+        ShaderShell.ROUNDED_RECT.set2F("center", (startX + (endX - startX) / 2) * 2, (startY + (endY - startY) / 2) * 2);
+        ShaderShell.ROUNDED_RECT.set2F("dst", (endX - startX - radius) * 2, (endY - startY - radius) * 2);
+        ShaderShell.ROUNDED_RECT.set1F("radius", radius);
+        ShaderShell.ROUNDED_RECT.set1F("alphaFactor", alphaFactor);
+
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex2d(endX, startY);
+        GL11.glVertex2d(startX, startY);
+        GL11.glVertex2d(startX, endY);
+        GL11.glVertex2d(endX, endY);
+        GL11.glEnd();
+
+        ShaderShell.ROUNDED_RECT.detach();
+
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+
+        GL11.glPopMatrix();
+    }
+
     public static void drawRoundedRect(float startX, float startY, float endX, float endY, int color, float radius) {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
@@ -414,21 +497,19 @@ public class Render2DUtil extends GuiScreen {
         float red = (float) (color >> 16 & 0xFF) / 255F;
         float green = (float) (color >> 8 & 0xFF) / 255F;
         float blue = (float) (color & 0xFF) / 255F;
-        ShaderShell.ROUNDED_RECT.attach();
-        ShaderShell.ROUNDED_RECT.set4F("color", red, green, blue, alpha);
-        ShaderShell.ROUNDED_RECT.set2F("resolution", Minecraft.getMinecraft().displayWidth,
-                Minecraft.getMinecraft().displayHeight);
-        ShaderShell.ROUNDED_RECT.set2F("center", (startX + (endX - startX) / 2) * 2,
-                (startY + (endY - startY) / 2) * 2);
-        ShaderShell.ROUNDED_RECT.set2F("dst", (endX - startX - radius) * 2, (endY - startY - radius) * 2);
-        ShaderShell.ROUNDED_RECT.set1F("radius", radius);
+        ShaderShell.ROUNDED_RECT_ALPHA.attach();
+        ShaderShell.ROUNDED_RECT_ALPHA.set4F("color", red, green, blue, alpha);
+        ShaderShell.ROUNDED_RECT_ALPHA.set2F("resolution", sr().getScaledWidth(), sr().getScaledHeight());
+        ShaderShell.ROUNDED_RECT_ALPHA.set2F("center", (startX + (endX - startX) / 2) * 2, (startY + (endY - startY) / 2) * 2);
+        ShaderShell.ROUNDED_RECT_ALPHA.set2F("dst", (endX - startX - radius) * 2, (endY - startY - radius) * 2);
+        ShaderShell.ROUNDED_RECT_ALPHA.set1F("radius", radius);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex2d(endX, startY);
         GL11.glVertex2d(startX, startY);
         GL11.glVertex2d(startX, endY);
         GL11.glVertex2d(endX, endY);
         GL11.glEnd();
-        ShaderShell.ROUNDED_RECT.detach();
+        ShaderShell.ROUNDED_RECT_ALPHA.detach();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();

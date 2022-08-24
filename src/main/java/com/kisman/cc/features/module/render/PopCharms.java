@@ -68,18 +68,24 @@ public class PopCharms extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(player == null || entity == null) return;
+        try {
+            if (player == null || entity == null) return;
             color = new Color(255, 255, 255, 255);
             opacity = Float.intBitsToFloat(Float.floatToIntBits(1.6358529E38f) ^ 0x7EF622C3);
             time = System.currentTimeMillis();
             duration = time - this.startTime;
             startAlpha = (float) color.getAlpha() / 255;
-            if (duration < (long) (fadeSpeed.getValInt() * 10)) opacity = startAlpha - (float)duration / (float)(fadeSpeed.getValInt() * 10);
-            if (duration < (long)(fadeSpeed.getValInt() * 10)) {
-            GL11.glPushMatrix();
-            if (angle.getValBoolean()) GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), ((float)duration / (float)(angleSpeed.getValInt() * 10)), Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
-            mc.renderManager.renderEntityStatic(player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
-            GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
+            if (duration < (long) (fadeSpeed.getValInt() * 10))
+                opacity = startAlpha - (float) duration / (float) (fadeSpeed.getValInt() * 10);
+            if (duration < (long) (fadeSpeed.getValInt() * 10)) {
+                GL11.glPushMatrix();
+                if (angle.getValBoolean())
+                    GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(1.240196E38f) ^ 0x7EBA9A9D), ((float) duration / (float) (angleSpeed.getValInt() * 10)), Float.intBitsToFloat(Float.floatToIntBits(3.0414126E38f) ^ 0x7F64CF7A));
+                mc.renderManager.renderEntityStatic(player, Float.intBitsToFloat(Float.floatToIntBits(6.159893f) ^ 0x7F451DD8), false);
+                GlStateManager.translate(Float.intBitsToFloat(Float.floatToIntBits(3.0715237E38f) ^ 0x7F671365), Float.intBitsToFloat(Float.floatToIntBits(1.9152719E37f) ^ 0x7D668ADF), Float.intBitsToFloat(Float.floatToIntBits(1.9703683E38f) ^ 0x7F143BEA));
+                GL11.glPopMatrix();
+            }
+        } catch(Exception ignored) {
             GL11.glPopMatrix();
         }
     }

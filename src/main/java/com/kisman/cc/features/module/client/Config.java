@@ -1,20 +1,13 @@
 package com.kisman.cc.features.module.client;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.manager.file.*;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.enums.GradientModes;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
-
-import java.io.IOException;
 
 public class Config extends Module {
     public static Config instance;
@@ -63,8 +56,6 @@ public class Config extends Module {
     public Setting pulseMin = register(other.add(new Setting("Pulse Min", this, 255, 0, 255, true)));
     public Setting pulseMax = register(other.add(new Setting("Pulse Max", this, 110, 0, 255, true)));
     public Setting pulseSpeed = register(other.add(new Setting("Pulse Speed", this, 1.5, 0.1, 10, false)));
-    public Setting saveConfig = register(main.add(new Setting("Save Config", this, false)));
-    public Setting loadConfig = register(main.add(new Setting("Load Config", this, false)));
     public Setting configurate = register(other.add(new Setting("Configurate", this, true)));
 
     public Setting particlesRenderPoints = register(particles.add(new Setting("Particles Render Points", this, true).setTitle("Render Points")));
@@ -97,33 +88,8 @@ public class Config extends Module {
 
 
     public Config() {
-        super("Config", Category.CLIENT, false);
+        super("Config", Category.CLIENT);
         instance = this;
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void onUpdate(TickEvent.ClientTickEvent event) {
-        if(saveConfig.getValBoolean()) {
-            try {
-                Kisman.instance.configManager.getSaver().init();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            saveConfig.setValBoolean(false);
-            if(mc.player != null && mc.world != null) ChatUtility.complete().printClientClassMessage("Config was saved!");
-        }
-
-        if(loadConfig.getValBoolean()) {
-            LoadConfig.init();
-            try {
-                Kisman.instance.configManager.getLoader().init();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            loadConfig.setValBoolean(false);
-            if(mc.player != null && mc.world != null) ChatUtility.complete().printClientClassMessage("Config was loaded!");
-        }
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, UwU, kidmad, EarthHack, Ferret, custom}

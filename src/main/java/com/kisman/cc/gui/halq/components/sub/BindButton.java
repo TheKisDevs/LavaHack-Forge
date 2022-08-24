@@ -108,4 +108,14 @@ public class BindButton implements Component {
     private boolean isMouseOnButton(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
+    }
 }

@@ -2,6 +2,7 @@ package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.util.Colour
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.enums.SpeedUnits
@@ -22,6 +23,7 @@ class Speed : HudModule(
         true
 ) {
     private val astolfo = register(Setting("Astolfo", this, true))
+    private val color = register(Setting("Color", this, Colour(255, 255, 255, 255)))
     private val speedUnit = register(Setting("Speed Unit", this, SpeedUnits.KMH))
 
     val timer = TimerUtils()
@@ -60,7 +62,7 @@ class Speed : HudModule(
 
         val text = "Speed: ${TextFormatting.GRAY}$speed ${(speedUnit.valEnum as SpeedUnits).displayInfo}"
 
-        CustomFontUtil.drawStringWithShadow(text, getX(), getY(), (if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else -1))
+        CustomFontUtil.drawStringWithShadow(text, getX(), getY(), (if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else color.colour.rgb))
 
         setW(CustomFontUtil.getStringWidth(text).toDouble())
         setH(CustomFontUtil.getFontHeight().toDouble())

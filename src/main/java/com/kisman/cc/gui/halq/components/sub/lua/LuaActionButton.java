@@ -93,7 +93,17 @@ public class LuaActionButton implements Component {
         RELOAD("Reload"),
         UNLOAD("Unload");
 
-        String name;
+        final String name;
         Action(String name) {this.name = name;}
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
     }
 }

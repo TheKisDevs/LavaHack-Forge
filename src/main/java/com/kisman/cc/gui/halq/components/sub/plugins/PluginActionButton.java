@@ -106,7 +106,17 @@ public class PluginActionButton implements Component {
         UNLOAD("Unload"),
         RELOAD("Reload");
 
-        String name;
+        final String name;
         Action(String name) {this.name = name;}
+    }
+
+    @Override
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public int getY() {
+        return y + offset;
     }
 }

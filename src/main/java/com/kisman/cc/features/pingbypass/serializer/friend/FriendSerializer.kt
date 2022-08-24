@@ -2,7 +2,9 @@ package com.kisman.cc.features.pingbypass.serializer.friend
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.friend.FriendEvent
+import com.kisman.cc.features.module.client.PingBypass
 import com.kisman.cc.features.pingbypass.serializer.Serializer
+import com.kisman.cc.pingbypass.server.PingBypassServer
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.manager.friend.FriendManager
 import me.zero.alpine.listener.EventHook
@@ -20,12 +22,13 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
 class FriendSerializer : Serializer<FriendEvent> {
     private val changed = HashSet<FriendEvent>()
 
-    private val settingChange = Listener<FriendEvent>(EventHook {
+    private val friendEvent = Listener<FriendEvent>(EventHook {
+        if(PingBypassServer.connected())
         changed.add(it)
     })
 
     init {
-        Kisman.EVENT_BUS.subscribe(settingChange)
+        Kisman.EVENT_BUS.subscribe(friendEvent)
         MinecraftForge.EVENT_BUS.register(this)
     }
 
@@ -68,6 +71,8 @@ class FriendSerializer : Serializer<FriendEvent> {
     override fun serializeAndSend(
         event : FriendEvent
     ) {
-        mc.player.connection.sendPacket(CPacketChatMessage("@ServerFriend ${if(event.type == FriendEvent.Type.Add) "add" else "remove"} ${event.name}"))
+        if(PingBypass.isToggled) {
+            mc.player.connection.sendPacket(CPacketChatMessage("@ServerFriend ${if (event.type == FriendEvent.Type.Add) "add" else "remove"} ${event.name}"))
+        }
     }
 }

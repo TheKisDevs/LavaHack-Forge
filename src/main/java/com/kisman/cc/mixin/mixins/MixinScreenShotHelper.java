@@ -7,6 +7,7 @@ import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.*;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.*;
 
 @Mixin(ScreenShotHelper.class)
@@ -15,11 +16,17 @@ public class MixinScreenShotHelper {
 
     /**
      * @author BloomWareClient
+     * @reason uwa??
      */
     @Overwrite
     public static ITextComponent saveScreenshot(File gameDirectory, int width, int height, Framebuffer buffer) {
         ITextComponent screenshot = saveScreenshot(gameDirectory, null, width, height, buffer);
-        if(BetterScreenshot.instance != null && BetterScreenshot.instance.isToggled()) try {BetterScreenshot.copyToClipboard(BetterScreenshot.getLatestScreenshot());} catch (IOException ignored) {}
+        if(BetterScreenshot.instance != null && BetterScreenshot.instance.isToggled()) {
+            try {
+                Image image = BetterScreenshot.getLatestScreenshot();
+                if(image != null) BetterScreenshot.copyToClipboard(image);
+            } catch (IOException ignored) {}
+        }
         return screenshot;
     }
 }

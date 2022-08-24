@@ -55,10 +55,10 @@ class AutoRerRenderer {
                     Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
                 }
 
-                timePassed = if (lastBB == toRenderBox(currentPos, scale)) {
-                    0f
+                if (lastBB == toRenderBox(currentPos, scale)) {
+                    timePassed = 0f
                 } else {
-                    50.0f
+                    timePassed += 50.0f
                 }
 
                 val multiplier = if(test) {

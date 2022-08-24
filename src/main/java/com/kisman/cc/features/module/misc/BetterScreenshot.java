@@ -22,7 +22,9 @@ public class BetterScreenshot extends Module {
     }
 
     public static Image getLatestScreenshot() throws IOException {
-        return new ImageIcon(Files.list((new File(mc.mcDataDir.getAbsolutePath() + "/screenshots/")).toPath()).filter(f -> !Files.isDirectory(f)).max(Comparator.comparingLong(f -> f.toFile().lastModified())).get().toString()).getImage();
+        ImageIcon imageIcon = new ImageIcon(Files.list((new File(mc.mcDataDir.getAbsolutePath() + "/screenshots/")).toPath()).filter(f -> !Files.isDirectory(f)).max(Comparator.comparingLong(f -> f.toFile().lastModified())).get().toString());
+
+        return imageIcon.getIconWidth() > 0 && imageIcon.getIconHeight() > 0 ? imageIcon.getImage() : null;
     }
 
     public static void copyToClipboard(Image image) {

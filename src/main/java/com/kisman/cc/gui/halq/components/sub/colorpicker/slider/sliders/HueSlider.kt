@@ -6,7 +6,6 @@ import com.kisman.cc.gui.halq.components.sub.colorpicker.slider.ISlider
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Render2DUtil
-import net.minecraft.client.gui.Gui
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -19,7 +18,7 @@ import kotlin.math.min
 class HueSlider(
     val setting : Setting,
     var x_ : Int,
-    var y : Int,
+    var y_ : Int,
     var offset : Int,
     var count_ : Int
 ) : ColorChanger, ISlider {
@@ -41,15 +40,15 @@ class HueSlider(
             GL11.glPushMatrix()
             this.gradient(
                 x + step * (width_ / 6),
-                y + offset,
+                y_ + offset,
                 x + (step + 1) * (width_ / 6),
-                y + offset + height,
+                y_ + offset + height,
                 previousStep,
                 nextStep
             )
             GL11.glPopMatrix()
         }
-        Render2DUtil.drawRectWH((x + width_ * color?.hue!!) - 1.0, y + offset.toDouble(), 2.0, height.toDouble(), -1)
+        Render2DUtil.drawRectWH((x + width_ * color?.hue!!) - 1.0, y_ + offset.toDouble(), 2.0, height.toDouble(), -1)
 
         if(isMouseOnButton(mouseX, mouseY)) {
             val restrictedX = min(max(x_, mouseX), x_ + width_)
@@ -57,7 +56,7 @@ class HueSlider(
         }
 
         val cursorX = x + color?.RGBtoHSB()!![1] * width_
-        val cursorY = (y + offset + width_) - color?.RGBtoHSB()!![2] * width_
+        val cursorY = (y_ + offset + width_) - color?.RGBtoHSB()!![2] * width_
 
         Render2DUtil.drawRectWH(cursorX - 2.0, cursorY - 2.0, 4.0, 4.0, -1)
 
@@ -101,7 +100,7 @@ class HueSlider(
     }
 
     private fun isMouseOnButton(x : Int, y : Int) : Boolean {
-        return x >= x_ && x <= x_ + width_ && y >= this.y + offset && y <= this.y + offset + height
+        return x >= x_ && x <= x_ + width_ && y >= this.y_ + offset && y <= this.y_ + offset + height
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -110,7 +109,7 @@ class HueSlider(
 
     override fun updateComponent(x: Int, y: Int) {
         x_ = x
-        this.y = y
+        this.y_ = y
     }
 
     override fun setOff(newOff: Int) {

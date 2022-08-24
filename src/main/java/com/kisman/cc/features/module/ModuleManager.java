@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -17,7 +16,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ModuleManager {
 	public List<Module> modules;
@@ -43,6 +41,7 @@ public class ModuleManager {
 		//modules.add(new ChorusTP());
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
+		modules.add(new FrostWalk());
 		modules.add(new FutureShader());
 		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
@@ -51,6 +50,7 @@ public class ModuleManager {
 		modules.add(new PacketIDGetterTest());
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
+		modules.add(new ScreenShaders());
 		modules.add(new SmoothRenderer());
 		modules.add(SwingTest.INSTANCE);
 		modules.add(new TextFieldTest());
@@ -74,12 +74,12 @@ public class ModuleManager {
 		modules.add(new AutoTrap());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
-		modules.add(new BreakAlert());
+//		modules.add(new BreakAlert());
 		modules.add(new Burrow2());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
 		modules.add(Crystals.INSTANCE);
-		modules.add(new Flatten());
+//		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
@@ -117,8 +117,8 @@ public class ModuleManager {
 		modules.add(new DamageESP());
 		modules.add(new EyeFinder());
 		modules.add(new EntityESPRewrite());
-		modules.add(new HoleESP());
-		modules.add(new HoleESPRewrite());
+//		modules.add(new HoleESP());
+//		modules.add(new HoleESPRewrite());
 		modules.add(new HoleESPRewrite2());
 		modules.add(new HotbarModifier());
 		modules.add(new ItemESPRewrite());
@@ -133,14 +133,14 @@ public class ModuleManager {
 		modules.add(new ScreenTint());
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
-		modules.add(new ShaderCharmsRewrite());
+		modules.add(new Shaders());
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
 		modules.add(new Tracers2());
 //		modules.add(new Trails());
-		modules.add(new Trajectories());
-		modules.add(new TrajectoriesRewrite());
+//		modules.add(new Trajectories());
+//		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
 		modules.add(new Weather());
 		modules.add(new XRay());
@@ -150,7 +150,6 @@ public class ModuleManager {
 		modules.add(new BoatFly());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
-		modules.add(new FrostWalk());
 		modules.add(new Jesus());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());
@@ -165,19 +164,18 @@ public class ModuleManager {
 		modules.add(new TargetStrafe());
 		//player
 		modules.add(AntiDesync.INSTANCE);
+		modules.add(new AntiHunger());
 		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
 		modules.add(new FreeCamRewrite());
-		modules.add(new Interaction());
+		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		modules.add(new PacketCancel());
-		modules.add(new PacketLogger());
+		modules.add(new PacketFeatures());
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());
-		modules.add(new TeleportBack());
 		modules.add(new Velocity());
 		//exploit
 		modules.add(new AntiLogger());
@@ -205,7 +203,6 @@ public class ModuleManager {
 		//misc
 		modules.add(new AntiRegear());
 		modules.add(new AntiSpammer());
-		modules.add(new AntiHunger());
 		modules.add(new AutoEZ());
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());

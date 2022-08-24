@@ -25,7 +25,6 @@ public class CommandManager extends ChatHandler {
 		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new Help());
-		add(new LoadConfigCommand());
 		add(new LuaCommand());
         add(new Slider());
 		add(new TestCommand());
@@ -33,7 +32,6 @@ public class CommandManager extends ChatHandler {
         //add(new Panic());
 		add(new RollBackCommand());
 		add(new RollBackDupeCommand());
-        add(new SaveConfigCommand());
         //add(new ShutdownCommand());
         add(new Toggle());
 		add(new MusicCommand());

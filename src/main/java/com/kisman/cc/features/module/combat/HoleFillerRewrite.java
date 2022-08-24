@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HoleFillerRewriteRenderer;
 import com.kisman.cc.features.module.combat.holefillerrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
@@ -31,6 +32,7 @@ import java.util.*;
  * Work in progress
  * @author Cubic
  */
+@PingBypassModule
 public class HoleFillerRewrite extends Module {
     public static HoleFillerRewrite instance;
     

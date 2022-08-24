@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
@@ -67,6 +68,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
+@PingBypassModule
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
@@ -145,7 +147,7 @@ public class AutoRer extends Module {
     private final Setting break_ = register(break__.add(new Setting("Break", this, true)));
     private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
     private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop).setVisible(break_::getValBoolean)));
-    private final Setting clientSide = register(break__.add(new Setting("Client Side", this, false).setVisible(break_::getValBoolean)));
+    private final Setting clientSide = register(break__.add(new Setting("Client Side", this, ClientSideMode.None).setVisible(break_::getValBoolean)));
     private final Setting manualBreaker = register(break__.add(new Setting("Manual Breaker", this, false).setTitle("Manual").setVisible(break_::getValBoolean)));
     private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false).setVisible(break_::getValBoolean)));
     private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break").setVisible(break_::getValBoolean)));
@@ -756,11 +758,11 @@ public class AutoRer extends Module {
     }
 
     public boolean needToMultiPlace() {
-        return multiPlace.getValEnum() != MultiPlaceMode.None ? multiPlace.getValEnum() == MultiPlaceMode.Stupid || isTargetMoving() : false;
+        return multiPlace.getValEnum() != MultiPlaceMode.None && (multiPlace.getValEnum() == MultiPlaceMode.Stupid || isTargetMoving());
     }
 
     public boolean needToFacePlace() {
-        return facePlace.getValEnum() != FacePlaceMode.None ? facePlace.getValEnum() == FacePlaceMode.Stupid || isTargetMoving() : false;
+        return facePlace.getValEnum() != FacePlaceMode.None && (facePlace.getValEnum() == FacePlaceMode.Stupid || isTargetMoving());
     }
 
     private boolean isTargetMoving() {
@@ -924,9 +926,8 @@ public class AutoRer extends Module {
         float selfDamage_ = 0.5f;
 
         try {
-            for (int i = 0; i < mc.world.loadedEntityList.size(); ++i) {
-                Entity entity = mc.world.loadedEntityList.get(i);
-                if (entity == null || !(entity instanceof EntityEnderCrystal) || (advancedSequential.getValBoolean() && timingMode.getValEnum() == TimingMode.Sequential && entity.ticksExisted < sequentialBreakDelay.getValInt())) continue;
+            for (Entity entity : mc.world.loadedEntityList) {
+                if (!(entity instanceof EntityEnderCrystal) || (advancedSequential.getValBoolean() && timingMode.getValEnum() == TimingMode.Sequential && entity.ticksExisted < sequentialBreakDelay.getValInt())) continue;
 
                 if (mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
                     Friend friend = getNearFriendWithMaxDamage(entity);
@@ -1006,6 +1007,7 @@ public class AutoRer extends Module {
         else mc.playerController.attackEntity(mc.player, crystal.get().getCrystal());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
+        doClientSide(crystal.get().getCrystal());
         try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().getCrystal().entityId);} catch (Exception ignored) {}
         getTimer(true).reset();
 
@@ -1020,6 +1022,13 @@ public class AutoRer extends Module {
         }
 
         lastBroken = true;
+    }
+
+    private void doClientSide(Entity entity) {
+        try {
+            if(clientSide.getValEnum() == ClientSideMode.RemoveEntity || clientSide.getValEnum() == ClientSideMode.Both) mc.world.removeEntityFromWorld(entity.entityId);
+            else if(clientSide.getValEnum() == ClientSideMode.SetDead || clientSide.getValEnum() == ClientSideMode.Both) entity.setDead();
+        } catch (Exception ignored) {}
     }
 
     private void swing() {
@@ -1071,6 +1080,7 @@ public class AutoRer extends Module {
     public enum MultiPlaceMode {None, Stupid, Smart}
     public enum FacePlaceMode {None, Stupid, Smart}
     public enum DamageSyncMode {None, Stupid, Smart}
+    public enum ClientSideMode {None, RemoveEntity, SetDead, Both}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

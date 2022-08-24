@@ -14,6 +14,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.*;
 
+@PingBypassModule
 public class Anchor extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.Motion));
     private final Setting pitch = register(new Setting("Pitch", this, 60, 0, 90, false));

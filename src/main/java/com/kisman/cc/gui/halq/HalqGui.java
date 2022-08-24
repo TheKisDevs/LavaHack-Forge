@@ -6,9 +6,12 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -91,9 +94,9 @@ public class HalqGui extends GuiScreen {
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
         shadowCheckBox = GuiModule.instance.shadow.getValBoolean();
-        test = GuiModule.instance.test.getValBoolean();
+        test = GuiModule.instance.horizontalLines.getValBoolean();
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
-        line = GuiModule.instance.line.getValBoolean();
+        line = GuiModule.instance.verticalLines.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
         offsets = GuiModule.instance.offsets.getValInt();
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
@@ -260,6 +263,72 @@ public class HalqGui extends GuiScreen {
             if(Config.instance.horizontalScroll.getValBoolean() && Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
         }
+    }
+
+    public static void renderComponent(
+            Component component
+    ) {
+        if(!component.visible()) return;
+
+        if(HalqGui.line) {
+            Render2DUtil.drawRectWH(
+                    component.getX(),
+                    component.getY(),
+                    1,
+                    component.getRawHeight(),
+                    HalqGui.getGradientColour(component.getCount()).getRGB()
+            );
+            Render2DUtil.drawRectWH(
+                    component.getX() + LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - 1,
+                    component.getY(),
+                    1,
+                    component.getRawHeight(),
+                    HalqGui.getGradientColour(component.getCount()).getRGB()
+            );
+        }
+
+        if(component instanceof Openable) {
+            Openable openable = (Openable) component;
+
+            if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
+                Render2DUtil.drawRectWH(
+                        component.getX(),
+                        component.getY() + component.getRawHeight(),
+                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
+                        1,
+                        HalqGui.getGradientColour(openable.getComponents().get(0).getCount()).getRGB()
+                );
+
+                int height = doIterationUpdateComponent(
+                        openable.getComponents(),
+                        0
+                );
+
+                Render2DUtil.drawRectWH(
+                        component.getX(),
+                        component.getY() + component.getRawHeight() + height - 1,
+                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
+                        1,
+                        HalqGui.getGradientColour(openable.getComponents().get(openable.getComponents().size() - 1).getCount()).getRGB()
+                );
+            }
+        }
+    }
+
+    public static int doIterationUpdateComponent(
+            ArrayList<Component> components,
+            int height
+    ) {
+        for(Component component : components) {
+            if(!component.visible()) continue;
+            height += component.getHeight();
+            if(component instanceof Openable) {
+                Openable openable = (Openable) component;
+                if(openable.isOpen()) height = doIterationUpdateComponent(openable.getComponents(), height);
+            }
+        }
+
+        return height;
     }
 
     public enum LocateMode {

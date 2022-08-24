@@ -8,9 +8,11 @@ import com.kisman.cc.features.pingbypass.serializer.friend.FriendSerializer
 import com.kisman.cc.features.pingbypass.serializer.setting.SettingSerializer
 import com.kisman.cc.features.pingbypass.utility.disconnect
 import com.kisman.cc.mixin.mixins.accessor.AccessorContainer
+import com.kisman.cc.pingbypass.server.PingBypassServer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.TimerUtils
+import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.enums.PingBypassProtocol
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -60,6 +62,12 @@ object PingBypass : Module(
     }
 
     override fun onEnable() {
+        if(PingBypassServer.server) {
+            ChatUtility.error().printClientModuleMessage("Cannot enable PingBypass module on PingBypass server!")
+            toggled = false
+            return
+        }
+
         super.onEnable()
         reset()
         Kisman.EVENT_BUS.subscribe(send)

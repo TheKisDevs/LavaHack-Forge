@@ -2,14 +2,14 @@ package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.ShaderCharmsRewriteSetting
+import com.kisman.cc.settings.ShadersSetting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.collections.Bind
 import com.kisman.cc.util.enums.ShaderCharmsOverlaying
-import com.kisman.cc.util.enums.ShaderCharmsRewriteObjectTypes
-import com.kisman.cc.util.enums.ShaderCharmsRewriteSettingTypes
-import com.kisman.cc.util.enums.ShaderCharmsRewriteShaders
-import com.kisman.cc.util.enums.dynamic.ShaderCharmsObjectsEnum
+import com.kisman.cc.util.enums.ShadersObjectTypes
+import com.kisman.cc.util.enums.ShadersSettingTypes
+import com.kisman.cc.util.enums.ShadersShaders
+import com.kisman.cc.util.enums.dynamic.ShadersObjectsEnum
 import com.kisman.cc.util.render.shader.uniform.type.types.TypeBool
 import com.kisman.cc.util.render.shader.uniform.type.types.TypeFloat
 import com.kisman.cc.util.render.shader.uniform.type.types.TypeInt
@@ -22,11 +22,11 @@ import net.minecraft.tileentity.TileEntity
  * @author _kisman_
  * @since 13:28 of 16.08.2022
  */
-class ShaderCharmsRewritePattern(
+class ShadersRendererPattern(
     private val module : Module
 ) {
     private val groups = ArrayList<SettingGroup>()
-    private val settings = ArrayList<ShaderCharmsRewriteSetting>()
+    private val settings = ArrayList<ShadersSetting>()
 
     private val optimizationGroup = SettingGroup(Setting("Optimization", module))
     private val listProcessing = optimizationGroup.add(Setting("List Processing", module, false))
@@ -42,9 +42,9 @@ class ShaderCharmsRewritePattern(
     private var criticalSection = false
 
     private val shaderMap = HashMap<
-            ShaderCharmsRewriteShaders,
+            ShadersShaders,
             HashMap<
-                    ShaderCharmsObjectsEnum.ShaderCharmsRewriteObjects,
+                    ShadersObjectsEnum.ShadersObjects,
                     ThreaddedBooleanSupplier
             >
     >()
@@ -67,23 +67,23 @@ class ShaderCharmsRewritePattern(
     val uniforms = HashMap<
             Int,
             Bind<
-                    ShaderCharmsRewriteShaders,
+                    ShadersShaders,
                     HashMap<
                             Int,
-                            ShaderCharmsRewriteSetting
+                            ShadersSetting
                     >
             >
     >()
 
     private val validEntities = HashMap<
             Entity,
-            ArrayList<ShaderCharmsRewriteShaders>
+            ArrayList<ShadersShaders>
     >()
 
 
     private val validTileEntities = HashMap<
             TileEntity,
-            ArrayList<ShaderCharmsRewriteShaders>
+            ArrayList<ShadersShaders>
     >()
 
     /*private val framebuffers = ArrayList<
@@ -95,19 +95,19 @@ class ShaderCharmsRewritePattern(
             >()*/
 
     init {
-        for(type in ShaderCharmsRewriteObjectTypes.values()) {
+        for(type in ShadersObjectTypes.values()) {
             val group = SettingGroup(Setting(type.name, module))
 
             groups.add(group)
 
-            for(type1 in ShaderCharmsObjectsEnum.ShaderCharmsRewriteObjects.byType(type)) {
+            for(type1 in ShadersObjectsEnum.ShadersObjects.byType(type)) {
                 val typeGroup = group.add(SettingGroup(Setting(type1.name, module)))
                 val shadersGroup = typeGroup.add(SettingGroup(Setting("Shaders", module)))
 
                 groups.add(typeGroup)
                 groups.add(shadersGroup)
 
-                settings.add(ShaderCharmsRewriteSetting(
+                settings.add(ShadersSetting(
                     typeGroup.add(Setting(
                         "$type $type1 State",
                         module,
@@ -116,12 +116,12 @@ class ShaderCharmsRewritePattern(
                     type,
                     type1,
                     null,
-                    ShaderCharmsRewriteSettingTypes.StateOfOption,
+                    ShadersSettingTypes.StateOfOption,
                     -1
                 ))
 
-                for(shader in ShaderCharmsRewriteShaders.values()) {
-                    settings.add(ShaderCharmsRewriteSetting(
+                for(shader in ShadersShaders.values()) {
+                    settings.add(ShadersSetting(
                         shadersGroup.add(Setting(
                             "$type $type1 ${shader.displayName} State",
                             module,
@@ -130,13 +130,13 @@ class ShaderCharmsRewritePattern(
                         type,
                         type1,
                         shader,
-                        ShaderCharmsRewriteSettingTypes.ShaderStateOfOption,
+                        ShadersSettingTypes.ShaderStateOfOption,
                         -1
                     ))
 
                     val shaderGroup = typeGroup.add(SettingGroup(Setting(shader.displayName, module)))
 
-                    val uniformsMap = HashMap<Int, ShaderCharmsRewriteSetting>()
+                    val uniformsMap = HashMap<Int, ShadersSetting>()
 
                     for(uniform in shader.uniforms) {
                         if(uniform.settingName != null) {
@@ -174,12 +174,12 @@ class ShaderCharmsRewritePattern(
 
                             shaderGroup.add(uniformSetting)
 
-                            val uniformSCRSetting = ShaderCharmsRewriteSetting(
+                            val uniformSCRSetting = ShadersSetting(
                                 uniformSetting,
                                 type,
                                 type1,
                                 shader,
-                                ShaderCharmsRewriteSettingTypes.UniformOfShader,
+                                ShadersSettingTypes.UniformOfShader,
                                 uniform.index
                             )
 
@@ -205,12 +205,12 @@ class ShaderCharmsRewritePattern(
             }
         }
 
-        needToRenderEntities = ThreaddedBooleanSupplier { needToProcessType(ShaderCharmsRewriteObjectTypes.Entity) }
-        needToRenderTileEntities = ThreaddedBooleanSupplier { needToProcessType(ShaderCharmsRewriteObjectTypes.TileEntity) }
-        needToRenderHand = ThreaddedBooleanSupplier { needToProcessType(ShaderCharmsRewriteObjectTypes.Hand) }
+        needToRenderEntities = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.Entity) }
+        needToRenderTileEntities = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.TileEntity) }
+        needToRenderHand = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.Hand) }
     }
 
-    fun init() : ShaderCharmsRewritePattern {
+    fun init() : ShadersRendererPattern {
         for(group in groups) {
             module.register(group)
         }
@@ -228,11 +228,11 @@ class ShaderCharmsRewritePattern(
     }
 
     fun getSetting(
-        type : ShaderCharmsRewriteObjectTypes,
-        option : ShaderCharmsObjectsEnum.ShaderCharmsRewriteObjects,
-        shader : ShaderCharmsRewriteShaders?,
-        typeS : ShaderCharmsRewriteSettingTypes
-    ) : ShaderCharmsRewriteSetting? {
+        type : ShadersObjectTypes,
+        option : ShadersObjectsEnum.ShadersObjects,
+        shader : ShadersShaders?,
+        typeS : ShadersSettingTypes
+    ) : ShadersSetting? {
         for(setting in settings) {
             if(
                 setting.type == type
@@ -247,22 +247,22 @@ class ShaderCharmsRewritePattern(
         return null
     }
 
-    fun getOptionSettingsByType(type : ShaderCharmsRewriteObjectTypes) : List<ShaderCharmsRewriteSetting> {
-        val list = ArrayList<ShaderCharmsRewriteSetting>()
+    fun getOptionSettingsByType(type : ShadersObjectTypes) : List<ShadersSetting> {
+        val list = ArrayList<ShadersSetting>()
 
-        for(option in ShaderCharmsObjectsEnum.ShaderCharmsRewriteObjects.byType(type)) {
+        for(option in ShadersObjectsEnum.ShadersObjects.byType(type)) {
 
         }
 
         return list
     }
 
-    private fun needToProcessType(type : ShaderCharmsRewriteObjectTypes) : Boolean {
+    private fun needToProcessType(type : ShadersObjectTypes) : Boolean {
         for(setting in settings) {
             if(
                 setting.type == type
                 && setting.shader == null
-                && setting.typeS == ShaderCharmsRewriteSettingTypes.StateOfOption
+                && setting.typeS == ShadersSettingTypes.StateOfOption
                 && setting.setting.valBoolean
             ) {
                 return true

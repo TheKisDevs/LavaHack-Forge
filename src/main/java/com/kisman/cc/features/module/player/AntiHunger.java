@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -11,6 +12,7 @@ import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
 
 
+@PingBypassModule
 public class AntiHunger extends Module {
     public static AntiHunger INSTANCE;
 

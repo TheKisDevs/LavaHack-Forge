@@ -27,6 +27,8 @@ import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
+import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
+import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
@@ -104,6 +106,7 @@ public class Kisman {
     public VectorUtils vectorUtils;
 
     public ModuleManager moduleManager;
+    public PingBypassModuleManager pingBypassModuleManager;
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
@@ -111,6 +114,7 @@ public class Kisman {
     public ConsoleGui consoleGui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
+    public PingBypassGui pingBypassGui;
     public MainGui.SelectionBar selectionBar;
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
@@ -164,6 +168,7 @@ public class Kisman {
         friendManager = new FriendManager();
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
+        PingBypassModuleManager.INSTANCE.init();
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
         consoleGui = new ConsoleGui();
@@ -178,7 +183,7 @@ public class Kisman {
         configManager.getLoader().init();
 
 
-        //load glow shader
+        //load 2d shaders
         ShaderShell.init();
 
         //catlua
@@ -192,6 +197,7 @@ public class Kisman {
         clickGuiNew = new ClickGuiNew();
         halqGui = new HalqGui();
         halqHudGui = new HalqHudGui();
+        pingBypassGui = new PingBypassGui();
 
         mainMenuController = new MainMenuController();
         mainMenuController.init();

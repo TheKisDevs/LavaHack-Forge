@@ -10,6 +10,6 @@ import net.minecraft.item.Item
 class ItemButton(
     val item : Item,
     val x_ : Int,
-    val y : Int
+    val y_ : Int
 ) : Component {
 }

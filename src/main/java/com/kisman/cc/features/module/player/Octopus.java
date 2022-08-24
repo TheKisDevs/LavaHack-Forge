@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.player;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -7,7 +8,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumActionResult;
@@ -145,7 +145,7 @@ public class Octopus extends Module {
     private void clickMouse() {
         if (mc.leftClickCounter <= 0) {
             if (mc.objectMouseOver == null) {
-                Minecraft.LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
+                Kisman.LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
                 if (mc.playerController.isNotCreative()) {
                     mc.leftClickCounter = 10;
                 }
@@ -179,7 +179,7 @@ public class Octopus extends Module {
             mc.rightClickDelayTimer = 4;
             if (!mc.player.isRowingBoat()) {
                 if (mc.objectMouseOver == null) {
-                    Minecraft.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
+                    Kisman.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
                 }
 
                 EnumHand[] var1 = EnumHand.values();

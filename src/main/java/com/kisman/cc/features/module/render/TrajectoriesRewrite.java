@@ -9,6 +9,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.*;
 
+@Deprecated
 public class TrajectoriesRewrite extends Module {
     private double motionX, motionZ, motionY;
     private double r = 0, g = 1, b = 0;
