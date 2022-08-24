@@ -47,10 +47,11 @@ public class ModuleManager {
 		modules.add(new HelloWorld());
 		modules.add(new Meow());
 		modules.add(new NoMove());
+		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
-		modules.add(new ScreenShaders());
+		modules.add(new ScreenShaders());;
 		modules.add(new SmoothRenderer());
 		modules.add(SwingTest.INSTANCE);
 		modules.add(new TextFieldTest());
@@ -177,6 +178,8 @@ public class ModuleManager {
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());
 		modules.add(new Velocity());
+		modules.add(new YawLock());
+		modules.add(new YawStep());
 		//exploit
 		modules.add(new AntiLogger());
 		modules.add(new AntiVanish());
@@ -192,6 +195,7 @@ public class ModuleManager {
 		modules.add(new NoGlitchBlocks());
 		modules.add(new PacketEat());
 		modules.add(new PacketMine());
+		modules.add(new PlayerLook());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 		modules.add(new Teleport());
