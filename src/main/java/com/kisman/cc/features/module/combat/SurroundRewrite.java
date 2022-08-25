@@ -81,6 +81,7 @@ public class SurroundRewrite extends Module {
     private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false).setTitle("Packet")));
     private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false).setTitle("Client Side")));
     private final Setting cbNoSuicide = register(crystalBreaker.add(new Setting("CbNoSuicide", this, true).setTitle("No Suicide")));
+    private final Setting cbTerrain = register(crystalBreaker.add(new Setting("CbTerrain", this, true).setVisible(cbNoSuicide::getValBoolean)));
 
     private static SurroundRewrite instance;
 
@@ -217,10 +218,11 @@ public class SurroundRewrite extends Module {
                 crystal.posX,
                 crystal.posY,
                 crystal.posZ,
-                mc.player, true
+                mc.player,
+                cbTerrain.getValBoolean()
         );
 
-        return damage >= mc.player.getHealth() + mc.player.getAbsorptionAmount();
+        return damage < mc.player.getHealth() + mc.player.getAbsorptionAmount();
     }
 
     private void breakCrystal(EntityEnderCrystal crystal, float[] oldRots){
