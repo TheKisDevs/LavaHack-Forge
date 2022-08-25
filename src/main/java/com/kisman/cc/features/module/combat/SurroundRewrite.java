@@ -379,7 +379,7 @@ public class SurroundRewrite extends Module {
             return;
 
         if(syncronized.getValBoolean())
-            doThreaddedSyncronizedSurround();
+            doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
     });
