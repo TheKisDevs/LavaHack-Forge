@@ -1,49 +1,63 @@
-name: Java CI with Gradle.
+ddddname: gradle.build
 
-on: [ push, pull_request ]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILD: ${{ github.run_number }}
+      SHA: ${{ github.sha }}
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: gradle/wrapper-validation-action@v1
-        with:
-          min-wrapper-count: 1
-          allow-snapshots: false
+      - name: Check out repository
+        uses: actions/checkout@v2
 
-      - name: Set up JDK 8.
-        uses: actions/setup-java@v2
-
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
-          java-version: 8
-          distribution: adopt-openj9
-          java-package: jdk
-          architecture: x64
-          check-latest: false
-          server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
-          overwrite-settings: true
-          job-status: success
+          java-version: 1.8
 
-      - name: Grant execute permission for gradlew.
-        run: chmod +x gradlew
+      - name: Elevate wrapper permissions
+        run: chmod +x ./gradlew
 
-      - uses: gradle/gradle-build-action@v2
+      - name: Loading gradle cache
+        uses: actions/cache@v2
         with:
-          arguments: setupdecompworkspace
-          
-      - uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Prepare workspace
+        run: ./gradlew --no-daemon classes
 
-      - uses: actions/upload-artifact@v2
+      - name: Build lambda utility mod
+        run: ./gradlew --build-cache build
+
+      - name: Rename built forge mod
+        run: mv build/libs/lavahack-*.jar lavahack-${{ github.run_number }}.jar
+
+      - name: Generate forge mod checksum
+        uses: ToxicAven/generate-checksum-file@v1
         with:
-          name: package
-          path: build/libs/
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`.
-          retention-days: 30 # The retention period must be between 1 and 90 inclusive.
-        env:
-          JAVA_HOME: /opt/hostedtoolcache/Java_Adopt-OpenJ9_jdk/8.0.312-7/x64
-          GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+          filePath: lavahack-${{ github.run_number }}.jar
+          saveFile: lavahack-${{ github.run_number }}-SHA256.txt
+          algorithm: SHA256
+
+      - name: Archive forge mod
+        uses: actions/upload-artifact@v2
+        with:
+          name: lavahack-${{ github.run_number }}
+          path: lavahack-${{ github.run_number }}.jar
+
+      - name: Archive forge mod checksum
+        uses: actions/upload-artifact@v2
+        with:
+          name: lavahack-${{ github.run_number }}-SHA256.txt
+          path: lavahack-${{ github.run_number }}-SHA256.txt
+
