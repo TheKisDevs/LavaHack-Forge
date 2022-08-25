@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.objects.world.Box;
@@ -32,6 +33,7 @@ import java.util.Queue;
 @SuppressWarnings("rawtypes")
 public class ChorusDelay extends Module {
     private final Setting teleportKey = register(new Setting("Teleport", this, Keyboard.KEY_LSHIFT));
+    private final RenderingRewritePattern pattern = new RenderingRewritePattern(this).preInit().init();
 
     private final Queue<Packet<?>> packets = new LinkedList<>();
     private SPacketPlayerPosLook posLook = null;
@@ -57,13 +59,7 @@ public class ChorusDelay extends Module {
             Box box = Box.Companion.byAABB(mc.player.getEntityBoundingBox());
             box.setPos(new Vec3d(posLook.x, posLook.y, posLook.z));
 
-            Rendering.draw(
-                    Rendering.correct(box.toAABB()),
-                    2f,
-                    new Colour(255, 255, 255, 120),
-                    Rendering.DUMMY_COLOR,
-                    Rendering.Mode.BOTH
-            );
+            pattern.draw(box.toAABB());
         }
     }
 
