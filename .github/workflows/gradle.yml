@@ -1,4 +1,4 @@
-ddddname: gradle.build
+name: gradle.build
 
 on:
   push:
