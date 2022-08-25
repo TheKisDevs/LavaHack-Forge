@@ -228,6 +228,7 @@ public class ModuleManager {
 		modules.add(new SelfDamage());
 		modules.add(new SkyBlockFeatures());
 		modules.add(new SkylightFix());
+		modules.add(new SlotMapper());
 		modules.add(new Spammer());
 		modules.add(new Spin());
 		modules.add(new TotemPopCounter());

@@ -96,8 +96,24 @@ public class Module implements IBindable {
 	public void setPriority(int priority) {this.priority = priority;}
 	public void setKey(int key) {this.key = key;}
 	public boolean isToggled() {return toggled;}
-	public void onEnable() {if(subscribes) MinecraftForge.EVENT_BUS.register(this);}
-	public void onDisable() {if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);}
+
+	public void onEnable() {
+		if(subscribes) MinecraftForge.EVENT_BUS.register(this);
+
+		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
+		if(subscribes == null)
+			return;
+		SubscribeMode.register(subscribes, this);
+	}
+	public void onDisable() {
+		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
+
+		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
+		if(subscribes == null)
+			return;
+		SubscribeMode.unregister(subscribes, this);
+	}
+
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}
 	public String getDisplayInfo() {return displayInfoSupplier == null ? displayInfo : displayInfoSupplier.get();}
