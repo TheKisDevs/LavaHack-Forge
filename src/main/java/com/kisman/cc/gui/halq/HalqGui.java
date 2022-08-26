@@ -197,13 +197,13 @@ public class HalqGui extends GuiScreen {
             case Center:
                 switch(step) {
                     case 1 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, y * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), y * 2, colour.getRGB());
                         break;
                     case 2 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2)) * 2f, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2)) * 2f, colour.getRGB());
                         break;
                     case 3 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
                         break;
                 }
                 break;
