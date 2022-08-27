@@ -4,6 +4,8 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
@@ -45,7 +47,22 @@ public class HoleESPRewrite2 extends Module {
     private final RenderPattern cRender = new ModulePrefixRenderPattern(this, "Custom").init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
-    private Map<BoundingBox, Type> map = new ConcurrentHashMap<>();
+    private final Setting fadeIn = register(new Setting("FadeIn", this, false));
+    private final Setting fadeInTicks = register(new Setting("FadeInTicks", this, 200, 0, 500, true));
+
+    private final Setting fadeOut = register(new Setting("FadeOut", this, false));
+    private final Setting fadeOutTicks = register(new Setting("FadeOutTicks", this, 200, 0, 500, true));
+
+    private static final Comparator<BoundingBox> comparator = (o1, o2) -> Double.compare(mc.player.getDistanceSq(o2.getCenter().x, o2.getCenter().y, o2.getCenter().z), mc.player.getDistanceSq(o1.getCenter().x, o1.getCenter().y, o1.getCenter().z));
+
+    private static final Comparator<Bind<BoundingBox, Type>> comparatorBind = (o1, o2) -> Double.compare(mc.player.getDistanceSq(o2.getFirst().getCenter().x, o2.getFirst().getCenter().y, o2.getFirst().getCenter().z), mc.player.getDistanceSq(o1.getFirst().getCenter().x, o1.getFirst().getCenter().y, o1.getFirst().getCenter().z));
+
+    // sorted map solves flickering problem i hope
+    private Map<BoundingBox, Type> map = new TreeMap<>(comparator);
+
+    private Map<Bind<BoundingBox, Type>, Double> newHoles = new TreeMap<>(comparatorBind);
+
+    private Map<Bind<BoundingBox, Type>, Double> oldHoles = new TreeMap<>(comparatorBind);
 
     public HoleESPRewrite2(){
         super("HoleESPRewrite2", Category.RENDER);
@@ -57,6 +74,11 @@ public class HoleESPRewrite2 extends Module {
         multiThread.reset();
     }
 
+    @Override
+    public void onDisable(){
+        super.onDisable();
+    }
+
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
         multiThread.update(this::doHoleESPLogic);
@@ -64,7 +86,26 @@ public class HoleESPRewrite2 extends Module {
     }
 
     private void doHoleESPLogic() {
-        mc.addScheduledTask(() -> map = getHoles());
+        mc.addScheduledTask(() -> {
+            Map<BoundingBox, Type> holes = getHoles();
+            if(fadeOut.getValBoolean()){
+                for(Map.Entry<BoundingBox, Type> entry : map.entrySet()){
+                    if(!holes.containsKey(entry.getKey()))
+                        oldHoles.put(new Bind<>(entry.getKey(), entry.getValue()), 0.0);
+                }
+            } else {
+                oldHoles.clear();
+            }
+            if(fadeIn.getValBoolean()){
+                for(Map.Entry<BoundingBox, Type> entry : holes.entrySet()){
+                    if(!map.containsKey(entry.getKey()))
+                        newHoles.put(new Bind<>(entry.getKey(), entry.getValue()), 0.0D);
+                }
+            } else {
+                newHoles.clear();
+            }
+            map = holes;
+        });
     }
 
     private void doHoleESP() {
@@ -74,11 +115,38 @@ public class HoleESPRewrite2 extends Module {
             RenderBuilder renderBuilder = renderBuilderFor(type);
             renderBuilder.pos(bb).render();
         }
-
+        if(fadeIn.getValBoolean()){
+            Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
+            for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : newHoles.entrySet()){
+                BoundingBox bb = entry.getKey().getFirst();
+                double diffX = bb.maxX - bb.minX;
+                double diffY = bb.maxY - bb.minY;
+                double diffZ = bb.maxZ - bb.minZ;
+                BoundingBox boundingBox = new BoundingBox(bb.scale(entry.getValue() * diffX, entry.getValue() * diffY, entry.getValue() * diffZ).toAABB());
+                RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
+                renderBuilder.pos(boundingBox).render();
+                newMap.put(entry.getKey(), entry.getValue() + (1.0 / fadeInTicks.getValDouble()));
+            }
+            newHoles = newMap;
+        }
+        if(fadeOut.getValBoolean()){
+            Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
+            for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : newHoles.entrySet()){
+                BoundingBox bb = entry.getKey().getFirst();
+                double diffX = bb.maxX - bb.minX;
+                double diffY = bb.maxY - bb.minY;
+                double diffZ = bb.maxZ - bb.minZ;
+                BoundingBox boundingBox = new BoundingBox(bb.scale(1.0 - (entry.getValue() * diffX), 1.0 - (entry.getValue() * diffY), 1.0 - (entry.getValue() * diffZ)).toAABB());
+                RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
+                renderBuilder.pos(boundingBox).render();
+                newMap.put(entry.getKey(), entry.getValue() + (1.0 / fadeOutTicks.getValDouble()));
+            }
+            oldHoles = newMap;
+        }
     }
 
     private Map<BoundingBox, Type> getHoles(){
-        Map<BoundingBox, Type> holes = new ConcurrentHashMap<>();
+        Map<BoundingBox, Type> holes = new TreeMap<>(comparator);
         List<BlockPos> possibleHoles = getPossibleHoles(range.getValFloat());
         int lim = 0;
         for(BlockPos pos : possibleHoles){
@@ -114,7 +182,8 @@ public class HoleESPRewrite2 extends Module {
 
             BoundingBox bb = adjust(holeInfo.getCentre(), type);
 
-            holes.put(bb, type);
+            if(!holes.containsKey(bb))
+                holes.put(bb, type);
 
             lim++;
         }
