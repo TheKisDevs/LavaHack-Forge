@@ -1,63 +1,31 @@
-name: gradle.build
+name: Gradle Build
 
 on:
   push:
   pull_request:
-  workflow_dispatch:
+    types: [opened, reopened]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
-    env:
-      BUILD: ${{ github.run_number }}
-      SHA: ${{ github.sha }}
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-
-      - name: Elevate wrapper permissions
-        run: chmod +x ./gradlew
-
-      - name: Loading gradle cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Prepare workspace
-        run: ./gradlew --no-daemon classes
-
-      - name: Build lambda utility mod
-        run: ./gradlew --build-cache build
-
-      - name: Rename built forge mod
-        run: mv build/libs/lavahack-*.jar lavahack-${{ github.run_number }}.jar
-
-      - name: Generate forge mod checksum
-        uses: ToxicAven/generate-checksum-file@v1
-        with:
-          filePath: lavahack-${{ github.run_number }}.jar
-          saveFile: lavahack-${{ github.run_number }}-SHA256.txt
-          algorithm: SHA256
-
-      - name: Archive forge mod
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: |
+          ./gradlew setupDecompWorkspace
+          ./gradlew build
+      - name: List files
+        run: ls
+      - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: lavahack-${{ github.run_number }}
-          path: lavahack-${{ github.run_number }}.jar
-
-      - name: Archive forge mod checksum
-        uses: actions/upload-artifact@v2
-        with:
-          name: lavahack-${{ github.run_number }}-SHA256.txt
-          path: lavahack-${{ github.run_number }}-SHA256.txt
-
+          name: LavaHack
+          path: ./build/libs/*release.jar  

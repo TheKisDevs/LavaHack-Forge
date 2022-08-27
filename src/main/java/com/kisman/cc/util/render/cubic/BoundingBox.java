@@ -200,4 +200,19 @@ public class BoundingBox {
     public AxisAlignedBB toAABB(){
         return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
+
+    public boolean equals(Object other){
+        if(other == null)
+            return false;
+        if(!(other instanceof BoundingBox))
+            return false;
+        BoundingBox boundingBox = (BoundingBox) other;
+        boolean b1 = minX == boundingBox.minX;
+        boolean b2 = minY == boundingBox.minY;
+        boolean b3 = minZ == boundingBox.minZ;
+        boolean b4 = maxX == boundingBox.maxX;
+        boolean b5 = maxY == boundingBox.maxY;
+        boolean b6 = maxZ == boundingBox.maxZ;
+        return b1 && b2 && b3 && b4 && b5 && b6;
+    }
 }

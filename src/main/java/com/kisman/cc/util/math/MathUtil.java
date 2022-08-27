@@ -393,4 +393,20 @@ public class MathUtil {
     public static double curve2(double a){
         return Math.sqrt(-(a * a) - 2 * a);
     }
+
+    public static double normalize(double a, double bound){
+        return a % bound;
+    }
+
+    public static double absNormalize(double a, double bound){
+        return (a % bound + bound) % bound;
+    }
+
+    public static float normalize(float a, float bound){
+        return a % bound;
+    }
+
+    public static float absNormalize(float a, float bound){
+        return (a % bound + bound) % bound;
+    }
 }

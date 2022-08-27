@@ -25,7 +25,11 @@ public class Trigonometric {
     }
 
     public static Vec3d entityLookOffset(Entity entity, double radius){
-        return position(MathHelper.normalizeAngle((int) entity.rotationYaw, 360) + 90, entity.rotationPitch + 90, radius);
+        return position(entity.rotationYaw + 90, entity.rotationPitch + 90, radius);
+    }
+
+    public static Vec3d entityLookOffset(Entity entity, double radius, float partialTicks){
+        return position(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, radius);
     }
 
     public static BlockPos entityObjectMouseOver(Entity entity, double radius, boolean raytrace){
