@@ -39,6 +39,7 @@ public class ModuleManager {
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
 		//modules.add(new ChorusTP());
+		modules.add(ClickCooldownReset.INSTANCE);
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
 		modules.add(new FrostWalk());

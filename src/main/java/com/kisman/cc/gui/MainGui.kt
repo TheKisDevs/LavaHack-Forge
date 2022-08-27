@@ -2,7 +2,7 @@ package com.kisman.cc.gui
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.gui.halq.HalqGui
-import com.kisman.cc.gui.halq.HalqHudGui
+import com.kisman.cc.gui.hudeditor.HalqHudGui
 import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Render2DUtil

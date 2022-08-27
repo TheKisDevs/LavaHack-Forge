@@ -148,7 +148,7 @@ public class CrystalUtils {
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
-        if (entity == mc.player && mc.player.capabilities.isCreativeMode) return 0.0f;
+        if ((entity == mc.player && mc.player.capabilities.isCreativeMode) || entity == null) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
         double dist = entity.getDistance(posX, posY, posZ);

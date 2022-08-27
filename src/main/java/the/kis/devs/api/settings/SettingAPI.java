@@ -19,7 +19,7 @@ public class SettingAPI extends Setting {
     public SettingAPI(String type) {super(type);}
     public SettingAPI(String name, Module parent, int key) {super(name, parent, key);}
     public SettingAPI(String name, Module parent, String sval, String dString, boolean opening) {super(name, parent, sval, dString, opening);}
-    public SettingAPI(String name, Module parent, String sval, String dString, boolean opening, boolean onlyOneWord) {super(name, parent, sval, dString, opening, onlyOneWord);}
+//    public SettingAPI(String name, Module parent, String sval, String dString, boolean opening, boolean onlyOneWord) {super(name, parent, sval, dString, opening, onlyOneWord);}
     public SettingAPI(String name, Module parent, String title) {super(name, parent, title);}
     public SettingAPI(String name, Module parent, String sval, ArrayList<String> options) {super(name, parent, sval, options);}
     public SettingAPI(String name, Module parent, String sval, List<String> options) {super(name, parent, sval, options);}

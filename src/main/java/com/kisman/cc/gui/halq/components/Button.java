@@ -10,7 +10,7 @@ import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.*;
-import com.kisman.cc.gui.halq.components.sub.hud.DraggableBox;
+import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;

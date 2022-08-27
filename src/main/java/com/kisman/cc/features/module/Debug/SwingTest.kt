@@ -43,10 +43,16 @@ object SwingTest : Module(
         Kisman.EVENT_BUS.unsubscribe(swing)
     }
     
-    fun rotateItems(
+    fun renderItems(
         side : EnumHandSide,
         progress : Float
     ) {
+        GlStateManager.translate(
+            translateX.valDouble * progress * (if(side == EnumHandSide.LEFT && offhandFix.valBoolean) -1 else 1),
+            translateY.valDouble * progress,
+            translateZ.valDouble * progress
+        )
+
         GlStateManager.rotate(
             itemRotateX.valFloat * progress,
             1f, 0f, 0F
@@ -64,11 +70,11 @@ object SwingTest : Module(
     }
 
     private val swing = Listener<EventItemRenderer>(EventHook {
-        GlStateManager.translate(
+        /*GlStateManager.translate(
             translateX.valDouble * it.progress * (if(it.side == EnumHandSide.LEFT && offhandFix.valBoolean) -1 else 1),
             translateY.valDouble * it.progress,
             translateZ.valDouble * it.progress
-        )
+        )*/
 
         GlStateManager.rotate(
             handRotateX.valFloat * it.progress,

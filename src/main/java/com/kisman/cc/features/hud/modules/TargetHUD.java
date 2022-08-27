@@ -5,16 +5,17 @@ import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.combat.AutoRer;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.AnimationUtils;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.customfont.AbstractFontRenderer;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +29,6 @@ import java.awt.*;
 import java.util.Objects;
 
 public class TargetHUD extends HudModule {
-    private EntityPlayer target = null;
     private final TimerUtils timer = new TimerUtils();
     private double hpBarWidth;
     private double cdBarWidth;
@@ -36,7 +36,17 @@ public class TargetHUD extends HudModule {
 
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
     private final Setting theme = register(new Setting("Theme", this, TargetHudThemeMode.Simple));
-    private final Setting shadow = register(new Setting("Shadow", this, true));
+
+    private final SettingGroup rewriteGroup = register(new SettingGroup(new Setting("Rewrite", this)));
+    private final Setting shadow = register(rewriteGroup.add(new Setting("Rewrite Shadow", this, true).setTitle("Shadow")));
+
+    private final SettingGroup noatGroup = register(new SettingGroup(new Setting("Noat", this)));
+    private final SettingGroup noatColorsGroup = register(noatGroup.add(new SettingGroup(new Setting("Colors", this))));
+    private final SettingGroup noatSidewayColorsGroup = register(noatColorsGroup.add(new SettingGroup(new Setting("Sideway", this))));
+    private final Setting noatBackgroundColor = register(noatColorsGroup.add(new Setting("Noat Background Color", this, new Colour(30, 30, 30, 150)).setTitle("Background")));
+    private final Setting noatSidewayFirstColor = register(noatSidewayColorsGroup.add(new Setting("Noat Sideway First Color", this, new Colour(218, 186, 255, 255)).setTitle("First")));
+    private final Setting noatSidewaySecondColor = register(noatSidewayColorsGroup.add(new Setting("Noat Sideway Second Color", this, new Colour(255, 208, 143, 255)).setTitle("Second")));
+    private final Setting noatFontMode = register(noatGroup.add(new Setting("Noat Font Mode", this, NoatTargetHudFontMode.Regular).setTitle("Font Mode")));
 
     public TargetHUD() {
         super("TargetHud", true);
@@ -47,31 +57,131 @@ public class TargetHUD extends HudModule {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        target = AutoRer.currentTarget;
+        EntityPlayer target = AutoRer.currentTarget;
         if(target == null && KillAuraRewrite.Companion.getTarget() instanceof EntityPlayer) target = (EntityPlayer) KillAuraRewrite.Companion.getTarget();
 
         if(target == null) return;
 
         switch (theme.getValString()) {
-            case "Vega":
-                drawVega();
-                break;
             case "Rewrite":
-                drawRewrite();
+                drawRewrite(target);
                 break;
             case "NoRules":
-                drawNoRules(getX(), getY(), 150, 45);
+                drawNoRules(target, getX(), getY(), 150, 45);
                 break;
             case "Simple":
-                drawSimple();
+                drawSimple(target);
                 break;
             case "Astolfo":
-                drawAstolfo();
+                drawAstolfo(target);
+                break;
+            case "Noat":
+                drawNoat(target);
                 break;
         }
     }
 
-    private void drawAstolfo() {
+    private void drawNoat(EntityPlayer player) {
+        try {
+            GlStateManager.pushMatrix();
+
+            Render2DUtil.drawRectWH(
+                    getX(),
+                    getY(),
+                    150,
+                    50,
+                    noatBackgroundColor.getColour().getRGB()
+            );
+            Render2DUtil.drawFace(
+                    player,
+                    (int) getX() + 5,
+                    (int) getY() + 5,
+                    40,
+                    40
+            );
+            Render2DUtil.drawGradientSidewaysWH(
+                    getX() + 50,
+                    getY() + 40,
+                    player.getHealth() * 3.9f,
+                    5,
+                    noatSidewayFirstColor.getColour().getRGB(),
+                    noatSidewaySecondColor.getColour().getRGB()
+            );
+            noatFont(10).drawStringWithShadow(
+                    String.format("%.1f", player.getHealth() + player.getAbsorptionAmount()),
+                    (int) getX() + 50 + (int) (player.getHealth() * 3.9f) + 5,
+                    (int) getY() + 40,
+                    -1
+            );
+            noatFont(30).drawStringWithShadow(
+                    player.getName(),
+                    (int) getX() + 50,
+                    (int) getY() + 5,
+                    -1
+            );
+
+            int iteration = 0;
+            for (ItemStack is : player.inventory.armorInventory) {
+                ++iteration;
+                try {
+                    if (is.isEmpty()) continue;
+                    int x = (int) ((getX() + 50) - 90 + (9 - iteration) * 20 + 2);
+                    GlStateManager.pushMatrix();
+                    Render2DUtil.instance.setZLevel(200);
+                    mc.getRenderItem().renderItemAndEffectIntoGUI(is, x, (int) (getY() + 17));
+//                    Render2DUtil.renderItemOverlayIntoGUI(x, (int) (getY() + 17) , ""));
+                    Render2DUtil.instance.setZLevel(0);
+                    GlStateManager.popMatrix();
+                } catch(Exception e) {
+                    GlStateManager.enableTexture2D();
+                    GlStateManager.disableLighting();
+                    GlStateManager.disableDepth();
+                    GlStateManager.popMatrix();
+                }
+            }
+
+            GlStateManager.popMatrix();
+        } catch (Exception e) {
+            GlStateManager.popMatrix();
+        }
+
+        setW(150);
+        setH(50);
+    }
+
+    private AbstractFontRenderer noatFont(
+            int size
+    ) {
+        if(size == 10) {
+            return getFont(
+                    CustomFontUtil.comfortaa10,
+                    CustomFontUtil.comfortaal10,
+                    CustomFontUtil.comfortaab10
+            );
+        } else {
+            return getFont(
+                    CustomFontUtil.comfortaa30,
+                    CustomFontUtil.comfortaal30,
+                    CustomFontUtil.comfortaab30
+            );
+        }
+    }
+
+    private AbstractFontRenderer getFont(
+            AbstractFontRenderer regular,
+            AbstractFontRenderer light,
+            AbstractFontRenderer bold
+    ) {
+        if(noatFontMode.getValEnum() == NoatTargetHudFontMode.Regular) {
+            return regular;
+        } else if(noatFontMode.getValEnum() == NoatTargetHudFontMode.Light) {
+            return light;
+        } else {
+            return bold;
+        }
+    }
+
+    private void drawAstolfo(EntityPlayer target) {
         Color color = astolfo.getValBoolean() ? ColorUtils.astolfoColorsToColorObj(100, 100) : new Color(255, 0, 89);
 
         float x = (float) getX(), y = (float) getY();
@@ -101,7 +211,7 @@ public class TargetHUD extends HudModule {
         Render2DUtil.drawRectWH(x + 30, y + 48, (float) healthWid, 8, color.getRGB());
     }
 
-    private void drawSimple() {
+    private void drawSimple(EntityPlayer target) {
         int x = (int) getX();
         int y = (int) getY();
         setW(25 + borderOffset * 2 + CustomFontUtil.getStringWidth(target.getName()));
@@ -126,7 +236,7 @@ public class TargetHUD extends HudModule {
         Render2DUtil.drawRectWH(x + borderOffset + 25, y + height - borderOffset - 7, (target.getHealth() / target.getMaxHealth()) * CustomFontUtil.getStringWidth(target.getName()), 7, -1);
     }
 
-    private void drawNoRules(double x, double y, double w, double h) {
+    private void drawNoRules(EntityPlayer target, double x, double y, double w, double h) {
         setW(w);
         setH(h);
         double healthOffset = ((target.getHealth() + target.getAbsorptionAmount()) - 0) / (target.getMaxHealth() - 0);
@@ -134,18 +244,16 @@ public class TargetHUD extends HudModule {
         Render2DUtil.drawRoundedRect2(x, y, w, h, 6, new Colour(20, 20, 20, 210).getRGB());
         Render2DUtil.drawRoundedRect2(x + 2, y + (h / 2 - 34 / 2) - 3, 40, 40, 6, 0x40575656);
         Render2DUtil.drawRoundedRect2(x + 45, y + 4, w - 49, 30, 6, 0x40575656);
-        if (target != null) {
-            CustomFontUtil.drawStringWithShadow("Name: " + ChatFormatting.GRAY + target.getName(), x + 47, y + 4, -1);
-            CustomFontUtil.drawStringWithShadow("Distance: " + ChatFormatting.GRAY + MathUtil.round(mc.player.getDistance(target), 2), x + 47, y + 13, -1);
-            CustomFontUtil.drawStringWithShadow("Ping: " + ChatFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms", x + 47, y + 22.5, -1);
-            Render2DUtil.drawRoundedRect2(x + 45, y + h - 16, w - 49, 10, 6, 0x40575656);
-            Render2DUtil.drawRoundedRect2(x + 47, y + h - 12, 95 * hpBarWidth, 3, 4, ColorUtils.healthColor(target.getHealth() + target.getAbsorptionAmount(), target.getMaxHealth()).getRGB());
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            try {GuiInventory.drawEntityOnScreen((int) x + 21, (int) (y + 44), 18, -30, -target.rotationPitch, target);} catch (Exception ignored) {}
-        }
+        CustomFontUtil.drawStringWithShadow("Name: " + ChatFormatting.GRAY + target.getName(), x + 47, y + 4, -1);
+        CustomFontUtil.drawStringWithShadow("Distance: " + ChatFormatting.GRAY + MathUtil.round(mc.player.getDistance(target), 2), x + 47, y + 13, -1);
+        CustomFontUtil.drawStringWithShadow("Ping: " + ChatFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms", x + 47, y + 22.5, -1);
+        Render2DUtil.drawRoundedRect2(x + 45, y + h - 16, w - 49, 10, 6, 0x40575656);
+        Render2DUtil.drawRoundedRect2(x + 47, y + h - 12, 95 * hpBarWidth, 3, 4, ColorUtils.healthColor(target.getHealth() + target.getAbsorptionAmount(), target.getMaxHealth()).getRGB());
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        try {GuiInventory.drawEntityOnScreen((int) x + 21, (int) (y + 44), 18, -30, -target.rotationPitch, target);} catch (Exception ignored) {}
     }
 
-    private void drawRewrite() {
+    private void drawRewrite(EntityPlayer target) {
         double x = getX();
         double y = getY();
         setW(120);
@@ -246,61 +354,6 @@ public class TargetHUD extends HudModule {
         else Render2DUtil.drawRect(x, y, x + sliderWidth, y + sliderHeight, ColorUtils.astolfoColors(100, 100));
     }
 
-    private void drawVega() {
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
-        double renderX = getX();
-        double renderY = getY();
-        float maxX = Math.max(40, CustomFontUtil.getStringWidth("HP: " + (int) target.getHealth() + " | Dist: " + mc.player.getDistance(target)) + 70);
-        setW(maxX);
-        setH(49);
-        if(timer.passedMillis(15)) {
-            hpBarWidth = AnimationUtils.animate((target.getHealth() / target.getMaxHealth()) * maxX, hpBarWidth, 0.05);
-            timer.reset();
-        }
-        int color  = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : ColorUtils.rainbow(1, 1);
-        Render2DUtil.drawRect(renderX - 4, renderY - 3, (renderX + 4 + maxX), (int) renderY + 49, ColorUtils.getColor(55, 55, 63));
-        Render2DUtil.drawRect(renderX - 3, renderY - 2, (renderX + 3 + maxX), (int) renderY + 48, ColorUtils.getColor(95, 95, 103));
-        Render2DUtil.drawRect(renderX - 2, renderY - 1, (renderX + 2 + maxX), (int) renderY + 47, ColorUtils.getColor(65, 65, 73));
-        Render2DUtil.drawRect(renderX - 1, renderY, (renderX + 1 + maxX), (int) renderY + 46, ColorUtils.getColor(25, 25, 33));
-        Render2DUtil.drawRect(renderX + 2, renderY + 42, (renderX + maxX), (int) renderY + 45, ColorUtils.getColor(48, 48, 58));
-        Render2DUtil.drawRect(renderX + 1, renderY + 2, (renderX + 28), (int) renderY + 29, color);
-        Render2DUtil.drawRect(renderX + 2, renderY + 3, (int) (renderX + 27), (int) renderY + 28, ColorUtils.getColor(25, 25, 33));
-        Gui.drawRect((int) renderX, (int) renderY + 37 + 5, (int) (renderX + hpBarWidth), (int) renderY + 40 + 5, color);
-        Gui.drawRect((int) renderX + 1, (int) renderY + 38 + 5, (int) (renderX - 1 + hpBarWidth), (int) renderY + 39 + 5, ColorUtils.getColor(0, 0, 0));
-
-        try {
-            mc.getTextureManager().bindTexture(mc.getConnection().getPlayerInfo(target.getName()).getLocationSkin());
-            GL11.glColor4f(1, 1, 1, 1);
-            Gui.drawScaledCustomSizeModalRect((int) (renderX + 2), (int) (renderY + 3), 8.0F, 8, 8, 8, 25, 25, 64.0F, 64.0F);
-        } catch (Exception ignored) {}
-        CustomFontUtil.drawString("HP: " + (int) target.getHealth() + " | Dist: " + mc.player.getDistance(target), renderX + 1 + 27 + 5, renderY + 2, -1);
-        CustomFontUtil.drawString(target.getName(), renderX + 1 + 27 + 5, renderY + 4 + CustomFontUtil.getFontHeight(), -1);
-        int posX = scaledResolution.getScaledWidth() / 2 + 53;
-        for (final ItemStack item : target.getArmorInventoryList()) {
-            if(item.isEmpty) continue;
-            GL11.glPushMatrix();
-            GL11.glTranslated(posX - 27, renderY + 29 + 0.5, 0);
-            GL11.glScaled(0.8, 0.8, 0.8);
-            mc.getRenderItem().renderItemIntoGUI(item, 0, 0);
-            GL11.glPopMatrix();
-            posX += 12;
-        }
-        if(!target.getHeldItemMainhand().isEmpty) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(posX - 27, renderY + 29 + 0.5, 0);
-            GL11.glScaled(0.8, 0.8, 0.8);
-            mc.getRenderItem().renderItemIntoGUI(target.getHeldItemMainhand(), 0, 0);
-            GL11.glPopMatrix();
-            posX += 12;
-        }
-        if(!target.getHeldItemOffhand().isEmpty){
-            GL11.glPushMatrix();
-            GL11.glTranslated(posX - 27, renderY + 29 + 0.5, 0);
-            GL11.glScaled(0.8, 0.8, 0.8);
-            mc.getRenderItem().renderItemIntoGUI(target.getHeldItemOffhand(), 0, 0);
-            GL11.glPopMatrix();
-        }
-    }
-
-    public enum TargetHudThemeMode {Vega, Rewrite, NoRules, Simple, Astolfo}
+    public enum TargetHudThemeMode { Rewrite, NoRules, Simple, Astolfo, Noat }
+    public enum NoatTargetHudFontMode { Regular, Light, Bold }
 }

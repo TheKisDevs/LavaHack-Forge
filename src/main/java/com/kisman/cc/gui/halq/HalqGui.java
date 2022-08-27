@@ -120,7 +120,7 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
-            if(frame.open) for(Component comp : frame.mods) if(comp.visible()) {
+            if(frame.open) for(Component comp : frame.components) if(comp.visible()) {
                 comp.updateComponent(frame.x, frame.y);
                 comp.drawScreen(mouseX, mouseY);
             }
@@ -138,7 +138,7 @@ public class HalqGui extends GuiScreen {
     @Override
     public void keyTyped(char typedChar, int keyCode) throws IOException {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
-        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.mods.isEmpty() && !frame.reloading) for(Component mod : frame.mods) if(mod.visible()) mod.keyTyped(typedChar, keyCode);
+        for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.components.isEmpty() && !frame.reloading) for(Component mod : frame.components) if(mod.visible()) mod.keyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class HalqGui extends GuiScreen {
                 }
                 else if(mouseButton == 1) frame.open = !frame.open;
             }
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(mod.visible()) mod.mouseClicked(mouseX, mouseY, mouseButton);
+            if(frame.open && !frame.components.isEmpty()) for(Component mod : frame.components) if(mod.visible()) mod.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
@@ -163,7 +163,7 @@ public class HalqGui extends GuiScreen {
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.dragging = false;
-            if(frame.open && !frame.mods.isEmpty()) for(Component mod : frame.mods) if(mod.visible()) mod.mouseReleased(mouseX, mouseY, state);
+            if(frame.open && !frame.components.isEmpty()) for(Component mod : frame.components) if(mod.visible()) mod.mouseReleased(mouseX, mouseY, state);
         }
     }
 

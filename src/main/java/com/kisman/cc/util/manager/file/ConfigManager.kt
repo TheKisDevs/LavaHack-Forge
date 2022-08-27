@@ -23,6 +23,7 @@ class ConfigManager(
     val modulesPrefix = "module"
     val settingsPrefix = "setting"
     val hudModulesPrefix = "hud_module"
+    val hudEditorPrefix = "hud_editor"
     val friendsPrefix = "friend"
 
 
@@ -88,11 +89,21 @@ class ConfigManager(
                                     } catch(ignored : Exception) {}
                                 }
                                 config.settingsPrefix -> {
-                                    if(split2[3].contains(":")) {
-                                        val setting = Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0], true)
+                                    val flag1 = split2[3].contains(":")
+                                    val flag2 = if(split2.size > 4) split2[4].contains(":") else false
+                                    if(flag1 || flag2) {
+                                        val setting = if(flag1) {
+                                            Kisman.instance.settingsManager.getSettingByName(module, split2[3].split(":")[0], true)
+                                        } else {//if(flag2) {
+                                            Kisman.instance.settingsManager.getSettingByName(module, split2[3], true)
+                                        }
 
                                         if(setting != null && !setting.isGroup) {
-                                            val split3 = split2[3].split(":")
+                                            val split3 = if(flag1) {
+                                                split2[3].split(":")
+                                            } else {//if(flag2) {
+                                                split2[4].split(":")
+                                            }
 
                                             if(setting.isCheck) {
                                                 when (split3[1]) {
@@ -110,6 +121,28 @@ class ConfigManager(
                                                         try {
                                                             setting.setType(if(java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
                                                         } catch (ignored : Exception) {}
+                                                    }
+                                                }
+                                            } else if(setting.isCombo) {
+                                                val option = split3[0]
+
+                                                if(setting.binders.containsKey(option)) {
+                                                    when (split3[1]) {
+                                                        "key" -> {
+                                                            try {
+                                                                setting.binders[option]?.setKeyboardKey(Integer.parseInt(split1[1]))
+                                                            } catch (ignored : Exception) { }
+                                                        }
+                                                        "button" -> {
+                                                            try {
+                                                                setting.binders[option]?.setMouseButton(Integer.parseInt(split1[1]))
+                                                            } catch (ignored : Exception) { }
+                                                        }
+                                                        "mouseBind" -> {
+                                                            try {
+                                                                setting.binders[option]?.setType(if (java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
+                                                            } catch (ignored : Exception) { }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -177,11 +210,21 @@ class ConfigManager(
                                     } catch (ignored : Exception) {}
                                 }
                                 config.settingsPrefix -> {
-                                    if(split2[3].contains(":")) {
-                                        val setting = Kisman.instance.settingsManager.getSettingByName(hud, split2[3].split(":")[0], true)
+                                    val flag1 = split2[3].contains(":")
+                                    val flag2 = if(split2.size > 4) split2[4].contains(":") else false
+                                    if(flag1 || flag2) {
+                                        val setting = if(flag1) {
+                                            Kisman.instance.settingsManager.getSettingByName(hud, split2[3].split(":")[0], true)
+                                        } else {//if(flag2) {
+                                            Kisman.instance.settingsManager.getSettingByName(hud, split2[3], true)
+                                        }
 
                                         if(setting != null && !setting.isGroup) {
-                                            val split3 = split2[3].split(":")
+                                            val split3 = if(flag1) {
+                                                split2[3].split(":")
+                                            } else {//if(flag2) {
+                                                split2[4].split(":")
+                                            }
 
                                             if(setting.isCheck) {
                                                 when (split3[1]) {
@@ -201,6 +244,28 @@ class ConfigManager(
                                                         } catch (ignored : Exception) {}
                                                     }
                                                 }
+                                            } else if(setting.isCombo) {
+                                                val option = split3[0]
+
+                                                if(setting.binders.containsKey(option)) {
+                                                    when (split3[1]) {
+                                                        "key" -> {
+                                                            try {
+                                                                setting.binders[option]?.setKeyboardKey(Integer.parseInt(split1[1]))
+                                                            } catch (ignored : Exception) { }
+                                                        }
+                                                        "button" -> {
+                                                            try {
+                                                                setting.binders[option]?.setMouseButton(Integer.parseInt(split1[1]))
+                                                            } catch (ignored : Exception) { }
+                                                        }
+                                                        "mouseBind" -> {
+                                                            try {
+                                                                setting.binders[option]?.setType(if (java.lang.Boolean.parseBoolean(split1[1])) BindType.Mouse else BindType.Keyboard)
+                                                            } catch (ignored : Exception) { }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     } else {
@@ -212,10 +277,17 @@ class ConfigManager(
                                                 if (setting.isCombo) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
                                                 if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
-                                            } catch (e: Exception) { }
+                                            } catch (ignored : Exception) { }
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                    config.hudEditorPrefix -> {
+                        when(split2[1]) {
+                            "color" -> {
+                                Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour = ColourUtilKt.fromConfig(split1[1], Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour)
                             }
                         }
                     }
@@ -283,8 +355,19 @@ class ConfigManager(
                                 }
                             }
                             if(setting.isCombo) {
-                                writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
+                                writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
                                 writer.newLine()
+
+                                for(option in setting.binders.keys) {
+                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
                             }
                             if(setting.isSlider) {
                                 writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${setting.valDouble}")
@@ -323,12 +406,12 @@ class ConfigManager(
                             if(setting.isCheck) {
                                 writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${setting.valBoolean}")
                                 writer.newLine()
-                                if(setting.key != -1) {
-                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:key=${setting.key}")
+                                if(setting.getKeyboardKey() != -1) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:key=${setting.getKeyboardKey()}")
                                     writer.newLine()
                                 }
                                 if(setting.getMouseButton() != -1) {
-                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getKeyboardKey()}")
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getMouseButton()}")
                                     writer.newLine()
                                 }
                                 if(IBindable.valid(setting)) {
@@ -339,6 +422,17 @@ class ConfigManager(
                             if(setting.isCombo) {
                                 writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
                                 writer.newLine()
+
+                                for(option in setting.binders.keys) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
                             }
                             if(setting.isSlider) {
                                 writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${setting.valDouble}")
@@ -352,6 +446,10 @@ class ConfigManager(
                     }
                 }
             }
+
+            writer.write("${config.hudEditorPrefix}.color=${ColourUtilKt.toConfig(Kisman.instance.halqHudGui.color)}")
+            writer.newLine()
+
             if(FriendManager.instance.friends.isNotEmpty()) {
                 for(friend in FriendManager.instance.friends) {
                     writer.write("${config.friendsPrefix}=\"$friend\"")

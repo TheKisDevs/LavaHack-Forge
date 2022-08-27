@@ -65,7 +65,7 @@ public class ArrayListModule extends HudModule {
         if(hudModules.getValBoolean()) for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod != null && mod.isToggled() && mod.visible) elements.add(new ArrayListElement((mod.getName() + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.getName() + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.HudModule));
         if(checkBoxes.getValBoolean()) {
             for(Setting set : Kisman.instance.settingsManager.getSettings()) {
-                if(set.isCheck() && set.getKey() != Keyboard.KEY_NONE && set.getValBoolean()) elements.add(new ArrayListElement(set.getParentMod().getName() + "->" + set.getName() + (set.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + set.getDisplayInfo()), ElementTypes.CheckBox));
+                if(set.isCheck() && set.getKey() != Keyboard.KEY_NONE && set.getValBoolean()) elements.add(new ArrayListElement(set.toDisplayString() + (set.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + set.getDisplayInfo()), ElementTypes.CheckBox));
             }
         }
 

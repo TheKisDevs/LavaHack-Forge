@@ -3,6 +3,7 @@ package com.kisman.cc;
 import com.kisman.cc.api.cape.CapeAPI;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.event.EventProcessorLua;
+import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.ForgeMappings;
@@ -17,12 +18,13 @@ import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
+import com.kisman.cc.features.rpc.RPC;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.gui.halq.HalqHudGui;
+import com.kisman.cc.gui.hudeditor.HalqHudGui;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.gui.other.music.MusicGui;
@@ -181,10 +183,6 @@ public class Kisman {
         capeAPI = new CapeAPI();
         pluginHandler.init();
 
-        configManager = new ConfigManager("config");
-        configManager.getLoader().init();
-
-
         //load 2d shaders
         ShaderShell.init();
 
@@ -211,6 +209,9 @@ public class Kisman {
         searchGui = new SearchGui(new Setting("Test"), null);
         musicGui = new MusicGui();
 
+        configManager = new ConfigManager("config");
+        configManager.getLoader().init();
+
         init = true;
     }
 
@@ -224,9 +225,19 @@ public class Kisman {
                     if (keyCode <= 1) return;
                     for (Module m : moduleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
                     for (HudModule m : hudModuleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) if(s.getKeyboardKey() == keyCode && s.bindType == BindType.Keyboard && s.isCheck()) {
-                        s.setValBoolean(!s.getValBoolean());
-                        if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                    for (Setting s : settingsManager.getSettings()) {
+                        if(s.isCombo()) {
+                            for(String option : s.binders.keySet()) {
+                                Binder binder = s.binders.get(option);
+                                if(binder.getKeyboardKey() == keyCode && binder.getType() == BindType.Keyboard) {
+                                    s.setValString(option);
+                                    if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + s.toDisplayString() + " has been changed to " + option + "!");
+                                }
+                            }
+                        } else if(s.getKeyboardKey() == keyCode && s.bindType == BindType.Keyboard && s.isCheck()) {
+                            s.setValBoolean(!s.getValBoolean());
+                            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.toDisplayString()/*s.getParentMod().getName() + "->" + s.getName()*/ + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                        }
                     }
                 } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey(), false);
             }
@@ -243,9 +254,19 @@ public class Kisman {
                     if (button <= 1) return;
                     for (Module m : moduleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
                     for (HudModule m : hudModuleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == button && s.getType() == BindType.Mouse && s.isCheck()) {
-                        s.setValBoolean(!s.getValBoolean());
-                        if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                    for (Setting s : settingsManager.getSettings()) {
+                        if(s.isCombo()) {
+                            for(String option : s.binders.keySet()) {
+                                Binder binder = s.binders.get(option);
+                                if(IBindable.Companion.getKey(s) == button && binder.getType() == BindType.Mouse) {
+                                    s.setValString(option);
+                                    if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + s.toDisplayString() + " has been changed to " + option + "!");
+                                }
+                            }
+                        } else if(IBindable.Companion.getKey(s) == button && s.getType() == BindType.Mouse && s.isCheck()) {
+                            s.setValBoolean(!s.getValBoolean());
+                            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!");
+                        }
                     }
                 } else if(Mouse.getEventButton() > 1) onRelease(Mouse.getEventButton(), true);
             }

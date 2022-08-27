@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.client;
 
-import com.kisman.cc.RPC;
+import com.kisman.cc.features.rpc.RPC;
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.enums.RPCImages;

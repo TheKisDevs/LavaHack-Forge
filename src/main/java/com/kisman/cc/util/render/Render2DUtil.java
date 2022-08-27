@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.AbstractObject;
 import com.kisman.cc.util.render.objects.screen.ObjectWithGlow;
@@ -30,6 +31,70 @@ import static org.lwjgl.opengl.GL11.*;
 public class Render2DUtil extends GuiScreen {
     public static Render2DUtil instance = new Render2DUtil();
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static void renderItemOverlayIntoGUI(int xPosition, int yPosition, String s) {
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.disableBlend();
+        CustomFontUtil.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - CustomFontUtil.getStringWidth(s)), (float) (yPosition + 6 + 3), new Color(255, 255, 255, 255).hashCode());
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+    }
+
+    public static void drawGradientSidewaysWH(
+            double x,
+            double y,
+            double width,
+            double height,
+            int col1,
+            int col2
+    ) {
+        drawGradientSideways(
+                x,
+                y,
+                x + width,
+                y + height,
+                col1,
+                col2
+        );
+    }
+
+    //By noat#8700
+    public static void drawGradientSideways(
+            double left,
+            double top,
+            double right,
+            double bottom,
+            int col1,
+            int col2
+    ) {
+        float f = (col1 >> 24 & 0xFF) / 255.0f;
+        float f2 = (col1 >> 16 & 0xFF) / 255.0f;
+        float f3 = (col1 >> 8 & 0xFF) / 255.0f;
+        float f4 = (col1 & 0xFF) / 255.0f;
+        float f5 = (col2 >> 24 & 0xFF) / 255.0f;
+        float f7 = (col2 >> 8 & 0xFF) / 255.0f;
+        float f8 = (col2 & 0xFF) / 255.0f;
+        float f6 = (col2 >> 16 & 0xFF) / 255.0f;
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glShadeModel(7425);
+        GL11.glPushMatrix();
+        GL11.glBegin(7);
+        GL11.glColor4f(f2, f3, f4, f);
+        GL11.glVertex2d(left, top);
+        GL11.glVertex2d(left, bottom);
+        GL11.glColor4f(f6, f7, f8, f5);
+        GL11.glVertex2d(right, bottom);
+        GL11.glVertex2d(right, top);
+        GL11.glEnd();
+        GL11.glPopMatrix();
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+    }
     
     public static void drawFace(
             EntityPlayer player,
@@ -72,15 +137,34 @@ public class Render2DUtil extends GuiScreen {
                     alpha
             );
             Gui.drawScaledCustomSizeModalRect(
-                    x, 
-                    y, 
-                    8.0F, 
-                    8, 
-                    8, 
-                    8, 
-                    width, 
-                    height, 
-                    64.0F, 
+                    x,
+                    y,
+                    8.0F,
+                    8,
+                    8,
+                    8,
+                    width,
+                    height,
+                    64.0F,
+                    64.0F
+            );
+            mc.getTextureManager().bindTexture(mc.player.connection.getPlayerInfo(player.getName()).getLocationSkin());
+            GL11.glColor4f(
+                    red,
+                    green,
+                    blue,
+                    alpha
+            );
+            Gui.drawScaledCustomSizeModalRect(
+                    x,
+                    y,
+                    8.0F,
+                    8,
+                    40,
+                    8,
+                    width,
+                    height,
+                    64.0F,
                     64.0F
             );
             GL11.glPopMatrix();
@@ -89,7 +173,8 @@ public class Render2DUtil extends GuiScreen {
         }
     }
 
-    public float getZLevel() {return this.zLevel;}
+    public float getZLevel() { return this.zLevel; }
+    public void setZLevel(float zLevel) { this.zLevel = zLevel; }
 
     public static void disableGL2D() {
         GL11.glEnable(3553);

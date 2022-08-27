@@ -22,9 +22,10 @@ import java.util.Collections;
 
 public class Frame {
     //vars
-    public final ArrayList<Component> mods = new ArrayList<>();
+    public final ArrayList<Component> components = new ArrayList<>();
     public final Category cat;
-    public final boolean hud;
+    public final boolean customName;
+    public final String name;
     public int x, y, count = 0;
     public boolean reloading = false;
 
@@ -32,16 +33,31 @@ public class Frame {
     public boolean dragging, open = true;
     public int dragX, dragY;
 
-    public Frame(Category cat, int x, int y, boolean notFullInit) {
+    public Frame(
+            Category cat,
+            int x,
+            int y,
+            boolean notFullInit
+    ) {
         this.cat = cat;
-        this.hud = false;
+        this.customName = false;
+        this.name = "";
         this.x = x;
         this.y = y;
     }
 
-    public Frame(int x, int y) {
+    public Frame(Category cat, int x, int y, boolean notFullInit, String name) {
+        this.cat = cat;
+        this.customName = true;
+        this.name = name;
+        this.x = x;
+        this.y = y;
+    }
+
+    public Frame(int x, int y, String name) {
         this.cat = null;
-        this.hud = true;
+        this.customName = true;
+        this.name = name;
         this.x = x;
         this.y = y;
 
@@ -49,33 +65,34 @@ public class Frame {
         int count1 = 0;
 
         for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
-            mods.add(new Button(mod, x, y, offsetY, count1++));
+            components.add(new Button(mod, x, y, offsetY, count1++));
             offsetY += HalqGui.height;
         }
     }
 
     public Frame(Category cat, int x, int y) {
-        this.hud = false;
+        this.customName = false;
+        this.name = "";
 
         int offsetY = HalqGui.height;
         int count1 = 0;
 
         if(!cat.equals(Category.LUA)) {
             for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                mods.add(new Button(mod, x, y, offsetY, count1++));
+                components.add(new Button(mod, x, y, offsetY, count1++));
                 offsetY += HalqGui.height;
             }
         } else {
             if(!Kisman.instance.scriptManager.scripts.isEmpty()) {
                 for (Module script : Kisman.instance.scriptManager.scripts) {
-                    mods.add(new Button(script, x, y, offsetY, count1++));
+                    components.add(new Button(script, x, y, offsetY, count1++));
                     offsetY += HalqGui.height;
                 }
             }
 
             for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
                 if(mod instanceof ModulePlugin)
-                mods.add(new Button(mod, x, y, offsetY, count1++));
+                components.add(new Button(mod, x, y, offsetY, count1++));
                 offsetY += HalqGui.height;
             }
         }
@@ -87,25 +104,25 @@ public class Frame {
 
     public void reload() {
         reloading = true;
-        mods.clear();
+        components.clear();
 
         int offsetY = HalqGui.height;
         int count1 = 0;
 
-        if(hud) {
+        if(customName) {
             for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
-                mods.add(new Button(mod, x, y, offsetY, count1++));
+                components.add(new Button(mod, x, y, offsetY, count1++));
                 offsetY += HalqGui.height;
             }
         } else {
             if (!cat.equals(Category.LUA)) {
                 for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                    mods.add(new Button(mod, x, y, offsetY, count1++));
+                    components.add(new Button(mod, x, y, offsetY, count1++));
                     offsetY += HalqGui.height;
                 }
             } else {
                 for (Module script : Kisman.instance.scriptManager.scripts) {
-                    mods.add(new Button(script, x, y, offsetY, count1++));
+                    components.add(new Button(script, x, y, offsetY, count1++));
                     offsetY += HalqGui.height;
                 }
             }
@@ -128,12 +145,12 @@ public class Frame {
             if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30)));
         }
 
-        HalqGui.drawString((hud ? "Hud Editor" : cat.getName()), x, y, HalqGui.width, HalqGui.height);
+        HalqGui.drawString((customName ? name : cat.getName()), x, y, HalqGui.width, HalqGui.height);
 
         if(Config.instance.guiRenderSize.getValBoolean()) {
             HalqGui.drawSuffix(
-                    "[" + mods.size() + "]",
-                    (hud ? "Hud Editor" : cat.getName()),
+                    "[" + components.size() + "]",
+                    (customName ? name : cat.getName()),
                     x,
                     y,
                     HalqGui.width,
@@ -159,11 +176,13 @@ public class Frame {
 
             if(openable.isOpen()) {
                 for(Component comp : openable.getComponents()) {
-                    doIterationRenderPost(
-                            comp,
-                            mouseX,
-                            mouseY
-                    );
+                    if(comp.visible()) {
+                        doIterationRenderPost(
+                                comp,
+                                mouseX,
+                                mouseY
+                        );
+                    }
                 }
             }
         }
@@ -171,7 +190,7 @@ public class Frame {
 
     public void renderPost(int mouseX, int mouseY) {
         if(open) {
-            for(Component comp : mods) {
+            for(Component comp : components) {
                 doIterationRenderPost(
                         comp,
                         mouseX,
@@ -182,7 +201,7 @@ public class Frame {
     }
 
     public void veryRenderPost(int mouseX, int mouseY) {
-        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : mods) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
+        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
     }
 
     private int[] doRefreshIteration(ArrayList<Component> components, int[] data) {
@@ -215,15 +234,15 @@ public class Frame {
         int offsetY = HalqGui.height;
         int count1 = count + 1;
 
-        for(Component comp : mods) {
+        for(Component comp : components) {
             comp.setOff(offsetY);
             comp.setCount(count1);
             offsetY += HalqGui.height;
             count1++;
-            if(comp instanceof Button) {
-                Button button = (Button) comp;
-                if(button.open) {
-                    int[] data = doRefreshIteration(button.comps, new int[] {offsetY, count1});
+            if(comp instanceof Openable) {
+                Openable button = (Openable) comp;
+                if(button.isOpen()) {
+                    int[] data = doRefreshIteration(button.getComponents(), new int[] {offsetY, count1});
                     offsetY = data[0];
                     count1 = data[1];
                 }

@@ -13,12 +13,16 @@ import com.kisman.cc.util.render.objects.screen.Vec4d;
 import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
+import java.util.function.BooleanSupplier;
+
 public class BindButton implements Component {
     private final IBindable bindable;
     private int x, y, offset, count;
     private boolean changing;
     private int width = HalqGui.width;
     private int layer;
+
+    public BooleanSupplier visibleSupplier = null;
 
     public BindButton(IBindable bindable, int x, int y, int offset, int count, int layer) {
         this.bindable = bindable;
@@ -28,6 +32,14 @@ public class BindButton implements Component {
         this.count = count;
         this.layer = layer;
         this.width = LayerControllerKt.getModifiedWidth(layer, width);
+    }
+
+    public BindButton setVisible(
+            BooleanSupplier visible
+    ) {
+        this.visibleSupplier = visible;
+
+        return this;
     }
 
     @Override
@@ -95,7 +107,7 @@ public class BindButton implements Component {
         return HalqGui.height;
     }
 
-    public boolean visible() {return !(bindable instanceof Setting) || ((Setting) bindable).isVisible();}
+    public boolean visible() { return visibleSupplier != null ? visibleSupplier.getAsBoolean() : (!(bindable instanceof Setting) || ((Setting) bindable).isVisible()); }
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}

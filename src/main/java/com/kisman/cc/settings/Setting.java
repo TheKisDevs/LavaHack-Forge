@@ -2,6 +2,7 @@ package com.kisman.cc.settings;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
+import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.IBindable;
@@ -9,14 +10,13 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.ColourUtilKt;
+import com.kisman.cc.util.UtilityKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Setting implements IBindable {
@@ -67,6 +67,8 @@ public class Setting implements IBindable {
 
 	private NumberType numberType = NumberType.DECIMAL;
 
+	public final HashMap<String, Binder> binders = new HashMap<>();
+
 	public Setting(String type) {mode = type;}
 
 	public Setting(String name, Module parent, int key) {
@@ -88,17 +90,6 @@ public class Setting implements IBindable {
 		this.mode = "String";
 	}
 
-	public Setting(String name, Module parent, String sval, String dString, boolean opening, boolean onlyOneWord) {
-		this.name = name;
-		this.parent = parent;
-		this.title = name;
-		this.sval = sval;
-		this.dString = dString;
-		this.onlyOneWord = onlyOneWord;
-		this.onlyNumbers = false;
-		this.mode = "String";
-	}
-
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
 		this.parent = parent;
@@ -107,6 +98,7 @@ public class Setting implements IBindable {
 		this.options = options;
 		this.optionEnum = null;
 		this.mode = "Combo";
+		setupBinders(options);
 	}
 
 	public Setting(String name, Module parent, String sval, List<String> options){
@@ -117,9 +109,10 @@ public class Setting implements IBindable {
 		this.options = new ArrayList<>(options);
 		this.optionEnum = null;
 		this.mode = "Combo";
+		setupBinders(options);
 	}
 
-	public Setting(String name, Module parent, Enum options){
+	public Setting(String name, Module parent, Enum<?> options){
 		this.name = name;
 		this.parent = parent;
 		this.title = name;
@@ -128,6 +121,9 @@ public class Setting implements IBindable {
 		this.optionEnum = options;
 		this.enumCombo = true;
 		this.mode = "Combo";
+		setupBinders(
+				Arrays.asList(Arrays.stream(options.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new))
+		);
 	}
 	
 	public Setting(String name, Module parent, boolean bval){
@@ -206,6 +202,21 @@ public class Setting implements IBindable {
 		return this;
 	}
 
+	private void setupBinders(List<String> options) {
+		for(String option : options) {
+			binders.put(
+					option,
+					new Binder(
+							option,
+							BindType.Keyboard,
+							-1,
+							-1,
+							false
+					)
+			);
+		}
+	}
+
 	public Setting setDisplayInfo(String displayInfo) {
 		return setDisplayInfo(() -> displayInfo);
 	}
@@ -214,9 +225,9 @@ public class Setting implements IBindable {
 		return haveDisplayInfo ? displayInfoSupplier.get() : "";
 	}
 
-	public Enum getEnumByName() {
+	public Enum<?> getEnumByName() {
 		if(optionEnum == null) return null;
-		Enum enumVal = optionEnum;
+		Enum<?> enumVal = optionEnum;
 		String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
 		return Enum.valueOf(enumVal.getClass(), values[index]);
 	}
@@ -625,4 +636,31 @@ public class Setting implements IBindable {
 	public Supplier<Enum<?>> getSupplierEnum() {return this::getValEnum;}
 	public Supplier<Boolean> getSupplierBoolean() {return () -> bval;}
 
+	private ArrayList<String> doIterationDisplayString(Setting setting) {
+		ArrayList<String> result = new ArrayList<>();
+
+		result.add("->" + setting.getName());
+
+		if(setting.parent_ != null) {
+			result.addAll((doIterationDisplayString(setting.parent_)));
+		}
+
+		return result;
+	}
+
+	public String toDisplayString() {
+		String message = getParentMod().getName();
+
+		if(parent_ != null) {
+			ArrayList<String> elements = doIterationDisplayString(parent_);
+
+			Collections.reverse(elements);
+
+			message += UtilityKt.toString(elements);
+		}
+
+		message += "->" + getName();
+
+		return message;
+	}
 }

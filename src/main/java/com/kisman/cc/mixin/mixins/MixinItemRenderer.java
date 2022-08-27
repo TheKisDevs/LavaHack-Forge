@@ -107,15 +107,15 @@ public class MixinItemRenderer {
             }
         }
 
-        if(SwingTest.INSTANCE.toggled) {
-            SwingTest.INSTANCE.rotateItems(hand, lastSwingProgress);
-        }
-
         GlStateManager.translate(translate.x, translate.y, translate.z);
         GlStateManager.scale(scale.x, scale.y, scale.z);
         GlStateManager.rotate((float) rotate.x, 1, 0, 0);
         GlStateManager.rotate((float) rotate.y, 0, 1, 0);
         GlStateManager.rotate((float) rotate.z, 0, 0, 1);
+
+        if(SwingTest.INSTANCE.toggled) {
+            SwingTest.INSTANCE.renderItems(hand, lastSwingProgress);
+        }
     }
 
     @Redirect(method = "setLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/entity/EntityPlayerSP;"))

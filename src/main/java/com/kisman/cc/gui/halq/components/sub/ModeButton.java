@@ -2,42 +2,83 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.HalqGui;
+import com.kisman.cc.gui.halq.components.sub.combobox.OptionElement;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
+import org.jetbrains.annotations.NotNull;
 
-public class ModeButton implements Component {
-    private final Setting setting;
-    private int x, y, offset, index, count;
+import java.util.ArrayList;
+
+public class ModeButton implements Openable {
+    public final Setting setting;
+    public OptionElement selected;
+    private int x, y, offset, count;
     public boolean open;
-    private final String[] values;
+    private int elements = 0;//0 - closed | 1 - options | 2 - binds
     private int width = HalqGui.width;
     private int layer;
+
+    private final ArrayList<Component> components = new ArrayList<>();
 
     public ModeButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
         this.x = x;
         this.y = y;
         this.offset = offset;
-        this.values = setting.getStringValues();
-        this.index = setting.getSelectedIndex();
         this.count = count;
         this.layer = layer;
         this.width = LayerControllerKt.getModifiedWidth(layer, width);
+
+        int i = 0;
+        int offsetY = offset + HalqGui.height;
+        int count1 = 0;
+
+        for(String option : setting.binders.keySet()) {
+            count1++;
+
+            OptionElement element = new OptionElement(
+                    this,
+                    setting.binders.get(option),
+                    option,
+                    i,
+                    () -> open && (elements == 1),
+                    x,
+                    y,
+                    offsetY,
+                    count1,
+                    layer + 1
+            );
+
+            components.add(element);
+
+            components.add(
+                    new BindButton(
+                            setting.binders.get(option),
+                            x,
+                            y,
+                            offsetY,
+                            count1,
+                            layer + 1
+                    ).setVisible(() -> open && (elements == 2))
+            );
+
+            offsetY += HalqGui.height;
+
+            i++;
+        }
+
+        selected = (OptionElement) components.stream().filter(component -> component instanceof OptionElement && ((OptionElement) component).getName().equals(setting.getValString())).findFirst().orElse(components.get(0));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        this.index = setting.getSelectedIndex();
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
-
-        if(open) {
-            Render2DUtil.drawRectWH(x + 5, y + HalqGui.height + offset, width - 10, getHeight() - HalqGui.height, HalqGui.backgroundColor.getRGB());
-        }
 
         if(HalqGui.shadowCheckBox) {
             Render2DUtil.drawAbstract(
@@ -66,34 +107,50 @@ public class ModeButton implements Component {
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());
 
-        HalqGui.drawString(setting.getTitle() + ": " + values[index], x, y + offset, width, HalqGui.height);
+        HalqGui.drawString(setting.getTitle() + ": " + selected.getName(), x, y + offset, width, HalqGui.height);
 
         if(open) {
-            int offsetY = offset + HalqGui.height;
-            for(int i = 0; i < values.length; i++) {
-                if(i == index) continue;
-                HalqGui.drawCenteredString(values[i], x, y + offsetY, width, HalqGui.height);
-                offsetY += HalqGui.height;
+            for(Component component : components) {
+                if(component.visible()) {
+                    component.drawScreen(
+                            mouseX,
+                            mouseY
+                    );
+                }
             }
         }
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) open = !open;
-        else if(isMouseOnButton2(mouseX, mouseY) && button == 0 && open) {
-            int offsetY = y +  offset + HalqGui.height;
-            for(int i = 0; i < values.length; i++) {
-                if(i == index) continue;
+        if(isMouseOnButton(mouseX, mouseY)) {
+            open = !open;
 
-                if(mouseY >= offsetY && mouseY <= offsetY + HalqGui.height) {
-                    index = i;
-                    open = false;
-                    setting.setValString(values[i]);
-                    setting.setIndex(i);
-                    break;
+            if(button == 0) elements = 1;
+            else if(button == 1) elements = 2;
+        } else if(isMouseOnButton2(mouseX, mouseY) && open) {
+            for(Component component : components) {
+                if(component.visible()) {
+                    component.mouseClicked(
+                            mouseX,
+                            mouseY,
+                            button
+                    );
                 }
-                offsetY += HalqGui.height;
+            }
+        }
+    }
+
+    @Override
+    public void keyTyped(char typedChar, int key) {
+        if(elements == 2) {
+            for (Component component : components) {
+                if (component.visible()) {
+                    component.keyTyped(
+                            typedChar,
+                            key
+                    );
+                }
             }
         }
     }
@@ -102,6 +159,17 @@ public class ModeButton implements Component {
     public void updateComponent(int x, int y) {
         this.x = x;
         this.y = y;
+
+        if(open) {
+            for(Component component : components) {
+                if(component.visible()) {
+                    component.updateComponent(
+                            (x - LayerControllerKt.getXOffset(layer)) + LayerControllerKt.getXOffset(component.getLayer()),
+                            y
+                    );
+                }
+            }
+        }
     }
 
     @Override
@@ -109,9 +177,18 @@ public class ModeButton implements Component {
         this.offset = newOff;
     }
 
-    @Override
-    public int getHeight() {
-        return HalqGui.height + (open ? (values.length - 1) * HalqGui.height : 0);
+    private int getHeight1() {
+        int height1 = 0;
+
+        if(open) {
+            for(Component component : components) {
+                if(component.visible()) {
+                    height1 += component.getHeight();
+                }
+            }
+        }
+
+        return HalqGui.height + height1;
     }
 
     public boolean visible() {return setting.isVisible();}
@@ -129,7 +206,7 @@ public class ModeButton implements Component {
     }
 
     private boolean isMouseOnButton2(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + getHeight();
+        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + getHeight1();
     }
 
     @Override
@@ -140,5 +217,16 @@ public class ModeButton implements Component {
     @Override
     public int getY() {
         return y + offset;
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open;
+    }
+
+    @NotNull
+    @Override
+    public ArrayList<Component> getComponents() {
+        return components;
     }
 }

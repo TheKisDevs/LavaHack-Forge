@@ -32,7 +32,7 @@ interface IBindable {
 
         fun getName(bindable : IBindable) : String {
             return when(bindable.getType()) {
-                BindType.Keyboard -> Keyboard.getKeyName(bindable.getKeyboardKey())
+                BindType.Keyboard -> if(bindable.getKeyboardKey() == -1) "NONE" else Keyboard.getKeyName(bindable.getKeyboardKey())
                 BindType.Mouse -> "Button_${bindable.getMouseButton()}"
             }
         }

@@ -1,6 +1,5 @@
 package com.kisman.cc.pingbypass.server.gui
 
-import com.kisman.cc.Kisman
 import com.kisman.cc.gui.halq.Frame
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.Button
@@ -25,7 +24,7 @@ class PingBypassFrame(
         var offsetY = HalqGui.height
 
         for ((count1, mod) in PingBypassModuleManager.getModulesByCategory(cat).withIndex()) {
-            mods.add(Button(mod, x, y, offsetY, count1))
+            components.add(Button(mod, x, y, offsetY, count1))
             offsetY += HalqGui.height
         }
     }

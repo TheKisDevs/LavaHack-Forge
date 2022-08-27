@@ -1,5 +1,6 @@
-package com.kisman.cc.gui.halq.components.sub.hud
+package com.kisman.cc.gui.hudeditor
 
+import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
@@ -26,7 +27,7 @@ class DraggableBox(
 
             DraggableCoordsFixer.fix(module)
 
-            Render2DUtil.drawRectWH(module.getX(), module.getY(), module.getW(), module.getH(), Color(10, 10, 10, 170).rgb)
+            Render2DUtil.drawRectWH(module.getX(), module.getY(), module.getW(), module.getH(), Kisman.instance.halqHudGui.color.rgb)
         } else {
             drag = false
         }

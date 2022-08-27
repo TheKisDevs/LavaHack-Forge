@@ -74,3 +74,15 @@ fun toUrl(uri : URI) : URL? {
 fun sr() : ScaledResolution {
     return ScaledResolution(mc)
 }
+
+fun toString(
+    list : List<Any>
+) : String {
+    var string = ""
+
+    for(element in list) {
+        string += element.toString()
+    }
+
+    return string
+}

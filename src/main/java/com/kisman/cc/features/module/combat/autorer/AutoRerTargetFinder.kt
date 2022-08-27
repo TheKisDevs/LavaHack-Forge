@@ -85,21 +85,12 @@ class AutoRerTargetFinder(
                     autoRer.firePlace.valBoolean
                 )
             ) {
-                val targetDamage = CrystalUtils.calculateDamage(
-                    mc.world,
-                    pos.x + 0.5,
-                    (pos.y + 1).toDouble(),
-                    pos.z + 0.5,
-                    AutoRer.currentTarget,
-                    autoRer.terrain.valBoolean
-                )
-
                 maxDamage = maxDamage.max(CrystalUtils.calculateDamage(
                     mc.world,
                     pos.x + 0.5,
                     (pos.y + 1).toDouble(),
                     pos.z + 0.5,
-                    AutoRer.currentTarget,
+                    player,
                     autoRer.terrain.valBoolean
                 ))
 

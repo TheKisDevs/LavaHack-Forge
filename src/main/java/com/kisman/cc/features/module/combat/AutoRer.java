@@ -217,7 +217,7 @@ public class AutoRer extends Module {
     private final TimerUtils fromPlaceToBreakTimer = new TimerUtils();
     private final TimerUtils fromBreakToPlaceTimer = new TimerUtils();
     private final TimerUtils calcTimer = new TimerUtils();
-    private final TimerUtils renderTimer = new TimerUtils();
+    private final TimerUtils clearTimer = new TimerUtils();
     private final TimerUtils predictTimer = new TimerUtils();
     private final TimerUtils manualTimer = new TimerUtils();
     private final TimerUtils synsTimer = new TimerUtils();
@@ -270,13 +270,13 @@ public class AutoRer extends Module {
         breakTimer.reset();
         fromPlaceToBreakTimer.reset();
         fromBreakToPlaceTimer.reset();
-        renderTimer.reset();
+        clearTimer.reset();
         predictTimer.reset();
         manualTimer.reset();
         currentTarget = null;
         rotating = false;
         renderPos = null;
-        lastBroken = false;
+        lastBroken = true;
     }
 
     public void onDisable() {
@@ -337,9 +337,10 @@ public class AutoRer extends Module {
     public void update() {
         if(mc.player == null || mc.world == null || mc.isGamePaused) return;
 
-        if(renderTimer.passedMillis(clearDelay.getValLong())) {
+        if(clearTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
-            renderTimer.reset();
+            clearTimer.reset();
+            lastBroken = true;
         }
 
         AutoRerUtil.Companion.getTargetFinder().update();
@@ -817,12 +818,16 @@ public class AutoRer extends Module {
         this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
     }
 
+    private boolean placeStrictSync() {
+        return syncMode.getValEnum() == SyncMode.StrictFull && !lastBroken;
+    }
+
     public boolean isPosValid(BlockPos pos) {
         return mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) <= (EntityUtil.canSee(pos) ?  placeRange.getValDouble() : placeWallRange.getValDouble());
     }
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
-        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean())) return;
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean() || placeStrictSync())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
         if(placePos == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (syns.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
@@ -965,11 +970,15 @@ public class AutoRer extends Module {
         return crystal == null ? null : new BreakInfo((EntityEnderCrystal) crystal, selfDamage_, maxDamage, false);
     }
 
+    private boolean breakStrictSync() {
+        return (syncMode.getValEnum() == SyncMode.Strict || syncMode.getValEnum() == SyncMode.StrictFull) && lastBroken;
+    }
+
     private void doBreak() {
         if(
                 !break_.getValBoolean()
                         || !getTimer(true).passedMillis(getDelay(true))
-                        || (syncMode.getValEnum() == SyncMode.Strict && lastBroken)
+                        || breakStrictSync()
         ) return;
 
         AtomicReference<BreakInfo> crystal = new AtomicReference<>();
@@ -1065,7 +1074,6 @@ public class AutoRer extends Module {
     public enum ThreadMode {None, Pool, Sound, While}
     public enum Render {None, Default, Advanced}
     public enum Rotate {Off, Place/*, Break, All*/}
-    public enum Raytrace {None, Place, Break, Both}
     public enum SwitchMode {None, Normal, Silent}
     public enum SwingMode {MainHand, OffHand, PacketSwing, None}
     public enum SwingLogic {Pre, Post}
@@ -1076,7 +1084,7 @@ public class AutoRer extends Module {
     public enum BreakPriority {Damage, CevBreaker}
     public enum DelayMode {Default, FromTo}
     public enum TimingMode {Sequential, Adaptive}
-    public enum SyncMode {None, Merge, Strict}
+    public enum SyncMode {None, Merge, Strict, StrictFull}
     public enum MultiPlaceMode {None, Stupid, Smart}
     public enum FacePlaceMode {None, Stupid, Smart}
     public enum DamageSyncMode {None, Stupid, Smart}

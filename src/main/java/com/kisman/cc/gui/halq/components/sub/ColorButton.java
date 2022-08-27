@@ -1,16 +1,15 @@
 package com.kisman.cc.gui.halq.components.sub;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
 
@@ -140,7 +139,7 @@ public class ColorButton implements Component {
     }
 
     @Override
-    public int getHeight() {
+    public int getRawHeight() {
         return HalqGui.height + (open ? height : 0);
     }
 

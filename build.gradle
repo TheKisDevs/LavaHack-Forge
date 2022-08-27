@@ -102,7 +102,6 @@ dependencies {
     }
     compile group: 'net.jodah', name: 'typetools', version: '0.6.3'
     compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
-    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
     compile group: 'org.yaml', name: 'snakeyaml', version: '1.19'
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'

@@ -11,7 +11,7 @@ public interface Component {
     default void keyTyped(char typedChar, int key) { }
     default void setOff(int newOff) { }
     default void setCount(int count) { }
-    default int getHeight() { return 0; }
+    default int getHeight() { return getRawHeight(); }
     default int getRawHeight() { return HalqGui.height; }
     default int getCount() { return 0; }
     default void setWidth(int width) { }
