@@ -78,11 +78,11 @@ public class CGLA {
     }
 
     public static <T extends Number> void vertex2D(Vertex2D<T> vertex){
-        buf.pos((double) vertex.getX(), (double) vertex.getY(), 0.0).color(vertex.getColor().getRed(), vertex.getColor().getGreen(), vertex.getColor().getBlue(), vertex.getColor().getAlpha());
+        buf.pos((Double) vertex.getX(), (Double) vertex.getY(), 0.0).color(vertex.getColor().getRed(), vertex.getColor().getGreen(), vertex.getColor().getBlue(), vertex.getColor().getAlpha());
     }
 
     public static <T extends Number> void vertex3D(Vertex3D<T> vertex){
-        buf.pos((double) vertex.getX(), (double) vertex.getY(), (double) vertex.getZ()).color(vertex.getColor().getRed(), vertex.getColor().getGreen(), vertex.getColor().getBlue(), vertex.getColor().getAlpha());
+        buf.pos((Double) vertex.getX(), (Double) vertex.getY(), (Double) vertex.getZ()).color(vertex.getColor().getRed(), vertex.getColor().getGreen(), vertex.getColor().getBlue(), vertex.getColor().getAlpha());
     }
 
     public static Color color(int r, int g, int b){

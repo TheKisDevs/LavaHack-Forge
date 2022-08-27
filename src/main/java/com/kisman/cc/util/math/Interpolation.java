@@ -1,5 +1,7 @@
 package com.kisman.cc.util.math;
 
+import net.minecraft.client.Minecraft;
+
 public class Interpolation {
 
     public static final float ALMOST_ZERO = 1.e-4f;
