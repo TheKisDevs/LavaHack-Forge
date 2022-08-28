@@ -10,6 +10,10 @@ public class Interpolation {
         return Math.abs(value) <= tolerance;
     }
 
+    public static boolean isAlmostZero(double value, double tolerance){
+        return Math.abs(value) <= tolerance;
+    }
+
     public static float interpolateTo(float current, float target, float deltaTime, float speed){
         if(speed <= 0.0f)
             return target;

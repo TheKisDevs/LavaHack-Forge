@@ -156,6 +156,16 @@ public class BoundingBox {
         return this;
     }
 
+    public BoundingBox scaleNew(double x, double y, double z){
+        Vec3d center = getCenter();
+        double cx = center.x;
+        double cy = center.y;
+        double cz = center.z;
+        BoundingBox boundingBox = new BoundingBox(cx, cy, cz, cx, cy, cz);
+        boundingBox.grow(x * 0.5, y * 0.5, z * 0.5);
+        return boundingBox;
+    }
+
     public boolean intersects(BoundingBox boundingBox){
         return toAABB().intersects(boundingBox.toAABB());
     }

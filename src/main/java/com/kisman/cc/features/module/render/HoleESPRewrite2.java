@@ -4,9 +4,11 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.math.Interpolation;
+import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.cubic.ModulePrefixRenderPattern;
@@ -15,11 +17,11 @@ import com.kisman.cc.util.render.cubic.RenderPattern;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class HoleESPRewrite2 extends Module {
@@ -49,9 +51,11 @@ public class HoleESPRewrite2 extends Module {
 
     private final Setting fadeIn = register(new Setting("FadeIn", this, false));
     private final Setting fadeInTicks = register(new Setting("FadeInTicks", this, 200, 0, 500, true));
+    private final Setting fadeInCool = register(new Setting("FadeInCool", this, false));
 
     private final Setting fadeOut = register(new Setting("FadeOut", this, false));
     private final Setting fadeOutTicks = register(new Setting("FadeOutTicks", this, 200, 0, 500, true));
+    private final Setting fadeOutCool = register(new Setting("FadeOutCool", this, false));
 
     private static final Comparator<BoundingBox> comparator = (o1, o2) -> Double.compare(mc.player.getDistanceSq(o2.getCenter().x, o2.getCenter().y, o2.getCenter().z), mc.player.getDistanceSq(o1.getCenter().x, o1.getCenter().y, o1.getCenter().z));
 
@@ -77,6 +81,9 @@ public class HoleESPRewrite2 extends Module {
     @Override
     public void onDisable(){
         super.onDisable();
+        map.clear();
+        newHoles.clear();
+        oldHoles.clear();
     }
 
     @SubscribeEvent
@@ -109,40 +116,78 @@ public class HoleESPRewrite2 extends Module {
     }
 
     private void doHoleESP() {
-        for(Map.Entry<BoundingBox, Type> entry : map.entrySet()){
-            BoundingBox bb = entry.getKey();
-            Type type = entry.getValue();
-            RenderBuilder renderBuilder = renderBuilderFor(type);
-            renderBuilder.pos(bb).render();
-        }
+        Map<BoundingBox, Type> renderNormally = new TreeMap<>(comparator);
+        renderNormally.putAll(map);
+        Map<Bind<BoundingBox, Type>, Double> requestAdd = new TreeMap<>(comparatorBind);
         if(fadeIn.getValBoolean()){
             Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
             for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : newHoles.entrySet()){
+                Vec3d vec3d = entry.getKey().getFirst().getCenter();
+                boolean canAdd = true;
+                if(mc.player.getDistance(vec3d.x, vec3d.y, vec3d.z) > range.getValDouble()){
+                    requestAdd.put(entry.getKey(), entry.getValue());
+                    canAdd = false;
+                }
+                if(checkCompleted(entry.getValue(), true)){
+                    renderNormally.put(entry.getKey().getFirst(), entry.getKey().getSecond());
+                    continue;
+                }
                 BoundingBox bb = entry.getKey().getFirst();
                 double diffX = bb.maxX - bb.minX;
                 double diffY = bb.maxY - bb.minY;
                 double diffZ = bb.maxZ - bb.minZ;
-                BoundingBox boundingBox = new BoundingBox(bb.scale(entry.getValue() * diffX, entry.getValue() * diffY, entry.getValue() * diffZ).toAABB());
+                BoundingBox boundingBox = bb.scaleNew(entry.getValue() * diffX, entry.getValue() * diffY, entry.getValue() * diffZ);
                 RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
                 renderBuilder.pos(boundingBox).render();
-                newMap.put(entry.getKey(), entry.getValue() + (1.0 / fadeInTicks.getValDouble()));
+                //ChatUtility.info().printClientModuleMessage("Double: " + entry.getValue().toString()); // for debug only
+                double newDouble;
+                if(fadeInCool.getValBoolean())
+                    newDouble = MathUtil.lerp(entry.getValue(), 1.0, 1.0 / fadeInTicks.getValDouble());
+                else
+                    newDouble = entry.getValue() + (1.0 / fadeInTicks.getValDouble());
+                if(canAdd)
+                    newMap.put(entry.getKey(), newDouble);
             }
             newHoles = newMap;
         }
         if(fadeOut.getValBoolean()){
             Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
-            for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : newHoles.entrySet()){
+            for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : oldHoles.entrySet()){
+                if(checkCompleted(entry.getValue(), false))
+                    continue;
                 BoundingBox bb = entry.getKey().getFirst();
                 double diffX = bb.maxX - bb.minX;
                 double diffY = bb.maxY - bb.minY;
                 double diffZ = bb.maxZ - bb.minZ;
-                BoundingBox boundingBox = new BoundingBox(bb.scale(1.0 - (entry.getValue() * diffX), 1.0 - (entry.getValue() * diffY), 1.0 - (entry.getValue() * diffZ)).toAABB());
+                BoundingBox boundingBox = bb.scaleNew(1.0 - (entry.getValue() * diffX), 1.0 - (entry.getValue() * diffY), 1.0 - (entry.getValue() * diffZ));
                 RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
                 renderBuilder.pos(boundingBox).render();
                 newMap.put(entry.getKey(), entry.getValue() + (1.0 / fadeOutTicks.getValDouble()));
             }
             oldHoles = newMap;
+            oldHoles.putAll(requestAdd);
         }
+        for(Map.Entry<BoundingBox, Type> entry : renderNormally.entrySet()) {
+            if (fadeIn.getValBoolean() && newHoles.containsKey(new Bind<>(entry.getKey(), entry.getValue())))
+                continue;
+            if (fadeOut.getValBoolean() && oldHoles.containsKey(new Bind<>(entry.getKey(), entry.getValue())))
+                continue;
+            BoundingBox bb = entry.getKey();
+            Type type = entry.getValue();
+            RenderBuilder renderBuilder = renderBuilderFor(type);
+            renderBuilder.pos(bb).render();
+        }
+    }
+
+    private boolean checkCompleted(double a, boolean fadeIn){
+        if(fadeIn){
+            if(fadeInCool.getValBoolean())
+                return Interpolation.isAlmostZero(1.0 - a, Interpolation.ALMOST_ZERO);
+            return a >= 1.0;
+        }
+        if(fadeOutCool.getValBoolean())
+            return Interpolation.isAlmostZero(1.0 - a, Interpolation.ALMOST_ZERO);
+        return a >= 1.0;
     }
 
     private Map<BoundingBox, Type> getHoles(){
