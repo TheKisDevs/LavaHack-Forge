@@ -1,12 +1,14 @@
 package com.kisman.cc.util.math;
 
-import net.minecraft.client.Minecraft;
-
 public class Interpolation {
 
     public static final float ALMOST_ZERO = 1.e-4f;
 
     public static boolean isAlmostZero(float value, float tolerance){
+        return Math.abs(value) <= tolerance;
+    }
+
+    public static boolean isAlmostZero(double value, double tolerance){
         return Math.abs(value) <= tolerance;
     }
 

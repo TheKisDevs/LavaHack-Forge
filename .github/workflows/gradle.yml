@@ -1,4 +1,4 @@
-name: Gradle Build
+name: Build
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -27,5 +26,5 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: LavaHack
-          path: ./build/libs/*release.jar  
+          name: LavaHack-Public
+          path: ./build/libs/*release.jar
