@@ -119,6 +119,7 @@ public class HoleESPRewrite2 extends Module {
         Map<BoundingBox, Type> renderNormally = new TreeMap<>(comparator);
         renderNormally.putAll(map);
         Map<Bind<BoundingBox, Type>, Double> requestAdd = new TreeMap<>(comparatorBind);
+        Map<Bind<BoundingBox, Type>, Double> requestRenderFadeIn = new TreeMap<>(comparatorBind);
         if(fadeIn.getValBoolean()){
             Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
             for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : newHoles.entrySet()){
@@ -153,6 +154,12 @@ public class HoleESPRewrite2 extends Module {
         if(fadeOut.getValBoolean()){
             Map<Bind<BoundingBox, Type>, Double> newMap = new TreeMap<>(comparatorBind);
             for(Map.Entry<Bind<BoundingBox, Type>, Double> entry : oldHoles.entrySet()){
+                Vec3d vec3d = entry.getKey().getFirst().getCenter();
+                boolean canAdd = true;
+                if(mc.player.getDistance(vec3d.x, vec3d.y, vec3d.z) > range.getValDouble()){
+                    requestRenderFadeIn.put(entry.getKey(), entry.getValue());
+                    canAdd = false;
+                }
                 if(checkCompleted(entry.getValue(), false))
                     continue;
                 BoundingBox bb = entry.getKey().getFirst();
@@ -162,10 +169,18 @@ public class HoleESPRewrite2 extends Module {
                 BoundingBox boundingBox = bb.scaleNew(1.0 - (entry.getValue() * diffX), 1.0 - (entry.getValue() * diffY), 1.0 - (entry.getValue() * diffZ));
                 RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
                 renderBuilder.pos(boundingBox).render();
-                newMap.put(entry.getKey(), entry.getValue() + (1.0 / fadeOutTicks.getValDouble()));
+                double newDouble;
+                if(fadeOutCool.getValBoolean())
+                    newDouble = MathUtil.lerp(entry.getValue(), 1.0, 1.0 / fadeInTicks.getValDouble());
+                else
+                    newDouble = entry.getValue() + (1.0 / fadeInTicks.getValDouble());
+                if(canAdd)
+                    newMap.put(entry.getKey(), newDouble);
             }
             oldHoles = newMap;
             oldHoles.putAll(requestAdd);
+
+            newHoles.putAll(requestRenderFadeIn);
         }
         for(Map.Entry<BoundingBox, Type> entry : renderNormally.entrySet()) {
             if (fadeIn.getValBoolean() && newHoles.containsKey(new Bind<>(entry.getKey(), entry.getValue())))
