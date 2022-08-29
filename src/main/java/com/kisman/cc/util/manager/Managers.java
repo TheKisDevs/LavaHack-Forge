@@ -26,7 +26,7 @@ public class Managers {
     public Managers() {
         instance = this;
 
-        if(!Kisman.allowToConfiguredAnotherClients) {
+        if(!Kisman.bypassAuth) {
             if(!(Minecraft.getMinecraft().currentScreen instanceof AuthGui)) {
                 throw new NullPointerException("Nice try! Retard!");
             }

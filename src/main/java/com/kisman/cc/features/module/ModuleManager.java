@@ -42,6 +42,7 @@ public class ModuleManager {
 		modules.add(ClickCooldownReset.INSTANCE);
 		modules.add(new EventSystemTest());
 		modules.add(new FallbackableFontTest());
+		modules.add(new FastFallTest());
 		modules.add(new FrostWalk());
 		modules.add(new FutureShader());
 		modules.add(new GLScissorTest());

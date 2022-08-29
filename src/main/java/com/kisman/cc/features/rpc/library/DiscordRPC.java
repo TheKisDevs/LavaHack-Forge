@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
  *   <li>Darwin</li>
  * </ul>
  */
-public interface DiscordRPC extends Library
-{
+public interface DiscordRPC extends Library {
     /**
      * Library instance.
      */

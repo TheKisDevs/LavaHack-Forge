@@ -19,7 +19,7 @@ class Shaders : Module(
     private val renderer = ShadersRendererPattern(this).init()
 
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
-        renderer.render(event.partialTicks)
+//        renderer.render(event.partialTicks)
     }
 
     @SubscribeEvent fun onRenderHand(event : RenderHandEvent) {

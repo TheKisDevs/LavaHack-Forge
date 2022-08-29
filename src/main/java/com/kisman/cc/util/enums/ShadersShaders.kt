@@ -143,4 +143,38 @@ enum class ShadersShaders(
             framebuffer.setupUniform(uniform.name)
         }
     }
+
+    class Shader(
+        private val instance : ShadersShaders
+    ) : FramebufferShader(
+        instance.name
+    ) {
+        private var pattern : ShadersRendererPattern? = null
+
+        fun pattern(
+            pattern : ShadersRendererPattern
+        ) : Shader {
+            this.pattern = pattern
+
+            return this
+        }
+
+        override fun setupUniforms() {
+            instance.setupUniforms(
+                pattern!!,
+                this
+            )
+        }
+
+        override fun updateUniforms() {
+            instance.updateUniforms(
+                pattern!!,
+                this
+            )
+        }
+    }
+
+    val shader = Shader(
+        this
+    )
 }

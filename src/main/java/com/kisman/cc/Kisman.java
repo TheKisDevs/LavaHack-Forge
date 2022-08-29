@@ -16,6 +16,8 @@ import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.nocom.NoComModuleManager;
+import com.kisman.cc.features.nocom.gui.NoComGui;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
 import com.kisman.cc.features.rpc.RPC;
@@ -90,18 +92,12 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-
-
-    public static boolean allowToConfiguredAnotherClients, remapped = !runningFromIntelliJ();
+    public static boolean bypassAuth = true, remapped = !runningFromIntelliJ();
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = true;
 
     public static String currentConfig = null;
-
-    static {
-        allowToConfiguredAnotherClients = true;//HWID.getHWID().equals("42d17b8fbbd970b9f4db02f9a65fca3b") || HWID.getHWID().equals("4b7985cf9a97b4a82743c480e337259c");
-    }
 
     public boolean init = false;
 
@@ -110,7 +106,7 @@ public class Kisman {
     public VectorUtils vectorUtils;
 
     public ModuleManager moduleManager;
-    public PingBypassModuleManager pingBypassModuleManager;
+    public NoComModuleManager noComModuleManager;
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
@@ -119,6 +115,7 @@ public class Kisman {
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
     public PingBypassGui pingBypassGui;
+    public NoComGui noComGui;
     public MainGui.SelectionBar selectionBar;
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
@@ -168,11 +165,11 @@ public class Kisman {
         vectorUtils = new VectorUtils();
         pluginManager = new PluginManager();
 
-
         friendManager = new FriendManager();
     	settingsManager = new SettingsManager();
     	moduleManager = new ModuleManager();
         PingBypassModuleManager.INSTANCE.init();
+//        noComModuleManager = new NoComModuleManager();
         hudModuleManager = new HudModuleManager();
         clickGuiNew = new ClickGuiNew();
         consoleGui = new ConsoleGui();
@@ -198,6 +195,7 @@ public class Kisman {
         halqGui = new HalqGui();
         halqHudGui = new HalqHudGui();
         pingBypassGui = new PingBypassGui();
+//        noComGui = new NoComGui();
 
         mainMenuController = new MainMenuController();
         mainMenuController.init();

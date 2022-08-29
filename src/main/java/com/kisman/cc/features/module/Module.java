@@ -50,7 +50,7 @@ public class Module implements IBindable {
 	public void setToggled(boolean toggled) {
 		if(block) return;
 		this.toggled = toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (this.toggled) onEnable();
 		else onDisable();
 	}
@@ -58,7 +58,7 @@ public class Module implements IBindable {
 	public void toggle() {
 		if(block) return;
 		toggled = !toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientModuleMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 		if (toggled) onEnable();
 		else onDisable();
 	}

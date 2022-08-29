@@ -25,6 +25,7 @@ class MainGui {
                 Guis.Music -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.musicGui)
                 Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
                 Guis.PingBypassGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.pingBypassGui)
+//                Guis.NoComGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.noComGui)
             }
         }
     }
@@ -141,6 +142,7 @@ class MainGui {
     ) {
         ClickGui("Click Gui"),
         PingBypassGui("Ping Bypass"),
+//        NoComGui("No Com"),
         CSGOGui("CSGO Gui"),
         HudEditor("Hud Editor"),
         Music("Music"),

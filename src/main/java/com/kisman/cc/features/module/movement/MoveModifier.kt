@@ -53,7 +53,7 @@ class MoveModifier : Module(
     private val sprintGroup = register(move.add(SettingGroup(Setting("Sprint", this))))
     val sprint : Setting = register(sprintGroup.add(Setting("Sprint", this, SprintModes.None)))
     private val sprintOnlyWhileMoving = register(sprintGroup.add(Setting("Sprint Only While Moving", this, false).setVisible { sprint.valEnum != SprintModes.None }.setTitle("While Move")))
-    val keepSprint = register(move.add(Setting("Keep Sprint", this, false)))
+    val keepSprint : Setting = register(move.add(Setting("Keep Sprint", this, false)))
     private val autoWalk = register(move.add(Setting("Auto Walk", this, AutoWalkMode.None)))
     private val autoJump = register(move.add(Setting("Auto Jump", this, false)))
     private val autoSneak = register(move.add(Setting("Auto Sneak", this, false)))
@@ -68,6 +68,10 @@ class MoveModifier : Module(
     private val levitationControl = register(levitationControlGroup.add(Setting("Levitation Control", this, false).setTitle("Levitation")))
     private val levitationControlUpSpeed = register(levitationControlGroup.add(Setting("Levitation Control Up Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Up")))
     private val levitationControlDownSpeed = register(levitationControlGroup.add(Setting("Levitation Control Down Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Down")))
+    private val instantGroup = register(SettingGroup(Setting("Instant", this)))
+    private val instant = register(instantGroup.add(Setting("Instant State", this, false).setTitle("State")))
+    private val instantLiquids = register(instantGroup.add(Setting("Instant Liquids", this, false).setTitle("Liquids")))
+    private val instantSlow = register(instantGroup.add(Setting("Instant Slow", this, false).setTitle("Slow")))
 
 
     private val delays = register(SettingGroup(Setting("Delays", this)))
@@ -135,6 +139,15 @@ class MoveModifier : Module(
         doParkour()
         doFastLadder()
         doLevitationControl()
+        doInstant()
+    }
+
+    private fun doInstant() {
+        if(instant.valBoolean && ((!mc.player.isInWater && !mc.player.isInLava) || instantLiquids.valBoolean) && !mc.player.isElytraFlying) {
+            MovementUtil.strafe(MovementUtil.getSpeed(
+                instantSlow.valBoolean, MovementUtil.DEFAULT_SPEED
+            ))
+        }
     }
 
     private fun doLevitationControl() {

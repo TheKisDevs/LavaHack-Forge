@@ -4,6 +4,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.ShadersSetting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.collections.Bind
 import com.kisman.cc.util.enums.ShaderCharmsOverlaying
 import com.kisman.cc.util.enums.ShadersObjectTypes
@@ -29,14 +30,11 @@ class ShadersRendererPattern(
     private val settings = ArrayList<ShadersSetting>()
 
     private val optimizationGroup = SettingGroup(Setting("Optimization", module))
-    private val listProcessing = optimizationGroup.add(Setting("List Processing", module, false))
+
+    private val threads = MultiThreaddableModulePattern(module)
 
     private val itemsFix = Setting("Items Fix", module, false)
 
-    private val overlaying = Setting("Overlaying", module, ShaderCharmsOverlaying.Post)
-
-    private var needToRenderEntities = ThreaddedBooleanSupplier { false }
-    private var needToRenderTileEntities = ThreaddedBooleanSupplier { false }
     private var needToRenderHand = ThreaddedBooleanSupplier { false }
 
     private var criticalSection = false
@@ -48,21 +46,6 @@ class ShadersRendererPattern(
                     ThreaddedBooleanSupplier
             >
     >()
-
-    /*private val uniforms = ArrayList<
-            Bind<
-                    Bind<
-                            Int,
-                            ShaderCharmsRewriteShaders
-                            >,
-                    ArrayList<
-                            Bind<
-                                    Int,
-                                    ShaderCharmsRewriteSetting
-                                    >
-                            >
-                    >
-            >()*/
 
     val uniforms = HashMap<
             Int,
@@ -85,14 +68,6 @@ class ShadersRendererPattern(
             TileEntity,
             ArrayList<ShadersShaders>
     >()
-
-    /*private val framebuffers = ArrayList<
-            Bind<
-                    Bind<
-                            Int
-                            >
-                    >
-            >()*/
 
     init {
         for(type in ShadersObjectTypes.values()) {
@@ -193,20 +168,10 @@ class ShadersRendererPattern(
                         shader,
                         uniformsMap
                     )
-
-                    /*uniforms.add(Bind(
-                        Bind(
-                            shader.index,
-                            shader
-                        ),
-                        uniformsMap
-                    ))*/
                 }
             }
         }
 
-        needToRenderEntities = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.Entity) }
-        needToRenderTileEntities = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.TileEntity) }
         needToRenderHand = ThreaddedBooleanSupplier { needToProcessType(ShadersObjectTypes.Hand) }
     }
 
@@ -220,41 +185,12 @@ class ShadersRendererPattern(
         }
 
         module.register(optimizationGroup)
-        module.register(listProcessing)
 
         module.register(itemsFix)
 
+        threads.init()
+
         return this
-    }
-
-    fun getSetting(
-        type : ShadersObjectTypes,
-        option : ShadersObjectsEnum.ShadersObjects,
-        shader : ShadersShaders?,
-        typeS : ShadersSettingTypes
-    ) : ShadersSetting? {
-        for(setting in settings) {
-            if(
-                setting.type == type
-                && setting.option == option
-                && setting.shader == shader
-                && setting.typeS == typeS
-            ) {
-                return setting
-            }
-        }
-
-        return null
-    }
-
-    fun getOptionSettingsByType(type : ShadersObjectTypes) : List<ShadersSetting> {
-        val list = ArrayList<ShadersSetting>()
-
-        for(option in ShadersObjectsEnum.ShadersObjects.byType(type)) {
-
-        }
-
-        return list
     }
 
     private fun needToProcessType(type : ShadersObjectTypes) : Boolean {
@@ -273,30 +209,12 @@ class ShadersRendererPattern(
     }
 
     fun update() {
-//        threads
-    }
+        threads.update(Runnable {
 
-    fun render(ticks : Float) {
-
-
-        if(needToRenderEntities.get()) {
-
-        }
-
-        if(needToRenderTileEntities.get()) {
-
-        }
-
-        if(needToRenderHand.get()) {
-
-        }
+        })
     }
 
     fun renderHand() : Boolean = needToRenderHand.get() && itemsFix.valBoolean && criticalSection
-
-    fun getFramebuffer() {
-
-    }
 
     private var latestProcessedEntity : Entity? = null
     private var latestProcessedTileEntity : TileEntity? = null
@@ -307,7 +225,9 @@ class ShadersRendererPattern(
         if(validEntities.contains(entity)) {
             latestProcessedEntity = entity
 
-            //start frame buffer
+            for(shader in validEntities[entity]!!) {
+                shader.shader.pattern(this).startDraw(mc.renderPartialTicks)
+            }
         } else {
             latestProcessedEntity = null
         }
@@ -317,7 +237,9 @@ class ShadersRendererPattern(
         entity : Entity
     ) {
         if(latestProcessedEntity != null) {
-            //stop frame buffer
+            for(shader in validEntities[entity]!!) {
+                shader.shader.pattern(this).stopDraw()
+            }
         }
     }
 
@@ -328,18 +250,20 @@ class ShadersRendererPattern(
             latestProcessedTileEntity = entity
 
             for(shader in validTileEntities[entity]!!) {
-//                shader.frame
+                shader.shader.pattern(this).startDraw(mc.renderPartialTicks)
             }
         } else {
             latestProcessedTileEntity = null
         }
     }
 
-    fun renderTIleEntityPost(
+    fun renderTileEntityPost(
         entity : TileEntity
     ) {
         if(latestProcessedTileEntity != null) {
-            //stop frame buffer
+            for(shader in validTileEntities[entity]!!) {
+                shader.shader.pattern(this).stopDraw()
+            }
         }
     }
 
@@ -357,14 +281,4 @@ class ShadersRendererPattern(
         matrixMode(5888)
         popMatrix()
     }
-
-    /*fun doListProcessing() {
-        val needToRenderEntities = false
-        val needToRenderTileEntities = false
-        val needToRenderHand = false
-
-        for(setting in settings) {
-
-        }
-    }*/
 }

@@ -926,6 +926,8 @@ public class AutoRer extends Module {
     }
 
     private BreakInfo getCrystalWithMaxDamage() {
+        if(currentTarget == null) return null;
+
         Entity crystal = null;
         float maxDamage = 0.5f;
         float selfDamage_ = 0.5f;

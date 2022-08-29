@@ -11,13 +11,13 @@ public class CustomMainMenu {
             "kisman.cc+",
             "kidman.club",
             "kisman.cc b0.1.6.1",
-            "One of the best client lmao",
+            "best haked client",
             "TheKisDevs inc",
             "lava_hack",
             "Get Good. Get BloomWare.",
             "water??",
             "kidman own everyone",
-            "u got token logger))",
+            "ez rat",
             "sus user",
             "kisman > you",
             "kidmad.sex",
@@ -27,7 +27,17 @@ public class CustomMainMenu {
             "Future? No.",
             "meow",
             "Lavahake",
-            "Dallas got skidded"
+            "Dallas got skidded",
+            "lavhak",
+            "cubic > you",
+            ":^)",
+            "ratted by cattyn",
+            "ratted by TheKisDevs",
+            "ty for downloading and using this rat",
+            "https://github.com/kisman2000/lava_hack",
+            "https://github.com/TheKisDevs/LavaHack",
+            "https://github.com/TheKisDevs/LavaHack-Public",
+            "kisman left LavaHack Development"
     };
 
     public static void update() {

@@ -39,7 +39,7 @@ public class EventProcessor {
     public int oldWidth = -1, oldHeight = -1;
 
     public EventProcessor() {
-        if(!Kisman.allowToConfiguredAnotherClients) {
+        if(!Kisman.bypassAuth) {
             mc.displayGuiScreen(new AuthGui());
             Kisman.isOpenAuthGui = true;
         }
@@ -57,7 +57,7 @@ public class EventProcessor {
         if(Kisman.instance.aiImpr != null) Kisman.instance.aiImpr.onEntityJoinWorld(event);
     }
 
-    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.allowToConfiguredAnotherClients) event.setCanceled(true);}
+    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.bypassAuth) event.setCanceled(true);}
 
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
@@ -101,7 +101,7 @@ public class EventProcessor {
     @EventHandler
     private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketRespawn && AutoRer.instance.lagProtect.getValBoolean()) disableCa();
-        if(event.getPacket() instanceof SPacketChat && !Kisman.allowToConfiguredAnotherClients && Config.instance.configurate.getValBoolean()) {
+        if(event.getPacket() instanceof SPacketChat && !Kisman.bypassAuth && Config.instance.configurate.getValBoolean()) {
             SPacketChat packet = (SPacketChat) event.getPacket();
             String message = packet.chatComponent.getUnformattedText();
             if(message.contains("+")) {
