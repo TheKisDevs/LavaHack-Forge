@@ -24,6 +24,7 @@ public class CommandManager extends ChatHandler {
 		add(new DDOSCommand());
 		//add(new FormatCommand());
 		add(new FriendCommand());
+		add(new GetUUID());
 		add(new Help());
 		add(new IsOnline());
 		add(new LuaCommand());

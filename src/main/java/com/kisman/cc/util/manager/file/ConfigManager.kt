@@ -4,13 +4,17 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.BindType
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.IBindable
-import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.ColourUtilKt
+import com.kisman.cc.util.minecraft.GameProfiles
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * @author _kisman_, Cubic (only a few tweaks)
+ * @since unknown
+ */
 class ConfigManager(
         val name : String
 ) {
@@ -452,7 +456,15 @@ class ConfigManager(
 
             if(FriendManager.instance.friends.isNotEmpty()) {
                 for(friend in FriendManager.instance.friends) {
-                    writer.write("${config.friendsPrefix}=\"$friend\"")
+                    val profile = GameProfiles.getProfile(friend)
+                    val actualName = profile.name
+                    val uuid = profile.uuidString
+                    if(actualName == null){
+                        // the specified user name does not actually exist
+                        Kisman.LOGGER.warn("[ConfigManager]: The account \"$friend\" does not exist")
+                        continue
+                    }
+                    writer.write("${config.friendsPrefix}=\"$friend\",\"$uuid\"")
                     writer.newLine()
                 }
             }
