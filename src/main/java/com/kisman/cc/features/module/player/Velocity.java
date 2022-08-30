@@ -39,7 +39,6 @@ public class Velocity extends Module {
 
     public void update() {
         if(mc.player == null || mc.world == null) return;
-        super.setDisplayInfo("[" + mode + "]");
 
         if(mode.checkValString("Matrix") && mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() == Block.getBlockById(0) && mc.player.hurtTime > 0) mc.player.motionY = -0.2;
         else if(mode.checkValString("Matrix 6.4") && mc.player.hurtTime > 8) mc.player.onGround = true;
