@@ -147,6 +147,7 @@ processResources {
 mixin {
     defaultObfuscationEnv searge
     add sourceSets.main, 'mixins.kisman.refmap.json'
+    add sourceSets.main, 'mixins.loader.refmap.json'
 }
 
 reobf {
