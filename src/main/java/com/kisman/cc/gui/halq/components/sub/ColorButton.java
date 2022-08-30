@@ -18,6 +18,7 @@ import java.awt.*;
 import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
 import static com.kisman.cc.util.render.Render2DUtil.drawLeftGradientRect;
 
+@SuppressWarnings("SuspiciousNameCombination")
 public class ColorButton implements Component {
     private final Setting setting;
     private Colour color;
@@ -41,6 +42,7 @@ public class ColorButton implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        if(!setting.getColour().equals(color)) color = setting.getColour();
         this.pickerWidth = width;
         Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadowCheckBox) {
@@ -48,8 +50,8 @@ public class ColorButton implements Component {
                     new AbstractGradient(
                             new Vec4d(
                                     new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.offsets},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsets},
                                     new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
                             color.getColor(),
@@ -59,10 +61,10 @@ public class ColorButton implements Component {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsets},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.offsets},
                                     new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
                                     new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
+                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsets}
                             ),
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                             color.getColor()
@@ -73,15 +75,15 @@ public class ColorButton implements Component {
         HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
 
         if(open) {
-            int offsetY = HalqGui.height + 5;
-            drawPickerBase(x, y + offset + offsetY, pickerWidth, pickerWidth, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
-            offsetY += pickerWidth + 5;
-            drawHueSlider(x, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.getHue(), mouseX, mouseY);
-            offsetY += HalqGui.height - 3 + 5;
-            drawAlphaSlider(x, y + offset + offsetY, pickerWidth, HalqGui.height - 3, color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
-            height = offsetY + HalqGui.height - 3 + 5;
+            int offsetY = HalqGui.height;
+            drawPickerBase(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), pickerWidth - (HalqGui.offsets * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            offsetY += pickerWidth;
+            drawHueSlider(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), HalqGui.height - 3 - (HalqGui.offsets * 2), color.getHue(), mouseX, mouseY);
+            offsetY += HalqGui.height - 3;
+            drawAlphaSlider(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), HalqGui.height - 3 - (HalqGui.offsets * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            height = offsetY + HalqGui.height - 3;
 
-            updateValue(mouseX, mouseY, x + 2, y + offset + HalqGui.height + 5);
+            updateValue(mouseX, mouseY, x + HalqGui.offsets, y + offset + HalqGui.height + HalqGui.offsets);
 
             {
                 final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
@@ -103,7 +105,6 @@ public class ColorButton implements Component {
         if (pickingHue) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
             this.color.setHue((restrictedX - (float) x) / pickerWidth);
-            System.out.println((restrictedX - (float) x) / pickerWidth);
         }
         if (pickingAlpha) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
