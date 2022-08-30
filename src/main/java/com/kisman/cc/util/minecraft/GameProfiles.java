@@ -29,11 +29,32 @@ public class GameProfiles {
         }
     }
 
-    public static GameProfile getGameProfile(String player){
-        UUID uuid = getUUID(player);
-        if(uuid == null)
+    public static Profile getProfile(String player){
+        return getProfile(player, true);
+    }
+
+    public static Profile getProfile(String player, boolean resolveActualName){
+        String data = fetch(player);
+        if(data == null)
             return null;
-        return new GameProfile(uuid, player);
+        String name = resolveActualName ? data.substring(data.indexOf(':') + 2, data.indexOf("id") - 3) : player;
+        String uuidString = data.substring(data.indexOf("id") + 5, data.lastIndexOf('"'));
+        UUID uuid = UUID.fromString(uuidString);
+        return new Profile(name, uuid);
+    }
+
+    public static GameProfile getGameProfile(String player){
+        return getGameProfile(player, true);
+    }
+
+    public static GameProfile getGameProfile(String player, boolean resolveActualName){
+        String data = fetch(player);
+        if(data == null)
+            return null;
+        String name = resolveActualName ? data.substring(data.indexOf(':') + 2, data.indexOf("id") - 3) : player;
+        String uuidString = data.substring(data.indexOf("id") + 5, data.lastIndexOf('"'));
+        UUID uuid = UUID.fromString(uuidString);
+        return new GameProfile(uuid, name);
     }
 
     public static UUID getUUID(String player){
@@ -41,6 +62,13 @@ public class GameProfiles {
         if(uuid == null)
             return null;
         return UUID.fromString(uuid);
+    }
+
+    public static String getActualName(String player){
+        String data = fetch(player);
+        if(data == null)
+            return null;
+        return data.substring(data.indexOf(':') + 2, data.indexOf("id") - 3);
     }
 
     public static String getUUIDString(String player){
@@ -82,6 +110,36 @@ public class GameProfiles {
             Kisman.LOGGER.error("[GameProfiles]: Could not read bytes from URL", e);
             return null;
         }
+        if(size <= 0)
+            return null;
         return Arrays.copyOf(buf, size);
+    }
+
+    public static final class Profile {
+
+        private final String name;
+
+        private final UUID uuid;
+
+        public Profile(String name, UUID uuid){
+            this.name = name;
+            this.uuid = uuid;
+        }
+
+        public Profile(String name, String uuid){
+            this(name, UUID.fromString(uuid));
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public UUID getUuid() {
+            return uuid;
+        }
+
+        public String getUUIDString(){
+            return uuid.toString();
+        }
     }
 }
