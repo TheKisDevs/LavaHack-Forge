@@ -47,6 +47,17 @@
   private boolean mt_handActive = false;
   private boolean mt_isHittingBlock = false;
 
+  @Inject(
+          method = "init",
+          at = @At("RETURN")
+  ) private void initHook(CallbackInfo ci) {
+   try {
+    Kisman.instance.init();
+   } catch (Exception e) {
+    throw new RuntimeException(e);
+   }
+  }
+
   /**
    * @author Cubic
    */

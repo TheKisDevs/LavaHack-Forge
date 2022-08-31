@@ -13,6 +13,7 @@ object CommandManager {
         CheckVersionCommand,
         CreateFileCommand,
         GetFileCommand,
+        GetLibrariesCommand,
         GetPublicJarCommand,
         GetVersionsCommand
     )

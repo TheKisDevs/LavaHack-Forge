@@ -5,7 +5,6 @@
   "package": "com.kisman.cc.loader.mixins",
   "refmap": "mixins.loader.refmap.json",
   "mixins": [
-    "MixinEventBus",
-    "MixinMinecraft"
+    "MixinEventBus"
   ]
 }

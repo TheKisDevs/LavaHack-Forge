@@ -152,6 +152,8 @@ public class Kisman {
     }
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
+        if(init) return;
+
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
         managers = new Managers();

@@ -6,7 +6,7 @@ package the.kis.devs.server.util
  */
 val versions = mapOf(
     "1.0" to mapOf(
-        "b0.1.6.4" to "1.jar",
+        "b0.1.6.5" to "1.jar",
         "b0.1.6.5 beta" to "2.jar"
     )
 )

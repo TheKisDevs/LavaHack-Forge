@@ -19,7 +19,7 @@ import javax.swing.text.BadLocationException
  * @author _kisman_
  * @since 14:04 of 02.08.2022
  */
-@Suppress("NAME_SHADOWING", "UNUSED_VARIABLE")
+@Suppress("UNUSED_VARIABLE")
 class Gui(
     width : Int,
     height : Int,
@@ -33,7 +33,7 @@ class Gui(
         try {
             iconImage = ImageIO.read(javaClass.classLoader.getResourceAsStream("assets/loader/z.png"))
         } catch(e : IOException) {
-            e.printStackTrace()
+            println("Error Code: 0x002")
         }
 
         setBounds(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2) , width, height);
@@ -119,6 +119,7 @@ class Gui(
         try {
             logArea.caretPosition = logArea.getLineStartOffset(logArea.lineCount - 1)
         } catch (e : BadLocationException) {
+            println("Error Code: 0x001")
             e.printStackTrace()
         }
     }

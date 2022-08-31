@@ -23,22 +23,16 @@ class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
             suspend()
         }
 
-//        initHook()
-
         MixinBootstrap.init()
         Mixins.addConfiguration("mixins.Kisman.json")
         Mixins.addConfiguration("mixins.loader.json")
         MixinEnvironment.getDefaultEnvironment().obfuscationContext = "searge"
-
-//        lavahackMixinLoader = Class.forName("com.kisman.cc.mixin.KismanMixinLoader").newInstance()
     }
 
     override fun getModContainerClass(): String? = null
     override fun getASMTransformerClass(): Array<String> = emptyArray()
     override fun getSetupClass(): String? = null
-    override fun injectData(data: MutableMap<String, Any>?) {
-//        lavahackMixinLoader::class.java.getMethod("injectData", Map::class.java).invoke(lavahackMixinLoader, data)
-    }
+    override fun injectData(data: MutableMap<String, Any>?) {}
     override fun getAccessTransformerClass(): String? = null
 
     companion object {
