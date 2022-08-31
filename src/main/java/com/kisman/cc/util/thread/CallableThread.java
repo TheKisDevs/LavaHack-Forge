@@ -6,9 +6,9 @@ class CallableThread<T> {
 
     final Thread thread;
 
-    transient T result;
+    volatile T result;
 
-    transient boolean finished;
+    volatile boolean finished;
 
     CallableThread(Callable<T> callable){
         this.result = null;
@@ -19,6 +19,7 @@ class CallableThread<T> {
                 this.finished = true;
             } catch (Exception e){
                 e.printStackTrace();
+                this.finished = true;
             }
         });
     }

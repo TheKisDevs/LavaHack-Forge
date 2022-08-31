@@ -72,6 +72,10 @@ public class Promise<T> implements Runnable {
         return thread.result;
     }
 
+    public boolean isFinished(){
+        return thread.finished;
+    }
+
     public boolean isRunning() {
         return running;
     }

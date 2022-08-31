@@ -456,15 +456,7 @@ class ConfigManager(
 
             if(FriendManager.instance.friends.isNotEmpty()) {
                 for(friend in FriendManager.instance.friends) {
-                    val profile = GameProfiles.getProfile(friend)
-                    val actualName = profile.name
-                    val uuid = profile.uuidString
-                    if(actualName == null){
-                        // the specified user name does not actually exist
-                        Kisman.LOGGER.warn("[ConfigManager]: The account \"$friend\" does not exist")
-                        continue
-                    }
-                    writer.write("${config.friendsPrefix}=\"$friend\",\"$uuid\"")
+                    writer.write("${config.friendsPrefix}=\"$friend\"")
                     writer.newLine()
                 }
             }

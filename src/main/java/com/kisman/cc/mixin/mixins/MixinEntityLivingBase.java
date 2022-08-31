@@ -6,6 +6,7 @@ import baritone.api.event.events.RotationMoveEvent;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
 import com.kisman.cc.features.module.Debug.FrostWalk;
+import com.kisman.cc.features.module.render.SwingProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
@@ -44,6 +45,11 @@ public class MixinEntityLivingBase extends Entity {
     @Shadow @Override protected void entityInit() {}
     @Shadow @Override public void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
     @Shadow @Override public void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
+
+    @Shadow public float swingProgress;
+
+    @Shadow public int swingProgressInt;
+
     public MixinEntityLivingBase(World worldIn) {super(worldIn);}
 
     @Inject(method = "getArmSwingAnimationEnd", at = @At("HEAD"), cancellable = true)
@@ -122,6 +128,15 @@ public class MixinEntityLivingBase extends Entity {
 
         EnchantmentFrostWalker.freezeNearby(Minecraft.getMinecraft().player, this.world, pos, FrostWalk.INSTANCE.level.getValInt());
 
+        ci.cancel();
+    }
+
+    @Inject(method = "updateArmSwingProgress", at = @At("HEAD"), cancellable = true)
+    public void updateArmSwingProgress(CallbackInfo ci){
+        if(!SwingProgress.INSTANCE.isToggled())
+            return;
+        this.swingProgressInt = SwingProgress.INSTANCE.progress.getValInt();
+        this.swingProgress = (float) this.swingProgressInt / 6.0f;
         ci.cancel();
     }
 }
