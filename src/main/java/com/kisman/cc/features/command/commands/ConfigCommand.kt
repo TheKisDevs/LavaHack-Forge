@@ -70,6 +70,6 @@ class ConfigCommand : Command("config") {
     }
 
     override fun getSyntax(): String {
-        return "config create/save <name> | config list"
+        return "config save/load <name> | config list"
     }
 }
