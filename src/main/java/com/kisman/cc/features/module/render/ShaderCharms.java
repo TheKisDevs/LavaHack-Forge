@@ -21,6 +21,7 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;
 import net.minecraft.entity.monster.*;
@@ -32,7 +33,9 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ShaderCharms extends Module {
@@ -127,11 +130,11 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onFog(EntityViewRenderEvent.FogColors event) {
-        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperOutline2.getShader())).getListFramebuffers().forEach(framebuffer -> {
+        accessFrameBufferList(Objects.requireNonNull(shaderHelperOutline2.getShader())).forEach(framebuffer -> {
             framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
         });
 
-        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperInertiaOutline.getShader())).getListFramebuffers().forEach(framebuffer -> {
+        accessFrameBufferList(Objects.requireNonNull(shaderHelperInertiaOutline.getShader())).forEach(framebuffer -> {
             framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
         });
     }
@@ -480,5 +483,24 @@ public class ShaderCharms extends Module {
 
     public Color getColor() {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
+    }
+
+    private static final Field FRAME_BUFFER_LIST;
+
+    static {
+        try {
+            FRAME_BUFFER_LIST = ShaderGroup.class.getDeclaredField("listFramebuffers");
+            FRAME_BUFFER_LIST.setAccessible(true);
+        } catch (Exception e){
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static List<Framebuffer> accessFrameBufferList(ShaderGroup shaderGroup){
+        try {
+            return (List<Framebuffer>) FRAME_BUFFER_LIST.get(shaderGroup);
+        } catch (IllegalAccessException e){
+            throw new IllegalStateException(e);
+        }
     }
 }
