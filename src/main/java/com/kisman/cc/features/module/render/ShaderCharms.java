@@ -485,21 +485,12 @@ public class ShaderCharms extends Module {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
     }
 
-    private static final Field FRAME_BUFFER_LIST;
-
-    static {
-        try {
-            FRAME_BUFFER_LIST = ShaderGroup.class.getDeclaredField("listFramebuffers");
-            FRAME_BUFFER_LIST.setAccessible(true);
-        } catch (Exception e){
-            throw new IllegalStateException(e);
-        }
-    }
-
     private static List<Framebuffer> accessFrameBufferList(ShaderGroup shaderGroup){
         try {
-            return (List<Framebuffer>) FRAME_BUFFER_LIST.get(shaderGroup);
-        } catch (IllegalAccessException e){
+            Field f = shaderGroup.getClass().getDeclaredField("listFramebuffers");
+            f.setAccessible(true);
+            return (List<Framebuffer>) f.get(shaderGroup);
+        } catch (Exception e){
             throw new IllegalStateException(e);
         }
     }
