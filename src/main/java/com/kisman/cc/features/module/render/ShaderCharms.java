@@ -130,11 +130,11 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onFog(EntityViewRenderEvent.FogColors event) {
-        accessFrameBufferList(Objects.requireNonNull(shaderHelperOutline2.getShader())).forEach(framebuffer -> {
+        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperOutline2.getShader())).getListFramebuffers().forEach(framebuffer -> {
             framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
         });
 
-        accessFrameBufferList(Objects.requireNonNull(shaderHelperInertiaOutline.getShader())).forEach(framebuffer -> {
+        ((AccessorShaderGroup) Objects.requireNonNull(shaderHelperInertiaOutline.getShader())).getListFramebuffers().forEach(framebuffer -> {
             framebuffer.setFramebufferColor(event.getRed(), event.getGreen(), event.getBlue(), 0);
         });
     }
@@ -483,15 +483,5 @@ public class ShaderCharms extends Module {
 
     public Color getColor() {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
-    }
-
-    private static List<Framebuffer> accessFrameBufferList(ShaderGroup shaderGroup){
-        try {
-            Field f = shaderGroup.getClass().getDeclaredField("listFramebuffers");
-            f.setAccessible(true);
-            return (List<Framebuffer>) f.get(shaderGroup);
-        } catch (Exception e){
-            throw new IllegalStateException(e);
-        }
     }
 }
