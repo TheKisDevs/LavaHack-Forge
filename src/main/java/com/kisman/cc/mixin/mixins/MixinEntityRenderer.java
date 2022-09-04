@@ -102,4 +102,12 @@ public class MixinEntityRenderer {
             ibaritone.getGameEventHandler().onRenderPass(new RenderEvent(partialTicks));
         }
     }
+
+    @Inject(method = "applyBobbing", at = @At("HEAD"), cancellable = true)
+    private void onApplyBobbing(float partialTicks, CallbackInfo ci){
+        EventApplyBobbing event = new EventApplyBobbing(partialTicks);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled())
+            ci.cancel();
+    }
 }
