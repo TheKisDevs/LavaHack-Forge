@@ -1,10 +1,19 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventEntitySpawn;
+import com.kisman.cc.event.events.EventRemoveEntity;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.Colour;
-import net.minecraft.entity.item.EntityEnderCrystal;
+import com.kisman.cc.settings.types.number.NumberType;
+import com.kisman.cc.util.math.TimeAnimation;
+import me.zero.alpine.listener.Listener;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class CrystalModifier extends Module {
     public static CrystalModifier instance;
@@ -26,8 +35,7 @@ public class CrystalModifier extends Module {
     public static final int ANIMATION_LENGTH = 400;
     public static final double CUBELET_SCALE = 0.4;
 
-    public Setting mode = /*register*/(new Setting("Mode", this, Modes.Fill));
-    public Setting preview = /*register*/(new Setting("Crystal", this, "Crystal", new EntityEnderCrystal(mc.world)));
+    public static HashMap<Integer, List<TimeAnimation>> scaleTimes = new HashMap<>();
 
     private final SettingGroup rubiksCrystalGroup = register(new SettingGroup(new Setting("Rubiks Crystal", this)));
     public Setting rubiksCrystal = register(rubiksCrystalGroup.add(new Setting("Rubiks Crystal", this, false)));
@@ -53,6 +61,7 @@ public class CrystalModifier extends Module {
 
     private final SettingGroup baseGroup = register(elements.add(new SettingGroup(new Setting("Base", this))));
     public Setting base = register(baseGroup.add(new Setting("Base", this, true)));
+    public Setting baseFadeOutDelay = register(baseGroup.add(new Setting("Base Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
     public Setting alwaysBase = register(baseGroup.add(new Setting("Always Base", this, false).setVisible(base).setTitle("Always")));
 
     private final SettingGroup cubes = register(elements.add(new SettingGroup(new Setting("Cubes", this))));
@@ -60,13 +69,15 @@ public class CrystalModifier extends Module {
     private final SettingGroup insideGroup = register(cubes.add(new SettingGroup(new Setting("Inside", this))));
     public Setting insideCube = register(insideGroup.add(new Setting("Inside Tex", this, CubeModes.In).setTitle("Tex")));
     public Setting insideModel = register(insideGroup.add(new Setting("Inside Model", this, ModelModes.Cube).setTitle("Model")));
+    public Setting insideFadeOutDelay = register(insideGroup.add(new Setting("Inside Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
     private final SettingGroup outsideGroup = register(cubes.add(new SettingGroup(new Setting("Outside", this))));
     public Setting outsideCube = register(outsideGroup.add(new Setting("Outside Tex", this, CubeModes.Out).setTitle("Tex")));
     public Setting outsideModel = register(outsideGroup.add(new Setting("Outside Model", this, ModelModes.Glass).setTitle("Model")));
+    public Setting outsideFadeOutDelay = register(insideGroup.add(new Setting("Outside Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
     private final SettingGroup outsideGroup2 = register(cubes.add(new SettingGroup(new Setting("Outside 2", this))));
     public Setting outsideCube2 = register(outsideGroup2.add(new Setting("Outside 2 Tex", this, CubeModes.Out).setTitle("Tex")));
     public Setting outsideModel2 = register(outsideGroup2.add(new Setting("Outside 2 Model", this, ModelModes.Glass).setTitle("Model")));
-
+    public Setting outsideFadeOutDelay2 = register(insideGroup.add(new Setting("Outside 2 Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
 
     private final SettingGroup speeds = register(new SettingGroup(new Setting("Speeds", this)));
     public Setting speed = register(speeds.add(new Setting("Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
@@ -90,7 +101,52 @@ public class CrystalModifier extends Module {
         instance = this;
     }
 
-    public enum OutlineModes {Wire, Flat}
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        Kisman.EVENT_BUS.subscribe(spawn);
+        Kisman.EVENT_BUS.subscribe(remove);
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(spawn);
+        Kisman.EVENT_BUS.unsubscribe(remove);
+    }
+
+    private final Listener<EventEntitySpawn> spawn = new Listener<>(event -> {
+        scaleTimes.put(
+                event.getEntity().entityId,
+                Arrays.asList(
+                        new TimeAnimation(
+                                baseFadeOutDelay.getValLong(),
+                                0.1,
+                                1.0
+                        ),
+                        new TimeAnimation(
+                                insideFadeOutDelay.getValLong(),
+                                0.1,
+                                1.0
+                        ),
+                        new TimeAnimation(
+                                outsideFadeOutDelay.getValLong(),
+                                0.1,
+                                1.0
+                        ),
+                        new TimeAnimation(
+                                outsideFadeOutDelay2.getValLong(),
+                                0.1,
+                                1.0
+                        )
+                )
+        );
+    });
+
+    private final Listener<EventRemoveEntity> remove = new Listener<>(event -> {
+        if(scaleTimes.containsKey(event.getId())) scaleTimes.get(event.getId());
+    });
+
     public enum Modes {Fill, Wireframe}
     public enum RubiksCrystalRotationDirection {Left, Right}
     public enum CubeModes {Off, In, Out}

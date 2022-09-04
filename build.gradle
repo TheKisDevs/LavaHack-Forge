@@ -32,8 +32,6 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
-        /*classpath 'com.google.code.gson:gson:2.8.6'
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.0.9'*/
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -42,8 +40,6 @@ apply plugin: 'kotlin'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
-//apply plugin: 'com.matthewprenger.cursegradle'
-//apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = 'b0.1.6.5-plus'
@@ -93,7 +89,6 @@ configurations {
 }
 
 dependencies {
-//    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     compile("org.spongepowered:mixin:0.7.4-SNAPSHOT") {//
         exclude module: 'launchwrapper'
         exclude module: 'guava'
@@ -106,7 +101,6 @@ dependencies {
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude group: 'com.google.guava', module: 'guava'
     }
-//    compile group: 'org.beykery', name: 'neuroph', version: '2.92'
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 
     compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
@@ -128,7 +122,8 @@ dependencies {
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-core", version: "$coroutines_version"
     compile group: "org.jetbrains.kotlinx", name: "kotlinx-coroutines-jdk8", version: "$coroutines_version"
     compile 'org.jsoup:jsoup:1.11.3'
-    compile 'com.formdev:flatlaf:2.2'
+    compile 'com.formdev:flatlaf:2.4'
+    compile 'com.formdev:flatlaf-intellij-themes:2.4'
 }
 
 processResources {
@@ -198,7 +193,8 @@ shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$coroutines_version"))
         include(dependency("org.jsoup:jsoup:1.11.3"))
-        include(dependency('com.formdev:flatlaf:2.2'))
+        include(dependency('com.formdev:flatlaf:2.4'))
+        include(dependency('com.formdev:flatlaf-intellij-themes:2.4'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'

@@ -78,7 +78,7 @@ public class ModeButton implements Openable {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        if(!setting.getValString().equals(selected.getName())) selected = (OptionElement) components.stream().filter(component -> component instanceof OptionElement && ((OptionElement) component).getName().equals(setting.getValString())).findFirst().orElse(components.get(0));
+        selected = (OptionElement) components.stream().filter(component -> component instanceof OptionElement && ((OptionElement) component).getName().equals(setting.getValString())).findFirst().orElse(components.get(0));
 
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 

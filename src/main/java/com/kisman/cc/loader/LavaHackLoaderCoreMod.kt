@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.Mixins
  */
 @MCVersion("1.12.2")
 class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
-//    private val lavahackMixinLoader : Any
-
     init {
         if(Utility.runningFromIntelliJ()) {
             Kisman.LOGGER.debug("Not loading due to running in debugging environment!")

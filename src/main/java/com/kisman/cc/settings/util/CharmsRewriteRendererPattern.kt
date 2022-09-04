@@ -82,13 +82,13 @@ class CharmsRewriteRendererPattern(
         }
 
         list.add(CharmsRewriteSetting(
-            wireGroup.add(wireColorGroup.add(Setting("${type.name} Wire Custom Color", module, false).setTitle("Custom"))),
+            wireColorGroup.add(Setting("${type.name} Wire Custom Color", module, false).setTitle("Custom")),
             type,
             CharmsRewriteTypes.WireCustomColor
         ))
 
         list.add(CharmsRewriteSetting(
-            wireGroup.add(wireColorGroup.add(Setting("${type.name} Wire Color", module, Colour(255, 255, 255, 255)).setTitle("Custom"))),
+            wireColorGroup.add(Setting("${type.name} Wire Color", module, Colour(255, 255, 255, 255)).setTitle("Custom")),
             type,
             CharmsRewriteTypes.WireColor
         ))
@@ -103,13 +103,13 @@ class CharmsRewriteRendererPattern(
         }
 
         list.add(CharmsRewriteSetting(
-            modelGroup.add(modelColorGroup.add(Setting("${type.name} Model Custom Color", module, false).setTitle("Custom"))),
+            modelColorGroup.add(Setting("${type.name} Model Custom Color", module, false).setTitle("Custom")),
             type,
             CharmsRewriteTypes.ModelCustomColor
         ))
 
         list.add(CharmsRewriteSetting(
-            modelGroup.add(modelColorGroup.add(Setting("${type.name} Model Color", module, Colour(255, 255, 255, 255)).setTitle("Custom"))),
+            modelColorGroup.add(Setting("${type.name} Model Color", module, Colour(255, 255, 255, 255)).setTitle("Custom")),
             type,
             CharmsRewriteTypes.ModelColor
         ))

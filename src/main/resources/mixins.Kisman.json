@@ -15,7 +15,6 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
-    "MixinGoogleEventBus",
     "MixinGuiBossOverlay",
     "MixinGuiContainer",
     "MixinGuiIngame",
@@ -27,6 +26,7 @@
     "MixinItemEnderCrystal",
     "MixinItemRenderer",
     "MixinLayerBipedArmor",
+    "MixinLocale",
     "MixinMinecraft",
     "MixinModelBook",
     "MixinMovementInputFromOptions",
@@ -73,6 +73,7 @@
   ],
   "client": [
     "MixinTileEntityRendererDispatcher",
+    "accessor.AccessorFontRenderer",
     "baritone.MixinChatTabCompleter",
     "baritone.MixinChunkProviderClient",
     "baritone.MixinChunkRenderContainer",

@@ -56,7 +56,7 @@ public class MixinGuiNewChat {
             if (!this.isScrolled) y += (9.0f - 9.0f * this.animationPercent) * this.getChatScale();
             int customY = 0;
             if(chatModifier.getCustomY().getValBoolean()) customY = chatModifier.getCustomYVal().getValInt();
-            GlStateManager.translate(0.0f, y -customY, 0.0f);
+            GlStateManager.translate(0.0f, y - customY, 0.0f);
         }
     }
 
@@ -65,24 +65,24 @@ public class MixinGuiNewChat {
         return this.lineBeingDrawn = line;
     }
 
-    @Redirect(method = {"drawChat"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V"))
+    @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;drawRect(IIIII)V"))
     private void drawBackground(int left, int top, int right, int bottom, int color) {
         if(NoRender.instance.chatBackground.getValBoolean()) return;
 
         Gui.drawRect(left, top, right, bottom, color);
     }
 
-    @Redirect(method = {"drawChat"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
+    @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
     private int drawStringWithShadow(FontRenderer fontRenderer, String text, float x, float y, int color) {
+        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
         int newY = (int) y;
-        if (this.lineBeingDrawn <= this.newLines) {
-            int opacity = (int) y >> 24 & 0xFF;
-            opacity *= (int)this.animationPercent;
+        if (this.lineBeingDrawn <= this.newLines && chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
+            int opacity = (int) (((int) y >> 24 & 0xFF) * animationPercent);
             newY = ((int) y & 0xFFFFFF) | opacity << 24;
         }
-        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
+
         if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, color);
-        return fontRenderer.drawStringWithShadow(text, x, ((chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) ? newY : y), color);
+        return fontRenderer.drawStringWithShadow(text, x, newY, color);
     }
 
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))

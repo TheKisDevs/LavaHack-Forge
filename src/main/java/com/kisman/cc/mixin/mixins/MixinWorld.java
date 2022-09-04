@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventRemoveEntity;
 import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.EventSpawnEntity;
 import net.minecraft.entity.Entity;
@@ -23,5 +24,10 @@ public class MixinWorld {
         Kisman.EVENT_BUS.post(event);
         if(event.isCancelled())
             ci.setReturnValue(false);
+    }
+
+    @Inject(method = "onEntityRemoved", at = @At("HEAD"))
+    public void onEntityRemovedHook(Entity entityIn, CallbackInfo ci) {
+        Kisman.EVENT_BUS.post(new EventRemoveEntity(entityIn.getEntityId()));
     }
 }

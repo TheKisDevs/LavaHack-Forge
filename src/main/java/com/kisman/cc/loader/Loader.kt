@@ -2,19 +2,21 @@
 
 package com.kisman.cc.loader
 
-import com.formdev.flatlaf.FlatDarkLaf
 import com.kisman.cc.Kisman
 import com.kisman.cc.loader.LavaHackLoaderCoreMod.Companion.loaded
-import com.kisman.cc.loader.gui.Gui
+import com.kisman.cc.loader.antidump.AntiDump
+import com.kisman.cc.loader.antidump.CustomClassLoader
+import com.kisman.cc.loader.antidump.initProvider
+import com.kisman.cc.loader.antidump.runScanner
+import com.kisman.cc.loader.gui.*
 import com.kisman.cc.sockets.client.SocketClient
 import com.kisman.cc.sockets.data.SocketMessage.Type.*
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
-import java.awt.Font
-import java.awt.GraphicsEnvironment
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -25,14 +27,12 @@ import kotlin.random.Random
  * @since 12:33 of 04.07.2022
  */
 
-private const val address = "localhost"
-private const val port = 4321
+const val address = "localhost"
+const val port = 4321
 
 const val version = "1.0"
 
 val client = SocketClient(address, port)
-var gui : Gui? = null
-var answer : String? = null
 var loaded = false
 var versions = emptyArray<String>()
 
@@ -43,15 +43,13 @@ var haveLibraries = false
 
 var status = "Idling"
     set(value) {
-        if(gui != null) {
-            gui?.log(value)
+        if(created) {
+            log(value)
         } else {
             oldLogs.add(value)
         }
         field = value
     }
-
-private const val validAnswer = "2"
 
 fun load(
     key : String,
@@ -65,13 +63,8 @@ fun load(
         return
     }
 
-    var haveJar = false
-    var haveValidAnswer = false
-
     var bytes : ByteArray? = null
-
     var state = 0
-
     var needToBreak = false
 
     client.onMessageReceived = {
@@ -114,12 +107,15 @@ fun load(
 
     while(client.connected) {
         if(bytes != null) {
+            status = "Successfully received LavaHack"
+
+//            loadIntoCustomClassLoader(bytes!!)
             loadIntoResourceCache(bytes!!)
 //            loadIntoLavaHackCache(bytes!!)
             bytes = null
             loaded = true
             LavaHackLoaderCoreMod.resume()
-            gui?.isVisible = false
+            close()
             break
         }
 
@@ -133,18 +129,16 @@ fun load(
 
 fun createGui() {
     println("Creating the gui")
-    val font = Font.createFont(Font.TRUETYPE_FONT, classLoader.getResourceAsStream("assets/loader/font.ttf"))
-    GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font)
-    FlatDarkLaf.setup()
-    gui = Gui(355, 270, "LavaHack Loader | $version", Font(font.fontName, 0, 18))
+
+    create()
+
     for(log in oldLogs) {
-        gui?.log(log)
+        log(log)
     }
-    gui?.isVisible = true
 }
 
 fun initLoader() {
-//    rewriteClassLoader()
+    initProvider()
 
     Thread {
         try {
@@ -297,9 +291,6 @@ fun versions(version : String) {
                         if(answer.startsWith("2")) {
                             status = "Successfully received version list"
                             versions = answer.split("|")[1].split("&").toTypedArray()
-                            for(version in versions) {
-                                println(version)
-                            }
                             flag = false
                         }
                     }
@@ -408,14 +399,15 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     println("LavaHack Loader is done!")
 }
 
-fun loadIntoLavaHackCache(
+fun loadIntoCustomClassLoader(
     bytes : ByteArray
 ) {
+    val classes = ConcurrentHashMap<String, ByteArray>()
     val resources = HashMap<String, ByteArray>()
 
-    println("LavaHack Loader is injecting classes...")
+    println("LavaHack Loader is injecting LavaHack...")
 
-    status = "Injecting classes..."
+    status = "Finding files..."
 
     var classesCount = 0
     var resourcesCount = 0
@@ -425,30 +417,52 @@ fun loadIntoLavaHackCache(
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
             if (name.endsWith(".class")) {
-                println("Injecting class \"${name.removeSuffix(".class")}\"")
+                println("Found class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
-                if(name == "Main") {
-                    loadIntoClassLoader(zipStream.readBytes())
-                } else {
-                    (classLoader as CustomClassLoader).lavahackCache[name] = zipStream.readBytes()
-                }
+                classes[name] = zipStream.readBytes()
 
                 classesCount++
-                status = "Injecting $name"
+                status = "Found class \"${name.removeSuffix(".class")}\""
             } else if(Utility.validResource(name)) {
-                println("Found new resource \"$name\"")
+                println("Found resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
                 resourcesCount++
-                status = "Found \"$name\" resource."
+                status = "Found resource \"$name\""
             }
         }
     }
 
-    println("Injected $classesCount classes, Found $resourcesCount resources")
+    println("Found $classesCount classes and $resourcesCount resources")
+    status = "Found $classesCount classes and $resourcesCount resources"
+
+    println("LavaHack Loader is injecting classes...")
+    status = "Injecting classes..."
+
+    if(classes.isNotEmpty()) {
+        val customClassLoader = CustomClassLoader(classLoader)
+
+        customClassLoader.lavahackCache = classes
+
+        for(`class` in classes) {
+            loadClass(
+                `class`.key,
+                false
+            ) {
+                customClassLoader.findClass(it)
+            }
+        }
+
+        /*try {
+            customClassLoader.findClass("Main").newInstance()
+        } catch(e : Exception) {
+            e.printStackTrace()
+        }*/
+    }
 
     println("LavaHack Loader is injecting resources...")
+    status = "Injecting resources..."
 
     if(resources.isNotEmpty()) {
         val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
@@ -456,7 +470,8 @@ fun loadIntoLavaHackCache(
         val jos = JarOutputStream(fos)
 
         for(entry in resources.entries) {
-            status = "Injecting \"${entry.key}\" resource."
+            println("Injecting \"${entry.key}\" resource")
+            status = "Injecting \"${entry.key}\" resource"
             jos.putNextEntry(ZipEntry(entry.key))
             jos.write(entry.value)
             jos.closeEntry()
@@ -470,12 +485,79 @@ fun loadIntoLavaHackCache(
         classLoader.addURL(tempFile.toURI().toURL())
     }
 
-    status = "Done!"
+    status = "Successfully loader!"
 
     println("LavaHack Loader is done!")
 }
 
-fun rewriteClassLoader() {
-    classLoader = CustomClassLoader(classLoader.urLs)
-    Thread.currentThread().contextClassLoader = classLoader
+private fun loadClass(
+    name : String,
+    resolve : Boolean,
+    classFinder : (String) -> Class<*>?
+) : Class<*> {
+    synchronized (
+            /*getClassLoadingLock(name)*/
+            Utility.invokeMethod<Any>(
+                classLoader,
+                "getClassLoadingLock",
+                name
+            )!!
+    ) {
+        // First, check if the class has already been loaded
+        var c = Utility.invokeMethod<Class<*>>(
+            classLoader,
+            "findLoadedClass",
+            name
+        )//classLoader.findLoadedClass(name);
+        if (c == null) {
+            val time = System.nanoTime();
+            val parent = Utility.field<ClassLoader>(
+                classLoader,
+                "parent"
+            )
+
+            try {
+                c = if (parent != null) {
+                    Utility.invokeMethod<Class<*>>(
+                        classLoader,
+                        "loadClass",
+                        name,
+                        false
+                    )//parent.loadClass(name, false);
+                } else {
+                    Utility.invokeMethod(
+                        classLoader,
+                        "findBootstrapClassOrNull",
+                        name
+                    )//findBootstrapClassOrNull(name);
+                }
+            } catch (e : ClassNotFoundException) {
+                // ClassNotFoundException thrown if class not found
+                // from the non-null parent class loader
+            }
+
+            if (c == null) {
+                // If still not found, then invoke findClass in order
+                // to find the class.
+                val timeNew = System.nanoTime();
+                c = classFinder(
+                    name
+                )//classLoader.findClass(name);
+
+                // this is the defining class loader; record the stats
+                sun.misc.PerfCounter.getParentDelegationTime().addTime(timeNew - time);
+                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(timeNew);
+                sun.misc.PerfCounter.getFindClasses().increment();
+            }
+        }
+        if (resolve) {
+            Utility.invokeMethod<Void>(
+                classLoader,
+                "resolveClass",
+                c
+            )
+            //classLoader.resolveClass(c);
+        }
+        return c;
+    }
 }

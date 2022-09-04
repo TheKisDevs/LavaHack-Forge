@@ -157,13 +157,12 @@ class ConfigManager(
                                         if (setting != null && !setting.isGroup) {
                                             try {
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
-                                                if (setting.isCombo && setting.stringArray.contains(split1[1].split("\"")[1])) setting.valString = split1[1].split("\"")[1]
+                                                if (setting.isCombo && setting.binders.containsKey(split1[1].split("\"")[1])) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
                                                 if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
-                                            } catch (e: Exception) {}
+                                            } catch (_ : Exception) {}
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -359,17 +358,17 @@ class ConfigManager(
                                 }
                             }
                             if(setting.isCombo) {
-                                writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
+                                writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
                                 writer.newLine()
 
                                 for(option in setting.binders.keys) {
-                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
                                     writer.newLine()
 
-                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
                                     writer.newLine()
 
-                                    writer.write("${config.hudModulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
                                     writer.newLine()
                                 }
                             }

@@ -38,6 +38,10 @@ class CrystalModelHandler(
         scale : Float
     ) {
         if(CrystalModifier.instance.isToggled && entity is EntityEnderCrystal) {
+            if(CrystalModifier.scaleTimes.containsKey(entity.entityId)) {
+
+            }
+
             val ticks = mc.renderPartialTicks
 
             val defaultSpinSpeed = entity.innerRotation + ticks
@@ -51,23 +55,30 @@ class CrystalModelHandler(
             val bounceSpeed = defaultBounceSpeed * customBounceSpeed
 
             pushMatrix()
-            scale(2.0f * getScaleX(), 2.0f * getScaleY(), 2.0f * getScaleZ())
+            scale(2.0f * getScaleX() * getScaleModifier(entity.entityId, 0), 2.0f * getScaleY() * getScaleModifier(entity.entityId, 0), 2.0f * getScaleZ() * getScaleModifier(entity.entityId, 0))
             translate(getTranslateX(), -0.5f + getTranslateY(), getTranslateZ())
             if (needToRenderBase()) bottom.render(scale)
-            scale(getScaleX(), getScaleY(), getScaleZ())
+            scale(getScaleX() * getScaleModifier(entity.entityId, 2), getScaleY() * getScaleModifier(entity.entityId, 2), getScaleZ() * getScaleModifier(entity.entityId, 2))
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
             translate(getTranslateX(), 0.8f + bounceSpeed + getTranslateY(), getTranslateZ())
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
             if (CrystalModifier.instance.outsideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox()!!, 2, scale)//getOutsideBox()?.render(scale)
-            scale(0.875f * getScaleX(), 0.875f * getScaleY(), 0.875f * getScaleZ())
+            scale(0.875f * getScaleX() * getScaleModifier(entity.entityId, 3), 0.875f * getScaleY() * getScaleModifier(entity.entityId, 3), 0.875f * getScaleZ() * getScaleModifier(entity.entityId, 3))
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
             if (CrystalModifier.instance.outsideCube2.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox2()!!, 3, scale)//getOutsideBox2()?.render(scale)
-            scale(0.875f * getScaleX(), 0.875f * getScaleY(), 0.875f * getScaleZ())
+            scale(0.875f * getScaleX() * getScaleModifier(entity.entityId, 1), 0.875f * getScaleY() * getScaleModifier(entity.entityId, 1), 0.875f * getScaleZ() * getScaleModifier(entity.entityId, 1))
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
             rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
             if (CrystalModifier.instance.insideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getInsideBox()!!, 1, scale)//drawRubiksBox(getInsideBox()!!, scale)
             popMatrix()
+
+            if(CrystalModifier.scaleTimes.containsKey(entity.entityId)) {
+                CrystalModifier.scaleTimes[entity.entityId]!![0]!!.add(CrystalModifier.instance.baseFadeOutDelay.valLong)
+                CrystalModifier.scaleTimes[entity.entityId]!![1]!!.add(CrystalModifier.instance.insideFadeOutDelay.valLong)
+                CrystalModifier.scaleTimes[entity.entityId]!![2]!!.add(CrystalModifier.instance.outsideFadeOutDelay.valLong)
+                CrystalModifier.scaleTimes[entity.entityId]!![3]!!.add(CrystalModifier.instance.outsideFadeOutDelay2.valLong)
+            }
         } else {
             super.render(
                 entity,
@@ -207,31 +218,28 @@ class CrystalModelHandler(
         }
     }
 
-    private fun needToRenderBase(): Boolean {
-        return if (CrystalModifier.instance.base.valBoolean) CrystalModifier.instance.alwaysBase.valBoolean || renderBase else false
-    }
+    private fun needToRenderBase() : Boolean = if (CrystalModifier.instance.base.valBoolean) CrystalModifier.instance.alwaysBase.valBoolean || renderBase else false
 
-    private fun getTranslateX(): Double {
-        return if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateX.valDouble else 0.0
-    }
+    private fun getTranslateX() : Double = if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateX.valDouble else 0.0
+    private fun getTranslateY() : Double = if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateY.valDouble else 0.0
+    private fun getTranslateZ() : Double = if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateZ.valDouble else 0.0
 
-    private fun getTranslateY(): Double {
-        return if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateY.valDouble else 0.0
-    }
+    private fun getScaleX() : Double = if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleX.valDouble else 1.0
+    private fun getScaleY() : Double = if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleY.valDouble else 1.0
+    private fun getScaleZ() : Double = if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleZ.valDouble else 1.0
 
-    private fun getTranslateZ(): Double {
-        return if (CrystalModifier.instance.translate.valBoolean) CrystalModifier.instance.translateZ.valDouble else 0.0
-    }
-
-    private fun getScaleX(): Double {
-        return if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleX.valDouble else 1.0
-    }
-
-    private fun getScaleY(): Double {
-        return if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleY.valDouble else 1.0
-    }
-
-    private fun getScaleZ(): Double {
-        return if (CrystalModifier.instance.scale.valBoolean) CrystalModifier.instance.scaleZ.valDouble else 1.0
+    private fun getScaleModifier(
+            entityID : Int,
+            cubeID : Int
+    ) : Double = if(CrystalModifier.scaleTimes.containsKey(entityID)) {
+        when(cubeID) {
+            0 -> if(CrystalModifier.instance.baseFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![0]!!.current()
+            1 -> if(CrystalModifier.instance.insideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![1]!!.current()
+            2 -> if(CrystalModifier.instance.outsideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![2]!!.current()
+            3 -> if(CrystalModifier.instance.outsideFadeOutDelay2.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![3]!!.current()
+            else -> 1.0
+        }
+    } else {
+        1.0
     }
 }

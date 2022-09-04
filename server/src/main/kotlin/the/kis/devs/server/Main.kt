@@ -49,7 +49,7 @@ fun main() {
         }
 
         if (line == "exit") {
-            server.stop()
+            break
         }
 
         server.connections.forEach {

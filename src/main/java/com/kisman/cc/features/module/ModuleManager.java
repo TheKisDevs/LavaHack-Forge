@@ -98,6 +98,7 @@ public class ModuleManager {
 		modules.add(new Baritone());
 		modules.add(new Cape());
 		modules.add(new Changer());
+//		modules.add(ClientFixer.INSTANCE);
 		modules.add(new Config());
 		modules.add(new CustomFontModule());
 		modules.add(new CustomMainMenuModule());
@@ -176,7 +177,7 @@ public class ModuleManager {
 		modules.add(new FreeCamRewrite());
 		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		//modules.add(new PacketFeatures()); // causes crash
+		modules.add(new PacketFeatures());
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());

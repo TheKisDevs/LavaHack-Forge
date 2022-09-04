@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @author _kisman_
  * @since 12:51 of 04.07.2022
  */
+@SuppressWarnings("unchecked")
 public class Utility {
     public static List<String> allowedFileSuffixes = Arrays.asList(
             ".png",//images
@@ -26,9 +28,11 @@ public class Utility {
             ".json",//lang files, shaders
             ".csv",//plugin mappings
             ".ScriptEngineFactory",//META_INF service
+            ".IBaritoneProvider",//META_INF service
             ".fsh",//shaders
-            ".vsh"//shaders
-
+            ".vsh",//shaders
+            ".shader",//shaders
+            ".lang"//shaders
     );
 
     public static boolean validResource(String name) {
@@ -85,5 +89,64 @@ public class Utility {
     
     public static String stringFixer(Object toFix) {
         return toFix.toString().replaceAll(" ", "_");
+    }
+
+    public static <T> T invokeMethod(
+            Object object,
+            String name,
+            Object... params
+    ) {
+        try {
+            Class<?>[] parameterTypes = new Class[params.length];
+
+            for(
+                    int i = 0;
+                    i < params.length - 1;
+                    i++
+            ) {
+                parameterTypes[i] = params[i].getClass();
+            }
+
+            Object result = object.getClass().getDeclaredMethod(
+                    name,
+                    parameterTypes
+            ).invoke(
+                    object,
+                    params
+            );
+
+            return (T) result;
+        } catch (
+                NoSuchMethodException
+                |
+                InvocationTargetException
+                |
+                IllegalAccessException
+                        e
+        ) {
+            return null;
+        }
+    }
+
+    public static <T> T field(
+            Object object,
+            String name
+    ) {
+        try {
+            Object result = object.getClass().getField(
+                    name
+            ).get(
+                    object
+            );
+
+            return (T) result;
+        } catch (
+                NoSuchFieldException
+                |
+                IllegalAccessException
+                        e
+        ) {
+            return null;
+        }
     }
 }

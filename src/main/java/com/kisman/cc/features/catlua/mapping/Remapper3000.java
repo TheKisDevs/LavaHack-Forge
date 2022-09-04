@@ -36,7 +36,7 @@ public class Remapper3000 {
         Kisman.LOGGER.info("[Remapper3000] Start remapping!");
 
 
-        if(!Files.exists(mapping) || !Files.exists(fieldsPath) || !Files.exists(methodsPath)) Kisman.LOGGER.error("[Remapper3000] You haven't mapping files, if you want to use lua scripts, you should to put mapping files in .minecraft/kisman/cc/Mapping/ and relaunch the client!");
+        if(!Files.exists(mapping) || !Files.exists(fieldsPath) || !Files.exists(methodsPath)) Kisman.LOGGER.error("[Remapper3000] You haven't mapping files, if you want to use lua scripts, you should to put mapping files in .minecraft/kisman.cc/Mapping/ and relaunch the client!");
         else {
             fieldsMapping = methodsMapping = fieldsMappingReverse = methodsMappingReverse = new HashMap<>();
 
