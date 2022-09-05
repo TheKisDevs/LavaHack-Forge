@@ -87,6 +87,7 @@ public class ModuleManager {
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
 		modules.add(new HoleFillerRewrite());
+		modules.add(new HoleKicker());
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
 		modules.add(new Quiver());
@@ -179,7 +180,7 @@ public class ModuleManager {
 		modules.add(new FreeCamRewrite());
 		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		modules.add(new PacketFeatures());
+		//modules.add(new PacketFeatures());
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());
