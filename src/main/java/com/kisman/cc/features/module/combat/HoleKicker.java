@@ -4,7 +4,6 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingEnum;
-import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.collections.Pair;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -32,14 +31,12 @@ public class HoleKicker extends Module {
     private final SettingEnum<RedstoneMode> redstoneMode = new SettingEnum<>("RedstoneMode", this, RedstoneMode.Torch);
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent);
     private final Setting range = new Setting("Range", this, 5, 1, 10, false);
-    private final Setting rotate = new Setting("Rotate", this, false);
     private final Setting packetPlace = new Setting("PacketPlace", this, false);
 
     public HoleKicker(){
         super("HoleKicker", Category.COMBAT);
         setmgr.rSetting(redstoneMode);
         setmgr.rSetting(swap);
-        setmgr.rSetting(range);
         setmgr.rSetting(range);
         setmgr.rSetting(packetPlace);
     }
@@ -51,8 +48,10 @@ public class HoleKicker extends Module {
 
         EntityPlayer target = EntityUtil.getTarget(range.getValFloat());
 
-        if(target == null)
+        if(target == null){
+            this.toggle();
             return;
+        }
 
         RedstoneMode rm = redstoneMode.getValEnum();
 
@@ -67,36 +66,70 @@ public class HoleKicker extends Module {
             rm = getOppositeMode(rm);
             redstone = InventoryUtil.getBlockInHotbar(getOppositeBlock());
         }
-        if(redstone == -1)
+        if(redstone == -1){
+            this.toggle();
             return;
+        }
 
         int old = mc.player.inventory.currentItem;
 
         BlockPos pos = new BlockPos(target.posX, target.posY, target.posZ);
 
-        EnumFacing facing = getEnumFacing(pos);
+        EnumFacing facing = getEnumFacing(pos, rm);
 
-        if(facing == null)
+        if(facing == null){
+            this.toggle();
             return;
+        }
 
         Pair<BlockPos> pair = getPlacements(pos, facing, rm);
 
-        if(pair == null)
+        if(pair == null){
+            this.toggle();
             return;
+        }
+
+        float yaw = 0;
+        float pitch = 0;
+
+        switch (facing.getOpposite()) {
+            case SOUTH:
+                yaw = 180;
+                pitch = 0;
+                break;
+            case NORTH:
+                yaw = 0;
+                pitch = 0;
+                break;
+            case EAST:
+                yaw = 90;
+                pitch = 0;
+                break;
+            case WEST:
+                yaw = -90;
+                pitch = 0;
+                break;
+            case UP:
+            case DOWN:
+                pitch = 90;
+                break;
+        }
+
+        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, pitch, mc.player.onGround));
 
         swap.getValEnum().getTask().doTask(piston, false);
 
-        BlockUtil.placeBlock2(pair.getFirst(), EnumHand.MAIN_HAND, rotate.getValBoolean(), packetPlace.getValBoolean());
+        BlockUtil.placeBlock2(pair.getFirst(), EnumHand.MAIN_HAND, false, packetPlace.getValBoolean());
 
         swap.getValEnum().getTask().doTask(redstone, false);
 
-        BlockUtil.placeBlock2(pair.getSecond(), EnumHand.MAIN_HAND, rotate.getValBoolean(), packetPlace.getValBoolean());
+        BlockUtil.placeBlock2(pair.getSecond(), EnumHand.MAIN_HAND, false, packetPlace.getValBoolean());
 
         swap.getValEnum().getTask().doTask(old, true);
 
         mc.world.getBlockState(pair.getFirst()).getBlock().rotateBlock(mc.world, pair.getFirst(), facing.getOpposite());
 
-        //this.toggle();
+        this.toggle();
     }
 
     private RedstoneMode getOppositeMode(RedstoneMode rm){
@@ -126,13 +159,17 @@ public class HoleKicker extends Module {
         return false;
     }
 
-    private EnumFacing getEnumFacing(BlockPos pos){
+    private EnumFacing getEnumFacing(BlockPos pos, RedstoneMode rm){
         List<EnumFacing> facings = new ArrayList<>();
         for(EnumFacing enumFacing : EnumFacing.HORIZONTALS){
             BlockPos offset = pos.offset(enumFacing).up();
             if(!mc.world.getBlockState(offset).getBlock().isReplaceable(mc.world, offset))
                 continue;
             if(checkEntities(offset))
+                continue;
+            if(!mc.world.getBlockState(pos.offset(enumFacing.getOpposite()).up()).getBlock().isReplaceable(mc.world, pos.offset(enumFacing.getOpposite()).up()))
+                continue;
+            if(getPlacements(pos, enumFacing, rm) == null)
                 continue;
             facings.add(enumFacing);
         }
@@ -145,7 +182,7 @@ public class HoleKicker extends Module {
 
     private Pair<BlockPos> getPlacements(BlockPos pos, EnumFacing facing, RedstoneMode rm){
         BlockPos offset = pos.offset(facing);
-        if(mc.world.getBlockState(offset).getBlock().isReplaceable(mc.world, offset))
+        if(BlockUtil.getPossibleSides(offset.up()).isEmpty())
             return null;
         offset = offset.up();
         if(rm == RedstoneMode.Block)
