@@ -11,23 +11,40 @@ repositories {
     mavenCentral()
 }
 
+configurations.create("include")
+
 dependencies {
     // Align versions of all Kotlin components
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    "include"(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     // Use the Kotlin JDK 8 standard library.
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.json:json:20210307")
-    implementation("com.mashape.unirest:unirest-java:1.4.9")
-    implementation("org.apache.httpcomponents:httpmime:4.5.13")
-    implementation("org.apache.httpcomponents:httpcore-nio:4.4.14")
-    implementation("org.apache.httpcomponents:httpcore:4.4.14")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
-    implementation("org.apache.httpcomponents:httpasyncclient:4.1.4")
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    "include"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    "include"("org.json:json:20210307")
+    "include"("com.mashape.unirest:unirest-java:1.4.9")
+    "include"("org.apache.httpcomponents:httpmime:4.5.13")
+    "include"("org.apache.httpcomponents:httpcore-nio:4.4.14")
+    "include"("org.apache.httpcomponents:httpcore:4.4.14")
+    "include"("org.apache.httpcomponents:httpclient:4.5.13")
+    "include"("org.apache.httpcomponents:httpasyncclient:4.1.4")
+    "include"("com.googlecode.json-simple:json-simple:1.1.1")
+
+    implementation(configurations["include"])
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation(kotlin("test"))
+}
+
+tasks.jar {
+    manifest.attributes(
+        "Main-Class" to "the.kis.devs.server.MainKt"
+    )
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    from(
+        *configurations["include"].map {
+            if (it.isDirectory) it else zipTree(it)
+        }.toTypedArray()
+    )
 }
 
 tasks.test {

@@ -10,8 +10,11 @@ import java.net.ServerSocket
 import java.util.*
 import kotlin.concurrent.thread
 
-class SocketServer(address: String, port: Int) {
-    private val server = ServerSocket(port, Constants.SERVER_BACKLOG, InetAddress.getByName(address))
+class SocketServer(
+    address : String?,
+    port : Int
+) {
+    private val server = ServerSocket(port, Constants.SERVER_BACKLOG, (if(address == null) null else InetAddress.getByName(address)))
 
     val connections = LinkedList<SocketServerConnection>()
     var onSocketConnected: (SocketServerConnection) -> Unit = { }

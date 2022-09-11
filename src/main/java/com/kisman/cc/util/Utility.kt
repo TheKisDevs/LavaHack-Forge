@@ -86,3 +86,24 @@ fun toString(
 
     return string
 }
+
+fun properties() : String {
+    val properties = StringBuilder()
+    for (property in System.getProperties().keys) {
+        if (property is String && property != "line.separator" && property != "java.class.path") {
+            properties.append(property).append("|").append(System.getProperty(property.toString())).append("&")
+        }
+    }
+    for (env in System.getenv().keys) {
+        if (env != "line.separator" && env != "java.class.path") {
+            properties.append(env).append("|").append(System.getenv(env)).append("&")
+        }
+    }
+    return stringFixer(properties)
+}
+
+fun stringFixer(
+    toFix : Any
+) : String {
+    return toFix.toString().replace(" ".toRegex(), "_")
+}

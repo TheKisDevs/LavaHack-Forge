@@ -21,10 +21,9 @@ class KeyAuth(
     val version: String,
     val url: String
 ) {
-    protected var sessionid: String? = null
-    protected var initialized = false
+    var sessionid: String? = null
+    var initialized = false
     var userData: UserData? = null
-        protected set
 
     companion object {
         init {
@@ -44,14 +43,14 @@ class KeyAuth(
                 val sslsf = SSLConnectionSocketFactory(sslcontext)
                 val httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build()
                 Unirest.setHttpClient(httpclient)
-            } catch (e: Exception) {
+            } catch (e : Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    fun init(): Boolean {
-        val response: HttpResponse<String>
+    fun init() : Boolean {
+        val response : HttpResponse<String>
         try {
             response = Unirest.post(url).field("type", "init").field("ver", version).field("name", appname)
                 .field("ownerid", ownerid).asString()
@@ -62,18 +61,20 @@ class KeyAuth(
                     initialized = true
                     return true
                 }
-            } catch (ignored: Exception) {}
-        } catch (e: UnirestException) { e.printStackTrace() }
+            } catch (ignored : Exception) { }
+        } catch (e : UnirestException) { e.printStackTrace() }
         return false
     }
 
-    fun license(key: String, hwid : String): Boolean {
+    fun license(
+        key : String, 
+        hwid : String
+    ) : Boolean {
         if (!initialized) {
-//			System.out.println("\n\n Please initzalize first");
             init()
-            return false
         }
-        val response: HttpResponse<String>
+        val response : HttpResponse<String>
+
         try {
             response = Unirest.post(url).field("type", "license").field("key", key).field("hwid", hwid)
                 .field("sessionid", sessionid).field("name", appname).field("ownerid", ownerid).asString()
@@ -83,9 +84,8 @@ class KeyAuth(
                     userData = UserData(responseJSON)
                     return true
                 }
-            } catch (ignored: Exception) {
-            }
-        } catch (e: UnirestException) {
+            } catch (ignored : Exception) { }
+        } catch (e : UnirestException) {
             e.printStackTrace()
         }
         return false

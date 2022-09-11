@@ -212,7 +212,7 @@ task privateJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'kisman.cc-b0.1.6.5-plus'
+    classifier = 'kisman.cc-b0.1.6.5-2-plus'
 }
 
 task kismanClass(type : Jar, dependsOn : jar) {
@@ -227,7 +227,6 @@ task kismanClass(type : Jar, dependsOn : jar) {
 
 task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
-        include 'baritone/**'
         include "com/kisman/cc/sockets/**"
         include 'com/kisman/cc/ai/**'
         include 'com/kisman/cc/api/**'
@@ -247,10 +246,11 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'mixins.kisman.refmap.json'
         include 'assets/kismancc/**'
         include 'Main.class'
+        include 'com/kisman/cc/sockets/**'
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHack-b0.1.6.5-plus'
+    classifier = 'LavaHack-b0.1.6.5-2-plus'
 }
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
@@ -274,6 +274,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'assets/kismancc/**'
         exclude 'org/cubic/**'
         exclude 'Main.class'
+        exclude 'com/kisman/cc/sockets/**'
     }
     manifest {
         attributes(

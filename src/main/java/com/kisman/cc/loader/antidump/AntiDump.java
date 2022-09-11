@@ -2,8 +2,8 @@ package com.kisman.cc.loader.antidump;
 
 import com.kisman.cc.loader.LoaderKt;
 import com.kisman.cc.loader.gui.GuiNewKt;
-import com.kisman.cc.sockets.client.SocketClient;
-import com.kisman.cc.sockets.data.SocketMessage;
+import com.kisman.cc.loader.sockets.client.SocketClient;
+import com.kisman.cc.loader.sockets.data.SocketMessage;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -23,6 +23,8 @@ public class AntiDump {
     private static final Unsafe unsafe;
     private static Method findNative;
     private static ClassLoader classLoader;
+
+    private static boolean flag = false;
 
     private static final String[] naughtyFlags = {
             "-XBootclasspath",
@@ -69,7 +71,7 @@ public class AntiDump {
             for (String arg : naughtyFlags) {
                 for (String inputArgument : inputArguments) {
                     if (inputArgument.contains(arg)) {
-                        if(arg.equals("-noverify")) {
+                        if (arg.equals("-noverify")) {
                             System.out.println("Found illegal noverify argument!");
                             LoaderKt.setStatus("Found illegal noverify argument!");
                             JOptionPane.showMessageDialog(null, "Please remove -noverify argument");
@@ -89,8 +91,10 @@ public class AntiDump {
             }
 
             try {
-                byte[] bytes = createDummyClass("java/lang/instrument/Instrumentation");
-                unsafe.defineClass("java.lang.instrument.Instrumentation", bytes, 0, bytes.length, null, null);
+                if(!flag) {
+                    byte[] bytes = createDummyClass("java/lang/instrument/Instrumentation");
+                    unsafe.defineClass("java.lang.instrument.Instrumentation", bytes, 0, bytes.length, null, null);
+                }
             } catch (Throwable e) {
                 e.printStackTrace();
                 dumpDetected();
@@ -103,11 +107,13 @@ public class AntiDump {
                 return false;
             }
 
-            String dummyClassPath = "com/kisman/cc/loader/antidump/MaliciousClassFilter";
+            if(!flag){
+                String dummyClassPath = "com/kisman/cc/loader/antidump/MaliciousClassFilter";
 
-            byte[] bytes = createDummyClass(dummyClassPath);
-            unsafe.defineClass(dummyClassPath.replaceAll("/", "."), bytes, 0, bytes.length, null, null);
-            System.setProperty("sun.jvm.hotspot.tools.jcore.filter", dummyClassPath.replaceAll("/", "."));
+                byte[] bytes = createDummyClass(dummyClassPath);
+                unsafe.defineClass(dummyClassPath.replaceAll("/", "."), bytes, 0, bytes.length, null, null);
+                System.setProperty("sun.jvm.hotspot.tools.jcore.filter", dummyClassPath.replaceAll("/", "."));
+            }
 
             disassembleStruct();
 
@@ -116,6 +122,8 @@ public class AntiDump {
             dumpDetected();
             return false;
         }
+
+        flag = true;
 
         return true;
     }

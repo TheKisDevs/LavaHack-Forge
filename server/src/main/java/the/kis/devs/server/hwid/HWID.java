@@ -32,7 +32,10 @@ public class HWID {
 	private final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
 	public String getHWID() {
-		return bytesToHex(generateHWID());
+		return properties.get("os.name") + properties.get("os.arch") + properties.get("os.version")
+				+ availableProcessors + properties.get("PROCESSOR_IDENTIFIER")
+				+ properties.get("PROCESSOR_ARCHITECTURE") + properties.get("PROCESSOR_ARCHITEW6432")
+				+ properties.get("NUMBER_OF_PROCESSORS");//bytesToHex(generateHWID());
 	}
 
 	public byte[] generateHWID() {

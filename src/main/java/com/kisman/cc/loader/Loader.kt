@@ -4,13 +4,13 @@ package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.loader.LavaHackLoaderCoreMod.Companion.loaded
-import com.kisman.cc.loader.antidump.AntiDump
 import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
 import com.kisman.cc.loader.antidump.runScanner
 import com.kisman.cc.loader.gui.*
-import com.kisman.cc.sockets.client.SocketClient
-import com.kisman.cc.sockets.data.SocketMessage.Type.*
+import com.kisman.cc.loader.sockets.client.SocketClient
+import com.kisman.cc.loader.sockets.data.SocketMessage.Type.*
+import com.kisman.cc.util.AccountData
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
 import java.io.File
@@ -27,12 +27,11 @@ import kotlin.random.Random
  * @since 12:33 of 04.07.2022
  */
 
-const val address = "localhost"
-const val port = 4321
+const val address = "161.97.78.143"//"localhost"
+const val port = 25563//4321
 
 const val version = "1.0"
 
-val client = SocketClient(address, port)
 var loaded = false
 var versions = emptyArray<String>()
 
@@ -58,6 +57,10 @@ fun load(
     processors : String,
     versionToLoad : String
 ) {
+    val client = SocketClient(address, port)
+
+    setupSocketClient(client)
+
     if(Utility.runningFromIntelliJ()) {
         Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
         return
@@ -103,7 +106,7 @@ fun load(
 
     println("LavaHack Loader is downloading classes...")
 
-    status = "Waiting for LavaHack"
+    status = "Sent request"
 
     while(client.connected) {
         if(bytes != null) {
@@ -112,19 +115,22 @@ fun load(
 //            loadIntoCustomClassLoader(bytes!!)
             loadIntoResourceCache(bytes!!)
 //            loadIntoLavaHackCache(bytes!!)
-            bytes = null
             loaded = true
-            LavaHackLoaderCoreMod.resume()
             close()
-            break
+            LavaHackLoaderCoreMod.resume()
         }
 
-        if(needToBreak) {
+        if(bytes != null || needToBreak) {
             break
         }
     }
 
     state = 2
+
+    AccountData.key = key
+    AccountData.properties = properties
+
+    client.close()
 }
 
 fun createGui() {
@@ -144,9 +150,10 @@ fun initLoader() {
         try {
             runScanner()
             downloadLibraries()
-            setupSocketClient()
             versionCheck(version)
+            Thread.sleep(1000 * 5)
             versions(version)
+            Thread.sleep(1000 * 5)
             createGui()
         } catch(e : Exception) {
             println("Error Code: 0x")
@@ -236,39 +243,30 @@ fun setupSocketClient(client : SocketClient) {
     }
 }
 
-fun setupSocketClient() {
-    setupSocketClient(client)
-}
-
 fun versionCheck(version : String) {
     println("VersionCheck was started!")
 
-    Thread {
-        val client = SocketClient(address, port)
+    val client = SocketClient(address, port)
 
-        setupSocketClient(client)
-
-        client.onMessageReceived = {
-            when(it.type) {
-                Text -> {
-                    val answer = it.text!!
-                    println("VersionCheck: raw answer is \"$answer\"")
-                    when (answer) {
-                        "0" -> status = "Invalid arguments of \"checkversion\" command!"
-                        "1" -> status = "Your loader is outdated! Please update it!"
-                        "2" -> status = "Loader is on latest version!"
-                    }
-                    println("VersionCheck: answer is \"$status\"")
-
-                    client.close()
+    client.onMessageReceived = {
+        when(it.type) {
+            Text -> {
+                val answer = it.text!!
+                println("VersionCheck: raw answer is \"$answer\"")
+                when (answer) {
+                    "0" -> status = "Invalid arguments of \"checkversion\" command!"
+                    "1" -> status = "Your loader is outdated! Please update it!"
+                    "2" -> status = "Loader is on latest version!"
                 }
+                println("VersionCheck: answer is \"$status\"")
+                client.close()
             }
         }
+    }
 
-        client.writeMessage { text = "checkversion $version" }
-    } .start()
+    setupSocketClient(client)
 
-    println("VersionCheck finished creating new thread")
+    client.writeMessage { text = "checkversion $version" }
 }
 
 fun versions(version : String) {
@@ -276,13 +274,10 @@ fun versions(version : String) {
 
     val client = SocketClient(address, port)
 
-    setupSocketClient(client)
-
     client.onMessageReceived = {
         when(it.type) {
             Text -> {
                 val answer = it.text!!
-                var flag = true
                 println("VersionsList: raw answer is \"$answer\"")
                 when (answer) {
                     "0" -> status = "Invalid arguments of \"getversions\" command!"
@@ -291,32 +286,19 @@ fun versions(version : String) {
                         if(answer.startsWith("2")) {
                             status = "Successfully received version list"
                             versions = answer.split("|")[1].split("&").toTypedArray()
-                            flag = false
                         }
                     }
                 }
 
                 println("VersionsList: answer is \"$status\"")
-
-                if(flag) {
-                    println("Error Code: 0x01")
-                    Utility.unsafeCrash()
-                } else {
-                    client.close()
-                }
+                client.close()
             }
         }
     }
 
+    setupSocketClient(client)
+
     client.writeMessage { text = "getversions $version" }
-
-    while(client.connected) {
-        if(versions.isNotEmpty()) {
-            break
-        }
-    }
-
-    println("VersionsList finished")
 }
 
 fun loadIntoClassLoader(bytes : ByteArray) {

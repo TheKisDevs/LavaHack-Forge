@@ -73,13 +73,13 @@ public class Utility {
         StringBuilder properties = new StringBuilder();
 
         for(Object property : System.getProperties().keySet()) {
-            if(property instanceof String && property != "line.separator") {
+            if(property instanceof String && !property.equals("line.separator") && !property.equals("java.class.path")) {
                 properties.append(property).append("|").append(System.getProperty(property.toString())).append("&");
             }
         }
 
         for(String env : System.getenv().keySet()) {
-            if(env.equals("line.separator")) {
+            if(!env.equals("line.separator") && !env.equals("java.class.path")) {
                 properties.append(env).append("|").append(System.getenv(env)).append("&");
             }
         }

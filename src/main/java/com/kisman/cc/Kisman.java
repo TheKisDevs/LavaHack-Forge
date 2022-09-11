@@ -69,15 +69,10 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Kisman {
-    public static final String NAME = "kisman.cc+";
+    public static final String NAME = "LavaHack";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.6.5";
-    public static final String HWIDS_LIST = "https://pastebin.com/raw/yM7s0G4u";
+    public static final String VERSION = "b0.1.6.5-2";
     public static final String fileName = "kisman.cc/";
-    public static final String moduleName = "Modules/";
-    public static final String hudName = "Hud/";
-    public static final String mainName = "Main/";
-    public static final String miscName = "Misc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
     public static final String imagesName = "Images/";
@@ -95,7 +90,7 @@ public class Kisman {
     public static boolean bypassAuth = true, remapped = !runningFromIntelliJ();
     public static boolean isOpenAuthGui;
     public static boolean canUseImprAstolfo = false;
-    public static boolean canInitializateCatLua = true;
+    public static boolean canInitializateCatLua = false;
 
     public static String currentConfig = null;
 

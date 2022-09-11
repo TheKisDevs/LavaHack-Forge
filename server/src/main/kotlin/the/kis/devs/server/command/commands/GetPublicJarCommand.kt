@@ -38,6 +38,8 @@ import java.io.File
  *
  * `3` - Illegal access for selected version
  *
+ * `4` - Wrong filter
+ *
  * @author _kisman_
  * @since 17:33 of 05.07.2022
  */
@@ -56,28 +58,43 @@ object GetPublicJarCommand : Command(
 
     override fun execute(line: String, args: List<String>): List<SocketMessage> {
         if(args.size == 6) {
-            val authAnswer = AuthCommand.execute("", listOf("auth", args[1], HWID(args[4], args[4].toInt()).hwid))//TODO: need try catch
+            for(property in args[3].split("|")) {
+                try {
+                    val split = property.split("&")
+                    val name = split[0]
+                    val value = split[1]
+
+                    if (name == "sun.jvm.hotspot.tools.jcore.filter" && value != "com.kisman.cc.loader.antidump.MaliciousClassFilter") {
+                        return listOf(SocketMessage("4"))
+                    }
+                } catch(_ : Exception) { }
+            }
+
+            val authAnswer = AuthCommand.execute("", listOf("auth", args[1], HWID(args[3], args[4].toInt()).hwid))//TODO: need try catch
+            
+            println("auth answer ${authAnswer[0].text}")
 
             if(authAnswer[0].text == "2") {
                 val checkVersionAnswer = CheckVersionCommand.execute("", listOf("checkversion", args[2]))
+
+                println("check version answer ${checkVersionAnswer[0].text}")
 
                 if(checkVersionAnswer[0].text == "2") {
                     val versionIndex = args[5].replace("_", " ")
                     val versionFile = versions[args[2]]?.get(versionIndex)
 
-                    val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar\\$versionFile"))
+                    val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar/$versionFile"))
+
+                    println("get file answer ${getFileAnswer[0].text}")
 
                     if(getFileAnswer[0].text == "2") {
-                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\$versionFile"), "LavaHack")))
+
+                        return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH/publicJar/$versionFile"))))
                     }
                 }
             }
 
             return listOf(SocketMessage("1"))
-        }
-
-        if(args.size == 1) {//TODO: remove it!!!
-            return listOf(SocketMessage("2"), SocketMessage(SocketFile(File("$DEFAULT_PATH\\publicJar\\${versions[LATEST_CLIENT_VERSION]?.get("b0.1.6.5 beta")}"), "LavaHack")))
         }
 
         return listOf(SocketMessage("0"))

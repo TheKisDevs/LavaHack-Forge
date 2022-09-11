@@ -45,10 +45,10 @@ object GetFileCommand : Command(
 
     override fun execute(line : String, args : List<String>) : List<SocketMessage> {
         if(args.size == 2) {
-            val path = DEFAULT_PATH + "\\" + args[1]
+            val path = DEFAULT_PATH + "/" + args[1]
 
             return if(Files.exists(Paths.get(path))) {
-                listOf(SocketMessage("2"), SocketMessage(SocketFile(File(path), "uwu")))
+                listOf(SocketMessage("2"), SocketMessage(SocketFile(File(path))))
             } else {
                 listOf(SocketMessage("1"))
             }

@@ -11,15 +11,25 @@ import the.kis.devs.server.keyauth.KeyAuthApp
  */
 
 const val LATEST_CLIENT_VERSION = "1.0"
-const val DEFAULT_PATH = "server\\files\\server"
+val DEFAULT_PATH = if(System.getProperty("java.class.path").contains("idea_rt.jar")) "server\\files\\server" else "./files/server"
 const val LAVAHACK_CLIENT_NAME = "LavaHack-Client"
 const val DISCORD_BOT_NAME = "LavaHack-DiscordBot"
 const val OP_NAME = "OP"
 
-const val ADDRESS = "localhost"
-const val PORT = 4321
+var ADDRESS : String? = null//"localhost"
+var PORT = 25563//4321
 
-fun main() {
+fun main(
+    args : Array<String>
+) {
+    /*if(args.size == 2) {
+        ADDRESS = args[0]
+        PORT = Integer.valueOf(args[1])
+    } else if(args.size == 1) {
+        ADDRESS = null
+        PORT = Integer.valueOf(args[1])
+    }*/
+
     KeyAuthApp.keyAuth.init()
 
     val server = SocketServer(ADDRESS, PORT)
