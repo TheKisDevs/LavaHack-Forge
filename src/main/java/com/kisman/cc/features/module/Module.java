@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.settings.SettingLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,6 +46,8 @@ public class Module implements IBindable {
 		this.priority = 1;
 
 		setmgr = Kisman.instance.settingsManager;
+
+		SettingLoader.load(this);
 	}
 
 	public void setToggled(boolean toggled) {

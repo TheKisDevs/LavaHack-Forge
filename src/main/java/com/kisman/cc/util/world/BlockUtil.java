@@ -301,6 +301,44 @@ public class BlockUtil {
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
     }
 
+    public static void placeBlock2(final BlockPos pos, final EnumHand hand, final boolean rotate, final boolean packet, EnumFacing direction){
+        EnumFacing side = getFirstFacing(pos);
+        if (side == null) return;
+
+        BlockPos neighbour = pos.offset(side);
+        EnumFacing opposite = side.getOpposite();
+
+        Vec3d hitVec = new Vec3d(neighbour).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
+        if (!mc.player.isSneaking()) {
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            mc.player.setSneaking(true);
+        }
+
+        if (rotate){
+            Vec3d eyesPos = getEyesPos();
+            double diffX = hitVec.x - eyesPos.x;
+            double diffY = hitVec.y - eyesPos.y;
+            double diffZ = hitVec.z - eyesPos.z;
+            double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+            float yaw = (float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
+            float pitch = (float) -Math.toDegrees(Math.atan2(diffY, diffXZ));
+
+            float r1 = mc.player.rotationYaw + MathHelper.wrapDegrees(yaw - mc.player.rotationYaw);
+            float r2 = mc.player.rotationPitch + MathHelper.wrapDegrees(pitch - mc.player.rotationPitch);
+
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(r1, MathHelper.normalizeAngle((int) r2, 360), mc.player.onGround));
+        }
+
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+
+        rightClickBlock(neighbour, hitVec, hand, direction, packet);
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.rightClickDelayTimer = 4;
+
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+    }
+
     public static EnumFacing getFirstFacing(final BlockPos pos) {
         final Iterator<EnumFacing> iterator = getPossibleSides(pos).iterator();
         if (iterator.hasNext()) {
