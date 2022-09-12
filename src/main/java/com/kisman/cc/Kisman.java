@@ -31,6 +31,7 @@ import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
+import com.kisman.cc.loader.LavaHackInterface;
 import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.Setting;
@@ -140,6 +141,8 @@ public class Kisman {
     //Phobos Plugins
     public final PluginHandler pluginHandler = new PluginHandler();
 
+    public boolean haveLoader = false;
+
     private Kisman() {}
 
     public void coreModInit() {
@@ -148,6 +151,12 @@ public class Kisman {
 
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
         if(init) return;
+
+        try {
+            haveLoader = LavaHackInterface.INSTANCE.isLoaded();
+        } catch (Exception e) {
+            haveLoader = false;
+        }
 
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();

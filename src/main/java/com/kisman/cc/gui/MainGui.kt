@@ -20,10 +20,10 @@ class MainGui {
         fun openGui(bar : SelectionBar) {
             when (bar.selection) {
                 Guis.ClickGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqGui)
-                Guis.CSGOGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.clickGuiNew)
+                Guis.CSGOGui -> Minecraft.getMinecraft().displayGuiScreen(if(Kisman.instance.haveLoader) Minecraft.getMinecraft().currentScreen else Kisman.instance.clickGuiNew)
                 Guis.HudEditor -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.halqHudGui)
                 Guis.Music -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.musicGui)
-                Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.consoleGui)
+                Guis.Console -> Minecraft.getMinecraft().displayGuiScreen(if(Kisman.instance.haveLoader) Minecraft.getMinecraft().currentScreen else Kisman.instance.consoleGui)
                 Guis.PingBypassGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.pingBypassGui)
 //                Guis.NoComGui -> Minecraft.getMinecraft().displayGuiScreen(Kisman.instance.noComGui)
             }
