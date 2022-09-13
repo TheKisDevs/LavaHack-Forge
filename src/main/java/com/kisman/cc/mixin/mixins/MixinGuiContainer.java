@@ -2,6 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.gui.other.container.ItemESP;
 import com.kisman.cc.features.module.render.ContainerModifier;
+import com.kisman.cc.sockets.SocketsManagerKt;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -37,6 +38,8 @@ public class MixinGuiContainer extends GuiScreen {
 
     public ItemESP itemESP = new ItemESP();
 
+    private boolean flag2 = false;
+
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void drawee(int mouseX, int mouseY, float particalTicks, CallbackInfo ci) {
         if(ContainerModifier.instance.isToggled()) {
@@ -56,17 +59,33 @@ public class MixinGuiContainer extends GuiScreen {
             }
 
             if(ContainerModifier.instance.itemESP.getValBoolean()) {
-                itemESP.getGuiTextField().drawTextBox();
+                try {
+                    itemESP.getGuiTextField().drawTextBox();
+                } catch(Exception e) {
+                    if(flag2) {
+                        SocketsManagerKt.reportIssue("Got exception in drawScreen tail inject hook by ItemESP, stack trace: " + e);
+                        flag2 = false;
+                    }
+                }
             }
         }
     }
 
+    private boolean flag3 = false;
+
     @Inject(method = "drawScreen", at = @At("HEAD"))
     private void doDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (itemESP != null) {
-            itemESP.update(guiLeft, guiTop, xSize, ySize);
-            itemESP.getItemStacks().clear();
-            if(!itemESP.getGuiTextField().getText().isEmpty()) for(Slot slot : inventorySlots.inventorySlots) if(slot.getHasStack() && slot.getStack().getDisplayName().toLowerCase().contains(itemESP.getGuiTextField().getText().toLowerCase()))  itemESP.getItemStacks().add(slot.getStack());
+            try {
+                itemESP.update(guiLeft, guiTop, xSize, ySize);
+                itemESP.getItemStacks().clear();
+                if(!itemESP.getGuiTextField().getText().isEmpty()) for(Slot slot : inventorySlots.inventorySlots) if(slot.getHasStack() && slot.getStack().getDisplayName().toLowerCase().contains(itemESP.getGuiTextField().getText().toLowerCase()))  itemESP.getItemStacks().add(slot.getStack());
+            } catch(Exception e) {
+                if(flag3) {
+                    SocketsManagerKt.reportIssue("Got exception in drawScreen head inject hook by ItemESP, stack trace: " + e);
+                    flag3 = false;
+                }
+            }
         }
     }
 
@@ -101,7 +120,7 @@ public class MixinGuiContainer extends GuiScreen {
             if (ContainerModifier.instance.isToggled() && ContainerModifier.instance.itemESP.getValBoolean() && !itemESP.getItemStacks().isEmpty() && itemESP.getItemStacks().contains(slot.getStack())) Render2DUtil.drawRect(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, ColorUtils.astolfoColors(100, 100));
         } catch(Exception e) {
             if(flag) {
-                e.printStackTrace();
+                SocketsManagerKt.reportIssue("Got exception in drawSlot invoke inject hook by ItemESP, stack trace: " + e);
                 flag = false;
             }
         }

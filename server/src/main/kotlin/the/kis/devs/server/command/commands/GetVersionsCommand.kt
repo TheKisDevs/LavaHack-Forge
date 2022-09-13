@@ -26,7 +26,7 @@ object GetVersionsCommand : Command(
 ) {
     override fun execute(line: String, args: List<String>): List<SocketMessage> {//TODO
         if(args.size == 2) {
-            return listOf(SocketMessage("2|b0.1.6.5 beta&b0.1.6.5"))
+            return listOf(SocketMessage("2|b0.1.6.5-3&b0.1.6.5"))
         }
 
         return listOf(SocketMessage("0"))

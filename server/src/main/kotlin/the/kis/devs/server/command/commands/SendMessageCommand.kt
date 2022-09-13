@@ -14,11 +14,9 @@ object SendMessageCommand : Command(
         line : String,
         args : List<String>
     ) : List<SocketMessage> {
-        if(args.size == 1) {
-            println(args[0])
+        println(args.joinToString(" "))
 
-            //TODO: discord bot implementation
-        }
+        //TODO: discord bot implementation
 
         return emptyList()
     }

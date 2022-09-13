@@ -24,10 +24,10 @@ import java.io.UnsupportedEncodingException
 /**@author Dallas/gerald0mc
  */
 class ConsoleGui : GuiScreen(), Draggable {
-    private var width1: Int = 300
-    private var height1: Int = 250 - 25
-    private var x: Int = 25
-    private var y: Int = 25
+    private var width1 : Int = 300
+    private var height1 : Int = 250 - 25
+    private var x : Int = 25
+    private var y : Int = 25
 
     private val history = ArrayList<String>()
     var entryString = ""

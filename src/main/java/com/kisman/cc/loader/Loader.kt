@@ -27,10 +27,10 @@ import kotlin.random.Random
  * @since 12:33 of 04.07.2022
  */
 
-const val address = "161.97.78.143"//"localhost"
-const val port = 25563//4321
+const val address = "161.97.78.143"
+const val port = 25563
 
-const val version = "1.1"
+const val version = "1.2"
 
 var loaded = false
 var versions = emptyArray<String>()
@@ -39,6 +39,8 @@ var oldLogs = ArrayList<String>()
 
 var overwritingLibrary = false
 var haveLibraries = false
+
+var canPressInstallButton = true
 
 var status = "Idling"
     set(value) {
@@ -57,80 +59,88 @@ fun load(
     processors : String,
     versionToLoad : String
 ) {
-    val client = SocketClient(address, port)
-
-    setupSocketClient(client)
-
     if(Utility.runningFromIntelliJ()) {
         Kisman.LOGGER.debug("Not loading due to running in debugging environment!")
         return
     }
 
+    val client = SocketClient(address, port)
+
+    setupSocketClient(client)
+
     var bytes : ByteArray? = null
-    var state = 0
     var needToBreak = false
+
+    fun processBytes() {
+        status = "Successfully received LavaHack"
+        loaded = true
+
+        loadIntoResourceCache(bytes!!)
+        close()
+        AccountData.key = key
+        AccountData.properties = properties
+        LavaHackLoaderCoreMod.resume()
+        client.close()
+    }
 
     client.onMessageReceived = {
         when(it.type) {
             Text -> {
-                if(state == 1) {
-                    when (it.text) {
-                        "0" -> {
-                            status = "Invalid arguments of \"getpublicjar\" command!"
-                            needToBreak = true
-                        }
-                        "1" -> {
-                            status = "Invalid key or HWID | Loader is outdated!"
-                            needToBreak = true
-                        }
-                        "2" -> status = "Key and HWID is valid!"
-                        "3" -> {
-                            status = "You have no access for selected version!"
-                            needToBreak = true
-                        }
+                when (it.text) {
+                    "0" -> {
+                        status = "Invalid arguments of \"getpublicjar\" command!"
+                        needToBreak = true
+                    }
+                    "1" -> {
+                        status = "Invalid key or HWID | Loader is outdated!"
+                        needToBreak = true
+                    }
+                    "2" -> status = "Key and HWID is valid!"
+                    "3" -> {
+                        status = "You have no access for selected version!"
+                        needToBreak = true
                     }
                 }
             }
             File -> {
                 bytes = it.file?.byteArray
+                processBytes()
+                canPressInstallButton = false
             }
             Bytes -> {
                 bytes = it.byteArray
+                processBytes()
+                canPressInstallButton = false
             }
         }
     }
 
 
-    state = 1
     client.writeMessage { text = "getpublicjar $key $version $properties $processors $versionToLoad" }
 
     println("LavaHack Loader is downloading classes...")
 
     status = "Sent request"
-
+/*
     while(client.connected) {
         if(bytes != null) {
             status = "Successfully received LavaHack"
-
-//            loadIntoCustomClassLoader(bytes!!)
-            loadIntoResourceCache(bytes!!)
-//            loadIntoLavaHackCache(bytes!!)
             loaded = true
+
+            loadIntoResourceCache(bytes!!)
             close()
+            AccountData.key = key
+            AccountData.properties = properties
             LavaHackLoaderCoreMod.resume()
         }
 
         if(bytes != null || needToBreak) {
+            canPressInstallButton = true
             break
         }
-    }
+    }*/
 
-    state = 2
-
-    AccountData.key = key
-    AccountData.properties = properties
-
-    client.close()
+//    client.close()
 }
 
 fun createGui() {
@@ -253,10 +263,11 @@ fun versionCheck(version : String) {
             Text -> {
                 val answer = it.text!!
                 println("VersionCheck: raw answer is \"$answer\"")
-                when (answer) {
-                    "0" -> status = "Invalid arguments of \"checkversion\" command!"
-                    "1" -> status = "Your loader is outdated! Please update it!"
-                    "2" -> status = "Loader is on latest version!"
+                status = when (answer) {
+                    "0" -> "Invalid arguments of \"checkversion\" command!"
+                    "1" -> "Your loader is outdated! Please update it!"
+                    "2" -> "Loader is on latest version!"
+                    else -> "kill yourself <3"
                 }
                 println("VersionCheck: answer is \"$status\"")
                 client.close()

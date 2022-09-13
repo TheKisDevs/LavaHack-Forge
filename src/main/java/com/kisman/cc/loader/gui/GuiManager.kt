@@ -16,7 +16,7 @@ fun onLogin(
     if(key.isNotEmpty()) {
         Thread {
             load(
-                key,
+                Utility.cleaner(key),
                 com.kisman.cc.loader.version,
                 Utility.properties(),
                 Runtime.getRuntime().availableProcessors().toString(),

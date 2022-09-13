@@ -3,13 +3,16 @@ package com.kisman.cc.event;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventResolutionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.event.events.lua.EventClientChat;
+import com.kisman.cc.event.events.lua.EventClientTickUpdate;
+import com.kisman.cc.event.events.lua.EventRender2D;
+import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.CustomMainMenuModule;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.features.module.combat.AutoRer;
-import com.kisman.cc.gui.auth.AuthGui;
 import com.kisman.cc.util.TickRateUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -18,7 +21,8 @@ import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraftforge.client.event.ClientChatEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -39,11 +43,6 @@ public class EventProcessor {
     public int oldWidth = -1, oldHeight = -1;
 
     public EventProcessor() {
-        if(!Kisman.bypassAuth) {
-            mc.displayGuiScreen(new AuthGui());
-            Kisman.isOpenAuthGui = true;
-        }
-
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
@@ -56,8 +55,6 @@ public class EventProcessor {
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
         if(Kisman.instance.aiImpr != null) Kisman.instance.aiImpr.onEntityJoinWorld(event);
     }
-
-    @SubscribeEvent public void onGuiOpen(GuiOpenEvent event) {if(!(event.getGui() instanceof AuthGui) && Kisman.isOpenAuthGui && !Kisman.bypassAuth) event.setCanceled(true);}
 
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
@@ -79,6 +76,8 @@ public class EventProcessor {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
+        Kisman.instance.scriptManager.runCallback("tick");
+        Kisman.EVENT_BUS.post(new EventClientTickUpdate());
         if(oldWidth != mc.displayWidth || oldHeight != mc.displayHeight) {
             oldWidth = mc.displayWidth;
             oldHeight = mc.displayHeight;
@@ -129,4 +128,22 @@ public class EventProcessor {
             if(totemPopEvent.isCanceled()) event.cancel();
         }
     });
+
+    @SubscribeEvent
+    public void onRender(RenderGameOverlayEvent.Text event) {
+        Kisman.instance.scriptManager.runCallback("hud");
+        Kisman.EVENT_BUS.post(new EventRender2D(event.getPartialTicks()));
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        Kisman.EVENT_BUS.post(new EventRender3D(event.getPartialTicks()));
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onClientChat(ClientChatEvent event) {
+        EventClientChat eventClientChat = new EventClientChat(event.getMessage());
+        Kisman.EVENT_BUS.post(eventClientChat);
+        if(eventClientChat.cancelled) event.setMessage(eventClientChat.message);
+    }
 }

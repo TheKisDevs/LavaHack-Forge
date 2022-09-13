@@ -73,13 +73,13 @@ public class Utility {
         StringBuilder properties = new StringBuilder();
 
         for(Object property : System.getProperties().keySet()) {
-            if(property instanceof String && !property.equals("line.separator") && !property.equals("java.class.path")) {
+            if(property instanceof String && !property.equals("line.separator") && !property.equals("java.class.path") && !property.equals("ESET_OPTIONS") && !property.equals("sun.java.command")) {
                 properties.append(property).append("|").append(System.getProperty(property.toString())).append("&");
             }
         }
 
         for(String env : System.getenv().keySet()) {
-            if(!env.equals("line.separator") && !env.equals("java.class.path")) {
+            if(!env.equals("line.separator") && !env.equals("java.class.path") && !env.equals("ESET_OPTIONS") && !env.equals("sun.java.command")) {
                 properties.append(env).append("|").append(System.getenv(env)).append("&");
             }
         }
@@ -148,5 +148,11 @@ public class Utility {
         ) {
             return null;
         }
+    }
+
+    public static String cleaner(
+            String toClean
+    ) {
+        return toClean.replaceAll("\\s", "");
     }
 }

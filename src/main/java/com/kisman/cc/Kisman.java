@@ -2,7 +2,6 @@ package com.kisman.cc;
 
 import com.kisman.cc.api.cape.CapeAPI;
 import com.kisman.cc.event.EventProcessor;
-import com.kisman.cc.event.EventProcessorLua;
 import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
@@ -72,7 +71,7 @@ import java.util.HashMap;
 public class Kisman {
     public static final String NAME = "LavaHack";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.6.5-2";
+    public static final String VERSION = "b0.1.6.5-3";
     public static final String fileName = "kisman.cc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
@@ -129,7 +128,6 @@ public class Kisman {
     public MainAiImpr aiImpr;
 
     //catlua
-    public EventProcessorLua eventProcessorLua;
     public Remapper3000 remapper3000;
     public ForgeMappings forgeMappings;
     public LuaRotation luaRotation;
@@ -190,7 +188,6 @@ public class Kisman {
         ShaderShell.init();
 
         //catlua
-        eventProcessorLua = new EventProcessorLua();
         remapper3000 = new Remapper3000();
         remapper3000.init();
         luaRotation = new LuaRotation();

@@ -10,7 +10,7 @@ import the.kis.devs.server.keyauth.KeyAuthApp
  * @since 13:22 of 05.07.2022
  */
 
-const val LATEST_CLIENT_VERSION = "1.1"
+const val LATEST_CLIENT_VERSION = "1.2"
 val DEFAULT_PATH = if(System.getProperty("java.class.path").contains("idea_rt.jar")) "server\\files\\server" else "./files/server"
 const val LAVAHACK_CLIENT_NAME = "LavaHack-Client"
 const val OP_NAME = "OP"

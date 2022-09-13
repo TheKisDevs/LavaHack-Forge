@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
-import com.kisman.cc.gui.halq.util.TextUtil;
+import com.kisman.cc.gui.halq.util.TextUtilKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -95,24 +95,16 @@ public class Slider implements Component {
         if(bool) {
             if(key == Keyboard.KEY_RETURN) {
                 bool = false;
-                if(!customValue.isEmpty() && customValue.matches(TextUtil.Companion.getDoubleRegex())) setting.setValDouble(TextUtil.Companion.parseNumber(customValue));
+                if(!customValue.isEmpty()) setting.setValDouble(TextUtilKt.parseNumber(customValue, setting.getValDouble()));
                 return;
             }
 
-            if(key == 14 && !customValue.isEmpty()) {
+            if(key == 14 && !customValue.isEmpty() && TextUtilKt.parseNumber(customValue, setting.getValDouble()) != setting.getValDouble()) {
                 customValue = customValue.substring(0, customValue.length() - 1);
                 return;
             }
 
-            if(customValue.isEmpty()) {
-                if (TextUtil.Companion.isNumberChar(typedChar) && typedChar != '0') customValue += typedChar;
-            } else {
-                if(TextUtil.Companion.isNumberChar(typedChar)) customValue += typedChar;
-                else if(typedChar == '.' && !hasDot) {
-                    customValue += typedChar;
-                    hasDot = true;
-                }
-            }
+            customValue += typedChar;
         }
     }
     @Override public void setOff(int newOff) {this.offset = newOff;}

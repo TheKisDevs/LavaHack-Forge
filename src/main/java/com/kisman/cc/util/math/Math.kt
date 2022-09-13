@@ -46,3 +46,12 @@ fun lerp(
 ) : Int {
     return from + (to - from) * delta
 }
+
+fun Double.min(
+    minimumValue : Double
+) : Double {
+    return kotlin.math.min(
+        this,
+        minimumValue
+    )
+}

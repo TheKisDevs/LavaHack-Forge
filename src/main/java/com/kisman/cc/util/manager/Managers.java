@@ -2,10 +2,8 @@ package com.kisman.cc.util.manager;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.gui.auth.AuthGui;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,19 +23,12 @@ public class Managers {
 
     public Managers() {
         instance = this;
-
-        if(!Kisman.bypassAuth) {
-            if(!(Minecraft.getMinecraft().currentScreen instanceof AuthGui)) {
-                throw new NullPointerException("Nice try! Retard!");
-            }
-        }
     }
 
     public void init() {
         timerManager = new TimerManager();
         colorManager = new ColorManager();
         cpsManager = new CPSManager();
-
 
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(listener);

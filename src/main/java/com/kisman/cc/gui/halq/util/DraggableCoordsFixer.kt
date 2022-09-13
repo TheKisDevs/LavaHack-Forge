@@ -4,6 +4,7 @@ import com.kisman.cc.gui.api.Draggable
 import com.kisman.cc.util.Globals
 import net.minecraft.client.gui.ScaledResolution
 import com.kisman.cc.util.math.coerceIn
+import com.kisman.cc.util.math.min
 
 /**
  * @author _kisman_
@@ -14,8 +15,8 @@ class DraggableCoordsFixer {
         fun fix(draggable : Draggable) {
             val sr = ScaledResolution(Globals.mc)
 
-            draggable.setX(draggable.getX().coerceIn(0.0, sr.scaledWidth - draggable.getW()))
-            draggable.setY(draggable.getY().coerceIn(0.0, sr.scaledHeight - draggable.getH()))
+            draggable.setX(draggable.getX().coerceIn(0.0, sr.scaledWidth - draggable.getW()).min(0.0))
+            draggable.setY(draggable.getY().coerceIn(0.0, sr.scaledHeight - draggable.getH().min(0.0)))
         }
     }
 }
