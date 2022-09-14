@@ -42,6 +42,9 @@ var haveLibraries = false
 
 var canPressInstallButton = true
 
+var receivedVersionCheckAnswer = false
+var receivedVersions = false
+
 var status = "Idling"
     set(value) {
         if(created) {
@@ -64,18 +67,22 @@ fun load(
         return
     }
 
+    if(!canPressInstallButton) {
+        return
+    }
+
     val client = SocketClient(address, port)
 
     setupSocketClient(client)
 
-    var bytes : ByteArray? = null
-    var needToBreak = false
-
-    fun processBytes() {
+    fun processBytes(
+        bytes : ByteArray
+    ) {
         status = "Successfully received LavaHack"
         loaded = true
+        canPressInstallButton = false
 
-        loadIntoResourceCache(bytes!!)
+        loadIntoResourceCache(bytes)
         close()
         AccountData.key = key
         AccountData.properties = properties
@@ -86,65 +93,29 @@ fun load(
     client.onMessageReceived = {
         when(it.type) {
             Text -> {
-                when (it.text) {
-                    "0" -> {
-                        status = "Invalid arguments of \"getpublicjar\" command!"
-                        needToBreak = true
-                    }
-                    "1" -> {
-                        status = "Invalid key or HWID | Loader is outdated!"
-                        needToBreak = true
-                    }
-                    "2" -> status = "Key and HWID is valid!"
-                    "3" -> {
-                        status = "You have no access for selected version!"
-                        needToBreak = true
-                    }
+                status = when (it.text) {
+                    "0" -> "Invalid arguments of \"getpublicjar\" command!"
+                    "1" -> "Invalid key or HWID | Loader is outdated!"
+                    "2" -> "Key and HWID is valid!"
+                    "3" -> "You have no access for selected version!"
+                    else -> "Invalid answer for \"getpublicjar\" command"
                 }
             }
-            File -> {
-                bytes = it.file?.byteArray
-                processBytes()
-                canPressInstallButton = false
-            }
-            Bytes -> {
-                bytes = it.byteArray
-                processBytes()
-                canPressInstallButton = false
-            }
+            File -> processBytes(it.file!!.byteArray)
+            Bytes -> processBytes(it.byteArray)
         }
     }
 
 
     client.writeMessage { text = "getpublicjar $key $version $properties $processors $versionToLoad" }
 
-    println("LavaHack Loader is downloading classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is  trying to download classes...")
 
-    status = "Sent request"
-/*
-    while(client.connected) {
-        if(bytes != null) {
-            status = "Successfully received LavaHack"
-            loaded = true
-
-            loadIntoResourceCache(bytes!!)
-            close()
-            AccountData.key = key
-            AccountData.properties = properties
-            LavaHackLoaderCoreMod.resume()
-        }
-
-        if(bytes != null || needToBreak) {
-            canPressInstallButton = true
-            break
-        }
-    }*/
-
-//    client.close()
+    status = "Trying to download LavaHack"
 }
 
 fun createGui() {
-    println("Creating the gui")
+    LavaHackLoaderCoreMod.LOGGER.info("Creating the gui")
 
     create()
 
@@ -161,12 +132,27 @@ fun initLoader() {
             runScanner()
             downloadLibraries()
             versionCheck(version)
-            Thread.sleep(1000 * 5)
+
+            while(true) {
+                if(receivedVersionCheckAnswer) {
+                    break
+                }
+
+                Thread.sleep(1000 * 5)
+            }
+
             versions(version)
-            Thread.sleep(1000 * 5)
+
+            while(true) {
+                if(receivedVersions) {
+                    break
+                }
+                Thread.sleep(1000 * 5)
+            }
+
             createGui()
         } catch(e : Exception) {
-            println("Error Code: 0x")
+            LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x")
             Utility.unsafeCrash()
         }
     } .start()
@@ -248,13 +234,13 @@ fun setupSocketClient(client : SocketClient) {
         client.connect()
         client.writeMessage { text = "LavaHack-Client" }
     } catch(e : Exception) {
-        println("Error Code: 0x2")
+        LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x2")
         Utility.unsafeCrash()
     }
 }
 
 fun versionCheck(version : String) {
-    println("VersionCheck was started!")
+    LavaHackLoaderCoreMod.LOGGER.info("VersionCheck was started!")
 
     val client = SocketClient(address, port)
 
@@ -262,14 +248,22 @@ fun versionCheck(version : String) {
         when(it.type) {
             Text -> {
                 val answer = it.text!!
-                println("VersionCheck: raw answer is \"$answer\"")
+                LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: raw answer is \"$answer\"")
                 status = when (answer) {
-                    "0" -> "Invalid arguments of \"checkversion\" command!"
-                    "1" -> "Your loader is outdated! Please update it!"
+                    "0" -> {
+                        LavaHackLoaderCoreMod.LOGGER.info("Invalid arguments of \"checkversion\" command!")
+                        Utility.unsafeCrash()
+                        "Invalid arguments of \"checkversion\" command!"
+                    }
+                    "1" -> {
+                        LavaHackLoaderCoreMod.LOGGER.info("Your loader is outdated! Please update it!")
+                        Utility.unsafeCrash()
+                        "Your loader is outdated! Please update it!"
+                    }
                     "2" -> "Loader is on latest version!"
                     else -> "kill yourself <3"
                 }
-                println("VersionCheck: answer is \"$status\"")
+                LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: answer is \"$status\"")
                 client.close()
             }
         }
@@ -281,7 +275,7 @@ fun versionCheck(version : String) {
 }
 
 fun versions(version : String) {
-    println("VersionsList was started!")
+    LavaHackLoaderCoreMod.LOGGER.info("VersionsList was started!")
 
     val client = SocketClient(address, port)
 
@@ -289,7 +283,7 @@ fun versions(version : String) {
         when(it.type) {
             Text -> {
                 val answer = it.text!!
-                println("VersionsList: raw answer is \"$answer\"")
+                LavaHackLoaderCoreMod.LOGGER.info("VersionsList: raw answer is \"$answer\"")
                 when (answer) {
                     "0" -> status = "Invalid arguments of \"getversions\" command!"
                     "1" -> status = "Invalid loader version!"
@@ -301,7 +295,7 @@ fun versions(version : String) {
                     }
                 }
 
-                println("VersionsList: answer is \"$status\"")
+                LavaHackLoaderCoreMod.LOGGER.info("VersionsList: answer is \"$status\"")
                 client.close()
             }
         }
@@ -325,7 +319,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
     val resources = HashMap<String, ByteArray>()
 
-    println("LavaHack Loader is injecting classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting classes...")
 
     status = "Injecting classes..."
 
@@ -337,7 +331,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
             if (name.endsWith(".class")) {
-                println("Injecting class \"${name.removeSuffix(".class")}\"")
+                LavaHackLoaderCoreMod.LOGGER.info("Injecting class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
@@ -350,7 +344,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
                 classesCount++
                 status = "Injecting $name"
             } else if(Utility.validResource(name)) {
-                println("Found new resource \"$name\"")
+                LavaHackLoaderCoreMod.LOGGER.info("Found new resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
                 resourcesCount++
                 status = "Found \"$name\" resource."
@@ -358,9 +352,9 @@ fun loadIntoResourceCache(bytes : ByteArray) {
         }
     }
 
-    println("Injected $classesCount classes, Found $resourcesCount resources")
+    LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
 
-    println("LavaHack Loader is injecting resources...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting resources...")
 
     if(resources.isNotEmpty()) {
         val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
@@ -382,14 +376,14 @@ fun loadIntoResourceCache(bytes : ByteArray) {
         classLoader.addURL(tempFile.toURI().toURL())
     }
 
-    println("LavaHack Loader is setting resourceCache!")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is setting resourceCache!")
     status = "Setting \"resourceCache\""
 
     resourceCacheField[classLoader] = resourceCache
 
     status = "Done!"
 
-    println("LavaHack Loader is done!")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is done!")
 }
 
 fun loadIntoCustomClassLoader(
@@ -398,7 +392,7 @@ fun loadIntoCustomClassLoader(
     val classes = ConcurrentHashMap<String, ByteArray>()
     val resources = HashMap<String, ByteArray>()
 
-    println("LavaHack Loader is injecting LavaHack...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting LavaHack...")
 
     status = "Finding files..."
 
@@ -410,7 +404,7 @@ fun loadIntoCustomClassLoader(
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
             if (name.endsWith(".class")) {
-                println("Found class \"${name.removeSuffix(".class")}\"")
+                LavaHackLoaderCoreMod.LOGGER.info("Found class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
@@ -419,7 +413,7 @@ fun loadIntoCustomClassLoader(
                 classesCount++
                 status = "Found class \"${name.removeSuffix(".class")}\""
             } else if(Utility.validResource(name)) {
-                println("Found resource \"$name\"")
+                LavaHackLoaderCoreMod.LOGGER.info("Found resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(zipStream)
                 resourcesCount++
                 status = "Found resource \"$name\""
@@ -427,10 +421,10 @@ fun loadIntoCustomClassLoader(
         }
     }
 
-    println("Found $classesCount classes and $resourcesCount resources")
+    LavaHackLoaderCoreMod.LOGGER.info("Found $classesCount classes and $resourcesCount resources")
     status = "Found $classesCount classes and $resourcesCount resources"
 
-    println("LavaHack Loader is injecting classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting classes...")
     status = "Injecting classes..."
 
     if(classes.isNotEmpty()) {
@@ -454,7 +448,7 @@ fun loadIntoCustomClassLoader(
         }*/
     }
 
-    println("LavaHack Loader is injecting resources...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting resources...")
     status = "Injecting resources..."
 
     if(resources.isNotEmpty()) {
@@ -463,7 +457,7 @@ fun loadIntoCustomClassLoader(
         val jos = JarOutputStream(fos)
 
         for(entry in resources.entries) {
-            println("Injecting \"${entry.key}\" resource")
+            LavaHackLoaderCoreMod.LOGGER.info("Injecting \"${entry.key}\" resource")
             status = "Injecting \"${entry.key}\" resource"
             jos.putNextEntry(ZipEntry(entry.key))
             jos.write(entry.value)
@@ -480,7 +474,7 @@ fun loadIntoCustomClassLoader(
 
     status = "Successfully loader!"
 
-    println("LavaHack Loader is done!")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is done!")
 }
 
 private fun loadClass(

@@ -32,12 +32,16 @@ public class Utility {
             ".fsh",//shaders
             ".vsh",//shaders
             ".shader",//shaders
-            ".lang"//shaders
+            ".lang"//lang files
     );
 
     public static boolean validResource(String name) {
         for(String suffix : allowedFileSuffixes) if(name.endsWith(suffix)) return true;
         return false;
+    }
+
+    public static boolean runningOnWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     public static boolean runningFromIntelliJ() {
@@ -73,18 +77,22 @@ public class Utility {
         StringBuilder properties = new StringBuilder();
 
         for(Object property : System.getProperties().keySet()) {
-            if(property instanceof String && !property.equals("line.separator") && !property.equals("java.class.path") && !property.equals("ESET_OPTIONS") && !property.equals("sun.java.command")) {
+            if(property instanceof String && validProperty((String) property)) {
                 properties.append(property).append("|").append(System.getProperty(property.toString())).append("&");
             }
         }
 
         for(String env : System.getenv().keySet()) {
-            if(!env.equals("line.separator") && !env.equals("java.class.path") && !env.equals("ESET_OPTIONS") && !env.equals("sun.java.command")) {
+            if(validProperty(env)) {
                 properties.append(env).append("|").append(System.getenv(env)).append("&");
             }
         }
 
         return stringFixer(properties);
+    }
+
+    private static boolean validProperty(String property) {
+        return !property.equals("line.separator") && !property.equals("java.class.path") && !property.equals("ESET_OPTIONS") && !property.equals("sun.java.command");
     }
     
     public static String stringFixer(Object toFix) {

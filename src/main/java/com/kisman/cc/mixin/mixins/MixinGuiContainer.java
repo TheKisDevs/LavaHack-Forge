@@ -89,13 +89,23 @@ public class MixinGuiContainer extends GuiScreen {
         }
     }
 
+    private boolean flag4 = true;
+
     /**
      * @author _kisman_
      * @reason nya~ uwa~ owa~
      */
     @Overwrite
     protected void keyTyped(char typedChar, int keyCode) {
-        if(ContainerModifier.instance.itemESP.getValBoolean()) itemESP.getGuiTextField().textboxKeyTyped(typedChar, keyCode);
+        try {
+            if(ContainerModifier.instance.itemESP.getValBoolean()) itemESP.getGuiTextField().textboxKeyTyped(typedChar, keyCode);
+        } catch(Exception e) {
+            if(flag4) {
+                SocketsManagerKt.reportIssue("Got exception in keyTyped overwrite hook by ItemESP, stack trace: " + e);
+                flag4 = false;
+            }
+        }
+
         if (keyCode == 1 || (this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode) && !itemESP.getGuiTextField().isFocused())) mc.player.closeScreen();
         checkHotbarKeys(keyCode);
         if (hoveredSlot != null && hoveredSlot.getHasStack()) {
@@ -104,11 +114,20 @@ public class MixinGuiContainer extends GuiScreen {
         }
     }
 
+    private boolean flag5 = true;
+
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void doMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
         if(ContainerModifier.instance.isToggled() && ContainerModifier.instance.itemESP.getValBoolean() && itemESP != null) {
-            itemESP.getGuiTextField().mouseClicked(mouseX, mouseY, mouseButton);
-            if(itemESP.getGuiTextField().isFocused()) ci.cancel();
+            try {
+                itemESP.getGuiTextField().mouseClicked(mouseX, mouseY, mouseButton);
+                if(itemESP.getGuiTextField().isFocused()) ci.cancel();
+            } catch(Exception e) {
+                if(flag5) {
+                    SocketsManagerKt.reportIssue("Got exception in mouseClicked head inject hook by ItemESP, stack trace: " + e);
+                    flag5 = false;
+                }
+            }
         }
     }
 

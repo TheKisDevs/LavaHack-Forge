@@ -15,8 +15,8 @@ class DraggableCoordsFixer {
         fun fix(draggable : Draggable) {
             val sr = ScaledResolution(Globals.mc)
 
-            draggable.setX(draggable.getX().coerceIn(0.0, sr.scaledWidth - draggable.getW()).min(0.0))
-            draggable.setY(draggable.getY().coerceIn(0.0, sr.scaledHeight - draggable.getH().min(0.0)))
+            draggable.setX(draggable.getX().coerceIn(0.0, sr.scaledWidth - draggable.getW()))
+            draggable.setY(draggable.getY().coerceIn(0.0, sr.scaledHeight - draggable.getH()))
         }
     }
 }

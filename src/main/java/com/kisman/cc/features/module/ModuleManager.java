@@ -102,7 +102,7 @@ public class ModuleManager {
 		modules.add(new Changer());
 //		modules.add(ClientFixer.INSTANCE);
 		modules.add(new Config());
-		modules.add(new CustomFontModule());
+		modules.add(CustomFontModule.instance);
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
 		modules.add(new GuiModule());

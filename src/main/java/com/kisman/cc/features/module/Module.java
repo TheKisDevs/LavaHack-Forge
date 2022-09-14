@@ -5,6 +5,7 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.settings.SettingLoader;
 import net.minecraft.client.Minecraft;
@@ -140,4 +141,8 @@ public class Module implements IBindable {
 	@Override public int getMouseButton() {return mouse;}
 	@Override public void setMouseButton(int button) {this.mouse = button;}
 	@Override public @NotNull String getButtonName() {return "Bind";}
+
+	public MultiThreaddableModulePattern threads() {
+		return new MultiThreaddableModulePattern(this).preInit().init();
+	}
 }

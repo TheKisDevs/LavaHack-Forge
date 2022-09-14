@@ -55,3 +55,5 @@ fun Double.min(
         minimumValue
     )
 }
+
+fun Double.square() : Double = this * this

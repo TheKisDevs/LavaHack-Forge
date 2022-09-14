@@ -1,16 +1,19 @@
 package com.kisman.cc.features.module.client;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.render.customfont.CustomFontUtilKt;
+import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.util.enums.FontStyles;
+import com.kisman.cc.util.enums.Fonts;
+import com.kisman.cc.util.render.customfont.CustomFontUtilKt;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class CustomFontModule extends Module {
+    public final SettingEnum<Fonts> font = new SettingEnum<>("Mode", this, Fonts.Verdana).register();
     private final Setting antiAlias = register(new Setting("Anti Alias", this, true));
     private final Setting fractionMetrics = register(new Setting("Fraction Metrics", this, true));
-    public Setting mode = register(new Setting("Mode", this, "Comfortaa", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century", "Jellee Bold")));
     public final Setting style = register(new Setting("Style", this, FontStyles.Plain));
     public final Setting test = register(new Setting("Test", this, false));
     public final Setting test2 = register(new Setting("Test 2", this, false));
@@ -21,11 +24,11 @@ public class CustomFontModule extends Module {
 
     public static boolean turnOn = false;
 
-    public static CustomFontModule instance;
+    public static CustomFontModule instance = new CustomFontModule();
 
-    public CustomFontModule() {
+    private CustomFontModule() {
         super("CustomFont", "custom font", Category.CLIENT);
-        super.setDisplayInfo(() -> "[" + mode.getValString() + (fallbackFont.getValBoolean() ? " | " + fallbackMode.getValString() : "") + "]");
+        super.setDisplayInfo(() -> "[" + font.getValString() + (fallbackFont.getValBoolean() ? " | " + fallbackMode.getValString() : "") + "]");
 
         instance = this;
     }

@@ -42,7 +42,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
-version = 'b0.1.6.5-3'
+version = 'b0.1.6.5-4'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 
@@ -103,13 +103,7 @@ dependencies {
     }
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 
-    compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.1.4'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.14'
-    compile group: 'org.apache.httpcomponents', name: 'httpcore-nio', version: '4.4.14'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     compile group: 'org.json', name: 'json', version: '20210307'
-    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
     compile group: 'com.viaversion', name: 'viaversion', version: '4.2.2-SNAPSHOT'
     compile group: 'com.viaversion', name: 'viabackwards', version: '4.2.1-SNAPSHOT'
     compile group: "com.sun.net.httpserver", name: "http", version: "20070405"
@@ -174,13 +168,7 @@ shadowJar {
         include(dependency('org.yaml:snakeyaml'))
         include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
-        include(dependency('org.apache.httpcomponents:httpasyncclient'))
-        include(dependency('org.apache.httpcomponents:httpclient'))
-        include(dependency('org.apache.httpcomponents:httpcore'))
-        include(dependency('org.apache.httpcomponents:httpcore-nio'))
-        include(dependency('org.apache.httpcomponents:httpmime'))
         include(dependency('org.json:json'))
-        include(dependency('com.mashape.unirest:unirest-java'))
         include(dependency('com.viaversion:viaversion'))
         include(dependency('com.viaversion:viabackwards'))
         include(dependency('com.sun.net.httpserver:http'))
@@ -212,7 +200,7 @@ task privateJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'kisman.cc-b0.1.6.5-3'
+    classifier = 'kisman.cc-b0.1.6.5-4'
 }
 
 task kismanClass(type : Jar, dependsOn : jar) {
@@ -250,7 +238,7 @@ task publicJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHack-b0.1.6.5-3'
+    classifier = 'LavaHack-b0.1.6.5-4'
 }
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
@@ -289,7 +277,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHackLoader-1.2'
+    classifier = 'LavaHackLoader-1.2.1'
 }
 
 build.dependsOn(privateJar, publicJar, loaderJar)

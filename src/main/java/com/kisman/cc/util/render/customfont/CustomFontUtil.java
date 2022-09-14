@@ -2,6 +2,7 @@ package com.kisman.cc.util.render.customfont;
 
 import com.kisman.cc.features.module.client.CustomFontModule;
 import com.kisman.cc.util.enums.FontStyles;
+import com.kisman.cc.util.enums.Fonts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -48,6 +49,8 @@ public class CustomFontUtil {
 
     public static AbstractFontRenderer jelleeb18 = new ExtendedFontRenderer(getFontTTF("jellee-bold", 18));
 
+    public static AbstractFontRenderer minecraftRus13 = new ExtendedFontRenderer(getFontTTF("minecraft", 13));
+
     public static Font getFontTTF(String name, int size) {
         return getFontTTF(name, FontStyles.Plain, size);
     }
@@ -67,21 +70,21 @@ public class CustomFontUtil {
     }
 
     public static int getStringWidth(String text) {
-        return CustomFontUtilKt.Companion.getStringWidth(getCustomFontName(), text);
+        return CustomFontUtilKt.Companion.getStringWidth(text);
     }
 
     public static int getStringWidth(String text, boolean gui) {
-        return CustomFontUtilKt.Companion.getStringWidth(getCustomFontName(), text, gui);
+        return CustomFontUtilKt.Companion.getStringWidth(text, gui);
     }
 
     public static void drawString(String text, double x, double y, int color, boolean gui) {
-        if (customFont()) CustomFontUtilKt.Companion.getCustomFont(getCustomFontName(), gui).drawString(text, x, y, color);
+        if (customFont()) CustomFontUtilKt.Companion.getCustomFont(gui).drawString(text, x, y, color);
         else fontRenderer.drawString(text, (int)x, (int)y, color);
     }
 
     public static int drawString(String text, double x, double y, int color) {
         if (customFont()) {
-            CustomFontUtilKt.Companion.getCustomFont(getCustomFontName()).drawString(text, x, y, color);
+            CustomFontUtilKt.Companion.getCustomFont().drawString(text, x, y, color);
             return 0;
         }
         return fontRenderer.drawString(text, (int)x, (int)y, color);
@@ -89,19 +92,19 @@ public class CustomFontUtil {
 
     public static int drawStringWithShadow(String text, double x, double y, int color) {
         if (customFont()) {
-            CustomFontUtilKt.Companion.getCustomFont(getCustomFontName()).drawStringWithShadow(text, (int) x, (int) y, color);
+            CustomFontUtilKt.Companion.getCustomFont().drawStringWithShadow(text, (int) x, (int) y, color);
             return 0;
         }
         return fontRenderer.drawStringWithShadow(text, (float)x, (float)y, color);
     }
 
     public static void drawCenteredStringWithShadow(String text, double x, double y, int color) {
-        if (customFont()) CustomFontUtilKt.Companion.getCustomFont(getCustomFontName()).drawCenteredStringWithShadow(text, (int) x, (int) y, color);
+        if (customFont()) CustomFontUtilKt.Companion.getCustomFont().drawCenteredStringWithShadow(text, (int) x, (int) y, color);
         else fontRenderer.drawStringWithShadow(text, (float) x - fontRenderer.getStringWidth(text) / 2.0F, (float) y, color);
     }
 
     public static int getFontHeight(boolean gui) {
-        return CustomFontUtilKt.Companion.getHeight(getCustomFontName(), gui);
+        return CustomFontUtilKt.Companion.getHeight(gui);
     }
 
     public static int getFontHeight() {
@@ -112,7 +115,7 @@ public class CustomFontUtil {
         return CustomFontModule.turnOn;
     }
 
-    public static String getCustomFontName() {
-        return CustomFontModule.instance == null ? null : CustomFontModule.instance.mode.getValString();
+    public static Fonts getFont() {
+        return CustomFontModule.instance.font.getValEnum();
     }
 }

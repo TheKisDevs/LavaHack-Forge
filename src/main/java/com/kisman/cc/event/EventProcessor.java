@@ -35,9 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EventProcessor {
     private final Minecraft mc = Minecraft.getMinecraft();
 
-    //NEC vars
-    public boolean hasRan = false;
-
     public AtomicBoolean ongoing;
 
     public int oldWidth = -1, oldHeight = -1;
@@ -100,7 +97,7 @@ public class EventProcessor {
     @EventHandler
     private final Listener<PacketEvent.Receive> packet = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketRespawn && AutoRer.instance.lagProtect.getValBoolean()) disableCa();
-        if(event.getPacket() instanceof SPacketChat && !Kisman.bypassAuth && Config.instance.configurate.getValBoolean()) {
+        if(event.getPacket() instanceof SPacketChat && Config.instance.configurate.getValBoolean()) {
             SPacketChat packet = (SPacketChat) event.getPacket();
             String message = packet.chatComponent.getUnformattedText();
             if(message.contains("+")) {

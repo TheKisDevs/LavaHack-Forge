@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.client
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
+import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.pingbypass.serializer.friend.FriendSerializer
@@ -27,6 +28,7 @@ import net.minecraft.network.play.server.SPacketKeepAlive
  * @author _kisman_
  * @since 20:30 of 19.08.2022
  */
+@Beta
 object PingBypass : Module(
     "PingBypass",
     "Connects you to server via custom proxy",

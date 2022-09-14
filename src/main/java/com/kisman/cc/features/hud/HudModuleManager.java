@@ -36,6 +36,7 @@ public class HudModuleManager {
 		modules.add(new ServerIp());
 		modules.add(new Speed());
 		modules.add(new TargetHUD());
+		modules.add(new TextRadar());
 		modules.add(new Tps());
 		modules.add(new Welcomer());
 	}

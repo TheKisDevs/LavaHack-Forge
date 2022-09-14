@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -80,16 +79,21 @@ public abstract class MixinFontRenderer {
      * @author _kisman_
      * @reason nya~
      */
-    @Overwrite
-    public int drawString(String text, float x, float y, int color, boolean dropShadow) {
-        enableAlpha();
-        resetStyles();
-        int i;
-        if (dropShadow) {
-            Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
-            i = renderString(text, x + (changer.getShadowTextModifier().getValBoolean() ? changer.getShadowX().getValFloat() : 1), y + (changer.getShadowTextModifier().getValBoolean() ? changer.getShadowY().getValFloat() : 1), color, true);
-            return Math.max(i, renderString(text, x, y, color, false));
-        } else return renderString(text, x, y, color, false);
+    @Inject(method = "drawString*", at = @At("HEAD"), cancellable = true)
+    private void drawStringHook(String text, float x, float y, int color, boolean dropShadow, CallbackInfoReturnable<Integer> cir) {
+        Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
+        if(changer.getShadowTextModifier().getValBoolean()) {
+            enableAlpha();
+            resetStyles();
+
+            if (dropShadow) {
+                cir.setReturnValue(Math.max(
+                        renderString(text, x + changer.getShadowX().getValFloat(), y + changer.getShadowY().getValFloat(), color, true),
+                        renderString(text, x, y, color, false)
+                ));
+                cir.cancel();
+            }
+        }
     }
 
     @Inject(

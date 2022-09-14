@@ -1,5 +1,6 @@
 package com.kisman.cc.loader.antidump;
 
+import com.kisman.cc.loader.LavaHackLoaderCoreMod;
 import com.kisman.cc.loader.LoaderKt;
 import com.kisman.cc.loader.gui.GuiNewKt;
 import com.kisman.cc.loader.sockets.client.SocketClient;
@@ -72,16 +73,16 @@ public class AntiDump {
                 for (String inputArgument : inputArguments) {
                     if (inputArgument.contains(arg)) {
                         if (arg.equals("-noverify")) {
-                            System.out.println("Found illegal noverify argument!");
+                            LavaHackLoaderCoreMod.getLOGGER().info("Found illegal noverify argument!");
                             LoaderKt.setStatus("Found illegal noverify argument!");
                             JOptionPane.showMessageDialog(null, "Please remove -noverify argument");
                             GuiNewKt.close();
                             SocketClient client = new SocketClient(LoaderKt.address, LoaderKt.port);
                             LoaderKt.setupSocketClient(client);
-                            client.writeMessage(new SocketMessage("User with key \"" + key + "\" have illegal -noverify argument!"));
+                            client.writeMessage(new SocketMessage("sendmessage User with key \"" + key + "\" have illegal -noverify argument!"));
                             //TODO: ban this key for 1 day
                         } else {
-                            System.out.println("Found illegal program arguments!");
+                            LavaHackLoaderCoreMod.getLOGGER().info("Found illegal program arguments!");
                             dumpDetected();
                         }
 
@@ -102,7 +103,7 @@ public class AntiDump {
             }
 
             if (isClassLoaded("sun.instrument.InstrumentationImpl")) {
-                System.out.println("Found sun.instrument.InstrumentationImpl!");
+                LavaHackLoaderCoreMod.getLOGGER().info("Found sun.instrument.InstrumentationImpl!");
                 dumpDetected();
                 return false;
             }

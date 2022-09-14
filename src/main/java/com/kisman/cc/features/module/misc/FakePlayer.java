@@ -44,10 +44,12 @@ public class FakePlayer extends Module {
         if(mc.player == null || mc.world == null || player == null) super.setToggled(false);
 
         if(move.getValBoolean()) {
-            player.moveForward = mc.player.moveForward + (new Random().nextInt(5) / 10F);
-            player.moveStrafing = mc.player.moveStrafing + (new Random().nextInt(5) / 10F);
+            try {
+                player.moveForward = mc.player.moveForward + (new Random().nextInt(5) / 10F);
+                player.moveStrafing = mc.player.moveStrafing + (new Random().nextInt(5) / 10F);
 
-            travel(player.moveStrafing, player.moveVertical, player.moveForward);
+                travel(player.moveStrafing, player.moveVertical, player.moveForward);
+            } catch(Exception ignored) { }
         }
     }
 
