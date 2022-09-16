@@ -5,10 +5,12 @@ import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.features.module.exploit.*;
+import com.kisman.cc.features.module.exploit.LogoutSpots;
 import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.misc.botnet.BotnetConnection;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
+import com.kisman.cc.features.module.player.AutoMine;
 import com.kisman.cc.features.module.render.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -173,6 +175,7 @@ public class ModuleManager {
 		//player
 		modules.add(AntiDesync.INSTANCE);
 		modules.add(new AntiHunger());
+		modules.add(new AutoMine());
 		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
@@ -198,6 +201,7 @@ public class ModuleManager {
 		modules.add(new FakePearl());
 		modules.add(new FastMove());
 		modules.add(new Ghost());
+		modules.add(new LogoutSpots());
 		modules.add(new MiddleClick());
 		modules.add(new NewChunks());
 		modules.add(new NoFallExploit());
