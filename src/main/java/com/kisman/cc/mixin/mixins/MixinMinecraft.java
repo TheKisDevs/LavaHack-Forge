@@ -7,7 +7,9 @@
  import baritone.api.event.events.WorldEvent;
  import baritone.api.event.events.type.EventState;
  import com.kisman.cc.Kisman;
+ import com.kisman.cc.event.Event;
  import com.kisman.cc.event.events.EventClientTick;
+ import com.kisman.cc.event.events.EventSendClickBlockToController;
  import com.kisman.cc.event.events.KeyboardEvent;
  import com.kisman.cc.event.events.MouseEvent;
  import com.kisman.cc.features.module.player.AntiDesync;
@@ -271,5 +273,20 @@
   private void runTickMouseHook(CallbackInfo ci) {
    Kisman.EVENT_BUS.post(new MouseEvent(Mouse.getEventButton(),
            Mouse.getEventButtonState()));
+  }
+
+  @Inject(method = "sendClickBlockToController", at = @At("HEAD"), cancellable = true)
+  public void onSendClickBlockToControllerPre(boolean leftClick, CallbackInfo ci){
+   EventSendClickBlockToController event = new EventSendClickBlockToController(Event.Era.PRE, leftClick);
+   Kisman.EVENT_BUS.post(event);
+   if(event.isCancelled()){
+    ci.cancel();
+   }
+  }
+
+  @Inject(method = "sendClickBlockToController", at = @At("RETURN"))
+  public void onSendClickBlockToControllerPost(boolean leftClick, CallbackInfo ci){
+   EventSendClickBlockToController event = new EventSendClickBlockToController(Event.Era.POST, leftClick);
+   Kisman.EVENT_BUS.post(event);
   }
  }

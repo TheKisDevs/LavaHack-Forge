@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,5 +59,21 @@ public class MixinPlayerControllerMP {
         {
             info.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "onPlayerDamageBlock", at = @At("HEAD"), cancellable = true)
+    private void onPlayerDamageBlockPre(BlockPos pos, EnumFacing facing, CallbackInfoReturnable<Boolean> cir){
+        EventPlayerDamageBlock.Pre event = new EventPlayerDamageBlock.Pre(pos, facing);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled()){
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
+    }
+
+    @Inject(method = "onPlayerDamageBlock", at = @At("RETURN"))
+    private void onPlayerDamageBlockPost(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir){
+        EventPlayerDamageBlock.Post event = new EventPlayerDamageBlock.Post(posBlock, directionFacing);
+        Kisman.EVENT_BUS.post(event);
     }
 }

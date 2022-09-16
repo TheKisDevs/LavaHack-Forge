@@ -201,6 +201,7 @@ public class ModuleManager {
 		modules.add(new FakePearl());
 		modules.add(new FastMove());
 		modules.add(new Ghost());
+		modules.add(new HandMine());
 		modules.add(new LogoutSpots());
 		modules.add(new MiddleClick());
 		modules.add(new NewChunks());
