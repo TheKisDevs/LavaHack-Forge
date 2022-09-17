@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -52,6 +53,7 @@ public class SurroundRewrite extends Module {
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
     private final Setting syncronized = register(new Setting("Syncronized", this, false));
     private final SettingEnum<Vectors> mode = new SettingEnum<Vectors>("Mode", this, Vectors.Normal).register();
+    private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
@@ -439,6 +441,12 @@ public class SurroundRewrite extends Module {
         return Blocks.ENDER_CHEST;
     }
 
+    private List<BlockPos> getActualDynamicBlocks(){
+        if(extension.getValBoolean())
+            return getDynamicBlocksExtension();
+        return getDynamicBlocks();
+    }
+
     private List<BlockPos> getDynamicBlocks(){
         List<BlockPos> upperBlocks = getDynamicUpperBlocks();
         List<BlockPos> blocks = new ArrayList<>(16);
@@ -450,6 +458,52 @@ public class SurroundRewrite extends Module {
             blocks.add(pos);
         }
         return blocks;
+    }
+
+    private List<BlockPos> getDynamicBlocksExtension(){
+        List<BlockPos> upperBlocks = getDynamicUpperBlocks();
+        List<BlockPos> blocks = new ArrayList<>(16);
+        if(feetBlocks.getValBoolean())
+            blocks.addAll(getDynamicBlocksOffset(-1));
+        for(BlockPos pos : upperBlocks){
+            List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
+            blocks.addAll(helpingBlocks);
+            blocks.add(pos);
+        }
+        List<EntityPlayer> players = new ArrayList<>();
+        for(BlockPos pos : blocks){
+            List<EntityPlayer> playersInside = mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos));
+            if(players.isEmpty())
+                players = mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos.down()));
+            players.addAll(playersInside);
+        }
+        List<BlockPos> actualBlocks = new ArrayList<>(blocks);
+        for(EntityPlayer player : players){
+            if(player.equals(mc.player))
+                continue;
+            List<BlockPos> curUpperBlocks = getDynamicUpperBlocks(player, mc.player.posY);
+            List<BlockPos> positions = new ArrayList<>(16);
+            if(feetBlocks.getValBoolean())
+                positions.addAll(getDynamicBlocksOffset(player, mc.player.posY, -1));
+            for(BlockPos pos : curUpperBlocks){
+                List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
+                positions.addAll(helpingBlocks);
+                positions.add(pos);
+            }
+            List<EntityPlayer> newPlayers = new ArrayList<>(players);
+            newPlayers.add(mc.player);
+            List<BlockPos> remove = new ArrayList<>();
+            for(EntityPlayer entityPlayer : newPlayers){
+                List<BlockPos> raw = getDynamicBlocksOffset(entityPlayer, mc.player.posY, 0);
+                for(BlockPos pos : positions){
+                    if(raw.contains(pos))
+                        remove.add(pos);
+                }
+            }
+            positions.removeAll(remove);
+            actualBlocks.addAll(positions);
+        }
+        return actualBlocks;
     }
 
     private List<BlockPos> getHelpingBlocks(BlockPos pos){
@@ -479,6 +533,38 @@ public class SurroundRewrite extends Module {
         Vec3d vec2 = new Vec3d(mc.player.posX + 0.3, mc.player.posY + offset, mc.player.posZ - 0.3);
         Vec3d vec3 = new Vec3d(mc.player.posX - 0.3, mc.player.posY + offset, mc.player.posZ + 0.3);
         Vec3d vec4 = new Vec3d(mc.player.posX - 0.3, mc.player.posY + offset, mc.player.posZ - 0.3);
+        addIfChecks(vec1, list);
+        addIfChecks(vec2, list);
+        addIfChecks(vec3, list);
+        addIfChecks(vec4, list);
+        return list;
+    }
+
+    private List<BlockPos> getDynamicUpperBlocks(Entity entity, double y){
+        List<BlockPos> rawBlocks = getDynamicBlocksOffset(entity, y, 0);
+        List<BlockPos> blocks = new ArrayList<>(16);
+        for(BlockPos pos : rawBlocks){
+            BlockPos b1 = pos.north();
+            BlockPos b2 = pos.east();
+            BlockPos b3 = pos.south();
+            BlockPos b4 = pos.west();
+            if(!rawBlocks.contains(b1)) blocks.add(b1);
+            if(!rawBlocks.contains(b2)) blocks.add(b2);
+            if(!rawBlocks.contains(b3)) blocks.add(b3);
+            if(!rawBlocks.contains(b4)) blocks.add(b4);
+        }
+        return blocks;
+    }
+
+    private List<BlockPos> getDynamicBlocksOffset(Entity entity, double y, int offset){
+        List<BlockPos> list = new ArrayList<>(16);
+        AxisAlignedBB aabb = entity.getEntityBoundingBox();
+        double oX = (aabb.maxX - aabb.minX) / 2.0;
+        double oZ = (aabb.maxZ - aabb.minZ) / 2.0;
+        Vec3d vec1 = new Vec3d(entity.posX + oX, y + offset, entity.posZ + oZ);
+        Vec3d vec2 = new Vec3d(entity.posX + oX, y + offset, entity.posZ - oZ);
+        Vec3d vec3 = new Vec3d(entity.posX - oX, y + offset, entity.posZ + oZ);
+        Vec3d vec4 = new Vec3d(entity.posX - oX, y + offset, entity.posZ - oZ);
         addIfChecks(vec1, list);
         addIfChecks(vec2, list);
         addIfChecks(vec3, list);
@@ -611,7 +697,7 @@ public class SurroundRewrite extends Module {
         public List<BlockPos> getBlocks(){
             List<BlockPos> list = new ArrayList<>(64);
             if(this == Dynamic)
-                return instance.getDynamicBlocks();
+                return instance.getActualDynamicBlocks();
             if(this == AntiFacePlace)
                 return instance.getAntiFacePlaceBlocks();
             if(instance.feetBlocks.getValBoolean())
