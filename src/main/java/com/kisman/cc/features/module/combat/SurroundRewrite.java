@@ -53,6 +53,8 @@ public class SurroundRewrite extends Module {
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
     private final Setting syncronized = register(new Setting("Syncronized", this, false));
     private final SettingEnum<Vectors> mode = new SettingEnum<Vectors>("Mode", this, Vectors.Normal).register();
+    private final Setting rangeCheck = register(new Setting("RangeCheck", this, false));
+    private final Setting placeRange = register(new Setting("PlaceRange", this, 5.5, 1, 10, false).setVisible(rangeCheck::getValBoolean));
     private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
@@ -325,6 +327,8 @@ public class SurroundRewrite extends Module {
                 continue;
             if(!isReplaceable(pos)) continue;
             if(checkEntities(pos)) continue;
+            if(rangeCheck.getValBoolean() && mc.player.getDistanceSq(pos) > placeRange.getValDouble())
+                continue;
             swap.getValEnum().doSwap(slot, false, SwapWhen.Place);
             BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
             swap.getValEnum().doSwap(oldSlot, true, SwapWhen.Place);
