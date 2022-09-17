@@ -10,4 +10,6 @@ object ProtocolIds {
     const val CS2_ACTUAL_POS = 2
 
     const val C2S_RIDDEN_ENTITY = 4
+
+    const val C2S_BIND_FEATURE= 6
 }

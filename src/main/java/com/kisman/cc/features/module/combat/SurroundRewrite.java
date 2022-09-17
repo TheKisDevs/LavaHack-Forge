@@ -69,6 +69,11 @@ public class SurroundRewrite extends Module {
     private final Setting heightLimit = register(new Setting("HeightLimit", this, 256, 0, 256, true));
     private final Setting down = register(new Setting("Down", this, false));
 
+    private final SettingGroup inAirGroup = register(new SettingGroup(new Setting("In Air", this)));
+
+    private final Setting inAir = register(inAirGroup.add(new Setting("In Air", this, false).setTitle("State")));
+    private final Setting inAirMotionStop = register(inAirGroup.add(new Setting("In Air Motion Stop", this, false).setTitle("Motion Stop")));
+
     private final Setting breakCrystals = register(new Setting("BreakCrystals", this, false));
 
     private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
@@ -83,7 +88,7 @@ public class SurroundRewrite extends Module {
     private final Setting cbNoSuicide = register(crystalBreaker.add(new Setting("CbNoSuicide", this, true).setTitle("No Suicide")));
     private final Setting cbTerrain = register(crystalBreaker.add(new Setting("CbTerrain", this, true).setVisible(cbNoSuicide::getValBoolean)));
 
-    private static SurroundRewrite instance;
+    public static SurroundRewrite instance;
 
     private final TimerUtils timer = new TimerUtils();
 
@@ -143,11 +148,24 @@ public class SurroundRewrite extends Module {
 
         double y = mc.player.posY;
 
+        boolean ground = !mc.player.onGround;
+
+        if(inAir.getValBoolean()) {
+            ground = false;
+
+            if(inAirMotionStop.getValBoolean()) {
+                mc.player.motionX = 0;
+                mc.player.motionZ = 0;
+                mc.player.moveForward = 0;
+                mc.player.moveStrafing = 0;
+            }
+        }
+
         if(
-                (toggle.getValEnum() == Toggle.OffGround && !mc.player.onGround)
+                (toggle.getValEnum() == Toggle.OffGround && ground)
                         || (toggle.getValEnum() == Toggle.YChange && y > lastY)
                         || (toggle.getValEnum() == Toggle.PositiveYChange && y - toggleHeight.getValDouble() > lastY)
-                        || (toggle.getValEnum() == Toggle.Combo &&(y - toggleHeight.getValDouble() > lastY || !mc.player.onGround))
+                        || (toggle.getValEnum() == Toggle.Combo && (y - toggleHeight.getValDouble() > lastY || ground))
         ){
             toggle();
             return;

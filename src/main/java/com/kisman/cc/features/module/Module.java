@@ -23,7 +23,6 @@ public class Module implements IBindable {
 	private int key;
 	public int mouse = -1;
 	public BindType bindType = BindType.Keyboard;
-	private int priority;
 	private final Category category;
 	public boolean toggled;
 	public boolean subscribes;
@@ -44,27 +43,30 @@ public class Module implements IBindable {
 		this.category = category;
 		this.toggled = false;
 		this.subscribes = subscribes;
-		this.priority = 1;
 
 		setmgr = Kisman.instance.settingsManager;
 
 		SettingLoader.load(this);
 	}
 
+	private void printToggleMessage(
+			boolean toggled
+	) {
+		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+	}
+
 	public void setToggled(boolean toggled) {
 		if(block) return;
-		this.toggled = toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
-		if (this.toggled) onEnable();
-		else onDisable();
+		printToggleMessage(toggled);
+		if (toggled) enable();
+		else disable();
 	}
 
 	public void toggle() {
 		if(block) return;
-		toggled = !toggled;
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
-		if (toggled) onEnable();
-		else onDisable();
+		if (!toggled) enable();
+		else disable();
+		printToggleMessage(toggled);
 	}
 
 	public Setting register(Setting set) {
@@ -96,27 +98,31 @@ public class Module implements IBindable {
 	public String getDescription() {return description;}
 	public void setDescription(String description) {this.description = description;}
 	public int getKey() {return key;}
-	public int getPriority() {return priority;}
-	public void setPriority(int priority) {this.priority = priority;}
 	public void setKey(int key) {this.key = key;}
 	public boolean isToggled() {return toggled;}
 
-	public void onEnable() {
+	public final void enable() {
+		if(toggled) return;
+		toggled = true;
+		onEnable();
 		if(subscribes) MinecraftForge.EVENT_BUS.register(this);
-
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
-		if(subscribes == null)
-			return;
+		if(subscribes == null) return;
 		SubscribeMode.register(subscribes, this);
 	}
-	public void onDisable() {
-		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
 
+	public final void disable() {
+		if(!toggled) return;
+		toggled = false;
+		onDisable();
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
-		if(subscribes == null)
-			return;
+		if(subscribes == null) return;
 		SubscribeMode.unregister(subscribes, this);
 	}
+
+	public void onEnable() {}
+
+	public void onDisable() {}
 
 	public String getName() {return this.name;}
 	public Category getCategory() {return this.category;}

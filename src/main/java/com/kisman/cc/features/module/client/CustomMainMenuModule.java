@@ -5,22 +5,17 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 
 public class CustomMainMenuModule extends Module {
-    public Setting watermark = new Setting("WaterMark", this, true);
-    public Setting customSplashText = new Setting("Custom Splash Text", this, true);
-    public Setting customSplashFont = new Setting("Custom Splash Font", this, true).setVisible(() -> customSplashText.getValBoolean());
-    public Setting particles = new Setting("Particles", this, true);
+    public Setting watermark = register(new Setting("WaterMark", this, true));
+    public Setting customSplashText = register(new Setting("Custom Splash Text", this, true));
+    public Setting customSplashFont = register(new Setting("Custom Splash Font", this, true).setVisible(() -> customSplashText.getValBoolean()));
+    public Setting particles = register(new Setting("Particles", this, false));
 
     public static CustomMainMenuModule instance;
 
     public CustomMainMenuModule() {
         super("CustomMainMenu", Category.CLIENT);
-
+        super.setToggled(true);
         instance = this;
-
-        setmgr.rSetting(watermark);
-        setmgr.rSetting(customSplashText);
-        setmgr.rSetting(customSplashFont);
-        setmgr.rSetting(particles);
     }
 
     public void update() {

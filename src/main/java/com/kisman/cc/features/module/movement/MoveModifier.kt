@@ -68,7 +68,7 @@ class MoveModifier : Module(
     private val levitationControl = register(levitationControlGroup.add(Setting("Levitation Control", this, false).setTitle("Levitation")))
     private val levitationControlUpSpeed = register(levitationControlGroup.add(Setting("Levitation Control Up Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Up")))
     private val levitationControlDownSpeed = register(levitationControlGroup.add(Setting("Levitation Control Down Speed", this, 1.0, 0.0, 2.0, false).setVisible(levitationControl).setTitle("Down")))
-    private val instantGroup = register(SettingGroup(Setting("Instant", this)))
+    private val instantGroup = register(move.add(SettingGroup(Setting("Instant", this))))
     private val instant = register(instantGroup.add(Setting("Instant State", this, false).setTitle("State")))
     private val instantLiquids = register(instantGroup.add(Setting("Instant Liquids", this, false).setTitle("Liquids")))
     private val instantSlow = register(instantGroup.add(Setting("Instant Slow", this, false).setTitle("Slow")))
@@ -99,6 +99,7 @@ class MoveModifier : Module(
     override fun onDisable() {
         Kisman.EVENT_BUS.unsubscribe(entityControlListener)
         Kisman.EVENT_BUS.unsubscribe(send)
+
         if(mc.player == null || mc.world == null) return
 
         mc.player.stepHeight = 0.5f
@@ -144,9 +145,12 @@ class MoveModifier : Module(
 
     private fun doInstant() {
         if(instant.valBoolean && ((!mc.player.isInWater && !mc.player.isInLava) || instantLiquids.valBoolean) && !mc.player.isElytraFlying) {
-            MovementUtil.strafe(MovementUtil.getSpeed(
+            val motions =MovementUtil.strafe(MovementUtil.getSpeed(
                 instantSlow.valBoolean, MovementUtil.DEFAULT_SPEED
             ))
+
+            mc.player.motionX = motions[0]
+            mc.player.motionZ = motions[1]
         }
     }
 

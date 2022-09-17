@@ -28,10 +28,13 @@ public class Burrow2 extends Module {
     private final Setting smart = register(new Setting("Smart", this, false));
     private final Setting smartRange = register(new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean));
     private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
-    private final Setting keepOn = register(new Setting("KeepOn", this, false));
+    public final Setting keepOn = register(new Setting("KeepOn", this, false));
+
+    public static Burrow2 instance;
 
     public Burrow2(){
         super("Burrow", Category.COMBAT);
+        instance = this;
     }
 
     private BlockPos oldPos = null;
@@ -100,7 +103,7 @@ public class Burrow2 extends Module {
     }
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         if(mc.player == null || mc.world == null){
             this.setToggled(false);
             return;
@@ -129,26 +132,23 @@ public class Burrow2 extends Module {
             return;
         }
 
-        if(smart.getValBoolean() && mc.world.playerEntities.stream().noneMatch(player -> mc.player.getDistanceSq(player) <= smartRange.getValDouble()))
+        if(smart.getValBoolean() && mc.world.playerEntities.stream().noneMatch(player -> mc.player.getDistance(player) <= smartRange.getValDouble()))
             return;
 
         fakeJump();
 
         placeBlock(oldPos, slot);
 
-        mc.player.setPosition(mc.player.posX, mc.player.posY - 1.16610926093821D, mc.player.posZ);
+        if(!mc.isSingleplayer()) {
+            mc.player.setPosition(mc.player.posX, mc.player.posY - 1.16610926093821D, mc.player.posZ);
 
-        double off = getOffset();
-        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + off, mc.player.posZ, false));
+            double off = getOffset();
+            mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + off, mc.player.posZ, false));
+        }
 
         if(keepOn.getValBoolean())
             return;
 
         toggle();
-    }
-
-    @Override
-    public void onDisable(){
-        oldPos = null;
     }
 }

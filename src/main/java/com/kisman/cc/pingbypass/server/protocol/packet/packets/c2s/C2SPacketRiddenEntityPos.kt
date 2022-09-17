@@ -18,6 +18,13 @@ class C2SPacketRiddenEntityPos(
 ) : C2SPacket(
     ProtocolIds.C2S_RIDDEN_ENTITY
 ) {
+    constructor() : this(
+        -1,
+        0.0,
+        0.0,
+        0.0
+    )
+
     override fun readInnerBuffer(buffer: PacketBuffer) {
         entityID = buffer.readVarInt()
         x = buffer.readDouble()

@@ -3,7 +3,6 @@ package com.kisman.cc.features.module;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
-import com.kisman.cc.features.module.combat.autocrystal.AutoCrystal;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.misc.botnet.BotnetConnection;
@@ -63,7 +62,7 @@ public class ModuleManager {
 		modules.add(new Triangulation());
 
 		//combat
-		modules.add(new AutoCrystal());
+//		modules.add(new AutoCrystal());
 		modules.add(new AntiBot());
 		modules.add(new AntiBow());
 		modules.add(new AntiTrap());
@@ -82,6 +81,7 @@ public class ModuleManager {
 		modules.add(new Burrow2());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
+		modules.add(new CrystalPvPHelper());
 		modules.add(Crystals.INSTANCE);
 //		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());

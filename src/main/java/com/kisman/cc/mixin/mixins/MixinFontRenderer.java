@@ -2,18 +2,14 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.Changer;
-import com.kisman.cc.features.module.client.ClientFixer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -21,7 +17,7 @@ import java.util.Random;
  * @since 15:01 of 27.06.2022
  */
 @Mixin(FontRenderer.class)
-public abstract class MixinFontRenderer {
+public class MixinFontRenderer {
     private final String ASCII_RUS = "ÀÁÂÈÊËÍÓÔÕÚßãõğİıŒœŞşŴŵžȇ�������������� !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ёÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя";
     private final String ASCII_PATH_RUS = "textures/font/ascii_fat.png";
 
@@ -37,13 +33,13 @@ public abstract class MixinFontRenderer {
 
     @Shadow @Final private int[] colorCode;
 
-    @Shadow protected abstract float renderDefaultChar(int ch, boolean italic);
+    @Shadow protected float renderDefaultChar(int ch, boolean italic) { return 0f; }
 
-    @Shadow protected abstract float renderUnicodeChar(char ch, boolean italic);
+    @Shadow protected float renderUnicodeChar(char ch, boolean italic) { return 0f; }
 
     @Shadow private int textColor;
 
-    @Shadow protected abstract void setColor(float r, float g, float b, float a);
+    @Shadow protected void setColor(float r, float g, float b, float a) {}
 
     @Shadow private boolean randomStyle;
 
@@ -63,7 +59,7 @@ public abstract class MixinFontRenderer {
 
     @Shadow private float alpha;
 
-    @Shadow public abstract int getCharWidth(char character);
+    @Shadow public int getCharWidth(char character) { return 0; }
 
     @Shadow public Random fontRandom;
 
@@ -71,32 +67,36 @@ public abstract class MixinFontRenderer {
 
     @Shadow protected float posY;
 
-    @Shadow protected abstract float renderChar(char ch, boolean italic);
+    @Shadow private float renderChar(char ch, boolean italic) { return 0f; }
 
-    @Shadow protected abstract void doDraw(float f);
+    @Shadow protected void doDraw(float f) {}
+
+
 
     /**
      * @author _kisman_
      * @reason nya~
      */
-    @Inject(method = "drawString*", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
     private void drawStringHook(String text, float x, float y, int color, boolean dropShadow, CallbackInfoReturnable<Integer> cir) {
-        Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
-        if(changer.getShadowTextModifier().getValBoolean()) {
-            enableAlpha();
-            resetStyles();
+        if(Kisman.instance.moduleManager != null) {
+            Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
+            if (changer.getShadowTextModifier().getValBoolean()) {
+                enableAlpha();
+                resetStyles();
 
-            if (dropShadow) {
-                cir.setReturnValue(Math.max(
-                        renderString(text, x + changer.getShadowX().getValFloat(), y + changer.getShadowY().getValFloat(), color, true),
-                        renderString(text, x, y, color, false)
-                ));
-                cir.cancel();
+                if (dropShadow) {
+                    cir.setReturnValue(Math.max(
+                            renderString(text, x + changer.getShadowX().getValFloat(), y + changer.getShadowY().getValFloat(), color, true),
+                            renderString(text, x, y, color, false)
+                    ));
+                    cir.cancel();
+                }
             }
         }
     }
 
-    @Inject(
+    /*@Inject(
             method = "renderChar",
             at = @At("HEAD"),
             cancellable = true
@@ -112,7 +112,7 @@ public abstract class MixinFontRenderer {
                 cir.cancel();
             } else {
                 int i = ASCII_RUS.indexOf(ch);
-                cir.setReturnValue(i != -1 /*&& !unicodeFlag*/ ? renderDefaultChar(i, italic) : renderUnicodeChar(ch, italic));
+                cir.setReturnValue(i != -1 *//*&& !unicodeFlag*//* ? renderDefaultChar(i, italic) : renderUnicodeChar(ch, italic));
                 cir.cancel();
             }
         }
@@ -186,8 +186,8 @@ public abstract class MixinFontRenderer {
                         c0 = c1;
                     }
 
-                    float f1 = i1 != -1 /*&& !this.unicodeFlag*/ ? 1.0F : 0.5F;
-                    boolean flag = (c0 == 0 || i1 == -1/* || this.unicodeFlag*/) && shadow;
+                    float f1 = i1 != -1 *//*&& !this.unicodeFlag*//* ? 1.0F : 0.5F;
+                    boolean flag = (c0 == 0 || i1 == -1*//* || this.unicodeFlag*//*) && shadow;
                     if (flag) {
                         posX -= f1;
                         posY -= f1;
@@ -242,7 +242,7 @@ public abstract class MixinFontRenderer {
                 cir.cancel();
             } else {
                 int i = ASCII_RUS.indexOf(character);
-                if (character > 0 && i != -1/* && !unicodeFlag*/) {
+                if (character > 0 && i != -1*//* && !unicodeFlag*//*) {
                     cir.setReturnValue(charWidth[i]);
                     cir.cancel();
                 } else if (glyphWidth[character] != 0) {
@@ -258,5 +258,5 @@ public abstract class MixinFontRenderer {
                 }
             }
         }
-    }
+    }*/
 }

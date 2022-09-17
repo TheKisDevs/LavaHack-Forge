@@ -13,6 +13,7 @@ import java.util.Objects;
 public class MovementUtil {
     public static final double WALK_SPEED = 0.221;
     public static final double DEFAULT_SPEED = 0.2873;
+
     public static Minecraft mc = Minecraft.getMinecraft();
 
     public static double getJumpHeight(boolean strict) {
@@ -197,57 +198,31 @@ public class MovementUtil {
         return yaw;
     }
 
-    public static double[] strafe(double speed)
-    {
+    public static double[] strafe(double speed) {
         return strafe(mc.player, speed);
     }
 
-    public static double[] strafe(Entity entity, double speed)
-    {
+    public static double[] strafe(Entity entity, double speed) {
         return strafe(entity, mc.player.movementInput, speed);
     }
 
-    public static double[] strafe(Entity entity,
-                                  MovementInput movementInput,
-                                  double speed)
-    {
+    public static double[] strafe(Entity entity, MovementInput movementInput, double speed) {
         float moveForward = movementInput.moveForward;
         float moveStrafe  = movementInput.moveStrafe;
-        float rotationYaw = entity.prevRotationYaw
-                + (entity.rotationYaw - entity.prevRotationYaw)
-                * mc.getRenderPartialTicks();
+        float rotationYaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * mc.getRenderPartialTicks();
 
-        if (moveForward != 0.0f)
-        {
-            if (moveStrafe > 0.0f)
-            {
-                rotationYaw += ((moveForward > 0.0f) ? -45 : 45);
-            }
-            else if (moveStrafe < 0.0f)
-            {
-                rotationYaw += ((moveForward > 0.0f) ? 45 : -45);
-            }
+        if (moveForward != 0.0f) {
+            if (moveStrafe > 0.0f) rotationYaw += ((moveForward > 0.0f) ? -45 : 45);
+            else if (moveStrafe < 0.0f) rotationYaw += ((moveForward > 0.0f) ? 45 : -45);
             moveStrafe = 0.0f;
-            if (moveForward > 0.0f)
-            {
-                moveForward = 1.0f;
-            }
-            else if (moveForward < 0.0f)
-            {
-                moveForward = -1.0f;
-            }
+            if (moveForward > 0.0f) moveForward = 1.0f;
+            else if (moveForward < 0.0f) moveForward = -1.0f;
         }
 
-        double posX =
-                moveForward * speed * -Math.sin(Math.toRadians(rotationYaw))
-                        + moveStrafe * speed * Math.cos(Math.toRadians(rotationYaw));
-        double posZ =
-                moveForward * speed * Math.cos(Math.toRadians(rotationYaw))
-                        - moveStrafe * speed * -Math.sin(Math.toRadians(rotationYaw));
+        double posX = moveForward * speed * -Math.sin(Math.toRadians(rotationYaw)) + moveStrafe * speed * Math.cos(Math.toRadians(rotationYaw));
+        double posZ = moveForward * speed * Math.cos(Math.toRadians(rotationYaw)) - moveStrafe * speed * -Math.sin(Math.toRadians(rotationYaw));
 
         return new double[] {posX, posZ};
     }
-
-
 
 }

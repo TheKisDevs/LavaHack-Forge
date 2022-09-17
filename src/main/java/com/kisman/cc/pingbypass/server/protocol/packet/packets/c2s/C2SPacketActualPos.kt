@@ -20,6 +20,12 @@ class C2SPacketActualPos(
 ) : C2SPacket(
     ProtocolIds.CS2_ACTUAL_POS
 ) {
+    constructor() : this(
+        0.0,
+        0.0,
+        0.0
+    )
+
     private var packetfly = false
 
     override fun readInnerBuffer(
