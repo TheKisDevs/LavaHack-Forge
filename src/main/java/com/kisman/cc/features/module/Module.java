@@ -115,6 +115,7 @@ public class Module implements IBindable {
 		if(!toggled) return;
 		toggled = false;
 		onDisable();
+		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
 		if(subscribes == null) return;
 		SubscribeMode.unregister(subscribes, this);

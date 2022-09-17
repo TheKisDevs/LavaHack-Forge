@@ -6,11 +6,9 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
-import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
-import com.kisman.cc.features.module.render.shader.FramebufferShader;
-import com.kisman.cc.features.module.render.shader.shaders.*;
+import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -18,17 +16,14 @@ import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.DamageSyncPattern;
 import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.RotationSaver;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic;
 import com.kisman.cc.util.enums.RotationLogic;
-import com.kisman.cc.util.enums.ShaderModes;
 import com.kisman.cc.util.enums.dynamic.RotationEnum;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
@@ -37,7 +32,6 @@ import com.kisman.cc.util.world.CrystalUtils;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -81,7 +75,6 @@ public class AutoRer extends Module {
     private final SettingGroup damage = register(new SettingGroup(new Setting("Damage", this)));
     private final SettingGroup thread_ = register(new SettingGroup(new Setting("Thread", this)));
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
-    private final SettingGroup tc = register(new SettingGroup(new Setting("Target Charms", this)));
     private final SettingGroup optimization = register(new SettingGroup(new Setting("Optimization", this)));
 
     private final SettingGroup multiThreadGroup = register(optimization.add(new SettingGroup(new Setting("Multi Thread", this))));
@@ -89,12 +82,12 @@ public class AutoRer extends Module {
     public final Setting multiThreaddedSphereGetter = register(multiThreadGettersGroup.add(new Setting("MT Sphere Getter", this, false).setTitle("Sphere")));
     public final Setting multiThreaddedTargetGetter = register(multiThreadGettersGroup.add(new Setting("MT Target Getter", this, false).setTitle("Target")));
     private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
+    private final Setting multiThreaddedExtrapolation = register(multiThreadGroup.add(new Setting("MT Extrapolation", this, true).setTitle("Extrapolation")));
     private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
     public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false).setTitle("Place")));
-    private final Setting recalcPlaceRange = register(ranges.add(new Setting("Recalc Place Range", this, 4, 0, 6, false).setTitle("Recalc")));
     private final Setting placeWallRange = register(ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false).setTitle("Place Wall")));
     private final Setting breakRange = register(ranges.add(new Setting("Break Range", this, 6, 0, 6, false).setTitle("Break")));
     private final Setting breakWallRange = register(ranges.add(new Setting("Break Wall Range", this, 4.5f, 0, 6, false).setTitle("Break Wall")));
@@ -104,7 +97,6 @@ public class AutoRer extends Module {
     public final Setting terrain = register(main.add(new Setting("Terrain", this, false)));
     private final Setting switch_ = register(main.add(new Setting("Switch", this, SwitchMode.None)));
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
-    private final Setting recalc = register(calc.add(new Setting("ReCalc", this, false)));
     private final Setting cubicCalc = register(calc.add(new Setting("Cubic Calc", this, false)));
     private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
     private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
@@ -116,9 +108,9 @@ public class AutoRer extends Module {
     private final Setting instant = register(helpers.add(new Setting("Instant", this, true)));
     private final Setting instantCalc = register(helpers.add(new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean)));
     private final Setting instantRotate = register(helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean)));
-    private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, true)));
-    private final Setting sound = register(helpers.add(new Setting("Sound", this, true)));
-    public final Setting syns = register(helpers.add(new Setting("Syns", this, true)));
+    private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, false)));
+    private final Setting sound = register(helpers.add(new Setting("Sound", this, false)));
+    public final Setting sync = register(helpers.add(new Setting("Sync", this, false)));
     private final Setting syncMode = register(helpers.add(new Setting("Sync Mode", this, SyncMode.None).setTitle("Sync")));
     private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
     private final SettingEnum<RotationEnum.Rotation> rotateMode = new SettingEnum<>("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None")).group(helpers).register();
@@ -127,6 +119,13 @@ public class AutoRer extends Module {
     private final Setting damageSyncPlace = register(damageSync.getGroup_().add(new Setting("Damage Sync Place", this, DamageSyncMode.None).setTitle("Place")));
     private final Setting damageSyncBreak = register(damageSync.getGroup_().add(new Setting("Damage Sync Break", this, DamageSyncMode.None).setTitle("Break")));
     private final Setting damageSyncSelf = register(damageSync.getGroup_().add(new Setting("Damage Sync Self", this, false).setTitle("Self")));
+    private final SettingGroup extrapolationGroup = register(helpers.add(new SettingGroup(new Setting("Extrapolation", this))));
+    private final Setting extrapolationState = register(extrapolationGroup.add(new Setting("Extrapolation State", this, false).setTitle("State")));
+    private final Setting extrapolationSelf = register(extrapolationGroup.add(new Setting("Extrapolation Self", this, false).setTitle("Self")));
+    private final Setting extrapolationTicks = register(extrapolationGroup.add(new Setting("Extrapolation Ticks", this, 1.0, 1.0, 50.0, true).setTitle("Ticks")));
+    private final Setting extrapolationOutOfBlocks = register(extrapolationGroup.add(new Setting("Extrapolation Out Of Blocks", this, false).setTitle("Out Of Blocks")));
+    private final Setting extrapolationShrink = register(extrapolationGroup.add(new Setting("Extrapolation Shrink", this, false).setTitle("Shrink")));
+    private final Setting extrapolationRender = register(extrapolationGroup.add(new Setting("Extrapolation Render", this, false).setTitle("Render")));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
@@ -189,26 +188,6 @@ public class AutoRer extends Module {
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
-    private final Setting targetCharms = register(tc.add(new Setting("Target Charms", this, false)));
-    private final Setting targetCharmsShader = register(tc.add(new Setting("TC Shader", this, ShaderModes.SMOKE)));
-
-    private final Setting targetCharmsAnimationSpeed = register(tc.add(new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-
-    private final Setting targetCharmsBlur = register(tc.add(new Setting("Blur", this, true).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsRadius = register(tc.add(new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE") || targetCharmsShader.checkValString("GRADIENT")) && targetCharms.getValBoolean())));
-    private final Setting targetCharmsMix = register(tc.add(new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("ITEMGLOW") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsColor = register(tc.add(new Setting("TC Color", this, "TC Color", new Colour(255, 255, 255)).setVisible(() -> (targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean())));
-
-    private final Setting targetCharmsQuality = register(tc.add(new Setting("Quality", this, 1, 0, 20, false).setVisible(() -> (targetCharmsShader.checkValString("GRADIENT") || targetCharmsShader.checkValString("ITEMGLOW") || targetCharmsShader.checkValString("GLOW") || targetCharmsShader.checkValString("OUTLINE")) && targetCharms.getValBoolean())));
-    private final Setting targetCharmsGradientAlpha = register(tc.add(new Setting("Gradient Alpha", this, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsAlphaGradient = register(tc.add(new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsDuplicateOutline = register(tc.add(new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsMoreGradientOutline = register(tc.add(new Setting("More Gradient", this, 1, 0, 10, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsCreepyOutline = register(tc.add(new Setting("Creepy", this, 1, 0, 20, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsAlpha = register(tc.add(new Setting("Alpha", this, 1, 0, 1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsNumOctavesOutline = register(tc.add(new Setting("Num Octaves", this, 5, 1, 30, true).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-    private final Setting targetCharmsSpeedOutline = register(tc.add(new Setting("Speed", this, 0.1, 0.001, 0.1, false).setVisible(() -> targetCharmsShader.checkValString("GRADIENT") && targetCharms.getValBoolean())));
-
     public static AutoRer instance;
 
     public final List<PlaceInfo> placedList = new ArrayList<>();
@@ -220,7 +199,7 @@ public class AutoRer extends Module {
     private final TimerUtils clearTimer = new TimerUtils();
     private final TimerUtils predictTimer = new TimerUtils();
     private final TimerUtils manualTimer = new TimerUtils();
-    private final TimerUtils synsTimer = new TimerUtils();
+    private final TimerUtils syncTimer = new TimerUtils();
     private ScheduledExecutorService executor;
     private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
@@ -230,10 +209,11 @@ public class AutoRer extends Module {
     private Entity lastHitEntity = null;
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
-    private boolean subscribed = false;
     private boolean lastBroken = false;
     private BlockPos lastTargetPos = null;
 
+
+    private final ExtrapolationHelper extrapolationHelper = new ExtrapolationHelper(mtcgDelay.getSupplierLong(), multiThreaddedExtrapolation.getSupplierBoolean(), extrapolationTicks.getSupplierInt(), extrapolationOutOfBlocks.getSupplierBoolean(), extrapolationShrink.getSupplierBoolean());
     private final AutoRerDamageSyncHandler damageSyncHandler = new AutoRerDamageSyncHandler(damageSync.getHandler(), () -> damageSyncPlace.getValEnum() != DamageSyncMode.None, () -> damageSyncBreak.getValEnum() != DamageSyncMode.None);
 
     private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay.getSupplierLong(), multiThreaddedCrystalGetter.getSupplierBoolean());
@@ -258,12 +238,11 @@ public class AutoRer extends Module {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
-
-        subscribed = true;
     }
 
     private void reset() {
         renderer.reset();
+        extrapolationHelper.reset();
         damageSyncHandler.reset();
         placedList.clear();
         placeTimer.reset();
@@ -281,11 +260,9 @@ public class AutoRer extends Module {
 
     public void onDisable() {
         super.onDisable();
-        if(subscribed) {
-            Kisman.EVENT_BUS.unsubscribe(listener);
-            Kisman.EVENT_BUS.unsubscribe(listener1);
-            Kisman.EVENT_BUS.unsubscribe(motion);
-        }
+        Kisman.EVENT_BUS.unsubscribe(listener);
+        Kisman.EVENT_BUS.unsubscribe(listener1);
+        Kisman.EVENT_BUS.unsubscribe(motion);
 
         if(thread != null) shouldInterrupt.set(false);
         if(executor != null) executor.shutdown();
@@ -305,17 +282,17 @@ public class AutoRer extends Module {
     }
 
     private void handleWhile() {
-        if(thread == null || thread.isInterrupted() || thread.isAlive() || (synsTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
+        if(thread == null || thread.isInterrupted() || thread.isAlive() || (syncTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
             if(thread == null) thread = newThread();
-            else if(synsTimer.passedMillis(threadSynsValue.getValLong()) && !shouldInterrupt.get() && threadSyns.getValBoolean()) {
+            else if(syncTimer.passedMillis(threadSynsValue.getValLong()) && !shouldInterrupt.get() && threadSyns.getValBoolean()) {
                 shouldInterrupt.set(true);
-                synsTimer.reset();
+                syncTimer.reset();
                 return;
             }
             if(thread != null && (thread.isInterrupted() || !thread.isAlive())) thread = newThread();
             if(thread != null && thread.getState().equals(Thread.State.NEW)) {
                 try {thread.start();} catch (Exception ignored) {}
-                synsTimer.reset();
+                syncTimer.reset();
             }
         }
     }
@@ -327,10 +304,10 @@ public class AutoRer extends Module {
     }
 
     private void handlePool(boolean justDoIt) {
-        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (synsTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
+        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (syncTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
             if(executor != null) executor.shutdown();
             executor = getExecutor();
-            synsTimer.reset();
+            syncTimer.reset();
         }
     }
 
@@ -355,7 +332,9 @@ public class AutoRer extends Module {
         if(currentTarget == null) {
             placePos = null;
             return;
-        } else super.setDisplayInfo("[" + currentTarget.getName() + " | Thread: " + threadMode.getValString() + "]");
+        } else super.setDisplayInfo("[" + currentTarget.getName() + "]");
+
+        if(extrapolationState.getValBoolean()) extrapolationHelper.update();
 
         calc: {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
@@ -469,149 +448,8 @@ public class AutoRer extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(targetCharms.getValBoolean()) {
-            if(currentTarget != null) {
-                try {
-                    {
-                        FramebufferShader framebufferShader = null;
-                        boolean itemglow = false, gradient = false, glow = false, outline = false;
-
-                        switch (targetCharmsShader.getValString()) {
-                            case "AQUA":
-                                framebufferShader = AquaShader.AQUA_SHADER;
-                                break;
-                            case "RED":
-                                framebufferShader = RedShader.RED_SHADER;
-                                break;
-                            case "SMOKE":
-                                framebufferShader = SmokeShader.SMOKE_SHADER;
-                                break;
-                            case "FLOW":
-                                framebufferShader = FlowShader.FLOW_SHADER;
-                                break;
-                            case "ITEMGLOW":
-                                framebufferShader = ItemShader.ITEM_SHADER;
-                                itemglow = true;
-                                break;
-                            case "PURPLE":
-                                framebufferShader = PurpleShader.PURPLE_SHADER;
-                                break;
-                            case "GRADIENT":
-                                framebufferShader = GradientOutlineShader.INSTANCE;
-                                gradient = true;
-                                break;
-                            case "UNU":
-                                framebufferShader = UnuShader.UNU_SHADER;
-                                break;
-                            case "GLOW":
-                                framebufferShader = GlowShader.GLOW_SHADER;
-                                glow = true;
-                                break;
-                            case "OUTLINE":
-                                framebufferShader = OutlineShader.OUTLINE_SHADER;
-                                outline = true;
-                                break;
-                            case "BlueFlames":
-                                framebufferShader = BlueFlamesShader.BlueFlames_SHADER;
-                                break;
-                            case "CodeX":
-                                framebufferShader = CodeXShader.CodeX_SHADER;
-                                break;
-                            case "Crazy":
-                                framebufferShader = CrazyShader.CRAZY_SHADER;
-                                break;
-                            case "Golden":
-                                framebufferShader = GoldenShader.GOLDEN_SHADER;
-                                break;
-                            case "HideF":
-                                framebufferShader = HideFShader.HideF_SHADER;
-                                break;
-                            case "HolyFuck":
-                                framebufferShader = HolyFuckShader.HolyFuckF_SHADER;
-                                break;
-                            case "HotShit":
-                                framebufferShader = HotShitShader.HotShit_SHADER;
-                                break;
-                            case "Kfc":
-                                framebufferShader = KfcShader.KFC_SHADER;
-                                break;
-                            case "Sheldon":
-                                framebufferShader = SheldonShader.SHELDON_SHADER;
-                                break;
-                            case "Smoky":
-                                framebufferShader = SmokyShader.SMOKY_SHADER;
-                                break;
-                            case "SNOW":
-                                framebufferShader = SnowShader.SNOW_SHADER;
-                                break;
-                            case "Techno":
-                                framebufferShader = TechnoShader.TECHNO_SHADER;
-                                break;
-                        }
-
-                        if (framebufferShader == null) return;
-
-                        framebufferShader.animationSpeed = targetCharmsAnimationSpeed.getValInt();
-
-                        GlStateManager.matrixMode(5889);
-                        GlStateManager.pushMatrix();
-                        GlStateManager.matrixMode(5888);
-                        GlStateManager.pushMatrix();
-                        if (itemglow) {
-                            ((ItemShader) framebufferShader).red = targetCharmsColor.getColour().r1;
-                            ((ItemShader) framebufferShader).green = targetCharmsColor.getColour().g1;
-                            ((ItemShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
-                            ((ItemShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
-                            ((ItemShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
-                            ((ItemShader) framebufferShader).blur = targetCharmsBlur.getValBoolean();
-                            ((ItemShader) framebufferShader).mix = targetCharmsMix.getValFloat();
-                            ((ItemShader) framebufferShader).alpha = 1f;
-                            ((ItemShader) framebufferShader).useImage = false;
-                        } else if (gradient) {
-                            ((GradientOutlineShader) framebufferShader).color = targetCharmsColor.getColour().getColor();
-                            ((GradientOutlineShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).gradientAlpha = targetCharmsGradientAlpha.getValBoolean();
-                            ((GradientOutlineShader) framebufferShader).alphaOutline = targetCharmsAlphaGradient.getValInt();
-                            ((GradientOutlineShader) framebufferShader).duplicate = targetCharmsDuplicateOutline.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).moreGradient = targetCharmsMoreGradientOutline.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).creepy = targetCharmsCreepyOutline.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).alpha = targetCharmsAlpha.getValFloat();
-                            ((GradientOutlineShader) framebufferShader).numOctaves = targetCharmsNumOctavesOutline.getValInt();
-                        } else if(glow) {
-                            ((GlowShader) framebufferShader).red = targetCharmsColor.getColour().r1;
-                            ((GlowShader) framebufferShader).green = targetCharmsColor.getColour().g1;
-                            ((GlowShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
-                            ((GlowShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
-                            ((GlowShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
-                        } else if(outline) {
-                            ((OutlineShader) framebufferShader).red = targetCharmsColor.getColour().r1;
-                            ((OutlineShader) framebufferShader).green = targetCharmsColor.getColour().g1;
-                            ((OutlineShader) framebufferShader).blue = targetCharmsColor.getColour().b1;
-                            ((OutlineShader) framebufferShader).radius = targetCharmsRadius.getValFloat();
-                            ((OutlineShader) framebufferShader).quality = targetCharmsQuality.getValFloat();
-                        }
-                        framebufferShader.startDraw(event.getPartialTicks());
-                        for (Entity entity : mc.world.loadedEntityList) {
-                            if (entity == mc.player || entity == mc.getRenderViewEntity() || !entity.equals(currentTarget)) continue;
-                            Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
-                            Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
-                        }
-                        framebufferShader.stopDraw();
-                        if (gradient) ((GradientOutlineShader) framebufferShader).update(targetCharmsSpeedOutline.getValDouble());
-                        GlStateManager.color(1f, 1f, 1f);
-                        GlStateManager.matrixMode(5889);
-                        GlStateManager.popMatrix();
-                        GlStateManager.matrixMode(5888);
-                        GlStateManager.popMatrix();
-                    }
-                } catch (Exception ignored) {
-                    if(Config.instance.antiOpenGLCrash.getValBoolean() || lagProtect.getValBoolean()) {
-                        super.setToggled(false);
-                        ChatUtility.error().printClientModuleMessage("Error, Config -> AntiOpenGLCrash disabled AutoRer");
-                    }
-                }
-            }
+        if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) {
+            renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
         }
 
         if(placePos != null) renderer.onRenderWorld(
@@ -653,6 +491,40 @@ public class AutoRer extends Module {
         lastBroken = true;
         if(syncMode.getValEnum() == SyncMode.Merge) getTimer(false).reset();
         return pos;
+    }
+
+    private float calculateDamage(
+            double x,
+            double y,
+            double z,
+            EntityPlayer entity
+    ) {
+        return calculateDamage(
+                new BlockPos(
+                        x,
+                        y,
+                        z
+                ),
+                entity
+        );
+    }
+
+    private float calculateDamage(
+            BlockPos pos,
+            EntityPlayer entity
+    ) {
+        AxisAlignedBB bb = extrapolationState.getValBoolean() && (entity != mc.player || extrapolationSelf.getValBoolean()) ? extrapolationHelper.predictor(entity).getEntityBoundingBox() : entity.getEntityBoundingBox();
+
+        return CrystalUtils.calculateDamage(
+                mc.world,
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                entity,
+                bb,
+                0,
+                terrain.getValBoolean()
+        );
     }
 
     @EventHandler
@@ -726,36 +598,9 @@ public class AutoRer extends Module {
                         noSuicide.getValBoolean()
                 );
             } else calculatePlace();
-            if(recalc.getValBoolean() && placePos.getBlockPos() == null) recalculatePlace();
             if(placePos.getBlockPos() == null && Crystals.INSTANCE.getState()) placePos.setBlockPos(Crystals.INSTANCE.getPos());
             else Crystals.INSTANCE.setState(false);
         } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
-    }
-
-    private void recalculatePlace() {
-        List<BlockPos> sphere = CrystalUtils.getSphere(recalcPlaceRange.getValFloat(), true, false);
-        List<BlockPos> validPos = new ArrayList<>();
-
-        sphere.stream()
-                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) > minDMG.getValInt() || CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt()))
-                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) <= maxSelfDMG.getValInt())
-                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount())
-                .filter(pos -> CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean()) < CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()))
-                .forEach(validPos::add);
-
-        validPos.sort((first, second) -> (int) (mc.player.getDistanceSqToCenter(first) - mc.player.getDistanceSqToCenter(second)));
-
-        final double[] maxDamage = {0.5};
-        final BlockPos[] placePos = {null};
-
-        validPos.forEach(pos -> {
-            if(CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean()) > maxDamage[0]) {
-                maxDamage[0] = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
-                placePos[0] = pos;
-            }
-        });
-
-        this.placePos = placePos[0] == null ? null : AutoRerUtil.Companion.getPlaceInfo(placePos[0], currentTarget, terrain.getValBoolean());
     }
 
     public boolean needToMultiPlace() {
@@ -794,13 +639,13 @@ public class AutoRer extends Module {
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
             if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, needToMultiPlace(), firePlace.getValBoolean())) {
-                float targetDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget, terrain.getValBoolean());
+                float targetDamage = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget);
 
                 Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
                 if(damageSyncPlace.getValEnum() == DamageSyncMode.Smart) targetDamage = targetResult.getSecond();
                 if(targetResult.getFirst() && ((needToFacePlace() && (facePlaceDamageCheck(targetDamage) || facePlaceArmorBreakerCheck())) || targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount())) {
-                    float selfDamage = CrystalUtils.calculateDamage(mc.world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player, terrain.getValBoolean());
+                    float selfDamage = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player);
 
                     Bind<Boolean, Float> selfResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
@@ -829,7 +674,7 @@ public class AutoRer extends Module {
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
         if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean() || placeStrictSync())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
-        if(placePos == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (syns.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
+        if(placePos == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
         EnumHand hand = null;
         boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
@@ -1024,7 +869,7 @@ public class AutoRer extends Module {
 
         if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
 
-        if(syns.getValBoolean()) {
+        if(sync.getValBoolean()) {
             BlockPos toRemove = null;
 
             for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && crystal.get().getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
@@ -1142,7 +987,7 @@ public class AutoRer extends Module {
                 while (autoRer.isToggled() && autoRer.threadMode.checkValString("While")) {
                     if(autoRer.shouldInterrupt.get()) {
                         autoRer.shouldInterrupt.set(false);
-                        autoRer.synsTimer.reset();
+                        autoRer.syncTimer.reset();
                         autoRer.thread.interrupt();
                     }
                     autoRer.threadOngoing.set(true);

@@ -6,18 +6,89 @@ import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
 
 public class BlockUtil2 {
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static void pushOutOfBlocks(
+            Entity entity,
+            double x,
+            double y,
+            double z
+    ) {
+        BlockPos pos = new BlockPos(x, y, z);
+        double deltaX = x - pos.getX();
+        double deltaY = y - pos.getY();
+        double deltaZ = z - pos.getZ();
+
+        if (mc.world.collidesWithAnyBlock(entity.getEntityBoundingBox())) {
+            EnumFacing facing = EnumFacing.UP;
+
+            double delta = Double.MAX_VALUE;
+
+            if (!mc.world.isBlockFullCube(pos.west()) && deltaX < delta) {
+                delta = deltaX;
+                facing = EnumFacing.WEST;
+            }
+
+            if (!mc.world.isBlockFullCube(pos.east()) && 1.0D - deltaX < delta) {
+                delta = 1.0D - deltaX;
+                facing = EnumFacing.EAST;
+            }
+
+            if (!mc.world.isBlockFullCube(pos.north()) && deltaZ < delta) {
+                delta = deltaZ;
+                facing = EnumFacing.NORTH;
+            }
+
+            if (!mc.world.isBlockFullCube(pos.south()) && 1.0D - deltaZ < delta) {
+                delta = 1.0D - deltaZ;
+                facing = EnumFacing.SOUTH;
+            }
+
+            if (!mc.world.isBlockFullCube(pos.up()) && 1.0D - deltaY < delta) {
+//                delta = 1.0D - deltaY;
+                facing = EnumFacing.UP;
+            }
+
+            float f = new Random().nextFloat() * 0.2F + 0.1F;
+            float f1 = (float)facing.getAxisDirection().getOffset();
+
+            if (facing.getAxis() == EnumFacing.Axis.X) {
+                entity.motionX = f1 * f;
+                entity.motionY *= 0.75D;
+                entity.motionZ *= 0.75D;
+            } else if (facing.getAxis() == EnumFacing.Axis.Y) {
+                entity.motionX *= 0.75D;
+                entity.motionY = f1 * f;
+                entity.motionZ *= 0.75D;
+            } else if (facing.getAxis() == EnumFacing.Axis.Z) {
+                entity.motionX *= 0.75D;
+                entity.motionY *= 0.75D;
+                entity.motionZ = f1 * f;
+            }
+        }
+    }
 
     public static double getBreakingProgress(BlockPos pos, ItemStack stack, long start) {
         return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);

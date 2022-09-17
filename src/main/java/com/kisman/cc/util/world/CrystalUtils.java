@@ -1,5 +1,6 @@
 package com.kisman.cc.util.world;
 
+import com.kisman.cc.features.module.combat.autorer.MotionPredictor;
 import com.kisman.cc.util.entity.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -147,7 +148,11 @@ public class CrystalUtils {
         return calculateDamage(mc.world, pos.getX(), pos.getY(), pos.getZ(), entity, terrain);
     }
 
-    public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
+    public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, MotionPredictor predictor, int interlopedAmount, boolean terrain) {
+        return calculateDamage(world, posX, posY, posZ, entity, predictor.getEntityBoundingBox(), interlopedAmount, terrain);
+    }
+
+    public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, AxisAlignedBB bb, int interlopedAmount, boolean terrain) {
         if ((entity == mc.player && mc.player.capabilities.isCreativeMode) || entity == null) return 0.0f;
 
         float doubleExplosionSize = 12.0F;
@@ -165,8 +170,8 @@ public class CrystalUtils {
         double blockDensity =  0;
 
         try {
-            if(terrain) blockDensity = getBlockDensity(vec3d, entity.getEntityBoundingBox());
-            else blockDensity =  entity.world.getBlockDensity(vec3d, entity.getEntityBoundingBox());
+            if(terrain) blockDensity = getBlockDensity(vec3d, bb);
+            else blockDensity =  entity.world.getBlockDensity(vec3d, bb);
         } catch (Exception ignored) {}
 
         double v = (1.0D - distancedsize) * blockDensity;
@@ -174,6 +179,10 @@ public class CrystalUtils {
         double finald = 1.0D;
         if (entity instanceof EntityLivingBase) finald = getBlastReduction((EntityLivingBase) entity, getDamageMultiplied(world, damage), new Explosion(world, null, posX, posY, posZ, 6F, false, true));
         return (float) finald;
+    }
+
+    public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, int interlopedAmount, boolean terrain) {
+        return calculateDamage(world, posX, posY, posZ, entity, entity.getEntityBoundingBox(), interlopedAmount, terrain);
     }
 
     public static float getBlockDensity(final Vec3d vec, final AxisAlignedBB bb) {

@@ -113,15 +113,15 @@ public class SurroundRewrite extends Module {
     @Override
     public void onEnable(){
         super.onEnable();
+        Kisman.EVENT_BUS.subscribe(listener);
+        Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
+        Kisman.EVENT_BUS.subscribe(packetListener);
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
         if(center.getValBoolean() && !centerPlayer()) {
             setToggled(false);
         }
-        Kisman.EVENT_BUS.subscribe(listener);
-        Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
-        Kisman.EVENT_BUS.subscribe(packetListener);
     }
 
     @Override

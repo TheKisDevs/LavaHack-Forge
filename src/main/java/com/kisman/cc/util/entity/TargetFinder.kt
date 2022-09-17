@@ -27,7 +27,7 @@ open class TargetFinder(
         Supplier { threads.multiThread.valBoolean }
     )
 
-    protected val mc: Minecraft = Minecraft.getMinecraft()
+    protected val mc : Minecraft = Minecraft.getMinecraft()
     var target : EntityPlayer? = null
 
     private var targetFinderTHandler = ThreadHandler(delay, threadded)

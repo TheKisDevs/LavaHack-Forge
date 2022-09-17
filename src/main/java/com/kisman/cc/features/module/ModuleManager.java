@@ -123,7 +123,6 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CrystalSafeBlocks());
 		modules.add(new DamageESP());
-		modules.add(new EyeFinder());
 		modules.add(new EntityESPRewrite());
 //		modules.add(new HoleESP());
 //		modules.add(new HoleESPRewrite());
