@@ -11,7 +11,7 @@ import java.util.function.Supplier
  * @author _kisman_
  * @since 21:50 of 24.06.2022
  */
-class SpeedRewrite : Module(
+object SpeedRewrite : Module(
     "SpeedRewrite",
     "Logic-rewrite version of Speed.",
     Category.MOVEMENT
@@ -36,14 +36,6 @@ class SpeedRewrite : Module(
     val boostFactor = register(Setting("Boost Factor", this, false))
 
 //    private val strict = register(Setting("Strict", this, false))
-
-    companion object {
-        var instance : SpeedRewrite? = null
-    }
-
-    init {
-        instance = this
-    }
 
     override fun onEnable() {
         super.onEnable()

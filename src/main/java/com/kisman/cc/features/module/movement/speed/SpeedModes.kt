@@ -51,7 +51,7 @@ enum class SpeedModes(
                 if(mc.player.onGround) {
                     EntityUtil.setTimer(1.15f)
                     mc.player.jump()
-                    val direction = MovementUtil.forward(MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED))
+                    val direction = MovementUtil.forward(MovementUtil.getSpeed(SpeedRewrite.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED))
                     mc.player.motionX = direction[0]
                     mc.player.motionZ = direction[1]
                 } else {
@@ -75,18 +75,18 @@ enum class SpeedModes(
 
         override fun update() {
             if(!mc.player.isElytraFlying) {
-                if(SpeedRewrite.instance?.useTimer!!.valBoolean && Managers.instance.passed(250)) {
+                if(SpeedRewrite.useTimer!!.valBoolean && Managers.instance.passed(250)) {
                     EntityUtil.setTimer(1.0888f)
                 }
 
-                if(!Managers.instance.passed(SpeedRewrite.instance?.lagTime!!.valInt)) {
+                if(!Managers.instance.passed(SpeedRewrite.lagTime!!.valInt)) {
                     return
                 }
 
                 when(stage) {
                     1 -> {
                         if(MovementUtil.isMoving()) {
-                            speed = 1.35 * MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, SpeedRewrite.instance?.strafeSpeed!!.valDouble) - 0.01
+                            speed = 1.35 * MovementUtil.getSpeed(SpeedRewrite.slow!!.valBoolean, SpeedRewrite.strafeSpeed!!.valDouble) - 0.01
                         }
                     }
                     2 -> {
@@ -96,7 +96,7 @@ enum class SpeedModes(
                         }
                     }
                     3 -> {
-                        speed = distance - 0.66 * (distance - MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, SpeedRewrite.instance?.strafeSpeed!!.valDouble))
+                        speed = distance - 0.66 * (distance - MovementUtil.getSpeed(SpeedRewrite.slow!!.valBoolean, SpeedRewrite.strafeSpeed!!.valDouble))
                         boost = !boost
                     }
                     else -> {
@@ -109,7 +109,7 @@ enum class SpeedModes(
                 }
 
                 speed = min(speed, getCap())
-                speed = max(speed, MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, SpeedRewrite.instance?.strafeSpeed!!.valDouble))
+                speed = max(speed, MovementUtil.getSpeed(SpeedRewrite.slow!!.valBoolean, SpeedRewrite.strafeSpeed!!.valDouble))
                 MovementUtil.strafe(speed.toFloat())
 
                 if(MovementUtil.isMoving()) {
@@ -175,7 +175,7 @@ enum class SpeedModes(
 
             if(mc.gameSettings.keyBindForward.isKeyDown) {
                 if(mc.player.onGround) {
-                    if(SpeedRewrite.instance?.useMotion!!.valBoolean && currentMotion != null) {
+                    if(SpeedRewrite.useMotion!!.valBoolean && currentMotion != null) {
                         when(currentMotion) {
                             Motion.X -> mc.player.motionX += 0.1
                             Motion.Z -> mc.player.motionZ += 0.1
@@ -186,27 +186,27 @@ enum class SpeedModes(
 
                     y = 1.0
                     EntityUtil.resetTimer()
-                    if (SpeedRewrite.instance?.useTimer!!.valBoolean) Managers.instance.timerManager.updateTimer(Speed.instance, 2, 1.3f)
+                    if (SpeedRewrite.useTimer!!.valBoolean) Managers.instance.timerManager.updateTimer(Speed.instance, 2, 1.3f)
                     mc.player.jump()
-                    val dirSpeed = MovementUtil.forward(MovementUtil.getSpeed(SpeedRewrite.instance?.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED) * SpeedRewrite.instance?.boostSpeed!!.valDouble + (if (SpeedRewrite.instance?.boostFactor!!.valBoolean) 0.3 else 0.0))
+                    val dirSpeed = MovementUtil.forward(MovementUtil.getSpeed(SpeedRewrite.slow!!.valBoolean, MovementUtil.DEFAULT_SPEED) * SpeedRewrite.boostSpeed!!.valDouble + (if (SpeedRewrite.boostFactor!!.valBoolean) 0.3 else 0.0))
                     mc.player.motionX = dirSpeed[0]
                     mc.player.motionZ = dirSpeed[1]
                 } else {
-                    if (SpeedRewrite.instance?.jumpMovementFactor!!.valBoolean) {
-                        mc.player.jumpMovementFactor = SpeedRewrite.instance?.jumpMovementFactorSpeed!!.valFloat
+                    if (SpeedRewrite.jumpMovementFactor!!.valBoolean) {
+                        mc.player.jumpMovementFactor = SpeedRewrite.jumpMovementFactorSpeed!!.valFloat
                     }
                     if (y == 1.0) y = mc.player.positionVector.y else {
                         if (mc.player.positionVector.y < y) {
                             y = mc.player.positionVector.y
                             mc.player.motionX = 0.0
                             mc.player.motionZ = 0.0
-                            if (SpeedRewrite.instance?.useTimer!!.valBoolean) {
+                            if (SpeedRewrite.useTimer!!.valBoolean) {
                                 EntityUtil.resetTimer()
                             }
                             Managers.instance.timerManager.updateTimer(Speed.instance, 2, 16f)
                         } else {
                             y = mc.player.positionVector.y
-                            if (SpeedRewrite.instance?.useMotionInAir!!.valBoolean && currentMotion != null) {
+                            if (SpeedRewrite.useMotionInAir!!.valBoolean && currentMotion != null) {
                                 when (currentMotion) {
                                     Motion.X -> mc.player.motionX += 0.2
                                     Motion.Z -> mc.player.motionY += 0.2
@@ -241,8 +241,8 @@ enum class SpeedModes(
                     mc.player.jump()
                 } else {
                     val direction = MovementUtil.getDirection()
-                    mc.player.motionX = -sin(direction) * SpeedRewrite.instance?.motionXmodifier!!.valDouble
-                    mc.player.motionZ = cos(direction) * SpeedRewrite.instance?.motionZmodifier!!.valDouble
+                    mc.player.motionX = -sin(direction) * SpeedRewrite.motionXmodifier!!.valDouble
+                    mc.player.motionZ = cos(direction) * SpeedRewrite.motionZmodifier!!.valDouble
                 }
             }
         }
@@ -262,9 +262,9 @@ enum class SpeedModes(
 
     companion object {
         fun getCap(): Double {
-            var ret = SpeedRewrite.instance?.cap!!.valDouble
+            var ret = SpeedRewrite.cap!!.valDouble
 
-            if(!SpeedRewrite.instance?.scaleCap!!.valBoolean) {
+            if(!SpeedRewrite.scaleCap!!.valBoolean) {
                 return ret
             }
 
@@ -272,7 +272,7 @@ enum class SpeedModes(
                 ret *= 1 + 0.2 * (mc.player.getActivePotionEffect(MobEffects.SPEED)?.amplifier!! + 1)
             }
 
-            if(SpeedRewrite.instance?.slow!!.valBoolean && mc.player.isPotionActive(MobEffects.SLOWNESS)) {
+            if(SpeedRewrite.slow!!.valBoolean && mc.player.isPotionActive(MobEffects.SLOWNESS)) {
                 ret /= 1 + 0.2 * (mc.player.getActivePotionEffect(MobEffects.SLOWNESS)?.amplifier!! + 1)
             }
 

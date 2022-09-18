@@ -169,7 +169,7 @@ public class ModuleManager {
 		modules.add(new ScaffoldRewrite());
 		modules.add(new SoftScaffold());
 		modules.add(new Speed());
-		modules.add(new SpeedRewrite());
+//		modules.add(SpeedRewrite.INSTANCE);
 		modules.add(new Spider());
 		modules.add(new TargetStrafe());
 		//player
