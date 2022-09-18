@@ -109,7 +109,19 @@ class FallbackableFont(
         TODO("Not yet implemented")
     }
 
+    override fun getMultiLineOffset(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun setMultiLineOffset(offset: Int) {
+        TODO("Not yet implemented")
+    }
+
     override fun getStringWidth(text: String): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun getStringHeight(text: String): Int {
         TODO("Not yet implemented")
     }
 

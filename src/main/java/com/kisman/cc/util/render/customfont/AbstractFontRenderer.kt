@@ -31,8 +31,11 @@ abstract class AbstractFontRenderer {
     abstract fun getFractionMetrics(): Boolean
     abstract fun getAntiAlias(): Boolean
     abstract fun setFont(font : Font)
+    abstract fun getMultiLineOffset() : Int
+    abstract fun setMultiLineOffset(offset : Int)
 
     abstract fun getStringWidth(text : String) : Int
+    abstract fun getStringHeight(text : String) : Int
 
     abstract fun drawString(
         text : String,

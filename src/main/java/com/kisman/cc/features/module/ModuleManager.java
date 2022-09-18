@@ -81,6 +81,7 @@ public class ModuleManager {
 		modules.add(new BowSpam());
 //		modules.add(new BreakAlert());
 		modules.add(new Burrow2());
+		modules.add(new CityBoss());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
 		modules.add(new CrystalPvPHelper());

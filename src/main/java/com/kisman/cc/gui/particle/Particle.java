@@ -1,15 +1,12 @@
 package com.kisman.cc.gui.particle;
 
-import org.lwjgl.util.vector.*;
-
-import com.kisman.cc.util.render.ColorUtils;
-
-import java.util.*;
-
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.render.ColorUtils;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 
-import org.lwjgl.opengl.*;
+import java.util.Random;
 
 public class Particle
 {
@@ -29,8 +26,8 @@ public class Particle
 
     public static Particle generateParticle() {
         final Vector2f velocity = new Vector2f((float)(Math.random() * 3.0 - 1.0), (float)(Math.random() * 3.0 - 1.0));
-        final float x = (float)Particle.random.nextInt(Display.getWidth());
-        final float y = (float)Particle.random.nextInt(Display.getHeight());
+        final float x = (float)Particle.random.nextInt(Math.abs(Display.getWidth()));
+        final float y = (float)Particle.random.nextInt(Math.abs(Display.getHeight()));
         final float size = (float)(Math.random() * 4.0) + 2.0f;
         return new Particle(velocity, x, y, size);
     }

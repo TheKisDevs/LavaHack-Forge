@@ -71,5 +71,13 @@ class CustomFontUtilKt {
         private fun getChanger() : Changer {
             return Kisman.instance.moduleManager.getModule("Changer") as Changer
         }
+
+        fun setMultiLineOffset(
+            offset : Int
+        ) {
+            getCustomFont()
+        }
+
+        fun getMultiLineOffset() : Int = getCustomFont().getMultiLineOffset()
     }
 }

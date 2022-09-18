@@ -21,6 +21,8 @@ open class ExtendedFontRenderer(
     private val test = Supplier { if(CustomFontModule.instance != null) CustomFontModule.instance.test.valBoolean else false }
     private val test2 = Supplier { if(CustomFontModule.instance != null) CustomFontModule.instance.test2.valBoolean else false }
 
+    private var offset = 2
+
     open fun getCurrentFont() : CustomFontRenderer {
         return when(style.get()) {
             FontStyles.Plain -> plain
@@ -82,6 +84,8 @@ open class ExtendedFontRenderer(
         return getCurrentFont().getStringWidth(text)
     }
 
+    override fun getStringHeight(text : String) : Int = (getHeight() + offset) * text.split("\n").size
+
     override fun drawString(text: String, x: Double, y: Double, color: Int, shadow: Boolean) : Float {
         return getCurrentFont().drawString(text, x, getY(y.toInt()).toDouble(), color, shadow)
     }
@@ -96,5 +100,14 @@ open class ExtendedFontRenderer(
 
     override fun drawCenteredStringWithShadow(text: String, x: Float, y: Float, color: Int) {
         getCurrentFont().drawCenteredStringWithShadow(text, x, getY(y.toInt()).toFloat(), color)
+    }
+
+    override fun getMultiLineOffset() : Int = offset
+
+    override fun setMultiLineOffset(
+        offset : Int
+    ) {
+        this.offset = offset
+        getCurrentFont().offset = getHeight() + offset
     }
 }

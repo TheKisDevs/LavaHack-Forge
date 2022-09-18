@@ -18,6 +18,8 @@ public class CustomFont extends AbstractFontRenderer {
     protected int charOffset = 0;
     protected DynamicTexture tex;
 
+    public int offset = 2;
+
     public CustomFont(Font font, boolean antiAlias, boolean fractionalMetrics){
         this.font = font;
         this.antiAlias = antiAlias;
@@ -145,6 +147,21 @@ public class CustomFont extends AbstractFontRenderer {
     @Override public float drawString(@NotNull String text, double x, double y, int color) {return 0;}
     @Override public boolean getFractionMetrics() {return false;}
     @Override public boolean getAntiAlias() {return false;}
+
+    @Override
+    public int getMultiLineOffset() {
+        return 0;
+    }
+
+    @Override
+    public void setMultiLineOffset(int offset) {
+
+    }
+
+    @Override
+    public int getStringHeight(@NotNull String text) {
+        return 0;
+    }
 
     public static class CharData {
         public int width;

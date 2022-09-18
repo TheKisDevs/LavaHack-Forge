@@ -28,7 +28,6 @@ public class CommandManager extends ChatHandler {
 		add(new Help());
 		add(new IsOnline());
 		add(new LuaCommand());
-        add(new Slider());
 		add(new TestCommand());
         add(new OpenDir());
         //add(new Panic());

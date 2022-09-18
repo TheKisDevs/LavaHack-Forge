@@ -17,6 +17,7 @@ public class CustomFontModule extends Module {
     public final Setting style = register(new Setting("Style", this, FontStyles.Plain));
     public final Setting test = register(new Setting("Test", this, false));
     public final Setting test2 = register(new Setting("Test 2", this, false));
+    public final Setting multiLineOffset = register(new Setting("Multi Line Offset", this, 2, 0, 5, true));
     public final Setting fallbackFont = register(new Setting("Fallback Font", this, false));
     public final Setting fallbackMode = register(new Setting("Fallback Mode", this, "Futura", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century")));
     public final Setting customSize = register(new Setting("Custom Size", this, false));
@@ -41,6 +42,8 @@ public class CustomFontModule extends Module {
             CustomFontUtilKt.Companion.setFractionalMetrics(fractionMetrics.getValBoolean());
             CustomFontUtilKt.Companion.setAntiAlias(antiAlias.getValBoolean());
         }
+
+        CustomFontUtilKt.Companion.setMultiLineOffset(multiLineOffset.getValInt());
     }
     public void onDisable(){
         turnOn = false;

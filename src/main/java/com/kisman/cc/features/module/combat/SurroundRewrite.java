@@ -80,8 +80,10 @@ public class SurroundRewrite extends Module {
 
     private final Setting breakCrystals = register(new Setting("BreakCrystals", this, false));
 
-    private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("CrystalBreaker", this)));
+    private final SettingGroup crystalBreaker = register(new SettingGroup(new Setting("Crystal Breaker", this)));
 
+    private final Setting cbTimings = register(crystalBreaker.add(new Setting("CB Timings", this, Timings.Adaptive).setTitle("Timings")));
+    private final Setting cbSequentialDelay = register(crystalBreaker.add(new Setting("CB Sequential Delay", this, 1, 0, 10, true).setTitle("Sequential Delay")));
     private final Setting cbMode = register(crystalBreaker.add(new Setting("CbMode", this, "SurroundBlocks", Arrays.asList("SurroundBlocks", "Area")).setTitle("Mode")));
     private final Setting cbRange = register(crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area")).setTitle("Range")));
     private final Setting cbDelay = register(crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true).setTitle("Delay")));
@@ -208,7 +210,7 @@ public class SurroundRewrite extends Module {
             return;
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
         Set<EntityEnderCrystal> alreadyHit = new HashSet<>(64);
-        if(cbMode.getValString().equals("Area")){
+        if(cbMode.getValString().equals("Area")) {
             double range = cbRange.getValDouble();
             double x1 = mc.player.posX - range;
             double y1 = mc.player.posY - range;
@@ -233,6 +235,7 @@ public class SurroundRewrite extends Module {
     }
 
     private boolean validCrystal(EntityEnderCrystal crystal) {
+        if(cbTimings.checkValString("Sequential") && crystal.ticksExisted < cbSequentialDelay.getValInt()) return false;
         if(!cbNoSuicide.getValBoolean()) return true;
 
         float damage = CrystalUtils.calculateDamage(
@@ -806,5 +809,10 @@ public class SurroundRewrite extends Module {
         RemoveEntity,
         SetDead,
         Both
+    }
+
+    private enum Timings {
+        Adaptive,
+        Sequential
     }
 }

@@ -36,6 +36,10 @@ class CrystalPvPHelper : Module(
 
         threads.update(Runnable {
             for(player in mc.world.playerEntities) {
+                if(player == mc.player) {
+                    continue
+                }
+
                 val distanceToPlayer = mc.player.getDistance(player)
 
                 if(distanceToPlayer <= distance.valInt) {

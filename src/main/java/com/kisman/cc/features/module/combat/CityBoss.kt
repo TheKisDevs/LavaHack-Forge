@@ -21,7 +21,6 @@ import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
-import org.lwjgl.input.Keyboard
 import java.util.function.BiConsumer
 import java.util.function.Supplier
 import java.util.stream.Collectors
@@ -54,118 +53,179 @@ class CityBoss : Module(
     private var packetMined = false
     private var coordsPacketMined = BlockPos(-1, -1, -1)
 
-    private fun doCityBoss() {
-        if (mc.player == null && mc.world == null) return
+    override fun update() {
+        if (mc.player == null || mc.world == null || AutoRer.currentTarget == null) return
 
         cityable.clear()
 
-        val players = mc.world.playerEntities.stream()
-            .filter { entityPlayer: EntityPlayer -> entityPlayer !== mc.player }
-            .filter { entityPlayer: EntityPlayer -> entityPlayer.getDistanceSq(mc.player) <= range.valDouble * range.valDouble }
-            .filter { entityPlayer: EntityPlayer? ->
-                !EntityUtil.basicChecksEntity(
-                    entityPlayer
-                )
-            }.collect(Collectors.toList())
+        val player = AutoRer.currentTarget
 
-        for (player in players) {
-            var blocks = EntityUtil.getBlocksIn(player)
-            if (blocks.size == 0) continue
-            var minY = Int.MAX_VALUE
-            for (block in blocks) {
-                val y = block.y
-                if (y < minY) {
-                    minY = y
-                }
+        if(canBeBurrowed(player)) {
+            //TODO: auto trap action
+            println("*trapping*")
+        } else {
+            if(isBurrowed(player)) {
+                println("*mining burrow block*")
+                mineBlock(player.position)
+            } else {
+                println("*mining surround block*")
+                processPlayer(player)
+                processPlayerBlocks(cityable[player]!!)
             }
-            if (player.posY % 1 > .2) {
-                minY++
-            }
-            val finalMinY = minY
-            blocks = blocks.stream().filter {
-                    blockPos: BlockPos -> blockPos.y == finalMinY
-            }.collect(Collectors.toList())
-            val any = blocks.stream().findAny()
-            if (!any.isPresent) {
-                continue
-            }
-            val holeInfo = HoleUtil.isHole(any.get(), false, true)
-            if (holeInfo.type == HoleUtil.HoleType.NONE || holeInfo.safety == HoleUtil.BlockSafety.UNBREAKABLE) {
-                continue
-            }
-            val sides = ArrayList<BlockPos>()
-            for (block in blocks) {
-                sides.addAll(cityableSides(block!!, HoleUtil.getUnsafeSides(block).keys, player))
-            }
-            if (sides.isNotEmpty()) {
-                cityable[player] = sides
-            }
-        }
-
-        for (poss in cityable.values) {
-            var found = false
-            for (block in poss) {
-                if (mc.player.getDistance(
-                        block.x.toDouble(),
-                        block.y.toDouble(),
-                        block.z.toDouble()
-                    ) <= 5
-                ) {
-                    found = true
-                    if (packetMined && coordsPacketMined === block) break
-                    if (mc.player.heldItemMainhand.getItem() !== Items.DIAMOND_PICKAXE/* && switchPick.valBoolean*/) {
-                        val slot = InventoryUtil.findFirstItemSlot(ItemPickaxe::class.java, 0, 9)
-                        if (slot != 1) mc.player.inventory.currentItem = slot
-                    }
-                    if (mineMode.valString == CityESP.MineMode.Packet.name) {
-                        mc.player.swingArm(EnumHand.MAIN_HAND)
-                        mc.player.connection.sendPacket(
-                            CPacketPlayerDigging(
-                                CPacketPlayerDigging.Action.START_DESTROY_BLOCK,
-                                block,
-                                EnumFacing.UP
-                            )
-                        )
-                        mc.player.connection.sendPacket(
-                            CPacketPlayerDigging(
-                                CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                                block,
-                                EnumFacing.UP
-                            )
-                        )
-                        packetMined = true
-                        coordsPacketMined = block
-                    } else {
-                        mc.player.swingArm(EnumHand.MAIN_HAND)
-                        mc.playerController.onPlayerDamageBlock(block, EnumFacing.UP)
-                    }
-                    break
-                }
-            }
-            if (found) break
         }
     }
 
+    private fun mineBlock(
+        pos : BlockPos
+    ) {
+        if (packetMined && coordsPacketMined == pos) {
+            return
+        }
 
-    private fun cityableSides(centre: BlockPos, weakSides: Set<BlockOffset>, player: EntityPlayer): List<BlockPos> {
-        val cityableSides: MutableList<BlockPos> = ArrayList()
+        if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE/* && switchPick.valBoolean*/) {
+            val slot = InventoryUtil.findFirstItemSlot(ItemPickaxe::class.java, 0, 9)
+
+            if (slot != 1) {
+                mc.player.inventory.currentItem = slot
+            } else {
+                return
+            }
+        }
+
+        if (mineMode.valString == CityESP.MineMode.Packet.name) {
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.player.connection.sendPacket(
+                CPacketPlayerDigging(
+                    CPacketPlayerDigging.Action.START_DESTROY_BLOCK,
+                    pos,
+                    EnumFacing.UP
+                )
+            )
+            mc.player.connection.sendPacket(
+                CPacketPlayerDigging(
+                    CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                    pos,
+                    EnumFacing.UP
+                )
+            )
+            packetMined = true
+            coordsPacketMined = pos
+        } else {
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
+        }
+    }
+
+    private fun processPlayerBlocks(
+        posses : List<BlockPos>
+    ) : Boolean {
+        var found = false
+
+        for (pos in posses) {
+            if (mc.player.getDistance(
+                    pos.x.toDouble(),
+                    pos.y.toDouble(),
+                    pos.z.toDouble()
+                ) <= 5
+            ) {
+                found = true
+
+                mineBlock(pos)
+
+                break
+            }
+        }
+
+        return found
+    }
+
+    private fun canBeBurrowed(
+        player : EntityPlayer
+    ) : Boolean = mc.world.getBlockState(player.position.up().up()).block == Blocks.AIR
+
+    private fun isBurrowed(
+        player : EntityPlayer
+    ) : Boolean = mc.world.getBlockState(player.position).block != Blocks.AIR
+
+    private fun processPlayer(
+        player : EntityPlayer
+    ) {
+        var blocks = EntityUtil.getBlocksIn(player)
+
+        if (blocks.size == 0) {
+            return
+        }
+
+        var minY = Int.MAX_VALUE
+
+        for (block in blocks) {
+            val y = block.y
+
+            if (y < minY) {
+                minY = y
+            }
+        }
+
+        if (player.posY % 1 > .2) {
+            minY++
+        }
+
+        val finalMinY = minY
+
+        blocks = blocks.stream().filter { blockPos : BlockPos -> blockPos.y == finalMinY }.collect(Collectors.toList())
+
+        val any = blocks.stream().findAny()
+
+        if (!any.isPresent) {
+            return
+        }
+
+        val holeInfo = HoleUtil.isHole(any.get(), false, true)
+
+        if (holeInfo.type == HoleUtil.HoleType.NONE || holeInfo.safety == HoleUtil.BlockSafety.UNBREAKABLE) {
+            return
+        }
+
+        val sides = ArrayList<BlockPos>()
+
+        for (block in blocks) {
+            sides.addAll(cityableSides(block!!, HoleUtil.getUnsafeSides(block).keys, player))
+        }
+
+        if (sides.isNotEmpty()) {
+            cityable[player] = sides
+        }
+    }
+
+    private fun cityableSides(
+        centre : BlockPos,
+        weakSides : Set<BlockOffset>,
+        player : EntityPlayer
+    ) : List<BlockPos> {
+        val cityableSides = mutableListOf<BlockPos>()
         val directions = HashMap<BlockPos, BlockOffset>()
+
         for (weakSide in weakSides) {
             val pos = weakSide.offset(centre)
+
             if (mc.world.getBlockState(pos).block !== Blocks.AIR) {
                 directions[pos] = weakSide
             }
         }
+
         try {
             directions.forEach(BiConsumer { blockPos: BlockPos, blockOffset: BlockOffset ->
                 if (blockOffset == BlockOffset.DOWN) {
                     return@BiConsumer
                 }
+
                 val pos1 = blockOffset.left(blockPos.down(down.valInt), sides.valInt)
                 val pos2 = blockOffset.forward(blockOffset.right(blockPos, sides.valInt), depth.valInt)
                 val square = EntityUtil.getSquare(pos1, pos2)
                 val holder = mc.world.getBlockState(blockPos)
+
                 mc.world.setBlockToAir(blockPos)
+
                 for (pos in square) {
                     if (CrystalUtils.canPlaceCrystal(pos.down(), true, ignoreCrystals.valBoolean)) {
                         if (CrystalUtils.calculateDamage(
@@ -188,6 +248,7 @@ class CityBoss : Module(
                             ) {
                                 cityableSides.add(blockPos)
                             }
+
                             break
                         }
                     }
