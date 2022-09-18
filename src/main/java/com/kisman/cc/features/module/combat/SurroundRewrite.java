@@ -56,6 +56,7 @@ public class SurroundRewrite extends Module {
     private final Setting rangeCheck = register(new Setting("RangeCheck", this, false));
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5.5, 1, 10, false).setVisible(rangeCheck::getValBoolean));
     private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
+    private final Setting allEntities = register(new Setting("AllEntities", this, false).setVisible(extension::getValBoolean));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
@@ -477,31 +478,32 @@ public class SurroundRewrite extends Module {
             blocks.addAll(helpingBlocks);
             blocks.add(pos);
         }
-        List<EntityPlayer> players = new ArrayList<>();
+        List<Entity> entities = new ArrayList<>();
+        Class<? extends Entity> entityClass =  allEntities.getValBoolean() ? Entity.class : EntityPlayer.class;
         for(BlockPos pos : blocks){
-            List<EntityPlayer> playersInside = mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos));
-            if(players.isEmpty())
-                players = mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos.down()));
-            players.addAll(playersInside);
+            List<Entity> playersInside = mc.world.getEntitiesWithinAABB(entityClass, new AxisAlignedBB(pos));
+            if(entities.isEmpty())
+                entities = mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(pos.down()));
+            entities.addAll(playersInside);
         }
         List<BlockPos> actualBlocks = new ArrayList<>(blocks);
-        for(EntityPlayer player : players){
-            if(player.equals(mc.player))
+        for(Entity entity : entities){
+            if(entity.equals(mc.player))
                 continue;
-            List<BlockPos> curUpperBlocks = getDynamicUpperBlocks(player, mc.player.posY);
+            List<BlockPos> curUpperBlocks = getDynamicUpperBlocks(entity, mc.player.posY);
             List<BlockPos> positions = new ArrayList<>(16);
             if(feetBlocks.getValBoolean())
-                positions.addAll(getDynamicBlocksOffset(player, mc.player.posY, -1));
+                positions.addAll(getDynamicBlocksOffset(entity, mc.player.posY, -1));
             for(BlockPos pos : curUpperBlocks){
                 List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
                 positions.addAll(helpingBlocks);
                 positions.add(pos);
             }
-            List<EntityPlayer> newPlayers = new ArrayList<>(players);
-            newPlayers.add(mc.player);
+            List<Entity> newEntities = new ArrayList<>(entities);
+            newEntities.add(mc.player);
             List<BlockPos> remove = new ArrayList<>();
-            for(EntityPlayer entityPlayer : newPlayers){
-                List<BlockPos> raw = getDynamicBlocksOffset(entityPlayer, mc.player.posY, 0);
+            for(Entity e : newEntities){
+                List<BlockPos> raw = getDynamicBlocksOffset(e, mc.player.posY, 0);
                 for(BlockPos pos : positions){
                     if(raw.contains(pos))
                         remove.add(pos);

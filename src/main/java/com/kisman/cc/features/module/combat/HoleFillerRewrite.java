@@ -96,6 +96,8 @@ public class HoleFillerRewrite extends Module {
     public void update() {
         if(mc.world == null || mc.player == null) return;
 
+        targets.update();
+
         entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
 
         if(entity == null) return;
