@@ -118,7 +118,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.formdev:flatlaf:2.4'
     compile 'com.formdev:flatlaf-intellij-themes:2.4'
-    compile 'org.telegram:telegraph:1.0'
+//    compile 'org.telegram:telegraph:1.0'
 }
 
 processResources {
@@ -184,7 +184,7 @@ shadowJar {
         include(dependency("org.jsoup:jsoup:1.11.3"))
         include(dependency('com.formdev:flatlaf:2.4'))
         include(dependency('com.formdev:flatlaf-intellij-themes:2.4'))
-        include(dependency('org.telegram:telegraph:1.0'))
+//        include(dependency('org.telegram:telegraph:1.0'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
