@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
+import com.google.common.collect.ImmutableMap;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.PacketEvent;
@@ -14,9 +15,17 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
+import com.kisman.cc.util.world.CustomWorld;
 import com.kisman.cc.util.world.RotationUtils;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockFaceShape;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
@@ -32,16 +41,21 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketSoundEffect;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.cubic.dynamictask.AbstractTask;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -66,6 +80,7 @@ public class SurroundRewrite extends Module {
     private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
     private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
     private final Setting antiCity = register(new Setting("AntiCity", this, false));
+    private final Setting manipulateWorld = register(new Setting("ManipulateWorld", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -408,10 +423,24 @@ public class SurroundRewrite extends Module {
         if(!blocks.contains(pos))
             return;
 
+        WorldClient oldWorld = mc.world;
+
+        if(manipulateWorld.getValBoolean()){
+            CustomWorld customWorld = new CustomWorld(mc.world);
+            customWorld.override("getBlockState", AbstractTask.types(IBlockState.class, BlockPos.class).task(arg -> {
+                BlockPos blockPos = arg.fetch(0);
+                return new CustomBlockState(Blocks.AIR, mc.world.getBlockState(blockPos));
+            }));
+            oldWorld = mc.world;
+            mc.world = customWorld;
+        }
+
         if(syncronized.getValBoolean())
             doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
+
+        mc.world = oldWorld;
     });
 
     private boolean isInAnyBlocks(Vec3d vec, List<BlockPos> list){
@@ -456,10 +485,10 @@ public class SurroundRewrite extends Module {
     }
 
     private List<BlockPos> getDynamicBlocks(){
-        List<BlockPos> upperBlocks = getDynamicUpperBlocks();
+        List<BlockPos> upperBlocks = getDynamicUpperBlocks(mc.player, mc.player.posY);
         List<BlockPos> blocks = new ArrayList<>(16);
         if(feetBlocks.getValBoolean())
-            blocks.addAll(getDynamicBlocksOffset(-1));
+            blocks.addAll(getDynamicBlocksOffset(mc.player, mc.player.posY,-1));
         for(BlockPos pos : upperBlocks){
             List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
             blocks.addAll(helpingBlocks);
@@ -469,10 +498,10 @@ public class SurroundRewrite extends Module {
     }
 
     private List<BlockPos> getDynamicBlocksExtension(){
-        List<BlockPos> upperBlocks = getDynamicUpperBlocks();
+        List<BlockPos> upperBlocks = getDynamicUpperBlocks(mc.player, mc.player.posY);
         List<BlockPos> blocks = new ArrayList<>(16);
         if(feetBlocks.getValBoolean())
-            blocks.addAll(getDynamicBlocksOffset(-1));
+            blocks.addAll(getDynamicBlocksOffset(mc.player, mc.player.posY,-1));
         for(BlockPos pos : upperBlocks){
             List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
             blocks.addAll(helpingBlocks);
@@ -520,6 +549,7 @@ public class SurroundRewrite extends Module {
         return Arrays.asList(pos.down());
     }
 
+    /*
     private List<BlockPos> getDynamicUpperBlocks(){
         List<BlockPos> rawBlocks = getDynamicBlocksOffset(0);
         List<BlockPos> blocks = new ArrayList<>(16);
@@ -548,6 +578,7 @@ public class SurroundRewrite extends Module {
         addIfChecks(vec4, list);
         return list;
     }
+     */
 
     private List<BlockPos> getDynamicUpperBlocks(Entity entity, double y){
         List<BlockPos> rawBlocks = getDynamicBlocksOffset(entity, y, 0);
@@ -640,6 +671,20 @@ public class SurroundRewrite extends Module {
                 new Vec3d(0, 0, 1),
                 new Vec3d(0, 0, -1)
         }),
+        SemiSafe(new Vec3d[]{
+                new Vec3d(1, -1, 0),
+                new Vec3d(-1, -1, 0),
+                new Vec3d(0, -1, 1),
+                new Vec3d(0, -1, -1),
+                new Vec3d(1, 0, 0),
+                new Vec3d(-1, 0, 0),
+                new Vec3d(0, 0, 1),
+                new Vec3d(0, 0, -1),
+                new Vec3d(2, 0, 0),
+                new Vec3d(-2, 0, 0),
+                new Vec3d(0, 0, 2),
+                new Vec3d(0, 0, -2)
+        }),
         Safe(new Vec3d[]{
                 new Vec3d(1, -1, 0),
                 new Vec3d(-1, -1, 0),
@@ -710,9 +755,9 @@ public class SurroundRewrite extends Module {
             if(this == AntiFacePlace)
                 return instance.getAntiFacePlaceBlocks();
             if(instance.feetBlocks.getValBoolean())
-                list.addAll(instance.getDynamicBlocksOffset(-1));
+                list.addAll(instance.getDynamicBlocksOffset(mc.player, mc.player.posY, -1));
             if(instance.down.getValBoolean()) 
-                list.addAll(instance.getDynamicBlocksOffset(-2));
+                list.addAll(instance.getDynamicBlocksOffset(mc.player, mc.player.posY,-2));
             Vec3d posVec = mc.player.getPositionVector();
             for(Vec3d vec : vec3d) {
                 list.add(new BlockPos(vec.add(posVec)));
@@ -816,5 +861,278 @@ public class SurroundRewrite extends Module {
     private enum Timings {
         Adaptive,
         Sequential
+    }
+
+    @SuppressWarnings("ALL")
+    private static class CustomBlockState implements IBlockState {
+
+        private final Block block;
+
+        private final IBlockState blockState;
+
+        public CustomBlockState(Block block, IBlockState blockState) {
+            this.block = block;
+            this.blockState = blockState;
+        }
+
+        @Override
+        public Collection<IProperty<?>> getPropertyKeys() {
+            return blockState.getPropertyKeys();
+        }
+
+        @Override
+        public <T extends Comparable<T>> T getValue(IProperty<T> iProperty) {
+            return blockState.getValue(iProperty);
+        }
+
+        @Override
+        public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> iProperty, V v) {
+            return blockState.withProperty(iProperty, v);
+        }
+
+        @Override
+        public <T extends Comparable<T>> IBlockState cycleProperty(IProperty<T> iProperty) {
+            return blockState.cycleProperty(iProperty);
+        }
+
+        @Override
+        public ImmutableMap<IProperty<?>, Comparable<?>> getProperties() {
+            return blockState.getProperties();
+        }
+
+        @Override
+        public Block getBlock() {
+            return block;
+        }
+
+        @Override
+        public boolean onBlockEventReceived(World world, BlockPos blockPos, int i, int i1) {
+            return blockState.onBlockEventReceived(world, blockPos, i, i1);
+        }
+
+        @Override
+        public void neighborChanged(World world, BlockPos blockPos, Block block, BlockPos blockPos1) {
+            blockState.neighborChanged(world, blockPos, block, blockPos1);
+        }
+
+        @Override
+        public Material getMaterial() {
+            return blockState.getMaterial();
+        }
+
+        @Override
+        public boolean isFullBlock() {
+            return blockState.isFullBlock();
+        }
+
+        @Override
+        public boolean canEntitySpawn(Entity entity) {
+            return blockState.canEntitySpawn(entity);
+        }
+
+        @Override
+        @Deprecated
+        public int getLightOpacity() {
+            return blockState.getLightOpacity();
+        }
+
+        @Override
+        public int getLightOpacity(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getLightOpacity(iBlockAccess, blockPos);
+        }
+
+        @Override
+        @Deprecated
+        public int getLightValue() {
+            return blockState.getLightValue();
+        }
+
+        @Override
+        public int getLightValue(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getLightValue(iBlockAccess, blockPos);
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public boolean isTranslucent() {
+            return blockState.isTranslucent();
+        }
+
+        @Override
+        public boolean useNeighborBrightness() {
+            return blockState.useNeighborBrightness();
+        }
+
+        @Override
+        public MapColor getMapColor(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getMapColor(iBlockAccess, blockPos);
+        }
+
+        @Override
+        public IBlockState withRotation(Rotation rotation) {
+            return blockState.withRotation(rotation);
+        }
+
+        @Override
+        public IBlockState withMirror(Mirror mirror) {
+            return blockState.withMirror(mirror);
+        }
+
+        @Override
+        public boolean isFullCube() {
+            return blockState.isFullCube();
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public boolean hasCustomBreakingProgress() {
+            return blockState.hasCustomBreakingProgress();
+        }
+
+        @Override
+        public EnumBlockRenderType getRenderType() {
+            return blockState.getRenderType();
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public int getPackedLightmapCoords(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getPackedLightmapCoords(iBlockAccess, blockPos);
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public float getAmbientOcclusionLightValue() {
+            return blockState.getAmbientOcclusionLightValue();
+        }
+
+        @Override
+        public boolean isBlockNormalCube() {
+            return blockState.isBlockNormalCube();
+        }
+
+        @Override
+        public boolean isNormalCube() {
+            return blockState.isNormalCube();
+        }
+
+        @Override
+        public boolean canProvidePower() {
+            return blockState.canProvidePower();
+        }
+
+        @Override
+        public int getWeakPower(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.getWeakPower(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public boolean hasComparatorInputOverride() {
+            return blockState.hasComparatorInputOverride();
+        }
+
+        @Override
+        public int getComparatorInputOverride(World world, BlockPos blockPos) {
+            return blockState.getComparatorInputOverride(world, blockPos);
+        }
+
+        @Override
+        public float getBlockHardness(World world, BlockPos blockPos) {
+            return blockState.getBlockHardness(world, blockPos);
+        }
+
+        @Override
+        public float getPlayerRelativeBlockHardness(EntityPlayer entityPlayer, World world, BlockPos blockPos) {
+            return blockState.getPlayerRelativeBlockHardness(entityPlayer, world, blockPos);
+        }
+
+        @Override
+        public int getStrongPower(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.getStrongPower(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public EnumPushReaction getMobilityFlag() {
+            return blockState.getMobilityFlag();
+        }
+
+        @Override
+        public IBlockState getActualState(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getActualState(iBlockAccess, blockPos);
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public AxisAlignedBB getSelectedBoundingBox(World world, BlockPos blockPos) {
+            return blockState.getSelectedBoundingBox(world, blockPos);
+        }
+
+        @Override
+        @SideOnly(Side.CLIENT)
+        public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.shouldSideBeRendered(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public boolean isOpaqueCube() {
+            return blockState.isOpaqueCube();
+        }
+
+        @Override
+        @Nullable
+        public AxisAlignedBB getCollisionBoundingBox(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getCollisionBoundingBox(iBlockAccess, blockPos);
+        }
+
+        @Override
+        public void addCollisionBoxToList(World world, BlockPos blockPos, AxisAlignedBB axisAlignedBB, List<AxisAlignedBB> list, @org.jetbrains.annotations.Nullable Entity entity, boolean b) {
+            blockState.addCollisionBoxToList(world, blockPos, axisAlignedBB, list, entity, b);
+        }
+
+        @Override
+        public AxisAlignedBB getBoundingBox(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getBoundingBox(iBlockAccess, blockPos);
+        }
+
+        @Override
+        public RayTraceResult collisionRayTrace(World world, BlockPos blockPos, Vec3d vec3d, Vec3d vec3d1) {
+            return blockState.collisionRayTrace(world, blockPos, vec3d, vec3d1);
+        }
+
+        @Override
+        @Deprecated
+        public boolean isTopSolid() {
+            return blockState.isTopSolid();
+        }
+
+        @Override
+        public boolean doesSideBlockRendering(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.doesSideBlockRendering(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public boolean isSideSolid(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.isSideSolid(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public boolean doesSideBlockChestOpening(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.doesSideBlockChestOpening(iBlockAccess, blockPos, enumFacing);
+        }
+
+        @Override
+        public Vec3d getOffset(IBlockAccess iBlockAccess, BlockPos blockPos) {
+            return blockState.getOffset(iBlockAccess, blockPos);
+        }
+
+        @Override
+        public boolean causesSuffocation() {
+            return blockState.causesSuffocation();
+        }
+
+        @Override
+        public BlockFaceShape getBlockFaceShape(IBlockAccess iBlockAccess, BlockPos blockPos, EnumFacing enumFacing) {
+            return blockState.getBlockFaceShape(iBlockAccess, blockPos, enumFacing);
+        }
     }
 }
