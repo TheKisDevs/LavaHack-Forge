@@ -205,7 +205,7 @@ public class AutoRer extends Module {
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
     public static EntityPlayer currentTarget;
     private Thread thread;
-    public PlaceInfo placePos, renderPos;
+    public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0, null, null, null), renderPos;
     private Entity lastHitEntity = null;
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
@@ -330,7 +330,7 @@ public class AutoRer extends Module {
         }
 
         if(currentTarget == null) {
-            placePos = null;
+            placePos.setBlockPos(null);
             return;
         } else super.setDisplayInfo("[" + currentTarget.getName() + "]");
 
@@ -340,7 +340,7 @@ public class AutoRer extends Module {
             if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
                 if (threadCalc.getValBoolean() && !threadMode.checkValString("None")) break calc;
                 doCalculatePlace();
-                if (placePos != null) if (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos = null;
+                if (placePos.getBlockPos() != null) if (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos.setBlockPos(null);
                 calcTimer.reset();
             }
         }
@@ -452,7 +452,7 @@ public class AutoRer extends Module {
             renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
         }
 
-        if(placePos != null) renderer.onRenderWorld(
+        if(placePos.getBlockPos() != null) renderer.onRenderWorld(
                 movable.movingLength.getValFloat(),
                 movable.fadeLength.getValFloat(),
                 renderer_,
@@ -499,13 +499,17 @@ public class AutoRer extends Module {
             double z,
             EntityPlayer entity
     ) {
-        return calculateDamage(
-                new BlockPos(
-                        x,
-                        y,
-                        z
-                ),
-                entity
+        AxisAlignedBB bb = extrapolationState.getValBoolean() && (entity != mc.player || extrapolationSelf.getValBoolean()) ? extrapolationHelper.predictor(entity).getEntityBoundingBox() : entity.getEntityBoundingBox();
+
+        return CrystalUtils.calculateDamage(
+                mc.world,
+                x,
+                y,
+                z,
+                entity,
+                bb,
+                0,
+                terrain.getValBoolean()
         );
     }
 
@@ -513,17 +517,11 @@ public class AutoRer extends Module {
             BlockPos pos,
             EntityPlayer entity
     ) {
-        AxisAlignedBB bb = extrapolationState.getValBoolean() && (entity != mc.player || extrapolationSelf.getValBoolean()) ? extrapolationHelper.predictor(entity).getEntityBoundingBox() : entity.getEntityBoundingBox();
-
-        return CrystalUtils.calculateDamage(
-                mc.world,
+        return calculateDamage(
                 pos.getX(),
                 pos.getY(),
                 pos.getZ(),
-                entity,
-                bb,
-                0,
-                terrain.getValBoolean()
+                entity
         );
     }
 
@@ -672,9 +670,9 @@ public class AutoRer extends Module {
     }
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
-        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos == null && fastCalc.getValBoolean() || placeStrictSync())) return;
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean() || placeStrictSync())) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
-        if(placePos == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
+        if(placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
         EnumHand hand = null;
         boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
@@ -720,7 +718,7 @@ public class AutoRer extends Module {
             result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
         } catch(Exception ignored) {}
         EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
-        if(placePos != null && mc.player.connection != null) {
+        if(placePos.getBlockPos() != null && mc.player.connection != null) {
             if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
             if(packetPlace.getValBoolean() && mc.player.connection != null) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, getPlaceHand(offhand), 0, 0, 0));
             else mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));

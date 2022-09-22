@@ -15,12 +15,6 @@ import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.*;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.block.material.EnumPushReaction;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
@@ -38,21 +32,16 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketSoundEffect;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.cubic.dynamictask.AbstractTask;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -602,6 +591,18 @@ public class SurroundRewrite extends Module {
             if(!rawBlocks.contains(b2)) blocks.add(b2);
             if(!rawBlocks.contains(b3)) blocks.add(b3);
             if(!rawBlocks.contains(b4)) blocks.add(b4);
+
+            if(safeDynamic.getValBoolean() || (safeEchest.getValBoolean() && isEchest)) {
+                BlockPos b1_1 = pos.north().west();
+                BlockPos b2_2 = pos.north().east();
+                BlockPos b3_3 = pos.south().east();
+                BlockPos b4_4 = pos.south().west();
+
+                if(!rawBlocks.contains(b1_1)) blocks.add(b1_1);
+                if(!rawBlocks.contains(b2_2)) blocks.add(b2_2);
+                if(!rawBlocks.contains(b3_3)) blocks.add(b3_3);
+                if(!rawBlocks.contains(b4_4)) blocks.add(b4_4);
+            }
         }
         return blocks;
     }

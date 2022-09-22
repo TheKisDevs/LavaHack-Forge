@@ -208,6 +208,7 @@ public class ModuleManager {
 		modules.add(new NoFallExploit());
 		modules.add(new NoGlitchBlocks());
 		modules.add(new PacketEat());
+		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new PlayerLook());
 		modules.add(new SilentClose());

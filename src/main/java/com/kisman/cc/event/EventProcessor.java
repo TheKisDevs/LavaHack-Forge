@@ -57,7 +57,7 @@ public class EventProcessor {
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         try {
             if (AutoRer.instance.lagProtect.getValBoolean()) disableCa();
-            AutoRer.instance.placePos = null;
+            AutoRer.instance.placePos.setBlockPos(null);
             Kisman.instance.configManager.getSaver().init();
         } catch(Exception ignored) {}
     }
