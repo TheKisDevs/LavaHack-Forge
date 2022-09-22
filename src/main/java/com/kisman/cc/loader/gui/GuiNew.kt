@@ -10,6 +10,7 @@ import com.kisman.cc.loader.gui.page.pages.ConsolePage
 import com.kisman.cc.loader.gui.page.pages.MainPage
 import com.kisman.cc.loader.gui.page.pages.SettingsPage
 import com.kisman.cc.loader.gui.utils.LoaderFont
+import com.kisman.cc.loader.version
 import java.awt.*
 import javax.swing.JFrame
 import javax.swing.JLabel
@@ -51,7 +52,7 @@ fun create() {
 
     FlatMaterialDarkerIJTheme.setup()
 
-    frame = JFrame("LavaHack Loader")
+    frame = JFrame("LavaHack Loader | $version")
     frame!!.setSize(500, 400)
 
     val tabsPanel = JPanel()

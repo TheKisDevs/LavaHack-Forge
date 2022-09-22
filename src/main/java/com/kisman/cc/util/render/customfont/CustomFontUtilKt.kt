@@ -75,7 +75,7 @@ class CustomFontUtilKt {
         fun setMultiLineOffset(
             offset : Int
         ) {
-            getCustomFont()
+            getCustomFont().setMultiLineOffset(offset)
         }
 
         fun getMultiLineOffset() : Int = getCustomFont().getMultiLineOffset()

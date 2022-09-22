@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.Debug
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.SettingEnum
+import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Render2DUtil
 import net.minecraftforge.client.event.RenderWorldLastEvent

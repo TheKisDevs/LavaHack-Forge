@@ -30,6 +30,7 @@ public class GuiModule extends Module {
         super("Gui", Category.CLIENT);
         super.setKeyboardKey(Keyboard.KEY_RSHIFT);
         super.setType(BindType.Keyboard);
+        super.dontSendToggleMessages();
 
         instance = this;
     }

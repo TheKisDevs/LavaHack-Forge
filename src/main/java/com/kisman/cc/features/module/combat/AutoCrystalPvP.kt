@@ -6,7 +6,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.PingBypassModule
 import com.kisman.cc.features.module.combat.autocrystalpvp.PlaceInfo
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.SettingEnum
+import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern
@@ -41,7 +41,7 @@ object AutoCrystalPvP : Module(
     "crystal pvp go brr",
     Category.COMBAT
 ) {
-    private val terrain = register(Setting("Terrain", this, true))
+    private val terrain  = register(Setting("Terrain", this, true))
     private val targetIsUsingMultiPlace = /*register*/(Setting("Target Is Using Multi Place", this, false))
     private val debug1 = register(Setting("Debug 1", this, false))
     private val debug2 = register(Setting("Debug 2", this, false))

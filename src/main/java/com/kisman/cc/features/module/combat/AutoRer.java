@@ -10,7 +10,7 @@ import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.SettingEnum;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.DamageSyncPattern;

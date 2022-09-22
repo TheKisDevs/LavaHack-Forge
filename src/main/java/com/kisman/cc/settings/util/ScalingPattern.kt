@@ -2,7 +2,7 @@ package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.SettingEnum
+import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.enums.dynamic.ScalingEnum
 import com.kisman.cc.util.render.Rendering

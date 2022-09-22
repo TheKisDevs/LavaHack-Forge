@@ -1,7 +1,6 @@
 package com.kisman.cc.settings.types
 
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.SettingEnum
 
 open class SettingGroup(
         setting : Setting

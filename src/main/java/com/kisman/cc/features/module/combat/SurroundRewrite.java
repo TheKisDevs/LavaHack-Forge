@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.SettingEnum;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
@@ -52,13 +52,16 @@ public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
     private final Setting syncronized = register(new Setting("Syncronized", this, false));
-    private final SettingEnum<Vectors> mode = new SettingEnum<Vectors>("Mode", this, Vectors.Normal).register();
+    private final SettingEnum<Vectors> mode = new SettingEnum<>("Mode", this, Vectors.Normal).register();
     private final Setting rangeCheck = register(new Setting("RangeCheck", this, false));
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5.5, 1, 10, false).setVisible(rangeCheck::getValBoolean));
+    private final Setting safeDynamic = register(new Setting("Safe Dynamic", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
-    private final Setting allEntities = register(new Setting("AllEntities", this, false).setVisible(extension::getValBoolean));
+    private final Setting allEntities = register(new Setting("AllEntities", this, false).setVisible(() -> extension.getValBoolean() && extension.isVisible()));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
-    private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<SwapEnum.Swap>("Switch", this, SwapEnum.Swap.Silent).register();
+    private final Setting smartBlock = register(new Setting("Smart Block", this, false));
+    private final Setting safeEchest = /*register*/(new Setting("Safe E Chest", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
+    private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum.Swap.Silent).register();
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
@@ -100,6 +103,7 @@ public class SurroundRewrite extends Module {
     private final TimerUtils timer = new TimerUtils();
 
     private double lastY = -1;
+    private boolean isEchest = false;
 
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT, true);
@@ -438,9 +442,13 @@ public class SurroundRewrite extends Module {
     }
 
     private int getBlockSlot(){
-        if(block.getValString().equals("Obsidian"))
-            return InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
-        return InventoryUtil.getBlockInHotbar(Blocks.ENDER_CHEST);
+        int obbySlot = InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
+        int echestSlot = InventoryUtil.getBlockInHotbar(Blocks.ENDER_CHEST);
+
+        if(block.checkValString("Obsidian"))
+            return smartBlock.getValBoolean() && obbySlot == -1 ? echestSlot : obbySlot;
+        isEchest = true;
+        return smartBlock.getValBoolean() && echestSlot == -1 ? obbySlot : echestSlot;
     }
 
     private Block getSwapBlock(){
@@ -469,15 +477,8 @@ public class SurroundRewrite extends Module {
     }
 
     private List<BlockPos> getDynamicBlocksExtension(){
-        List<BlockPos> upperBlocks = getDynamicUpperBlocks();
-        List<BlockPos> blocks = new ArrayList<>(16);
-        if(feetBlocks.getValBoolean())
-            blocks.addAll(getDynamicBlocksOffset(-1));
-        for(BlockPos pos : upperBlocks){
-            List<BlockPos> helpingBlocks = getHelpingBlocks(pos);
-            blocks.addAll(helpingBlocks);
-            blocks.add(pos);
-        }
+        List<BlockPos> blocks = getDynamicBlocks();
+
         List<Entity> entities = new ArrayList<>();
         Class<? extends Entity> entityClass =  allEntities.getValBoolean() ? Entity.class : EntityPlayer.class;
         for(BlockPos pos : blocks){
@@ -523,6 +524,7 @@ public class SurroundRewrite extends Module {
     private List<BlockPos> getDynamicUpperBlocks(){
         List<BlockPos> rawBlocks = getDynamicBlocksOffset(0);
         List<BlockPos> blocks = new ArrayList<>(16);
+
         for(BlockPos pos : rawBlocks){
             BlockPos b1 = pos.north();
             BlockPos b2 = pos.east();
@@ -532,7 +534,20 @@ public class SurroundRewrite extends Module {
             if(!rawBlocks.contains(b2)) blocks.add(b2);
             if(!rawBlocks.contains(b3)) blocks.add(b3);
             if(!rawBlocks.contains(b4)) blocks.add(b4);
+
+            if(safeDynamic.getValBoolean() || (safeEchest.getValBoolean() && isEchest)) {
+                BlockPos b1_1 = pos.north().west();
+                BlockPos b2_2 = pos.north().east();
+                BlockPos b3_3 = pos.south().east();
+                BlockPos b4_4 = pos.south().west();
+
+                if(!rawBlocks.contains(b1_1)) blocks.add(b1_1);
+                if(!rawBlocks.contains(b2_2)) blocks.add(b2_2);
+                if(!rawBlocks.contains(b3_3)) blocks.add(b3_3);
+                if(!rawBlocks.contains(b4_4)) blocks.add(b4_4);
+            }
         }
+
         return blocks;
     }
 
@@ -695,7 +710,24 @@ public class SurroundRewrite extends Module {
                 new Vec3d(0, 1, -1)
         }),
         AntiFacePlace(null),
-        Dynamic(null);
+        Dynamic(null)/*,
+
+        @Exclude EchestSafeNormal(new Vec3d[]{
+                new Vec3d(1, -1, 0),
+                new Vec3d(-1, -1, 0),
+                new Vec3d(0, -1, 1),
+                new Vec3d(0, -1, -1),
+                new Vec3d(1, 0, 0),
+                new Vec3d(-1, 0, 0),
+                new Vec3d(0, 0, 1),
+                new Vec3d(0, 0, -1),
+
+                new Vec3d(-1, 0, -1),
+                new Vec3d(-1, 0, 1),
+                new Vec3d(1, 0, 1),
+                new Vec3d(1, 0, -1)
+        }),
+        @Exclude EchestSafeDynamic(null)*/;
 
         private final Vec3d[] vec3d;
 
@@ -705,23 +737,26 @@ public class SurroundRewrite extends Module {
 
         public List<BlockPos> getBlocks(){
             List<BlockPos> list = new ArrayList<>(64);
+
             if(this == Dynamic)
                 return instance.getActualDynamicBlocks();
             if(this == AntiFacePlace)
                 return instance.getAntiFacePlaceBlocks();
+
             if(instance.feetBlocks.getValBoolean())
                 list.addAll(instance.getDynamicBlocksOffset(-1));
-            if(instance.down.getValBoolean()) 
+            if(instance.down.getValBoolean())
                 list.addAll(instance.getDynamicBlocksOffset(-2));
+
             Vec3d posVec = mc.player.getPositionVector();
+
             for(Vec3d vec : vec3d) {
                 list.add(new BlockPos(vec.add(posVec)));
             }
+
             return list;
         }
     }
-
-
 
     private static class SwapEnum {
         private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(

@@ -5,7 +5,6 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.render.CityESP
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
@@ -13,14 +12,16 @@ import com.kisman.cc.util.render.RenderUtil
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.world.HoleUtil
 import com.kisman.cc.util.world.HoleUtil.BlockOffset
+import com.kisman.cc.util.world.playerPosition
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
-import net.minecraft.init.Items
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.network.play.client.CPacketPlayerDigging
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.function.BiConsumer
 import java.util.function.Supplier
 import java.util.stream.Collectors
@@ -34,6 +35,8 @@ class CityBoss : Module(
     "Breaks surround of nearest player.",
     Category.COMBAT
 ) {
+    private val render = register(Setting("Render", this, true))
+
     private val range = register(Setting("Range", this, 20.0, 1.0, 30.0, true))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
     private val sides = register(Setting("Sides", this, 1.0, 0.0, 4.0, true))
@@ -46,10 +49,11 @@ class CityBoss : Module(
 
     private val damages = register(SettingGroup(Setting("Damages", this)))
 
-    private val threads = MultiThreaddableModulePattern(this).init()
+    private val threads = threads()
     private val targets = TargetFinder(Supplier { range.valDouble }, threads)
 
     private val cityable = HashMap<EntityPlayer, List<BlockPos>>()
+    private var sides1 = ArrayList<BlockPos>()
     private var packetMined = false
     private var coordsPacketMined = BlockPos(-1, -1, -1)
 
@@ -60,19 +64,18 @@ class CityBoss : Module(
 
         val player = AutoRer.currentTarget
 
-        if(canBeBurrowed(player)) {
+//        if(canBeBurrowed(player)) {
             //TODO: auto trap action
-            println("*trapping*")
-        } else {
+//            println("*trapping*")
+//        } else {
             if(isBurrowed(player)) {
                 println("*mining burrow block*")
-                mineBlock(player.position)
+                mineBlock(playerPosition())
             } else {
                 println("*mining surround block*")
                 processPlayer(player)
-                processPlayerBlocks(cityable[player]!!)
             }
-        }
+//        }
     }
 
     private fun mineBlock(
@@ -82,7 +85,7 @@ class CityBoss : Module(
             return
         }
 
-        if (mc.player.heldItemMainhand.getItem() != Items.DIAMOND_PICKAXE/* && switchPick.valBoolean*/) {
+        if (mc.player.heldItemMainhand.getItem() !is ItemPickaxe/* && switchPick.valBoolean*/) {
             val slot = InventoryUtil.findFirstItemSlot(ItemPickaxe::class.java, 0, 9)
 
             if (slot != 1) {
@@ -111,8 +114,13 @@ class CityBoss : Module(
             packetMined = true
             coordsPacketMined = pos
         } else {
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
+            try {
+                mc.player.swingArm(EnumHand.MAIN_HAND)
+                mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
+            } catch(_ : Exception) {
+                //Only my burrow miner
+                println("kill yourself <3")
+            }
         }
     }
 
@@ -193,7 +201,9 @@ class CityBoss : Module(
         }
 
         if (sides.isNotEmpty()) {
-            cityable[player] = sides
+            println("1")
+            sides1 = sides
+            processPlayerBlocks(sides)
         }
     }
 
@@ -208,7 +218,7 @@ class CityBoss : Module(
         for (weakSide in weakSides) {
             val pos = weakSide.offset(centre)
 
-            if (mc.world.getBlockState(pos).block !== Blocks.AIR) {
+            if (mc.world.getBlockState(pos).block != Blocks.AIR) {
                 directions[pos] = weakSide
             }
         }
@@ -260,26 +270,28 @@ class CityBoss : Module(
         return cityableSides
     }
 
-    private fun render(blockPosList: List<BlockPos>) {
-        when (selectMode.valString) {
-            "Closest" -> {
-                blockPosList.stream().min(Comparator.comparing { blockPos: BlockPos ->
-                    blockPos.distanceSq(
-                        mc.player.posX.toInt().toDouble(),
-                        mc.player.posY.toInt().toDouble(),
-                        mc.player.posZ.toInt().toDouble()
-                    )
-                }).ifPresent { blockPos: BlockPos? ->
-                    RenderUtil.drawBlockESP(
-                        blockPos,
-                        0f,
-                        1f,
-                        0f
-                    )
+//    @SubscribeEvent
+    private fun onRenderWorld(event : RenderWorldLastEvent) {
+        if(render.valBoolean) {
+            when (selectMode.valString) {
+                "Closest" -> {
+                    sides1.stream().min(Comparator.comparing { pos : BlockPos ->
+                        mc.player.getDistanceSq(pos)
+                    }).ifPresent {
+                        RenderUtil.drawBlockESP(
+                            it,
+                            0f,
+                            1f,
+                            0f
+                        )
+                    }
                 }
-            }
-            "All" -> {
-                for (blockPos in blockPosList) RenderUtil.drawBlockESP(blockPos, 0f, 1f, 0f)
+
+                "All" -> {
+                    for (pos in sides1) {
+                        RenderUtil.drawBlockESP(pos, 0f, 1f, 0f)
+                    }
+                }
             }
         }
     }

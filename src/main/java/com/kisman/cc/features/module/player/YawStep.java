@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.player;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.SettingEnum;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.math.Interpolation;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;

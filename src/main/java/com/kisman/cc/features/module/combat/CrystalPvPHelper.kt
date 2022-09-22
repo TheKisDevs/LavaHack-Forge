@@ -20,13 +20,11 @@ class CrystalPvPHelper : Module(
     private val autoSurround = register(Setting("Auto Surround", this, false))
     private val threads = threads()
 
-    private var triggeredRaw = false
-    private var lastTriggered = false
+    private var triggered = false
 
     override fun onEnable() {
         threads.reset()
-        triggeredRaw = false
-        lastTriggered = false
+        triggered = false
     }
 
     override fun update() {
@@ -35,32 +33,31 @@ class CrystalPvPHelper : Module(
         }
 
         threads.update(Runnable {
-            for(player in mc.world.playerEntities) {
-                if(player == mc.player) {
-                    continue
-                }
+            if(!MovementUtil.isMoving()) {
+                for (player in mc.world.playerEntities) {
+                    if (player == mc.player) {
+                        continue
+                    }
 
-                val distanceToPlayer = mc.player.getDistance(player)
+                    val distanceToPlayer = mc.player.getDistance(player)
 
-                if(distanceToPlayer <= distance.valInt) {
-                    triggeredRaw = true
-                    break
+                    if (distanceToPlayer <= distance.valInt) {
+                        if(autoBurrow.valBoolean && (Burrow2.instance.keepOn.valBoolean || mc.world.getBlockState(mc.player.position).block != Blocks.AIR)) {
+                            Burrow2.instance.enable()
+                        }
+
+                        if(autoSurround.valBoolean) {
+                            SurroundRewrite.instance.enable()
+                        }
+
+                        triggered = true
+
+                        break
+                    }
                 }
             }
+
+            triggered = false
         })
-
-        val triggered = !lastTriggered && triggeredRaw
-
-        if(!MovementUtil.isMoving() && triggered) {
-            if(autoBurrow.valBoolean && (Burrow2.instance.keepOn.valBoolean || mc.world.getBlockState(mc.player.position).block != Blocks.AIR)) {
-                Burrow2.instance.enable()
-            }
-
-            if(autoSurround.valBoolean) {
-                SurroundRewrite.instance.enable()
-            }
-        }
-
-        lastTriggered = triggeredRaw
     }
 }

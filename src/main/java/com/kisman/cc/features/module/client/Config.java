@@ -30,7 +30,7 @@ public class Config extends Module {
     public Setting guiGlow = register(gui.add(new Setting("Gui Glow", this, false).setTitle("Glow")));
     public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true).setTitle("Radius")));
     public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true).setTitle("Size")));
-    public Setting guiDesc = register(gui.add(new Setting("Gui Desc", this, false)));
+    public Setting guiDesc = register(gui.add(new Setting("Gui Desc", this, true)));
     public Setting guiParticles = register(gui.add(new Setting("Gui Particles", this, false)));
 
     private final SettingGroup gradientGroup = register(gui.add(new SettingGroup(new Setting("Gradient", this))));

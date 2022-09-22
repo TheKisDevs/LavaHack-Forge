@@ -48,6 +48,7 @@
     "MixinVisGraph",
     "MixinWorld",
     "accessor.AccessorC00Handshake",
+    "accessor.AccessorClass",
     "accessor.AccessorContainer",
     "accessor.AccessorEntityPlayer",
     "accessor.AccessorEnumConnectionState",

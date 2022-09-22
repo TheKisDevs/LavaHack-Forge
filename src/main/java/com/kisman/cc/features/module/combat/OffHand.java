@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.SettingEnum;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.enums.OffhandItems;

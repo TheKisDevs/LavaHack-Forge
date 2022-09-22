@@ -31,6 +31,8 @@ public class Module implements IBindable {
 	public boolean block = false;
 	private Supplier<String> displayInfoSupplier = null;
 
+	public boolean sendToggleMessages = true;
+
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
 	public Module(String name, String description, Category category) {this(name, description, category, 0, true);}
@@ -49,15 +51,13 @@ public class Module implements IBindable {
 		SettingLoader.load(this);
 	}
 
-	private void printToggleMessage(
-			boolean toggled
-	) {
-		if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+	private void printToggleMessage() {
+		if (sendToggleMessages && Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 	}
 
 	public void setToggled(boolean toggled) {
 		if(block) return;
-		printToggleMessage(toggled);
+		printToggleMessage();
 		if (toggled) enable();
 		else disable();
 	}
@@ -66,7 +66,7 @@ public class Module implements IBindable {
 		if(block) return;
 		if (!toggled) enable();
 		else disable();
-		printToggleMessage(toggled);
+		printToggleMessage();
 	}
 
 	public Setting register(Setting set) {
@@ -151,5 +151,9 @@ public class Module implements IBindable {
 
 	public MultiThreaddableModulePattern threads() {
 		return new MultiThreaddableModulePattern(this).preInit().init();
+	}
+
+	protected void dontSendToggleMessages() {
+		sendToggleMessages = false;
 	}
 }
