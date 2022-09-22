@@ -1,6 +1,6 @@
 package org.cubic.dynamictask;
 
-class TaskArgumentFetcher implements ArgumentFetcher {
+public class TaskArgumentFetcher implements ArgumentFetcher {
 
     private final Object[] args;
 
