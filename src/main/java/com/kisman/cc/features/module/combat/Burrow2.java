@@ -14,6 +14,8 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 //TODO: crystal breaker
 public class Burrow2 extends Module {
@@ -25,6 +27,7 @@ public class Burrow2 extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting centerPlayer = register(new Setting("Center", this, false));
     private final Setting floorY = register(new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean));
+    private final Setting noPushOut = register(new Setting("NoPushOutBlock", this, false));
     private final Setting smart = register(new Setting("Smart", this, false));
     private final Setting smartRange = register(new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean));
     private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
@@ -33,7 +36,7 @@ public class Burrow2 extends Module {
     public static Burrow2 instance;
 
     public Burrow2(){
-        super("Burrow", Category.COMBAT);
+        super("Burrow", Category.COMBAT, true);
         instance = this;
     }
 
@@ -150,5 +153,11 @@ public class Burrow2 extends Module {
             return;
 
         toggle();
+    }
+
+    @SubscribeEvent
+    private void onPlayerPushOutEvent(PlayerSPPushOutOfBlocksEvent event){
+        if(noPushOut.getValBoolean())
+            event.setCanceled(true);
     }
 }
