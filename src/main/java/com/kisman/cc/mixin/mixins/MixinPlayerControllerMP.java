@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = PlayerControllerMP.class, priority = 10000)
@@ -75,5 +76,13 @@ public class MixinPlayerControllerMP {
     private void onPlayerDamageBlockPost(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir){
         EventPlayerDamageBlock.Post event = new EventPlayerDamageBlock.Post(posBlock, directionFacing);
         Kisman.EVENT_BUS.post(event);
+    }
+
+    @Inject(method = "onStoppedUsingItem", at = @At("HEAD"), cancellable = true)
+    private void onStoppedUsingItem(EntityPlayer player, CallbackInfo ci){
+        EventStopUsingItem event = new EventStopUsingItem(player);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled())
+            ci.cancel();
     }
 }
