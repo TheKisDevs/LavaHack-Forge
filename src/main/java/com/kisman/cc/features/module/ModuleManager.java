@@ -163,6 +163,7 @@ public class ModuleManager {
 		modules.add(new Jesus());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());
+		modules.add(new NoPushOutBlock());
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new NoWeb());
