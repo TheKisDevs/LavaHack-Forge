@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.combat
 
+import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.render.CityESP
@@ -30,6 +31,7 @@ import java.util.stream.Collectors
  * @author _kisman_
  * @since 18:41 of 10.08.2022
  */
+@Beta
 class CityBoss : Module(
     "CityBoss",
     "Breaks surround of nearest player.",

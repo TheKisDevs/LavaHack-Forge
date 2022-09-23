@@ -460,10 +460,10 @@ public class SurroundRewrite extends Module {
         int obbySlot = InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
         int echestSlot = InventoryUtil.getBlockInHotbar(Blocks.ENDER_CHEST);
 
-        if(block.checkValString("Obsidian"))
-            return smartBlock.getValBoolean() && obbySlot == -1 ? echestSlot : obbySlot;
-        isEchest = true;
-        return smartBlock.getValBoolean() && echestSlot == -1 ? obbySlot : echestSlot;
+        if(block.checkValString("Obsidian")) {
+            return (isEchest = (smartBlock.getValBoolean() && obbySlot == -1)) ? echestSlot : obbySlot;
+        }
+        return (isEchest = (!smartBlock.getValBoolean() && echestSlot != 1)) ? echestSlot : obbySlot;
     }
 
     private Block getSwapBlock(){
