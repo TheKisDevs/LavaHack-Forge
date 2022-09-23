@@ -2,6 +2,7 @@ package the.kis.devs.server.command.commands
 
 import me.yailya.sockets.data.SocketMessage
 import the.kis.devs.server.command.Command
+import the.kis.devs.server.hwid.HWID
 import the.kis.devs.server.keyauth.KeyAuthApp
 
 /**
@@ -12,6 +13,16 @@ import the.kis.devs.server.keyauth.KeyAuthApp
  * `args[1]` - key
  *
  * `args[2]` - hwid
+ *
+ * or
+ *
+ * `args[0]` - name of the command
+ *
+ * `args[1]` - key
+ *
+ * `args[2]` - properties
+ *
+ * `args[3]` - processors
  *
  * Answers:
  *
@@ -28,14 +39,18 @@ object AuthCommand : Command(
     "auth"
 ) {
     override fun execute(line: String, args: List<String>) : List<SocketMessage> {
-        if(args.size == 3) {
-            return if(KeyAuthApp.keyAuth.license(args[1], args[2])) {
+        return if(args.size == 3) {
+            if(KeyAuthApp.keyAuth.license(args[1], args[2])) {
                 listOf(SocketMessage("2"))
             } else {
                 listOf(SocketMessage("1"))
             }
-        }
-
-        return listOf(SocketMessage("0"))
+        } else if(args.size == 4) {
+            if(KeyAuthApp.keyAuth.license(args[1], HWID(args[2], args[3].toInt()).hwid)) {
+                listOf(SocketMessage("2"))
+            } else {
+                listOf(SocketMessage("1"))
+            }
+        } else listOf(SocketMessage("0"))
     }
 }

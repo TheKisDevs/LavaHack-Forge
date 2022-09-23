@@ -35,6 +35,7 @@ import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
+import com.kisman.cc.util.AccountData;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.manager.ServerManager;
@@ -155,6 +156,8 @@ public class Kisman {
         } catch (Exception e) {
             haveLoader = false;
         }
+
+        AccountData.check();
 
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
@@ -309,7 +312,7 @@ public class Kisman {
         if(instance.init) {
             switch (Config.instance.nameMode.getValString()) {
                 case "BloomWare": return "1.0";
-                case "EarthHack": return "1.6.2";
+                case "EarthHack": return "1.8.4";
                 default : return VERSION;
             }
         }

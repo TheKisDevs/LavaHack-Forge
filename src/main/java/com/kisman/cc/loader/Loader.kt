@@ -30,7 +30,7 @@ import kotlin.random.Random
 const val address = "161.97.78.143"
 const val port = 25563
 
-const val version = "1.2"
+const val version = "1.3"
 
 var loaded = false
 var versions = emptyArray<String>()
@@ -67,7 +67,7 @@ fun load(
         return
     }
 
-    if(!canPressInstallButton) {
+    if(!canPressInstallButton || loaded) {
         return
     }
 
@@ -84,10 +84,11 @@ fun load(
 
         loadIntoResourceCache(bytes)
         close()
+        client.close()
         AccountData.key = key
         AccountData.properties = properties
+        AccountData.processors = processors.toInt()
         LavaHackLoaderCoreMod.resume()
-        client.close()
     }
 
     client.onMessageReceived = {
@@ -98,7 +99,7 @@ fun load(
                     "1" -> "Invalid key or HWID | Loader is outdated!"
                     "2" -> "Key and HWID is valid!"
                     "3" -> "You have no access for selected version!"
-                    else -> "Invalid answer for \"getpublicjar\" command"
+                    else -> "Invalid answer of \"getpublicjar\" command"
                 }
             }
             File -> processBytes(it.file!!.byteArray)
