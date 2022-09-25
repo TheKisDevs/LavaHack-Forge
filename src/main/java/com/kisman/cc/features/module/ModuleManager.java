@@ -168,6 +168,7 @@ public class ModuleManager {
 		modules.add(new NoRotate());
 		modules.add(new NoSlow());
 		modules.add(new NoWeb());
+		modules.add(new SafeWalk());
 		modules.add(new ScaffoldRewrite());
 		modules.add(new SoftScaffold());
 		modules.add(new Speed());
