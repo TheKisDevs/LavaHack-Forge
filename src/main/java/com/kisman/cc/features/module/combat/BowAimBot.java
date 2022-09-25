@@ -13,7 +13,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class BowAimBot extends Module {
     private final Setting maxDist = register(new Setting("Max Distance", this, 20, 1, 50, true));
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(maxDist::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
 
     public BowAimBot() {

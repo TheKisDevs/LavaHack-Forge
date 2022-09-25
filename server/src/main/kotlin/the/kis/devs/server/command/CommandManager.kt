@@ -16,7 +16,8 @@ object CommandManager {
         GetLibrariesCommand,
         GetPublicJarCommand,
         GetVersionsCommand,
-        SendMessageCommand
+        SendMessageCommand,
+        TrueCommand
     )
 
     fun execute(line : String, connection : SocketServerConnection) {

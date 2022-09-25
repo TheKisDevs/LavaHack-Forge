@@ -73,7 +73,7 @@ public class FlattenRewrite extends Module {
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
     private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
 
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
 
     private final FlattenRewriteRenderer renderer = new FlattenRewriteRenderer();

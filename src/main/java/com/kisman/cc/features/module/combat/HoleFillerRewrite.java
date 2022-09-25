@@ -60,7 +60,7 @@ public class HoleFillerRewrite extends Module {
     private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
     private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
 
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
 
     private final HoleFillerRewriteRenderer renderer = new HoleFillerRewriteRenderer();
@@ -96,17 +96,19 @@ public class HoleFillerRewrite extends Module {
     public void update() {
         if(mc.world == null || mc.player == null) return;
 
-        targets.update();
+        try {
+            targets.update();
 
-        entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
+            entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
 
-        if(entity == null) return;
+            if (entity == null) return;
 
-        threads.update(() -> {
-            mc.addScheduledTask(() -> holes = getHoleBlocks(entity));
-        });
+            threads.update(() -> mc.addScheduledTask(() -> holes = getHoleBlocks(entity)));
 
-        placeHoleBlocks(entity);
+            placeHoleBlocks(entity);
+        } catch(Exception ignored) {
+            System.out.println("eskid moment lmao");
+        }
     }
 
     @SubscribeEvent

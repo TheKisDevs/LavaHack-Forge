@@ -24,7 +24,7 @@ public class SpawnsESP extends Module {
     private final Setting boats = register(new Setting("Boats", this, false));
     private final Setting duration = register(new Setting("Duration", this, 1, 0.1f, 5, false));
     private final Setting width = register(new Setting("Width", this, 2.5f, 0.1, 10, false));
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
 
     private final ArrayList<VecCircle> circles = new ArrayList<>();
 

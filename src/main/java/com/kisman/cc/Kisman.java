@@ -27,7 +27,6 @@ import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.hudeditor.HalqHudGui;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
-import com.kisman.cc.gui.mainmenu.sandbox.SandBoxShaders;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
 import com.kisman.cc.loader.LavaHackInterface;
@@ -121,7 +120,6 @@ public class Kisman {
     public RPC discord;
     public EventProcessor eventProcessor;
     public ServerManager serverManager;
-    public SandBoxShaders sandBoxShaders;
     public Managers managers;
     public CapeAPI capeAPI;
     public PluginManager pluginManager;
@@ -183,7 +181,6 @@ public class Kisman {
         commandManager = new CommandManager();
         discord = new RPC();
         serverManager = new ServerManager();
-        sandBoxShaders = new SandBoxShaders();
         capeAPI = new CapeAPI();
         pluginHandler.init();
 

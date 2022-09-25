@@ -18,6 +18,8 @@ const val OP_NAME = "OP"
 var ADDRESS : String? = null
 var PORT = 25563
 
+var encryption = false
+
 fun main(
     args : Array<String>
 ) {
@@ -26,21 +28,21 @@ fun main(
     val server = SocketServer(ADDRESS, PORT)
     server.start()
     server.onSocketConnected = { connection ->
-        println("New socket connection!")
+        println("Socket \"${connection.name}\" connected!")
 
         connection.onMessageReceived = {
             if(it.type == SocketMessage.Type.Text) {
-                println("Message from socket: ${it.text}")
+                println("Message from socket \"${connection.name}\" is \"${it.text}\"")
 
                 CommandManager.execute(it.text!!, connection)
             }
         }
     }
-    server.onSocketDisconnected = {
-        println("Socket disconnected!")
+    server.onSocketDisconnected = { connection ->
+        println("Socket \"${connection.name}\" disconnected!")
     }
 
-    println("Server started with address: $ADDRESS, port: $PORT")
+    println("> Server started with address: $ADDRESS, port: $PORT")
 
     while (server.run) {
         val line = readLine() ?: continue
@@ -51,11 +53,28 @@ fun main(
 
         if (line == "exit") {
             break
-        }
-
-        server.connections.forEach {
-            it.writeMessage {
-                text = line
+        } else if(line == "encryption true") {
+            encryption = true
+            println("> Encryption is true")
+        } else if(line == "encryption false") {
+            encryption = false
+            println("> Encryption is false")
+        } else if(line == "encryption status") {
+            println("> Encryption is $encryption")
+        } else if(line == "help") {
+            println(
+                """> Commands:
+                > > exit - stops the server
+                > > encryption <true/false> - changes state of encryption
+                > > encryption status - shows current value of "encryption" field
+                > > help - shows this menu
+                > > message <text> - sends <text> to add connections"""
+            )
+        } else if(line.startsWith("message ")) {
+            server.connections.forEach {
+                it.writeMessage {
+                    text = line.removePrefix("message ")
+                }
             }
         }
     }

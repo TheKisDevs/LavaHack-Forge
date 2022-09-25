@@ -34,7 +34,7 @@ public class Flatten extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting antiGlitch = register(new Setting("AntiGlitch", this, false));
 
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
 
     public Flatten(){

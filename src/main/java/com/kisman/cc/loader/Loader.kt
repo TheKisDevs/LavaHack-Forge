@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
 /**
@@ -128,7 +129,7 @@ fun createGui() {
 fun initLoader() {
     initProvider()
 
-    Thread {
+    thread {
         try {
             runScanner()
             downloadLibraries()
@@ -156,7 +157,7 @@ fun initLoader() {
             LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x")
             Utility.unsafeCrash()
         }
-    } .start()
+    }
 }
 
 private fun downloadLibraries() {
@@ -249,22 +250,23 @@ fun versionCheck(version : String) {
         when(it.type) {
             Text -> {
                 val answer = it.text!!
+                //TODO: remove this line!!!!
                 LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: raw answer is \"$answer\"")
                 status = when (answer) {
-                    "0" -> {
-                        LavaHackLoaderCoreMod.LOGGER.info("Invalid arguments of \"checkversion\" command!")
-                        Utility.unsafeCrash()
-                        "Invalid arguments of \"checkversion\" command!"
-                    }
-                    "1" -> {
-                        LavaHackLoaderCoreMod.LOGGER.info("Your loader is outdated! Please update it!")
-                        Utility.unsafeCrash()
-                        "Your loader is outdated! Please update it!"
-                    }
+                    "0" -> "Invalid arguments of \"checkversion\" command!"
+                    "1" -> "Your loader is outdated! Please update it!"
                     "2" -> "Loader is on latest version!"
                     else -> "kill yourself <3"
                 }
-                LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: answer is \"$status\"")
+
+                LavaHackLoaderCoreMod.LOGGER.info(status)
+
+                if(answer != "2") {
+                    Utility.unsafeCrash()
+                }
+
+                receivedVersionCheckAnswer = true
+
                 client.close()
             }
         }
@@ -284,6 +286,7 @@ fun versions(version : String) {
         when(it.type) {
             Text -> {
                 val answer = it.text!!
+                //TODO: remove this line!!!!
                 LavaHackLoaderCoreMod.LOGGER.info("VersionsList: raw answer is \"$answer\"")
                 when (answer) {
                     "0" -> status = "Invalid arguments of \"getversions\" command!"
@@ -292,11 +295,17 @@ fun versions(version : String) {
                         if(answer.startsWith("2")) {
                             status = "Successfully received version list"
                             versions = answer.split("|")[1].split("&").toTypedArray()
+                            receivedVersions = true
                         }
                     }
                 }
 
-                LavaHackLoaderCoreMod.LOGGER.info("VersionsList: answer is \"$status\"")
+                LavaHackLoaderCoreMod.LOGGER.info(status)
+
+                if(status != "Successfully received version list") {
+                    Utility.unsafeCrash()
+                }
+
                 client.close()
             }
         }
@@ -320,7 +329,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
     val resources = HashMap<String, ByteArray>()
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("Injecting classes...")
 
     status = "Injecting classes..."
 

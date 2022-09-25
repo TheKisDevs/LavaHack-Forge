@@ -42,7 +42,7 @@ public class OffHand extends Module {
     private final Setting antiTotemFail = register(new Setting("Anti Totem Fail", this, true));
     private final Setting terrain = register(new Setting("Terrain", this, true));
 
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern threads = threads();
 
     private final AtomicBoolean needTotem = new AtomicBoolean(false);
 

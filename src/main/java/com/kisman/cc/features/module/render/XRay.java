@@ -29,7 +29,7 @@ public class XRay extends Module {
     public Setting diamond = register(blocks.add(new Setting("Diamond", this, false)));
     public Setting emerald = register(blocks.add(new Setting("Emerald", this, false)));
 
-    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this).init();
+    private final MultiThreaddableModulePattern multiThread = threads();
     private final BoxRendererPattern renderer = new BoxRendererPattern(this).init();
 
     private final TaskQueue queue = new TaskQueue();

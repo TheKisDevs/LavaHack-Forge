@@ -1,9 +1,11 @@
 package com.kisman.cc.util.manager.file
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.features.module.BindType
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.ColourUtilKt
 import com.kisman.cc.util.minecraft.GameProfiles
@@ -18,8 +20,10 @@ import java.nio.file.Paths
 class ConfigManager(
         val name : String
 ) {
-    val saver : Save = Save(this)
-    val loader : Load = Load(this)
+    val saver = Save(this)
+    val loader = Load(this)
+
+    val moduleSaver = ModuleSave(this)
 
     val suffix = ".kis"
     val path = Kisman.fileName
@@ -30,6 +34,195 @@ class ConfigManager(
     val hudEditorPrefix = "hud_editor"
     val friendsPrefix = "friend"
 
+    class ModuleSave(
+        val config : ConfigManager
+    ) {
+        @Throws(IOException::class)
+        fun init(
+            modules : ArrayList<Module>
+        ) {
+            Kisman.initDirs()
+
+            fileCheck()
+
+            BufferedWriter(
+                FileWriter(
+                    Paths.get(config.path + config.name + config.suffix).toFile()
+                )
+            ).use { writer ->
+                save(writer, modules)
+            }
+        }
+
+        @Throws(IOException::class)
+        private fun save(writer : BufferedWriter, modules : ArrayList<Module>) {
+            for(module in modules) {
+                val prefix = if(module is HudModule) config.hudModulesPrefix else config.modulesPrefix
+
+                writer.write("${prefix}.${module.name}.toggle=${module.isToggled}")
+                writer.newLine()
+                writer.write("${prefix}.${module.name}.hold=${module.hold}")
+                writer.newLine()
+                writer.write("${prefix}.${module.name}.visible=${module.isVisible}")
+                writer.newLine()
+                writer.write("${prefix}.${module.name}.key=${module.getKeyboardKey()}")
+                writer.newLine()
+                writer.write("${prefix}.${module.name}.button=${module.getMouseButton()}")
+                writer.newLine()
+                writer.write("${prefix}.${module.name}.mouseBind=${module.getType() == BindType.Mouse}")
+                writer.newLine()
+
+                if (module is HudModule) {
+                    writer.write("${prefix}.${module.name}.x=${module.getX()}")
+                    writer.newLine()
+                    writer.write("${prefix}.${module.name}.y=${module.getY()}")
+                    writer.newLine()
+                }
+
+                if (Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
+                    for (setting in Kisman.instance.settingsManager.getSettingsByMod(module)) {
+                        if (setting != null && !setting.isGroup) {
+                            if (setting.isCheck) {
+                                writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${setting.valBoolean}")
+                                writer.newLine()
+                                if (setting.getKeyboardKey() != -1) {
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}:key=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if (setting.getMouseButton() != -1) {
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if (IBindable.valid(setting)) {
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
+                            }
+                            if (setting.isCombo) {
+                                writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
+                                writer.newLine()
+
+                                for (option in setting.binders.keys) {
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
+                                    writer.newLine()
+
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
+                                    writer.newLine()
+
+                                    writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
+                            }
+                            if (setting.isSlider) {
+                                writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${setting.valDouble}")
+                                writer.newLine()
+                            }
+                            if (setting.isColorPicker) {
+                                writer.write(
+                                    "${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${
+                                        ColourUtilKt.toConfig(
+                                            setting.colour
+                                        )
+                                    }"
+                                )
+                                writer.newLine()
+                            }
+                        }
+                    }
+                }
+            }
+
+            for(module in Kisman.instance.moduleManager.modules) {
+                if(module.category == Category.LUA) continue
+
+
+            }
+            for(hud in Kisman.instance.hudModuleManager.modules) {
+                writer.write("${config.hudModulesPrefix}.${hud.name}.toggle=${hud.isToggled}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.hold=${hud.hold}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.visible=${hud.isVisible}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.key}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.getKeyboardKey()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.button=${hud.getMouseButton()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.mouseBind=${hud.getType() == BindType.Mouse}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.x=${hud.getX()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.y=${hud.getY()}")
+                writer.newLine()
+                if(Kisman.instance.settingsManager.getSettingsByMod(hud) != null) {
+                    for(setting in Kisman.instance.settingsManager.getSettingsByMod(hud)) {
+                        if(setting != null && !setting.isGroup) {
+                            if(setting.isCheck) {
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${setting.valBoolean}")
+                                writer.newLine()
+                                if(setting.getKeyboardKey() != -1) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:key=${setting.getKeyboardKey()}")
+                                    writer.newLine()
+                                }
+                                if(setting.getMouseButton() != -1) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:button=${setting.getMouseButton()}")
+                                    writer.newLine()
+                                }
+                                if(IBindable.valid(setting)) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
+                            }
+                            if(setting.isCombo) {
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=\"${setting.valString}\"")
+                                writer.newLine()
+
+                                for(option in setting.binders.keys) {
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:key=${setting.binders[option]!!.getKeyboardKey()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:mouse=${setting.binders[option]!!.getMouseButton()}")
+                                    writer.newLine()
+
+                                    writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}.$option:mouseBind=${setting.getType() == BindType.Mouse}")
+                                    writer.newLine()
+                                }
+                            }
+                            if(setting.isSlider) {
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${setting.valDouble}")
+                                writer.newLine()
+                            }
+                            if(setting.isColorPicker) {
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${ColourUtilKt.toConfig(setting.colour)}")
+                                writer.newLine()
+                            }
+                        }
+                    }
+                }
+            }
+
+            writer.write("${config.hudEditorPrefix}.color=${ColourUtilKt.toConfig(Kisman.instance.halqHudGui.color)}")
+            writer.newLine()
+
+            if(FriendManager.instance.friends.isNotEmpty()) {
+                for(friend in FriendManager.instance.friends) {
+                    writer.write("${config.friendsPrefix}=\"$friend\"")
+                    writer.newLine()
+                }
+            }
+        }
+
+        @Throws(IOException::class)
+        private fun fileCheck() {
+            if(Files.exists(Paths.get(config.path + config.name + config.suffix))) {
+                File(config.path + config.name + config.suffix).delete()
+            } else {
+                Files.createFile(Paths.get(config.path + config.name + config.suffix))
+            }
+        }
+    }
 
     class Load (
             val config : ConfigManager

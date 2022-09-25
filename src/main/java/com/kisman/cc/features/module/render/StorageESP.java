@@ -25,7 +25,7 @@ public class StorageESP extends Module{
     private final Setting hopper = register(blocks.add(new Setting("Hopper", this, false)));
     private final Setting dropper = register(blocks.add(new Setting("Dropper", this, false)));
     private final BoxRendererPattern renderer = new BoxRendererPattern(this).init();
-    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this).init();
+    private final MultiThreaddableModulePattern multiThread = threads();
 
     private ArrayList<TileEntity> list = new ArrayList<>();
 

@@ -49,7 +49,7 @@ import java.util.*;
  */
 @PingBypassModule
 public class SurroundRewrite extends Module {
-    private final MultiThreaddableModulePattern threads = new MultiThreaddableModulePattern(this).init();
+    private final MultiThreaddableModulePattern threads = threads();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
     private final Setting syncronized = register(new Setting("Syncronized", this, false));
     private final SettingEnum<Vectors> mode = new SettingEnum<>("Mode", this, Vectors.Normal).register();

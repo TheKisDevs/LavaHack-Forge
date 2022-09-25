@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class HoleESPRewrite2 extends Module {
-    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern multiThread = threads();
 
     private final Setting oHoles = register(new Setting("Obsidian", this, true).setTitle("Obby"));
     private final Setting bHoles = register(new Setting("Bedrock", this, true));

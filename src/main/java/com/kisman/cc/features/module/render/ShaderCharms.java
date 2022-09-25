@@ -42,7 +42,7 @@ public class ShaderCharms extends Module {
     private final Setting range = register(new Setting("Range", this, 32, 8, 64, true));
     public final Setting mode = register(new Setting("Mode", this, ShaderModes.SMOKE));
 
-    private final MultiThreaddableModulePattern multiThread = new MultiThreaddableModulePattern(this);
+    private final MultiThreaddableModulePattern multiThread = threads();
 
     private final SettingGroup types = register(new SettingGroup(new Setting("Types", this)));
 

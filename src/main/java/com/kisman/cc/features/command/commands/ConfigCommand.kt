@@ -2,6 +2,7 @@ package com.kisman.cc.features.command.commands
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.command.Command
+import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.manager.file.ConfigManager
 import net.minecraft.util.text.TextFormatting
 import java.io.File
@@ -13,11 +14,27 @@ import java.io.File
 class ConfigCommand : Command("config") {
     override fun runCommand(s: String, args: Array<String>) {
         try {
-            if((args?.get(0) ?: (throw Exception())) == "add") {
-                //TODO
-            } else if(args[0] == "save") {
-                ConfigManager(args[1]).saver.init()
-                complete("Config \"${args[1]}\" was saved!")
+            if(args[0] == "save") {
+                if(args.size != 2) {
+                    val modules = ArrayList<Module>()
+
+                    for(name in args[3].split(",")) {
+                        if(args[2] == "module") {
+                            if(Kisman.instance.moduleManager.getModule(name) != null) {
+                                modules += Kisman.instance.moduleManager.getModule(name)
+                            }
+                        } else if(args[2] == "hud_module") {
+                            if(Kisman.instance.hudModuleManager.getModule(name) != null) {
+                                modules += Kisman.instance.hudModuleManager.getModule(name)
+                            }
+                        }
+                    }
+
+                    ConfigManager(args[1]).moduleSaver.init(modules)
+                } else {
+                    ConfigManager(args[1]).saver.init()
+                    complete("Config \"${args[1]}\" was saved!")
+                }
             } else if(args[0] == "load") {
                 ConfigManager(args[1]).loader.init()
                 complete("Config \"${args[1]}\" was loaded!")
@@ -70,6 +87,6 @@ class ConfigCommand : Command("config") {
     }
 
     override fun getSyntax(): String {
-        return "config save/load <name> | config list"
+        return "config save/load <name>\nconfig list\nconfig save <name> module <module>\nconfig save <name> module <module1>,<module2>\nconfig save <name> hud_module <hud_module1>,<hud_module2>"
     }
 }

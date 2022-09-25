@@ -48,7 +48,7 @@ public class ModuleManager {
 		modules.add(new FutureShader());
 		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
-		modules.add(new M2LTest());
+//		modules.add(new M2LTest());
 		modules.add(new Meow());
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());

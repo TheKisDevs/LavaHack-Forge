@@ -11,7 +11,15 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 
 class SocketServerConnection(override val socket: Socket, private val server: SocketServer) : ISocketRW {
-    private val defaultName = "Socket-${AtomicLong(0).get()}"
+    private val defaultName = "Socket-$index"
+
+    companion object {
+        private var index = -1
+            get() {
+                field++
+                return field
+            }
+    }
 
     var name = defaultName
     val hasCustomName get() = name != defaultName

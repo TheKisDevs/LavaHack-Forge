@@ -2,7 +2,11 @@ package the.kis.devs.server.command
 
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServerConnection
+import the.kis.devs.server.encryption
 import the.kis.devs.server.permission.IPermission
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 /**
  * @author _kisman_
@@ -12,13 +16,22 @@ abstract class Command(
     val command : String
 ) : ICommand {
     val permissions = ArrayList<IPermission>()
+    var connection : SocketServerConnection? = null
 
     fun runCommand(line : String, args : List<String>, connection : SocketServerConnection) {
-        Thread {
+        this.connection = connection
+
+        thread {
             for(message in execute(line, args)) {
-                println("Answer by command $command is ${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}")
+                println("Answer by command \"$command\" from socket \"${connection.name}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
+
+                if(encryption && message.type == SocketMessage.Type.Text) {
+                    message.text = "true ${Base64.getEncoder().encodeToString(message.text?.toByteArray())}"
+                    println("Encoded answer by command \"$command\" from socket \"${connection.name}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
+                }
+
                 connection.writeMessage(message)
             }
-        }.start()
+        }
     }
 }

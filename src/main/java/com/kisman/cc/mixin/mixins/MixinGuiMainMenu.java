@@ -1,13 +1,18 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
-import net.minecraft.client.gui.*;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GuiMainMenu.class, priority = 10000)
@@ -18,7 +23,7 @@ public class MixinGuiMainMenu extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         int j = this.height / 4 + 48;
-        buttonList.add(new GuiButton(893, width / 2 - 100, j + 72 + 12 + 24, "kisman.cc"));
+        buttonList.add(new GuiButton(893, width / 2 - 100, j + 72 + 12 + 24, Kisman.getName()));
         particleSystem = new ParticleSystem();
         customSplashSrt = CustomMainMenu.getRandomCustomSplash();
     }
