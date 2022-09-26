@@ -72,7 +72,7 @@ public class Kisman {
     public static final String forReal = "специальная военная операция российской федерации на украине по защите территорий донбасса от украиских националистических формирований и по денацификации украины";
     public static final String NAME = "LavaHack";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.6.5-4";
+    public static final String VERSION = "b0.1.6.5-5";
     public static final String fileName = "kisman.cc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
@@ -88,7 +88,7 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean remapped = !runningFromIntelliJ();
+    public static boolean remapped = !runningFromIntelliJ();//TODO improve it
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = false;
 

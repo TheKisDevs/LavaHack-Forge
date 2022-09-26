@@ -91,26 +91,15 @@ public class MixinGuiContainer extends GuiScreen {
 
     private boolean flag4 = true;
 
-    /**
-     * @author _kisman_
-     * @reason nya~ uwa~ owa~
-     */
-    @Overwrite
-    protected void keyTyped(char typedChar, int keyCode) {
+    @Inject(method = "keyTyped", at = @At("HEAD"))
+    private void keyTypedHook(char typedChar, int keyCode, CallbackInfo ci) {
         try {
             if(ContainerModifier.instance.itemESP.getValBoolean()) itemESP.getGuiTextField().textboxKeyTyped(typedChar, keyCode);
         } catch(Exception e) {
             if(flag4) {
-                SocketsManagerKt.reportIssue("Got exception in keyTyped overwrite hook by ItemESP, stack trace: " + e);
+                SocketsManagerKt.reportIssue("Got exception in keyTyped head inject hook by ItemESP, stack trace: " + e);
                 flag4 = false;
             }
-        }
-
-        if (keyCode == 1 || (this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode) && !itemESP.getGuiTextField().isFocused())) mc.player.closeScreen();
-        checkHotbarKeys(keyCode);
-        if (hoveredSlot != null && hoveredSlot.getHasStack()) {
-            if (mc.gameSettings.keyBindPickBlock.isActiveAndMatches(keyCode)) handleMouseClick(hoveredSlot, hoveredSlot.slotNumber, 0, ClickType.CLONE);
-            else if (mc.gameSettings.keyBindDrop.isActiveAndMatches(keyCode)) handleMouseClick(hoveredSlot, hoveredSlot.slotNumber, isCtrlKeyDown() ? 1 : 0, ClickType.THROW);
         }
     }
 

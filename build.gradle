@@ -202,7 +202,7 @@ task privateJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'kisman.cc-b0.1.6.5-4'
+    classifier = 'kisman.cc-b0.1.6.5-5'
 }
 
 task publicJar(type : Jar, dependsOn : jar) {
@@ -231,7 +231,7 @@ task publicJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHack-b0.1.6.5-4'
+    classifier = 'LavaHack-b0.1.6.5-5'
 }
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {

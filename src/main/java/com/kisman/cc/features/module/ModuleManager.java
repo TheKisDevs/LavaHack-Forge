@@ -94,7 +94,6 @@ public class ModuleManager {
 		modules.add(new HoleKicker());
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
-		modules.add(new Quiver());
 		modules.add(new SelfTrap());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
