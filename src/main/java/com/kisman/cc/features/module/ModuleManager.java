@@ -214,6 +214,7 @@ public class ModuleManager {
 		//modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new PlayerLook());
+		modules.add(new PreciseStrongholdFinder());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 		modules.add(new Teleport());
