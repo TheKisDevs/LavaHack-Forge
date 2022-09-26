@@ -81,7 +81,7 @@ public class ModuleManager {
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
 //		modules.add(new BreakAlert());
-		//modules.add(new Burrow2());
+		modules.add(new Burrow2());
 		modules.add(new CityBoss());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
@@ -210,10 +210,10 @@ public class ModuleManager {
 		modules.add(new NoFallExploit());
 		modules.add(new NoGlitchBlocks());
 		modules.add(new PacketEat());
-		//modules.add(new PacketFly());
+		modules.add(new PacketFly());
 		modules.add(new PacketMine());
 		modules.add(new PlayerLook());
-		modules.add(new PreciseStrongholdFinder());
+		//modules.add(new PreciseStrongholdFinder());
 		modules.add(new SilentClose());
 		modules.add(new SoundCoordLogger());
 		modules.add(new Teleport());
