@@ -9,6 +9,7 @@
     "MixinAbstractHorse",
     "MixinBlockRendererDispatcher",
     "MixinC00Handshake",
+    "MixinChunkGeneratorOverworld",
     "MixinEntity",
     "MixinEntityLivingBase",
     "MixinEntityPlayer",
