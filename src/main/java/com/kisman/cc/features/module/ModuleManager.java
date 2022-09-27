@@ -224,7 +224,6 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
-		modules.add(new BotnetConnection());
 		modules.add(new ChatModifier());
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());
