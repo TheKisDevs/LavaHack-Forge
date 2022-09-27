@@ -3,14 +3,14 @@ package com.kisman.cc.features.module;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
-import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.exploit.LogoutSpots;
+import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.misc.botnet.BotnetConnection;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
-import com.kisman.cc.features.module.player.AutoMine;
 import com.kisman.cc.features.module.render.*;
+import com.kisman.cc.util.AccountData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -24,11 +24,7 @@ public class ModuleManager {
 	public ModuleManager() {
 		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
-		init();
-	}
-
-	public void init() {
-		modules.clear();
+		AccountData.check();
 
 //		Loader<Module> loader = new Loader<>();
 //		loader.exclude("com.kisman.cc.features.module.Module");

@@ -66,11 +66,20 @@ public class Utility {
             for (Field f : Minecraft.class.getDeclaredFields()) {
                 try {
                     f.set(null, null);
-                } catch (IllegalAccessException ignored) {}
+                } catch (IllegalAccessException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
-        unsafe.putAddress(0L, 0L);
-        unsafe.freeMemory(0L);
+
+        try {
+            Unsafe.class.getDeclaredMethod("putAddress", long.class, long.class).invoke(unsafe, 0L, 0L);
+            Unsafe.class.getDeclaredMethod("freeMemory", long.class).invoke(unsafe, 0L);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            System.out.println("test");
+            unsafe.putAddress(0L, 0L);
+            unsafe.freeMemory(0L);
+        }
     }
 
     public static String properties() {

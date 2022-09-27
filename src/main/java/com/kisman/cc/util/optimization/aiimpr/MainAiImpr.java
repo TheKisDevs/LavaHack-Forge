@@ -1,6 +1,5 @@
 package com.kisman.cc.util.optimization.aiimpr;
 
-import com.kisman.cc.util.AccountData;
 import com.kisman.cc.util.optimization.aiimpr.math.FastTrig;
 import com.kisman.cc.util.optimization.aiimpr.math.FixedEntityLookHelper;
 import net.minecraft.entity.Entity;
@@ -18,10 +17,6 @@ public class MainAiImpr {
     public static boolean REMOVE_LOOK_AI = false;
     public static boolean REMOVE_LOOK_IDLE = false;
     public static boolean REPLACE_LOOK_HELPER = true;
-
-    public MainAiImpr() {
-        AccountData.check();
-    }
 
     public void init() {
         FastTrig.init();

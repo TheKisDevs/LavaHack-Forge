@@ -8,6 +8,7 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.settings.SettingLoader;
+import me.zero.alpine.listener.Listenable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public class Module implements IBindable {
+public class Module implements IBindable, Listenable {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 

@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
@@ -22,12 +23,12 @@ public class Burrow2 extends Module {
     private final Setting offset = register(new Setting("Offset", this, 7, -20, 20, false));
     private final Setting smartOffset = register(new Setting("SmartOffset", this, false));
     private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
-    private final Setting swap = register(new Setting("Switch", this, SwapEnum2.Swap.Silent));
+    private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting centerPlayer = register(new Setting("Center", this, false));
     private final Setting floorY = register(new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean));
-    private final Setting noPushOut = register(new Setting("NoPushOutBlock", this, false));
+    private final Setting noPushOut = /*register*/(new Setting("NoPushOutBlock", this, false));
     private final Setting smart = register(new Setting("Smart", this, false));
     private final Setting smartRange = register(new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean));
     private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
@@ -36,7 +37,7 @@ public class Burrow2 extends Module {
     public static Burrow2 instance;
 
     public Burrow2(){
-        super("Burrow", Category.COMBAT, true);
+        super("Burrow", Category.COMBAT);
         instance = this;
     }
 
@@ -47,7 +48,7 @@ public class Burrow2 extends Module {
     }
 
     private void swap(int slot, boolean swapBack){
-        ((SwapEnum2.Swap) swap.getValEnum()).getTask().doTask(slot, swapBack);
+        swap.getValEnum().getTask().doTask(slot, swapBack);
     }
 
     private boolean checkSafe(BlockPos pos){
@@ -107,6 +108,7 @@ public class Burrow2 extends Module {
 
     @Override
     public void onEnable() {
+        super.onEnable();
         if(mc.player == null || mc.world == null){
             this.setToggled(false);
             return;
@@ -156,7 +158,7 @@ public class Burrow2 extends Module {
     }
 
     @SubscribeEvent
-    private void onPlayerPushOutEvent(PlayerSPPushOutOfBlocksEvent event){
+    public void onPlayerPushOutEvent(PlayerSPPushOutOfBlocksEvent event){
         if(noPushOut.getValBoolean())
             event.setCanceled(true);
     }

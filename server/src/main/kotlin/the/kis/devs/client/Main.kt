@@ -14,7 +14,7 @@ import java.util.zip.ZipInputStream
  * @author _kisman_
  * @since 16:31 of 06.07.2022
  */
-fun main() {
+fun main1() {
     val client = SocketClient(ADDRESS!!, PORT)
     var bytes : ByteArray? = null
     client.connect()

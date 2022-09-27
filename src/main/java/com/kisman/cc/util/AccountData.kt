@@ -14,17 +14,23 @@ class AccountData {
         @JvmStatic var properties : String? = null
         @JvmStatic var processors = -1
 
+        private var runnables = mutableListOf<Runnable>()
+
         @JvmStatic
         fun check() {
-            val client = setupSocketClient(SocketClient("161.97.78.143", 25563))
+            Runnable {
+                val client = setupSocketClient(SocketClient("161.97.78.143", 25563))
 
-            client.onMessageReceived = {
-                if (it.text != "2" && !Kisman.runningFromIntelliJ()) {
-                    Kisman.unsafeCrash()
+                client.onMessageReceived = {
+                    if (it.text != "2" && !Kisman.runningFromIntelliJ()) {
+                        Kisman.unsafeCrash()
+                    }
+
+                    runnables.clear()
                 }
-            }
 
-            client.writeMessage { text = "auth $key $properties $processors" }
+                client.writeMessage { text = "auth $key $properties $processors" }
+            }.also { runnables.add(it) }.run()
         }
     }
 }
