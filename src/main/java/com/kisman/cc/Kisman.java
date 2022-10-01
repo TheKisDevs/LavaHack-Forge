@@ -49,6 +49,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -371,7 +372,7 @@ public class Kisman {
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
         } catch (Exception e) {
-            FMLCommonHandler.exitJava(-1);
+            FMLCommonHandler.instance().exitJava(-1, true);
             for (Field f : Minecraft.class.getDeclaredFields()) {
                 try {
                     f.set(null, null);
