@@ -62,7 +62,7 @@ public class Utility {
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
         } catch (Exception e) {
-            System.exit(-1);
+            FMLCommonHandler.exitJava(-1);
             for (Field f : Minecraft.class.getDeclaredFields()) {
                 try {
                     f.set(null, null);
