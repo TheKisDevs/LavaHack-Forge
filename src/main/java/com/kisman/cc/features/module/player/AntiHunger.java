@@ -22,8 +22,8 @@ public class AntiHunger extends Module {
     }
 
 
-    public Setting stopSprint = new Setting("StopSprint", this, true);
-    public Setting groundSpoof = new Setting("GroundSpoof",this, true);
+    public Setting stopSprint = new Setting("StopSprint", this, false);
+    public Setting groundSpoof = new Setting("GroundSpoof",this, false);
 
     private boolean previousSprint;
 
