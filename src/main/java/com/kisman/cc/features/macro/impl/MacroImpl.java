@@ -6,10 +6,21 @@ package com.kisman.cc.features.macro.impl;
  */
 public abstract class MacroImpl {
 
+    protected final String name;
+
     protected final String arguments;
 
-    public MacroImpl(String arguments){
+    public MacroImpl(String name, String arguments){
+        this.name = name;
         this.arguments = arguments;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getArguments() {
+        return arguments;
     }
 
     public synchronized void execute(){

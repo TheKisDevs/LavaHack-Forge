@@ -14,6 +14,8 @@ public class KeyActivator extends Activator {
         super("key", condition, macro);
     }
 
+    private boolean alreadyDown = false;
+
     @Override
     protected void onEnable() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -37,7 +39,13 @@ public class KeyActivator extends Activator {
             Kisman.LOGGER.error("[KeyActivator] Invalid key range: " + key);
             return;
         }
-        if(Keyboard.isKeyDown(key))
-            callMacro();
+        if(!Keyboard.isKeyDown(key)){
+            alreadyDown = false;
+            return;
+        }
+        if(alreadyDown)
+            return;
+        callMacro();
+        alreadyDown = true;
     }
 }

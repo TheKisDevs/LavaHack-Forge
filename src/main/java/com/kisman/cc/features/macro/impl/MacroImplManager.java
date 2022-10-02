@@ -1,29 +1,25 @@
-package com.kisman.cc.features.macro.activator;
+package com.kisman.cc.features.macro.impl;
 
-import com.kisman.cc.features.macro.activator.activators.KeyActivator;
+import com.kisman.cc.features.macro.impl.impls.CommandMacro;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author Cubic
- * @since 02.10.2022
- */
-public final class ActivatorManager {
+public class MacroImplManager {
 
-    private static final Map<Entry, ActivatorFactory<?>> ACTIVATORS = new ConcurrentHashMap<>();
+    private static final Map<Entry, MacroImplFactory<?>> MACRO_IMPLEMENTATIONS = new ConcurrentHashMap<>();
 
-    public static ActivatorFactory<?> getFactory(String name){
-        return ACTIVATORS.get(new Entry(name, null));
+    public static MacroImplFactory<?> getMacroImpl(String name){
+        return MACRO_IMPLEMENTATIONS.get(new Entry(name, null));
     }
 
-    public static ActivatorFactory<?> getFactory(Class<?> cls){
-        return ACTIVATORS.get(new Entry(null, cls));
+    public static MacroImplFactory<?> getMacroImpl(Class<?> cls){
+        return MACRO_IMPLEMENTATIONS.get(new Entry(null, cls));
     }
 
     static {
-        ACTIVATORS.put(new Entry("key", KeyActivator.class), KeyActivator::new);
+        MACRO_IMPLEMENTATIONS.put(new Entry("cmd", CommandMacro.class), CommandMacro::new);
     }
 
     private static class Entry {
