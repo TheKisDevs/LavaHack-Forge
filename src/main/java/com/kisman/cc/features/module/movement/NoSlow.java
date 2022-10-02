@@ -57,13 +57,11 @@ public class NoSlow extends Module {
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
-        Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(listener2);
     }
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
-        Kisman.EVENT_BUS.unsubscribe(listener1);
         Kisman.EVENT_BUS.unsubscribe(listener2);
     }
 
@@ -118,6 +116,8 @@ public class NoSlow extends Module {
 
     @SubscribeEvent
     public void onLivingUpdate(LivingUpdateEvent event) {
+        if(mc.player == null || mc.world == null) return;
+
         if (mc.player.isHandActive() && !mc.player.isRiding() && mode.getValString().equals("Sunrise")) {
             mc.player.movementInput.moveStrafe *= 0.2F;
             mc.player.movementInput.moveForward *= 0.2F;
@@ -132,7 +132,6 @@ public class NoSlow extends Module {
                     mc.player.motionX *= 0.9f;
                     mc.player.motionZ *= 0.9f;
                 }
-
             }
         }
     }
@@ -175,10 +174,7 @@ public class NoSlow extends Module {
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode()));
             mc.player.movementInput.jump = Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
         }
-    });
 
-    @EventHandler
-    private final Listener<EventPlayerUpdateMoveState> listener1 = new Listener<>(event -> {
         if(items.getValBoolean() && mc.player.isHandActive() && !mc.player.isRiding()) {
             mc.player.movementInput.moveForward /= 0.2;
             mc.player.movementInput.moveStrafe /= 0.2;

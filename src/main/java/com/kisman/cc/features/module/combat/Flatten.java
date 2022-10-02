@@ -5,9 +5,8 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.entity.TargetFinder;
-import com.kisman.cc.util.world.BlockUtil;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class Flatten extends Module {
 
     private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 2, 15, false));

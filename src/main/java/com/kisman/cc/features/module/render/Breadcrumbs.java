@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@WorkInProgress
 public class Breadcrumbs extends Module {
 
     private final Setting smooth = register(new Setting("Smooth", this, false));

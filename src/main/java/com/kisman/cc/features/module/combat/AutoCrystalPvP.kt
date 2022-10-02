@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat
 
-import com.kisman.cc.features.module.Beta
-import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.PingBypassModule
+import com.kisman.cc.features.module.*
 import com.kisman.cc.features.module.combat.autocrystalpvp.PlaceInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
@@ -36,6 +33,7 @@ import java.util.stream.Collectors
  */
 @Beta
 @PingBypassModule
+@WorkInProgress
 object AutoCrystalPvP : Module(
     "AutoCrystalPvP",
     "crystal pvp go brr",

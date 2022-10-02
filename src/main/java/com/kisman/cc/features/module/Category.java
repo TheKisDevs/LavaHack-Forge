@@ -9,6 +9,7 @@ public enum Category {
 	MISC("Misc"),
 	EXPLOIT("Exploit"),
 	DEBUG("Debug"),
+	WIP("WIP"),
 	LUA("Plugin&Lua");
 
 	private final String name;

@@ -254,6 +254,10 @@ public class Setting implements IBindable {
 		return sval.equalsIgnoreCase(str);
 	}
 
+	public boolean checkValString(Enum<?> enm) {
+		return checkValString(enm.name());
+	}
+
 	public boolean isVisible() {
 		return visibleSupplier.get();
 	}

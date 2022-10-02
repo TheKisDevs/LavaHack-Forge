@@ -2,9 +2,11 @@ package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.util.math.BlockPos;
 
+@WorkInProgress
 public class SafeWalk extends Module {
 
     public SafeWalk(){

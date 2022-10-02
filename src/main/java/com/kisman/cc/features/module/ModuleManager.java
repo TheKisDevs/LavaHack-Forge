@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -24,7 +25,7 @@ public class ModuleManager {
 	public ModuleManager() {
 		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
-		AccountData.check();
+		Kisman.processAccountData();
 
 //		Loader<Module> loader = new Loader<>();
 //		loader.exclude("com.kisman.cc.features.module.Module");

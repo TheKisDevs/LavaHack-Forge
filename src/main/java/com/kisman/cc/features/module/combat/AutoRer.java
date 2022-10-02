@@ -130,6 +130,7 @@ public class AutoRer extends Module {
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
     public final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
+    private final Setting fourthCheck = register(place_.add(new Setting("Fourth Check", this, false)));
     private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi").setVisible(place::getValBoolean)));
     public final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
     private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet").setVisible(place::getValBoolean)));
@@ -218,12 +219,11 @@ public class AutoRer extends Module {
 
     private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay.getSupplierLong(), multiThreaddedCrystalGetter.getSupplierBoolean());
 
-    private final AtomicReference<BreakInfo> atomicCrystal = new AtomicReference<>();
-
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
 
         instance = this;
     }
@@ -332,7 +332,7 @@ public class AutoRer extends Module {
         if(currentTarget == null) {
             placePos.setBlockPos(null);
             return;
-        } else super.setDisplayInfo("[" + currentTarget.getName() + "]");
+        }
 
         if(extrapolationState.getValBoolean()) extrapolationHelper.update();
 
@@ -560,10 +560,18 @@ public class AutoRer extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
-        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) try {
-            PlaceInfo info = AutoRerUtil.Companion.getPlaceInfo(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos(), currentTarget, terrain.getValBoolean());
-            placedList.add(info);
-        } catch (Exception ignored) {}
+        if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
+            if(fourthCheck.getValBoolean() && !isPosValid(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos())) {
+                event.cancel();
+                return;
+            }
+
+            try {
+                PlaceInfo info = AutoRerUtil.Companion.getPlaceInfo(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos(), currentTarget, terrain.getValBoolean());
+                placedList.add(info);
+            } catch (Exception ignored) {}
+        }
+
         if(removeAfterAttack.getValBoolean() && event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && packet.getEntityFromWorld(mc.world) instanceof EntityEnderCrystal) {
@@ -670,7 +678,7 @@ public class AutoRer extends Module {
     }
 
     private void doPlace(EventPlayerMotionUpdate event, boolean thread) {
-        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean() || placeStrictSync())) return;
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync()) return;
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
         if(placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
@@ -825,44 +833,51 @@ public class AutoRer extends Module {
                         || !getTimer(true).passedMillis(getDelay(true))
                         || breakStrictSync()
         ) return;
+        BreakInfo finallyCrystal;
 
-        AtomicReference<BreakInfo> crystal = new AtomicReference<>();
-        AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
+        if(crystalTHandler.getThreadded().get()) {
+            AtomicReference<BreakInfo> crystal = new AtomicReference<>();
+            AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
 
-        crystalTHandler.update(
-                () -> mc.addScheduledTask(
-                        () -> {
-                            if(crystalTHandler.getThreadded().get()) atomicCrystal.set(getCrystalWithMaxDamage());
-                            else crystalWithMaxDamage.set(getCrystalWithMaxDamage());
-                        }
-                )
-        );
+            crystalTHandler.update(() -> mc.addScheduledTask(() -> crystalWithMaxDamage.set(getCrystalWithMaxDamage())));
 
-        if(crystalTHandler.getThreadded().get()) crystalWithMaxDamage.set(atomicCrystal.get());
+            if (breakPriority.checkValString("Damage")) crystal.set(crystalWithMaxDamage.get());
+            else {
+                crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
+                crystal.set(getCrystalForAntiCevBreaker());
+                if (crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
+            }
 
-        if(breakPriority.checkValString("Damage")) crystal.set(crystalWithMaxDamage.get());
-        else {
-            crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
-            crystal.set(getCrystalForAntiCevBreaker());
-            if(crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
+            finallyCrystal = crystal.get();
+        } else {
+            BreakInfo crystal;
+            BreakInfo crystalWithMaxDamage = getCrystalWithMaxDamage();
+
+            if (breakPriority.checkValString("Damage")) crystal = crystalWithMaxDamage;
+            else {
+                crystal = getCrystalForAntiCevBreaker();
+                if (crystal == null) crystal = crystalWithMaxDamage;
+            }
+
+            finallyCrystal = crystal;
         }
 
-        if(crystal.get() == null || (timingMode.getValEnum() != TimingMode.Adaptive && crystal.get().getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(crystal.get().getTargetDamage(), currentTarget).getFirst()) return;
+        if(finallyCrystal == null || (timingMode.getValEnum() != TimingMode.Adaptive && finallyCrystal.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(finallyCrystal.getTargetDamage(), currentTarget).getFirst()) return;
 
         RotationSaver saver = new RotationSaver().save();
 
-        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(crystal.get().getCrystal().getEntityId());
+        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(finallyCrystal.getCrystal().getEntityId());
 
-        lastHitEntity = crystal.get().getCrystal();
+        lastHitEntity = finallyCrystal.getCrystal();
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
 
-        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(crystal.get().getCrystal()));
-        else mc.playerController.attackEntity(mc.player, crystal.get().getCrystal());
+        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(finallyCrystal.getCrystal()));
+        else mc.playerController.attackEntity(mc.player, finallyCrystal.getCrystal());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-        doClientSide(crystal.get().getCrystal());
-        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(crystal.get().getCrystal().entityId);} catch (Exception ignored) {}
+        doClientSide(finallyCrystal.getCrystal());
+        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(finallyCrystal.getCrystal().entityId);} catch (Exception ignored) {}
         getTimer(true).reset();
 
         if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
@@ -870,7 +885,7 @@ public class AutoRer extends Module {
         if(sync.getValBoolean()) {
             BlockPos toRemove = null;
 
-            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && crystal.get().getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
+            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && finallyCrystal.getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
 
             if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }
@@ -886,9 +901,10 @@ public class AutoRer extends Module {
     }
 
     private void swing() {
-        if(swing.checkValString(SwingMode.None.name())) return;
-        if(swing.checkValString(SwingMode.PacketSwing.name())) mc.player.connection.sendPacket(new CPacketAnimation(swing.checkValString(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
-        else mc.player.swingArm(swing.checkValString(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        if(swing.checkValString(SwingMode.None)) return;
+        if(swing.checkValString(SwingMode.PacketSwing)) mc.player.connection.sendPacket(new CPacketAnimation(swing.checkValString(SwingMode.MainHand.name()) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND));
+        else if(swing.checkValString(SwingMode.CurrentHand)) mc.player.swingArm(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
+        else mc.player.swingArm(swing.checkValString(SwingMode.MainHand) ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
     }
 
     private Friend getNearFriendWithMaxDamage(Entity entity) {
@@ -920,7 +936,7 @@ public class AutoRer extends Module {
     public enum Render {None, Default, Advanced}
     public enum Rotate {Off, Place/*, Break, All*/}
     public enum SwitchMode {None, Normal, Silent}
-    public enum SwingMode {MainHand, OffHand, PacketSwing, None}
+    public enum SwingMode {MainHand, OffHand, CurrentHand, PacketSwing, None}
     public enum SwingLogic {Pre, Post}
     public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
     public enum LogicMode {PlaceBreak, BreakPlace}

@@ -207,7 +207,7 @@ public class AntiDump {
             setupIntrospection();
             long entry = getSymbol("gHotSpotVMStructs");
             unsafe.putLong(entry, 0);
-        } catch (Throwable t) {
+        } catch(NoSuchElementException e) {} catch (Throwable t) {
             t.printStackTrace();
             dumpDetected();
         }
@@ -231,59 +231,5 @@ public class AntiDump {
         }
 
         return new String(chars, 0, offset);
-    }
-
-    private static void readStructs(Map<String, Set<Object[]>> structs) throws InvocationTargetException, IllegalAccessException {
-        long entry = getSymbol("gHotSpotVMStructs");
-        long typeNameOffset = getSymbol("gHotSpotVMStructEntryTypeNameOffset");
-        long fieldNameOffset = getSymbol("gHotSpotVMStructEntryFieldNameOffset");
-        long typeStringOffset = getSymbol("gHotSpotVMStructEntryTypeStringOffset");
-        long isStaticOffset = getSymbol("gHotSpotVMStructEntryIsStaticOffset");
-        long offsetOffset = getSymbol("gHotSpotVMStructEntryOffsetOffset");
-        long addressOffset = getSymbol("gHotSpotVMStructEntryAddressOffset");
-        long arrayStride = getSymbol("gHotSpotVMStructEntryArrayStride");
-
-        for (; ; entry += arrayStride) {
-            String typeName = getString(unsafe.getLong(entry + typeNameOffset));
-            String fieldName = getString(unsafe.getLong(entry + fieldNameOffset));
-            if (fieldName == null) break;
-
-            String typeString = getString(unsafe.getLong(entry + typeStringOffset));
-            boolean isStatic = unsafe.getInt(entry + isStaticOffset) != 0;
-            long offset = unsafe.getLong(entry + (isStatic ? addressOffset : offsetOffset));
-
-            Set<Object[]> fields = structs.get(typeName);
-            if (fields == null) structs.put(typeName, fields = new HashSet<>());
-            fields.add(new Object[]{fieldName, typeString, offset, isStatic});
-        }
-        long address = (Long) findNative.invoke(null, classLoader, 2);
-        if (address == 0) throw new NoSuchElementException("");
-
-        unsafe.getLong(address);
-    }
-
-    private static void readTypes(Map<String, Object[]> types, Map<String, Set<Object[]>> structs) throws InvocationTargetException, IllegalAccessException {
-        long entry = getSymbol("gHotSpotVMTypes");
-        long typeNameOffset = getSymbol("gHotSpotVMTypeEntryTypeNameOffset");
-        long superclassNameOffset = getSymbol("gHotSpotVMTypeEntrySuperclassNameOffset");
-        long isOopTypeOffset = getSymbol("gHotSpotVMTypeEntryIsOopTypeOffset");
-        long isIntegerTypeOffset = getSymbol("gHotSpotVMTypeEntryIsIntegerTypeOffset");
-        long isUnsignedOffset = getSymbol("gHotSpotVMTypeEntryIsUnsignedOffset");
-        long sizeOffset = getSymbol("gHotSpotVMTypeEntrySizeOffset");
-        long arrayStride = getSymbol("gHotSpotVMTypeEntryArrayStride");
-
-        for (; ; entry += arrayStride) {
-            String typeName = getString(unsafe.getLong(entry + typeNameOffset));
-            if (typeName == null) break;
-
-            String superclassName = getString(unsafe.getLong(entry + superclassNameOffset));
-            boolean isOop = unsafe.getInt(entry + isOopTypeOffset) != 0;
-            boolean isInt = unsafe.getInt(entry + isIntegerTypeOffset) != 0;
-            boolean isUnsigned = unsafe.getInt(entry + isUnsignedOffset) != 0;
-            int size = unsafe.getInt(entry + sizeOffset);
-
-            Set<Object[]> fields = structs.get(typeName);
-            types.put(typeName, new Object[]{typeName, superclassName, size, isOop, isInt, isUnsigned, fields});
-        }
     }
 }

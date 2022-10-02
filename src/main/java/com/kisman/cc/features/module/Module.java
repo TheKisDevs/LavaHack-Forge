@@ -43,7 +43,7 @@ public class Module implements IBindable, Listenable {
 		this.description = description;
 		this.displayInfo = "";
 		this.key = key;
-		this.category = category;
+		this.category = getClass().isAnnotationPresent(WorkInProgress.class) ? Category.WIP : category;
 		this.toggled = false;
 		this.subscribes = subscribes;
 

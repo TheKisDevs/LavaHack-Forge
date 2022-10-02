@@ -33,8 +33,9 @@ class ConfigCommand : Command("config") {
                     ConfigManager(args[1]).moduleSaver.init(modules)
                 } else {
                     ConfigManager(args[1]).saver.init()
-                    complete("Config \"${args[1]}\" was saved!")
                 }
+
+                complete("Config \"${args[1]}\" was saved!")
             } else if(args[0] == "load") {
                 ConfigManager(args[1]).loader.init()
                 complete("Config \"${args[1]}\" was loaded!")

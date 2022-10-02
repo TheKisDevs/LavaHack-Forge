@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat
 import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.movement.MovementUtil
 import net.minecraft.init.Blocks
@@ -12,6 +13,7 @@ import net.minecraft.init.Blocks
  * @since 5:54 of 15.09.2022
  */
 @Beta
+@WorkInProgress
 class CrystalPvPHelper : Module(
     "CrystalPvPHelper",
     "Helps with crystal pvp.",

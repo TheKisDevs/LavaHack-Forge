@@ -18,7 +18,6 @@ import net.minecraft.util.math.*;
 public class Anchor extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.Motion));
     private final Setting pitch = register(new Setting("Pitch", this, 60, 0, 90, false));
-    private final Setting movementStop = /*register*/(new Setting("Movement Stop", this, false).setVisible(!mode.checkValString(Mode.Teleport.name())));
     private final Setting timer = register(new Setting("Timer", this, false));
     private final Setting timerValue = register(new Setting("Timer Value", this, 5, 0.1f, 20, false).setVisible(timer::getValBoolean));
     private final Setting disableAfterComplete = register(new Setting("Disable After Complete", this, false));
@@ -29,18 +28,19 @@ public class Anchor extends Module {
     private final Setting synsWithReverseStep = register(new Setting("Syns With Reverse Step", this, false));
 
     private boolean using = false;
-    private double[] oneblockPositions = new double[] { 0.42, 0.75 };
+    private final double[] oneblockPositions = new double[] { 0.42, 0.75 };
     private int packets;
     private boolean jumped = false;
     private boolean hasReverseStepDisabled = false;
 
     public Anchor() {
-        super("Anchor", "help with holes", Category.MOVEMENT);
+        super("Anchor", "Helps with holes", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 
     private boolean isBlockHole(BlockPos blockpos) {
         int holeblocks = 0;
+
         if (mc.world.getBlockState(blockpos.add(0, 3, 0)).getBlock() == Blocks.AIR) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 2, 0)).getBlock() == Blocks.AIR) ++holeblocks;
         if (mc.world.getBlockState(blockpos.add(0, 1, 0)).getBlock() == Blocks.AIR) ++holeblocks;
@@ -88,7 +88,7 @@ public class Anchor extends Module {
                         mc.player.motionX = motionX / 2;
                         mc.player.motionZ = motionZ / 2;
                     }
-                    if(fastFall.getValBoolean() && !lagTimeCheck()) mc.player.motionY = -fastFallMotion.getValDouble();
+
                     using = true;
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
                     if (!mc.player.onGround) this.jumped = mc.gameSettings.keyBindJump.isKeyDown();
@@ -103,8 +103,29 @@ public class Anchor extends Module {
                         }
                     }
 
-                    if(fastFall.getValBoolean() && !lagTimeCheck()) mc.player.motionY = -fastFallMotion.getValDouble();
+                } else if(mode.checkValString("MovementStop")) {
+                    if(isBlockHole(mc.player.getPosition())) {
+                        mc.player.motionX = 0;
+                        mc.player.motionZ = 0;
+                    } else {
+                        Vec3d center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
+
+                        double xDiff = Math.abs(center.x - mc.player.posX);
+                        double zDiff = Math.abs(center.z - mc.player.posZ);
+
+                        if (!(xDiff <= 0.1 && zDiff <= 0.1)) {
+                            double motionX = center.x - mc.player.posX;
+                            double motionZ = center.z - mc.player.posZ;
+
+                            mc.player.motionX = motionX / 2;
+                            mc.player.motionZ = motionZ / 2;
+                        }
+                    }
+
+                    using = true;
                 }
+
+                if(fastFall.getValBoolean() && !lagTimeCheck()) mc.player.motionY = -fastFallMotion.getValDouble();
             } else using = false;
         }
 
@@ -121,6 +142,7 @@ public class Anchor extends Module {
         if(using && synsWithReverseStep.getValBoolean()) {
             MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
             module.getReverseStep().setValBoolean(false);
+            hasReverseStepDisabled = true;
         }
 
         if(hasReverseStepDisabled && !using) {

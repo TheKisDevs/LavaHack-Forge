@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.util.enums.dynamic.ScalingEnum
+import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -21,7 +21,7 @@ class ScalingPattern(
 ) {
     private val group_ = setupGroup(SettingGroup(Setting("Scaling", module)))
 
-    private val mode = SettingEnum("Smooth Scaling Mode", module, ScalingEnum.Scaling.Linear).setTitle("Mode").also {
+    private val mode = SettingEnum("Smooth Scaling Mode", module, EasingEnum.EasingOld.Linear).setTitle("Mode").also {
         setupEnum(it)
         group_.add(it)
     }

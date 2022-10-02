@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat
 import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.features.module.render.CityESP
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -32,6 +33,7 @@ import java.util.stream.Collectors
  * @since 18:41 of 10.08.2022
  */
 @Beta
+@WorkInProgress
 class CityBoss : Module(
     "CityBoss",
     "Breaks surround of nearest player.",
