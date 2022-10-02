@@ -7,7 +7,6 @@ import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.exploit.LogoutSpots;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
-import com.kisman.cc.features.module.misc.botnet.BotnetConnection;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
@@ -226,7 +225,6 @@ public class ModuleManager {
 		modules.add(new AutoLog());
 		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
-		modules.add(new BotnetConnection());
 		modules.add(new ChatModifier());
 		//modules.add(new DDOSModule());
 		modules.add(new FakePlayer());

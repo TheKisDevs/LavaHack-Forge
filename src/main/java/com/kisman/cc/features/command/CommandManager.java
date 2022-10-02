@@ -71,4 +71,20 @@ public class CommandManager extends ChatHandler {
 		}
 		if(!commandResolved) error("Cannot resolve internal command: \u00a7c" + commandName);
 	}
+
+	public void runCommandsNoPrefix(String s) {
+		boolean commandResolved = false;
+		boolean hasArgs = s.trim().contains(" ");
+		String commandName = hasArgs ? s.split(" ")[0] : s.trim();
+		String[] args = hasArgs ? s.substring(commandName.length()).trim().split(" ") : new String[0];
+
+		for(Command command : commands.values()) {
+			if(command.getCommand().trim().equalsIgnoreCase(commandName.trim())) {
+				command.runCommand(s, args);
+				commandResolved = true;
+				break;
+			}
+		}
+		if(!commandResolved) error("Cannot resolve internal command: \u00a7c" + commandName);
+	}
 }
