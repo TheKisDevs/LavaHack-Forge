@@ -98,6 +98,8 @@ public class AutoRer extends Module {
     private final Setting switch_ = register(main.add(new Setting("Switch", this, SwitchMode.None)));
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
     private final Setting cubicCalc = register(calc.add(new Setting("Cubic Calc", this, false)));
+    private final Setting heuristics = register(calc.add(new Setting("Heuristic", this, Heuristics.Damage)));
+    private final Setting safetyBalance = register(calc.add(new Setting("Safety Balance", this, 0, 0, 20, false).setVisible(heuristics.getValEnum() == Heuristics.Safety)));
     private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
     private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
     private final Setting motionCalc = register(motionGroup.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)).setTitle("Calc"));
@@ -649,6 +651,7 @@ public class AutoRer extends Module {
 
                     if(damageSyncPlace.getValEnum() == DamageSyncMode.Smart && damageSyncSelf.getValBoolean()) selfDamage = selfResult.getSecond();
                     if(selfResult.getFirst() && selfDamage <= maxSelfDMG.getValInt() && (selfDamage + 2 < mc.player.getHealth() + mc.player.getAbsorptionAmount() || !noSuicide.getValBoolean()) && selfDamage < targetDamage) {
+                        targetDamage = getHeuristic(targetDamage, selfDamage);
                         if(maxDamage <= targetDamage) {
                             maxDamage = targetDamage;
                             selfDamage_ = selfDamage;
@@ -659,6 +662,18 @@ public class AutoRer extends Module {
             }
         }
         this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, null, null, null);
+    }
+
+    private float getHeuristic(float targetDamage, float selfDamage){
+        switch((Heuristics) heuristics.getValEnum()){
+            case Damage:
+                return targetDamage;
+            case MinMax:
+                return targetDamage - selfDamage;
+            case Safety:
+                return targetDamage - safetyBalance.getValFloat();
+        }
+        return targetDamage;
     }
 
     private boolean placeStrictSync() {
@@ -934,6 +949,7 @@ public class AutoRer extends Module {
     public enum FacePlaceMode {None, Stupid, Smart}
     public enum DamageSyncMode {None, Stupid, Smart}
     public enum ClientSideMode {None, RemoveEntity, SetDead, Both}
+    public enum Heuristics {Damage, MinMax, Safety}
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),
