@@ -10,7 +10,6 @@ import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
-import com.kisman.cc.util.AccountData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -46,6 +45,8 @@ public class ModuleManager {
 		modules.add(new HelloWorld());
 //		modules.add(new M2LTest());
 		modules.add(new Meow());
+		modules.add(new ModuleInstancingJava());
+		modules.add(new ModuleInstancingKt());
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());

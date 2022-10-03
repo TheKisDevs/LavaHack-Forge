@@ -14,6 +14,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 public class Module implements IBindable, Listenable {
@@ -50,6 +51,16 @@ public class Module implements IBindable, Listenable {
 		setmgr = Kisman.instance.settingsManager;
 
 		SettingLoader.load(this);
+
+		for(Field field : getClass().getDeclaredFields()) {
+			if(field.isAnnotationPresent(ModuleInstance.class)) {
+				try {
+					field.set(null, this);
+				} catch (IllegalAccessException ignored) {
+					Kisman.LOGGER.error("Cant create instance of " + name + " module! it may will give crash in the future");
+				}
+			}
+		}
 	}
 
 	private void printToggleMessage() {

@@ -5,7 +5,6 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.ReflectUtil;
 import com.kisman.cc.util.chat.cubic.AbstractChatMessage;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import net.minecraft.client.Minecraft;
 import the.kis.devs.api.features.module.ModuleManagerAPI;
 
 import java.util.HashMap;

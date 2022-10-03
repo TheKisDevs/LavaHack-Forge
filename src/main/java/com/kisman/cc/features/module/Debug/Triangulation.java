@@ -8,10 +8,8 @@ import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.math.Trigonometric;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.world.BlockUtil;
-import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Triangulation extends Module {
 
