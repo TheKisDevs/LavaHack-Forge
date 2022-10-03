@@ -150,6 +150,7 @@ public class AutoRer extends Module {
     private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
     private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop).setVisible(break_::getValBoolean)));
     private final Setting clientSide = register(break__.add(new Setting("Client Side", this, ClientSideMode.None).setVisible(break_::getValBoolean)));
+    private final Setting clientSideWhen = register(break__.add(new Setting("Client Side On", this, ClientSideWhen.Break).setVisible(break__::getValBoolean)));
     private final Setting manualBreaker = register(break__.add(new Setting("Manual Breaker", this, false).setTitle("Manual").setVisible(break_::getValBoolean)));
     private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false).setVisible(break_::getValBoolean)));
     private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break").setVisible(break_::getValBoolean)));
@@ -553,6 +554,13 @@ public class AutoRer extends Module {
             }
         }
 
+        if(event.getPacket() instanceof SPacketSoundEffect && clientSideWhen.getValEnum() == ClientSideWhen.Sound && lastHitEntity != null){
+            SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
+            if(packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE)
+                if(lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6)
+                    doClientSide(lastHitEntity);
+        }
+
         if (event.getPacket() instanceof SPacketSoundEffect && ((inhibit.getValBoolean() && lastHitEntity != null) || (sound.getValBoolean()))) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
             if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) lastHitEntity.setDead();
@@ -703,6 +711,10 @@ public class AutoRer extends Module {
         int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
 
         if(crystalSlot == -1 && !offhand) return;
+
+        if(clientSideWhen.getValEnum() == ClientSideWhen.Place && lastHitEntity != null){
+            doClientSide(lastHitEntity);
+        }
 
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && !offhand) {
             switch (switch_.getValString()) {
@@ -891,8 +903,10 @@ public class AutoRer extends Module {
         else mc.playerController.attackEntity(mc.player, finallyCrystal.getCrystal());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
-        doClientSide(finallyCrystal.getCrystal());
-        try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(finallyCrystal.getCrystal().entityId);} catch (Exception ignored) {}
+        if(clientSideWhen.getValEnum() == ClientSideWhen.Break){
+            doClientSide(finallyCrystal.getCrystal());
+            try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(finallyCrystal.getCrystal().entityId);} catch (Exception ignored) {}
+        }
         getTimer(true).reset();
 
         if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
@@ -965,6 +979,7 @@ public class AutoRer extends Module {
     public enum FacePlaceMode {None, Stupid, Smart}
     public enum DamageSyncMode {None, Stupid, Smart}
     public enum ClientSideMode {None, RemoveEntity, SetDead, Both}
+    public enum ClientSideWhen {Break, Place, Sound};
     public enum Heuristics {Damage, MinMax, Safety}
 
     public enum AntiCevBreakerVectors {
