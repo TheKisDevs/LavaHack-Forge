@@ -64,4 +64,11 @@ public class Macro {
             activator.enable();
         activators.add(activator);
     }
+
+    public boolean isEnable(){
+        for(Activator activator : activators)
+            if(activator.isEnabled())
+                return true;
+        return false;
+    }
 }
