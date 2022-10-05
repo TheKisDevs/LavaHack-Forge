@@ -89,7 +89,14 @@ public class Kisman {
 
     public static EntityPlayer target_by_click = null;
 
-    public static boolean remapped = !runningFromIntelliJ();//TODO improve it
+    /**
+     * This will be the default value for {@code remapped} if
+     * the check for remapped failed.
+     * - Cubic
+     */
+    public static final boolean ASSUME_REMAPPED = false;
+
+    public static boolean remapped = !runningFromIntelliJ() || checkRemapped();
     public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = false;
 
@@ -363,6 +370,27 @@ public class Kisman {
 
     public static boolean runningFromIntelliJ() {
         return System.getProperty("java.class.path").contains("idea_rt.jar");
+    }
+
+    /**
+     * Checks if Minecraft is remapped using reflection to access a
+     * Minecraft field by it's unmapped name. If Minecraft is remapped,
+     * it will throw a {@link NoSuchFieldException}. If this happens,
+     * Minecraft is (most likely) remapped.
+     * @author Cubic
+     * @since  05.10.2022
+     * @return if Minecraft is remapped or not
+     */
+    public static boolean checkRemapped(){
+        try {
+            Minecraft.class.getDeclaredField("world");
+            return false;
+        } catch (NoSuchFieldException e){ // could not find the field because mc is remapped
+            return true;
+        } catch (SecurityException e){ // check failed, return what we assume
+            LOGGER.error("[Kisman]: Could not check if Minecraft is remapped!");
+            return ASSUME_REMAPPED;
+        }
     }
 
     public static void unsafeCrash() {
