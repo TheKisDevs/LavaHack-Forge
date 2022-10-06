@@ -1,6 +1,6 @@
 package com.kisman.cc.util.world;
 
-import com.kisman.cc.settings.util.ScalingPattern;
+import com.kisman.cc.settings.util.EasingsPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.block.Block;
@@ -101,14 +101,14 @@ public class BlockUtil2 {
         );
     }
 
-    public static AxisAlignedBB getMutableProgressBB(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier) {
+    public static AxisAlignedBB getMutableProgressBB(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier) {
         return getProgressBB(
                 mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
                 scalier.mutateProgress(getBreakingProgress(pos, stack, start))
         );
     }
 
-    public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, ScalingPattern scalier, boolean inverse) {
+    public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier, boolean inverse) {
         return getProgressBB(
                 mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
                 inverse ? scalier.mutateProgress(getBreakingProgress(pos, stack, start)) : scalier.mutateProgress(getBreakingProgress(pos, stack, start))

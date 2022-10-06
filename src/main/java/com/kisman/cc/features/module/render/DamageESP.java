@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import net.minecraft.client.gui.Gui;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Beta
+@WorkInProgress
 public class DamageESP extends Module {
     private final Setting timeToRemove = register(new Setting("Time To Remove", this, 3, 1, 5, true));
     private final Setting range = register(new Setting("Range", this, 20, 1, 50, true));

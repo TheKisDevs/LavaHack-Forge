@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module.player
 
-import com.google.common.collect.BiMap
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Category
@@ -22,7 +21,7 @@ import java.lang.reflect.Field
  */
 class PacketFeatures : Module(
     "PacketFeatures",
-    "Cancels packets and logs packets :>",
+    "Cancels/logs minecraft packets :>",
     Category.PLAYER
 ) {
     private val canceller = register(SettingGroup(Setting("Canceller", this)))
@@ -89,7 +88,9 @@ class PacketFeatures : Module(
         }
 
         if(loggerState.valBoolean && loggerPacketsMap.containsKey(it.packet::class.java) && loggerPacketsMap[it.packet::class.java]!!.valBoolean) {
-            var message = it.packet::class.java.simpleName
+            var message = "---------------------"
+
+            message += it.packet::class.java.simpleName
 
             for(field in it.packet::class.java.fields) {
                 message += "\n\t${processField(it.packet, field)}"
@@ -98,6 +99,8 @@ class PacketFeatures : Module(
             if(it.cancelled) {
                 message += "\n\tCancelled"
             }
+
+            message += "---------------------"
 
             ChatUtility.cleanMessage(message)
         }
@@ -109,7 +112,9 @@ class PacketFeatures : Module(
         }
 
         if(loggerState.valBoolean && loggerPacketsMap.containsKey(it.packet::class.java) && loggerPacketsMap[it.packet::class.java]!!.valBoolean) {
-            var message = it.packet::class.java.simpleName
+            var message = "---------------------"
+
+            message += it.packet::class.java.simpleName
 
             for(field in it.packet::class.java.fields) {
                 message += "\n\t${processField(it.packet, field)}"
@@ -118,6 +123,8 @@ class PacketFeatures : Module(
             if(it.cancelled) {
                 message += "\n\tCancelled"
             }
+
+            message += "---------------------"
 
             ChatUtility.cleanMessage(message)
         }

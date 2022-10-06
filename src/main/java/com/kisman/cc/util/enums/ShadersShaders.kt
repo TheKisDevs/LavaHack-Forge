@@ -1,7 +1,7 @@
 package com.kisman.cc.util.enums
 
 import com.kisman.cc.settings.util.ShadersRendererPattern
-import com.kisman.cc.settings.util.shadercharmsrewrite.ShaderCharmsRewriteUniform
+import com.kisman.cc.settings.util.shaders.ShaderCharmsRewriteUniform
 import com.kisman.cc.util.math.vectors.Vec3f
 import com.kisman.cc.util.render.shader.framebuffer.FramebufferShader
 import com.kisman.cc.util.render.shader.resolution
@@ -147,7 +147,7 @@ enum class ShadersShaders(
     class Shader(
         private val instance : ShadersShaders
     ) : FramebufferShader(
-        instance.name
+        instance.name_
     ) {
         private var pattern : ShadersRendererPattern? = null
 

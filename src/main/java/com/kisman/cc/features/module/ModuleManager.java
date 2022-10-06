@@ -131,7 +131,7 @@ public class ModuleManager {
 //		modules.add(new LogoutSpots());
 		modules.add(new MotionBlur());
 		modules.add(new NameTags());
-		modules.add(new NoBobbing());
+//		modules.add(new NoBobbing());
 		modules.add(new NoRender());
 		modules.add(new Particle());
 //		modules.add(new PearlTracer());
@@ -182,7 +182,8 @@ public class ModuleManager {
 		modules.add(new FreeCamRewrite());
 		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		//modules.add(new PacketFeatures());
+		modules.add(new PacketFeatures());
+		modules.add(new PearlBypass());
 		modules.add(new Refill());
 		modules.add(new Replenish());
 		modules.add(new RotateModifier());

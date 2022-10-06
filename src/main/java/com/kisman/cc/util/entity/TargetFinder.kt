@@ -7,6 +7,7 @@ import com.kisman.cc.util.thread.kisman.ThreadHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import java.lang.Error
 import java.util.function.Supplier
 
 /**
@@ -38,7 +39,11 @@ open class TargetFinder(
 
     fun update() {
         targetFinderTHandler.update(Runnable {
-            mc.addScheduledTask { target = getTarget((range.get() * range.get()).toFloat()) }
+            try {
+                mc.addScheduledTask { target = getTarget((range.get() * range.get()).toFloat()) }
+            } catch(_ : Error) {
+                target = null
+            }
         })
     }
 

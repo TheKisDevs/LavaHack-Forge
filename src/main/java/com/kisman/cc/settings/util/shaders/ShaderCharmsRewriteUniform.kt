@@ -1,4 +1,4 @@
-package com.kisman.cc.settings.util.shadercharmsrewrite
+package com.kisman.cc.settings.util.shaders
 
 import com.kisman.cc.util.render.shader.uniform.Uniform
 import com.kisman.cc.util.render.shader.uniform.type.Type
