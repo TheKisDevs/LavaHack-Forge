@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.enums.HandRewriteSlotMappings
@@ -10,6 +11,7 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.item.*
 import org.lwjgl.input.Mouse
 
+@WorkInProgress
 class HandRewrite : Module(
         "HandRewrite",
         "Need to update btw, dont use mainhand feature",

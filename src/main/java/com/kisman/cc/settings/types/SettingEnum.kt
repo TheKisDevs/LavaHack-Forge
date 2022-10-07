@@ -1,10 +1,10 @@
 package com.kisman.cc.settings.types
 
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.mixin.mixins.accessor.AccessorClass
+//import com.kisman.cc.mixin.mixins.accessor.AccessorClass
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.types.enums.Exclude
-import java.util.*
+//import com.kisman.cc.settings.types.enums.Exclude
+//import java.util.*
 import java.util.function.Supplier
 
 /**
@@ -15,7 +15,7 @@ import java.util.function.Supplier
 class SettingEnum<T : Enum<*>>(
     name : String,
     module : Module,
-    private val t : T
+    /*private val*/ t : T
 ) : Setting(
     name,
     module,

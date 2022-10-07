@@ -122,7 +122,7 @@ public class Setting implements IBindable {
 		this.enumCombo = true;
 		this.mode = "Combo";
 		setupBinders(
-				Arrays.asList(Arrays.stream(options.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new))
+				Arrays.asList(Arrays.stream(options.getClass().getEnumConstants()).map(Enum::toString).toArray(String[]::new))
 		);
 	}
 	
@@ -228,7 +228,7 @@ public class Setting implements IBindable {
 	public Enum<?> getEnumByName() {
 		if(optionEnum == null) return null;
 		Enum<?> enumVal = optionEnum;
-		String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+		String[] values = Arrays.stream(enumVal.getClass().getEnumConstants()).map(Enum::toString).toArray(String[]::new);
 		return Enum.valueOf(enumVal.getClass(), values[index]);
 	}
 
@@ -255,7 +255,7 @@ public class Setting implements IBindable {
 	}
 
 	public boolean checkValString(Enum<?> enm) {
-		return checkValString(enm.name());
+		return checkValString(enm.toString());
 	}
 
 	public boolean isVisible() {
@@ -281,7 +281,7 @@ public class Setting implements IBindable {
 
 	public String[] getStringValues() {
 		if(!enumCombo) return options.toArray(new String[options.size()]);
-		else return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::name).toArray(String[]::new);
+		else return Arrays.stream(optionEnum.getClass().getEnumConstants()).map(Enum::toString).toArray(String[]::new);
 	}
 
 	public ArrayList<String> getStringArray() {
