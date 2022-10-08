@@ -83,7 +83,7 @@ class KillAuraRewrite : Module(
 
         val weaponSlot = getWeaponSlot()
 
-        if(oldSlot == -1 || (weaponSlot != oldSlot && weapon.valEnum != KillAuraWeapons.None)) {
+        if(oldSlot == -1 || (weaponSlot != oldSlot && (weapon.valEnum != KillAuraWeapons.None || swap.valEnum == SwapEnum2.Swap.None))) {
             return
         }
 
