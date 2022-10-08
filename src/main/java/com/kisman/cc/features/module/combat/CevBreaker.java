@@ -1,15 +1,25 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketBlockChange;
+import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -42,10 +52,79 @@ public class CevBreaker extends Module {
     private final Setting packet = register(trapGroup.add(new Setting("Packet", this, false)));
 
     public CevBreaker(){
-        super("CevBreaker", "Are ya satisfied, banckie?", Category.COMBAT);
+        super("CevBreaker", "Are ya satisfied, banckie?", Category.COMBAT, 0, true);
     }
 
     private final Supplier<BlockListProvider> blockProvider = () -> trapDynamic.getValBoolean() ? new DynamicProvider() : new StaticProvider();
+
+    private Entity target = null;
+
+    private EntityEnderCrystal crystal = null;
+
+    private boolean canPlaceTrap = true;
+
+    private BlockPos placePos = null;
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        target = null;
+        crystal = null;
+        canPlaceTrap = true;
+        placePos = null;
+    }
+
+    @Override
+    public void update(){
+        if(mc.player == null || mc.world == null)
+            return;
+
+        target = EntityUtil.getTarget(8);
+        if(target == null)
+            return;
+
+        if(canPlaceTrap) {
+            placeTrapBlocks(target);
+            placePos = getBlockPos(target).up(2);
+            canPlaceTrap = false;
+        }
+    }
+
+    @EventHandler
+    private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
+        if(placePos == null)
+            return;
+        if(!(event.getPacket() instanceof SPacketBlockChange))
+            return;
+        SPacketBlockChange packet = (SPacketBlockChange) event.getPacket();
+        if(packet.getBlockPosition() != placePos)
+            return;
+        int slot = InventoryUtil.getHotbarItemSlot(Items.END_CRYSTAL);
+        if(slot == -1){
+            canPlaceTrap = true;
+            return;
+        }
+        int oldSlot = mc.player.inventory.currentItem;
+        ((SwapEnum2.Swap) trapSwap.getValEnum()).getTask().doTask(slot, false);
+        //mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos, EnumFacing.UP, EnumHand.MAIN_HAND, 0, 0, 0));
+        mc.playerController.processRightClickBlock(mc.player, mc.world, placePos, EnumFacing.UP, new Vec3d(0, 0, 0), EnumHand.MAIN_HAND);
+        ((SwapEnum2.Swap) trapSwap.getValEnum()).getTask().doTask(oldSlot, true);
+
+        EntityEnderCrystal enderCrystal = null;
+
+        for(EntityEnderCrystal entityEnderCrystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(placePos.up()))){
+            mc.player.connection.sendPacket(new CPacketUseEntity(entityEnderCrystal));
+            enderCrystal = entityEnderCrystal;
+            break;
+        }
+
+        if(enderCrystal != null){
+            enderCrystal.setDead();
+            mc.world.removeEntityFromWorld(enderCrystal.entityId);
+        }
+
+        canPlaceTrap = true;
+    });
 
     private int getSwitchSlot(){
         return InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
