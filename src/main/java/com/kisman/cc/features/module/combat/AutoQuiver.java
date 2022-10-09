@@ -10,17 +10,13 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * @author Cubic
@@ -130,6 +126,8 @@ public class AutoQuiver extends Module {
     }
 
     private void swap(int slot, boolean switchBack){
+        if(mc.player == null || mc.world == null) return;
+
         switch(swap.getValEnum()){
             case Off:
                 break;

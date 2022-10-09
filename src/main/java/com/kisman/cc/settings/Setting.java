@@ -26,6 +26,7 @@ public class Setting implements IBindable {
 	public Supplier<String> displayInfoSupplier = () -> "";
 
 	private Colour colour;
+	private Colour colourDefault;
 
 	private Entity entity;
 
@@ -34,7 +35,7 @@ public class Setting implements IBindable {
 	public int mouse = -1;
 	public BindType bindType = BindType.Keyboard;
 	public boolean hold = false;
-	
+
 	private String name;
 	public Module parent;
 	public Setting parent_ = null;
@@ -43,17 +44,20 @@ public class Setting implements IBindable {
 	private String title;
 
 	private String sval;
+	private String svalDefault;
 	private String dString;
 	private ArrayList<String> options;
 	private Enum optionEnum;
-	
+
 	private boolean bval;
+	private boolean bvalDefault;
 	private boolean rainbow;
 	private boolean onlyOneWord;
 	private boolean onlyNumbers;
 	private boolean enumCombo = false;
 
 	private double dval;
+	private double dvalDefault;
 	private double min;
 	private double max;
 
@@ -95,6 +99,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = name;
 		this.sval = sval;
+		this.svalDefault = sval;
 		this.options = options;
 		this.optionEnum = null;
 		this.mode = "Combo";
@@ -106,6 +111,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = name;
 		this.sval = sval;
+		this.svalDefault = sval;
 		this.options = new ArrayList<>(options);
 		this.optionEnum = null;
 		this.mode = "Combo";
@@ -117,6 +123,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = name;
 		this.sval = options.name();
+		this.svalDefault = sval;
 		this.options = null;
 		this.optionEnum = options;
 		this.enumCombo = true;
@@ -125,12 +132,13 @@ public class Setting implements IBindable {
 				Arrays.asList(Arrays.stream(options.getClass().getEnumConstants()).map(Enum::toString).toArray(String[]::new))
 		);
 	}
-	
+
 	public Setting(String name, Module parent, boolean bval){
 		this.name = name;
 		this.parent = parent;
 		this.title = name;
 		this.bval = bval;
+		this.bvalDefault = bval;
 		this.mode = "Check";
 	}
 
@@ -139,6 +147,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = name;
 		this.dval = dval;
+		this.dvalDefault = dval;
 		this.min = min;
 		this.max = max;
 		this.onlyint = numberType.equals(NumberType.INTEGER);
@@ -151,6 +160,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = name;
 		this.dval = dval;
+		this.dvalDefault = dval;
 		this.min = min;
 		this.max = max;
 		this.onlyint = onlyint;
@@ -163,6 +173,7 @@ public class Setting implements IBindable {
 		this.parent = parent;
 		this.title = title;
 		this.colour = colour;
+		this.colourDefault = colour;
 		this.mode = "ColorPicker";
 	}
 
@@ -194,6 +205,13 @@ public class Setting implements IBindable {
 		this.name = name;
 		this.parent = parent;
 		this.title = title;
+	}
+
+	public void reset() {
+		if(isCombo()) sval = svalDefault;
+		if(isCheck()) bval = bvalDefault;
+		if(isSlider()) dval = dvalDefault;
+		if(isColorPicker()) colour = colourDefault;
 	}
 
 	public Setting setDisplayInfo(Supplier<String> displayInfoSupplier) {
@@ -261,7 +279,7 @@ public class Setting implements IBindable {
 	public boolean isVisible() {
 		return visibleSupplier.get();
 	}
-	
+
 	public Setting setVisible(Setting setting) {
 		visibleSupplier = setting::getValBoolean;
 
@@ -417,15 +435,15 @@ public class Setting implements IBindable {
 	public int getX1() {
 		return this.x1;
 	}
-	
+
 	public int getY1() {
 		return this.y1;
 	}
-	
+
 	public int getX2() {
 		return this.x2;
 	}
-	
+
 	public int getY2() {
 		return this.y2;
 	}
@@ -476,22 +494,22 @@ public class Setting implements IBindable {
 		this.name = name;
 		return this;
 	}
-	
+
 	public Module getParentMod(){
 		return parent;
 	}
-	
+
 	public String getValString(){
 		return this.sval;
 	}
-	
+
 	public Setting setValString(String in){
 		this.sval = in;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
-	
+
 	public ArrayList<String> getOptions(){
 		return this.options;
 	}
@@ -512,18 +530,18 @@ public class Setting implements IBindable {
 		Kisman.instance.settingsManager.rSetting(this);
 		return this;
 	}
-	
+
 	public boolean getValBoolean(){
 		return this.bval;
 	}
-	
+
 	public Setting setValBoolean(boolean in){
 		this.bval = in;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
-	
+
 	public double getValDouble(){
 		if(this.onlyint){
 			this.dval = (int) dval;
@@ -553,11 +571,11 @@ public class Setting implements IBindable {
 		Kisman.EVENT_BUS.post(event);
 		return this;
 	}
-	
+
 	public double getMin(){
 		return this.min;
 	}
-	
+
 	public double getMax(){
 		return this.max;
 	}
@@ -598,11 +616,11 @@ public class Setting implements IBindable {
 	public boolean isString() { return this.mode.equalsIgnoreCase("String"); }
 
 	public boolean isVoid() { return this.mode.equalsIgnoreCase("Void"); }
-	
+
 	public boolean isCombo(){
 		return this.mode.equalsIgnoreCase("Combo");
 	}
-	
+
 	public boolean isCheck(){
 		return this.mode.equalsIgnoreCase("Check");
 	}
@@ -643,7 +661,7 @@ public class Setting implements IBindable {
 	private ArrayList<String> doIterationDisplayString(Setting setting) {
 		ArrayList<String> result = new ArrayList<>();
 
-		result.add("->" + setting.getName());
+		result.add("->" + setting.getTitle());
 
 		if(setting.parent_ != null) {
 			result.addAll((doIterationDisplayString(setting.parent_)));

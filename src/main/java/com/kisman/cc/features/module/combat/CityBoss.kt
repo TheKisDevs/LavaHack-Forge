@@ -53,6 +53,9 @@ class CityBoss : Module(
 
     private val damages = register(SettingGroup(Setting("Damages", this)))
 
+    private val debug1 = register(Setting("Debug 1", this, false))
+    private val debug2 = register(Setting("Debug 2", this, false))
+
     private val threads = threads()
     private val targets = TargetFinder(Supplier { range.valDouble }, threads)
 
@@ -68,18 +71,18 @@ class CityBoss : Module(
 
         val player = AutoRer.currentTarget
 
-//        if(canBeBurrowed(player)) {
-            //TODO: auto trap action
-//            println("*trapping*")
-//        } else {
-            if(isBurrowed(player)) {
+        if(canBeBurrowed(player) && debug1.valBoolean) {
+            // TODO: auto trap action
+            println("*trapping*")
+        } else {
+            if(isBurrowed(player) && debug2.valBoolean) {
                 println("*mining burrow block*")
                 mineBlock(playerPosition())
             } else {
                 println("*mining surround block*")
                 processPlayer(player)
             }
-//        }
+        }
     }
 
     private fun mineBlock(
@@ -274,8 +277,8 @@ class CityBoss : Module(
         return cityableSides
     }
 
-//    @SubscribeEvent
-    private fun onRenderWorld(event : RenderWorldLastEvent) {
+    @SubscribeEvent
+    fun onRenderWorld(event : RenderWorldLastEvent) {
         if(render.valBoolean) {
             when (selectMode.valString) {
                 "Closest" -> {

@@ -71,6 +71,18 @@ class ConfigCommand : Command("config") {
                 }
 
                 complete(output)
+            } else if(args[0] == "reset") {
+                for(module in Kisman.instance.moduleManager.modules) {
+                    module.isToggled = false
+                }
+
+                for(module in Kisman.instance.hudModuleManager.modules) {
+                    module.isToggled = false
+                }
+
+                for(setting in Kisman.instance.settingsManager.settings) {
+                    setting.reset()
+                }
             } else {
                 throw Exception()
             }
@@ -83,11 +95,16 @@ class ConfigCommand : Command("config") {
         }
     }
 
-    override fun getDescription(): String {
+    override fun getDescription() : String {
         return "cfg maker btw"
     }
 
-    override fun getSyntax(): String {
-        return "config save/load <name>\nconfig list\nconfig save <name> module <module>\nconfig save <name> module <module1>,<module2>\nconfig save <name> hud_module <hud_module1>,<hud_module2>"
+    override fun getSyntax() : String {
+        return "config save/load <name>" +
+                "\nconfig list" +
+                "\nconfig save <name> module <module>" +
+                "\nconfig save <name> module <module1>,<module2>" +
+                "\nconfig save <name> hud_module <hud_module1>,<hud_module2>" +
+                "\nconfig reset"
     }
 }

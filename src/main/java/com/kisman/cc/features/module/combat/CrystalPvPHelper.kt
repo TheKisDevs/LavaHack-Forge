@@ -37,7 +37,7 @@ class CrystalPvPHelper : Module(
         }
 
         threads.update(Runnable {
-            if(!MovementUtil.isMoving()) {
+            if(!MovementUtil.isMoving() && !triggered) {
                 for (player in mc.world.playerEntities) {
                     if (player == mc.player) {
                         continue
@@ -61,7 +61,26 @@ class CrystalPvPHelper : Module(
                 }
             }
 
-            triggered = false
+            if(triggered) {
+                var flag = false
+
+                for(player in mc.world.playerEntities) {
+                    if(player == mc.player) {
+                        continue
+                    }
+
+                    val distanceToPlayer = mc.player.getDistance(player)
+
+                    if(distanceToPlayer <= distance.valInt) {
+                        flag = true
+                        break
+                    }
+                }
+
+                if(!flag) {
+                    triggered = false
+                }
+            }
         })
     }
 }

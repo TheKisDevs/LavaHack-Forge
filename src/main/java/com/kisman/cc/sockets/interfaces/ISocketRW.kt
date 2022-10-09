@@ -8,6 +8,7 @@ import com.kisman.cc.sockets.Constants
 import com.kisman.cc.sockets.data.SocketMessage
 import java.net.Socket
 import java.nio.ByteBuffer
+import java.util.*
 
 @Suppress("unused")
 interface ISocketRW {
@@ -29,7 +30,11 @@ interface ISocketRW {
      * Sends message to the socket
      */
     fun writeMessage(message: SocketMessage) {
-        writeBytes(message.byteArray)
+        if(message.type == SocketMessage.Type.Text) {
+            writeBytes(message.also { it.text = "true ${Base64.getEncoder().encode(it.text?.toByteArray()).toString(Charsets.UTF_8)}" }.byteArray)
+        } else {
+            writeBytes(message.byteArray)
+        }
     }
 
     /**

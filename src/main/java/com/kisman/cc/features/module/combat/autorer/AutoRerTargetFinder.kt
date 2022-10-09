@@ -34,8 +34,8 @@ class AutoRerTargetFinder(
         var minHealth = 50f
         var maxDamage = 0.5f
 
-        for(player in mc.world.playerEntities) {
-            if (AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka") && !EntityUtil.antibotCheck(player)) {
+        for(player in mc.world.loadedEntityList) {
+            if (player !is EntityPlayer || (AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka") && !EntityUtil.antibotCheck(player))) {
                 continue
             }
 
