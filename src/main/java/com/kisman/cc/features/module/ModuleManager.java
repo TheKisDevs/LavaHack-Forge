@@ -79,6 +79,7 @@ public class ModuleManager {
 		modules.add(new BowSpam());
 //		modules.add(new BreakAlert());
 		modules.add(new Burrow2());
+		//modules.add(new CevBreaker());
 		modules.add(new CityBoss());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
@@ -140,6 +141,7 @@ public class ModuleManager {
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new Shaders());
+		modules.add(new SmartCityESP());
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
@@ -183,7 +185,7 @@ public class ModuleManager {
 		modules.add(new FreeCamRewrite());
 		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		modules.add(new PacketFeatures());
+		//modules.add(new PacketFeatures());
 		modules.add(new PearlBypass());
 		modules.add(new Refill());
 		modules.add(new Replenish());
