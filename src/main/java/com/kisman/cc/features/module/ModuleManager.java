@@ -141,6 +141,7 @@ public class ModuleManager {
 		modules.add(new SelfCityESP());
 		modules.add(new ShaderCharms());
 		modules.add(new Shaders());
+		modules.add(new SmartCityESP());
 		modules.add(new SpawnsESP());
 		modules.add(new StorageESP());
 		modules.add(new SwingAnimation());
