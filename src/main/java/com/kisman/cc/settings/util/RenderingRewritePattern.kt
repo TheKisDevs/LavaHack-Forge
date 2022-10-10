@@ -10,6 +10,7 @@ import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import kotlin.math.roundToInt
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "HasPlatformType")
 class RenderingRewritePattern(
@@ -38,6 +39,8 @@ class RenderingRewritePattern(
         mode.valEnum == RenderingRewriteModes.GlowOutline ||
         mode.valEnum == RenderingRewriteModes.Glow
     }))
+
+    var alphaSubtract : Double = 0.0
 
     override fun preInit() : RenderingRewritePattern {
         if(group != null) {
@@ -88,8 +91,10 @@ class RenderingRewritePattern(
         }
         if(!rainbowGlow.valString.equals("None")){
             val cAabb = Rendering.correct(a)
-            val colour1 = getColor1()
-            val colour2 = getColor2()
+            var colour1 = getColor1()
+            colour1 = colour1.withAlpha((colour1.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0))
+            var colour2 = getColor2()
+            colour2 = colour2.withAlpha((colour2.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0))
             var outAlpha1 = 255
             var outAlpha2 = 255
             val reverse = rainbowGlow.valString.equals("ReverseGlow")
@@ -98,6 +103,8 @@ class RenderingRewritePattern(
             } else {
                 outAlpha2 = 0
             }
+            outAlpha1 = (outAlpha1 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
+            outAlpha2 = (outAlpha2 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
             Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
             Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
             return
@@ -105,8 +112,8 @@ class RenderingRewritePattern(
         Rendering.draw(
             Rendering.correct(a),
             lineWidth.valFloat,
-            color1,
-            color2,
+            color1.withAlpha((color1.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
+            color2.withAlpha((color2.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
             mode
         )
     }
