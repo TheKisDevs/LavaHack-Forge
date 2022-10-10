@@ -65,6 +65,7 @@ public class SurroundRewrite extends Module {
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
+    private final Setting smartHelpingBlocks = register(new Setting("SmartHelping", this, false));
     private final Setting fightCA = register(new Setting("FightCA", this, false));
     private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
     private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
@@ -532,8 +533,9 @@ public class SurroundRewrite extends Module {
     }
 
     private List<BlockPos> getHelpingBlocks(BlockPos pos){
-        // this will change in the future
-        return Arrays.asList(pos.down());
+        if(smartHelpingBlocks.getValBoolean() && !BlockUtil.getPossibleSides(pos).isEmpty())
+            return Collections.emptyList();
+        return Collections.singletonList(pos.down());
     }
 
     private List<BlockPos> getDynamicUpperBlocks(){
@@ -792,7 +794,10 @@ public class SurroundRewrite extends Module {
             Vec3d posVec = mc.player.getPositionVector();
 
             for(Vec3d vec : vec3d) {
-                list.add(new BlockPos(vec.add(posVec)));
+                BlockPos pos = new BlockPos(vec.add(posVec));
+                if(instance.smartHelpingBlocks.getValBoolean() && vec.y < 0 && !BlockUtil.getPossibleSides(pos).isEmpty())
+                    continue;
+                list.add(pos);
             }
 
             return list;
