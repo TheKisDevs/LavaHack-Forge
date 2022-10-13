@@ -252,6 +252,7 @@ public class ModuleManager {
 		modules.add(new Spin());
 		modules.add(new TotemPopCounter());
 		modules.add(new Tracker());
+		modules.add(new Translate());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());

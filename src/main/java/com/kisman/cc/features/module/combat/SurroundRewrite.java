@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntitySpawn;
+import com.kisman.cc.event.events.EventGetBlockState;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -43,6 +44,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Cubic
@@ -106,6 +108,8 @@ public class SurroundRewrite extends Module {
 
     private double lastY = -1;
     private boolean isEchest = false;
+
+    private Function<BlockPos, IBlockState> getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
 
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT, true);
@@ -209,6 +213,7 @@ public class SurroundRewrite extends Module {
         Kisman.EVENT_BUS.unsubscribe(eventEntitySpawnListener);
         Kisman.EVENT_BUS.unsubscribe(packetListener);
         lastY = -1;
+        getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
         timer.reset();
     }
 
@@ -285,13 +290,13 @@ public class SurroundRewrite extends Module {
 
     private BlockPos findClosestSolid(BlockPos pos){
         List<BlockPos> possiblePositions = new ArrayList<>();
-        if(mc.world.getBlockState(pos.north().down()).getMaterial().isSolid())
+        if(getBlockStateFunction.apply(pos.north().down()).getMaterial().isSolid())
             possiblePositions.add(pos.north());
-        if(mc.world.getBlockState(pos.east().down()).getMaterial().isSolid())
+        if(getBlockStateFunction.apply(pos.east().down()).getMaterial().isSolid())
             possiblePositions.add(pos.east());
-        if(mc.world.getBlockState(pos.south().down()).getMaterial().isSolid())
+        if(getBlockStateFunction.apply(pos.south().down()).getMaterial().isSolid())
             possiblePositions.add(pos.south());
-        if(mc.world.getBlockState(pos.west().down()).getMaterial().isSolid())
+        if(getBlockStateFunction.apply(pos.west().down()).getMaterial().isSolid())
             possiblePositions.add(pos.west());
         return possiblePositions.stream().min(Comparator.comparingDouble(o -> mc.player.getDistance(o.getX() + 0.5, o.getY(), o.getZ() + 0.5))).orElse(null);
     }
@@ -414,16 +419,12 @@ public class SurroundRewrite extends Module {
         if(!blocks.contains(pos))
             return;
 
-        WorldClient oldWorld = mc.world;
-
         if(manipulateWorld.getValBoolean()){
-            CustomWorld customWorld = new CustomWorld(mc.world);
-            customWorld.override("getBlockState", AbstractTask.types(IBlockState.class, BlockPos.class).task(arg -> {
-                BlockPos blockPos = arg.fetch(0);
-                return new CustomBlockState(Blocks.AIR, mc.world.getBlockState(blockPos));
-            }));
-            oldWorld = mc.world;
-            mc.world = customWorld;
+            getBlockStateFunction = blockPos -> {
+                if(!blocks.contains(blockPos))
+                    return mc.world.getBlockState(blockPos);
+                return Blocks.AIR.getDefaultState();
+            };
         }
 
         if(syncronized.getValBoolean())
@@ -431,7 +432,7 @@ public class SurroundRewrite extends Module {
         else
             doThreaddedSurround();
 
-        mc.world = oldWorld;
+        getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
     });
 
     private boolean isInAnyBlocks(Vec3d vec, List<BlockPos> list){
@@ -632,7 +633,7 @@ public class SurroundRewrite extends Module {
     }
 
     private boolean isReplaceable(BlockPos pos){
-        return pos != null && mc.world != null && mc.world.getBlockState(pos).getMaterial().isReplaceable();
+        return pos != null && mc.world != null && getBlockStateFunction.apply(pos).getMaterial().isReplaceable();
     }
 
     private List<BlockPos> getAntiFacePlaceBlocks(){
@@ -664,7 +665,7 @@ public class SurroundRewrite extends Module {
     }
 
     private Block getBlock(BlockPos pos){
-        return mc.world.getBlockState(pos).getBlock();
+        return getBlockStateFunction.apply(pos).getBlock();
     }
 
     private enum Vectors {
