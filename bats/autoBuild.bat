@@ -1,0 +1,2 @@
+setupDecompWorkSpace
+build
