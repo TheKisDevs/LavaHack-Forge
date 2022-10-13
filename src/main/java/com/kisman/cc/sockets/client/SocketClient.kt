@@ -2,8 +2,9 @@
  * Copyright (c) 2022. ya-ilya, _kisman_
  */
 package com.kisman.cc.sockets.client
-import com.kisman.cc.loader.sockets.data.SocketMessage
-import com.kisman.cc.loader.sockets.interfaces.ISocketRW
+
+import com.kisman.cc.sockets.data.SocketMessage
+import com.kisman.cc.sockets.interfaces.ISocketRW
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*

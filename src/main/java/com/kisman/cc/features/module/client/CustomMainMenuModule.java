@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 public class CustomMainMenuModule extends Module {
     public Setting watermark = register(new Setting("WaterMark", this, true));
     public Setting customSplashText = register(new Setting("Custom Splash Text", this, true));
-    public Setting customSplashFont = register(new Setting("Custom Splash Font", this, true).setVisible(() -> customSplashText.getValBoolean()));
+    public Setting customSplashFont = register(new Setting("Custom Splash Font", this, false).setVisible(() -> customSplashText.getValBoolean()));
     public Setting particles = register(new Setting("Particles", this, false));
 
     public static CustomMainMenuModule instance;

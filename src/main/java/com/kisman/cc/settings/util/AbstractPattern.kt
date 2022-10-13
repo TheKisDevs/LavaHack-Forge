@@ -2,6 +2,7 @@ package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingArray
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import java.util.function.Supplier
@@ -18,17 +19,17 @@ abstract class AbstractPattern<T>(
     var prefix : String? = null
     var group : SettingGroup? = null
 
-    fun visible(visible : Supplier<Boolean>) : T {
+    open fun visible(visible : Supplier<Boolean>) : T {
         this.visible = visible
         return this as T
     }
 
-    fun group(group : SettingGroup) : T {
+    open fun group(group : SettingGroup) : T {
         this.group = group
         return this as T
     }
 
-    fun prefix(prefix : String) : T {
+    open fun prefix(prefix : String) : T {
         this.prefix = prefix
         return this as T
     }
@@ -43,6 +44,10 @@ abstract class AbstractPattern<T>(
 
     protected fun setupGroup(group : SettingGroup) : SettingGroup {
         return setupSetting(group) as SettingGroup
+    }
+
+    protected fun <T> setupArray(array : SettingArray<T>) : SettingArray<T> {
+        return setupSetting(array) as SettingArray<T>
     }
 
     abstract fun preInit() : T

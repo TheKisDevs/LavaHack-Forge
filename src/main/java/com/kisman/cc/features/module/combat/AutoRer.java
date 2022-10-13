@@ -15,7 +15,7 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.DamageSyncPattern;
 import com.kisman.cc.settings.util.MovableRendererPattern;
-import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.collections.Bind;
@@ -187,12 +187,9 @@ public class AutoRer extends Module {
     private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setTitle("Sound Player").setVisible(() -> threadMode.checkValString("Sound"))));
     private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setTitle("Calc").setVisible(() -> !threadMode.checkValString("None"))));
 
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
-    private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
+    private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
     private final Setting alphaFade = register(render_.add(new Setting("Alpha Fade", this, false)));
     private final Setting alphaFadeTicks = register(render_.add(new Setting("Alpha Fade Ticks", this, 20, 2, 100, true).setVisible(alphaFade::getValBoolean)));
-
-    private final Setting renderTest = register(render_.add(new Setting("Render Test", this, false)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -466,12 +463,11 @@ public class AutoRer extends Module {
         }
 
         if(placePos.getBlockPos() != null) renderer.onRenderWorld(
-                movable.movingLength.getValFloat(),
-                movable.fadeLength.getValFloat(),
+                renderer_.movingLength.getValFloat(),
+                renderer_.fadeLength.getValFloat(),
                 renderer_,
                 placePos,
-                text.getValBoolean(),
-                renderTest.getValBoolean()
+                text.getValBoolean()
         );
 
         if(!alphaFade.getValBoolean())
@@ -509,12 +505,11 @@ public class AutoRer extends Module {
                 continue;
             renderer_.setAlphaSubtract(entry.getSecond().getSecond());
             renderer.onRenderWorld(
-                    movable.movingLength.getValFloat(),
-                    movable.fadeLength.getValFloat(),
+                    renderer_.movingLength.getValFloat(),
+                    renderer_.fadeLength.getValFloat(),
                     renderer_,
                     entry.getFirst(),
-                    text.getValBoolean(),
-                    renderTest.getValBoolean()
+                    text.getValBoolean()
             );
             double a = entry.getSecond().getSecond() - entry.getSecond().getFirst();
             if(a < 0)
@@ -596,7 +591,7 @@ public class AutoRer extends Module {
     @EventHandler
     private final Listener<PacketEvent.Receive> listener = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketSpawnObject && instant.getValBoolean()) {
-            SPacketSpawnObject packet =  (SPacketSpawnObject) event.getPacket();
+            SPacketSpawnObject packet = (SPacketSpawnObject) event.getPacket();
             if (packet.getType() == 51) {
                 if(!(mc.world.getEntityByID(packet.getEntityID()) instanceof EntityEnderCrystal)) return;
                 BlockPos toRemove = null;

@@ -6,7 +6,8 @@ import com.kisman.cc.features.plugins.exceptions.BadPluginException;
 import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.features.plugins.utils.Jsonable;
 import com.kisman.cc.features.plugins.utils.ReflectionUtil;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -19,8 +20,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class PluginManager
-{
+public class PluginManager {
+    public static final Logger LOGGER = LogManager.getLogger("LavaHack Plugins");
     private static final PluginManager INSTANCE = new PluginManager();
     private static final String PATH = "kisman.cc/Plugins";
     private final Map<PluginConfig, Plugin> plugins = new HashMap<>();
@@ -38,59 +39,40 @@ public class PluginManager
     }
 
 
-    public void createPluginConfigs(ClassLoader pluginClassLoader)
-    {
-        if (!(pluginClassLoader instanceof URLClassLoader))
-        {
-            throw new IllegalArgumentException("PluginClassLoader was not" +
-                    " an URLClassLoader, but: "
-                    + pluginClassLoader.getClass().getName());
-        }
+    public void createPluginConfigs(ClassLoader pluginClassLoader) {
+        if (!(pluginClassLoader instanceof URLClassLoader)) throw new IllegalArgumentException("PluginClassLoader was not an URLClassLoader, but: " + pluginClassLoader.getClass().getName());
 
         this.classLoader = pluginClassLoader;
-        System.out.println("PluginManager: Scanning for PluginConfigs.");
+        LOGGER.info("PluginManager: Scanning for PluginConfigs.");
 
         File d = new File(PATH);
         Map<String, File> remap = scanPlugins(d.listFiles(), pluginClassLoader);
         remap.keySet().removeAll(configs.keySet());
 
-        try
-        {
+        try {
             File[] remappedPlugins = remapper.remap(remap.values());
             scanPlugins(remappedPlugins, pluginClassLoader);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private Map<String, File> scanPlugins(File[] files,
-                                          ClassLoader pluginClassLoader)
-    {
+    private Map<String, File> scanPlugins(File[] files, ClassLoader pluginClassLoader) {
         Map<String, File> remap = new HashMap<>();
 
-        try
-        {
-            for (File file : (files))
-            {
-                if (file.getName().endsWith(".jar"))
-                {
-                    System.out.println("PluginManager: Scanning "
-                            + file.getName());
-                    try
-                    {
+        try {
+            for (File file : files) {
+                if (file.getName().endsWith(".jar")) {
+                    LOGGER.info("PluginManager: Scanning " + file.getName());
+
+                    try {
                         scanJarFile(file, pluginClassLoader, remap);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -98,64 +80,43 @@ public class PluginManager
     }
 
 
-    public void instantiatePlugins()
-    {
-        for (PluginConfig config : configs.values())
-        {
-            if (plugins.containsKey(config))
-            {
-                System.out.println("Can't register Plugin "
-                        + config.getName()
-                        + ", a plugin with that name is already registered.");
+    public void instantiatePlugins() {
+        for (PluginConfig config : configs.values()) {
+            if (plugins.containsKey(config)) {
+                LOGGER.info("Can't register Plugin " + config.getName() + ", a plugin with that name is already registered.");
                 continue;
             }
 
-            System.out.println("Instantiating: "
-                    + config.getName()
-                    + ", MainClass: "
-                    + config.getMainClass());
-            try
-            {
+            LOGGER.info("Instantiating: " + config.getName() + ", MainClass: " + config.getMainClass());
+
+            try {
                 Class<?> clazz = Class.forName(config.getMainClass());
                 Constructor<?> constructor = clazz.getConstructor();
                 constructor.setAccessible(true);
                 Plugin plugin = (Plugin) constructor.newInstance();
                 plugins.put(config, plugin);
-            }
-            catch (Throwable e)
-            {
-                System.out.println("Error instantiating : "
-                        + config.getName() + ", caused by:");
+            } catch (Throwable e) {
+                LOGGER.info("Error instantiating : " + config.getName() + ", caused by:");
 
                 e.printStackTrace();
             }
         }
     }
 
-    private void scanJarFile(File file,
-                             ClassLoader pluginClassLoader,
-                             Map<String, File> remap)
-            throws Exception
-    {
+    private void scanJarFile(File file, ClassLoader pluginClassLoader, Map<String, File> remap) throws Exception {
         JarFile jarFile = new JarFile(file);
 
         Manifest manifest = jarFile.getManifest();
         Attributes attributes = manifest.getMainAttributes();
         String configName = attributes.getValue("LavaHackConfig");
 
-        if (configName == null)
-        {
-            throw new BadPluginException(jarFile.getName()
-                    + ": Manifest doesn't provide a LavaHackConfig!");
-        }
+        if (configName == null) throw new BadPluginException(jarFile.getName() + ": Manifest doesn't provide a LavaHackConfig!");
 
         String vanilla = attributes.getValue("LavaHackVanilla");
-        switch (Environment.getEnvironment())
-        {
+        switch (Environment.getEnvironment()) {
             case VANILLA:
-                if (vanilla == null || vanilla.equals("false"))
-                {
-                    System.out.println("Found Plugin to remap!");
+                if (vanilla == null || vanilla.equals("false")) {
+                    LOGGER.info("Found Plugin to remap!");
                     remap.put(configName, file);
                     return;
                 }
@@ -163,36 +124,18 @@ public class PluginManager
                 break;
             case SEARGE:
             case MCP:
-                if (vanilla != null && vanilla.equals("true"))
-                {
-                    return;
-                }
-
+                if (vanilla != null && vanilla.equals("true")) return;
                 break;
-            default:
         }
 
         // ._.
         ReflectionUtil.addToClassPath((URLClassLoader) pluginClassLoader, file);
 
-        PluginConfig config = Jsonable.GSON.fromJson(
-                new InputStreamReader(
-                        Objects.requireNonNull(
-                                pluginClassLoader.getResourceAsStream(configName))),
-                PluginConfig.class);
+        PluginConfig config = Jsonable.GSON.fromJson(new InputStreamReader(Objects.requireNonNull(pluginClassLoader.getResourceAsStream(configName))), PluginConfig.class);
 
-        if (config == null)
-        {
-            throw new BadPluginException(jarFile.getName()
-                    + ": Found a PluginConfig, but couldn't instantiate it.");
-        }
+        if (config == null) throw new BadPluginException(jarFile.getName() + ": Found a PluginConfig, but couldn't instantiate it.");
 
-        System.out.println("Found PluginConfig: "
-                + config.getName()
-                + ", MainClass: "
-                + config.getMainClass()
-                + ", Mixins: "
-                + config.getMixinConfig());
+        LOGGER.info("Found PluginConfig: " + config.getName() + ", MainClass: " + config.getMainClass() + ", Mixins: " + config.getMixinConfig());
 
         configs.put(configName, config);
     }
@@ -217,5 +160,4 @@ public class PluginManager
     {
         return classLoader;
     }
-
 }

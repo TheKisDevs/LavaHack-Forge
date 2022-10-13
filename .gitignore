@@ -13,6 +13,7 @@ hs_err_pid*.log
 replay_pid*.log
 options.txt
 .idea
+.fleet
 auth/.vs/
 auth/SocketAuth/obj/
 auth/SocketAuth/bin/

@@ -1,6 +1,7 @@
 package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.sockets.reportIssue
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -63,4 +64,14 @@ fun changeEnumEntryName(
     }
 
     return false
+}
+
+fun annotationCheck(
+    option : Enum<*>,
+    annotation : Class<out Annotation>
+) : Boolean = try {
+    option::class.java.getField(option.name).isAnnotationPresent(annotation)
+} catch(e : Exception) {
+    reportIssue("Got an exception in \"annotationCheck\" method: ${e.message}, key is ${AccountData.key}")
+    false
 }

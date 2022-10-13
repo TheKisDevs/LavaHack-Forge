@@ -3,7 +3,6 @@ package com.kisman.cc.features.module.render
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
-import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.features.module.render.blockhighlight.BlockHighlightRenderer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -11,6 +10,7 @@ import com.kisman.cc.settings.util.MovableRendererPattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.enums.BoxRenderModes
+import com.kisman.cc.util.render.RenderUtil3.toAABB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.BoxObject
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
@@ -59,7 +59,9 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         renderer.reset()
     }
 
-    @SubscribeEvent fun onRenderWorld(event: RenderWorldLastEvent) {
+    @SubscribeEvent fun onRenderWorld(
+        event : RenderWorldLastEvent
+    ) {
         if (mc.objectMouseOver == null) return
         val hitObject = mc.objectMouseOver
         var box: Box? = null
@@ -78,14 +80,14 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     val sightEnd = eyePos.add(lookVec.scale(6.0))
                     facing = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
                     box = Box.byAABB(entity.entityBoundingBox.also { bb = it })
-                    if (hitSideOnly.valBoolean && !advancedRenderer.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), facing))
+                    if (hitSideOnly.valBoolean && !advancedRenderer.valBoolean) box = Box.byAABB(toAABB(box.toAABB(), facing))
                 }
             }
             RayTraceResult.Type.BLOCK -> {
                 box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos).grow(offset.valDouble))
                 if (hitSideOnly.valBoolean) {
                     facing = hitObject.sideHit
-                    if(!advancedRenderer.valBoolean) box = Box.byAABB(EnumFacingMask.toAABB(box.toAABB(), facing))
+                    if(!advancedRenderer.valBoolean) box = Box.byAABB(toAABB(box.toAABB(), facing))
                 }
                 bb = box.toAABB()
             }

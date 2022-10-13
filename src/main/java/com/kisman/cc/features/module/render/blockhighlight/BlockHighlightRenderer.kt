@@ -1,9 +1,9 @@
 package com.kisman.cc.features.module.render.blockhighlight
 
 import com.kisman.cc.features.module.combat.autorer.util.Easing
-import com.kisman.cc.features.module.combat.autorer.util.mask.EnumFacingMask
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.BoxRenderModes
+import com.kisman.cc.util.render.RenderUtil3.toAABB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.BoxObject
 import net.minecraft.util.EnumFacing
@@ -82,7 +82,7 @@ class BlockHighlightRenderer {
                 var bb = toRenderBox(renderPos, scale, (bb ?: lastBB!!)).grow(offset)
 
                 if(facing != null) {
-                    bb = EnumFacingMask.toAABB(bb, facing)
+                    bb = toAABB(bb, facing)
                 }
 
                 BoxObject(

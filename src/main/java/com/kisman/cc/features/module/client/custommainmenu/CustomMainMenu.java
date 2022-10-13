@@ -37,7 +37,10 @@ public class CustomMainMenu {
             "https://github.com/kisman2000/lava_hack",
             "https://github.com/TheKisDevs/LavaHack",
             "https://github.com/TheKisDevs/LavaHack-Public",
-            "kisman left LavaHack Development"
+            "kisman left LavaHack Development",
+            "earthhack skid fr",
+            "fr",
+            "auto crystsa pp v??/?"
     };
 
     public static void update() {

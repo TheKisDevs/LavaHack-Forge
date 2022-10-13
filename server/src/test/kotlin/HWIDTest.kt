@@ -43,4 +43,12 @@ internal class HWIDTest {
     }
 
     private fun formatClassName(clazz : Class<*>) : String = "/${clazz.name.replace(".", "/")}.class"
+
+    @Test fun fleetTest1() {
+        println(System.getProperty("java.class.path").contains("fleet_rt.jar"))
+    }
+
+    @Test fun fleetTest2() {
+        println(System.getProperty("java.class.path"))
+    }
 }

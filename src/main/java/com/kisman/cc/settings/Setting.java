@@ -47,7 +47,7 @@ public class Setting implements IBindable {
 	private String svalDefault;
 	private String dString;
 	private ArrayList<String> options;
-	private Enum optionEnum;
+	private Enum<?> optionEnum;
 
 	private boolean bval;
 	private boolean bvalDefault;
@@ -220,7 +220,7 @@ public class Setting implements IBindable {
 		return this;
 	}
 
-	private void setupBinders(List<String> options) {
+	protected void setupBinders(List<String> options) {
 		for(String option : options) {
 			binders.put(
 					option,

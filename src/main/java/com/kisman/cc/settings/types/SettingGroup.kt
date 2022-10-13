@@ -29,4 +29,10 @@ open class SettingGroup(
         settings.add(enum)
         return enum
     }
+
+    open fun <T> add(array : SettingArray<T>) : SettingArray<T> {
+        array.parent_ = this
+        settings.add(array)
+        return array
+    }
 }

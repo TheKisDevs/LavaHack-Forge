@@ -12,8 +12,8 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import kotlin.math.roundToInt
 
-@Suppress("MemberVisibilityCanBePrivate", "unused", "HasPlatformType")
-class RenderingRewritePattern(
+@Suppress("MemberVisibilityCanBePrivate", "unused")
+open class RenderingRewritePattern(
     module : Module
 ) : AbstractPattern<RenderingRewritePattern>(
     module
@@ -71,11 +71,11 @@ class RenderingRewritePattern(
         return this
     }
 
-    fun isActive() : Boolean {
+    open fun isActive() : Boolean {
         return mode.valEnum != RenderingRewriteModes.None
     }
 
-    fun draw(
+    open fun draw(
         aabb : AxisAlignedBB,
         color1: Colour,
         color2 : Colour,
@@ -118,7 +118,7 @@ class RenderingRewritePattern(
         )
     }
 
-    fun draw(
+    open fun draw(
         aabb : AxisAlignedBB,
         color1: Colour,
         color2 : Colour,
@@ -132,7 +132,7 @@ class RenderingRewritePattern(
         )
     }
 
-    fun draw(aabb : AxisAlignedBB) {
+    open fun draw(aabb : AxisAlignedBB) {
         draw(
             aabb,
             getColor1(),
@@ -141,7 +141,7 @@ class RenderingRewritePattern(
         )
     }
 
-    fun draw(pos : BlockPos) {
+    open fun draw(pos : BlockPos) {
         draw(
             Minecraft.getMinecraft().world.getBlockState(pos).getSelectedBoundingBox(
                 Minecraft.getMinecraft().world,

@@ -111,7 +111,7 @@ fun load(
 
     client.writeMessage { text = "getpublicjar $key $version $properties $processors $versionToLoad" }
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is  trying to download classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is trying to download classes...")
 
     status = "Trying to download LavaHack"
 }
