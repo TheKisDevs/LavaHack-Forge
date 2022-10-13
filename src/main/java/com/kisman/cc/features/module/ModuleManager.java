@@ -85,6 +85,7 @@ public class ModuleManager {
 		modules.add(new CrystalFiller());
 		modules.add(new CrystalPvPHelper());
 		modules.add(Crystals.INSTANCE);
+		modules.add(new DamageIncreaser());
 //		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
@@ -93,6 +94,7 @@ public class ModuleManager {
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
 		modules.add(new SelfTrap());
+		modules.add(new SelfTrapRewrite());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
 		modules.add(new SurroundRewrite());
@@ -177,6 +179,7 @@ public class ModuleManager {
 		//player
 		modules.add(AntiDesync.INSTANCE);
 		modules.add(new AntiHunger());
+		modules.add(new AntiWeakness());
 		modules.add(new AutoMine());
 		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
@@ -251,6 +254,7 @@ public class ModuleManager {
 		modules.add(new Spin());
 		modules.add(new TotemPopCounter());
 		modules.add(new Tracker());
+		modules.add(new Translate());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());
 		modules.add(new XCarry());
