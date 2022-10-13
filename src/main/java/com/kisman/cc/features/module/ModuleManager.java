@@ -85,6 +85,7 @@ public class ModuleManager {
 		modules.add(new CrystalFiller());
 		modules.add(new CrystalPvPHelper());
 		modules.add(Crystals.INSTANCE);
+		modules.add(new DamageIncreaser());
 //		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
@@ -178,6 +179,7 @@ public class ModuleManager {
 		//player
 		modules.add(AntiDesync.INSTANCE);
 		modules.add(new AntiHunger());
+		modules.add(new AntiWeakness());
 		modules.add(new AutoMine());
 		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
