@@ -412,10 +412,10 @@ public class Kisman {
     }
 
     public static void processAccountData() {
-        /*try {
+        try {
             Class.forName("com.kisman.cc.loader.LavaHackLoaderCoreMod");
 
             AccountData.check();
-        } catch(Throwable ignored) {}*/
+        } catch(Throwable ignored) {}
     }
 }
