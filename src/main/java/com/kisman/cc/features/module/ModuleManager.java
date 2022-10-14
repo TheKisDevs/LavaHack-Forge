@@ -75,6 +75,7 @@ public class ModuleManager {
 		modules.add(new AutoQuiver());
 		modules.add(new AutoRer());
 		modules.add(new AutoTrap());
+		modules.add(new Blocker());
 		modules.add(new BowAimBot());
 		modules.add(new BowSpam());
 //		modules.add(new BreakAlert());
