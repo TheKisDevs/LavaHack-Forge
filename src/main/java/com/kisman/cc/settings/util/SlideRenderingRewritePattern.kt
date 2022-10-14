@@ -27,7 +27,7 @@ class SlideRenderingRewritePattern(
 
     private val easingGroup = setupGroup(movingGroup.add(SettingGroup(Setting("Easing", module))))
 
-    @JvmField val movingInEasing = setupArray(easingGroup.add(SettingArray("Moving In Easing", module, Easing.Linear, EasingEnum.inEasings).setTitle("Moving In")))
+//    @JvmField val movingInEasing = setupArray(easingGroup.add(SettingArray("Moving In Easing", module, Easing.Linear, EasingEnum.inEasings).setTitle("Moving In")))
     @JvmField val movingOutEasing = setupArray(easingGroup.add(SettingArray("Moving Out Easing", module, Easing.Linear, EasingEnum.outEasings).setTitle("Moving Out")))
 
     @JvmField val fadeInEasing = setupArray(easingGroup.add(SettingArray("Fade In Easing", module, Easing.Linear, EasingEnum.inEasings).setTitle("Fade In")))

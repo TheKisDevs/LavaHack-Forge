@@ -52,7 +52,7 @@ class TextRadar : HudModule(
                                 "${(player.health + player.absorptionAmount).toInt()} " + (if (FriendManager.instance.isFriend(
                                         player
                                     ) && friendHighlight.valBoolean
-                                ) TextFormatting.AQUA else if (AutoRer.currentTarget != null && autoRerTargetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
+                                ) TextFormatting.AQUA else if (AutoRer.currentTarget == player && autoRerTargetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
                             )
                         }
                     }

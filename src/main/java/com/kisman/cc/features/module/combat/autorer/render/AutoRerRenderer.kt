@@ -5,6 +5,14 @@ import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
 
 class AutoRerRenderer : SlideRendererPattern() {
+    @JvmField var lastSelfDamage = 0.0f
+    @JvmField var lastTargetDamage = 0.0f
+
+    override fun reset() {
+        super.reset()
+        lastSelfDamage = 0.0f
+        lastTargetDamage = 0.0f
+    }
 
     fun onRenderWorld(
         movingLength : Float,

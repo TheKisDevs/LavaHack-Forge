@@ -187,7 +187,7 @@ public class CrystalFiller extends Module {
         Silent
     }
 
-    public class Hole {
+    public static class Hole {
         public BlockPos pos;
         public float distToPlayer;
         public float distToTarget;

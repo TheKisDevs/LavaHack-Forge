@@ -1,7 +1,6 @@
 package com.kisman.cc.util.render.pattern
 
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
-import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
@@ -23,20 +22,16 @@ open class SlideRendererPattern {
     @JvmField var lastRenderPos : Vec3d? = null
     @JvmField var lastUpdateTime = 0L
     @JvmField var startTime = 0L
-    @JvmField var scale = 0.0f
-    @JvmField var lastSelfDamage = 0.0f
-    @JvmField var lastTargetDamage = 0.0f
+    @JvmField var scale = 0.0
 
-    fun reset() {
+    open fun reset() {
         lastBlockPos = null
         prevPos = null
         currentPos = null
         lastRenderPos = null
         lastUpdateTime = 0L
         startTime = 0L
-        scale = 0.0f
-        lastSelfDamage = 0.0f
-        lastTargetDamage = 0.0f
+        scale = 0.0
     }
 
     open fun handleRenderWorld(
@@ -63,27 +58,41 @@ open class SlideRendererPattern {
     ) {
         prevPos?.let { prevPos ->
             (currentPos ?: prevPos).let { currentPos ->
-                scale = if(renderer is SlideRenderingRewritePattern) {
+                scale = if(fadeLength != 0f) {
+                    if(renderer is SlideRenderingRewritePattern) {
+                        if(this.currentPos != null) {
+                            renderer.fadeOutEasing.getValElement().inc(toDelta(startTime, fadeLength))
+                        } else {
+                            renderer.fadeInEasing.getValElement().dec(toDelta(startTime, fadeLength))
+                        }
+                    } else {
+                        if (this.currentPos != null) {
+                            EasingEnum.Easing.OutCubic.inc(toDelta(startTime, fadeLength))
+                        } else {
+                            EasingEnum.Easing.InCubic.dec(toDelta(startTime, fadeLength))
+                        }
+                    }
+                } else {
                     if(this.currentPos != null) {
-                        renderer.fadeOutEasing.getValElement().inc(toDelta(startTime, fadeLength.toLong()).toDouble()).toFloat()
+                        1.0
                     } else {
-                        renderer.fadeInEasing.getValElement().dec(toDelta(startTime, fadeLength.toLong()).toDouble()).toFloat()
-                    }
-                } else {
-                    if (this.currentPos != null) {
-                        EasingEnum.Easing.OutCubic.inc(toDelta(startTime, fadeLength.toLong()).toDouble()).toFloat()
-                    } else {
-                        EasingEnum.Easing.InCubic.dec(toDelta(startTime, fadeLength.toLong()).toDouble()).toFloat()
+                        0.0
                     }
                 }
 
-                val multiplier = if(renderer is SlideRenderingRewritePattern) {
-                    renderer.movingOutEasing.getValElement().inc(toDelta(startTime, movingLength.toLong()).toDouble()).toFloat()
+                val multiplier = if(movingLength != 0f) {
+                    if(renderer is SlideRenderingRewritePattern) {
+                        renderer.movingOutEasing.getValElement().inc(toDelta(lastUpdateTime, movingLength))
+                    } else {
+                        EasingEnum.Easing.OutQuart.inc(toDelta(lastUpdateTime, movingLength))
+                    }
                 } else {
-                    EasingEnum.Easing.OutQuart.inc(toDelta(startTime, movingLength.toLong()).toDouble()).toFloat()
+                    1.0
                 }
 
-                val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier.toDouble()))
+                println("multiplier $multiplier multiplier delta ${toDelta(lastUpdateTime, movingLength)}")
+
+                val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier))
 
                 renderer.draw(toRenderBox(renderPos, scale))
 
@@ -102,7 +111,7 @@ open class SlideRendererPattern {
 
     private fun toRenderBox(
         vec3d : Vec3d,
-        scale : Float
+        scale : Double
     ) : AxisAlignedBB {
         val halfSize = 0.5 * scale
         return AxisAlignedBB(
@@ -114,13 +123,15 @@ open class SlideRendererPattern {
     open fun update(
         pos : BlockPos?
     ) {
-        if (pos != lastBlockPos) {
-            currentPos = if(pos != null) AutoRerUtil.toVec3dCenter(pos) else null
-            prevPos = lastRenderPos ?: currentPos
-            lastUpdateTime = System.currentTimeMillis()
-            if (lastBlockPos == null) startTime = System.currentTimeMillis()
+            if(pos != lastBlockPos) {
+                currentPos = if (pos != null) AutoRerUtil.toVec3dCenter(pos) else null
+                prevPos = lastRenderPos ?: currentPos
+                lastUpdateTime = System.currentTimeMillis()
+                if (lastBlockPos == null) {
+                    startTime = System.currentTimeMillis()
+                }
 
-            lastBlockPos = pos
-        }
+                lastBlockPos = pos
+            }
     }
 }

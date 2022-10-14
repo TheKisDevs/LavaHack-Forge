@@ -26,20 +26,20 @@ public class EasingEnum implements AbstractTaskProvider {
     @Target(ElementType.FIELD) @Retention(RetentionPolicy.RUNTIME) public @interface Out {}
 
     private interface IEasing {
-        default double inc(double n) {
+        default double inc(float n) {
             if(n < 0) return 0;
             if(n > 1) return 1;
-            return getTask().doTask(n);
+            return getTask().doTask((double) n);
         }
 
-        default double dec0(double n) {
+        default double dec0(float n) {
             return 1 - inc(n);
         }
 
-        default double dec(double n, double min, double max) {
+        default double dec(float n, float min, float max) {
             if(max == min) return 0;
             if(max < min) {
-                double oldMax = max;
+                float oldMax = max;
                 max = min;
                 min = oldMax;
             }
@@ -49,7 +49,7 @@ public class EasingEnum implements AbstractTaskProvider {
             return MathUtil.lerp(min, max, dec0(n));
         }
 
-        default double dec(double n) {
+        default double dec(float n) {
             if(n <= 0) return 1;
             if(n >= 1) return 0;
 
@@ -149,15 +149,6 @@ public class EasingEnum implements AbstractTaskProvider {
 
     static {
         new EasingEnum().staticBlock();
-        /*for(Easing easing : Easing.values()) {
-            if(ReflectionUtilsKt.annotationCheck(easing, In.class)) inEasings.add(easing);
-            if(ReflectionUtilsKt.annotationCheck(easing, Out.class)) outEasings.add(easing);
-        }
-
-        for(EasingReverse easing : EasingReverse.values()) {
-            if(ReflectionUtilsKt.annotationCheck(easing, In.class)) inEasingsReverse.add(easing);
-            if(ReflectionUtilsKt.annotationCheck(easing, Out.class)) outEasingsReverse.add(easing);
-        }*/
     }
 
     private void staticBlock() {

@@ -60,4 +60,4 @@ fun Double.square() : Double = this * this
 
 fun toDelta(start : Long) : Long = System.currentTimeMillis() - start
 
-fun toDelta(start : Long, length : Long) : Long = (toDelta(start) / length).coerceIn(0L..1L)
+fun toDelta(start : Long, length : Float) : Float = (toDelta(start).toFloat() / length).coerceIn(0.0f, 1.0f)
