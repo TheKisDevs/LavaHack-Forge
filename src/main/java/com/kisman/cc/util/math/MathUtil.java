@@ -394,6 +394,10 @@ public class MathUtil {
         return Math.sqrt(-(a * a) - 2 * a);
     }
 
+    public static double smoothstep(double a){
+        return (a * a) + ((1.0 - (1.0 - a) * (1.0 - a)) - (a * a)) * a;
+    }
+
     public static double normalize(double a, double bound){
         return a % bound;
     }
