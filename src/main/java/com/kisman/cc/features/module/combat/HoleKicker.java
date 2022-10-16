@@ -28,17 +28,13 @@ import java.util.stream.Collectors;
 
 public class HoleKicker extends Module {
 
-    private final SettingEnum<RedstoneMode> redstoneMode = new SettingEnum<>("RedstoneMode", this, RedstoneMode.Torch);
-    private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent);
-    private final Setting range = new Setting("Range", this, 5, 1, 10, false);
-    private final Setting packetPlace = new Setting("PacketPlace", this, false);
+    private final SettingEnum<RedstoneMode> redstoneMode = new SettingEnum<>("RedstoneMode", this, RedstoneMode.Torch).register();
+    private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
+    private final Setting range = register(new Setting("Range", this, 5, 1, 10, false));
+    private final Setting packetPlace = register(new Setting("PacketPlace", this, false));
 
     public HoleKicker(){
         super("HoleKicker", Category.COMBAT);
-        setmgr.rSetting(redstoneMode);
-        setmgr.rSetting(swap);
-        setmgr.rSetting(range);
-        setmgr.rSetting(packetPlace);
     }
 
     @Override

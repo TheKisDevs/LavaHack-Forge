@@ -21,6 +21,9 @@ open class RenderingRewritePattern(
     val mode = setupSetting(Setting("Render Mode", module, RenderingRewriteModes.None).setTitle("Mode"))
     val abyss = setupSetting(Setting("Abyss", module, false))
     val lineWidth = setupSetting(Setting("Render Line Width", module, 1.0, 0.1, 5.0, false).setVisible { mode.valEnum != RenderingRewriteModes.Filled && mode.valEnum != RenderingRewriteModes.FilledGradient }.setTitle("Width"))
+    val scaleGroup = setupGroup(SettingGroup(Setting("Scale", module)))
+    val scaleState = setupSetting(scaleGroup.add(Setting("Scale State", module, false).setTitle("State")))
+    val scaleOffset = setupSetting(scaleGroup.add(Setting("Scale Offset", module, 0.002, 0.002, 0.2, false)))
 
     val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
     val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
@@ -47,6 +50,7 @@ open class RenderingRewritePattern(
             group!!.add(mode)
             group!!.add(abyss)
             group!!.add(lineWidth)
+            group!!.add(scaleGroup)
             group!!.add(rainbowGroup)
             group!!.add(colorGroup)
         }
@@ -58,6 +62,9 @@ open class RenderingRewritePattern(
         module.register(mode)
         module.register(abyss)
         module.register(lineWidth)
+        module.register(scaleGroup)
+        module.register(scaleState)
+        module.register(scaleOffset)
         module.register(rainbowGroup)
         module.register(rainbow)
         module.register(rainbowSpeed)
@@ -71,9 +78,7 @@ open class RenderingRewritePattern(
         return this
     }
 
-    open fun isActive() : Boolean {
-        return mode.valEnum != RenderingRewriteModes.None
-    }
+    open fun isActive() : Boolean = mode.valEnum != RenderingRewriteModes.None
 
     open fun draw(
         aabb : AxisAlignedBB,

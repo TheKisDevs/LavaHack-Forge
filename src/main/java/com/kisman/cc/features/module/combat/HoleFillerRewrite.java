@@ -3,21 +3,18 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
-import com.kisman.cc.features.module.combat.holefillerrewrite.HoleFillerRewriteRenderer;
-import com.kisman.cc.features.module.combat.holefillerrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
@@ -57,13 +54,12 @@ public class HoleFillerRewrite extends Module {
     private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
     private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
 
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
-    private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
+    private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
 
-    private final HoleFillerRewriteRenderer renderer = new HoleFillerRewriteRenderer();
+    private final SlideRendererPattern renderer = new SlideRendererPattern();
 
     private Entity entity = null;
 
@@ -82,7 +78,7 @@ public class HoleFillerRewrite extends Module {
 
     private int lim = 0;
 
-    private final PlaceInfo placeInfo = new PlaceInfo(null, null);
+    private BlockPos placePos;
 
     @Override
     public void onEnable() {
@@ -90,6 +86,7 @@ public class HoleFillerRewrite extends Module {
         targets.reset();
         threads.reset();
         renderer.reset();
+        placePos = null;
     }
 
     @Override
@@ -114,12 +111,11 @@ public class HoleFillerRewrite extends Module {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(renderer_.isActive()) {
-            renderer.onRenderWorld(
-                    movable.movingLength.getValFloat(),
-                    movable.fadeLength.getValFloat(),
+            renderer.handleRenderWorld(
                     renderer_,
-                    placeInfo,
-                    !placeMode.getValString().equals("All")
+                    placePos,
+                    null
+
             );
         }
     }
@@ -139,8 +135,7 @@ public class HoleFillerRewrite extends Module {
         for(BlockPos pos : holes){
             if(placed.contains(pos)) continue;
             if(!mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isEmpty()) continue;
-            placeInfo.setTarget((EntityLivingBase) entity);
-            placeInfo.setBlockPos(pos);
+            placePos = pos;
             place(pos, slot);
             placed.add(pos);
             clear = false;

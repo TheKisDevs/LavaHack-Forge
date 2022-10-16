@@ -14,7 +14,6 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.DamageSyncPattern;
-import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
@@ -67,6 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @PingBypassModule
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
+    private final Setting mode = register(new Setting("Mode", this, Mode.ManualTick));
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
     private final SettingGroup calc = register(new SettingGroup(new Setting("Calc", this)));
@@ -147,6 +147,7 @@ public class AutoRer extends Module {
     private final SettingGroup facePlaceMinFacePlaceDamageGroup = register(facePlaceTriggersGroup.add(new SettingGroup(new Setting("Damage", this))));
     private final Setting minFacePlaceDamageState = register(facePlaceMinFacePlaceDamageGroup.add(new Setting("Min Damage State", this, false).setTitle("State")));
     private final Setting minFacePlaceDMG = register(facePlaceMinFacePlaceDamageGroup.add(new Setting("Min Face Place DMG", this, 7.0, 1.0, 37.0, true).setTitle("Min")));
+    private final Setting raytrace = register(place_.add(new Setting("Ray Trace", this, false)));
 
     private final Setting break_ = register(break__.add(new Setting("Break", this, true)));
     private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
@@ -211,6 +212,7 @@ public class AutoRer extends Module {
     public static EntityPlayer currentTarget;
     private Thread thread;
     public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0, null, null, null), renderPos;
+    private BreakInfo breakPos = new BreakInfo(null, 0, 0, false);
     private Entity lastHitEntity = null;
     public boolean rotating;
     private String lastThreadMode = threadMode.getValString();
@@ -228,11 +230,56 @@ public class AutoRer extends Module {
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
+    private final Thread fastModeThread;
+
+    @SuppressWarnings("BusyWait")
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
 
         instance = this;
+
+        fastModeThread = new Thread(() -> {
+            while(true) {
+                if(isToggled()) {
+                    if (clearTimer.passedMillis(clearDelay.getValLong())) {
+                        placedList.clear();
+                        clearTimer.reset();
+                        lastBroken = true;
+                    }
+
+                    AutoRerUtil.Companion.getTargetFinder().update();
+                    currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
+
+                    if (!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
+                        if (this.executor != null) this.executor.shutdown();
+                        if (this.thread != null) this.shouldInterrupt.set(true);
+                        lastThreadMode = threadMode.getValString();
+                    }
+
+                    if (currentTarget == null) {
+                        placePos.setBlockPos(null);
+                        return;
+                    }
+
+                    if (extrapolationState.getValBoolean()) extrapolationHelper.update();
+
+                    doCalculatePlace();
+                    handleBreakCalculate();
+
+                    handlePlaceFull(false, null);
+                }
+
+                try {
+                    Thread.sleep(1L);
+                } catch (InterruptedException ignored) {
+                    System.out.println("cant wait more!!!!! disabling!!!!!");
+                    if(isToggled()) setToggled(false);
+                }
+            }
+        });
+
+        fastModeThread.start();
     }
 
     public void onEnable() {
@@ -321,8 +368,18 @@ public class AutoRer extends Module {
         }
     }
 
+    private void doFastMode() {
+        handlePlaceFull(false, null);
+        handleBreakFull();
+    }
+
     public void update() {
         if(mc.player == null || mc.world == null || mc.isGamePaused) return;
+
+        if(mode.getValEnum() != Mode.ManualTick) {
+            if(mode.getValEnum() == Mode.FastTick) doFastMode();
+            return;
+        }
 
         if(clearTimer.passedMillis(clearDelay.getValLong())) {
             placedList.clear();
@@ -456,11 +513,17 @@ public class AutoRer extends Module {
         } catch(NullPointerException ignored) {}
     }
 
+    private void doManualMode() {
+        //TODO
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) {
-            renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
-        }
+        if(mode.getValEnum() != Mode.ManualRender) {
+            if(mode.getValEnum() == Mode.FastRender) doFastMode();
+        } else doManualMode();
+
+        if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
 
         if(placePos.getBlockPos() != null) renderer.onRenderWorld(
                 renderer_.movingLength.getValFloat(),
@@ -765,20 +828,24 @@ public class AutoRer extends Module {
         if(!fastCalc.getValBoolean() || (thread && threadCalc.getValBoolean())) doCalculatePlace();
         if(placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
 
-        EnumHand hand = null;
-        boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
-        int oldSlot = mc.player.inventory.currentItem;
-        int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
+        handlePlaceFull(thread, event);
+    }
 
-        if(crystalSlot == -1 && !offhand) return;
-
+    private void handlePlaceClientSide() {
         if(clientSideWhen.getValEnum() == ClientSideWhen.Place && lastHitEntity != null){
             doClientSide(lastHitEntity);
         }
+    }
+
+    private int[] handlePlacePreSwitch(boolean offhand) {
+        int oldSlot = mc.player.inventory.currentItem;
+        int crystalSlot = InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9);
+
+        if(crystalSlot == -1 && !offhand) return new int[] {oldSlot, 1};
 
         if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && !offhand) {
             switch (switch_.getValString()) {
-                case "None": return;
+                case "None": return new int[] {oldSlot, 1};
                 case "Normal":
                     InventoryUtil.switchToSlot(crystalSlot, false);
                     break;
@@ -788,10 +855,14 @@ public class AutoRer extends Module {
             }
         }
 
-        if(mc.player == null) return;
-        if(mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
-        if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
+        return new int[] {oldSlot, 0};
+    }
 
+    private void handlePlacePostSwitch(int oldSlot) {
+        if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+    }
+
+    private RotationSaver handlePlacePreRotate(boolean thread, EventPlayerMotionUpdate event) {
         RotationSaver saver = new RotationSaver().save();
 
         if(rotate.checkValString("Place") || rotate.checkValString("All")) {
@@ -808,26 +879,52 @@ public class AutoRer extends Module {
             } catch (Exception ignored) {}
         }
 
-        RayTraceResult result = null;
-        try {
-            result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
-        } catch(Exception ignored) {}
-        EnumFacing facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
+        return saver;
+    }
+
+    private void handlePlacePostRotate(RotationSaver saver) {
+        if((rotate.checkValString("Place") || rotate.checkValString("All"))) loadSaver(saver);
+    }
+
+    private void handlePlaceFull(boolean thread, EventPlayerMotionUpdate event) {
+        handlePlaceClientSide();
+
+        EnumHand hand = null;
+        boolean offhand = mc.player.getHeldItemOffhand().getItem().equals(Items.END_CRYSTAL);
+
+        int[] slots = handlePlacePreSwitch(offhand);
+
+        if(slots[1] == 1 || mc.player == null || (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL)) return;
+
+        if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
+
+        EnumFacing facing = EnumFacing.UP;
+        if (raytrace.getValBoolean()) {
+            RayTraceResult result = null;
+            try {
+                result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
+            } catch(Exception ignored) {}
+            facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
+        }
+
+        RotationSaver saver = handlePlacePreRotate(thread, event);
+
+        handlePlace(facing, offhand);
+        handlePlacePostRotate(saver);
+        handlePlacePostSwitch(slots[0]);
+
+        if(hand != null) mc.player.setActiveHand(hand);
+    }
+
+    private void handlePlace(EnumFacing facing, boolean offhand) {
         if(placePos.getBlockPos() != null && mc.player.connection != null) {
             if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
             if(packetPlace.getValBoolean() && mc.player.connection != null) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, getPlaceHand(offhand), 0, 0, 0));
             else mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));
             if(swingLogic.getValEnum() == SwingLogic.Post) swing();
+            lastBroken = false;
+            getTimer(false).reset();
         }
-        getTimer(false).reset();
-
-        renderPos = placePos;
-
-        if((rotate.checkValString("Place") || rotate.checkValString("All"))) loadSaver(saver);
-        if(hand != null) mc.player.setActiveHand(hand);
-        if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
-
-        lastBroken = false;
     }
 
     private EnumHand getPlaceHand(boolean offhand) {
@@ -914,12 +1011,12 @@ public class AutoRer extends Module {
         return (syncMode.getValEnum() == SyncMode.Strict || syncMode.getValEnum() == SyncMode.StrictFull) && lastBroken;
     }
 
-    private void doBreak() {
+    private boolean handleBreakCalculate() {
         if(
                 !break_.getValBoolean()
                         || !getTimer(true).passedMillis(getDelay(true))
                         || breakStrictSync()
-        ) return;
+        ) return true;
         BreakInfo finallyCrystal;
 
         if(crystalTHandler.getThreadded().get()) {
@@ -949,37 +1046,67 @@ public class AutoRer extends Module {
             finallyCrystal = crystal;
         }
 
-        if(finallyCrystal == null || (timingMode.getValEnum() != TimingMode.Adaptive && finallyCrystal.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(finallyCrystal.getTargetDamage(), currentTarget).getFirst()) return;
+        breakPos = finallyCrystal;
 
+        return false;
+    }
+
+    private void doBreak() {
+        if(handleBreakCalculate()) return;
+
+        if(breakPos == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
+
+        handleBreakFull();
+    }
+
+    private void handleBreakFull() {
+        RotationSaver saver = handleBreakPreRotate();
+
+        handleBreak();
+        handleBreakPostRotate(saver);
+        handleBreakSync();
+    }
+
+    private RotationSaver handleBreakPreRotate() {
         RotationSaver saver = new RotationSaver().save();
 
-        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(finallyCrystal.getCrystal().getEntityId());
+        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(breakPos.getCrystal().getEntityId());
 
-        lastHitEntity = finallyCrystal.getCrystal();
+        return saver;
+    }
+
+    private void handleBreak() {
+        if(breakPos == null || breakPos.getCrystal() == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
+
+        lastHitEntity = breakPos.getCrystal();
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
 
-        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(finallyCrystal.getCrystal()));
-        else mc.playerController.attackEntity(mc.player, finallyCrystal.getCrystal());
+        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(breakPos.getCrystal()));
+        else mc.playerController.attackEntity(mc.player, breakPos.getCrystal());
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         if(clientSideWhen.getValEnum() == ClientSideWhen.Break){
-            doClientSide(finallyCrystal.getCrystal());
-            try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(finallyCrystal.getCrystal().entityId);} catch (Exception ignored) {}
+            doClientSide(breakPos.getCrystal());
+            try {if(clientSide.getValBoolean()) mc.world.removeEntityFromWorld(breakPos.getCrystal().entityId);} catch (Exception ignored) {}
         }
+
         getTimer(true).reset();
+        lastBroken = true;
+    }
 
+    private void handleBreakPostRotate(RotationSaver saver) {
         if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
+    }
 
+    private void handleBreakSync() {
         if(sync.getValBoolean()) {
             BlockPos toRemove = null;
 
-            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && finallyCrystal.getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
+            for(int i = 0; i < placedList.size(); i++) if(placedList.get(i).getBlockPos() != null && breakPos.getCrystal().getDistanceSq(placedList.get(i).getBlockPos()) <= (3 * 3)) toRemove = placedList.get(i).getBlockPos();
 
             if(toRemove != null) placedList.remove(PlaceInfo.Companion.getElementFromListByPos(placedList, toRemove));
         }
-
-        lastBroken = true;
     }
 
     private void doClientSide(Entity entity) {
@@ -1021,6 +1148,7 @@ public class AutoRer extends Module {
         return nearFriendWithMaxDamage;
     }
 
+    public enum Mode {ManualTick, ManualRender, FastTick, FastRender};
     public enum ThreadMode {None, Pool, Sound, While}
     public enum Render {None, Default, Advanced}
     public enum Rotate {Off, Place/*, Break, All*/}
@@ -1070,6 +1198,17 @@ public class AutoRer extends Module {
             this.damage = damage;
             if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
             this.isTotemPopped = isTotemPopped;
+        }
+    }
+
+    public static class FastAutoRer implements Runnable {
+        public static FastAutoRer instance = new FastAutoRer();
+
+        private FastAutoRer() {}
+
+        @Override
+        public void run() {
+
         }
     }
 

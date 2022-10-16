@@ -108,10 +108,10 @@ public class BlockUtil2 {
         );
     }
 
-    public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier, boolean inverse) {
+    public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier) {
         return getProgressBB(
                 mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
-                inverse ? scalier.mutateProgress(getBreakingProgress(pos, stack, start)) : scalier.mutateProgress(getBreakingProgress(pos, stack, start))
+                scalier.mutateProgress(getBreakingProgress(pos, stack, start))
         );
     }
 

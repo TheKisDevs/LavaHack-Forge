@@ -7,6 +7,7 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
+import net.minecraft.client.renderer.entity.Render
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -38,7 +39,7 @@ open class SlideRendererPattern {
         movingLength : Float,
         fadeLength : Float,
         renderer : RenderingRewritePattern,
-        pos : BlockPos,
+        pos : BlockPos?,
         text : String?
     ) {
         update(pos)
@@ -50,51 +51,36 @@ open class SlideRendererPattern {
         )
     }
 
-    fun renderWorld(
+    open fun handleRenderWorld(
+        renderer : SlideRenderingRewritePattern,
+        pos : BlockPos?,
+        text : String?
+    ) {
+        handleRenderWorld(
+            renderer.movingLength.valFloat,
+            renderer.fadeLength.valFloat,
+            renderer,
+            pos,
+            text
+        )
+    }
+
+    open fun renderWorld(
         movingLength : Float,
         fadeLength : Float,
         renderer : RenderingRewritePattern,
+        aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
         text : String?
     ) {
         prevPos?.let { prevPos ->
             (currentPos ?: prevPos).let { currentPos ->
-                scale = if(fadeLength != 0f) {
-                    if(renderer is SlideRenderingRewritePattern) {
-                        if(this.currentPos != null) {
-                            renderer.fadeOutEasing.getValElement().inc(toDelta(startTime, fadeLength))
-                        } else {
-                            renderer.fadeInEasing.getValElement().dec(toDelta(startTime, fadeLength))
-                        }
-                    } else {
-                        if (this.currentPos != null) {
-                            EasingEnum.Easing.OutCubic.inc(toDelta(startTime, fadeLength))
-                        } else {
-                            EasingEnum.Easing.InCubic.dec(toDelta(startTime, fadeLength))
-                        }
-                    }
-                } else {
-                    if(this.currentPos != null) {
-                        1.0
-                    } else {
-                        0.0
-                    }
-                }
+                scale = scale(fadeLength, renderer)
 
-                val multiplier = if(movingLength != 0f) {
-                    if(renderer is SlideRenderingRewritePattern) {
-                        renderer.movingOutEasing.getValElement().inc(toDelta(lastUpdateTime, movingLength))
-                    } else {
-                        EasingEnum.Easing.OutQuart.inc(toDelta(lastUpdateTime, movingLength))
-                    }
-                } else {
-                    1.0
-                }
-
-                println("multiplier $multiplier multiplier delta ${toDelta(lastUpdateTime, movingLength)}")
+                val multiplier = multiplier(movingLength, renderer)
 
                 val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier))
 
-                renderer.draw(toRenderBox(renderPos, scale))
+                renderer.draw(aabbModifier(toRenderBox(renderPos, scale)))
 
                 lastRenderPos = renderPos
 
@@ -109,7 +95,60 @@ open class SlideRendererPattern {
         }
     }
 
-    private fun toRenderBox(
+    open fun renderWorld(
+        movingLength : Float,
+        fadeLength : Float,
+        renderer : RenderingRewritePattern,
+        text : String?
+    ) {
+        renderWorld(
+            movingLength,
+            fadeLength,
+            renderer,
+            { it },
+            text
+        )
+    }
+
+    protected fun multiplier(
+        movingLength : Float,
+        renderer : RenderingRewritePattern
+    ) : Double = if(movingLength != 0f) {
+        if(renderer is SlideRenderingRewritePattern) {
+            renderer.movingOutEasing.getValElement().inc(toDelta(lastUpdateTime, movingLength))
+        } else {
+            EasingEnum.Easing.OutQuart.inc(toDelta(lastUpdateTime, movingLength))
+        }
+    } else {
+        1.0
+    }
+
+    protected fun scale(
+        fadeLength : Float,
+        renderer : RenderingRewritePattern
+    ) : Double = if(fadeLength != 0f) {
+        if(renderer is SlideRenderingRewritePattern) {
+            if(this.currentPos != null) {
+                renderer.fadeOutEasing.getValElement().inc(toDelta(startTime, fadeLength))
+            } else {
+                renderer.fadeInEasing.getValElement().dec(toDelta(startTime, fadeLength))
+            }
+        } else {
+            if (this.currentPos != null) {
+                EasingEnum.Easing.OutCubic.inc(toDelta(startTime, fadeLength))
+            } else {
+                EasingEnum.Easing.InCubic.dec(toDelta(startTime, fadeLength))
+            }
+        }
+    } else {
+        if(this.currentPos != null) {
+            1.0
+        } else {
+            0.0
+        }
+    }
+
+    protected open fun toRenderBox(
         vec3d : Vec3d,
         scale : Double
     ) : AxisAlignedBB {

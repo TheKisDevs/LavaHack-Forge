@@ -3,32 +3,30 @@ package com.kisman.cc.features.module.render
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
-import com.kisman.cc.features.module.render.blockhighlight.BlockHighlightRenderer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.settings.util.MovableRendererPattern
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.enums.BoxRenderModes
 import com.kisman.cc.util.render.RenderUtil3.toAABB
 import com.kisman.cc.util.render.objects.world.Box
-import com.kisman.cc.util.render.objects.world.BoxObject
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
+import com.kisman.cc.util.render.pattern.SlideRendererPattern
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
+import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.max
+import kotlin.math.min
 
+@Suppress("PrivatePropertyName")
 class BlockHighlight : Module("BlockHighlight", "Highlights object you are looking at", Category.RENDER) {
-    private val mode = register(Setting("Mode", this, BoxRenderModes.Filled))
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
-    private val depth = register(Setting("Depth", this, false))
-    private val alpha = register(Setting("Alpha", this, true))
-    private val color = register(Setting("Color", this, "Color", Colour(255, 255, 255)))
-    private val width = register(Setting("Width", this, 2.0, 0.25, 5.0, false).setVisible { !mode.valEnum.equals(BoxRenderModes.Filled) })
-    private val offset = register(Setting("Offset", this, 0.002, 0.002, 0.2, false))
+
+    private val renderer_ = SlideRenderingRewritePattern(this).preInit().init()
 
     //Crystal info
     private val ciGroup = register(SettingGroup(Setting("Crystal Info", this)))
@@ -37,20 +35,95 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
     private val crystalInfoTerrain = register(ciGroup.add(Setting("Crystal Info Terrain", this, false).setVisible { crystalInfo.valBoolean }))
     private val crystalInfoTargetRange = register(ciGroup.add(Setting("Crystal Info Target Range", this, 15.0, 0.0, 20.0, true).setVisible { crystalInfo.valBoolean }))
     
-    //Advanced renderer
-    private val adGroup = register(SettingGroup(Setting("Advanced Renderer", this)))
-    private val advancedRenderer = register(adGroup.add(Setting("Advanced Renderer", this, false)))
-    private val movable = MovableRendererPattern(this).group(adGroup).preInit().init()
+    private val renderer : IRenderer = object : SlideRendererPattern(), IRenderer {
+        private var vec : Vec3d? = null
+        private var lastVec : Vec3d? = null
+        private var lastBB: AxisAlignedBB? = null
+        private var bb : AxisAlignedBB? = null
+        private var facing : EnumFacing? = null
 
-    private val renderer = BlockHighlightRenderer()
+        override fun reset() {
+            super.reset()
+            vec = null
+            lastVec = null
+            lastBB = null
+            bb = null
+            facing = null
+        }
+
+        override fun onRenderWorld(
+            bb : AxisAlignedBB,
+            facing : EnumFacing?,
+            renderer : SlideRenderingRewritePattern
+        ) {
+            update(bb)
+            this.facing = facing
+            renderWorld(
+                renderer.movingLength.valFloat,
+                renderer.fadeLength.valFloat,
+                renderer,
+                null
+            )
+        }
+
+        override  fun toRenderBox(
+            vec3d : Vec3d,
+            scale : Double
+        ) : AxisAlignedBB {
+            val bb = this.bb ?: lastBB!!
+
+            val halfSizeX = getSizeCoefficient(bb, 1) * scale
+            val halfSizeY = getSizeCoefficient(bb, 2) * scale
+            val halfSizeZ = getSizeCoefficient(bb, 3) * scale
+
+            var modifiedBB = AxisAlignedBB(
+                vec3d.x - halfSizeX + getSizeCoefficient(bb, 1), vec3d.y - halfSizeY + getSizeCoefficient(bb, 2), vec3d.z - halfSizeZ + getSizeCoefficient(bb, 3),
+                vec3d.x + halfSizeX + getSizeCoefficient(bb, 1), vec3d.y + halfSizeY + getSizeCoefficient(bb, 2), vec3d.z + halfSizeZ + getSizeCoefficient(bb, 3)
+            )
+
+            if(facing != null) {
+                modifiedBB = toAABB(modifiedBB, facing!!)
+            }
+
+            return modifiedBB
+        }
+
+        private fun getVec(bb_ : AxisAlignedBB?) : Vec3d {
+            val bb = bb_ ?: return Vec3d(0.0, 0.0, 0.0)
+            return Vec3d(min(bb.minX, bb.maxX), min(bb.minY, bb.maxY), min(bb.minZ, bb.maxZ))
+        }
+
+        private fun getSizeCoefficient(bb : AxisAlignedBB?, axis : Int) : Double {
+            return when(axis) {
+                1 -> (max(bb?.maxX!!, bb.minX) - min(bb.minX, bb.maxX)) / 2 // X
+                2 -> (max(bb?.maxY!!, bb.minY) - min(bb.minY, bb.maxY)) / 2 // Y
+                3 -> (max(bb?.maxZ!!, bb.minZ) - min(bb.minZ, bb.maxZ)) / 2 // Z
+                else -> 0.5
+            }
+        }
+
+        private fun update(bb : AxisAlignedBB?) {
+            this.bb = bb
+            vec = getVec(bb)
+            if (vec != lastVec) {
+                currentPos = vec
+                prevPos = lastRenderPos ?: currentPos
+                lastUpdateTime = System.currentTimeMillis()
+                if (lastBB == null) {
+                    startTime = System.currentTimeMillis()
+                }
+
+                lastBB = bb
+                lastVec = vec
+            }
+        }
+    }
 
     companion object {
         var instance : BlockHighlight? = null
     }
 
     init {
-        super.setDisplayInfo { "[${mode.valString}]" }
-
         instance = this
     }
 
@@ -80,15 +153,11 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     val sightEnd = eyePos.add(lookVec.scale(6.0))
                     facing = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
                     box = Box.byAABB(entity.entityBoundingBox.also { bb = it })
-                    if (hitSideOnly.valBoolean && !advancedRenderer.valBoolean) box = Box.byAABB(toAABB(box.toAABB(), facing))
                 }
             }
             RayTraceResult.Type.BLOCK -> {
-                box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos).grow(offset.valDouble))
-                if (hitSideOnly.valBoolean) {
-                    facing = hitObject.sideHit
-                    if(!advancedRenderer.valBoolean) box = Box.byAABB(toAABB(box.toAABB(), facing))
-                }
+                box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos))
+                facing = hitObject.sideHit
                 bb = box.toAABB()
             }
             else -> {
@@ -97,36 +166,13 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             }
         }
 
-        if (box == null || (bb == null && !shouldReturn)) return
+        if (box == null || bb == null) return
 
-        if(advancedRenderer.valBoolean) {
-            renderer.onRenderWorld(
-                movable.movingLength.valFloat,
-                movable.fadeLength.valFloat,
-                bb,
-                color.colour,
-                mode.valEnum as BoxRenderModes,
-                width.valFloat,
-                depth.valBoolean,
-                alpha.valBoolean,
-                event.partialTicks,
-                offset.valDouble,
-                facing
-            )
-
-            if(shouldReturn) {
-                return
-            }
-        } else {
-            BoxObject(
-                box,
-                color.colour,
-                mode.valEnum as BoxRenderModes,
-                width.valFloat,
-                depth.valBoolean,
-                alpha.valBoolean
-            ).draw(event.partialTicks)
-        }
+        renderer.onRenderWorld(
+            bb!!,
+            if(hitSideOnly.valBoolean) facing else null,
+            renderer_
+        )
 
         if(crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
             val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
@@ -143,5 +189,15 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                     crystalInfoColor.colour
             ).draw(event.partialTicks)
         }
+    }
+
+    private interface IRenderer {
+        fun onRenderWorld(
+            bb : AxisAlignedBB,
+            facing : EnumFacing?,
+            renderer : SlideRenderingRewritePattern
+        )
+
+        fun reset()
     }
 }

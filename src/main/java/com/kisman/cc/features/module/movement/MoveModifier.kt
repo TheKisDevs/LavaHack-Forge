@@ -72,6 +72,22 @@ class MoveModifier : Module(
     private val instant = register(instantGroup.add(Setting("Instant State", this, false).setTitle("State")))
     private val instantLiquids = register(instantGroup.add(Setting("Instant Liquids", this, false).setTitle("Liquids")))
     private val instantSlow = register(instantGroup.add(Setting("Instant Slow", this, false).setTitle("Slow")))
+    private val motionLimiter = register(move.add(SettingGroup(Setting("Motion Limiter", this))))
+    private val motionLimiterX = register(motionLimiter.add(SettingGroup(Setting("X", this))))
+    private val motionLimiterPositiveXState = register(motionLimiterX.add(Setting("Motion Limiter Positive X State", this, false).setTitle("\"+\" State")))
+    private val motionLimiterPositiveXValue = register(motionLimiterX.add(Setting("Motion Limiter Positive X Value", this, 1.0, 0.0, 5.0, false).setTitle("\"+\" Value")))
+    private val motionLimiterNegativeXState = register(motionLimiterX.add(Setting("Motion Limiter Negative X State", this, false).setTitle("\"-\" State")))
+    private val motionLimiterNegativeXValue = register(motionLimiterX.add(Setting("Motion Limiter Negative X Value", this, 1.0, 0.0, 5.0, false).setTitle("\"-\" Value")))
+    private val motionLimiterY = register(motionLimiter.add(SettingGroup(Setting("Y", this))))
+    private val motionLimiterPositiveYState = register(motionLimiterY.add(Setting("Motion Limiter Positive Y State", this, false).setTitle("\"+\" State")))
+    private val motionLimiterPositiveYValue = register(motionLimiterY.add(Setting("Motion Limiter Positive Y Value", this, 1.0, 0.0, 5.0, false).setTitle("\"+\" Value")))
+    private val motionLimiterNegativeYMode = register(motionLimiterY.add(Setting("Motion Limiter Negative Y Mode", this, MotionLimiterNegativeYMode.None).setTitle("\"-\" Mode")))
+    private val motionLimiterNegativeYValue = register(motionLimiterY.add(Setting("Motion Limiter Negative Y Value", this, 1.0, 0.0, 5.0, false).setTitle("\"-\" Value")))
+    private val motionLimiterZ = register(motionLimiter.add(SettingGroup(Setting("Z", this))))
+    private val motionLimiterPositiveZState = register(motionLimiterZ.add(Setting("Motion Limiter Positive Z State", this, false).setTitle("\"+\" State")))
+    private val motionLimiterPositiveZValue = register(motionLimiterZ.add(Setting("Motion Limiter Positive Z Value", this, 1.0, 0.0, 5.0, false).setTitle("\"+\" Value")))
+    private val motionLimiterNegativeZState = register(motionLimiterZ.add(Setting("Motion Limiter Negative Z State", this, false).setTitle("\"-\" State")))
+    private val motionLimiterNegativeZValue = register(motionLimiterZ.add(Setting("Motion Limiter Negative Z Value", this, 1.0, 0.0, 5.0, false).setTitle("\"-\" Value")))
 
 
     private val delays = register(SettingGroup(Setting("Delays", this)))
@@ -141,6 +157,48 @@ class MoveModifier : Module(
         doFastLadder()
         doLevitationControl()
         doInstant()
+        doMotionLimiter()
+    }
+
+    private fun doMotionLimiter() {
+        fun limitMotion(
+            currentMotion : Double,
+            positiveLimit : Double,
+            negativeLimit : Double,
+            positiveFlag : Boolean,
+            negativeFlag : Boolean
+        ) : Double {
+            if(currentMotion > positiveLimit && positiveFlag) {
+                return positiveLimit
+            }
+
+            if(currentMotion < -negativeLimit && negativeFlag) {
+                return -negativeLimit
+            }
+
+            return currentMotion
+        }
+
+        mc.player.motionX = limitMotion(mc.player.motionX, motionLimiterPositiveXValue.valDouble, motionLimiterNegativeXValue.valDouble, motionLimiterPositiveXState.valBoolean, motionLimiterNegativeXState.valBoolean)
+        mc.player.motionY = limitMotion(mc.player.motionY, motionLimiterPositiveYValue.valDouble, motionLimiterNegativeYValue.valDouble, motionLimiterPositiveYState.valBoolean, motionLimiterNegativeYMode.valEnum != MotionLimiterNegativeYMode.None)
+        mc.player.motionZ = limitMotion(mc.player.motionZ, motionLimiterPositiveZValue.valDouble, motionLimiterNegativeZValue.valDouble, motionLimiterPositiveZState.valBoolean, motionLimiterNegativeZState.valBoolean)
+
+        if(mc.player.onGround && motionLimiterNegativeYMode.valEnum == MotionLimiterNegativeYMode.ReverseStep && reverseStep.valBoolean) {
+            var motionY = 0.0
+
+            var y = 0.0
+            while (y < reverseStepVal.valInt + 0.5) {
+                if (mc.world.getCollisionBoxes(mc.player, mc.player.entityBoundingBox.offset(0.0, -y, 0.0)).isNotEmpty()) {
+                    motionY = -10.0
+                    break
+                }
+                y += 0.01
+            }
+
+            if(mc.player.motionY < motionY) {
+                mc.player.motionY = motionY
+            }
+        }
     }
 
     private fun doInstant() {
@@ -292,4 +350,5 @@ class MoveModifier : Module(
     })
 
     private enum class AutoWalkMode {None, Stupid, Smart}
+    private enum class MotionLimiterNegativeYMode {None, Value, ReverseStep}
 }

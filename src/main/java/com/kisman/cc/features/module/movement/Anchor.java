@@ -25,7 +25,7 @@ public class Anchor extends Module {
     private final Setting fastFallMotion = register(new Setting("Fast Fall Motion", this, 10, 1, 10, false).setVisible(fastFall::getValBoolean));
     private final Setting useLagTime = register(new Setting("Use Fast Fall Lag Time", this, false));
     private final Setting lagTime = register(new Setting("Fast Fall Lag Time", this, 500, 0, 1000, NumberType.TIME));
-    private final Setting synsWithReverseStep = register(new Setting("Syns With Reverse Step", this, false));
+    private final Setting syncWithReverseStep = register(new Setting("Sync With Reverse Step", this, false));
 
     private boolean using = false;
     private final double[] oneblockPositions = new double[] { 0.42, 0.75 };
@@ -139,7 +139,7 @@ public class Anchor extends Module {
             if(using) using = false;
         }
 
-        if(using && synsWithReverseStep.getValBoolean()) {
+        if(using && syncWithReverseStep.getValBoolean()) {
             MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
             module.getReverseStep().setValBoolean(false);
             hasReverseStepDisabled = true;

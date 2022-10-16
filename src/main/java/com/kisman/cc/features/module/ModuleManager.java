@@ -136,7 +136,6 @@ public class ModuleManager {
 		modules.add(new NameTags());
 //		modules.add(new NoBobbing());
 		modules.add(new NoRender());
-		modules.add(new Particle());
 //		modules.add(new PearlTracer());
 		modules.add(new PopCharms());
 		modules.add(new ScreenTint());

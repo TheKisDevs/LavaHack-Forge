@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.render.Rendering;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class  NameTags extends Module {
@@ -35,49 +37,72 @@ public class  NameTags extends Module {
     private final Setting atheist = register(new Setting("Atheist", this, true));
     private final Setting desc = register(new Setting("Desc", this, false));
 
+    private final MultiThreaddableModulePattern threads = threads();
+
     public static NameTags instance;
 
     private int counter2;
     private final HashMap<String, Integer> tagList = new HashMap<>();
     private final HashMap<String, String> damageList = new HashMap<>();
 
+    private ArrayList<EntityPlayer> list = new ArrayList<>();
+
     public NameTags() {
         super("NameTags", Category.RENDER);
         instance = this;
     }
 
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        threads.reset();
+    }
+
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        for(EntityPlayer p : mc.world.playerEntities) {
-            if (p != mc.player && mc.player.getDistance(p) <= range.getValInt() &&p != mc.getRenderViewEntity() && p.isEntityAlive()) {
-                if (damageDisplay.getValBoolean()) {
-                    if (!this.tagList.containsKey(p.getName())) {
-                        this.tagList.put(p.getName(), (int)p.getHealth());
-                        this.damageList.put(p.getName(), "");
+        threads.update(() -> {
+            ArrayList<EntityPlayer> list = new ArrayList<>();
+
+            for(EntityPlayer player : mc.world.playerEntities) {
+                if(player != mc.player && mc.player.getDistance(player) <= range.getValInt() && player != mc.getRenderViewEntity() && player.isEntityAlive()) {
+                    if (damageDisplay.getValBoolean()) {
+                        if (!tagList.containsKey(player.getName())) {
+                            tagList.put(player.getName(), (int) player.getHealth());
+                            damageList.put(player.getName(), "");
+                        }
+                        if (player.isDead || player.getHealth() <= 0.0f) {
+                            tagList.remove(player.getName());
+                            damageList.remove(player.getName());
+                        }
                     }
-                    if (p.isDead || p.getHealth() <= 0.0f) {
-                        this.tagList.remove(p.getName());
-                        this.damageList.remove(p.getName());
-                    }
+
+                    list.add(player);
                 }
-                final double pX = p.lastTickPosX + (p.posX - p.lastTickPosX) * mc.timer.renderPartialTicks;
-                final double pY = p.lastTickPosY + (p.posY - p.lastTickPosY) * mc.timer.renderPartialTicks;
-                final double pZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ) * mc.timer.renderPartialTicks;
-                Entity renderEntity = mc.getRenderManager().renderViewEntity;
-                if (renderEntity == null) renderEntity = mc.player;
-                if (renderEntity == null) return;
-                final double rX = renderEntity.lastTickPosX + (renderEntity.posX - renderEntity.lastTickPosX) * mc.timer.renderPartialTicks;
-                final double rY = renderEntity.lastTickPosY + (renderEntity.posY - renderEntity.lastTickPosY) * mc.timer.renderPartialTicks;
-                final double rZ = renderEntity.lastTickPosZ + (renderEntity.posZ - renderEntity.lastTickPosZ) * mc.timer.renderPartialTicks;
-                this.renderNametag(p, pX - rX, pY - rY, pZ - rZ);
+
+                if (counter2 == 601 && damageDisplay.getValBoolean()) {
+                    tagList.remove(player.getName());
+                    damageList.remove(player.getName());
+                }
             }
-            if (this.counter2 == 601 && damageDisplay.getValBoolean()) {
-                this.tagList.remove(p.getName());
-                this.damageList.remove(p.getName());
-            }
+
+            if (counter2 == 601) counter2 = 0;
+            ++counter2;
+
+            this.list = list;
+        });
+
+        for(EntityPlayer player : list) {
+            double pX = player.lastTickPosX + (player.posX - player.lastTickPosX) * mc.timer.renderPartialTicks;
+            double pY = player.lastTickPosY + (player.posY - player.lastTickPosY) * mc.timer.renderPartialTicks;
+            double pZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * mc.timer.renderPartialTicks;
+            Entity renderEntity = mc.getRenderManager().renderViewEntity;
+            if (renderEntity == null) renderEntity = mc.player;
+            if (renderEntity == null) return;
+            double rX = renderEntity.lastTickPosX + (renderEntity.posX - renderEntity.lastTickPosX) * mc.timer.renderPartialTicks;
+            double rY = renderEntity.lastTickPosY + (renderEntity.posY - renderEntity.lastTickPosY) * mc.timer.renderPartialTicks;
+            double rZ = renderEntity.lastTickPosZ + (renderEntity.posZ - renderEntity.lastTickPosZ) * mc.timer.renderPartialTicks;
+            renderNametag(player, pX - rX, pY - rY, pZ - rZ);
         }
-        if (this.counter2 == 601) this.counter2 = 0;
-        ++this.counter2;
     }
 
     public void renderNametag(final EntityPlayer player, final double x, final double y, final double z) {
@@ -218,11 +243,5 @@ public class  NameTags extends Module {
                 }
             }
         }
-    }
-
-    public static Color twoColorEffect(Color color, Color color2, double delay) {
-        if (delay > 1.0) delay = (((int)delay % 2 == 0) ? delay % 1.0 : (1.0 - delay % 1.0));
-        double n3 = 1.0 - delay;
-        return new Color((int)(color.getRed() * n3 + color2.getRed() * delay), (int)(color.getGreen() * n3 + color2.getGreen() * delay), (int)(color.getBlue() * n3 + color2.getBlue() * delay), (int)(color.getAlpha() * n3 + color2.getAlpha() * delay));
     }
 }
