@@ -52,6 +52,7 @@ public class ModuleManager {
 		modules.add(new PacketIDGetterTest());
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
+		modules.add(new ScaffoldTest2());
 		modules.add(new ScreenShaders());;
 		modules.add(new SmoothRenderer());
 		modules.add(SwingTest.INSTANCE);
