@@ -3,10 +3,12 @@ package com.kisman.cc.features.module.combat.blocker;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.util.EnumFacing;
@@ -37,13 +39,9 @@ public class CrystalPushBlocker extends BlockerModule {
             AxisAlignedBB aabb = axisAlignedBB.offset(new Vec3d(facing.getDirectionVec()));
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb)){
                 BlockPos pos = new BlockPos(crystal.posX, crystal.posY, crystal.posZ);
-                pos.offset(facing.getOpposite());
+                pos.offset(facing);
                 IBlockState blockState = mc.world.getBlockState(pos);
                 if(!(blockState.getBlock() instanceof BlockPistonBase))
-                    continue;
-                EnumFacing enumFacing = blockState.getValue(BlockDirectional.FACING);
-                ChatUtility.info().printClientModuleMessage(enumFacing.toString());
-                if(enumFacing != facing.getOpposite())
                     continue;
                 AxisAlignedBB bb = new AxisAlignedBB(crystal.posX + 0.5, crystal.posY, crystal.posZ + 0.5, crystal.posX - 0.5, crystal.posY + 1, crystal.posZ - 0.5);
                 if(aabb.intersects(bb))

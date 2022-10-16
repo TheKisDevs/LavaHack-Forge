@@ -7,11 +7,13 @@ import com.kisman.cc.features.module.combat.blocker.BlockerModule;
 import com.kisman.cc.features.module.combat.blocker.CrystalPushBlocker;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.world.BlockUtil;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @WorkInProgress
 public class Blocker extends Module {
@@ -38,6 +40,22 @@ public class Blocker extends Module {
     public void onDisable() {
         super.onDisable();
         this.blockerStates.clear();
+    }
+
+    private List<BlockPos> getDynamicBlocks(){
+        List<BlockPos> list = Arrays.asList(
+                new BlockPos(mc.player.posX + 0.3, mc.player.posY, mc.player.posZ + 0.3),
+                new BlockPos(mc.player.posX + 0.3, mc.player.posY, mc.player.posZ - 0.3),
+                new BlockPos(mc.player.posX - 0.3, mc.player.posY, mc.player.posZ - 0.3),
+                new BlockPos(mc.player.posX - 0.3, mc.player.posY, mc.player.posZ + 0.3)
+        );
+        final List<BlockPos> dynamicBlocks = new ArrayList<>(list);
+        list.forEach(pos -> dynamicBlocks.addAll(Arrays.stream(EnumFacing.HORIZONTALS).map(pos::offset).collect(Collectors.toList())));
+        return dynamicBlocks.stream()
+                .distinct()
+                .filter(pos -> mc.world.getBlockState(pos).getMaterial().isReplaceable())
+                .filter(pos -> !BlockUtil.getPossibleSides(pos).isEmpty())
+                .collect(Collectors.toList());
     }
 
     @Override
