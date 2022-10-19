@@ -20,7 +20,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScaffoldTest3 extends Module {
@@ -37,6 +40,7 @@ public class ScaffoldTest3 extends Module {
     private final Setting downBind = register(new Setting("Down", this, Keyboard.KEY_NONE));
     private final Setting keepY = register(new Setting("KeeY", this, false));
     private final Setting resetY = register(new Setting("ResetY", this, Keyboard.KEY_NONE).setVisible(keepY::getValBoolean));
+    private final Setting clutch = register(new Setting("Clutch", this, 0, 0, 6, true));
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
 
@@ -59,6 +63,14 @@ public class ScaffoldTest3 extends Module {
         playerY = (int) Math.floor(mc.player.posY);
         super.onEnable();
         MinecraftForge.EVENT_BUS.register(this);
+        int slot = InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
+        if(slot == -1)
+            return;
+        BlockPos pos = new BlockPos(mc.player.posX, playerY, mc.player.posZ).down();
+        BlockPos connector = getConnector(pos);
+        if(clutch.getValInt() > 0 && BlockUtil.getPossibleSides(pos).isEmpty() && connector == null)
+            for(BlockPos blockPos : clutch(pos, clutch.getValInt()))
+                placeBlock(blockPos, slot);
     }
 
     @Override
@@ -139,6 +151,29 @@ public class ScaffoldTest3 extends Module {
                 }
             }
         }
+    }
+
+    private List<BlockPos> clutch(BlockPos pos, int n){
+        List<BlockPos> list = new ArrayList<>();
+        clutch0(pos, 0, n, list);
+        return list;
+    }
+
+    private void clutch0(BlockPos pos, int cur, int n, List<BlockPos> list){
+        list.add(pos);
+        if(!BlockUtil.getPossibleSides(pos).isEmpty())
+            return;
+        if(cur >= n){
+            list.clear();
+            return;
+        }
+        List<BlockPos> possiblePositions = Stream.of(EnumFacing.HORIZONTALS)
+                .map(pos::offset)
+                .filter(blockPos -> !BlockUtil.getPossibleSides(blockPos).isEmpty())
+                .filter(blockPos -> !checkEntities(blockPos))
+                .collect(Collectors.toList());
+        for(BlockPos blockPos : possiblePositions)
+            clutch0(blockPos, cur + 1, n, new ArrayList<>(list));
     }
 
     private void placeBlock(BlockPos pos, int slot){

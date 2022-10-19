@@ -22,7 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinItemRenderer {
     @Shadow @Final public Minecraft mc;
 
+    @Shadow
+    public void renderItemInFirstPerson(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress){}
+
     private float lastSwingProgress = 0f;
+
+    private boolean injection = true;
 
     @Inject(method = "rotateArm", at = @At("HEAD"), cancellable = true)
     private void doRotateArm(float p_187458_1_, CallbackInfo ci) {
@@ -30,6 +35,30 @@ public class MixinItemRenderer {
             ci.cancel();
         }
     }
+
+    @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "HEAD"), cancellable = true)
+    private void onRenderItemInFirstPerson(AbstractClientPlayer player, float p_187457_2_, float p_187457_3_, EnumHand hand, float p_187457_5_, ItemStack stack, float p_187457_7_, CallbackInfo ci){
+        if(this.injection){
+            if(!SmallShield.INSTANCE.isToggled())
+                return;
+            if(stack.isEmpty)
+                return;
+            ci.cancel();
+            float xOff;
+            float yOff;
+            this.injection = false;
+            if(hand == EnumHand.MAIN_HAND){
+                xOff = SmallShield.INSTANCE.mainX.getValFloat();
+                yOff = SmallShield.INSTANCE.mainY.getValFloat();
+            } else {
+                xOff = SmallShield.INSTANCE.offX.getValFloat();
+                yOff = SmallShield.INSTANCE.offY.getValFloat();
+            }
+            this.renderItemInFirstPerson(player, p_187457_2_, p_187457_3_, hand, p_187457_5_ + xOff, stack, p_187457_7_ + yOff);
+            this.injection = true;
+        }
+    }
+
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", shift = At.Shift.AFTER))
     private void transformSideFirstPersonInvokePushMatrix(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo ci) {
