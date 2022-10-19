@@ -1,7 +1,5 @@
 package com.kisman.cc.features.hud.modules
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.settings.Setting

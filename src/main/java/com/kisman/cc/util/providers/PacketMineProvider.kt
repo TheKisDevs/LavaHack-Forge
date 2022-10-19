@@ -105,47 +105,60 @@ object PacketMineProvider : Listenable {
     private fun blockProgressCheck() : Boolean = getBlockProgress(position!!, mc.player.inventory.getStackInSlot(InventoryUtil.findBestToolSlot(position)), start) <= 1 - speed
 
     private val damageBlock = Listener<EventDamageBlock>(EventHook {
+        if(handleBlockClick(it.blockPos, it.faceDirection)) {
+            it.cancel()
+        }
+    })
+
+    fun handleBlockClick(
+        pos : BlockPos,
+        facing : EnumFacing?
+    ) : Boolean {
         if(!active()) {
-            return@EventHook
+            return false
         }
 
         if(swap) {
-            it.cancel()
-            return@EventHook
+            return true
         }
 
-        if(BlockUtil.canBlockBeBroken(it.blockPos)) {
+        if(BlockUtil.canBlockBeBroken(pos)) {
             if(position != null) {
-                if(it.blockPos.toLong() == position!!.toLong()) {
+                if(pos.toLong() == position!!.toLong()) {
                     if(!swap && blockProgressCheck() && mc.world.getBlockState(position!!).block != Blocks.AIR) {
                         if(silent) {
-                            swapper?.swap()
+                            swapper.swap()
                         }
 
                         mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, position!!, EnumFacing.DOWN))
-                        it.cancel()
+
+                        return true
                     }
-                    return@EventHook
+
+                    return false
                 }
 
-                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, position, it.faceDirection))
+                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, position!!, facing ?: EnumFacing.DOWN))
                 mc.playerController.isHittingBlock = false
             }
 
             mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
 
             for(j in 0..packetSpam) {
-                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, it.blockPos, EnumFacing.DOWN))
+                mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
             }
 
-            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, it.blockPos, EnumFacing.DOWN))
+            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
 
-            position = it.blockPos
+            position = pos
             start = System.currentTimeMillis()
             strictCheck = true
-            it.cancel()
+
+            return true
         }
-    })
+
+        return false
+    }
 
     @SubscribeEvent fun onClientTick(event : TickEvent.ClientTickEvent) {
         if(!active() || mc.player == null || mc.world == null) {

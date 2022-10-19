@@ -11,16 +11,16 @@ import com.kisman.cc.util.render.ColorUtils;
 public class Description implements Component {
     public final String title;
     private int count;
-    private final int width;
 
     public Description(String title, int count) {
         this.title = title;
         this.count = count;
-        this.width = CustomFontUtil.getStringWidth(title);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        int width = CustomFontUtil.getStringWidth(title);
+
         Render2DUtil.drawRectWH(mouseX + 5, mouseY, width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
         if(HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {mouseX - HalqGui.headerOffset + 5, mouseY}, new double[] {mouseX + 5, mouseY}, new double[] {mouseX + 5, mouseY + HalqGui.height}, new double[] {mouseX + 5 - HalqGui.headerOffset, mouseY + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0), HalqGui.getGradientColour(count).getColor()));
         if(HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {mouseX + 5 + width, mouseY}, new double[] {mouseX + width + 5 + HalqGui.headerOffset, mouseY}, new double[] {mouseX + 5 + width + HalqGui.headerOffset, mouseY + HalqGui.height}, new double[] {mouseX + width + 5, mouseY + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 0)));

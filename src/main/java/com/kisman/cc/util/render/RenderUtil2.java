@@ -1,9 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.util.Globals;
-import com.kisman.cc.util.math.vectors.Vec3dColored;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.util.render.objects.world.Vectors;
 import net.minecraft.client.renderer.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;

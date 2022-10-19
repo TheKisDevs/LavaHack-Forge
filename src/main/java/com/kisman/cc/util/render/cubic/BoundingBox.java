@@ -5,8 +5,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import javax.swing.plaf.IconUIResource;
-
 public class BoundingBox {
 
     private static final Minecraft mc = Minecraft.getMinecraft();

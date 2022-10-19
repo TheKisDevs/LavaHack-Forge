@@ -9,7 +9,6 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Keyboard
 
 class BindList : HudModule(
         "BindList",

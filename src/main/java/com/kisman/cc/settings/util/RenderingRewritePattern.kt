@@ -137,6 +137,34 @@ open class RenderingRewritePattern(
         )
     }
 
+    open fun draw(
+        aabb : AxisAlignedBB,
+        color1: Colour,
+        color2 : Colour
+    ) {
+        draw(
+            aabb,
+            color1,
+            color2,
+            (mode.valEnum as RenderingRewriteModes).mode
+        )
+    }
+
+    open fun draw(
+        pos : BlockPos,
+        color1 : Colour,
+        color2 : Colour
+    ) {
+        draw(
+            Minecraft.getMinecraft().world.getBlockState(pos).getSelectedBoundingBox(
+                Minecraft.getMinecraft().world,
+                pos
+            ),
+            color1,
+            color2
+        )
+    }
+
     open fun draw(aabb : AxisAlignedBB) {
         draw(
             aabb,

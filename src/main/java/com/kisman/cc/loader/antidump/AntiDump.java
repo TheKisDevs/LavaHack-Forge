@@ -97,9 +97,11 @@ public class AntiDump {
                     unsafe.defineClass("java.lang.instrument.Instrumentation", bytes, 0, bytes.length, null, null);
                 }
             } catch (Throwable e) {
-                e.printStackTrace();
-                dumpDetected();
-                return false;
+                if(!(e instanceof LinkageError)) {
+                    e.printStackTrace();
+                    dumpDetected();
+                    return false;
+                }
             }
 
             if (isClassLoaded("sun.instrument.InstrumentationImpl")) {
