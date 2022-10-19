@@ -60,7 +60,7 @@ public class ScaffoldTest2 extends Module {
         List<BlockPos> list = getBlocks(mc.player.posX, playerY - 1, mc.player.posZ);
         if(!BlockUtil.getPossibleSides(playerPos).isEmpty())
             list = Arrays.asList(playerPos);
-        if(/*alreadyPlaced(mc.player.posX, playerY - 1, mc.player.posZ) ||*/ (lastPlaced.size() >= 2 && list.stream().filter(pos -> lastPlaced.contains(pos)).count() > 1)){
+        if(alreadyPlaced(mc.player.posX, playerY - 1, mc.player.posZ) || (lastPlaced.size() >= 2 && list.stream().filter(pos -> lastPlaced.contains(pos)).count() > 1)){
             this.playerY = newY;
             return;
         }
