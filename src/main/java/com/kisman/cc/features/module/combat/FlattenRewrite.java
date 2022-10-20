@@ -19,7 +19,10 @@ import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -29,9 +32,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Stream;
 
 /**
  * @author Cubic
@@ -315,6 +320,24 @@ public class FlattenRewrite extends Module {
         }
     }
 
+    private static boolean checkEntities(BlockPos pos){
+        AxisAlignedBB aabb = new AxisAlignedBB(pos);
+        for(Entity entity : mc.world.getEntitiesWithinAABB(Entity.class, aabb)){
+            if(entity instanceof EntityItem || entity instanceof EntityXPOrb) continue;
+            return true;
+        }
+        return false;
+    }
+
+    private static BlockPos getConnector(Entity entity, BlockPos pos){
+        return Stream.of(EnumFacing.HORIZONTALS)
+                .map(pos::offset)
+                .filter(blockPos -> !BlockUtil.getPossibleSides(blockPos).isEmpty())
+                .filter(blockPos -> !checkEntities(blockPos))
+                .min(Comparator.comparingDouble(blockPos -> entity.getDistance(blockPos.getX() + 0.5, blockPos.getY() + 1, blockPos.getZ() + 0.5)))
+                .orElse(null);
+    }
+
     private static final class PlaceModeEnum {
 
         private static final AbstractTask.DelegateAbstractTask<Void> task = AbstractTask.types(Void.class, Vec3d.class, Entity.class);
@@ -374,6 +397,16 @@ public class FlattenRewrite extends Module {
                     addIfAbsentAndReplaceable(pos3);
                     addIfAbsentAndReplaceable(pos4);
                 }
+                return null;
+            })),
+            Scaffold(false, task.task(args -> {
+                Vec3d vec = args.fetch(0);
+                Entity entity = args.fetch(1);
+                BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
+                BlockPos connector = getConnector(entity, pos);
+                if(BlockUtil.getPossibleSides(pos).isEmpty() && connector != null)
+                    addIfAbsentAndReplaceable(connector);
+                addIfAbsentAndReplaceable(pos);
                 return null;
             }));
 
