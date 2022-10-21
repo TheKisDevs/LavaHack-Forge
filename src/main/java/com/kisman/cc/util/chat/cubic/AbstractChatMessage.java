@@ -50,6 +50,27 @@ public abstract class AbstractChatMessage {
     }
 
 
+    public void printClientMessage(String format, Object... args){
+        printClientMessage(String.format(format, args));
+    }
+
+    public void printClientModuleMessage(String format, Object... args){
+        printClientModuleMessage(String.format(format, args));
+    }
+
+    public void printModuleMessage(String format, Object... args){
+        printModuleMessage(String.format(format, args));
+    }
+
+    public void printClassMessage(String format, Object... args){
+        printClassMessage(String.format(format, args));
+    }
+
+    public void printClientClassMessage(String format, Object... args){
+        printClientClassMessage(String.format(format, args));
+    }
+
+
     public abstract void printClientMessage(ITextComponent textComponent);
 
     public abstract void printClientMessage(String message);

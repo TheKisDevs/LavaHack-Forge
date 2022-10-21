@@ -41,12 +41,14 @@ public class ModuleManager {
 		modules.add(new FastFallTest());
 		modules.add(new FrostWalk());
 		modules.add(new FutureShader());
+		//modules.add(new GhostBlock());
 		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
 //		modules.add(new M2LTest());
 		modules.add(new Meow());
 		modules.add(new ModuleInstancingJava());
 		modules.add(new ModuleInstancingKt());
+		modules.add(new MoveInspector());
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());
@@ -137,6 +139,7 @@ public class ModuleManager {
 		modules.add(new MotionBlur());
 		modules.add(new NameTags());
 //		modules.add(new NoBobbing());
+		modules.add(new NoCrosshair());
 		modules.add(new NoRender());
 //		modules.add(new PearlTracer());
 		modules.add(new PopCharms());

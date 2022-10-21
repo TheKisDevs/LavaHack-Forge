@@ -36,10 +36,12 @@ public class NoRender extends Module {
     private final Setting swing = register(new Setting("Swing", this, SwingMode.None));
     public Setting sway = register(new Setting("Sway",  this, false));
     private final Setting glow = register(new Setting("Glow", this, false));
-    private final Setting potion = register(new Setting("Potion", this, false));
+    public final Setting potion = register(new Setting("Potion", this, false));
     private final Setting weather = register(new Setting("Weather", this, false));
     private final Setting block = register(new Setting("Block", this, false));
+    private final Setting fire = register(new Setting("Fire", this, false));
     private final Setting lava = register(new Setting("Lava", this, false));
+    private final Setting water = register(new Setting("Water", this, false));
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -123,10 +125,21 @@ public class NoRender extends Module {
 
     @SubscribeEvent
     public void renderBlockEvent(RenderBlockOverlayEvent event) {
+        /*
         if(mc.player != null && mc.world != null) {
-            if(block.getValBoolean()) event.setCanceled(true);
+            if(block.getValBoolean() && event.getOverlayType() == RenderBlockOverlayEvent.OverlayType.BLOCK) event.setCanceled(true);
             if(lava.getValBoolean() && event.getBlockForOverlay().getBlock().equals(Blocks.LAVA)) event.setCanceled(true);
         }
+         */
+        if(mc.player == null || mc.world == null)
+            return;
+
+        RenderBlockOverlayEvent.OverlayType overlayType = event.getOverlayType();
+
+        if(block.getValBoolean() && overlayType == RenderBlockOverlayEvent.OverlayType.BLOCK) event.setCanceled(true);
+        if(fire.getValBoolean() && overlayType == RenderBlockOverlayEvent.OverlayType.FIRE) event.setCanceled(true);
+        if(lava.getValBoolean() && event.getBlockForOverlay().getBlock().equals(Blocks.LAVA)) event.setCanceled(true);
+        if(water.getValBoolean() && overlayType == RenderBlockOverlayEvent.OverlayType.WATER) event.setCanceled(true);
     }
 
     public enum ParticleMode {None, All, AllButIgnorePops}

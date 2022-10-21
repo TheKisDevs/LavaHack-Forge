@@ -2,7 +2,6 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntitySpawn;
-import com.kisman.cc.event.events.EventGetBlockState;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -17,7 +16,6 @@ import com.kisman.cc.util.world.*;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
@@ -73,6 +71,7 @@ public class SurroundRewrite extends Module {
     private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
     private final Setting antiCity = register(new Setting("AntiCity", this, false));
     private final Setting manipulateWorld = register(new Setting("ManipulateWorld", this, false));
+    private final Setting postReceive = register(new Setting("PostReceive", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -133,6 +132,7 @@ public class SurroundRewrite extends Module {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
         Kisman.EVENT_BUS.subscribe(packetListener);
+        Kisman.EVENT_BUS.subscribe(postPacketListener);
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
@@ -402,6 +402,18 @@ public class SurroundRewrite extends Module {
     });
 
     private final Listener<PacketEvent.Receive> packetListener = new Listener<>(event -> {
+        if(postReceive.getValBoolean())
+            return;
+        onSPacketBlockChange(event);
+    });
+
+    private final Listener<PacketEvent.PostReceive> postPacketListener = new Listener<>(event -> {
+        if(!postReceive.getValBoolean())
+            return;
+        onSPacketBlockChange(new PacketEvent.Receive(event.getPacket()));
+    });
+
+    private void onSPacketBlockChange(PacketEvent.Receive event){
         if(!antiCity.getValBoolean())
             return;
 
@@ -433,7 +445,7 @@ public class SurroundRewrite extends Module {
             doThreaddedSurround();
 
         getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
-    });
+    }
 
     private boolean isInAnyBlocks(Vec3d vec, List<BlockPos> list){
         for(BlockPos pos : list)
