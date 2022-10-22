@@ -114,11 +114,13 @@ public class NoRender extends Module {
         }
          */
 
-        Map<Potion, PotionEffect> map = new HashMap<>();
-        for(Map.Entry<Potion, PotionEffect> effect : mc.player.activePotionsMap.entrySet())
-            map.put(effect.getKey(), new PotionEffect(effect.getValue().getPotion(), effect.getValue().getDuration(), effect.getValue().getAmplifier(), effect.getValue().getIsAmbient(), false));
-        mc.player.activePotionsMap.clear();
-        mc.player.activePotionsMap.putAll(map);
+        if(potion.getValBoolean()){
+            Map<Potion, PotionEffect> map = new HashMap<>();
+            for(Map.Entry<Potion, PotionEffect> effect : mc.player.activePotionsMap.entrySet())
+                map.put(effect.getKey(), new PotionEffect(effect.getValue().getPotion(), effect.getValue().getDuration(), effect.getValue().getAmplifier(), effect.getValue().getIsAmbient(), false));
+            mc.player.activePotionsMap.clear();
+            mc.player.activePotionsMap.putAll(map);
+        }
 
         if(weather.getValBoolean()) mc.world.setRainStrength(0.0f);
 
