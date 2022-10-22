@@ -50,11 +50,12 @@ public class ModuleManager {
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());
+		modules.add(new PacketMineProviderTest());
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
 		modules.add(new ScaffoldTest2());
 		modules.add(new ScaffoldTest3());
-		modules.add(new ScreenShaders());;
+		modules.add(new ScreenShaders());
 		modules.add(new SmoothRenderer());
 		modules.add(SwingTest.INSTANCE);
 		modules.add(new TextFieldTest());

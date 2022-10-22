@@ -902,7 +902,7 @@ public class AutoRer extends Module {
         if (raytrace.getValBoolean()) {
             RayTraceResult result = null;
             try {
-                result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + ( double ) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(( double ) placePos.getBlockPos().getX() + 0.5, ( double ) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
+                result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double) placePos.getBlockPos().getX() + 0.5, (double) placePos.getBlockPos().getY() - 0.5, ( double ) placePos.getBlockPos().getZ() + 0.5));
             } catch(Exception ignored) {}
             facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         }

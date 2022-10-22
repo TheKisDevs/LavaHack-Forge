@@ -37,7 +37,7 @@ public class DamageIncreaser extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
 
     public DamageIncreaser(){
-        super("DamageIncreaser", Category.COMBAT, true);
+        super("DamageIncreaser", Category.COMBAT);
         setDisplayInfo(() -> target == null ? "No Target" : target.getName());
     }
 

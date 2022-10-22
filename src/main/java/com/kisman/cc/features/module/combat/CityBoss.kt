@@ -6,19 +6,15 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.exploit.PacketMine
+import com.kisman.cc.mixin.accessors.IMinecraft
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.chat.cubic.ChatUtility
-import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.providers.PacketMineProvider
 import com.kisman.cc.util.render.nearestFacing
-import com.kisman.cc.util.world.CrystalUtils
-import com.kisman.cc.util.world.HoleUtil
-import com.kisman.cc.util.world.HoleUtil.BlockOffset
 import com.kisman.cc.util.world.entityPosition
 import com.kisman.cc.util.world.playerPosition
 import net.minecraft.entity.player.EntityPlayer
@@ -27,12 +23,10 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.function.BiConsumer
 import java.util.function.Supplier
-import java.util.stream.Collectors
-import kotlin.math.min
 
 /**
  * @author _kisman_
@@ -45,18 +39,12 @@ class CityBoss : Module(
     "Breaks surround of nearest player.",
     Category.COMBAT
 ) {
-    private val logic = register(Setting("Logic", this, Logic.Skidded))
-
     private val range = register(Setting("Range", this, 20.0, 1.0, 30.0, true))
     private val blockRangeCheck = register(Setting("Block Range Check", this, false))
     private val blockRange = register(Setting("Block Range", this, 5.0, 1.0, 6.0, false))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
 //    private val smartDown = register(Setting("Smart Down", this, false))
-    private val sides = register(Setting("Sides", this, 1.0, 0.0, 4.0, true))
-    private val depth = register(Setting("Depth", this, 3.0, 0.0, 10.0, true))
-    private val ignoreCrystals = register(Setting("Ignore Crystals", this, true))
     private val mineMode = register(Setting("Mine Mode", this, MineMode.Client))
-    private val selectMode = register(Setting("Select Mode", this, SelectMode.Closest))
 
     private val cases = register(SettingGroup(Setting("Cases", this)))
     private val simpleCase1 = register(cases.add(Setting("Simple Case 1", this, true)))
@@ -65,9 +53,9 @@ class CityBoss : Module(
     private val leftDiagonalCase = register(cases.add(Setting("Left Diagonal", this, true)))
     private val rightDiagonalCase = register(cases.add(Setting("Right Diagonal", this, true)))
 
-    private val damages = register(SettingGroup(Setting("Damages", this)))
-    private val minDMG = register(damages.add(Setting("Min DMG", this, 10.0, 0.0, 20.0, true)))
-    private val maxSelfDMG = register(damages.add(Setting("Max Self DMG", this, 7.0, 0.0, 20.0, true)))
+//    private val damages = register(SettingGroup(Setting("Damages", this)))
+//    private val minDMG = register(damages.add(Setting("Min DMG", this, 10.0, 0.0, 20.0, true)))
+//    private val maxSelfDMG = register(damages.add(Setting("Max Self DMG", this, 7.0, 0.0, 20.0, true)))
 
     private val debug1 = register(Setting("Debug 1", this, false))
     private val debug2 = register(Setting("Debug 2", this, false))
@@ -89,8 +77,6 @@ class CityBoss : Module(
     private val threads = threads()
     private val targets = TargetFinder(Supplier { range.valDouble }, threads)
 
-    private val cityable = HashMap<EntityPlayer, List<BlockPos>>()
-    private var sides1 = ArrayList<BlockPos>()
     private var clicked = false
     private var lastPos : BlockPos? = null
 
@@ -118,11 +104,13 @@ class CityBoss : Module(
     private fun displayInfo(
         info : String
     ) {
-        displayInfo = if(player == null) {
-            "[no target no fun]"
-        } else {
-            "[${player!!.name}|$info] "
-        }
+        displayInfo = "[${
+            if (player == null) {
+                info
+            } else {
+                "${player!!.name}|$info"
+            }
+        }]"
     }
 
     override fun update() {
@@ -130,7 +118,6 @@ class CityBoss : Module(
 
         posses.clear()
         currentPosses.clear()
-        cityable.clear()
         targets.update()
 
         processingBlock = null
@@ -176,6 +163,8 @@ class CityBoss : Module(
             return
         }
 
+        val result = mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ), Vec3d(pos.x + 0.5, pos.y - 0.5, pos.z + 0.5))
+
         if(mineMode.valEnum == MineMode.Client) {
             if(PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = false
@@ -192,8 +181,8 @@ class CityBoss : Module(
             }
 
             try {
+                mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
                 mc.player.swingArm(EnumHand.MAIN_HAND)
-                mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
             } catch (_: Exception) {
                 //Only by burrow miner
                 println("kill yourself <3")
@@ -202,34 +191,16 @@ class CityBoss : Module(
             if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
             }
-            PacketMineProvider.handleBlockClick(pos, null)
+
+            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
+//            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
+//            PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
             clicked = true
         }
 
         lastPos = pos
-    }
-
-    private fun processPlayerBlocks(
-        posses : List<BlockPos>
-    ) : Boolean {
-        var found = false
-
-        for (pos in posses) {
-            if (mc.player.getDistance(
-                    pos.x.toDouble(),
-                    pos.y.toDouble(),
-                    pos.z.toDouble()
-                ) <= 5
-            ) {
-                found = true
-
-                mineBlock(pos)
-
-                break
-            }
-        }
-
-        return found
     }
 
     private fun canBeBurrowed(
@@ -240,7 +211,7 @@ class CityBoss : Module(
         player : EntityPlayer
     ) : Boolean = mc.world.getBlockState(player.position).block != Blocks.AIR
 
-    private fun processPlayerNew(
+    private fun processPlayer(
         player : EntityPlayer
     ) {
         val playerPosition = entityPosition(player)
@@ -350,180 +321,37 @@ class CityBoss : Module(
         return bestCase
     }
 
-    private fun processPlayer(
-        player : EntityPlayer
-    ) {
-        if(logic.valEnum == Logic.Skidded) {
-            processPlayerSkidded(player)
-        } else if(logic.valEnum == Logic.New) {
-            processPlayerNew(player)
-        }
-    }
-
-    private fun processPlayerSkidded(
-        player : EntityPlayer
-    ) {
-        var blocks = EntityUtil.getBlocksIn(player)
-
-        if (blocks.size == 0) {
-            return
-        }
-
-        var minY = Int.MAX_VALUE
-
-        for (block in blocks) {
-            minY = min(block.y, minY)
-        }
-
-        if (player.posY % 1 > .2) {
-            minY++
-        }
-
-        blocks = blocks.stream().filter { blockPos : BlockPos -> blockPos.y == minY }.collect(Collectors.toList())
-
-        val any = blocks.stream().findAny()
-
-        if (!any.isPresent) {
-            return
-        }
-
-        val holeInfo = HoleUtil.isHole(any.get(), false, true)
-
-        if (holeInfo.type == HoleUtil.HoleType.NONE || holeInfo.safety == HoleUtil.BlockSafety.UNBREAKABLE) {
-            return
-        }
-
-        val sides = ArrayList<BlockPos>()
-
-        for (block in blocks) {
-            sides.addAll(cityableSides(block!!, HoleUtil.getUnsafeSides(block).keys, player))
-        }
-
-        if (sides.isNotEmpty()) {
-            println("1")
-            sides1 = sides
-            processPlayerBlocks(sides)
-        }
-    }
-
-    private fun cityableSides(
-        centre : BlockPos,
-        weakSides : Set<BlockOffset>,
-        player : EntityPlayer
-    ) : List<BlockPos> {
-        val cityableSides = mutableListOf<BlockPos>()
-        val directions = HashMap<BlockPos, BlockOffset>()
-
-        for (weakSide in weakSides) {
-            val pos = weakSide.offset(centre)
-
-            if (mc.world.getBlockState(pos).block != Blocks.AIR) {
-                directions[pos] = weakSide
-            }
-        }
-
-        try {
-            directions.forEach(BiConsumer { blockPos: BlockPos, blockOffset: BlockOffset ->
-                if (blockOffset == BlockOffset.DOWN) {
-                    return@BiConsumer
-                }
-
-                val pos1 = blockOffset.left(blockPos.down(down.valInt), sides.valInt)
-                val pos2 = blockOffset.forward(blockOffset.right(blockPos, sides.valInt), depth.valInt)
-                val square = EntityUtil.getSquare(pos1, pos2)
-                val holder = mc.world.getBlockState(blockPos)
-
-                mc.world.setBlockToAir(blockPos)
-
-                for (pos in square) {
-                    if (CrystalUtils.canPlaceCrystal(pos.down(), true, ignoreCrystals.valBoolean)) {
-                        if (CrystalUtils.calculateDamage(
-                                mc.world,
-                                pos.x.toDouble() + 0.5,
-                                pos.y.toDouble(),
-                                pos.z.toDouble() + 0.5,
-                                player,
-                                false
-                            ) >= minDMG.valInt
-                        ) {
-                            if (CrystalUtils.calculateDamage(
-                                    mc.world,
-                                    pos.x.toDouble() + 0.5,
-                                    pos.y.toDouble(),
-                                    pos.z.toDouble() + 0.5,
-                                    mc.player,
-                                    false
-                                ) <= maxSelfDMG.valInt
-                            ) {
-                                cityableSides.add(blockPos)
-                            }
-
-                            break
-                        }
-                    }
-                }
-                mc.world.setBlockState(blockPos, holder)
-            })
-        } catch (ignored : Exception) { }
-
-        return cityableSides
-    }
-
     @SubscribeEvent
     fun onRenderWorld(event : RenderWorldLastEvent) {
-        if(renderer.isActive()) {
-            if(logic.valEnum == Logic.Skidded) {
-                when (selectMode.valString) {
-                    "Closest" -> {
-                        sides1.stream().min(Comparator.comparing { pos: BlockPos ->
-                            mc.player.getDistanceSq(pos)
-                        }).ifPresent {
-                            renderer.draw(it)
-                        }
-                    }
-                    "All" -> {
-                        for (pos in sides1) {
-                            renderer.draw(pos)
-                        }
-                    }
+        if(renderer.isActive() && player != null) {
+            for(pos in posses) {
+                val pos1 = entityPosition(player!!).add(pos)
+
+                if(processingBlock == pos1) {
+                    renderer.draw(
+                        pos1,
+                        processingBlockColor1.colour,
+                        processingBlockColor2.colour
+                    )
+
+                    continue
                 }
-            } else if(logic.valEnum == Logic.New && player != null) {
-                for(pos in posses) {
-                    val pos1 = entityPosition(player!!).add(pos)
 
-                    if(processingBlock == pos1) {
-                        renderer.draw(
-                            pos1,
-                            processingBlockColor1.colour,
-                            processingBlockColor2.colour
-                        )
+                if(currentPosses.contains(pos)) {
+                    renderer.draw(
+                        pos1,
+                        currentFacingColor1.colour,
+                        currentFacingColor2.colour
+                    )
 
-                        continue
-                    }
-
-                    if(currentPosses.contains(pos)) {
-                        renderer.draw(
-                            pos1,
-                            currentFacingColor1.colour,
-                            currentFacingColor2.colour
-                        )
-
-                        continue
-                    }
-
-                    renderer.draw(pos1)
+                    continue
                 }
+
+                renderer.draw(pos1)
             }
         }
     }
-
-    private enum class Logic { Skidded, New }
-
     enum class MineMode {
         Client, PacketMine
-    }
-
-    enum class SelectMode {
-        Closest, All
     }
 }
