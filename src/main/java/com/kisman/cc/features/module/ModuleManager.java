@@ -52,11 +52,12 @@ public class ModuleManager {
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());
+		modules.add(new PacketMineProviderTest());
 		modules.add(new RectTest());
 		modules.add(new ScaffoldTest());
 		modules.add(new ScaffoldTest2());
 		modules.add(new ScaffoldTest3());
-		modules.add(new ScreenShaders());;
+		modules.add(new ScreenShaders());
 		modules.add(new SmoothRenderer());
 		modules.add(SwingTest.INSTANCE);
 		modules.add(new TextFieldTest());
@@ -164,6 +165,7 @@ public class ModuleManager {
 		modules.add(new AirJump());
 		modules.add(new Anchor());
 		modules.add(new BoatFly());
+		modules.add(new CornerClip());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
 		modules.add(new Jesus());
@@ -193,7 +195,7 @@ public class ModuleManager {
 		modules.add(new FreeCamRewrite());
 		modules.add(Interaction.INSTANCE);
 		modules.add(new Octopus());
-		//modules.add(new PacketFeatures());
+		modules.add(new PacketFeatures());
 		modules.add(new PearlBypass());
 		modules.add(new Refill());
 		modules.add(new Replenish());

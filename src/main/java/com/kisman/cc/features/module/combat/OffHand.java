@@ -35,7 +35,7 @@ public class OffHand extends Module {
 //    private final Setting replacePacket = register(new Setting("AP Replace Packet", this, false));
     private final Setting totemOnElytra = register(new Setting("Totem On Elytra", this, true));
     private final Setting offhandGapOnSword = register(new Setting("Gap On Sword", this, true));
-    private final Setting rightClickGap = register(new Setting("Right Click Gap", this, false));
+    private final Setting rightClickGap = register(new Setting("Right Click Gap", this, false).setVisible(offhandGapOnSword));
     private final Setting totemIfNoNearbyPlayers = register(new Setting("Totem If No Nearby Players", this, false));
     private final Setting hotbarFirst = register(new Setting("Hotbar First", this, false));
     private final Setting useUpdateController = register(new Setting("Use UpdateController", this, true));
@@ -67,7 +67,7 @@ public class OffHand extends Module {
         OffhandItems item = mode.getValEnum();
 
         if (needTotem.get() || health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallDistance.getValDouble() && !mc.player.isElytraFlying())) item = OffhandItems.Totem;
-        if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean()) || (rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && !mc.player.getHeldItemMainhand().getItem().equals(Items.GOLDEN_APPLE))) item = OffhandItems.Gap;
+        if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !rightClickGap.getValBoolean()) || (offhandGapOnSword.getValBoolean() && rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) item = OffhandItems.Gap;
 
         doOffHand(item.getItem());
     }

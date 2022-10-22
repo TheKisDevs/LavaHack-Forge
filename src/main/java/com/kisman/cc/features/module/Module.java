@@ -27,7 +27,7 @@ public class Module implements IBindable, Listenable {
 	public BindType bindType = BindType.Keyboard;
 	private final Category category;
 	public boolean toggled;
-	public boolean subscribes;
+	public boolean subscribes = true;
 	public boolean visible = true;
 	public boolean hold = false;
 	public boolean block = false;

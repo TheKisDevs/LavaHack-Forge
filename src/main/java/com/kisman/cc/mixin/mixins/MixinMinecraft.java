@@ -15,6 +15,7 @@
  import com.kisman.cc.features.module.player.AntiDesync;
  import com.kisman.cc.features.module.player.Interaction;
  import com.kisman.cc.features.viaforge.ViaForge;
+ import com.kisman.cc.mixin.accessors.IMinecraft;
  import com.kisman.cc.pingbypass.server.PingBypassServer;
  import com.kisman.cc.pingbypass.server.input.Keyboard;
  import com.kisman.cc.util.minecraft.MouseHandlerKt;
@@ -42,7 +43,7 @@
  import java.util.function.BiFunction;
 
  @Mixin(value = Minecraft.class, priority = 10000)
- public class MixinMinecraft {
+ public class MixinMinecraft implements IMinecraft {
   @Shadow public GameSettings gameSettings;
   @Shadow public EntityPlayerSP player;
   @Shadow public PlayerControllerMP playerController;
@@ -134,6 +135,8 @@
 
   //Baritone
   @Shadow public WorldClient world;
+
+  @Shadow private void sendClickBlockToController(boolean leftClick) {}
 
   @Inject(method = "init", at = @At("RETURN"))
   private void postInit(CallbackInfo ci) {
@@ -288,5 +291,10 @@
   public void onSendClickBlockToControllerPost(boolean leftClick, CallbackInfo ci){
    EventSendClickBlockToController event = new EventSendClickBlockToController(Event.Era.POST, leftClick);
    Kisman.EVENT_BUS.post(event);
+  }
+
+  @Override
+  public void invokeSendClickBlockToController(boolean leftClick) {
+   sendClickBlockToController(leftClick);
   }
  }
