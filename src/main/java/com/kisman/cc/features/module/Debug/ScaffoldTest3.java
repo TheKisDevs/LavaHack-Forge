@@ -101,7 +101,11 @@ public class ScaffoldTest3 extends Module {
 
         tower(newY);
 
-        playerY = newY;
+        if(Keyboard.isKeyDown(downBind.getKey()) && flag)
+            playerY = newY - 1;
+        else
+            playerY = newY;
+
         if(flag)
             restrictTicks = 0;
         else

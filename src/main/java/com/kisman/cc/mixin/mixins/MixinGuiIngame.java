@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.event.events.EventIngameOverlay;
+import com.kisman.cc.event.events.EventRenderAttackIndicator;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
@@ -197,5 +198,13 @@ public class MixinGuiIngame extends Gui {
         event.entity = mc.player;
         Kisman.EVENT_BUS.post(event);
         return event.entity;
+    }
+
+    @Inject(method = "renderAttackIndicator", at = @At("HEAD"), cancellable = true)
+    private void onRenderAttackIndicator(float partialTicks, ScaledResolution scaledResolution, CallbackInfo ci){
+        EventRenderAttackIndicator event = new EventRenderAttackIndicator(partialTicks, scaledResolution);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled())
+            ci.cancel();
     }
 }

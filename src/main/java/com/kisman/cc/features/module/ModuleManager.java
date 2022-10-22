@@ -41,12 +41,14 @@ public class ModuleManager {
 		modules.add(new FastFallTest());
 		modules.add(new FrostWalk());
 		modules.add(new FutureShader());
+		//modules.add(new GhostBlock());
 		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
 //		modules.add(new M2LTest());
 		modules.add(new Meow());
 		modules.add(new ModuleInstancingJava());
 		modules.add(new ModuleInstancingKt());
+		modules.add(new MoveInspector());
 		modules.add(new NoMove());
 		modules.add(new ObjectMouseOver());
 		modules.add(new PacketIDGetterTest());
@@ -83,7 +85,7 @@ public class ModuleManager {
 		modules.add(new BowSpam());
 //		modules.add(new BreakAlert());
 		modules.add(new Burrow2());
-		//modules.add(new CevBreaker());
+		modules.add(new CevBreaker());
 		modules.add(new CityBoss());
 		modules.add(new Criticals());
 		modules.add(new CrystalFiller());
@@ -138,6 +140,7 @@ public class ModuleManager {
 		modules.add(new MotionBlur());
 		modules.add(new NameTags());
 //		modules.add(new NoBobbing());
+		modules.add(new NoCrosshair());
 		modules.add(new NoRender());
 //		modules.add(new PearlTracer());
 		modules.add(new PopCharms());
@@ -162,6 +165,7 @@ public class ModuleManager {
 		modules.add(new AirJump());
 		modules.add(new Anchor());
 		modules.add(new BoatFly());
+		modules.add(new CornerClip());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
 		modules.add(new Jesus());
