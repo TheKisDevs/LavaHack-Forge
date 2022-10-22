@@ -4,20 +4,22 @@
 </div>
 
 <h1 align="center">
-  Lavahack
+  LavaHack
 </h1>
 
 <p align="center">
     A based minecraft 1.12.2 utility mod
 </p>
 
-<h1 align="left">
+<h1 align="center">
 Contributors
 </h1>
-_kisman_ <br>
-Cubic <br>
-GentlemanMC <br>
-noatmc
+<div align="center">
+  _kisman_ <br>
+  Cubic <br>
+  GentlemanMC <br>
+  noatmc
+</div>
 
 <div align="center">
 <br>
