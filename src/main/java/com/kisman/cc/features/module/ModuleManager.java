@@ -164,6 +164,7 @@ public class ModuleManager {
 		modules.add(new AirJump());
 		modules.add(new Anchor());
 		modules.add(new BoatFly());
+		modules.add(new CornerClip());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
 		modules.add(new Jesus());
