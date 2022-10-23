@@ -146,9 +146,8 @@ public class CrystalModifier extends Module {
     private final Listener<EventRemoveEntity> remove = new Listener<>(event -> {
         if(scaleTimes.containsKey(event.getId())) scaleTimes.get(event.getId());
     });
-
-    public enum Modes {Fill, Wireframe}
+    
     public enum RubiksCrystalRotationDirection {Left, Right}
-    public enum CubeModes {Off, In, Out}
+    public enum Cube {Off, In, Out}
     public enum ModelModes {Cube, Glass}
 }
