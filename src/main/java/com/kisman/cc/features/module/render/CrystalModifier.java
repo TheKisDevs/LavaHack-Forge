@@ -69,34 +69,26 @@ public class CrystalModifier extends Module {
     private final SettingGroup insideGroup = register(cubes.add(new SettingGroup(new Setting("Inside", this))));
     public Setting insideCube = register(insideGroup.add(new Setting("Inside Tex", this, CubeModes.In).setTitle("Tex")));
     public Setting insideModel = register(insideGroup.add(new Setting("Inside Model", this, ModelModes.Cube).setTitle("Model")));
+    private final SettingGroup insideSpeeds = register(insideGroup.add(new SettingGroup(new Setting("Speeds", this))));
+    public Setting insideSpinSpeed = register(insideSpeeds.add(new Setting("Inside Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
     public Setting insideFadeOutDelay = register(insideGroup.add(new Setting("Inside Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
     private final SettingGroup outsideGroup = register(cubes.add(new SettingGroup(new Setting("Outside", this))));
     public Setting outsideCube = register(outsideGroup.add(new Setting("Outside Tex", this, CubeModes.Out).setTitle("Tex")));
     public Setting outsideModel = register(outsideGroup.add(new Setting("Outside Model", this, ModelModes.Glass).setTitle("Model")));
-    public Setting outsideFadeOutDelay = register(insideGroup.add(new Setting("Outside Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
+    private final SettingGroup outsideSpeeds = register(outsideGroup.add(new SettingGroup(new Setting("Speeds", this))));
+    public Setting outsideSpinSpeed = register(outsideSpeeds.add(new Setting("Outside Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
+    public Setting outsideFadeOutDelay = register(outsideGroup.add(new Setting("Outside Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
     private final SettingGroup outsideGroup2 = register(cubes.add(new SettingGroup(new Setting("Outside 2", this))));
     public Setting outsideCube2 = register(outsideGroup2.add(new Setting("Outside 2 Tex", this, CubeModes.Out).setTitle("Tex")));
     public Setting outsideModel2 = register(outsideGroup2.add(new Setting("Outside 2 Model", this, ModelModes.Glass).setTitle("Model")));
-    public Setting outsideFadeOutDelay2 = register(insideGroup.add(new Setting("Outside 2 Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
+    private final SettingGroup outsideSpeeds2 = register(outsideGroup2.add(new SettingGroup(new Setting("Speeds", this))));
+    public Setting outsideSpinSpeed2 = register(outsideSpeeds2.add(new Setting("Outside 2 Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
+    public Setting outsideFadeOutDelay2 = register(outsideGroup2.add(new Setting("Outside 2 Fade Out Delay", this, 0, 0, 10000, NumberType.TIME).setTitle("Fade Out")));
 
-    private final SettingGroup speeds = register(new SettingGroup(new Setting("Speeds", this)));
-    public Setting speed = register(speeds.add(new Setting("Spin Speed", this, 3, 0, 50, false).setTitle("Spin")));
-    public Setting bounce = register(speeds.add(new Setting("Bounce Speed", this, 0.2f, 0, 10, false).setTitle("Bounce")));
+    public Setting bounce = register((new Setting("Bounce Speed", this, 0.2f, 0, 10, false)));
 
     public CrystalModifier() {
         super("CrystalModifier", "Modify crystal model renderer", Category.RENDER);
-        super.setDisplayInfo(
-                () ->
-                        "[" +
-                                (rubiksCrystal.getValBoolean() ? "Rubik's Mode | " : "") +
-                                "C: " +
-                                    (insideCube.getValBoolean() ? "I" : "") +
-                                    (outsideCube.getValBoolean() ? "O" : "") +
-                                    (outsideCube2.getValBoolean() ? "O" : "") +
-                                "S: " + speed.getNumberType().getFormatter().apply(speed.getValDouble()) +
-                                "B: " + bounce.getNumberType().getFormatter().apply(bounce.getValDouble()) +
-                        "]"
-        );
 
         instance = this;
     }

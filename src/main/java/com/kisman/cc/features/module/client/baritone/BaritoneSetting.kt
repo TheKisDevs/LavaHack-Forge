@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.client.settings.EventSettingChange
 import com.kisman.cc.settings.Setting
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import java.awt.Color
 
 /**
  * Note: only for boolean settings!!!
@@ -14,22 +15,21 @@ import me.zero.alpine.listener.Listener
  * @since 16:44 of 09.10.2022
  */
 @Suppress("UNCHECKED_CAST")
-/*abstract*/ class BaritoneSetting<T>(
+class BaritoneSetting<T>(
     private val lavahackSetting : Setting,
     private val baritoneSetting : Settings.Setting<T>
 ) {
     private val onChange = Listener<EventSettingChange>(EventHook {
         if(it.setting == lavahackSetting) {
-            /*if(lavahackSetting.isCheck)*/ baritoneSetting.value = lavahackSetting.valBoolean as T
-//            onChange()
+            when (baritoneSetting.value) {
+                is Boolean -> baritoneSetting.value = lavahackSetting.valBoolean as T
+                is Float, is Double, is Int -> baritoneSetting.value = lavahackSetting.valDouble as T
+                is Color -> baritoneSetting.value = lavahackSetting.colour.color as T
+            }
         }
     })
 
     init {
-        if((baritoneSetting.value == true || baritoneSetting.value == false) && lavahackSetting.isCheck) {
-            Kisman.EVENT_BUS.subscribe(onChange)
-        }
+        Kisman.EVENT_BUS.subscribe(onChange)
     }
-
-//    abstract fun onChange()
 }

@@ -3,22 +3,19 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
-import com.kisman.cc.features.module.combat.flattenrewrite.FlattenRewriteRenderer;
-import com.kisman.cc.features.module.combat.flattenrewrite.PlaceInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.settings.util.MovableRendererPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.enums.RenderingRewriteModes;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
+import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
@@ -60,6 +57,7 @@ public class FlattenRewrite extends Module {
     private final Setting swapSyncItem = register(syncItemGroup.add(new Setting("SyncItem", this, false).setTitle("Sync")));
     private final Setting swapSyncItemWhen = register(syncItemGroup.add(new Setting("SyncItemWhen", this, SyncItemWhen.AfterSwap).setVisible(swapSyncItem::getValBoolean).setTitle("When")));
 
+    private final Setting web = register(placeGroup.add(new Setting("Web", this, false)));
     private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
 
     private final Setting keepY = register(new Setting("KeepY", this, true));
@@ -76,13 +74,12 @@ public class FlattenRewrite extends Module {
     private final Setting processPackets = register(new Setting("ProcessPackets", this, false));
 
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
-    private final RenderingRewritePattern renderer_ = new RenderingRewritePattern(this).group(render_).preInit().init();
-    private final MovableRendererPattern movable = new MovableRendererPattern(this).group(render_).preInit().init();
+    private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
 
-    private final FlattenRewriteRenderer renderer = new FlattenRewriteRenderer();
+    private final SlideRendererPattern renderer = new SlideRendererPattern();
 
     public static FlattenRewrite instance;
 
@@ -95,7 +92,11 @@ public class FlattenRewrite extends Module {
 
     private double enemyY;
 
-    private final PlaceInfo placeInfo = new PlaceInfo(null, null);
+    private BlockPos placeInfo = null;
+
+    private Block block() {
+        return web.getValBoolean() ? Blocks.WEB : ((BlockEnum.Blocks) block.getValEnum()).getTask().doTask();
+    }
 
     public FlattenRewrite() {
         super("FlattenRewrite", Category.COMBAT);
@@ -110,7 +111,7 @@ public class FlattenRewrite extends Module {
                     toggled = this.isToggled();
                     continue;
                 }
-                int slot = InventoryUtil.getBlockInHotbar(((BlockEnum.Blocks) block.getValEnum()).getTask().doTask());
+                int slot = InventoryUtil.getBlockInHotbar(block());
                 if(slot == -1)
                     continue;
                 int oldSlot = mc.player.inventory.currentItem;
@@ -157,7 +158,7 @@ public class FlattenRewrite extends Module {
 
         ((PlaceModeEnum.Modes) placeMode.getValEnum()).getTask().doTask(vec, enemy);
 
-        int slot = InventoryUtil.getBlockInHotbar(((BlockEnum.Blocks) block.getValEnum()).getTask().doTask());
+        int slot = InventoryUtil.getBlockInHotbar(block());
 
         int oldSlot = mc.player.inventory.currentItem;
 
@@ -194,12 +195,11 @@ public class FlattenRewrite extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(renderer_.getMode().getValEnum() != RenderingRewriteModes.None) {
-            renderer.onRenderWorld(
-                    movable.movingLength.getValFloat(),
-                    movable.fadeLength.getValFloat(),
+        if(renderer_.isActive()) {
+            renderer.handleRenderWorld(
                     renderer_,
-                    placeInfo
+                    placeInfo,
+                    null
             );
         }
     }
@@ -208,8 +208,7 @@ public class FlattenRewrite extends Module {
     public void onEnable() {
         super.onEnable();
         blocks = new ConcurrentLinkedQueue<>();
-        placeInfo.setBlockPos(null);
-        placeInfo.setTarget(null);
+        placeInfo = null;
         enemy = null;
         enemyY = 0.0;
         targets.reset();
@@ -238,8 +237,7 @@ public class FlattenRewrite extends Module {
     }
 
     private void placeBlock(BlockPos pos, int oldSlot, int slot){
-        placeInfo.setBlockPos(pos);
-        placeInfo.setTarget((EntityLivingBase) enemy);
+        placeInfo = pos;
         if(mc.player.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > placeRange.getValDouble())
             return;
         swap(slot, false, SwapWhen.Place);

@@ -2,24 +2,19 @@ package com.kisman.cc.features.module.Debug
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
-import com.kisman.cc.features.module.combat.autorer.PlaceInfo
-import com.kisman.cc.features.module.combat.autorer.util.Easing
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
-import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.enums.dynamic.EasingEnum
+import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.math.vectors.Vec3dColored
 import com.kisman.cc.util.math.vectors.VectorUtils
 import com.kisman.cc.util.render.RenderUtil3
-import com.kisman.cc.util.render.objects.world.Abstract3dObject
 import com.kisman.cc.util.render.objects.world.Object3d
 import com.kisman.cc.util.render.objects.world.Vectors
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.RayTraceResult
-import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -112,14 +107,14 @@ class SmoothRenderer : Module(
 
             prevPlaceInfo?.let { prevPos ->
                 currentPlaceInfo?.let { currentPos ->
-                    val multiplier = Easing.OUT_QUART.inc(Easing.toDelta(lastUpdateTime, movingLength))
+                    val multiplier = EasingEnum.Easing.OutQuart.inc(toDelta(lastUpdateTime, movingLength))
                     val renderPos = if(prevPos.vectors != null && currentPos.vectors != null)
                         prevPos.vectors.transform(
                             { vec1/*prevPos*/, vec2/*currentPos*/ ->
                                 Vec3dColored(
                                     vec1.vec.add(
                                         VectorUtils.subtract(vec2.vec, vec1.vec)
-                                    ).scale(multiplier.toDouble()),
+                                    ).scale(multiplier),
                                     vec2.color
                                 )
                             },
@@ -136,11 +131,11 @@ class SmoothRenderer : Module(
 //                    )
                     else null
 
-                    scale = if (placeInfo.blockPos != null) {
-                        Easing.OUT_CUBIC.inc(Easing.toDelta(startTime, fadeLength))
+                    scale = (if (placeInfo.blockPos != null) {
+                        EasingEnum.Easing.OutCubic.inc(toDelta(startTime, fadeLength))
                     } else {
-                        Easing.IN_CUBIC.dec(Easing.toDelta(startTime, fadeLength))
-                    }
+                        EasingEnum.Easing.OutCubic.dec(toDelta(startTime, fadeLength))
+                    }).toFloat()
 
                     if(renderPos != null) {
                         GlStateManager.pushMatrix()

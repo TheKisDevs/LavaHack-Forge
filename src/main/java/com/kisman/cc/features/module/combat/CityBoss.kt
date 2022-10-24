@@ -6,14 +6,12 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.exploit.PacketMine
-import com.kisman.cc.mixin.accessors.IMinecraft
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.providers.PacketMineProvider
 import com.kisman.cc.util.render.nearestFacing
 import com.kisman.cc.util.world.entityPosition
 import com.kisman.cc.util.world.playerPosition
@@ -166,9 +164,9 @@ class CityBoss : Module(
         val result = mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ), Vec3d(pos.x + 0.5, pos.y - 0.5, pos.z + 0.5))
 
         if(mineMode.valEnum == MineMode.Client) {
-            if(PacketMine.instance.isToggled) {
+            /*if(PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = false
-            }
+            }*/
 
             if (mc.player.heldItemMainhand.getItem() !is ItemPickaxe) {
                 val slot = InventoryUtil.findFirstItemSlot(ItemPickaxe::class.java, 0, 9)
@@ -188,15 +186,17 @@ class CityBoss : Module(
                 println("kill yourself <3")
             }
         } else if(!clicked && mineMode.valEnum == MineMode.PacketMine) {
-            if(!PacketMine.instance.isToggled) {
+            /*if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
-            }
+            }*/
 
-            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+            /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
 //            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
-//            PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
+//            PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)*/
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
             clicked = true
         }
 

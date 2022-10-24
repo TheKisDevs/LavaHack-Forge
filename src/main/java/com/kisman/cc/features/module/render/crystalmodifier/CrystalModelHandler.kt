@@ -48,29 +48,23 @@ class CrystalModelHandler(
             var defaultBounceSpeed = MathHelper.sin(defaultSpinSpeed * 0.2f) / 2.0f + 0.5f
             defaultBounceSpeed += defaultBounceSpeed * defaultBounceSpeed
 
-            val customSpinSpeed = CrystalModifier.instance.speed.valFloat
-            val customBounceSpeed = CrystalModifier.instance.bounce.valFloat
-
-            val spinSpeed = defaultSpinSpeed * customSpinSpeed
-            val bounceSpeed = defaultBounceSpeed * customBounceSpeed
-
             pushMatrix()
             scale(2.0f * getScaleX() * getScaleModifier(entity.entityId, 0), 2.0f * getScaleY() * getScaleModifier(entity.entityId, 0), 2.0f * getScaleZ() * getScaleModifier(entity.entityId, 0))
             translate(getTranslateX(), -0.5f + getTranslateY(), getTranslateZ())
             if (needToRenderBase()) bottom.render(scale)
             scale(getScaleX() * getScaleModifier(entity.entityId, 2), getScaleY() * getScaleModifier(entity.entityId, 2), getScaleZ() * getScaleModifier(entity.entityId, 2))
-            rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
-            translate(getTranslateX(), 0.8f + bounceSpeed + getTranslateY(), getTranslateZ())
+            rotate(defaultSpinSpeed * CrystalModifier.instance.outsideSpinSpeed.valFloat, 0.0f, 1.0f, 0.0f)
+            translate(getTranslateX(), 0.8f + defaultBounceSpeed * CrystalModifier.instance.bounce.valFloat + getTranslateY(), getTranslateZ())
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
-            if (CrystalModifier.instance.outsideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox()!!, 2, scale)//getOutsideBox()?.render(scale)
+            if (CrystalModifier.instance.outsideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox()!!, 2, scale)
             scale(0.875f * getScaleX() * getScaleModifier(entity.entityId, 3), 0.875f * getScaleY() * getScaleModifier(entity.entityId, 3), 0.875f * getScaleZ() * getScaleModifier(entity.entityId, 3))
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
-            rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
-            if (CrystalModifier.instance.outsideCube2.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox2()!!, 3, scale)//getOutsideBox2()?.render(scale)
+            rotate(defaultSpinSpeed * CrystalModifier.instance.outsideSpinSpeed2.valFloat, 0.0f, 1.0f, 0.0f)
+            if (CrystalModifier.instance.outsideCube2.valEnum != CrystalModifier.CubeModes.Off) drawCube(getOutsideBox2()!!, 3, scale)
             scale(0.875f * getScaleX() * getScaleModifier(entity.entityId, 1), 0.875f * getScaleY() * getScaleModifier(entity.entityId, 1), 0.875f * getScaleZ() * getScaleModifier(entity.entityId, 1))
             rotate(60.0f, 0.7071f, 0.0f, 0.7071f)
-            rotate(spinSpeed, 0.0f, 1.0f, 0.0f)
-            if (CrystalModifier.instance.insideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getInsideBox()!!, 1, scale)//drawRubiksBox(getInsideBox()!!, scale)
+            rotate(defaultSpinSpeed * CrystalModifier.instance.insideSpinSpeed.valFloat, 0.0f, 1.0f, 0.0f)
+            if (CrystalModifier.instance.insideCube.valEnum != CrystalModifier.CubeModes.Off) drawCube(getInsideBox()!!, 1, scale)
             popMatrix()
 
             if(CrystalModifier.scaleTimes.containsKey(entity.entityId)) {
@@ -92,17 +86,12 @@ class CrystalModelHandler(
         }
     }
 
-    private fun getInsideBox() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.insideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.insideModel.valEnum as CrystalModifier.ModelModes)
-    }
+    private fun getInsideBox() : ModelRenderer? = getRenderer(CrystalModifier.instance.insideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.insideModel.valEnum as CrystalModifier.ModelModes)
 
-    private fun getOutsideBox() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.outsideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel.valEnum as CrystalModifier.ModelModes)
-    }
+    private fun getOutsideBox() : ModelRenderer? = getRenderer(CrystalModifier.instance.outsideCube.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel.valEnum as CrystalModifier.ModelModes)
 
-    private fun getOutsideBox2() : ModelRenderer? {
-        return getRenderer(CrystalModifier.instance.outsideCube2.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel2.valEnum as CrystalModifier.ModelModes)
-    }
+    private fun getOutsideBox2() : ModelRenderer? = getRenderer(CrystalModifier.instance.outsideCube2.valEnum as CrystalModifier.CubeModes, CrystalModifier.instance.outsideModel2.valEnum as CrystalModifier.ModelModes)
+
 
     /**
      * cubeID:
