@@ -12,8 +12,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class NoRender extends Module {
     public static NoRender instance;
@@ -93,8 +97,10 @@ public class NoRender extends Module {
     });
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
+        // bruh are you serious? - Cubic
+        /*
         if(potion.getValBoolean()) {
             if(mc.player.isPotionActive(Potion.getPotionById(25))) mc.player.removeActivePotionEffect(Potion.getPotionById(25));
             if(mc.player.isPotionActive(Potion.getPotionById(2))) mc.player.removeActivePotionEffect(Potion.getPotionById(2));
@@ -105,6 +111,15 @@ public class NoRender extends Module {
             if(mc.player.isPotionActive(Potion.getPotionById(18))) mc.player.removeActivePotionEffect(Potion.getPotionById(18));
             if(mc.player.isPotionActive(Potion.getPotionById(27))) mc.player.removeActivePotionEffect(Potion.getPotionById(27));
             if(mc.player.isPotionActive(Potion.getPotionById(20))) mc.player.removeActivePotionEffect(Potion.getPotionById(20));
+        }
+         */
+
+        if(potion.getValBoolean()){
+            Map<Potion, PotionEffect> map = new HashMap<>();
+            for(Map.Entry<Potion, PotionEffect> effect : mc.player.activePotionsMap.entrySet())
+                map.put(effect.getKey(), new PotionEffect(effect.getValue().getPotion(), effect.getValue().getDuration(), effect.getValue().getAmplifier(), effect.getValue().getIsAmbient(), false));
+            mc.player.activePotionsMap.clear();
+            mc.player.activePotionsMap.putAll(map);
         }
 
         if(weather.getValBoolean()) mc.world.setRainStrength(0.0f);

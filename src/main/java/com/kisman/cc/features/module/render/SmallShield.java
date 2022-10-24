@@ -8,8 +8,8 @@ public class SmallShield extends Module {
 
     public final Setting mainX = register(new Setting("MainHandX", this, 0, -1, 1, false));
     public final Setting mainY = register(new Setting("MainHandY", this, 0, -1, 1, false));
-    public final Setting offX = register(new Setting("MainHandX", this, 0, -1, 1, false));
-    public final Setting offY = register(new Setting("MainHandY", this, 0, -1, 1, false));
+    public final Setting offX = register(new Setting("OffHandX", this, 0, -1, 1, false));
+    public final Setting offY = register(new Setting("OffHandY", this, 0, -1, 1, false));
 
     public static SmallShield INSTANCE;
 
