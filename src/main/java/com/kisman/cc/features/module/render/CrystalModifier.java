@@ -140,6 +140,6 @@ public class CrystalModifier extends Module {
     });
     
     public enum RubiksCrystalRotationDirection {Left, Right}
-    public enum Cube {Off, In, Out}
+    public enum CubeModes {Off, In, Out}
     public enum ModelModes {Cube, Glass}
 }
