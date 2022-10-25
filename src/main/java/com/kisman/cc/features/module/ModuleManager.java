@@ -188,6 +188,7 @@ public class ModuleManager {
 		modules.add(new AntiHunger());
 		modules.add(new AntiWeakness());
 		modules.add(new AutoMine());
+		modules.add(new AutoMount());
 		modules.add(new AutoRespawn());
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
