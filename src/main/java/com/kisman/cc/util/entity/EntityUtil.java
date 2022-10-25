@@ -519,6 +519,18 @@ public class EntityUtil {
         return list4;
     }
 
+    /**
+     * @author Cubic
+     * @return the unwebbed motion
+     */
+    public static double[] unwebMotion(double[] motion){
+        return new double[]{
+                motion[0] * 4.0,
+                Double.longBitsToDouble(Double.doubleToRawLongBits(motion[1] * 19.99999970197678) + 1),
+                motion[2] * 4.0
+        };
+    }
+
     static {
         EXPLOSION_SOURCE = new DamageSource("explosion").setDifficultyScaled().setExplosion();
     }

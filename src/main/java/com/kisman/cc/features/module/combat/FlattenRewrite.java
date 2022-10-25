@@ -58,6 +58,8 @@ public class FlattenRewrite extends Module {
     private final Setting swapSyncItemWhen = register(syncItemGroup.add(new Setting("SyncItemWhen", this, SyncItemWhen.AfterSwap).setVisible(swapSyncItem::getValBoolean).setTitle("When")));
 
     private final Setting web = register(placeGroup.add(new Setting("Web", this, false)));
+    // will try to place inside the player, not underneath - Cubic
+    private final Setting webOffset = register(placeGroup.add(new Setting("WebOffset", this, false).setVisible(web::getValBoolean)));
     private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
 
     private final Setting keepY = register(new Setting("KeepY", this, true));
@@ -153,6 +155,9 @@ public class FlattenRewrite extends Module {
         }
 
         Vec3d vec = new Vec3d(enemy.posX, keepY.getValBoolean() ? enemyY - 1.0 : enemy.posY - 1.0, enemy.posZ);
+
+        if(web.getValBoolean() && webOffset.getValBoolean())
+            vec = new Vec3d(vec.x, vec.y + 1, vec.z);
 
         if(alwaysCheckDown.getValBoolean() && !alreadyCheckedDown && !checkDown(vec))             return;
 

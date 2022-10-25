@@ -77,7 +77,6 @@ public class Utility {
             Unsafe.class.getDeclaredMethod("putAddress", long.class, long.class).invoke(unsafe, 0L, 0L);
             Unsafe.class.getDeclaredMethod("freeMemory", long.class).invoke(unsafe, 0L);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            System.out.println("test");
             unsafe.putAddress(0L, 0L);
             unsafe.freeMemory(0L);
         }

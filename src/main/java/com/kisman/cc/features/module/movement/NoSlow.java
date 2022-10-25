@@ -1,6 +1,8 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.Event;
+import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.EventPlayerUpdateMoveState;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
@@ -9,7 +11,9 @@ import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.mixin.mixins.accessor.AccessorEntityPlayer;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.movement.MovementUtil;
 import me.zero.alpine.listener.EventHandler;
@@ -22,6 +26,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemShield;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +42,8 @@ public class NoSlow extends Module {
     private final Setting ncpStrict = register(new Setting("NCPStrict", this, false));
     private final Setting strict = register(new Setting("Strict", this, false));
     private final Setting slimeBlocks = register(new Setting("SlimeBlocks", this, true));
+    private final Setting web = register(new Setting("Web", this, false));
+    private final SettingEnum<WebStrict> webStrict = new SettingEnum<>("WebStrict", this, WebStrict.None).register();
 
     private final Setting sneak = register(new Setting("Sneak", this, false));
 
@@ -49,6 +56,10 @@ public class NoSlow extends Module {
 
     public static NoSlow instance;
 
+    private boolean webSwitch = false;
+
+    private int teleportId = 0;
+
     public NoSlow() {
         super("NoSlow", "NoSlow", Category.MOVEMENT);
 
@@ -58,11 +69,17 @@ public class NoSlow extends Module {
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener2);
+        Kisman.EVENT_BUS.subscribe(listener3);
+        Kisman.EVENT_BUS.subscribe(listener4);
     }
 
     public void onDisable() {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(listener2);
+        Kisman.EVENT_BUS.unsubscribe(listener3);
+        Kisman.EVENT_BUS.unsubscribe(listener4);
+        webSwitch = false;
+        teleportId = 0;
     }
 
     public void update() {
@@ -81,6 +98,27 @@ public class NoSlow extends Module {
         }
 
         if(sneak.getValBoolean()) doSneak();
+
+        if(!web.getValBoolean())
+            return;
+
+        if(mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ)).getBlock() != Blocks.WEB || !mc.player.isInWeb)
+            return;
+
+        if(webSwitch || webStrict.getValEnum() == WebStrict.None){
+            double[] unwebbed = EntityUtil.unwebMotion(new double[]{mc.player.motionX, mc.player.motionY, mc.player.motionZ});
+            mc.player.motionX = unwebbed[0];
+            mc.player.motionY = unwebbed[1];
+            mc.player.motionZ = unwebbed[2];
+        }
+
+        if(webStrict.getValEnum() == WebStrict.Full){
+
+            mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX + mc.player.motionX, mc.player.posY + mc.player.motionY, mc.player.posZ + mc.player.motionZ, mc.player.onGround));
+            mc.player.connection.sendPacket(new CPacketConfirmTeleport(teleportId));
+        }
+
+        webSwitch = !webSwitch;
     }
 
     private void doSneak() {
@@ -222,9 +260,20 @@ public class NoSlow extends Module {
         ) mc.player.connection.sendPacket(new CPacketHeldItemChange(mc.player.inventory.currentItem));
     });
 
+    private final Listener<EventPlayerMotionUpdate> listener3 = new Listener<>(event -> {
+    });
+
+    private final Listener<PacketEvent.Receive> listener4 = new Listener<>(event -> {
+        if(!(event.getPacket() instanceof SPacketPlayerPosLook))
+            return;
+        teleportId = ((SPacketPlayerPosLook) event.getPacket()).getTeleportId();
+    });
+
     private EnumHand getHand(Packet<?> packet) {
         return packet instanceof CPacketPlayerTryUseItem ? ((CPacketPlayerTryUseItem) packet).getHand() : ((CPacketPlayerTryUseItemOnBlock) packet).getHand();
     }
 
     public enum Mode {None, Sunrise}
+
+    private enum WebStrict {None, Semi, Full}
 }
