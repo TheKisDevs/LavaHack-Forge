@@ -29,6 +29,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object PacketMineProvider : Listenable {
     var position : BlockPos? = null
 
+    var posToMine : BlockPos? = null
+    private var lastPosToMine : BlockPos? = null
+
     private var swapper = DefaultSwapper()
 
     var silent = false
@@ -130,7 +133,9 @@ object PacketMineProvider : Listenable {
                             swapper.swap()
                         }
 
-                        mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, position!!, EnumFacing.DOWN))
+                        try {
+                            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, position!!, EnumFacing.DOWN))
+                        } catch(_ : Exception) {}
 
                         return true
                     }
@@ -162,7 +167,12 @@ object PacketMineProvider : Listenable {
 
     @SubscribeEvent fun onClientTick(event : TickEvent.ClientTickEvent) {
         if(!active() || mc.player == null || mc.world == null) {
+            lastPosToMine = null
             return
+        }
+
+        if(posToMine != lastPosToMine && posToMine != null) {
+            handleBlockClick(posToMine!!, EnumFacing.UP)
         }
 
         if(swap) {
@@ -181,6 +191,8 @@ object PacketMineProvider : Listenable {
 
             delay++
         }
+
+        lastPosToMine = posToMine
     }
 
     init {

@@ -29,6 +29,7 @@ import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.thread.kisman.ThreadHandler;
 import com.kisman.cc.util.world.CrystalUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.state.IBlockState;
@@ -132,12 +133,15 @@ public class AutoRer extends Module {
     private final Setting extrapolationRender = register(extrapolationGroup.add(new Setting("Extrapolation Render", this, false).setTitle("Render")));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
-    public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false).setVisible(place::getValBoolean)));
-    public final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false).setVisible(place::getValBoolean)));
+    public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false)));
+    public final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false)));
     private final Setting fourthCheck = register(place_.add(new Setting("Fourth Check", this, false)));
-    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi").setVisible(place::getValBoolean)));
-    public final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire").setVisible(place::getValBoolean)));
-    private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet").setVisible(place::getValBoolean)));
+    private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi")));
+    public final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire")));
+    private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet")));
+    private final Setting newVerPlace = register(place_.add(new Setting("1.13+ Place", this, false).setTitle("1.13+")));
+    private final Setting newVerEntities = register(place_.add(new Setting("1.13 Entities", this, false)));
+    private final Setting feetReplacer = register(place_.add(new Setting("Feet Replacer", this, false)));
     private final SettingGroup facePlaceGroup = register(place_.add(new SettingGroup(new Setting("Face", this))));
     private final Setting facePlace = register(facePlaceGroup.add(new Setting("Face Place", this, FacePlaceMode.None).setTitle("Mode")));
     private final SettingGroup facePlaceTriggersGroup = register(facePlaceGroup.add(new SettingGroup(new Setting("Triggers", this))));
@@ -705,14 +709,51 @@ public class AutoRer extends Module {
             } catch (Exception ignored) {}
         }
 
-        if(removeAfterAttack.getValBoolean() && event.getPacket() instanceof CPacketUseEntity) {
+        if(event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
-            if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && packet.getEntityFromWorld(mc.world) instanceof EntityEnderCrystal) {
-                Objects.requireNonNull(packet.getEntityFromWorld(mc.world)).setDead();
-                try {mc.world.removeEntityFromWorld(packet.entityId);} catch(Exception ignored) {}
+            Entity entity = packet.getEntityFromWorld(mc.world);
+
+            if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && entity instanceof EntityEnderCrystal) {
+                if(feetReplacer.getValBoolean()) {
+                    if(isSemiSafe(currentTarget) && isAtFeet(currentTarget, entity.getPosition().down())) {
+                        placePos.setBlockPos(entity.getPosition().down());
+                        handlePlaceFull(false, null);
+                    }
+                }
+
+                if(removeAfterAttack.getValBoolean()) {
+                    Objects.requireNonNull(entity).setDead();
+                    try {mc.world.removeEntityFromWorld(packet.entityId);} catch (Exception ignored) {}
+                }
             }
         }
     });
+
+    private boolean isSemiSafe(EntityPlayer player) {
+        BlockPos pos = WorldUtilKt.entityPosition(player);
+        int i = 0;
+
+        for(EnumFacing facing : EnumFacing.HORIZONTALS) if(mc.world.getBlockState(pos.offset(facing)).getBlock() != Blocks.AIR) i++;
+
+        return i >= 3;
+    }
+
+    public boolean isAtFeet(List<EntityPlayer> players, BlockPos pos) {
+        for (EntityPlayer player : players) {
+            if (FriendManager.instance.isFriend(player) || player == mc.player) continue;
+            if (isAtFeet(player, pos)) return true;
+        }
+
+        return false;
+    }
+
+    public boolean isAtFeet(EntityPlayer player, BlockPos pos) {
+        BlockPos up = pos.up();
+        if (!canPlaceCrystal(pos, secondCheck.getValBoolean(), false, needToMultiPlace(), firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) return false;
+        for (EnumFacing face : EnumFacing.HORIZONTALS) if (mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(up.offset(face))).contains(player) || mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(up.offset(face).offset(face))).contains(player)) return true;
+
+        return false;
+    }
 
     private boolean isRightThread() {
         return mc.isCallingFromMinecraftThread() || (!this.threadOngoing.get());
@@ -720,23 +761,7 @@ public class AutoRer extends Module {
 
     private void doCalculatePlace() {
         try {
-            if(cubicCalc.getValBoolean()) {
-                placePos = AutoRerUtil.Companion.getPlacePos(
-                        placeRange.getValFloat(),
-                        placeWallRange.getValFloat(),
-                        currentTarget,
-                        needToMultiPlace(),
-                        firePlace.getValBoolean(),
-                        secondCheck.getValBoolean(),
-                        thirdCheck.getValBoolean(),
-                        minDMG.getValInt(),
-                        maxSelfDMG.getValInt(),
-                        lethalMult.getValFloat(),
-                        terrain.getValBoolean(),
-                        wallRangeUsage.getValBoolean(),
-                        noSuicide.getValBoolean()
-                );
-            } else calculatePlace();
+            calculatePlace();
             if(placePos.getBlockPos() == null && Crystals.INSTANCE.getState()) placePos.setBlockPos(Crystals.INSTANCE.getPos());
             else Crystals.INSTANCE.setState(false);
         } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
@@ -762,6 +787,24 @@ public class AutoRer extends Module {
         return armorBreakerState.getValBoolean() && InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt());
     }
 
+    private boolean entityCheck(BlockPos pos, boolean multiPlace) {
+        return mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY(), pos.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
+    }
+
+    private boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace, boolean newVerPlace, boolean newVerEntities) {
+        if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR) && !(firePlace && mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.FIRE))) return false;
+            if (!newVerPlace && !mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) return false;//TODO new ver place
+            BlockPos boost = pos.add(0, 1, 0);
+            if(!newVerEntities) {
+                if (check) boost.up().up();
+                else boost.up();
+            }
+            return !entity || entityCheck(boost, multiPlace);//mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (check ? 2 : 1), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
+        }
+        return false;
+    }
+
     private void calculatePlace() {
         double maxDamage = 0.5;
         double selfDamage_ = 0;
@@ -777,7 +820,7 @@ public class AutoRer extends Module {
             BlockPos pos = sphere.get(i);
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
-            if(CrystalUtils.canPlaceCrystal(pos, secondCheck.getValBoolean(), true, needToMultiPlace(), firePlace.getValBoolean())) {
+            if(canPlaceCrystal(pos, secondCheck.getValBoolean(), true, needToMultiPlace(), firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) {
                 float targetDamage = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget);
 
                 Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);

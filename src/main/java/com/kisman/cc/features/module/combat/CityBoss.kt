@@ -12,6 +12,7 @@ import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
+import com.kisman.cc.util.providers.PacketMineProvider
 import com.kisman.cc.util.render.nearestFacing
 import com.kisman.cc.util.world.entityPosition
 import com.kisman.cc.util.world.playerPosition
@@ -195,8 +196,9 @@ class CityBoss : Module(
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
 //            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
 //            PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)*/
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)
+            /*mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)*/
+            PacketMineProvider.posToMine = pos
             clicked = true
         }
 

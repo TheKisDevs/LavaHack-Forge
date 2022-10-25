@@ -66,7 +66,13 @@ class KillAuraRewrite : Module(
     override fun update() {
         if(mc.player == null || mc.world == null || mc.player.isDead) return
 
-        if(cooldownCheck.valBoolean) {
+        val oldSlot = mc.player.inventory.currentItem
+        val saver = RotationSaver().save()
+        val swapper = swap.valEnum as SwapEnum2.Swap
+        val rotator = rotation.valEnum as RotationEnum.Rotation
+        val weaponSlot = getWeaponSlot()
+
+        if(cooldownCheck.valBoolean && oldSlot != weaponSlot && swapper == SwapEnum2.Swap.None) {
             if(mc.player.getCooledAttackStrength(0f) <= (if(ccOnlyCrits.valBoolean) 0.95f else 1f)) return
         }
 
@@ -76,39 +82,35 @@ class KillAuraRewrite : Module(
             return
         }
 
-        val oldSlot = mc.player.inventory.currentItem
-        val saver = RotationSaver().save()
-        val swapper = swap.valEnum as SwapEnum2.Swap
-        val rotator = rotation.valEnum as RotationEnum.Rotation
-
-        val weaponSlot = getWeaponSlot()
-
-        if(oldSlot == -1 || (weaponSlot != oldSlot && weapon.valEnum == KillAuraWeapons.None)) {
+        if(oldSlot == -1 || (weaponSlot != oldSlot && swapper == SwapEnum2.Swap.None)) {
             return
         }
 
         swapper.task.doTask(weaponSlot, false)
         rotator.taskR.doTask(rotator.taskCEntity.doTask(target?.entityId, rotationLogic.valEnum as RotationLogic), false)
 
-        if(packetAttack.valBoolean) {
-            mc.player.connection.sendPacket(CPacketUseEntity(target!!))
-        } else {
-            mc.playerController.attackEntity(mc.player, target!!)
-        }
+        if(cooldownCheck.valBoolean && oldSlot == weaponSlot && swapper != SwapEnum2.Swap.None) {
+            if(mc.player.getCooledAttackStrength(0f) > (if(ccOnlyCrits.valBoolean) 0.95f else 1f)) {
+                if(packetAttack.valBoolean) {
+                    mc.player.connection.sendPacket(CPacketUseEntity(target!!))
+                } else {
+                    mc.playerController.attackEntity(mc.player, target!!)
+                }
 
-        when(swing.valEnum as SwingHands) {
-            SwingHands.MainHand -> mc.player.swingArm(EnumHand.MAIN_HAND)
-            SwingHands.OffHand -> mc.player.swingArm(EnumHand.OFF_HAND)
-            SwingHands.PacketSwing -> mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
-        }
+                when(swing.valEnum as SwingHands) {
+                    SwingHands.MainHand -> mc.player.swingArm(EnumHand.MAIN_HAND)
+                    SwingHands.OffHand -> mc.player.swingArm(EnumHand.OFF_HAND)
+                    SwingHands.PacketSwing -> mc.player.connection.sendPacket(CPacketAnimation(EnumHand.MAIN_HAND))
+                }
 
-        if(resetCooldown.valBoolean) {
-            mc.player.resetCooldown()
+                if(resetCooldown.valBoolean) {
+                    mc.player.resetCooldown()
+                }
+            }
         }
 
         rotator.taskRFromSaver.doTask(saver, true)
         swapper.task.doTask(oldSlot, true)
-
     }
 
     private fun getWeaponSlot() : Int {
