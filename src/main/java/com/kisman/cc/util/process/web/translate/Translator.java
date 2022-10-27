@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class Translator {
 
-    public static final String API_KEY = "trnsl.1.1.20200422T075141Z.abcf23ddfa9d3554.07818759534663d66c01378ce744e8da1ef0a04a";
+    //public static final String API_KEY = "trnsl.1.1.20200422T075141Z.abcf23ddfa9d3554.07818759534663d66c01378ce744e8da1ef0a04a";
 
     private static String request(String URL) throws IOException {
         java.net.URL url = new URL(URL);
@@ -30,6 +30,7 @@ public class Translator {
     }
 
     public static Map<String, String> getLangs() throws IOException {
+        /*
         String langs = request("https://translate.yandex.net/api/v1.5/tr.json/getLangs?key=" + API_KEY + "&ui=en");
         langs = langs.substring(langs.indexOf("langs") + 7);
         langs = langs.substring(0, langs.length() - 2);
@@ -46,16 +47,24 @@ public class Translator {
             languages.put(key, value);
         }
         return languages;
+         */
+        return new HashMap<>();
     }
 
     public static String translate(String text, String sourceLang, String targetLang) throws IOException {
+        /*
         String response = request("https://translate.yandex.net/api/v1.5/tr.json/translate?key=" + API_KEY + "&text=" + text.replaceAll(" ", "%20") + "&lang=" + sourceLang + "-" + targetLang);
         return response.substring(response.indexOf("text") + 8, response.length() - 3);
+         */
+        return "Unsupported";
     }
 
     public static String detectLanguage(String text) throws IOException {
+        /*
         String response = request("https://translate.yandex.net/api/v1.5/tr.json/detect?key=" + API_KEY + "&text=" + text);
         return response.substring(response.indexOf("lang") + 7, response.length() - 2);
+         */
+        return "Unsupported";
     }
 
     public static String getKey(Map<String, String> map, String value) {

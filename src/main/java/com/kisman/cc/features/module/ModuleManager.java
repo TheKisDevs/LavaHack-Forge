@@ -248,6 +248,7 @@ public class ModuleManager {
 //		modules.add(new FreeLook());
 		modules.add(new Funny());
 		modules.add(new HotbarScroller());
+		modules.add(new ItemRenamer());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());
