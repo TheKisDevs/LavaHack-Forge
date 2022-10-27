@@ -1,5 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventEnchantGlintColor;
 import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -42,5 +44,14 @@ public class MixinRenderItem {
 
             GlStateManager.popMatrix();
         }
+    }
+
+    @ModifyArg(method = "renderEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderItem;renderModel(Lnet/minecraft/client/renderer/block/model/IBakedModel;I)V"), index = 1)
+    public int changeColor(int color){
+        EventEnchantGlintColor event = new EventEnchantGlintColor(EventEnchantGlintColor.Stage.Item, new Color(color, true));
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled())
+            return event.getColor().getRGB();
+        return color;
     }
 }

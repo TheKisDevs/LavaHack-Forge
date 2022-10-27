@@ -27,6 +27,7 @@
     "MixinItemBlock",
     "MixinItemEnderCrystal",
     "MixinItemRenderer",
+    "MixinLayerArmorBase",
     "MixinLayerBipedArmor",
     "MixinLocale",
     "MixinMinecraft",
