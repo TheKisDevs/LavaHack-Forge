@@ -141,7 +141,6 @@ public class AutoQuiver extends Module {
 
     private void swap(int slot, boolean switchBack){
         if(mc.player == null || mc.world == null) return;
-
         switch(swap.getValEnum()){
             case Off:
                 break;
