@@ -54,7 +54,7 @@ public class EnchantGlint extends Module {
             return;
         event.cancel();
         if(noGlint.getValBoolean()){
-            event.setColor(new Color(0, 0, 0, 0));
+            event.setColor(new Color(255, 255, 255, 0));
             return;
         }
         Color color = this.color.getColour().getColor();
