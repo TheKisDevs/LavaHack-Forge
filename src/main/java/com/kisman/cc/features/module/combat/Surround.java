@@ -177,7 +177,7 @@ public class Surround extends Module {
                 if (Objects.equals(BlockUtil.getBlockResistance(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)))), BlockUtil.BlockResistance.BLANK) && surroundPlaced <= blocksPerTick.getValDouble()) {
                     surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
-                    if (RaytraceUtil.raytraceBlock(surroundPosition, RaytraceUtil.Raytrace.NORMAL) && raytrace.getValBoolean()) return;
+//                    if (RaytraceUtil.raytraceBlock(surroundPosition, RaytraceUtil.Raytrace.NORMAL) && raytrace.getValBoolean()) return;
 //                    if (surroundPosition != BlockPos.ORIGIN) {
 //                        if (!rotate.getValString().equals(Rotate.NONE.name())) {
 //                            float[] surroundAngles = rotateCenter.getValBoolean() ? AngleUtil.calculateCenter(surroundPosition) : AngleUtil.calculateAngles(surroundPosition);

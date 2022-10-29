@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.misc;
+package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.util.process.file.ClipboardImage;
@@ -16,7 +16,7 @@ public class BetterScreenshot extends Module {
     public static BetterScreenshot instance;
 
     public BetterScreenshot() {
-        super("BetterScreenshot", "offix sori no mne 'eto otchen nado ni termay repy poshaluysta", Category.MISC);
+        super("BetterScreenshot", "offix sori no mne 'eto otchen nado ni termay repy poshaluysta", Category.CLIENT);
 
         instance = this;
     }

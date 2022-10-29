@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.misc;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventServerPing;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -14,6 +15,18 @@ public class NoPing extends Module {
 
     public NoPing(){
         super("NoPing", Category.MISC, true);
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        Kisman.EVENT_BUS.subscribe(this);
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(this);
     }
 
     @EventHandler

@@ -3,6 +3,9 @@ package com.kisman.cc.features.viaforge.protocol;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 
 public enum ProtocolCollection {
+    R1_19_2(new ProtocolVersion(760, "1.19.1-1.19.2")),
+    R1_19(new ProtocolVersion(759, "1.19")),
+
     R1_18_2(new ProtocolVersion(758, "1.18.2")),
     R1_18_1(new ProtocolVersion(757, "1.18-1.18.1")),
 
@@ -59,6 +62,6 @@ public enum ProtocolCollection {
         for (ProtocolCollection coll : values())
             if (coll.getVersion().getVersion() == id)
                 return coll.getVersion();
-        return null;
+        return R1_12_2.getVersion();
     }
 }

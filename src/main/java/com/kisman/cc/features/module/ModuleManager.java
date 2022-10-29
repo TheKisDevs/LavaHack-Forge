@@ -31,6 +31,7 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.features.module");
 
 		//Debug
+		modules.add(new AutoFly());
 		modules.add(new BaritoneTest());
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
@@ -106,6 +107,7 @@ public class ModuleManager {
 //		modules.add(new TrapDoorBurrow());
 		//client
 		modules.add(new Baritone());
+		modules.add(new BetterScreenshot());
 		modules.add(new Cape());
 		modules.add(new Changer());
 //		modules.add(ClientFixer.INSTANCE);
@@ -240,7 +242,6 @@ public class ModuleManager {
 		modules.add(new AntiSpammer());
 		modules.add(new AutoEZ());
 		modules.add(new AutoLog());
-		modules.add(new BetterScreenshot());
 		modules.add(new BurrowCounter());
 		modules.add(new ChatModifier());
 		//modules.add(new DDOSModule());
@@ -262,7 +263,6 @@ public class ModuleManager {
 		modules.add(new Spammer());
 		modules.add(new Spin());
 		modules.add(new TotemPopCounter());
-		modules.add(new Tracker());
 		modules.add(new Translate());
 		modules.add(new VisualRange());
 		modules.add(new WeaknessLog());

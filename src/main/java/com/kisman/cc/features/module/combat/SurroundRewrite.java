@@ -622,7 +622,7 @@ public class SurroundRewrite extends Module {
         return blocks;
     }
 
-    private List<BlockPos> getDynamicBlocksOffset(Entity entity, double y, int offset){
+    public List<BlockPos> getDynamicBlocksOffset(Entity entity, double y, int offset){
         List<BlockPos> list = new ArrayList<>(16);
         AxisAlignedBB aabb = entity.getEntityBoundingBox();
         double oX = (aabb.maxX - aabb.minX) / 2.0;

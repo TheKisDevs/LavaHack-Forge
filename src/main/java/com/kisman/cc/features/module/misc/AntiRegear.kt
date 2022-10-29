@@ -3,10 +3,9 @@ package com.kisman.cc.features.module.misc
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.world.BlockInteractionHelper
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.entity.player.PlayerUtil
 import com.kisman.cc.util.chat.cubic.ChatUtility
+import com.kisman.cc.util.world.CrystalUtils
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -37,7 +36,7 @@ class AntiRegear : Module(
                 oldSlot = -1
             }
         }
-        for(pos in BlockInteractionHelper.getSphere(PlayerUtil.GetLocalPlayerPosFloored(), range.valDouble.toFloat(), range.valInt, false, true, 0)) {
+        for(pos in CrystalUtils.getSphere(mc.player, range.valFloat, false, true)) {
             if(mc.world.getBlockState(pos).block is BlockShulkerBox) {
                 if (!breakQueue.contains(pos)) breakQueue.add(pos)
             }

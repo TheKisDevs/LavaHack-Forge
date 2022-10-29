@@ -28,11 +28,12 @@ public class Burrow2 extends Module {
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting centerPlayer = register(new Setting("Center", this, false));
     private final Setting floorY = register(new Setting("FloorY", this, false).setVisible(centerPlayer::getValBoolean));
-    private final Setting noPushOut = /*register*/(new Setting("NoPushOutBlock", this, false));
+    private final Setting noPushOut = register(new Setting("NoPushOutBlock", this, false));
     private final Setting smart = register(new Setting("Smart", this, false));
     private final Setting smartRange = register(new Setting("SmartRange", this, 3.0, 1.0, 8.0, false).setVisible(smart::getValBoolean));
     private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
     public final Setting keepOn = register(new Setting("KeepOn", this, false));
+    private final Setting dynamic = register(new Setting("Dynamic", this, false));
 
     public static Burrow2 instance;
 
@@ -142,7 +143,12 @@ public class Burrow2 extends Module {
 
         fakeJump();
 
-        placeBlock(oldPos, slot);
+        if(dynamic.getValBoolean()) {
+            int oldSlot = mc.player.inventory.currentItem;
+            swap(slot, false);
+            for(BlockPos pos : SurroundRewrite.instance.getDynamicBlocksOffset(mc.player, oldPos.getY(), 0)) BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            swap(oldSlot, true);
+        } else placeBlock(oldPos, slot);
 
         if(!mc.isSingleplayer()) {
             mc.player.setPosition(mc.player.posX, mc.player.posY - 1.16610926093821D, mc.player.posZ);

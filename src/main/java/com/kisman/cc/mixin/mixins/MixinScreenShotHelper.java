@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.misc.BetterScreenshot;
+import com.kisman.cc.features.module.client.BetterScreenshot;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ScreenShotHelper;
 import net.minecraft.util.text.ITextComponent;

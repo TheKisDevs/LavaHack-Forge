@@ -20,6 +20,7 @@ import com.kisman.cc.features.nocom.gui.NoComGui;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
 import com.kisman.cc.features.rpc.RPC;
+import com.kisman.cc.features.viaforge.ViaForge;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
@@ -220,6 +221,9 @@ public class Kisman {
 
         configManager = new ConfigManager("config");
         configManager.getLoader().init();
+
+        try {ViaForge.getInstance().start();}
+        catch (Exception e) {LOGGER.error("[ViaForge] ViaForge did not loaded! If you need it, restart the client");}
 
         init = true;
     }

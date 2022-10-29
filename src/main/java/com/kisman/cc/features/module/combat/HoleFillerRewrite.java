@@ -3,8 +3,10 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
@@ -47,7 +49,8 @@ public class HoleFillerRewrite extends Module {
     private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
     private final Setting packet = register(logic.add(new Setting("Packet", this, false)));
     private final Setting place = register(logic.add(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay"))));
-    private final Setting delay = register(logic.add(new Setting("DelayMS", this, 50, 0, 500, true).setVisible(() -> place.getValString().equals("Delay"))));
+    private final Setting entityCheck = register(logic.add(new Setting("Entity Check", this, false)));
+    private final Setting delay = register(logic.add(new Setting("Delay", this, 50, 0, 500, NumberType.TIME).setVisible(() -> place.getValString().equals("Delay"))));
     private final Setting placeMode = register(logic.add(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target"))));
     private final Setting enemyRange = register(logic.add(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target"))));
     private final Setting aroundEnemyRange = register(logic.add(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target"))));
@@ -145,13 +148,13 @@ public class HoleFillerRewrite extends Module {
     }
 
     private List<BlockPos> getHoleBlocks(Entity entity){
-        List<BlockPos> holes = new ArrayList<>(64);
+        HolesList holes = new HolesList();
         float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
         Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
         lim = 0;
-        if(singleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE));
-        if(doubleHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE));
-        if(customHoles.getValBoolean()) holes.addAll(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM));
+        if(singleHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE), entityCheck.getValBoolean());
+        if(doubleHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE), entityCheck.getValBoolean());
+        if(customHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM), entityCheck.getValBoolean());
         return holes;
     }
 

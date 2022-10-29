@@ -187,18 +187,20 @@ class CityBoss : Module(
                 println("kill yourself <3")
             }
         } else if(!clicked && mineMode.valEnum == MineMode.PacketMine) {
-            /*if(!PacketMine.instance.isToggled) {
+            if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
-            }*/
+            }
 
             /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
-            (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
+            (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
 //            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
-//            PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)*/
+            if(PacketMineProvider.position != pos) {
+                PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
+            }
             /*mc.player.swingArm(EnumHand.MAIN_HAND)
             mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)*/
-            PacketMineProvider.posToMine = pos
+//            PacketMineProvider.posToMine = pos
             clicked = true
         }
 

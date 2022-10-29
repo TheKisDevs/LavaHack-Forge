@@ -1,22 +1,25 @@
 package com.kisman.cc.features.viaforge.platform;
 
+import com.kisman.cc.features.viaforge.ViaForge;
+import com.kisman.cc.features.viaforge.util.FutureTaskId;
+import com.kisman.cc.features.viaforge.util.JLoggerToLog4j;
 import com.viaversion.viaversion.api.command.ViaCommandSender;
 import com.viaversion.viaversion.api.configuration.ConfigurationProvider;
 import com.viaversion.viaversion.api.configuration.ViaVersionConfig;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.PlatformTask;
+import com.viaversion.viaversion.api.platform.UnsupportedSoftware;
 import com.viaversion.viaversion.api.platform.ViaPlatform;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import com.viaversion.viaversion.libs.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import com.kisman.cc.features.viaforge.ViaForge;
-import com.kisman.cc.features.viaforge.util.FutureTaskId;
-import com.kisman.cc.features.viaforge.util.JLoggerToLog4j;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -156,5 +159,20 @@ public class Platform implements ViaPlatform<UUID> {
     @Override
     public boolean isOldClientsAllowed() {
         return true;
+    }
+
+    @Override
+    public Collection<UnsupportedSoftware> getUnsupportedSoftwareClasses() {
+        return ViaPlatform.super.getUnsupportedSoftwareClasses();
+    }
+
+    @Override
+    public boolean disconnect(UserConnection connection, String message) {
+        return ViaPlatform.super.disconnect(connection, message);
+    }
+
+    @Override
+    public boolean isProxy() {
+        return ViaPlatform.super.isProxy();
     }
 }

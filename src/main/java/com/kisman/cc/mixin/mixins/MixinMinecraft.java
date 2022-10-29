@@ -128,11 +128,6 @@
    if (Interaction.INSTANCE.isToggled() && Interaction.multiTask.getValBoolean() && !player.isHandActive()) player.handActive = mt_handActive;
   }
 
-  @Inject(method = "<init>", at = @At("RETURN"))
-  public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
-   try {ViaForge.getInstance().start();} catch (Exception e) {Kisman.LOGGER.error("[ViaForge] ViaForge did not loaded! If you need it, restart the client");}}
-
-
   //Baritone
   @Shadow public WorldClient world;
 

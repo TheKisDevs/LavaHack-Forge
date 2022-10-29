@@ -46,9 +46,6 @@ public class GuiProtocolSelector extends GuiScreen {
         CustomFontUtil.drawCenteredStringWithShadow("ViaForge", width / 4, 6, ColorUtils.astolfoColors(100, 100));
         GL11.glPopMatrix();
 
-        CustomFontUtil.drawString("by EnZaXD/Flori2007", 1, 1, -1);
-        CustomFontUtil.drawString("Discord: EnZaXD#6257", 1, 11, -1);
-
         super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_);
     }
 

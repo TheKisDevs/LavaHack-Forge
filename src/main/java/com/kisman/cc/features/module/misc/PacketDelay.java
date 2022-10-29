@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.misc;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -25,6 +26,13 @@ public class PacketDelay extends Module {
         ChatUtility.info().printClientModuleMessage("Sending packet...");
         mc.player.connection.sendPacket(new CPacketPing());
         this.start = System.currentTimeMillis();
+        Kisman.EVENT_BUS.subscribe(this);
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(this);
     }
 
     @EventHandler

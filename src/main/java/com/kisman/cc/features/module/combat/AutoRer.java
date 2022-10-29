@@ -100,7 +100,6 @@ public class AutoRer extends Module {
     public final Setting terrain = register(main.add(new Setting("Terrain", this, false)));
     private final Setting switch_ = register(main.add(new Setting("Switch", this, SwitchMode.None)));
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
-    private final Setting cubicCalc = register(calc.add(new Setting("Cubic Calc", this, false)));
     private final Setting heuristics = register(calc.add(new Setting("Heuristic", this, Heuristics.Damage)));
     private final Setting safetyBalance = register(calc.add(new Setting("Safety Balance", this, 0, 0, 20, false).setVisible(heuristics.getValEnum() == Heuristics.Safety)));
     private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
@@ -715,7 +714,7 @@ public class AutoRer extends Module {
 
             if(packet.getAction().equals(CPacketUseEntity.Action.ATTACK) && entity instanceof EntityEnderCrystal) {
                 if(feetReplacer.getValBoolean()) {
-                    if(isSemiSafe(currentTarget) && isAtFeet(currentTarget, entity.getPosition().down())) {
+                    if(currentTarget != null && isSemiSafe(currentTarget) && isAtFeet(currentTarget, entity.getPosition().down())) {
                         placePos.setBlockPos(entity.getPosition().down());
                         handlePlaceFull(false, null);
                     }
@@ -776,7 +775,7 @@ public class AutoRer extends Module {
     }
 
     private boolean isTargetMoving() {
-        return currentTarget != null && !lastTargetPos.equals(currentTarget.getPosition());
+        return currentTarget != null && (currentTarget.moveForward != 0 || currentTarget.moveStrafing != 0);//!lastTargetPos.equals(currentTarget.getPosition());
     }
 
     public boolean facePlaceDamageCheck(float currentDamage) {
@@ -787,20 +786,12 @@ public class AutoRer extends Module {
         return armorBreakerState.getValBoolean() && InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt());
     }
 
-    private boolean entityCheck(BlockPos pos, boolean multiPlace) {
-        return mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY(), pos.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
-    }
-
     private boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace, boolean newVerPlace, boolean newVerEntities) {
         if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
             if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR) && !(firePlace && mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.FIRE))) return false;
-            if (!newVerPlace && !mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) return false;//TODO new ver place
+            if (!newVerPlace && !mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) return false;
             BlockPos boost = pos.add(0, 1, 0);
-            if(!newVerEntities) {
-                if (check) boost.up().up();
-                else boost.up();
-            }
-            return !entity || entityCheck(boost, multiPlace);//mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (check ? 2 : 1), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
+            return !entity || mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (newVerEntities ? 0 : (check ? 2 : 1)), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
         }
         return false;
     }

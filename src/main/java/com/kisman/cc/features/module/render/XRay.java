@@ -7,9 +7,8 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.BoxRendererPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.ColourUtilKt;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.thread.TaskQueue;
-import com.kisman.cc.util.world.BlockInteractionHelper;
+import com.kisman.cc.util.world.CrystalUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -51,7 +50,7 @@ public class XRay extends Module {
 
     private void doXRay(float ticks) {
         queue.clear();
-        for(BlockPos pos : BlockInteractionHelper.getSphere(PlayerUtil.GetLocalPlayerPosFloored(), (float) range.getValDouble(), range.getValInt(), false, true, 0)) renderBlock(pos, ticks);
+        for(BlockPos pos : CrystalUtils.getSphere(mc.player, range.getValFloat(), false, true)) renderBlock(pos, ticks);
         while(queue.hasMoreTasks()) {
             queue.runCur();
         }

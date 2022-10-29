@@ -37,7 +37,7 @@ class BlockESP : Module(
     private val endPortal = register(endPortalGroup.add(Setting("End Portal", this, false)))
     private val endPortalRenderer = BoxRendererPattern(this).group(endPortalGroup).visible(Supplier { endPortal.valBoolean }).prefix("End Portal").preInit().init()
 
-    private var list = java.util.ArrayList<BlockPos>()
+    private var list = ArrayList<BlockPos>()
 
     override fun onEnable() {
         super.onEnable()
@@ -63,7 +63,7 @@ class BlockESP : Module(
     }
 
     private fun doBlockESPLogic() {
-        val list = java.util.ArrayList<BlockPos>(list.size)
+        val list = ArrayList<BlockPos>(list.size)
         for(pos in CrystalUtils.getSphere(range.valFloat, true, false)) {
             val block = mc.world.getBlockState(pos).block
             if(block == Blocks.WEB && web.valBoolean) list.add(pos)
