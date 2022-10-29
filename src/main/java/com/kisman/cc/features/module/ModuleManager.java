@@ -45,6 +45,7 @@ public class ModuleManager {
 		//modules.add(new GhostBlock());
 		modules.add(new GLScissorTest());
 		modules.add(new HelloWorld());
+		modules.add(new LavaHackOwns());
 //		modules.add(new M2LTest());
 		modules.add(new Meow());
 		modules.add(new ModuleInstancingJava());
