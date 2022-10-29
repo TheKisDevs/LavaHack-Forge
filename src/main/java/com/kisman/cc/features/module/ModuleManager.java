@@ -100,6 +100,7 @@ public class ModuleManager {
 		modules.add(new HoleKicker());
 		modules.add(new KillAuraRewrite());
 		modules.add(new OffHand());
+		modules.add(new Prison());
 		modules.add(new SelfTrapRewrite());
 		modules.add(new SilentXp());
 		modules.add(new Surround());
@@ -131,6 +132,7 @@ public class ModuleManager {
 		modules.add(new CrystalModifier());
 		modules.add(new CrystalSafeBlocks());
 		modules.add(new DamageESP());
+		modules.add(new EnchantGlint());
 		modules.add(new EntityESPRewrite());
 //		modules.add(new HoleESP());
 //		modules.add(new HoleESPRewrite());
@@ -249,6 +251,7 @@ public class ModuleManager {
 //		modules.add(new FreeLook());
 		modules.add(new Funny());
 		modules.add(new HotbarScroller());
+		modules.add(new ItemRenamer());
 		modules.add(new MurderFinder());
 		modules.add(new NameProtect());
 		modules.add(new Optimizer());

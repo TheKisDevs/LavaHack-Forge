@@ -1,5 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventEnchantGlintColor;
 import com.kisman.cc.features.module.render.*;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -16,7 +18,14 @@ public class MixinRenderItem {
 
     @ModifyArg(method = "renderEffect", at = @At(value="INVOKE", target="net/minecraft/client/renderer/RenderItem.renderModel(Lnet/minecraft/client/renderer/block/model/IBakedModel;I)V"), index=1)
     private int renderEffect(int oldValue) {
-        return ViewModel.instance.isToggled() && ViewModel.instance.useAlpha.getValBoolean() ? new Color(255, 255, 255, ViewModel.instance.alpha.getValInt()).getRGB() : oldValue;
+        EventEnchantGlintColor event = new EventEnchantGlintColor(EventEnchantGlintColor.Stage.Item, new Color(oldValue, true));
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled())
+            return event.getColor().getRGB();
+        Color color = event.getColor();
+        if(ViewModel.instance.isToggled() && ViewModel.instance.useAlpha.getValBoolean())
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), ViewModel.instance.alpha.getValInt());
+        return color.getRGB();
     }
 
     /**

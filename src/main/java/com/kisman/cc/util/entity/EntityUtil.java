@@ -531,6 +531,12 @@ public class EntityUtil {
         };
     }
 
+    public static <T extends Entity> List<T> getEntities(Class<T> type, AxisAlignedBB aabb){
+        return mc.world.getEntitiesWithinAABB(type, aabb.expand(5, 5, 5)).stream()
+                .filter(e -> aabb.intersects(e.getEntityBoundingBox()))
+                .collect(Collectors.toList());
+    }
+
     static {
         EXPLOSION_SOURCE = new DamageSource("explosion").setDifficultyScaled().setExplosion();
     }

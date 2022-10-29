@@ -34,6 +34,8 @@ public class ScaffoldTest3 extends Module {
     private final Setting towerFast = register(new Setting("TowerFast", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerTicks = register(new Setting("TowerTicks", this, 1, 1, 20, true).setVisible(tower::getValBoolean));
     private final Setting towerMotion = register(new Setting("TowerMotion", this,0.42, 0, 1, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
+    private final Setting jump = register(new Setting("Jump", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
+    private final Setting fallFly = register(new Setting("FallFly", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
     private final Setting restrict = register(new Setting("Restrict", this, true).setVisible(tower::getValBoolean));
     private final Setting settingRestrictTicks = register(new Setting("RestrictTicks", this, 15, 1, 40, true).setVisible(tower::getValBoolean));
     private final Setting towerBind = register(new Setting("TowerBind", this, Keyboard.KEY_SPACE).setTitle("Bind").setVisible(tower::getValBoolean));
@@ -137,10 +139,14 @@ public class ScaffoldTest3 extends Module {
                         && (!restrict.getValBoolean() || restrictTicks >= settingRestrictTicks.getValInt())
         ) {
             if(towerMode.getValEnum() == TowerMode.Motion){
-                mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                if(fallFly.getValBoolean())
+                    mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
+                if(Math.floor(mc.player.prevPosY) < Math.floor(mc.player.posY))
+                    mc.player.connection.sendPacket(new CPacketPlayer(true));
+                if(jump.getValBoolean() && (mc.player.onGround || Math.floor(mc.player.prevPosY) < Math.floor(mc.player.posY)))
+                    mc.player.jump();
                 mc.player.motionY = towerMotion.getValDouble();
                 mc.player.fallDistance = 0f;
-                mc.player.connection.sendPacket(new CPacketPlayer(true));
             } else {
                 if(mc.player.onGround)
                     mc.player.jump();

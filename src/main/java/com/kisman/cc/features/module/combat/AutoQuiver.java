@@ -10,6 +10,7 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemBow;
@@ -58,6 +59,9 @@ public class AutoQuiver extends Module {
         super.onDisable();
         if(oldSlot != -1)
             swap(oldSlot, true);
+        if(cancel){
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false);
+        }
         cancel = false;
         oldSlot = -1;
         Kisman.EVENT_BUS.unsubscribe(listener);
@@ -72,8 +76,11 @@ public class AutoQuiver extends Module {
 
     @Override
     public void update(){
-        if(mc.player == null || mc.world == null)
+        if(mc.player == null || mc.world == null){
+            if(cancel)
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false);
             return;
+        }
 
         int ms = delay.getValEnum() == DelayMode.None ? 0 : (delay.getValEnum() == DelayMode.Millis ? delayMS.getValInt() : delayTicks.getValInt() * 50);
         if(ms != 0 && !timer.passedMillis(ms))
@@ -88,11 +95,18 @@ public class AutoQuiver extends Module {
                 ChatUtility.warning().printClientModuleMessage("You have no bow! Disabling...");
                 toggle();
             }
+            if(cancel){
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false);
+            }
             return;
         }
 
-        if(!checkArrow())
+        if(!checkArrow()){
+            if(cancel){
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false);
+            }
             return;
+        }
 
         oldSlot = mc.player.inventory.currentItem;
 
@@ -105,7 +119,7 @@ public class AutoQuiver extends Module {
         }
         if(mc.player.getItemInUseMaxCount() >= useTicks.getValInt()){
             cancel = false;
-            mc.playerController.onStoppedUsingItem(mc.player);
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false);
             timer.reset();
             swap(oldSlot, true);
             if(toggleOnComplete.getValBoolean())
@@ -117,7 +131,7 @@ public class AutoQuiver extends Module {
                     toggle();
                 return;
             }
-            mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND);
+            KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true);
             cancel = true;
         }
 
@@ -127,7 +141,6 @@ public class AutoQuiver extends Module {
 
     private void swap(int slot, boolean switchBack){
         if(mc.player == null || mc.world == null) return;
-
         switch(swap.getValEnum()){
             case Off:
                 break;
