@@ -6,9 +6,10 @@ import com.kisman.cc.features.module.exploit.PacketFly
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.TimerUtils
+import net.minecraft.network.play.client.CPacketPlayer
 
 /**
- * @author _kisman_
+ * @author _kisman_ and Cubic
  * @since 15:24 of 29.10.2022
  */
 class AutoPacketFly : Module(
@@ -19,6 +20,7 @@ class AutoPacketFly : Module(
     private val flyTime = register(Setting("Fly Time", this, 2000.0, 500.0, 10000.0, NumberType.TIME))
     private val takeoffDelay = register(Setting("Takeoff Delay", this, 1000.0, 500.0, 10000.0, NumberType.TIME))
     private val ground = register(Setting("Ground", this, true))
+    private val groundPacket = register(Setting("GroundPacket", this, true))
     private val iterationsLimit = register(Setting("Iterations Limit", this, 0.0, 0.0, 10.0, true))
 
     private val flyTimer = TimerUtils()
@@ -87,6 +89,10 @@ class AutoPacketFly : Module(
 
             if(PacketFly.instance.isToggled) {
                 PacketFly.instance.toggle()
+            }
+
+            if(groundPacket.valBoolean) {
+                mc.player.connection.sendPacket(CPacketPlayer.Position(mc.player.posX, mc.player.posY, mc.player.posZ, true))
             }
 
             if(ground.valBoolean) {
