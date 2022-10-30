@@ -9,6 +9,7 @@ import com.kisman.cc.features.module.combat.autorer.MotionPredictor;
 import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.datasync.DataParameter;
@@ -25,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
-public class MixinEntityPlayer extends MixinEntityLivingBase implements IEntityPlayer {
+public abstract class MixinEntityPlayer extends EntityLivingBase implements IEntityPlayer {
     public MixinEntityPlayer(World worldIn) {super(worldIn);}
     @Shadow protected void doWaterSplashEffect() {}
     @Shadow public @NotNull String getName() {return "";}
@@ -34,11 +35,13 @@ public class MixinEntityPlayer extends MixinEntityLivingBase implements IEntityP
 
     public MotionPredictor predictor;
 
-    @Inject(method = "jump", at = @At("HEAD"))
+    @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     private void onJump(CallbackInfo ci) {
         if(Minecraft.getMinecraft().player.getName().equals(getName())) {
             EventPlayerJump event = new EventPlayerJump(this);
             Kisman.EVENT_BUS.post(event);
+
+            if(event.isCancelled()) ci.cancel();
         }
     }
 

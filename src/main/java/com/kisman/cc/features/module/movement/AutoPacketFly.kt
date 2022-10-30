@@ -20,14 +20,20 @@ class AutoPacketFly : Module(
     private val flyTime = register(Setting("Fly Time", this, 2000.0, 500.0, 10000.0, NumberType.TIME))
     private val takeoffDelay = register(Setting("Takeoff Delay", this, 1000.0, 500.0, 10000.0, NumberType.TIME))
     private val ground = register(Setting("Ground", this, true))
-    private val groundPacket = register(Setting("GroundPacket", this, true))
+    private val groundPacket = register(Setting("Ground Packet", this, true))
+    private val takeoffLogic = register(Setting("Takeoff Logic", this, TakeoffLogic.PacketFlyState))
+    private val takeoffFactor = register(Setting("Takeoff Factor", this, 1.0, 0.1, 10.0, false))
+    private val takeoffStopMoving = register(Setting("Takeoff Stop Moving", this, true))
     private val iterationsLimit = register(Setting("Iterations Limit", this, 0.0, 0.0, 10.0, true))
+    private val instantJump = register(Setting("Instant Jump", this, true))
 
     private val flyTimer = TimerUtils()
     private val takeoffTimer = TimerUtils()
 
     private var stage = Stage.Fly
     private var iterations = 0
+
+    private var prevFactor = -1.0
 
     override fun onEnable() {
         super.onEnable()
@@ -39,7 +45,7 @@ class AutoPacketFly : Module(
         }
 
         flyTimer.reset()
-        stage = Stage.Prepare
+        stage = Stage.PrepareFly
     }
 
     override fun onDisable() {
@@ -60,10 +66,12 @@ class AutoPacketFly : Module(
             return
         }
 
-        if(stage == Stage.Prepare) {
+        if(stage == Stage.PrepareFly) {
             if(mc.player.onGround) {
                 mc.player.jump()
             }
+
+            PacketFly.instance.factor.valDouble = prevFactor
 
             mc.gameSettings.keyBindForward.pressed = true
 
@@ -71,14 +79,21 @@ class AutoPacketFly : Module(
                 PacketFly.instance.toggle()
             }
 
-            stage = Stage.Fly
+            stage = Stage.Jumping
+        } else if(stage == Stage.Jumping) {
+            if(instantJump.valBoolean || mc.player.motionY == 0.0) {
+                stage = Stage.Fly
+            }
         } else if(stage == Stage.Fly) {
             mc.gameSettings.keyBindForward.pressed = true
 
             if(flyTimer.passedMillis(flyTime.valLong)) {
                 takeoffTimer.reset()
-                stage = Stage.Takeoff
+                stage = Stage.PrepareTakeoff
             }
+        } else if(stage == Stage.PrepareTakeoff) {
+            prevFactor = PacketFly.instance.factor.valDouble
+            stage = Stage.Takeoff
         } else if(stage == Stage.Takeoff) {
             iterations++
 
@@ -87,8 +102,12 @@ class AutoPacketFly : Module(
                 return
             }
 
-            if(PacketFly.instance.isToggled) {
-                PacketFly.instance.toggle()
+            if(takeoffLogic.valEnum == TakeoffLogic.PacketFlyState) {
+                if (PacketFly.instance.isToggled) {
+                    PacketFly.instance.toggle()
+                }
+            } else if(takeoffLogic.valEnum == TakeoffLogic.FactorValue) {
+                PacketFly.instance.factor.valDouble = takeoffFactor.valDouble
             }
 
             if(groundPacket.valBoolean) {
@@ -99,18 +118,27 @@ class AutoPacketFly : Module(
                 mc.player.onGround = true
             }
 
-            mc.gameSettings.keyBindForward.pressed = false
+            if(takeoffStopMoving.valBoolean) {
+                mc.gameSettings.keyBindForward.pressed = false
+            }
 
             if(takeoffTimer.passedMillis(takeoffDelay.valLong)) {
                 flyTimer.reset()
-                stage = Stage.Prepare
+                stage = Stage.PrepareFly
             }
         }
     }
 
     private enum class Stage {
-        Prepare,
+        PrepareFly,
+        Jumping,
         Fly,
+        PrepareTakeoff,
         Takeoff
+    }
+
+    private enum class TakeoffLogic {
+        PacketFlyState,
+        FactorValue
     }
 }

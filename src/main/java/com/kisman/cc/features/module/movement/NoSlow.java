@@ -1,7 +1,6 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.EventPlayerUpdateMoveState;
 import com.kisman.cc.event.events.PacketEvent;
@@ -46,6 +45,7 @@ public class NoSlow extends Module {
     private final SettingEnum<WebStrict> webStrict = new SettingEnum<>("WebStrict", this, WebStrict.None).register();
 
     private final Setting sneak = register(new Setting("Sneak", this, false));
+    public final Setting jump = register(new Setting("Jump", this, false));
 
     private final SettingGroup invMoveGroup = register(new SettingGroup(new Setting("Inv Move", this)));
 

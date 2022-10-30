@@ -6,6 +6,7 @@ import baritone.api.event.events.RotationMoveEvent;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventArmSwingAnimationEnd;
 import com.kisman.cc.features.module.Debug.FrostWalk;
+import com.kisman.cc.features.module.movement.NoSlow;
 import com.kisman.cc.features.module.render.SwingProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -20,6 +21,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +34,7 @@ import static org.spongepowered.asm.lib.Opcodes.GETFIELD;
 
 @SuppressWarnings({"unused", "NullableProblems"})
 @Mixin(value = EntityLivingBase.class, priority = 10000)
-public class MixinEntityLivingBase extends Entity {
+public abstract class MixinEntityLivingBase extends Entity {
     @Shadow public EnumHand swingingHand;
     @Shadow public ItemStack activeItemStack;
     @Shadow public float moveStrafing;
@@ -49,6 +51,8 @@ public class MixinEntityLivingBase extends Entity {
     @Shadow public float swingProgress;
 
     @Shadow public int swingProgressInt;
+
+    @Shadow protected float getJumpUpwardsMotion() { return 0f; };
 
     public MixinEntityLivingBase(World worldIn) {super(worldIn);}
 
@@ -82,6 +86,13 @@ public class MixinEntityLivingBase extends Entity {
                 this.jumpRotationEvent = new RotationMoveEvent(RotationMoveEvent.Type.JUMP, this.rotationYaw);
                 baritone.getGameEventHandler().onPlayerRotationMove(this.jumpRotationEvent);
             }
+        }
+
+        if(NoSlow.instance.jump.getValBoolean() && Minecraft.getMinecraft().player.getName().equals(getName())) {
+            motionY = getJumpUpwardsMotion() + ((isPotionActive(MobEffects.JUMP_BOOST)) ? (getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F : 0);
+            isAirBorne = true;
+            ForgeHooks.onLivingJump((EntityLivingBase) (Object) this);
+            ci.cancel();
         }
     }
 
