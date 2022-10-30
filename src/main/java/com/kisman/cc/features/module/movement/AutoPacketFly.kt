@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.Debug
+package com.kisman.cc.features.module.movement
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
@@ -11,10 +11,10 @@ import com.kisman.cc.util.TimerUtils
  * @author _kisman_
  * @since 15:24 of 29.10.2022
  */
-class AutoFly : Module(
-    "AutoFly",
+class AutoPacketFly : Module(
+    "AutoPacketFly",
     "fly for crystalpvp.cc",
-    Category.DEBUG
+    Category.MOVEMENT
 ) {
     private val flyTime = register(Setting("Fly Time", this, 2000.0, 500.0, 10000.0, NumberType.TIME))
     private val takeoffDelay = register(Setting("Takeoff Delay", this, 1000.0, 500.0, 10000.0, NumberType.TIME))

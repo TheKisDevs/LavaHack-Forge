@@ -31,7 +31,6 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.features.module");
 
 		//Debug
-		modules.add(new AutoFly());
 		modules.add(new BaritoneTest());
 		modules.add(new BlockOverlay());
 		modules.add(new ChatPrint());
@@ -168,6 +167,7 @@ public class ModuleManager {
 		//movement
 		modules.add(new AirJump());
 		modules.add(new Anchor());
+		modules.add(new AutoPacketFly());
 		modules.add(new BoatFly());
 		modules.add(new CornerClip());
 		modules.add(new ElytraFly());

@@ -4,11 +4,15 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.misc.ChatModifier;
 import com.kisman.cc.features.module.render.NoRender;
 import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.ITextComponent;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -75,14 +79,16 @@ public class MixinGuiNewChat {
     @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
     private int drawStringWithShadow(FontRenderer fontRenderer, String text, float x, float y, int color) {
         ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
+        int modifiedColor = color;
         int newY = (int) y;
         if (this.lineBeingDrawn <= this.newLines && chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
             int opacity = (int) (((int) y >> 24 & 0xFF) * animationPercent);
             newY = ((int) y & 0xFFFFFF) | opacity << 24;
+            modifiedColor = ColorUtils.injectAlpha(color, opacity).getRGB();
         }
 
-        if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, color);
-        return fontRenderer.drawStringWithShadow(text, x, newY, color);
+        if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, modifiedColor);
+        return fontRenderer.drawStringWithShadow(text, x, newY, modifiedColor);
     }
 
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"))

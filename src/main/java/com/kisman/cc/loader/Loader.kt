@@ -231,7 +231,9 @@ private fun downloadLibraries() {
     status = "Loaded libraries into class loader"
 }
 
-fun setupSocketClient(client : SocketClient) {
+fun setupSocketClient(
+    client : SocketClient
+) : SocketClient {
     try {
         client.connect()
         client.writeMessage { text = "LavaHack-Client" }
@@ -239,6 +241,16 @@ fun setupSocketClient(client : SocketClient) {
         LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x2")
         Utility.unsafeCrash()
     }
+
+    return client
+}
+
+fun reportIssue(
+    message : String
+) {
+    val client = setupSocketClient(SocketClient("161.97.78.143", 25563))
+    client.writeMessage { text = "sendmessage Received new message: \"$message\"" }
+    client.close()
 }
 
 fun versionCheck(version : String) {

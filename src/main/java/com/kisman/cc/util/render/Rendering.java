@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glLineWidth;
 
 /**
- * Skidded
+ * Is not skidded class
  * _kisman_ wanted this  - Cubic
  */
 public class Rendering {
