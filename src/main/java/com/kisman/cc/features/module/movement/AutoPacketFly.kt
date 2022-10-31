@@ -38,18 +38,20 @@ class AutoPacketFly : Module(
     override fun onEnable() {
         super.onEnable()
 
-        iterations = 0
-
         if(mc.player == null || mc.world == null) {
+            toggle()
             return
         }
 
+        iterations = 0
+        prevFactor = -1.0
         flyTimer.reset()
         stage = Stage.PrepareFly
     }
 
     override fun onDisable() {
         super.onDisable()
+
         if(PacketFly.instance.isToggled) {
             PacketFly.instance.toggle()
         }
@@ -71,7 +73,9 @@ class AutoPacketFly : Module(
                 mc.player.jump()
             }
 
-            PacketFly.instance.factor.valDouble = prevFactor
+            if(prevFactor != -1.0) {
+                PacketFly.instance.factor.valDouble = prevFactor
+            }
 
             mc.gameSettings.keyBindForward.pressed = true
 
@@ -106,6 +110,7 @@ class AutoPacketFly : Module(
                 if (PacketFly.instance.isToggled) {
                     PacketFly.instance.toggle()
                 }
+                prevFactor = -1.0
             } else if(takeoffLogic.valEnum == TakeoffLogic.FactorValue) {
                 PacketFly.instance.factor.valDouble = takeoffFactor.valDouble
             }

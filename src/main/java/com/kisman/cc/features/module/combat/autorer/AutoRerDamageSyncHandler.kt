@@ -34,16 +34,16 @@ class AutoRerDamageSyncHandler(
 
     fun canPlace(
         damage : Float,
-        target : Entity
+        target : Entity?
     ) : Bind<Boolean, Float> {
-        return if(placeCheck.get()) {
+        return if(target != null && placeCheck.get()) {
             check(
                 damage,
                 target
             )
         } else {
             Bind(
-                true,
+                target != null,
                 damage
             )
         }
@@ -51,16 +51,16 @@ class AutoRerDamageSyncHandler(
 
     fun canBreak(
         damage : Float,
-        target : Entity
+        target : Entity?
     ) : Bind<Boolean, Float> {
-        return if(breakCheck.get()) {
+        return if(target != null && breakCheck.get()) {
             check(
                 damage,
                 target
             )
         } else {
             Bind(
-                true,
+                target != null,
                 damage
             )
         }

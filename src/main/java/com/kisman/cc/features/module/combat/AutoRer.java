@@ -50,6 +50,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
@@ -89,6 +90,10 @@ public class AutoRer extends Module {
     private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
+    private final SettingGroup stages = register(main.add(new SettingGroup(new Setting("Stages", this))));
+    private final Setting calcStage = register(stages.add(new Setting("Calc Stage", this, EventMode.Tick).setTitle("Calc")));
+    private final Setting logicStage = register(stages.add(new Setting("Logic Stage", this, EventMode.Tick).setTitle("Logic")));
+//    private final SettingGroup resync = register(stages.add(new SettingGroup()))
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
     public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false).setTitle("Place")));
     private final Setting placeWallRange = register(ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false).setTitle("Place Wall")));
@@ -233,56 +238,65 @@ public class AutoRer extends Module {
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
-    private final Thread fastModeThread;
-
-    @SuppressWarnings("BusyWait")
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
 
         instance = this;
+    }
 
-        fastModeThread = new Thread(() -> {
-            while(true) {
-                if(isToggled()) {
-                    if (clearTimer.passedMillis(clearDelay.getValLong())) {
-                        placedList.clear();
-                        clearTimer.reset();
-                        lastBroken = true;
-                    }
+    /*public void thread() {
+        if(calcStage.getValEnum() == EventMode.Thread) handleCalc();
+        if(logicStage.getValEnum() == EventMode.Thread) handleLogic();
+    }*/
 
-                    AutoRerUtil.Companion.getTargetFinder().update();
-                    currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
+    private void handleCalc() {
+        if (clearTimer.passedMillis(clearDelay.getValLong())) {
+            placedList.clear();
+            clearTimer.reset();
+            lastBroken = true;
+        }
 
-                    if (!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
-                        if (this.executor != null) this.executor.shutdown();
-                        if (this.thread != null) this.shouldInterrupt.set(true);
-                        lastThreadMode = threadMode.getValString();
-                    }
+        if (!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
+            if (this.executor != null) this.executor.shutdown();
+            if (this.thread != null) this.shouldInterrupt.set(true);
+            lastThreadMode = threadMode.getValString();
+        }
 
-                    if (currentTarget == null) {
-                        placePos.setBlockPos(null);
-                        return;
-                    }
+        if (currentTarget == null) {
+            placePos.setBlockPos(null);
+            breakPos = null;
+            return;
+        }
 
-                    if (extrapolationState.getValBoolean()) extrapolationHelper.update();
+        doCalculatePlace();
+        handleBreakCalculate();
+    }
 
-                    doCalculatePlace();
-                    handleBreakCalculate();
+    private void handlePlacement() {
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
+        handlePlaceFull(false, null);
+    }
 
-                    handlePlaceFull(false, null);
-                }
+    private void handleBreakment()  {
+        if(breakPos == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
 
-                try {
-                    Thread.sleep(1L);
-                } catch (InterruptedException ignored) {
-                    System.out.println("cant wait more!!!!! disabling!!!!!");
-                    if(isToggled()) setToggled(false);
-                }
-            }
-        });
+        handleBreakFull();
+    }
 
-        fastModeThread.start();
+    private void handleLogic() {
+        AutoRerUtil.Companion.getTargetFinder().update();
+        currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
+
+        if (extrapolationState.getValBoolean()) extrapolationHelper.update();
+
+        if(logic.checkValString("PlaceBreak")) {
+            handlePlacement();
+            handleBreakment();
+        } else {
+            handleBreakment();
+            handlePlacement();
+        }
     }
 
     public void onEnable() {
@@ -371,27 +385,11 @@ public class AutoRer extends Module {
         }
     }
 
-    private void doFastMode() {
-        handlePlaceFull(false, null);
-        handleBreakFull();
-    }
-
     public void update() {
         if(mc.player == null || mc.world == null || mc.isGamePaused) return;
 
-        if(mode.getValEnum() != Mode.ManualTick) {
-            if(mode.getValEnum() == Mode.FastTick) doFastMode();
-            return;
-        }
-
-        if(clearTimer.passedMillis(clearDelay.getValLong())) {
-            placedList.clear();
-            clearTimer.reset();
-            lastBroken = true;
-        }
-
-        AutoRerUtil.Companion.getTargetFinder().update();
-        currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
+        if(calcStage.getValEnum() == EventMode.Tick) handleCalc();
+        if(logicStage.getValEnum() == EventMode.Tick) handleLogic();
 
         if(!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
             if (this.executor != null) this.executor.shutdown();
@@ -399,29 +397,13 @@ public class AutoRer extends Module {
             lastThreadMode = threadMode.getValString();
         }
 
-        if(currentTarget == null) {
-            placePos.setBlockPos(null);
-            return;
-        }
-
-        if(extrapolationState.getValBoolean()) extrapolationHelper.update();
-
-        calc: {
-            if (fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-                if (threadCalc.getValBoolean() && !threadMode.checkValString("None")) break calc;
-                doCalculatePlace();
-                if (placePos.getBlockPos() != null) if (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) placePos.setBlockPos(null);
-                calcTimer.reset();
-            }
-        }
-
-        if(threadMode.checkValString("None")) {
+        /*if(threadMode.checkValString("None")) {
             if (motionCrystal.getValBoolean()) return;
             else if (motionCalc.getValBoolean() && fastCalc.getValBoolean()) return;
             if (manualBreaker.getValBoolean()) manualBreaker();
             if (multiplication.getValInt() == 1) doAutoRerLogic(null, false);
             else for (int i = 0; i < multiplication.getValInt(); i++) doAutoRerLogic(null, false);
-        } else processMultiThreading();
+        } else processMultiThreading();*/
     }
 
     private IBlockState getBlockState(BlockPos pos) {
@@ -516,15 +498,16 @@ public class AutoRer extends Module {
         } catch(NullPointerException ignored) {}
     }
 
-    private void doManualMode() {
-        //TODO
+    @SubscribeEvent
+    public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+        if(calcStage.getValEnum() == EventMode.Update) handleCalc();
+        if(logicStage.getValEnum() == EventMode.Update) handleLogic();
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(mode.getValEnum() != Mode.ManualRender) {
-            if(mode.getValEnum() == Mode.FastRender) doFastMode();
-        } else doManualMode();
+        if(calcStage.getValEnum() == EventMode.Render3D) handleCalc();
+        if(logicStage.getValEnum() == EventMode.Render3D) handleLogic();
 
         if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
 
@@ -1182,27 +1165,28 @@ public class AutoRer extends Module {
         return nearFriendWithMaxDamage;
     }
 
-    public enum Mode {ManualTick, ManualRender, FastTick, FastRender};
-    public enum ThreadMode {None, Pool, Sound, While}
-    public enum Render {None, Default, Advanced}
-    public enum Rotate {Off, Place/*, Break, All*/}
-    public enum SwitchMode {None, Normal, Silent}
-    public enum SwingMode {MainHand, OffHand, CurrentHand, PacketSwing, None}
-    public enum SwingLogic {Pre, Post}
-    public enum FriendMode {None, AntiTotemFail, AntiTotemPop}
-    public enum LogicMode {PlaceBreak, BreakPlace}
-    public enum RotateMode {Normal, Silent}
-    public enum AntiCevBreakerMode {None, Cev, Civ, Both}
-    public enum BreakPriority {Damage, CevBreaker}
-    public enum DelayMode {Default, FromTo}
-    public enum TimingMode {Sequential, Adaptive}
-    public enum SyncMode {None, Merge, Strict, StrictFull}
-    public enum MultiPlaceMode {None, Stupid, Smart}
-    public enum FacePlaceMode {None, Stupid, Smart}
-    public enum DamageSyncMode {None, Stupid, Smart}
-    public enum ClientSideMode {None, RemoveEntity, SetDead, Both}
-    public enum ClientSideWhen {Break, Place, Sound};
-    public enum Heuristics {Damage, MinMax, Safety}
+    public enum Mode { ManualTick, ManualRender, FastTick, FastRender }
+    public enum ThreadMode { None, Pool, Sound, While }
+    public enum Render { None, Default, Advanced }
+    public enum Rotate { Off, Place/*, Break, All*/ }
+    public enum SwitchMode { None, Normal, Silent}
+    public enum SwingMode { MainHand, OffHand, CurrentHand, PacketSwing, None }
+    public enum SwingLogic { Pre, Post }
+    public enum FriendMode { None, AntiTotemFail, AntiTotemPop }
+    public enum LogicMode { PlaceBreak, BreakPlace }
+    public enum RotateMode { Normal, Silent }
+    public enum AntiCevBreakerMode { None, Cev, Civ, Both }
+    public enum BreakPriority { Damage, CevBreaker }
+    public enum DelayMode { Default, FromTo }
+    public enum TimingMode { Sequential, Adaptive }
+    public enum SyncMode { None, Merge, Strict, StrictFull }
+    public enum MultiPlaceMode { None, Stupid, Smart }
+    public enum FacePlaceMode { None, Stupid, Smart }
+    public enum DamageSyncMode { None, Stupid, Smart }
+    public enum ClientSideMode { None, RemoveEntity, SetDead, Both }
+    public enum ClientSideWhen { Break, Place, Sound }
+    public enum Heuristics { Damage, MinMax, Safety }
+    public enum EventMode { /*Motion, */Update, Tick, Render3D/*, Thread*/ }
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

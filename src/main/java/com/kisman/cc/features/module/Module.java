@@ -142,8 +142,9 @@ public class Module implements IBindable, Listenable {
 	public String getDisplayInfo() {return displayInfoSupplier == null ? displayInfo : displayInfoSupplier.get();}
 	public void setDisplayInfo(String displayInfo) {this.displayInfo = displayInfo;}
 	public void setDisplayInfo(Supplier<String> displayInfoSupplier) {this.displayInfoSupplier = displayInfoSupplier;}
-	public void update(){}
-	public void render(){}
+	public void update() { }
+	public void thread() { }
+	public void render() { }
 	public void key() {}
 	public void key(int key) {}
 	public void key(char typedChar, int key) {}

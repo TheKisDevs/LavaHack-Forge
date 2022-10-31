@@ -44,6 +44,7 @@ import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.render.shader.ShaderShell;
+import com.kisman.cc.util.thread.kisman.ThreadManager;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -114,6 +115,7 @@ public class Kisman {
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
+    public ThreadManager threadManager;
     public ClickGuiNew clickGuiNew;
     public ConsoleGui consoleGui;
     public HalqGui halqGui;
@@ -182,6 +184,7 @@ public class Kisman {
         friendManager = new FriendManager();
         settingsManager = new SettingsManager();
         moduleManager = new ModuleManager();
+        threadManager = new ThreadManager();
         PingBypassModuleManager.INSTANCE.init();
 //        noComModuleManager = new NoComModuleManager();
         hudModuleManager = new HudModuleManager();

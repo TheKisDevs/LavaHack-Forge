@@ -1,5 +1,6 @@
 package com.kisman.cc.util
 
+import com.kisman.cc.Kisman
 import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
@@ -28,7 +29,7 @@ fun getPing(id : UUID) : Int {
     return if(mc.isSingleplayer) 0 else try { mc.player.connection.getPlayerInfo(id).responseTime } catch(ignored : Exception) { -1 }
 }
 
-//It's useless for java, but useful for kotlin - _kisman_
+//It's useless in java, but useful in kotlin - _kisman_
 fun createDoubleArray(vararg elements : Double) : DoubleArray {
     val array = DoubleArray(elements.size)
 
@@ -107,3 +108,13 @@ fun stringFixer(
 ) : String {
     return toFix.toString().replace(" ".toRegex(), "_")
 }
+
+fun stackTrace(
+    throwable : Throwable
+) {
+    if(Kisman.runningFromIntelliJ()) {
+        throwable.printStackTrace()
+    }
+}
+
+fun nullCheck() : Boolean = mc.player != null && mc.world != null && mc.player.connection != null
