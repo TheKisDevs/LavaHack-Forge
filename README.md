@@ -24,13 +24,10 @@ Contributors
 <div align="center">
 <br>
     <a href="https://discord.gg/wgxfsPB3pD"><img src="https://img.shields.io/discord/823286525402939402?logo=discord" alt="Lavahack Discord"/></a>
-<br>#i dont know how to fix these (i think i need admin perms on the repo)
 <br>
-    <img src="https://img.shields.io/github/last-commit/kisman2000/lava_hack" alt="GitHub last commit"/>
-    <img src="https://img.shields.io/github/commit-activity/w/kisman2000/lava_hack" alt="GitHub commit activity"/>
-    <br>
-    <img src="https://img.shields.io/github/languages/code-size/kisman2000/lava_hack" alt="GitHub code size in bytes"/>
-    <img src="https://img.shields.io/tokei/lines/github/kisman2000/lava_hack?color=blue&label=lines%20of%20code&style=for-the-badge)" alt="GitHub lines of code"/>
-    <img src="https://img.shields.io/github/contributorskisman2000/lava_hack" alt="GitHub contributors"/>
+    <img src="https://img.shields.io/badge/Minecraft-1.12.2-blue.svg" alt="Minecraft"/>
+    <a href="https://discord.gg/wgxfsPB3pD"><img src="https://img.shields.io/badge/Discord-JK2Zz2CDpM-8080c0" alt="Discord"/></a>
+<br>
+    <img src="https://img.shields.io/badge/Key--bind-Right--shift-violet" alt="KeyBind"/>
 <br>
 </div>
