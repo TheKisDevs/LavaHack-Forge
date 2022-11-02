@@ -13,10 +13,10 @@ public class SettingPage<T, S extends Setting> {
 
     private final Module module;
 
-    public SettingPage(S setting, Function<S, T> value, Module module){
+    public SettingPage(S setting, Function<S, T> value){
         this.setting = setting;
         this.value = value;
-        this.module = module;
+        this.module = setting.parent;
     }
 
     public SettingPage<T, S> page(T value, Setting... settings){
