@@ -24,11 +24,17 @@ class SocketServer(
 
     val run get() = !server.isClosed
 
+    var stopped = false
+
     fun start() {
         thread {
             onStart()
 
             while (run) {
+                if(stopped) {
+                    return@thread
+                }
+
                 val socket = server.accept()
 
                 try {
@@ -50,5 +56,7 @@ class SocketServer(
         onStop()
         connections.forEach { it.close() }
         server.close()
+
+        stopped = true
     }
 }
