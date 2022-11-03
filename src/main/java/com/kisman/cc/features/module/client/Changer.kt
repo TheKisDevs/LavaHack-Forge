@@ -23,7 +23,7 @@ import java.awt.Color
 import javax.vecmath.Vector3f
 import com.kisman.cc.util.math.max
 
-class Changer : Module("Changer", "Changes your minecraft", Category.CLIENT) {
+object Changer : Module("Changer", "Changes your minecraft", Category.CLIENT) {
     private val gamma = register(Setting("Gamma", this, 100.0, 1.0, 100.0, true))
     private val fov = register(Setting("Fov", this, 120.0, 30.0, 150.0, true))
 

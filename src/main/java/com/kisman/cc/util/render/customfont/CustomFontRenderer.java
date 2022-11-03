@@ -1,5 +1,6 @@
 package com.kisman.cc.util.render.customfont;
 
+import com.kisman.cc.features.module.client.FriendHighlight;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -41,6 +42,8 @@ public class CustomFontRenderer extends CustomFont {
     }
 
     public float drawString(String text, double x, double y, int c, boolean shadow) {
+        text = FriendHighlight.INSTANCE.modifyLine(text);
+
         int color = c;
         x--;
         y -= 2.0D;

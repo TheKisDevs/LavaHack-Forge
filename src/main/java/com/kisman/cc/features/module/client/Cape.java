@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventCape;
+import com.kisman.cc.features.capes.CapeManager;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -30,7 +31,7 @@ public class Cape extends Module {
     }
 
     @EventHandler private final Listener<EventCape> cape = new Listener<>(event -> {
-        if(event.getInfo() == mc.player.getPlayerInfo() || Kisman.instance.capeAPI.is(event.getInfo().getGameProfile().getId())) {
+        if(/*event.getInfo() == mc.player.getPlayerInfo() || */CapeManager.INSTANCE.has(event.getInfo().getGameProfile().getId().toString())) {
             event.setResLoc(mode.getValEnum().location());
         }
     });

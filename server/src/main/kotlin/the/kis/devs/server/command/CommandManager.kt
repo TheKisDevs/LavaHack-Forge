@@ -11,6 +11,7 @@ object CommandManager {
     private val commands = listOf(
         AuthCommand,
         CheckVersionCommand,
+        ClientStatusCommand,
         CreateFileCommand,
         GetFileCommand,
         GetLibrariesCommand,

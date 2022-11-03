@@ -110,12 +110,13 @@ public class ModuleManager {
 		modules.add(new Baritone());
 		modules.add(new BetterScreenshot());
 		modules.add(new Cape());
-		modules.add(new Changer());
+		modules.add(Changer.INSTANCE);
 //		modules.add(ClientFixer.INSTANCE);
 		modules.add(new Config());
 		modules.add(CustomFontModule.instance);
 		modules.add(new CustomMainMenuModule());
 		modules.add(new DiscordRPCModule());
+		modules.add(FriendHighlight.INSTANCE);
 		modules.add(new GuiModule());
 		modules.add(NoSpoof.INSTANCE);
 		modules.add(new PauseBaritone());

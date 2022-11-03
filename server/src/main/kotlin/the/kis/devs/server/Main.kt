@@ -20,14 +20,21 @@ var PORT = 25563
 
 var encryption = false
 
+var server : SocketServer? = null
+
 fun main(
     args : Array<String>
 ) {
+    if(args.size == 1) {
+        PORT = Integer.valueOf(args[0])
+    }
+
+    server = SocketServer(ADDRESS, PORT)
+
     KeyAuthApp.keyAuth.init()
 
-    val server = SocketServer(ADDRESS, PORT)
-    server.start()
-    server.onSocketConnected = { connection ->
+    server!!.start()
+    server!!.onSocketConnected = { connection ->
         println("Socket \"${connection.name}\" connected!")
 
         connection.onMessageReceived = {
@@ -38,13 +45,13 @@ fun main(
             }
         }
     }
-    server.onSocketDisconnected = { connection ->
+    server!!.onSocketDisconnected = { connection ->
         println("Socket \"${connection.name}\" disconnected!")
     }
 
     println("> Server started with address: $ADDRESS, port: $PORT")
 
-    while (server.run) {
+    while (server!!.run) {
         val line = readLine() ?: continue
 
         if (line.isEmpty()) {
@@ -71,13 +78,19 @@ fun main(
                 > > message <text> - sends <text> to add connections"""
             )
         } else if(line.startsWith("message ")) {
-            server.connections.forEach {
-                it.writeMessage {
-                    text = line.removePrefix("message ")
-                }
-            }
+            sendMessage(line.removePrefix("message "))
         }
     }
 
-    server.stop()
+    server!!.stop()
+}
+
+fun sendMessage(
+    message : String
+) {
+    server!!.connections.forEach {
+        it.writeMessage {
+            text = message
+        }
+    }
 }

@@ -187,6 +187,8 @@ task privateJar(type : Jar, dependsOn : jar) {
         exclude 'mixins.loader.refmap.json'
 
         exclude 'com/formdev/**'
+
+        exclude 'ghost/classes/**'
     }
     manifest {
         attributes(
@@ -256,6 +258,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'Main.class'
         exclude 'com/kisman/cc/sockets/**'
         exclude 'me/**'
+        exclude 'ghost/classes/**'
     }
     manifest {
         attributes(

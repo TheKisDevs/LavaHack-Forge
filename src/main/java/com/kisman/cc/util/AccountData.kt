@@ -18,11 +18,16 @@ class AccountData {
 
         @JvmStatic
         fun check() {
+            if(key == null || properties == null) {
+                Kisman.unsafeCrash()
+                return
+            }
+
             Runnable {
                 val client = setupSocketClient(SocketClient("161.97.78.143", 25563))
 
                 client.onMessageReceived = {
-                    if (it.text != "2" && !Kisman.runningFromIntelliJ()) {
+                    if (it.text != "2") {
                         Kisman.unsafeCrash()
                     }
 

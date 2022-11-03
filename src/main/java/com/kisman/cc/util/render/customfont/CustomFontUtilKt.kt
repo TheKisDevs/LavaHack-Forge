@@ -3,7 +3,7 @@ package com.kisman.cc.util.render.customfont
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.client.Changer
 import com.kisman.cc.features.module.client.CustomFontModule
-import com.kisman.cc.util.render.customfont.CustomFontUtil.*
+import com.kisman.cc.util.render.customfont.CustomFontUtil.getFont
 import net.minecraft.client.Minecraft
 
 class CustomFontUtilKt {
@@ -61,15 +61,11 @@ class CustomFontUtilKt {
         }
 
         fun getShadowX() : Double {
-            return if(getChanger().shadowTextModifier.valBoolean) getChanger().shadowX.valDouble else 1.0
+            return if(Changer.shadowTextModifier.valBoolean) Changer.shadowX.valDouble else 1.0
         }
 
         fun getShadowY() : Double {
-            return if(getChanger().shadowTextModifier.valBoolean) getChanger().shadowY.valDouble else 1.0
-        }
-
-        private fun getChanger() : Changer {
-            return Kisman.instance.moduleManager.getModule("Changer") as Changer
+            return if(Changer.shadowTextModifier.valBoolean) Changer.shadowY.valDouble else 1.0
         }
 
         fun setMultiLineOffset(

@@ -35,6 +35,7 @@ import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
+import com.kisman.cc.sockets.command.ConnectionManager;
 import com.kisman.cc.util.AccountData;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.manager.Managers;
@@ -163,10 +164,13 @@ public class Kisman {
         try {
             haveLoader = LavaHackInterface.INSTANCE.isLoaded();
         } catch (Throwable ignored) {
+            System.out.println("kys!!!!");
             haveLoader = false;
         }
 
         processAccountData();
+
+        ConnectionManager.INSTANCE.connect();
 
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
@@ -420,9 +424,9 @@ public class Kisman {
 
     public static void processAccountData() {
         try {
-            Class.forName("com.kisman.cc.loader.LavaHackLoaderCoreMod");
-
+            Class.forName("ghost.classes.DevelopmentEnvironment");
+        } catch(Throwable ignored) {
             AccountData.check();
-        } catch(Throwable ignored) {}
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.Changer;
+import com.kisman.cc.features.module.client.FriendHighlight;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,18 +81,17 @@ public class MixinFontRenderer {
     @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
     private void drawStringHook(String text, float x, float y, int color, boolean dropShadow, CallbackInfoReturnable<Integer> cir) {
         if(Kisman.instance.moduleManager != null) {
-            Changer changer = (Changer) Kisman.instance.moduleManager.getModule("Changer");
-            if (changer.getShadowTextModifier().getValBoolean()) {
-                enableAlpha();
-                resetStyles();
+            String text0 = FriendHighlight.INSTANCE.modifyLine(text);
+            boolean flag = Changer.INSTANCE.getShadowTextModifier().getValBoolean();
+            enableAlpha();
+            resetStyles();
 
-                if (dropShadow) {
-                    cir.setReturnValue(Math.max(
-                            renderString(text, x + changer.getShadowX().getValFloat(), y + changer.getShadowY().getValFloat(), color, true),
-                            renderString(text, x, y, color, false)
-                    ));
-                    cir.cancel();
-                }
+            if (dropShadow) {
+                cir.setReturnValue(Math.max(
+                        renderString(text0, x + (flag ? Changer.INSTANCE.getShadowX().getValFloat() : 1), y + (flag ? Changer.INSTANCE.getShadowY().getValFloat() : 1), color, true),
+                        renderString(text0, x, y, color, false)
+                ));
+                cir.cancel();
             }
         }
     }

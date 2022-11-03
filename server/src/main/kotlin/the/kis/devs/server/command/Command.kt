@@ -21,7 +21,7 @@ abstract class Command(
     fun runCommand(line : String, args : List<String>, connection : SocketServerConnection) {
         this.connection = connection
 
-        thread {
+//        thread {
             for(message in execute(line, args)) {
                 println("Answer by command \"$command\" from socket \"${connection.name}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
 
@@ -32,6 +32,6 @@ abstract class Command(
 
                 connection.writeMessage(message)
             }
-        }
+//        }
     }
 }

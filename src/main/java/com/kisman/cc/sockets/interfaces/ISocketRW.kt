@@ -5,6 +5,7 @@
 package com.kisman.cc.sockets.interfaces
 
 import com.kisman.cc.sockets.Constants
+import com.kisman.cc.sockets.command.CommandManager
 import com.kisman.cc.sockets.data.SocketMessage
 import java.net.Socket
 import java.nio.ByteBuffer
