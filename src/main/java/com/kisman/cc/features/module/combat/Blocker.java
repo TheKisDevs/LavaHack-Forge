@@ -51,6 +51,7 @@ public class Blocker extends Module {
         );
         final List<BlockPos> dynamicBlocks = new ArrayList<>(list);
         list.forEach(pos -> dynamicBlocks.addAll(Arrays.stream(EnumFacing.HORIZONTALS).map(pos::offset).collect(Collectors.toList())));
+        dynamicBlocks.removeAll(list);
         return dynamicBlocks.stream()
                 .distinct()
                 .filter(pos -> mc.world.getBlockState(pos).getMaterial().isReplaceable())

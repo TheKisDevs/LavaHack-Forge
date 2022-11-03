@@ -212,6 +212,7 @@ public class SurroundRewrite extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener);
         Kisman.EVENT_BUS.unsubscribe(eventEntitySpawnListener);
         Kisman.EVENT_BUS.unsubscribe(packetListener);
+        Kisman.EVENT_BUS.unsubscribe(postPacketListener);
         lastY = -1;
         getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
         timer.reset();
