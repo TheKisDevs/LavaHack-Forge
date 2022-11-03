@@ -10,7 +10,7 @@ import com.kisman.cc.util.Globals.mc
  * @since 14:42 of 02.11.2022
  */
 object ConnectionManager {
-    val client = SocketClient(/*"161.97.78.143"*/"localhost", /*25563*/25564)
+    val client = SocketClient("161.97.78.143"/*"localhost"*/, 25563/*25564*/)
 
     var connected = false
 
