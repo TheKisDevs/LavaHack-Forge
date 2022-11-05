@@ -16,6 +16,10 @@ import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.HoleUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.init.Blocks;
@@ -47,6 +51,7 @@ public class HoleSnap extends Module {
     private final Setting stuckTicks = register(new Setting("StuckTicks", this, 5, 0, 40, true));
 
     private final Setting speed = register(new Setting("Speed", this, 0.2873, 0.05, 0.5, false));
+    private final Setting snap = register(new Setting("Snap", this, true));
     private final Setting useTimer = register(new Setting("Timer", this, false));
     private final Setting timerSpeed = register(new Setting("TimerSpeed", this, 1.088,  1, 5, false));
 
@@ -101,14 +106,18 @@ public class HoleSnap extends Module {
 
         Vec3d center = getCenter(hole);
 
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+
         Rendering.setup();
 
-        GL11.glBegin(GL11.GL_LINE_STRIP);
         GL11.glLineWidth(lineWidth.getValFloat());
-        GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-        GL11.glVertex3d(mc.player.posX - mc.renderManager.viewerPosX, mc.player.posY - mc.renderManager.viewerPosY, mc.player.posZ - mc.renderManager.viewerPosZ);
-        GL11.glVertex3d(center.x - mc.renderManager.viewerPosX, center.y - mc.renderManager.viewerPosY, center.z - mc.renderManager.viewerPosZ);
-        GL11.glEnd();
+        bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        bufferBuilder.pos(mc.player.posX - mc.renderManager.viewerPosX, mc.player.posY - mc.renderManager.viewerPosY, mc.player.posZ - mc.renderManager.viewerPosZ)
+                .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+        bufferBuilder.pos(center.x - mc.renderManager.viewerPosX, center.y - mc.renderManager.viewerPosY, center.z - mc.renderManager.viewerPosZ)
+                .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+        tessellator.draw();
 
         Rendering.release();
     }
@@ -164,7 +173,7 @@ public class HoleSnap extends Module {
 
         Vec3d center = getCenter(hole);
 
-        if(contains(hole, mc.player.getEntityBoundingBox().expand(0, -0.05, 0))){
+        if(snap.getValBoolean() && contains(hole, mc.player.getEntityBoundingBox().expand(0, -0.05, 0))){
             mc.player.connection.sendPacket(new CPacketPlayer.Position(center.x, mc.player.posY, center.z, mc.player.onGround));
             mc.player.setPosition(center.x, mc.player.posY, center.z);
             toggle();
@@ -179,6 +188,12 @@ public class HoleSnap extends Module {
         Vec3d playerPos = mc.player.getPositionVector();
         double yaw = Math.toRadians(AngleUtil.calculateAngle(playerPos, center)[0]);
         double d = Math.hypot(center.x - playerPos.x, center.z - playerPos.z);
+
+        if(!snap.getValBoolean() && d == 0){
+            toggle();
+            return;
+        }
+
         double baseSpeed = EntityUtil.applySpeedEffect(mc.player, this.speed.getValDouble());
         double speed = mc.player.onGround ? baseSpeed : Math.max(currentSpeed + 0.02, baseSpeed);
         double cappedSpeed = Math.min(speed, d);
