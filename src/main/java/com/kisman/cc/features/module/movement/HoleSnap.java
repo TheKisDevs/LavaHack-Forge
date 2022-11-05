@@ -103,9 +103,9 @@ public class HoleSnap extends Module {
 
         Rendering.setup();
 
+        GL11.glBegin(GL11.GL_LINE_STRIP);
         GL11.glLineWidth(lineWidth.getValFloat());
         GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-        GL11.glBegin(GL11.GL_LINE_STRIP);
         GL11.glVertex3d(mc.player.posX - mc.renderManager.viewerPosX, mc.player.posY - mc.renderManager.viewerPosY, mc.player.posZ - mc.renderManager.viewerPosZ);
         GL11.glVertex3d(center.x - mc.renderManager.viewerPosX, center.y - mc.renderManager.viewerPosY, center.z - mc.renderManager.viewerPosZ);
         GL11.glEnd();
@@ -164,7 +164,7 @@ public class HoleSnap extends Module {
 
         Vec3d center = getCenter(hole);
 
-        if(contains(hole, mc.player.getEntityBoundingBox())){
+        if(contains(hole, mc.player.getEntityBoundingBox().expand(0, -0.05, 0))){
             mc.player.connection.sendPacket(new CPacketPlayer.Position(center.x, mc.player.posY, center.z, mc.player.onGround));
             mc.player.setPosition(center.x, mc.player.posY, center.z);
             toggle();
