@@ -174,6 +174,7 @@ public class ModuleManager {
 		modules.add(new CornerClip());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
+		modules.add(new HoleSnap());
 		modules.add(new Jesus());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());

@@ -54,7 +54,7 @@ public class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IE
         EventPlayerMove event = new EventPlayerMove(type, x, y, z);
         Kisman.EVENT_BUS.post(event);
         if (event.isCancelled()) {
-            move(type, event.x, event.y, event.z);
+            super.move(type, event.x, event.y, event.z);
             ci.cancel();
         }
     }
