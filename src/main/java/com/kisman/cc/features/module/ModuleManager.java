@@ -194,6 +194,7 @@ public class ModuleManager {
 		modules.add(AntiDesync.INSTANCE);
 		modules.add(new AntiHunger());
 		modules.add(new AntiWeakness());
+		modules.add(new ArrowBlocker());
 		modules.add(new AutoMine());
 		modules.add(new AutoMount());
 		modules.add(new AutoRespawn());
