@@ -4,12 +4,14 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.manager.friend.FriendManager;
+import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.mojang.authlib.GameProfile;
 import me.zero.alpine.listener.EventHandler;
@@ -20,13 +22,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.*;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
@@ -62,8 +67,11 @@ public class AutoCrystalRewrite extends Module {
     private final SettingEnum<SwingHand> swingHand = new SettingEnum<>("SwingHand", this, SwingHand.MainHand);
 
     private final Setting packetPlace = register(new Setting("PacketPlace", this, true));
+    private final Setting placeRaytrace = register(new Setting("Raytrace", this, false));
+    private final Setting strictFacing = register(new Setting("StrictFacing", this, false));
 
     private final Setting packetBreak = register(new Setting("PacketBreak", this, true));
+    private final Setting breakRaytrace = register(new Setting("BreakRaytrace", this, true));
 
     private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
@@ -77,8 +85,11 @@ public class AutoCrystalRewrite extends Module {
     private final Setting minPlaceDamage = register(new Setting("MinPlaceDamage", this, 5, 0, 36, false));
     private final Setting maxSelfPlace = register(new Setting("MaxSelfPlace", this, 8, 0, 36, false));
 
+    private static AutoCrystalRewrite INSTANCE;
+
     public AutoCrystalRewrite(){
         super("Kys+", Category.COMBAT);
+        INSTANCE = this;
     }
 
     private EntityPlayer target;
@@ -94,6 +105,29 @@ public class AutoCrystalRewrite extends Module {
         }
 
         Kisman.EVENT_BUS.subscribe(this);
+    }
+
+    private void placeCrystal(BlockPos pos){
+        RayTraceResult result = mc.world.rayTraceBlocks(BlockUtil.getEyesPos(), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+        EnumFacing facing = result == null ? (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN) : (placeRaytrace.getValBoolean() ? result.sideHit : (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN));
+        float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
+        float[] rots = AngleUtil.calculateAngles(pos);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
+        if(packetPlace.getValBoolean())
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, facing, getCrystalHand(), 0, 0, 0));
+        else
+            mc.playerController.processRightClickBlock(mc.player, mc.world, pos, facing, new Vec3d(0, 0, 0), getCrystalHand());
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
+    }
+
+    public EnumHand getCrystalHand(){
+        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL)
+            return EnumHand.MAIN_HAND;
+        if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL)
+            return EnumHand.OFF_HAND;
+        return EnumHand.MAIN_HAND;
     }
 
     private void attackCrystal(EntityEnderCrystal crystal){
@@ -248,6 +282,9 @@ public class AutoCrystalRewrite extends Module {
             if(!isEntityInRange(crystal, breakRange.getValDouble(), breakWallRange.getValDouble()))
                 continue;
 
+            if(breakRaytrace.getValBoolean() && !mc.player.canEntityBeSeen(crystal))
+                continue;
+
             double damage = CrystalUtils.calculateDamage(
                     mc.world,
                     crystal.posX,
@@ -296,6 +333,9 @@ public class AutoCrystalRewrite extends Module {
             ){
                 continue;
             }
+
+            if(placeRaytrace.getValBoolean() && !EntityUtil.canSee(pos))
+                continue;
 
             double damage = CrystalUtils.calculateDamage(
                     mc.world,
@@ -555,7 +595,8 @@ public class AutoCrystalRewrite extends Module {
 
     private enum SwingHand {
         MainHand(EnumHand.MAIN_HAND),
-        OffHand(EnumHand.OFF_HAND);
+        OffHand(EnumHand.OFF_HAND),
+        CurrentHand(INSTANCE.getCrystalHand());
 
         private final EnumHand hand;
 
