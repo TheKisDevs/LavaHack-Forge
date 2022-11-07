@@ -16,15 +16,15 @@ Contributors
 </h1>
 <div align="center">
   _kisman_ <br>
-  Cubic <br>
+  Cubic
   GentlemanMC <br>
   noatmc
   Skarlord991
-  toster96
+  toster96 <br>
   dionfire
   PunCakeCat
   Halqq
-  lava_frai
+  lava_frai <br>
 </div>
 
 <div align="center">
