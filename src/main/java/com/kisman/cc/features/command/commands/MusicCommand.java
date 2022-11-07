@@ -2,7 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
 import com.kisman.cc.features.command.SubCommand;
-import com.kisman.cc.util.process.web.music.Player;
+import com.kisman.cc.util.net.music.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

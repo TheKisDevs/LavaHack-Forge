@@ -3,7 +3,7 @@ package com.kisman.cc.gui.other.music
 import com.kisman.cc.Kisman
 import com.kisman.cc.gui.MainGui
 import com.kisman.cc.util.render.customfont.CustomFontUtil
-import com.kisman.cc.util.process.web.music.Player
+import com.kisman.cc.util.net.music.Player
 import com.kisman.cc.util.render.ColorUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.*

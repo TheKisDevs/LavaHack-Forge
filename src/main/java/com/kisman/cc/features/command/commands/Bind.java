@@ -48,7 +48,7 @@ public class Bind extends Command{
 
     @Override
 	public String getDescription() {
-		return "Change key for modules/commands.";
+		return "Changes key for modules/commands. | Shows your bind list";
 	}
 
 	@Override

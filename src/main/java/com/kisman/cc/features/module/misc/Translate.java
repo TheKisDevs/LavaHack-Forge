@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.misc;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.process.web.translate.Translator;
+import com.kisman.cc.util.net.translate.Translator;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

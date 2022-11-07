@@ -1,7 +1,6 @@
 package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
-import org.jetbrains.annotations.NotNull;
 
 public class ShutdownCommand extends Command {
 
@@ -17,24 +16,13 @@ public class ShutdownCommand extends Command {
 
     @Override
     public String getSyntax() {
-        return "shutdown <client/hard/crash>";
+        return "shutdown client/hard/crash";
     }
 
     @Override
-    public void runCommand(@NotNull String s, @NotNull String[] args) {
-        String mode = args[0];
-        if(mode.equals("client")){
-            mc.shutdownMinecraftApplet();
-            return;
-        }
-        if(mode.equals("hard")){
-            mc.shutdown();
-            return;
-        }
-        if(mode.equals("crash")){
-            System.exit(1);
-            return;
-        }
-
+    public void runCommand(String s, String[] args) {
+        if(args[0].equals("client")) mc.shutdownMinecraftApplet();
+        else if(args[0].equals("hard")) mc.shutdown();
+        else if(args[0].equals("crash")) System.exit(1);
     }
 }

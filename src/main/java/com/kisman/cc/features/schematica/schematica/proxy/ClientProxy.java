@@ -2,18 +2,14 @@ package com.kisman.cc.features.schematica.schematica.proxy;
 
 import com.kisman.cc.features.schematica.core.util.math.MBlockPos;
 import com.kisman.cc.features.schematica.core.util.vector.Vector3d;
+import com.kisman.cc.features.schematica.schematica.Schematica;
 import com.kisman.cc.features.schematica.schematica.api.ISchematic;
 import com.kisman.cc.features.schematica.schematica.client.printer.SchematicPrinter;
 import com.kisman.cc.features.schematica.schematica.client.renderer.RenderSchematic;
 import com.kisman.cc.features.schematica.schematica.client.world.SchematicWorld;
 import com.kisman.cc.features.schematica.schematica.command.client.CommandSchematicaReplace;
 import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.GuiHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.InputHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.OverlayHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.RenderTickHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.TickHandler;
-import com.kisman.cc.features.schematica.schematica.handler.client.WorldHandler;
+import com.kisman.cc.features.schematica.schematica.handler.client.*;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.features.schematica.schematica.world.schematic.SchematicFormat;
 import net.minecraft.client.Minecraft;
@@ -27,12 +23,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
-import java.io.IOException;
 
 public class ClientProxy extends CommonProxy {
     public static boolean isRenderingGuide = false;
@@ -150,10 +142,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @Override
-    public void preInit(final FMLPreInitializationEvent event) {
-        super.preInit(event);
-
+    public void preInit() {
         final Property[] sliders = {
                 ConfigurationHandler.propAlpha,
                 ConfigurationHandler.propBlockDelta,
@@ -171,10 +160,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @Override
-    public void init(final FMLInitializationEvent event) {
-        super.init(event);
-
+    public void init() {
         MinecraftForge.EVENT_BUS.register(InputHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TickHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RenderTickHandler.INSTANCE);
@@ -187,22 +173,21 @@ public class ClientProxy extends CommonProxy {
         ClientCommandHandler.instance.registerCommand(new CommandSchematicaReplace());
     }
 
-    @Override
-    public void postInit(final FMLPostInitializationEvent event) {
-        super.postInit(event);
-
+    public void postInit() {
         resetSettings();
     }
 
     @Override
     public File getDataDirectory() {
-        final File file = MINECRAFT.mcDataDir;
+        //TODO
+        return Schematica.CONFIG_FOLDER;
+        /*final File file = MINECRAFT.mcDataDir;
         try {
             return file.getCanonicalFile();
         } catch (final IOException e) {
             Reference.logger.debug("Could not canonize path!", e);
         }
-        return file;
+        return file;*/
     }
 
     @Override

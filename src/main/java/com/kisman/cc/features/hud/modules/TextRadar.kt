@@ -38,7 +38,7 @@ class TextRadar : HudModule(
         toRender.clear()
     }
 
-    @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
+    override fun update() {
         threads.update(Runnable {
             mc.addScheduledTask {
                 toRender.clear()
@@ -59,7 +59,9 @@ class TextRadar : HudModule(
                 }
             }
         })
+    }
 
+    @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
         setW(0.0)
         setH(0.0)
 

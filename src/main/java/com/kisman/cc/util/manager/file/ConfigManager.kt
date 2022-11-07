@@ -134,9 +134,8 @@ class ConfigManager(
 
             for(module in Kisman.instance.moduleManager.modules) {
                 if(module.category == Category.LUA) continue
-
-
             }
+
             for(hud in Kisman.instance.hudModuleManager.modules) {
                 writer.write("${config.hudModulesPrefix}.${hud.name}.toggle=${hud.isToggled}")
                 writer.newLine()

@@ -1,21 +1,24 @@
 package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.settings.util.HudModuleColorPattern;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ServerIp extends HudModule {
+    private final HudModuleColorPattern color = colors();
+
     public ServerIp() {
-        super("ServerIP", "");
+        super("ServerIp", "", true);
     }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        ScaledResolution sr = new ScaledResolution(mc);
-        String str = TextFormatting.WHITE + "Server: " + TextFormatting.GRAY + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase());
-        CustomFontUtil.drawStringWithShadow(str, sr.getScaledWidth() - 1 - CustomFontUtil.getStringWidth(str), sr.getScaledHeight() - 5 - (CustomFontUtil.getFontHeight() * 3), -1);
+        setW(CustomFontUtil.getStringWidth("Server: " + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase())));
+        setH(CustomFontUtil.getFontHeight());
+
+        CustomFontUtil.drawStringWithShadow("Server: " + TextFormatting.GRAY + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase()), getX(), getY(), color.color().getRGB());
     }
 }

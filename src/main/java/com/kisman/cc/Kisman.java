@@ -1,6 +1,5 @@
 package com.kisman.cc;
 
-import com.kisman.cc.api.cape.CapeAPI;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.ScriptManager;
@@ -20,6 +19,7 @@ import com.kisman.cc.features.nocom.gui.NoComGui;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
 import com.kisman.cc.features.rpc.RPC;
+import com.kisman.cc.features.schematica.schematica.Schematica;
 import com.kisman.cc.features.viaforge.ViaForge;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
@@ -133,7 +133,6 @@ public class Kisman {
     public EventProcessor eventProcessor;
     public ServerManager serverManager;
     public Managers managers;
-    public CapeAPI capeAPI;
     public PluginManager pluginManager;
 
     public MainAiImpr aiImpr;
@@ -197,7 +196,6 @@ public class Kisman {
         commandManager = new CommandManager();
         discord = new RPC();
         serverManager = new ServerManager();
-        capeAPI = new CapeAPI();
         pluginHandler.init();
 
         //load 2d shaders
@@ -231,6 +229,8 @@ public class Kisman {
 
         try {ViaForge.getInstance().start();}
         catch (Exception e) {LOGGER.error("[ViaForge] ViaForge did not loaded! If you need it, restart the client");}
+
+        Schematica.instance.init();
 
         init = true;
     }

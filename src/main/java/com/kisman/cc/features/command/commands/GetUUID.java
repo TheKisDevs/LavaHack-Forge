@@ -68,6 +68,6 @@ public class GetUUID extends Command {
 
     @Override
     public String getSyntax() {
-        return "uuid copy:<true/false> <player> <timeOutMillis(Optional)>";
+        return "getuuid copy:<true/false> <player> <timeOutMillis(Optional)>";
     }
 }

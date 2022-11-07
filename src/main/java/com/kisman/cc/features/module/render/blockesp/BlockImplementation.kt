@@ -15,7 +15,7 @@ class BlockImplementation(
     val block : BlockESPBlocks,
     val module : Module
 ) {
-    val group = SettingGroup(Setting(block.toString(), module))
+    val group = module.register(SettingGroup(Setting(block.toString(), module)))
     val renderer = RenderingRewritePattern(module).group(group).preInit().init()
 
     fun valid(

@@ -1,7 +1,7 @@
 package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.features.module.*;
-import com.kisman.cc.util.process.file.ClipboardImage;
+import com.kisman.cc.util.io.ClipboardImage;
 
 import javax.swing.*;
 import java.awt.*;

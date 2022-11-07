@@ -2,6 +2,7 @@ package com.kisman.cc.util.enums
 
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.Globals.mc
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 
@@ -22,7 +23,7 @@ enum class BlockESPBlocks(
         override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block == Blocks.END_PORTAL
     }),
     Burrow(object : IBlock {
-        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block != Blocks.AIR && mc.world.getEntitiesWithinAABBExcludingEntity(null, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isNotEmpty()
+        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block != Blocks.AIR && mc.world.getEntitiesWithinAABB(EntityPlayer::class.java, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isNotEmpty()
     })
 }
 

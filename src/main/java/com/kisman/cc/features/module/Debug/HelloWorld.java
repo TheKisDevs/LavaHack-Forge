@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.Debug;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.chat.lava.ChatLoggerUtil;
+//import com.kisman.cc.util.chat.lava.ChatLoggerUtil;
 
 
 /**
@@ -11,11 +11,11 @@ import com.kisman.cc.util.chat.lava.ChatLoggerUtil;
  * @author lava_frai
  */
 public class HelloWorld extends Module {
-    private final ChatLoggerUtil Logger;
+//    private final ChatLoggerUtil Logger;
     public HelloWorld() {
         super("HelloWorld", "Test module, print \"Hello, World\" into the chat every 5 seconds", Category.DEBUG);
 
-        Logger = new ChatLoggerUtil(getName());
+//        Logger = new ChatLoggerUtil(getName());
     }
 
     @Override
@@ -24,7 +24,7 @@ public class HelloWorld extends Module {
         super.onEnable();
 
         if(mc.player == null || mc.world == null) return;
-        Logger.Log("Debug module enabled");
+//        Logger.Log("Debug module enabled");
     }
 
     @Override
@@ -33,7 +33,7 @@ public class HelloWorld extends Module {
         super.onDisable();
 
         if(mc.player == null || mc.world == null) return;
-        Logger.Error("Debug module disabled");
+//        Logger.Error("Debug module disabled");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class HelloWorld extends Module {
         counter++;
         if (counter > 20 * 5)
         {
-            Logger.LogLackluster("Hello, World!");
+//            Logger.LogLackluster("Hello, World!");
             counter = 0;
         }
     }

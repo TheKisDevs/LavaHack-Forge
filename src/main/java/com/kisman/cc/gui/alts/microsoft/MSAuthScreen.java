@@ -2,8 +2,7 @@ package com.kisman.cc.gui.alts.microsoft;
 
 import java.util.*;
 
-import com.kisman.cc.util.process.web.microsoft.AuthSys;
-import net.minecraft.client.resources.*;
+import com.kisman.cc.util.net.microsoft.AuthSys;
 import net.minecraft.client.gui.*;
 import java.io.*;
 import net.minecraft.client.*;

@@ -2,7 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
 import com.kisman.cc.features.module.misc.Translate;
-import com.kisman.cc.util.process.web.translate.Translator;
+import com.kisman.cc.util.net.translate.Translator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

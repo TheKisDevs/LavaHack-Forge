@@ -149,7 +149,7 @@ public class Module implements IBindable, Listenable {
 	public void key(int key) {}
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
-	public boolean isVisible() {return true;}
+	public boolean isVisible() {return visible;}
 	public boolean isBeta() {return isBeta0();}
 	public boolean isAddon() {return isAddon0();}
 	@Override public @NotNull BindType getType() {return bindType;}

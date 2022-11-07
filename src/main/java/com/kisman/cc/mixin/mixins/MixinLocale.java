@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.features.module.client.ClientFixer;
+import com.kisman.cc.features.schematica.schematica.Schematica;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Locale;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +25,22 @@ public class MixinLocale {
     ) {
         if(ClientFixer.INSTANCE.isToggled() && !Minecraft.getMinecraft().gameSettings.forceUnicodeFont && Minecraft.getMinecraft().gameSettings.language.equalsIgnoreCase("ru_ru")) {
             cir.setReturnValue(false);
+            cir.cancel();
+        }
+    }
+
+    @Inject(
+            method = "translateKeyPrivate",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void translateKeyPrivateHook(String translateKey, CallbackInfoReturnable<String> cir) {
+        //TODO: event!!!
+
+        String value = Schematica.properties.get(translateKey);
+
+        if(value != null) {
+            cir.setReturnValue(value);
             cir.cancel();
         }
     }

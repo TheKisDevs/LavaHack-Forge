@@ -1,7 +1,7 @@
 package com.kisman.cc.features.catlua.lua.utils
 
-import com.kisman.cc.api.util.URLReader
-import com.kisman.cc.util.process.web.util.HttpTools
+import com.kisman.cc.util.net.URLReader
+import com.kisman.cc.util.net.HttpTools
 
 class LuaNet {
     fun getPasteBinAPI(url: String): URLReader {

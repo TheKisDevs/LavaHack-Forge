@@ -2,15 +2,10 @@ package com.kisman.cc.features.schematica.schematica.proxy;
 
 import com.kisman.cc.features.schematica.core.util.math.MBlockPos;
 import com.kisman.cc.features.schematica.schematica.api.ISchematic;
-import com.kisman.cc.features.schematica.schematica.command.CommandSchematicaList;
-import com.kisman.cc.features.schematica.schematica.command.CommandSchematicaRemove;
-import com.kisman.cc.features.schematica.schematica.command.CommandSchematicaSave;
 import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
-import com.kisman.cc.features.schematica.schematica.handler.DownloadHandler;
 import com.kisman.cc.features.schematica.schematica.handler.QueueTickHandler;
 import com.kisman.cc.features.schematica.schematica.nbt.NBTConversionException;
 import com.kisman.cc.features.schematica.schematica.nbt.NBTHelper;
-import com.kisman.cc.features.schematica.schematica.network.PacketHandler;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.features.schematica.schematica.world.chunk.SchematicContainer;
 import com.kisman.cc.features.schematica.schematica.world.schematic.SchematicUtil;
@@ -24,45 +19,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 public abstract class CommonProxy {
     public boolean isSaveEnabled = true;
     public boolean isLoadEnabled = true;
-
-    public void preInit(final FMLPreInitializationEvent event) {
-        Reference.logger = event.getModLog();
-        ConfigurationHandler.init(event.getSuggestedConfigurationFile());
-
-        FMLInterModComms.sendMessage("LunatriusCore", "checkUpdate", Reference.FORGE);
-    }
-
-    public void init(final FMLInitializationEvent event) {
-        PacketHandler.init();
-
-        MinecraftForge.EVENT_BUS.register(QueueTickHandler.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(DownloadHandler.INSTANCE);
-    }
-
-    public void postInit(final FMLPostInitializationEvent event) {
-    }
-
-    public void serverStarting(final FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandSchematicaSave());
-        event.registerServerCommand(new CommandSchematicaList());
-        event.registerServerCommand(new CommandSchematicaRemove());
-    }
 
     public void createFolders() {
         if (!ConfigurationHandler.schematicDirectory.exists()) {

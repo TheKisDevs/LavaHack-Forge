@@ -3,6 +3,7 @@ package com.kisman.cc.features.hud;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.api.Draggable;
+import com.kisman.cc.settings.util.HudModuleColorPattern;
 import net.minecraft.client.Minecraft;
 
 public class HudModule extends Module implements Draggable {
@@ -37,4 +38,8 @@ public class HudModule extends Module implements Draggable {
 	@Override public void setW(double w) {this.w = w;}
 	@Override public double getH() {return h;}
 	@Override public void setH(double h) {this.h = h;}
+
+	protected HudModuleColorPattern colors() {
+		return new HudModuleColorPattern(this).preInit().init();
+	}
 }
