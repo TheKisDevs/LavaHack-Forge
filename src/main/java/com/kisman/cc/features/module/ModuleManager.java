@@ -99,6 +99,7 @@ public class ModuleManager {
 		modules.add(new HoleFillerRewrite());
 		modules.add(new HoleKicker());
 		modules.add(new KillAuraRewrite());
+		modules.add(new AutoCrystalRewrite());
 		modules.add(new OffHand());
 		modules.add(new Prison());
 		modules.add(new SelfTrapRewrite());
@@ -174,6 +175,7 @@ public class ModuleManager {
 		modules.add(new CornerClip());
 		modules.add(new ElytraFly());
 		modules.add(new Fly());
+		modules.add(new HoleSnap());
 		modules.add(new Jesus());
 		modules.add(new MoveModifier());
 		modules.add(new NoFall());
@@ -193,6 +195,7 @@ public class ModuleManager {
 		modules.add(AntiDesync.INSTANCE);
 		modules.add(new AntiHunger());
 		modules.add(new AntiWeakness());
+		modules.add(new ArrowBlocker());
 		modules.add(new AutoMine());
 		modules.add(new AutoMount());
 		modules.add(new AutoRespawn());

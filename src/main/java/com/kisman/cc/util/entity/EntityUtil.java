@@ -16,6 +16,7 @@ import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.init.*;
 import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 
@@ -535,6 +536,16 @@ public class EntityUtil {
         return mc.world.getEntitiesWithinAABB(type, aabb.expand(5, 5, 5)).stream()
                 .filter(e -> aabb.intersects(e.getEntityBoundingBox()))
                 .collect(Collectors.toList());
+    }
+
+    public static double applySpeedEffect(EntityLivingBase entity, double speed){
+        double r = speed;
+        PotionEffect effect;
+        if((effect = entity.getActivePotionEffect(MobEffects.SPEED)) != null)
+            r += speed * (effect.getAmplifier() + 1.0) * 0.2;
+        if((effect = entity.getActivePotionEffect(MobEffects.SLOWNESS)) != null)
+            r -= speed * (effect.getAmplifier() + 1.0) * 0.15;
+        return r;
     }
 
     static {
