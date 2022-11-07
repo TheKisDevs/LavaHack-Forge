@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -34,6 +35,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@WorkInProgress
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
