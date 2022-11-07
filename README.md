@@ -19,6 +19,12 @@ Contributors
   Cubic <br>
   GentlemanMC <br>
   noatmc
+  Skarlord991
+  toster96
+  dionfire
+  PunCakeCat
+  Halqq
+  lava_frai
 </div>
 
 <div align="center">
