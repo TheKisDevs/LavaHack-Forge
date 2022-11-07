@@ -4,9 +4,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
+import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -20,22 +20,25 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.network.play.server.SPacketDestroyEntities;
-import net.minecraft.network.play.server.SPacketEntityStatus;
-import net.minecraft.network.play.server.SPacketExplosion;
-import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+import net.minecraft.world.WorldServer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@WorkInProgress
+/**
+ * @author Cubic
+ * @since 8.11.2022
+ */
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
@@ -51,6 +54,18 @@ public class AutoCrystalRewrite extends Module {
 
     private final Setting predict = register(new Setting("Predict", this, false));
     private final Setting predictTicks = register(new Setting("PredictTicks", this, 2, 0, 20, true));
+
+    private final Setting rotate = register(new Setting("Rotate", this, false));
+    private final Setting yawStep = register(new Setting("YawStep", this, 55, 1, 180, true));
+
+    private final Setting swing = register(new Setting("Swing", this, true));
+    private final SettingEnum<SwingHand> swingHand = new SettingEnum<>("SwingHand", this, SwingHand.MainHand);
+
+    private final Setting packetPlace = register(new Setting("PacketPlace", this, true));
+
+    private final Setting packetBreak = register(new Setting("PacketBreak", this, true));
+
+    private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));
     private final Setting placeWallRange = register(new Setting("PlaceWallRange", this, 3, 0, 6, false));
@@ -79,6 +94,78 @@ public class AutoCrystalRewrite extends Module {
         }
 
         Kisman.EVENT_BUS.subscribe(this);
+    }
+
+    private void attackCrystal(EntityEnderCrystal crystal){
+        float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
+        float[] rots = AngleUtil.calculateAngles(crystal);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
+        if(packetBreak.getValBoolean())
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        else
+            mc.playerController.attackEntity(mc.player, crystal);
+        swing();
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
+    }
+
+    private void swing(){
+        int armSwingAnimationEnd;
+        if(mc.player.isPotionActive(MobEffects.HASTE))
+            armSwingAnimationEnd = 6 - (1 + mc.player.getActivePotionEffect(MobEffects.HASTE).getAmplifier());
+        else
+            armSwingAnimationEnd = mc.player.isPotionActive(MobEffects.MINING_FATIGUE) ? 6 + (1 + mc.player.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
+
+        if(swing.getValBoolean() && (!mc.player.isSwingInProgress || mc.player.swingProgressInt >= armSwingAnimationEnd / 2 || mc.player.swingProgressInt < 0)){
+            mc.player.swingProgressInt = -1;
+            mc.player.isSwingInProgress = true;
+            mc.player.swingingHand = swingHand.getValEnum().getHand();
+
+            if(mc.player.world instanceof WorldServer)
+                ((WorldServer) mc.player.world).getEntityTracker().sendToTracking(mc.player, new SPacketAnimation(mc.player, swingHand.getValEnum().getHand() == EnumHand.OFF_HAND ? 3 : 0));
+        }
+
+        mc.player.connection.sendPacket(new CPacketAnimation(swingHand.getValEnum().getHand()));
+    }
+
+    // let's pray this actually works
+    private void handleRotate(float[] rots, float[] oldRots){
+        if(yawStep.getValInt() >= 360){
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+            mc.player.lastReportedYaw = rots[0];
+            mc.player.lastReportedPitch = rots[1];
+            return;
+        }
+
+        float yD1 = MathHelper.wrapDegrees(oldRots[0] - rots[0]);
+        float yD2 = MathHelper.wrapDegrees(rots[0] - oldRots[0]);
+
+        if(yD1 < yD2){
+            float step = Math.abs(yD1) / yawStep.getValFloat();
+            float total = 0;
+            for(int i = 0;;i++){
+                if(total < Math.abs(yD1))
+                    break;
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0] - (i * step), rots[1], mc.player.onGround));
+                total += step;
+            }
+            mc.player.lastReportedYaw = rots[0];
+            mc.player.lastReportedPitch = rots[1];
+            return;
+        }
+
+        float step = Math.abs(yD2) / yawStep.getValFloat();
+        float total = 0;
+        for(int i = 0;;i++){
+            if(total < Math.abs(yD2))
+                break;
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0] + (i * step), rots[1], mc.player.onGround));
+            total += step;
+        }
+        mc.player.lastReportedYaw = rots[0];
+        mc.player.lastReportedPitch = rots[1];
+        return;
     }
 
     @Override
@@ -442,6 +529,13 @@ public class AutoCrystalRewrite extends Module {
         return world.getBlockState(result.getBlockPos()).getBlock() != Blocks.AIR;
     }
 
+    private enum Timings {
+        Adaptive,
+        Sequential,
+        Concurrent,
+        Recursive
+    }
+
     private enum Safety {
         None,
         MinMax,
@@ -452,6 +546,26 @@ public class AutoCrystalRewrite extends Module {
         Closest,
         Health,
         Damage
+    }
+
+    private enum Sync {
+        Attack,
+        Confirm
+    }
+
+    private enum SwingHand {
+        MainHand(EnumHand.MAIN_HAND),
+        OffHand(EnumHand.OFF_HAND);
+
+        private final EnumHand hand;
+
+        SwingHand(EnumHand hand) {
+            this.hand = hand;
+        }
+
+        public EnumHand getHand() {
+            return hand;
+        }
     }
 
     private static class PositionInfo {
