@@ -99,6 +99,7 @@ public class ModuleManager {
 		modules.add(new HoleFillerRewrite());
 		modules.add(new HoleKicker());
 		modules.add(new KillAuraRewrite());
+		modules.add(new AutoCrystalRewrite());
 		modules.add(new OffHand());
 		modules.add(new Prison());
 		modules.add(new SelfTrapRewrite());
