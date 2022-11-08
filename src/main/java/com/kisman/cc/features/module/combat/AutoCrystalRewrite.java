@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Cubic
- * @since 8.11.2022
+ * @since 5.11.2022
  */
 public class AutoCrystalRewrite extends Module {
 
@@ -59,6 +59,7 @@ public class AutoCrystalRewrite extends Module {
     private final SettingEnum<TargetMode> targetMode = new SettingEnum<>("TargetMode", this, TargetMode.Closest).register();
     private final Setting targetRange = register(new Setting("TargetRange", this, 12, 1, 16, false));
     private final Setting popFocus = register(new Setting("PopFocus", this, false));
+    private final Setting popFocusTimeOut = register(new Setting("PopFocusTimeOut", this, 30, 0, 120, true));
 
     private final Setting predict = register(new Setting("Predict", this, false));
     private final Setting predictTicks = register(new Setting("PredictTicks", this, 2, 0, 20, true));
@@ -115,6 +116,8 @@ public class AutoCrystalRewrite extends Module {
 
     private TimerUtils breakTimer = new TimerUtils();
 
+    private final TimerUtils popFocusTimer = new TimerUtils();
+
     private EntityPlayer target = null;
 
     private Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
@@ -131,6 +134,7 @@ public class AutoCrystalRewrite extends Module {
 
         placeTimer.reset();
         breakTimer.reset();
+        popFocusTimer.reset();
 
         updateTarget();
 
@@ -149,6 +153,7 @@ public class AutoCrystalRewrite extends Module {
         thread = null;
         placeTimer.reset();
         breakTimer.reset();
+        popFocusTimer.reset();
         target = null;
         inhibitCrystals.clear();
         lastPlacePos = null;
@@ -163,11 +168,15 @@ public class AutoCrystalRewrite extends Module {
         mc.addScheduledTask(() -> {
             long timeOut = inhibitTimeOut.getValInt() * 50L;
             inhibitCrystals.forEach((crystal, time) -> {
-                if(time >= timeOut)
+                if((System.currentTimeMillis() - time) >= timeOut)
                     inhibitCrystals.remove(crystal);
             });
         });
-        mc.addScheduledTask(this::updateTarget);
+        mc.addScheduledTask(() -> {
+            if(popFocus.getValBoolean() && !popFocusTimer.passedMillis(popFocusTimeOut.getValInt() * 50L))
+                return;
+            updateTarget();
+        });
     }
 
     private void doAutoCrystal(){
@@ -340,7 +349,6 @@ public class AutoCrystalRewrite extends Module {
         }
         mc.player.lastReportedYaw = rots[0];
         mc.player.lastReportedPitch = rots[1];
-        return;
     }
 
     @EventHandler
@@ -389,8 +397,12 @@ public class AutoCrystalRewrite extends Module {
 
         if(event.getPacket() instanceof SPacketEntityStatus){
             SPacketEntityStatus packet = (SPacketEntityStatus) event.getPacket();
-            if(packet.getOpCode() == 35 && packet.getEntity(mc.world) instanceof EntityPlayer && popFocus.getValBoolean())
-                target = (EntityPlayer) packet.getEntity(mc.world);
+            if(packet.getOpCode() == 35 && packet.getEntity(mc.world) instanceof EntityPlayer && popFocus.getValBoolean()) {
+                if (mc.player.getDistance(packet.getEntity(mc.world)) <= targetRange.getValDouble()) {
+                    target = (EntityPlayer) packet.getEntity(mc.world);
+                    popFocusTimer.reset();
+                }
+            }
         }
     });
 
