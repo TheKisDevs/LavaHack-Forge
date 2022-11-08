@@ -67,15 +67,16 @@ public class AutoCrystalRewrite extends Module {
     private final Setting yawStep = register(new Setting("YawStep", this, 55, 1, 180, true));
 
     private final Setting swing = register(new Setting("Swing", this, true));
-    private final SettingEnum<SwingHand> swingHand = new SettingEnum<>("SwingHand", this, SwingHand.MainHand);
+    private final SettingEnum<SwingHand> swingingHand = new SettingEnum<>("SwingingHand", this, SwingHand.MainHand).register();
 
-    private final SettingEnum<Timings> timings = new SettingEnum<>("Timings", this, Timings.Adaptive);
-    private final SettingEnum<Logic> logic = new SettingEnum<>("Logic", this, Logic.BreakPlace);
+    private final SettingEnum<Timings> timings = new SettingEnum<>("Timings", this, Timings.Adaptive).register();
+    private final SettingEnum<Logic> logic = new SettingEnum<>("Logic", this, Logic.BreakPlace).register();
 
     private final Setting placeSpeed = register(new Setting("PlaceSpeed", this, 20, 0, 20, false));
     private final Setting packetPlace = register(new Setting("PacketPlace", this, true));
     private final Setting placeRaytrace = register(new Setting("Raytrace", this, false));
     private final Setting strictFacing = register(new Setting("StrictFacing", this, false));
+    private final Setting antiStuck = register(new Setting("AntiStuck", this, false));
     private final Setting noPlaceSuicide = register(new Setting("NoPlaceSuicide", this, true));
 
     private final Setting breakSpeed = register(new Setting("BreakSpeed", this, 18.4, 0, 20, false));
@@ -96,13 +97,15 @@ public class AutoCrystalRewrite extends Module {
 
     private final Setting minPlaceDamage = register(new Setting("MinPlaceDamage", this, 5, 0, 36, false));
     private final Setting maxSelfPlace = register(new Setting("MaxSelfPlace", this, 8, 0, 36, false));
+    private final Setting minBreakDamage = register(new Setting("MinBreakDamage", this, 5, 0, 36, false));
+    private final Setting maxSelfBreak = register(new Setting("MaxSelfBreak", this, 8, 0, 36, false));
 
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
     private static AutoCrystalRewrite INSTANCE;
 
     public AutoCrystalRewrite(){
-        super("Kys+", Category.COMBAT);
+        super("Kys+", Category.COMBAT, true);
         INSTANCE = this;
     }
 
@@ -122,7 +125,7 @@ public class AutoCrystalRewrite extends Module {
     public void onEnable() {
         super.onEnable();
         if(mc.player == null || mc.world == null){
-            toggle();
+            setToggled(false);
             return;
         }
 
@@ -151,7 +154,7 @@ public class AutoCrystalRewrite extends Module {
     @Override
     public void update(){
         if(mc.player == null || mc.world == null){
-            toggle();
+            setToggled(false);
             return;
         }
         mc.addScheduledTask(() -> {
@@ -168,11 +171,15 @@ public class AutoCrystalRewrite extends Module {
         AtomicBoolean started = new AtomicBoolean(true);
         thread = new Thread(() -> {
             while(!Thread.currentThread().isInterrupted()){
+                if(getCrystalHand() == null){
+                    started.set(true);
+                    return;
+                }
                 try {
                     handleLogic(logic.getValEnum(), started.get());
                     started.set(false);
                 } catch (InterruptedException e){
-                    toggle();
+                    setToggled(false);
                     return;
                 }
             }
@@ -254,7 +261,7 @@ public class AutoCrystalRewrite extends Module {
             return EnumHand.MAIN_HAND;
         if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL)
             return EnumHand.OFF_HAND;
-        return EnumHand.MAIN_HAND;
+        return null;
     }
 
     private void attackCrystal(EntityEnderCrystal crystal){
@@ -281,13 +288,13 @@ public class AutoCrystalRewrite extends Module {
         if(swing.getValBoolean() && (!mc.player.isSwingInProgress || mc.player.swingProgressInt >= armSwingAnimationEnd / 2 || mc.player.swingProgressInt < 0)){
             mc.player.swingProgressInt = -1;
             mc.player.isSwingInProgress = true;
-            mc.player.swingingHand = swingHand.getValEnum().getHand();
+            mc.player.swingingHand = swingingHand.getValEnum().getHand();
 
             if(mc.player.world instanceof WorldServer)
-                ((WorldServer) mc.player.world).getEntityTracker().sendToTracking(mc.player, new SPacketAnimation(mc.player, swingHand.getValEnum().getHand() == EnumHand.OFF_HAND ? 3 : 0));
+                ((WorldServer) mc.player.world).getEntityTracker().sendToTracking(mc.player, new SPacketAnimation(mc.player, swingingHand.getValEnum().getHand() == EnumHand.OFF_HAND ? 3 : 0));
         }
 
-        mc.player.connection.sendPacket(new CPacketAnimation(swingHand.getValEnum().getHand()));
+        mc.player.connection.sendPacket(new CPacketAnimation(swingingHand.getValEnum().getHand()));
     }
 
     // let's pray this actually works
@@ -434,6 +441,12 @@ public class AutoCrystalRewrite extends Module {
 
             damage = getSafetyDamage(damage, selfDamage);
 
+            if(damage < minBreakDamage.getValDouble())
+                continue;
+
+            if(selfDamage > maxSelfBreak.getValDouble())
+                continue;
+
             CrystalInfo info = new CrystalInfo(crystal, damage, selfDamage);
 
             crystalInfo = crystalInfo.max(info);
@@ -443,8 +456,6 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private PositionInfo calculatePlace(){
-        if(target == null)
-            return null;
 
         PositionInfo positionInfo = new PositionInfo(BlockPos.ORIGIN, -1, -1);
 
@@ -462,6 +473,8 @@ public class AutoCrystalRewrite extends Module {
             ){
                 continue;
             }
+
+
 
             if(placeRaytrace.getValBoolean() && !EntityUtil.canSee(pos))
                 continue;
@@ -483,6 +496,20 @@ public class AutoCrystalRewrite extends Module {
                     mc.player,
                     terrain.getValBoolean()
             );
+
+            if(antiStuck.getValBoolean()){
+                AxisAlignedBB aabb = new AxisAlignedBB(
+                        pos.getX() -1,
+                        pos.getY() - 0.5,
+                        pos.getZ() - 1,
+                        pos.getX() + 2,
+                        pos.getY() + 1,
+                        pos.getZ() + 2
+                );
+
+                if(!mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb).isEmpty())
+                    continue;
+            }
 
             if(noPlaceSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() - mc.player.getAbsorptionAmount()))
                 continue;
@@ -521,7 +548,7 @@ public class AutoCrystalRewrite extends Module {
         double maxDamage = 0.5;
         double minDistance = targetRange.getValDouble() + 1;
 
-        for(EntityPlayer player : mc.world.getEntitiesWithinAABB(EntityPlayer.class, playerRelativeAABB(targetRange.getValDouble()))){
+        for(EntityPlayer player : mc.world.playerEntities){
             if(isTargetNotValid(player, targetRange.getValDouble()))
                 continue;
 
@@ -572,8 +599,8 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private boolean isTargetNotValid(EntityPlayer player, double range){
-        return mc.player.getDistanceSq(player) > range
-                ||  player.equals(mc.player)
+        return mc.player.getDistance(player) > range
+                || player.equals(mc.player)
                 || player.getHealth() <= 0.0f
                 || player.isDead
                 || FriendManager.instance.isFriend(player.getName());
@@ -745,7 +772,7 @@ public class AutoCrystalRewrite extends Module {
     private enum SwingHand {
         MainHand(EnumHand.MAIN_HAND),
         OffHand(EnumHand.OFF_HAND),
-        CurrentHand(INSTANCE.getCrystalHand());
+        CurrentHand(null);
 
         private final EnumHand hand;
 
@@ -754,7 +781,7 @@ public class AutoCrystalRewrite extends Module {
         }
 
         public EnumHand getHand() {
-            return hand;
+            return hand == null ? INSTANCE.getCrystalHand() : hand;
         }
     }
 
