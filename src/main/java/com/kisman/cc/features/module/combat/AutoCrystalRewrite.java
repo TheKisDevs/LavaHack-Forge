@@ -115,7 +115,7 @@ public class AutoCrystalRewrite extends Module {
 
     private TimerUtils breakTimer = new TimerUtils();
 
-    private EntityPlayer target;
+    private EntityPlayer target = null;
 
     private Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
 
@@ -132,6 +132,8 @@ public class AutoCrystalRewrite extends Module {
         placeTimer.reset();
         breakTimer.reset();
 
+        updateTarget();
+
         doAutoCrystal();
 
         Kisman.EVENT_BUS.subscribe(this);
@@ -147,6 +149,7 @@ public class AutoCrystalRewrite extends Module {
         thread = null;
         placeTimer.reset();
         breakTimer.reset();
+        target = null;
         inhibitCrystals.clear();
         lastPlacePos = null;
     }
@@ -173,7 +176,7 @@ public class AutoCrystalRewrite extends Module {
             while(!Thread.currentThread().isInterrupted()){
                 if(getCrystalHand() == null){
                     started.set(true);
-                    return;
+                    continue;
                 }
                 try {
                     handleLogic(logic.getValEnum(), started.get());
@@ -257,10 +260,14 @@ public class AutoCrystalRewrite extends Module {
     }
 
     public EnumHand getCrystalHand(){
-        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL)
+        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL){
+            mc.playerController.syncCurrentPlayItem();
             return EnumHand.MAIN_HAND;
-        if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL)
+        }
+        if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL){
+            mc.playerController.syncCurrentPlayItem();
             return EnumHand.OFF_HAND;
+        }
         return null;
     }
 
