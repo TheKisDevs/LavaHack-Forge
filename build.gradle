@@ -188,7 +188,7 @@ task privateJar(type : Jar, dependsOn : jar) {
 
         exclude 'com/formdev/**'
 
-        exclude 'ghost/classes/**'
+//        exclude 'ghost/classes/**'
     }
     manifest {
         attributes(
