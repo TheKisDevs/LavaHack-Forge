@@ -187,8 +187,6 @@ task privateJar(type : Jar, dependsOn : jar) {
         exclude 'mixins.loader.refmap.json'
 
         exclude 'com/formdev/**'
-
-//        exclude 'ghost/classes/**'
     }
     manifest {
         attributes(
@@ -210,7 +208,6 @@ task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
         include "com/kisman/cc/sockets/**"
         include 'com/kisman/cc/ai/**'
-        include 'com/kisman/cc/api/**'
         include 'com/kisman/cc/event/**'
         include 'com/kisman/cc/features/**'
         include 'com/kisman/cc/gui/**'
@@ -239,7 +236,6 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
         exclude 'baritone'
         exclude 'com/kisman/cc/ai/**'
-        exclude 'com/kisman/cc/api/**'
         exclude 'com/kisman/cc/event/**'
         exclude 'com/kisman/cc/features/**'
         exclude 'com/kisman/cc/gui/**'
