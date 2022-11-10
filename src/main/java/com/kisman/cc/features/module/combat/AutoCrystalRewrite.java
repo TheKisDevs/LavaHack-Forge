@@ -4,12 +4,14 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.util.AngleUtil;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.manager.friend.FriendManager;
+import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.mojang.authlib.GameProfile;
 import me.zero.alpine.listener.EventHandler;
@@ -20,37 +22,72 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.network.play.server.SPacketDestroyEntities;
-import net.minecraft.network.play.server.SPacketEntityStatus;
-import net.minecraft.network.play.server.SPacketExplosion;
-import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.*;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-@WorkInProgress
+/**
+ * @author Cubic
+ * @since 5.11.2022
+ */
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
     private final Setting safetyBalance = register(new Setting("SafetyBalance", this, 2, 0, 10, false));
 
-    private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.None).register();
-    private final Setting swapDelay = register(new Setting("SwapDelay", this, 0, 0, 10, false));
-    private final SettingEnum<SwapEnum2.Swap> antiWeakness = new SettingEnum<>("AntiWeakness", this, SwapEnum2.Swap.None);
+    //private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.None).register();
+    //private final Setting swapDelay = register(new Setting("SwapDelay", this, 0, 0, 10, false));
+    //private final SettingEnum<SwapEnum2.Swap> antiWeakness = new SettingEnum<>("AntiWeakness", this, SwapEnum2.Swap.None);
 
     private final SettingEnum<TargetMode> targetMode = new SettingEnum<>("TargetMode", this, TargetMode.Closest).register();
     private final Setting targetRange = register(new Setting("TargetRange", this, 12, 1, 16, false));
     private final Setting popFocus = register(new Setting("PopFocus", this, false));
+    private final Setting popFocusTimeOut = register(new Setting("PopFocusTimeOut", this, 30, 0, 120, true));
 
     private final Setting predict = register(new Setting("Predict", this, false));
     private final Setting predictTicks = register(new Setting("PredictTicks", this, 2, 0, 20, true));
+
+    private final Setting rotate = register(new Setting("Rotate", this, false));
+    private final Setting yawStep = register(new Setting("YawStep", this, 55, 1, 180, true));
+
+    private final Setting swing = register(new Setting("Swing", this, true));
+    private final SettingEnum<SwingHand> swingingHand = new SettingEnum<>("SwingingHand", this, SwingHand.MainHand).register();
+
+    private final SettingEnum<Timings> timings = new SettingEnum<>("Timings", this, Timings.Adaptive).register();
+    private final SettingEnum<Logic> logic = new SettingEnum<>("Logic", this, Logic.BreakPlace).register();
+
+    private final Setting placeSpeed = register(new Setting("PlaceSpeed", this, 20, 0, 20, false));
+    private final Setting packetPlace = register(new Setting("PacketPlace", this, true));
+    private final Setting placeRaytrace = register(new Setting("Raytrace", this, false));
+    private final Setting strictFacing = register(new Setting("StrictFacing", this, false));
+    private final Setting antiStuck = register(new Setting("AntiStuck", this, false));
+    private final Setting noPlaceSuicide = register(new Setting("NoPlaceSuicide", this, true));
+
+    private final Setting breakSpeed = register(new Setting("BreakSpeed", this, 18.4, 0, 20, false));
+    private final Setting inhibit = register(new Setting("Inhibit", this, false));
+    private final Setting inhibitTimeOut = register(new Setting("InhibitTimeOut", this, 30, 1, 60, true));
+    private final Setting packetBreak = register(new Setting("PacketBreak", this, true));
+    private final Setting breakRaytrace = register(new Setting("BreakRaytrace", this, true));
+    private final Setting noBreakSuicide = register(new Setting("NoBreakSuicide", this, true));
+
+    private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));
     private final Setting placeWallRange = register(new Setting("PlaceWallRange", this, 3, 0, 6, false));
@@ -61,22 +98,47 @@ public class AutoCrystalRewrite extends Module {
 
     private final Setting minPlaceDamage = register(new Setting("MinPlaceDamage", this, 5, 0, 36, false));
     private final Setting maxSelfPlace = register(new Setting("MaxSelfPlace", this, 8, 0, 36, false));
+    private final Setting minBreakDamage = register(new Setting("MinBreakDamage", this, 5, 0, 36, false));
+    private final Setting maxSelfBreak = register(new Setting("MaxSelfBreak", this, 8, 0, 36, false));
+
+    private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
+
+    private static AutoCrystalRewrite INSTANCE;
 
     public AutoCrystalRewrite(){
-        super("Kys+", Category.COMBAT);
+        super("Kys+", Category.COMBAT, true);
+        INSTANCE = this;
     }
 
-    private EntityPlayer target;
+    private Thread thread = null;
 
-    private Set<EntityEnderCrystal> placedCrystals = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private TimerUtils placeTimer = new TimerUtils();
+
+    private TimerUtils breakTimer = new TimerUtils();
+
+    private final TimerUtils popFocusTimer = new TimerUtils();
+
+    private EntityPlayer target = null;
+
+    private Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
+
+    private BlockPos lastPlacePos = null;
 
     @Override
     public void onEnable() {
         super.onEnable();
         if(mc.player == null || mc.world == null){
-            toggle();
+            setToggled(false);
             return;
         }
+
+        placeTimer.reset();
+        breakTimer.reset();
+        popFocusTimer.reset();
+
+        updateTarget();
+
+        doAutoCrystal();
 
         Kisman.EVENT_BUS.subscribe(this);
     }
@@ -87,7 +149,206 @@ public class AutoCrystalRewrite extends Module {
 
         Kisman.EVENT_BUS.unsubscribe(this);
 
-        placedCrystals.clear();
+        thread.interrupt();
+        thread = null;
+        placeTimer.reset();
+        breakTimer.reset();
+        popFocusTimer.reset();
+        target = null;
+        inhibitCrystals.clear();
+        lastPlacePos = null;
+    }
+
+    @Override
+    public void update(){
+        if(mc.player == null || mc.world == null){
+            setToggled(false);
+            return;
+        }
+        mc.addScheduledTask(() -> {
+            long timeOut = inhibitTimeOut.getValInt() * 50L;
+            inhibitCrystals.forEach((crystal, time) -> {
+                if((System.currentTimeMillis() - time) >= timeOut)
+                    inhibitCrystals.remove(crystal);
+            });
+        });
+        mc.addScheduledTask(() -> {
+            if(popFocus.getValBoolean() && !popFocusTimer.passedMillis(popFocusTimeOut.getValInt() * 50L))
+                return;
+            updateTarget();
+        });
+    }
+
+    private void doAutoCrystal(){
+        AtomicBoolean started = new AtomicBoolean(true);
+        thread = new Thread(() -> {
+            while(!Thread.currentThread().isInterrupted()){
+                if(getCrystalHand() == null){
+                    started.set(true);
+                    continue;
+                }
+                try {
+                    handleLogic(logic.getValEnum(), started.get());
+                    started.set(false);
+                } catch (InterruptedException e){
+                    setToggled(false);
+                    return;
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void handleLogic(Logic logic, boolean justDoIt) throws InterruptedException {
+        if(logic == Logic.PlaceBreak){
+            if(timings.getValEnum() == Timings.Sequential){
+                if (!justDoIt)
+                    Thread.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
+                handlePlace(false);
+                Thread.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
+                handleBreak(false);
+                return;
+            }
+            handlePlace(!justDoIt);
+            handleBreak(true);
+            return;
+        }
+        if(timings.getValEnum() == Timings.Sequential){
+            if(!justDoIt)
+                Thread.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
+            handleBreak(false);
+            Thread.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
+            handlePlace(false);
+            return;
+        }
+        handleBreak(true);
+        handlePlace(true);
+    }
+
+    private void handleBreak(boolean handleDelay){
+        if(handleDelay && !breakTimer.passedMillis(Math.round(1000L - (50L * breakSpeed.getValDouble()))))
+            return;
+        CrystalInfo info = getOptimalBreak();
+        if(info == null)
+            return;
+        attackCrystal(info.getCrystal());
+        inhibitCrystals.put(info.getCrystal(), System.currentTimeMillis());
+        if(sync.getValEnum() == Sync.Attack)
+            removeCrystal(info.getCrystal());
+        if(handleDelay)
+            breakTimer.reset();
+    }
+
+    private void handlePlace(boolean handleDelay){
+        if(handleDelay && !placeTimer.passedMillis(Math.round(1000L - (50L * placeSpeed.getValDouble()))))
+            return;
+        PositionInfo info = calculatePlace();
+        if(info == null){
+            lastPlacePos = null;
+            return;
+        }
+        lastPlacePos = info.getBlockPos();
+        placeCrystal(info.getBlockPos());
+        if(handleDelay)
+            placeTimer.reset();
+    }
+
+    private void placeCrystal(BlockPos pos){
+        RayTraceResult result = mc.world.rayTraceBlocks(BlockUtil.getEyesPos(), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+        EnumFacing facing = result == null ? (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN) : (placeRaytrace.getValBoolean() ? result.sideHit : (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN));
+        float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
+        float[] rots = AngleUtil.calculateAngles(pos);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
+        if(packetPlace.getValBoolean())
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, facing, getCrystalHand(), 0, 0, 0));
+        else
+            mc.playerController.processRightClickBlock(mc.player, mc.world, pos, facing, new Vec3d(0, 0, 0), getCrystalHand());
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
+    }
+
+    public EnumHand getCrystalHand(){
+        if(mc.player.getHeldItemMainhand().getItem() == Items.END_CRYSTAL){
+            mc.playerController.syncCurrentPlayItem();
+            return EnumHand.MAIN_HAND;
+        }
+        if(mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL){
+            mc.playerController.syncCurrentPlayItem();
+            return EnumHand.OFF_HAND;
+        }
+        return null;
+    }
+
+    private void attackCrystal(EntityEnderCrystal crystal){
+        float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
+        float[] rots = AngleUtil.calculateAngles(crystal);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
+        if(packetBreak.getValBoolean())
+            mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
+        else
+            mc.playerController.attackEntity(mc.player, crystal);
+        swing();
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
+    }
+
+    private void swing(){
+        int armSwingAnimationEnd;
+        if(mc.player.isPotionActive(MobEffects.HASTE))
+            armSwingAnimationEnd = 6 - (1 + mc.player.getActivePotionEffect(MobEffects.HASTE).getAmplifier());
+        else
+            armSwingAnimationEnd = mc.player.isPotionActive(MobEffects.MINING_FATIGUE) ? 6 + (1 + mc.player.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
+
+        if(swing.getValBoolean() && (!mc.player.isSwingInProgress || mc.player.swingProgressInt >= armSwingAnimationEnd / 2 || mc.player.swingProgressInt < 0)){
+            mc.player.swingProgressInt = -1;
+            mc.player.isSwingInProgress = true;
+            mc.player.swingingHand = swingingHand.getValEnum().getHand();
+
+            if(mc.player.world instanceof WorldServer)
+                ((WorldServer) mc.player.world).getEntityTracker().sendToTracking(mc.player, new SPacketAnimation(mc.player, swingingHand.getValEnum().getHand() == EnumHand.OFF_HAND ? 3 : 0));
+        }
+
+        mc.player.connection.sendPacket(new CPacketAnimation(swingingHand.getValEnum().getHand()));
+    }
+
+    // let's pray this actually works
+    private void handleRotate(float[] rots, float[] oldRots){
+        if(yawStep.getValInt() >= 360){
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
+            mc.player.lastReportedYaw = rots[0];
+            mc.player.lastReportedPitch = rots[1];
+            return;
+        }
+
+        float yD1 = MathHelper.wrapDegrees(oldRots[0] - rots[0]);
+        float yD2 = MathHelper.wrapDegrees(rots[0] - oldRots[0]);
+
+        if(yD1 < yD2){
+            float step = Math.abs(yD1) / yawStep.getValFloat();
+            float total = 0;
+            for(int i = 0;;i++){
+                if(total < Math.abs(yD1))
+                    break;
+                mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0] - (i * step), rots[1], mc.player.onGround));
+                total += step;
+            }
+            mc.player.lastReportedYaw = rots[0];
+            mc.player.lastReportedPitch = rots[1];
+            return;
+        }
+
+        float step = Math.abs(yD2) / yawStep.getValFloat();
+        float total = 0;
+        for(int i = 0;;i++){
+            if(total < Math.abs(yD2))
+                break;
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0] + (i * step), rots[1], mc.player.onGround));
+            total += step;
+        }
+        mc.player.lastReportedYaw = rots[0];
+        mc.player.lastReportedPitch = rots[1];
     }
 
     @EventHandler
@@ -97,13 +358,15 @@ public class AutoCrystalRewrite extends Module {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
             if(packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE){
                 Set<EntityEnderCrystal> remove = new HashSet<>();
-                placedCrystals.forEach(crystal -> {
+                inhibitCrystals.forEach((crystal, time) -> {
                     if(crystal.getDistance(packet.getX(), packet.getY(), packet.getZ()) >= 6)
                         return;
                     remove.add(crystal);
-                    removeCrystal(crystal);
+                    if(sync.getValEnum() == Sync.Confirm)
+                        removeCrystal(crystal);
                 });
-                placedCrystals.removeAll(remove);
+                for(EntityEnderCrystal crystal : remove)
+                    inhibitCrystals.remove(crystal);
             }
         }
 
@@ -113,8 +376,9 @@ public class AutoCrystalRewrite extends Module {
                     EntityEnderCrystal crystal :
                     mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(new BlockPos(packet.getX(), packet.getY(), packet.getZ())))
             ){
-                placedCrystals.remove(crystal);
-                removeCrystal(crystal);
+                inhibitCrystals.remove(crystal);
+                if(sync.getValEnum() == Sync.Confirm)
+                    removeCrystal(crystal);
             }
         }
 
@@ -125,14 +389,20 @@ public class AutoCrystalRewrite extends Module {
                 if(!(entity instanceof EntityEnderCrystal))
                     return;
                 EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
-                removeCrystal(crystal);
+                inhibitCrystals.remove(crystal);
+                if(sync.getValEnum() == Sync.Confirm)
+                    removeCrystal(crystal);
             }
         }
 
         if(event.getPacket() instanceof SPacketEntityStatus){
             SPacketEntityStatus packet = (SPacketEntityStatus) event.getPacket();
-            if(packet.getOpCode() == 35 && packet.getEntity(mc.world) instanceof EntityPlayer && popFocus.getValBoolean())
-                target = (EntityPlayer) packet.getEntity(mc.world);
+            if(packet.getOpCode() == 35 && packet.getEntity(mc.world) instanceof EntityPlayer && popFocus.getValBoolean()) {
+                if (mc.player.getDistance(packet.getEntity(mc.world)) <= targetRange.getValDouble()) {
+                    target = (EntityPlayer) packet.getEntity(mc.world);
+                    popFocusTimer.reset();
+                }
+            }
         }
     });
 
@@ -161,6 +431,12 @@ public class AutoCrystalRewrite extends Module {
             if(!isEntityInRange(crystal, breakRange.getValDouble(), breakWallRange.getValDouble()))
                 continue;
 
+            if(breakRaytrace.getValBoolean() && !mc.player.canEntityBeSeen(crystal))
+                continue;
+
+            if(inhibit.getValBoolean() && inhibitCrystals.containsKey(crystal))
+                continue;
+
             double damage = CrystalUtils.calculateDamage(
                     mc.world,
                     crystal.posX,
@@ -179,7 +455,16 @@ public class AutoCrystalRewrite extends Module {
                     terrain.getValBoolean()
             );
 
+            if(noBreakSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() + mc.player.getAbsorptionAmount()))
+                continue;
+
             damage = getSafetyDamage(damage, selfDamage);
+
+            if(damage < minBreakDamage.getValDouble())
+                continue;
+
+            if(selfDamage > maxSelfBreak.getValDouble())
+                continue;
 
             CrystalInfo info = new CrystalInfo(crystal, damage, selfDamage);
 
@@ -190,8 +475,6 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private PositionInfo calculatePlace(){
-        if(target == null)
-            return null;
 
         PositionInfo positionInfo = new PositionInfo(BlockPos.ORIGIN, -1, -1);
 
@@ -210,6 +493,11 @@ public class AutoCrystalRewrite extends Module {
                 continue;
             }
 
+
+
+            if(placeRaytrace.getValBoolean() && !EntityUtil.canSee(pos))
+                continue;
+
             double damage = CrystalUtils.calculateDamage(
                     mc.world,
                     pos.getX() + 0.5,
@@ -227,6 +515,23 @@ public class AutoCrystalRewrite extends Module {
                     mc.player,
                     terrain.getValBoolean()
             );
+
+            if(antiStuck.getValBoolean()){
+                AxisAlignedBB aabb = new AxisAlignedBB(
+                        pos.getX() -1,
+                        pos.getY() - 0.5,
+                        pos.getZ() - 1,
+                        pos.getX() + 2,
+                        pos.getY() + 1,
+                        pos.getZ() + 2
+                );
+
+                if(!mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb).isEmpty())
+                    continue;
+            }
+
+            if(noPlaceSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() - mc.player.getAbsorptionAmount()))
+                continue;
 
             damage = getSafetyDamage(damage, selfDamage);
 
@@ -262,7 +567,7 @@ public class AutoCrystalRewrite extends Module {
         double maxDamage = 0.5;
         double minDistance = targetRange.getValDouble() + 1;
 
-        for(EntityPlayer player : mc.world.getEntitiesWithinAABB(EntityPlayer.class, playerRelativeAABB(targetRange.getValDouble()))){
+        for(EntityPlayer player : mc.world.playerEntities){
             if(isTargetNotValid(player, targetRange.getValDouble()))
                 continue;
 
@@ -313,8 +618,8 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private boolean isTargetNotValid(EntityPlayer player, double range){
-        return mc.player.getDistanceSq(player) > range
-                ||  player.equals(mc.player)
+        return mc.player.getDistance(player) > range
+                || player.equals(mc.player)
                 || player.getHealth() <= 0.0f
                 || player.isDead
                 || FriendManager.instance.isFriend(player.getName());
@@ -442,6 +747,30 @@ public class AutoCrystalRewrite extends Module {
         return world.getBlockState(result.getBlockPos()).getBlock() != Blocks.AIR;
     }
 
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event){
+        if(mc.player == null || mc.world == null)
+            return;
+
+        if(!isToggled())
+            return;
+
+        if(lastPlacePos == null)
+            return;
+
+        renderer.draw(lastPlacePos);
+    }
+
+    private enum Timings {
+        Adaptive,
+        Sequential
+    }
+
+    private enum Logic {
+        PlaceBreak,
+        BreakPlace
+    }
+
     private enum Safety {
         None,
         MinMax,
@@ -452,6 +781,27 @@ public class AutoCrystalRewrite extends Module {
         Closest,
         Health,
         Damage
+    }
+
+    private enum Sync {
+        Attack,
+        Confirm
+    }
+
+    private enum SwingHand {
+        MainHand(EnumHand.MAIN_HAND),
+        OffHand(EnumHand.OFF_HAND),
+        CurrentHand(null);
+
+        private final EnumHand hand;
+
+        SwingHand(EnumHand hand) {
+            this.hand = hand;
+        }
+
+        public EnumHand getHand() {
+            return hand == null ? INSTANCE.getCrystalHand() : hand;
+        }
     }
 
     private static class PositionInfo {

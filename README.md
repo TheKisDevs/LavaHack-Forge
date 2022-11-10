@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-    A based minecraft 1.12.2 utility mod
+    The best minecraft 1.12.2 full stack utility mod
 </p>
 
 <h1 align="center">
