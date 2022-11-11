@@ -33,6 +33,23 @@ public class Frame {
     public boolean dragging, open = true;
     public int dragX, dragY;
 
+    private final Component headerComponent = new Component() {
+        @Override
+        public int getX() {
+            return x;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+
+        @Override
+        public int getLayer() {
+            return 0;
+        }
+    };
+
     public Frame(
             Category cat,
             int x,
@@ -91,9 +108,10 @@ public class Frame {
             }
 
             for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                if(mod instanceof ModulePlugin)
-                components.add(new Button(mod, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
+                if(mod instanceof ModulePlugin) {
+                    components.add(new Button(mod, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
             }
         }
 
@@ -189,6 +207,8 @@ public class Frame {
     }
 
     public void renderPost(int mouseX, int mouseY) {
+        if(HalqGui.outlineHeaders) HalqGui.drawComponentOutline(headerComponent, false, !HalqGui.outlineTest2, HalqGui.outlineTest2);
+
         if(open) {
             for(Component comp : components) {
                 doIterationRenderPost(

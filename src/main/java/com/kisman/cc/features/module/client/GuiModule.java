@@ -23,6 +23,12 @@ public class GuiModule extends Module {
     public final Setting test2 = register(new Setting("Test 2", this, true));
     public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));
     public final Setting textOffsetX = register(new Setting("Text X Offset", this, 5, 0, 10, true));
+    public final Setting outlineColor = register(new Setting("Outline Color", this, new Colour(0, 0, 0, 255)));
+    public final Setting outlineTest = register(new Setting("Outline Test", this, true));
+    public final Setting outlineHeaders = register(new Setting("Outline Headers", this, false));
+    public final Setting outlineTest2 = register(new Setting("Outline Test 2", this, true));
+    public final Setting componentsOutline = register(new Setting("Components Outline", this, false));
+    public final Setting lineWidth = register(new Setting("Line Width", this, 1, 0.1, 2, false));
 
     public static GuiModule instance;
 

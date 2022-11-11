@@ -116,6 +116,7 @@ public class ModuleManager {
 		modules.add(new Config());
 		modules.add(CustomFontModule.instance);
 		modules.add(new CustomMainMenuModule());
+		modules.add(new DevelopmentHelper());
 		modules.add(new DiscordRPCModule());
 		modules.add(FriendHighlight.INSTANCE);
 		modules.add(new GuiModule());

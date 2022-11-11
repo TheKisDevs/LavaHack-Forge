@@ -50,16 +50,8 @@ class SettingArray<T>(
         str : String
     ) : Boolean = value.toString().equals(str, true)
 
-    override fun getStringValues() : Array<String> {
-        /*val values = Array<String>(list.size) {}
+    override fun getStringValues() : Array<String> = options.toTypedArray()
 
-        for((i, element) in list.withIndex()) {
-            values[i] = element.toString()
-        }
-
-        return values*/
-        return options.toTypedArray()
-    }
 
     override fun getOptions() : ArrayList<String> {
         val values = ArrayList<String>()
@@ -89,4 +81,6 @@ class SettingArray<T>(
     override fun setVisible(
         suppliner : Supplier<Boolean>
     ) : Setting = super.setVisible(suppliner) as SettingArray<T>
+
+    fun register() : SettingArray<T> = this.also { parentMod.register(it) }
 }

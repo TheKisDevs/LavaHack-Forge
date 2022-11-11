@@ -1,5 +1,6 @@
 package com.kisman.cc.util.render.shader.framebuffer
 
+import com.kisman.cc.Kisman
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.ARBShaderObjects
 import org.lwjgl.opengl.GL11
@@ -37,7 +38,7 @@ abstract class Shader(
                 fragmentShaderID = createShader(IOUtils.toString(fragmentStream, Charset.defaultCharset()), 35632)
                 IOUtils.closeQuietly(fragmentStream)
             } catch(e : Exception) {
-                e.printStackTrace()
+                Kisman.LOGGER.error("Cannot create $fragmentShader shader", e)
 
                 return@run
             }

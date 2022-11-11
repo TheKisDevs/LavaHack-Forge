@@ -32,13 +32,25 @@ public class HalqGui extends GuiScreen {
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
-    public static boolean background = true, line = true, shadow = true, shadowCheckBox = false, test = true, shadowRects = false, test2 = true;
+    public static Colour outlineColor = new Colour(Color.BLACK);
+    public static boolean background = true,
+            line = true,
+            shadow = true,
+            test = true,
+            shadowRects = false,
+            test2 = true,
+            //Outline fields:
+            componentsOutline = false,
+            outlineTest = true,
+            outlineTest2 = true,
+            outlineHeaders = false;
     public static int diff = 0, offsets = 0, textOffsetX = 5;
+    public static double lineWidth = 1.0;
 
     //constants
     public static final int height = 13;
     public static final int headerOffset = 5;
-    public static final int width = 100;
+    public static final int width = 120;
 
     //frames list
     public final ArrayList<Frame> frames = new ArrayList<>();
@@ -70,7 +82,7 @@ public class HalqGui extends GuiScreen {
         int offsetX = 0;
         for(Category cat : Category.values()) {
             frames.add(new Frame(cat, offsetX, 17));
-            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1;
+            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1 - 1;
         }
     }
 
@@ -93,7 +105,7 @@ public class HalqGui extends GuiScreen {
 
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
-        shadowCheckBox = GuiModule.instance.shadow.getValBoolean();
+        shadow = GuiModule.instance.shadow.getValBoolean();
         test = GuiModule.instance.horizontalLines.getValBoolean();
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
         line = GuiModule.instance.verticalLines.getValBoolean();
@@ -102,6 +114,12 @@ public class HalqGui extends GuiScreen {
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
         test2 = GuiModule.instance.test2.getValBoolean();
         textOffsetX = GuiModule.instance.textOffsetX.getValInt();
+        outlineColor = GuiModule.instance.outlineColor.getColour();
+        outlineTest = GuiModule.instance.outlineTest.getValBoolean();
+        outlineTest2 = GuiModule.instance.outlineTest2.getValBoolean();
+        outlineHeaders = GuiModule.instance.outlineHeaders.getValBoolean();
+        componentsOutline = GuiModule.instance.componentsOutline.getValBoolean();
+        lineWidth = GuiModule.instance.lineWidth.getValDouble();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -117,6 +135,7 @@ public class HalqGui extends GuiScreen {
         Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         scrollWheelCheck();
+
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
@@ -329,6 +348,79 @@ public class HalqGui extends GuiScreen {
         }
 
         return height;
+    }
+
+    public static void drawComponentOutline(Component component, boolean offsetsCheck, boolean drawSecondLines, boolean full) {
+        if(componentsOutline) {
+            int width0 = LayerControllerKt.getModifiedWidth(component.getLayer(), width);
+
+            if(!full && (offsets > 0 || !offsetsCheck)) {
+                int width1 = width0 - (offsets * 2);
+
+                Render2DUtil.drawRectWH(
+                        component.getX() + offsets,
+                        component.getY() + offsets,
+                        width1,
+                        lineWidth,
+                        outlineColor.getRGB()
+                );
+                Render2DUtil.drawRectWH(
+                        component.getX() + offsets,
+                        component.getY() + offsets + component.getRawHeight() - (offsets * 2) - lineWidth,
+                        width1,
+                        lineWidth,
+                        outlineColor.getRGB()
+                );
+                Render2DUtil.drawRectWH(
+                        component.getX() + offsets,
+                        component.getY() + offsets,
+                        lineWidth,
+                        component.getRawHeight() - (offsets * 2),
+                        outlineColor.getRGB()
+                );
+                Render2DUtil.drawRectWH(
+                        component.getX() + offsets + width1 - lineWidth,
+                        component.getY() + offsets,
+                        lineWidth,
+                        component.getRawHeight() - (offsets * 2),
+                        outlineColor.getRGB()
+                );
+            }
+
+            if(drawSecondLines) {
+                if(full) {
+                    Render2DUtil.drawRectWH(
+                            component.getX(),
+                            component.getY(),
+                            width0,
+                            lineWidth,
+                            outlineColor.getRGB()
+                    );
+                    Render2DUtil.drawRectWH(
+                            component.getX(),
+                            component.getY() + component.getRawHeight() - lineWidth,
+                            width0,
+                            lineWidth,
+                            outlineColor.getRGB()
+                    );
+                }
+
+                Render2DUtil.drawRectWH(
+                        component.getX(),
+                        component.getY(),
+                        lineWidth,
+                        component.getRawHeight(),
+                        outlineColor.getRGB()
+                );
+                Render2DUtil.drawRectWH(
+                        component.getX() + width0 - lineWidth,
+                        component.getY(),
+                        lineWidth,
+                        component.getRawHeight(),
+                        outlineColor.getRGB()
+                );
+            }
+        }
     }
 
     public enum LocateMode {

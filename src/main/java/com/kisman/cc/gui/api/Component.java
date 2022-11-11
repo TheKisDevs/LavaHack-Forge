@@ -4,7 +4,10 @@ import com.kisman.cc.gui.halq.HalqGui;
 
 public interface Component {
     default void drawScreen(int mouseX, int mouseY) { }
-    default void drawScreenPost(int mouseX, int mouseY) { HalqGui.renderComponent(this); }
+    default void drawScreenPost(int mouseX, int mouseY) {
+        HalqGui.renderComponent(this);
+        HalqGui.drawComponentOutline(this, true, HalqGui.outlineTest, false);
+    }
     default void mouseClicked(int mouseX, int mouseY, int button) { }
     default void mouseReleased(int mouseX, int mouseY, int mouseButton) { }
     default void updateComponent(int x, int y) { }

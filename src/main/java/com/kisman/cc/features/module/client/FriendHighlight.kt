@@ -3,9 +3,10 @@ package com.kisman.cc.features.module.client
 import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.settings.types.SettingEnum
+import com.kisman.cc.settings.types.SettingArray
 import com.kisman.cc.util.collections.LimitedSortedMap
 import com.kisman.cc.util.manager.friend.FriendManager
+import com.kisman.cc.util.minecraft.*
 import net.minecraft.util.text.TextFormatting
 
 /**
@@ -15,10 +16,13 @@ import net.minecraft.util.text.TextFormatting
 @Beta
 object FriendHighlight : Module(
     "FriendHighlight",
-    "highlights your friends at tab, chat, nametags and other places",
+    "Highlights your friends at tab, chat, nametags and other places",
     Category.CLIENT
 ) {
-    private val color = SettingEnum("Color", this, TextFormatting.AQUA).register()
+    private val COLOR_FORMATTER = Formatter(TextFormatting.AQUA, TextFormatting.AQUA.friendlyName, FormatterType.Color)
+
+    private val color = SettingArray("Color", this, COLOR_FORMATTER, getColorFormatters()).register()
+    private val style = SettingArray("Style", this, DEFAULT_STYLE_FORMATTER, getStyleFormatters()).register()
 
     private val cache = LimitedSortedMap<String, String>(50)
 
@@ -26,14 +30,13 @@ object FriendHighlight : Module(
         line : String
     ) : String = if(isToggled && mc.player != null && mc.world != null) cache[line] ?: modify(line).also { cache[line] = it } else line
 
-
     private fun modify(
         line : String
     ) : String {
         var modified = line
 
         for(friend in FriendManager.instance.friends) {
-            modified = modified.replace(friend, "${color.valEnum}$friend${TextFormatting.RESET}", true)
+            modified = modified.replace(friend, "${style.getValElement().original}${color.getValElement().original}$friend${TextFormatting.RESET}", true)
         }
 
         return modified

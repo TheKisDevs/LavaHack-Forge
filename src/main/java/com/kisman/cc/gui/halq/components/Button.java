@@ -104,7 +104,7 @@ public class Button implements Openable {
         if(hud && draggable != null) draggable.drawScreen(mouseX, mouseY);
 
         Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             if(mod.isToggled()) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(

@@ -34,7 +34,7 @@ public class BindModeButton implements Component {
     public void drawScreen(int mouseX, int mouseY) {
         this.index = module.hold ? 1 : 0;
         Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(

@@ -82,7 +82,7 @@ public class ModeButton implements Openable {
 
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                         new Vec4d(

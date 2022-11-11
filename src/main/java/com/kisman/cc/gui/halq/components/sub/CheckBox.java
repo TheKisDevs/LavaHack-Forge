@@ -39,7 +39,7 @@ public class CheckBox implements Openable {
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             if(setting.getValBoolean()) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(

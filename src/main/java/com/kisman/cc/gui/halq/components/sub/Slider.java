@@ -55,7 +55,7 @@ public class Slider implements Component {
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         int width = (int) (this.width * (setting.getValDouble() - min) / (max - min));
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(

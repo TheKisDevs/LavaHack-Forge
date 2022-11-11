@@ -45,7 +45,7 @@ public class ColorButton implements Component {
         if(!setting.getColour().equals(color)) color = setting.getColour();
         this.pickerWidth = width;
         Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(

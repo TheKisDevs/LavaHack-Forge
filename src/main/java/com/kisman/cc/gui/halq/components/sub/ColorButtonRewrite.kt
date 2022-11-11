@@ -55,7 +55,7 @@ class ColorButtonRewrite(
             HalqGui.height.toDouble(),
             HalqGui.backgroundColor.rgb
         )
-        if (HalqGui.shadowCheckBox) {
+        if (HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                 AbstractGradient(
                     Vec4d(

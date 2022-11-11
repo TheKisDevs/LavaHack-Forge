@@ -1,10 +1,13 @@
 package com.kisman.cc.mixin.mixins;
 
+import com.kisman.cc.features.module.client.DevelopmentHelper;
+import com.kisman.cc.util.enums.DevelopmentHelperSlotTypes;
 import com.kisman.cc.gui.other.container.ItemESP;
 import com.kisman.cc.features.module.render.ContainerModifier;
 import com.kisman.cc.sockets.SocketsManagerKt;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.Minecraft;
@@ -126,6 +129,10 @@ public class MixinGuiContainer extends GuiScreen {
     private void drawSlotHook(Slot slot, CallbackInfo ci) {
         try {
             if (ContainerModifier.instance.isToggled() && ContainerModifier.instance.itemESP.getValBoolean() && !itemESP.getItemStacks().isEmpty() && itemESP.getItemStacks().contains(slot.getStack())) Render2DUtil.drawRect(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, ColorUtils.astolfoColors(100, 100));
+            if(DevelopmentHelper.getInstance().isToggled() && DevelopmentHelper.getInstance().getDisplaySlots().getValBoolean()) {
+                Render2DUtil.drawRect(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, Color.BLACK.getRGB());
+                CustomFontUtil.drawString(String.valueOf(DevelopmentHelper.getInstance().getSlotType().getValEnum() == DevelopmentHelperSlotTypes.Index ? slot.getSlotIndex() : slot.slotNumber), slot.xPos, slot.yPos, -1);
+            }
         } catch(Exception e) {
             if(flag) {
                 SocketsManagerKt.reportIssue("Got exception in drawSlot invoke inject hook by ItemESP, stack trace: " + e);

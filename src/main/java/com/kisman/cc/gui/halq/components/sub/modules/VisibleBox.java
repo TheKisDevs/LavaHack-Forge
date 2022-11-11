@@ -29,7 +29,7 @@ public class VisibleBox implements Component {
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadowCheckBox) {
+        if(HalqGui.shadow) {
             if(module.visible) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
