@@ -56,6 +56,12 @@ public class ScaffoldTest3 extends Module {
 
     private BlockPos last = null;
 
+    private int whatDaHeckTicks = 0;
+
+    private boolean yes = true;
+
+    private int ticks = 0;
+
     @Override
     public void onEnable() {
         if(mc.player == null || mc.world == null){
@@ -82,6 +88,9 @@ public class ScaffoldTest3 extends Module {
         playerY = 0;
         restrictTicks = 0;
         last = null;
+        whatDaHeckTicks = 0;
+        yes = true;
+        ticks = 0;
     }
 
     @Override
@@ -147,17 +156,41 @@ public class ScaffoldTest3 extends Module {
                     mc.player.jump();
                 mc.player.motionY = towerMotion.getValDouble();
                 mc.player.fallDistance = 0f;
-            } else {
-                if(mc.player.onGround)
-                    mc.player.jump();
-                else if(newY > playerY){
+            } else if(towerMode.getValEnum() == TowerMode.Vanilla) {
+                if(mc.player.onGround){
+                    //if(yes)
+                    //    mc.player.jump();
+                    //yes = !yes;
+                } else if(newY > playerY){
                     if(towerFast.getValBoolean()){
-                        mc.player.motionY = -0.28;
+                        mc.player.motionY = -0.42;
                     } else {
-                        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, playerY, mc.player.posZ, true));
-                        mc.player.setPosition(mc.player.posX, playerY, mc.player.posZ);
+                        //if(ticks >= 4){
+                        //    ticks = 0;
+                        //    return;
+                        //}
+                        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
+                        mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
                         mc.player.jump();
+                        //ticks++;
                     }
+                }
+            } else {
+                if(whatDaHeckTicks == 0){
+                    BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+                    fakeJump();
+                    whatDaHeckTicks++;
+                    return;
+                }
+
+                if(whatDaHeckTicks == 1){
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
+                    mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
+                    whatDaHeckTicks++;
+                }
+
+                if(whatDaHeckTicks == 2){
+                    whatDaHeckTicks = 0;
                 }
             }
         }
@@ -213,8 +246,17 @@ public class ScaffoldTest3 extends Module {
                 .orElse(null);
     }
 
+    private void fakeJump(){
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.41999998688698D, mc.player.posZ, true));
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.7531999805211997D, mc.player.posZ, true));
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.00133597911214D, mc.player.posZ, true));
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.16610926093821D, mc.player.posZ, true));
+        mc.player.setPosition(mc.player.posX, mc.player.posY + 1.16610926093821D, mc.player.posZ);
+    }
+
     private enum TowerMode {
         Vanilla,
-        Motion
+        Motion,
+        WhatDaHeck
     }
 }
