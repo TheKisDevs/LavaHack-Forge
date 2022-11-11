@@ -58,7 +58,9 @@ public class ScaffoldTest3 extends Module {
 
     private int whatDaHeckTicks = 0;
 
-    boolean yes = true;
+    private boolean yes = true;
+
+    private int ticks = 0;
 
     @Override
     public void onEnable() {
@@ -88,6 +90,7 @@ public class ScaffoldTest3 extends Module {
         last = null;
         whatDaHeckTicks = 0;
         yes = true;
+        ticks = 0;
     }
 
     @Override
@@ -155,16 +158,21 @@ public class ScaffoldTest3 extends Module {
                 mc.player.fallDistance = 0f;
             } else if(towerMode.getValEnum() == TowerMode.Vanilla) {
                 if(mc.player.onGround){
-                    if(yes)
-                        mc.player.jump();
-                    yes = !yes;
+                    //if(yes)
+                    //    mc.player.jump();
+                    //yes = !yes;
                 } else if(newY > playerY){
                     if(towerFast.getValBoolean()){
-                        mc.player.motionY = -0.28;
+                        mc.player.motionY = -0.42;
                     } else {
+                        //if(ticks >= 4){
+                        //    ticks = 0;
+                        //    return;
+                        //}
                         mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
                         mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
                         mc.player.jump();
+                        //ticks++;
                     }
                 }
             } else {
