@@ -49,10 +49,10 @@ public class ColorButton implements Component {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(
-                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsets},
-                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                             ),
                             color.getColor(),
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
@@ -61,29 +61,29 @@ public class ColorButton implements Component {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(
-                                    new double[] {x + width / 2f, y + offset + HalqGui.offsets},
-                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
-                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsets}
+                                    new double[] {x + width / 2f, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY}
                             ),
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                             color.getColor()
                     )
             );
-        } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, getHeight() - HalqGui.offsets * 2, color.getRGB());
+        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
 
         HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
 
         if(open) {
             int offsetY = HalqGui.height;
-            drawPickerBase(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), pickerWidth - (HalqGui.offsets * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             offsetY += pickerWidth;
-            drawHueSlider(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), HalqGui.height - 3 - (HalqGui.offsets * 2), color.getHue(), mouseX, mouseY);
+            drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
             offsetY += HalqGui.height - 3;
-            drawAlphaSlider(x + HalqGui.offsets, y + offset + offsetY + HalqGui.offsets, pickerWidth - (HalqGui.offsets * 2), HalqGui.height - 3 - (HalqGui.offsets * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            drawAlphaSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
             height = offsetY + HalqGui.height - 3;
 
-            updateValue(mouseX, mouseY, x + HalqGui.offsets, y + offset + HalqGui.height + HalqGui.offsets);
+            updateValue(mouseX, mouseY, x + HalqGui.offsetsX, y + offset + HalqGui.height + HalqGui.offsetsY);
 
             {
                 final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
@@ -95,7 +95,7 @@ public class ColorButton implements Component {
         setting.setColour(color);
     }
 
-    private void updateValue(int mouseX, int mouseY, int x, int y) {
+    private void updateValue(int mouseX, int mouseY, double x, double y) {
         if (pickingBase) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
             float restrictedY = (float) Math.min(Math.max(y, mouseY), y + pickerWidth);
@@ -161,11 +161,11 @@ public class ColorButton implements Component {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
-    private void drawHueSlider(int x, int y, int width, int height, float hue, int mouseX, int mouseY) {
+    private void drawHueSlider(double x, double y, double width, double height, float hue, int mouseX, int mouseY) {
         hueHover = mouseX > x && mouseX < x + width && mouseY > y && mouseY <  y + height;
         int step = 0;
         if (height > width) {
-            Gui.drawRect(x, y, x + width, y + 4, -1);
+            Render2DUtil.drawRect(x, y, x + width, y + 4, -1);
             y += 4;
             for (int colorIndex = 0; colorIndex < 6; colorIndex++) {
                 int previousStep = Color.HSBtoRGB((float) step/6, 1.0f, 1.0f);
@@ -174,7 +174,7 @@ public class ColorButton implements Component {
                 step++;
             }
             final int sliderMinY = (int) (y + (height*hue)) - 4;
-            Gui.drawRect(x, sliderMinY - 1, x+width, sliderMinY + 1, -1);
+            Render2DUtil.drawRect(x, sliderMinY - 1, x+width, sliderMinY + 1, -1);
         } else {
             for (int colorIndex = 0; colorIndex < 6; colorIndex++) {
                 int previousStep = Color.HSBtoRGB((float) step/6, 1.0f, 1.0f);
@@ -182,24 +182,24 @@ public class ColorButton implements Component {
                 this.gradient(x + step * (width/6), y, x + (step+1) * (width/6), y + height, previousStep, nextStep, true);
                 step++;
             }
-            final int sliderMinX = (int) (x + (width*hue));
-            Gui.drawRect(sliderMinX - 1, y, sliderMinX + 1, y + height, -1);
+            double sliderMinX = x + (width * hue);
+            Render2DUtil.drawRect(sliderMinX - 1, y, sliderMinX + 1, y + height, -1);
         }
     }
 
-    public void drawAlphaSlider(int x, int y, int width, int height, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
+    public void drawAlphaSlider(double x, double y, double width, double height, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
         alphaHover = mouseX > x && mouseX < x + width && mouseY > y && mouseY <  y + height;
         boolean left = true;
-        int checkerBoardSquareSize = height / 2;
+        double checkerBoardSquareSize = height / 2;
 
-        for (int squareIndex = -checkerBoardSquareSize; squareIndex < width; squareIndex += checkerBoardSquareSize) {
+        for (double squareIndex = -checkerBoardSquareSize; squareIndex < width; squareIndex += checkerBoardSquareSize) {
             if (!left) {
                 Render2DUtil.drawRect(x + squareIndex, y, x + squareIndex + checkerBoardSquareSize, y + height, 0xFFFFFFFF);
                 Render2DUtil.drawRect(x + squareIndex, y + checkerBoardSquareSize, x + squareIndex + checkerBoardSquareSize, y + height, 0xFF909090);
 
                 if (squareIndex < width - checkerBoardSquareSize) {
-                    int minX = x + squareIndex + checkerBoardSquareSize;
-                    int maxX = Math.min(x + width, x + squareIndex + checkerBoardSquareSize * 2);
+                    double minX = x + squareIndex + checkerBoardSquareSize;
+                    double maxX = Math.min(x + width, x + squareIndex + checkerBoardSquareSize * 2);
                     Render2DUtil.drawRect(minX, y, maxX, y + height, 0xFF909090);
                     Render2DUtil.drawRect(minX, y + checkerBoardSquareSize, maxX, y + height, 0xFFFFFFFF);
                 }
@@ -213,7 +213,7 @@ public class ColorButton implements Component {
         Render2DUtil.drawRect(sliderMinX - 1, y, sliderMinX + 1, y + height, -1);
     }
 
-    private void drawPickerBase(int pickerX, int pickerY, int pickerWidth, int pickerHeight, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
+    private void drawPickerBase(double pickerX, double pickerY, double pickerWidth, double pickerHeight, float red, float green, float blue, float alpha, int mouseX, int mouseY) {
         baseHover = mouseX > pickerX && mouseX < pickerX + pickerWidth && mouseY > pickerY && mouseY <  pickerY + pickerHeight;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -222,23 +222,23 @@ public class ColorButton implements Component {
         GL11.glBegin(GL11.GL_POLYGON);
         {
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-            GL11.glVertex2f(pickerX, pickerY);
-            GL11.glVertex2f(pickerX, pickerY + pickerHeight);
+            GL11.glVertex2d(pickerX, pickerY);
+            GL11.glVertex2d(pickerX, pickerY + pickerHeight);
             GL11.glColor4f(red, green, blue, alpha);
-            GL11.glVertex2f(pickerX + pickerWidth, pickerY + pickerHeight);
-            GL11.glVertex2f(pickerX + pickerWidth, pickerY);
+            GL11.glVertex2d(pickerX + pickerWidth, pickerY + pickerHeight);
+            GL11.glVertex2d(pickerX + pickerWidth, pickerY);
         }
         GL11.glEnd();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glBegin(GL11.GL_POLYGON);
         {
             GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-            GL11.glVertex2f(pickerX, pickerY);
+            GL11.glVertex2d(pickerX, pickerY);
             GL11.glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-            GL11.glVertex2f(pickerX, pickerY + pickerHeight);
-            GL11.glVertex2f(pickerX + pickerWidth, pickerY + pickerHeight);
+            GL11.glVertex2d(pickerX, pickerY + pickerHeight);
+            GL11.glVertex2d(pickerX + pickerWidth, pickerY + pickerHeight);
             GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-            GL11.glVertex2f(pickerX + pickerWidth, pickerY);
+            GL11.glVertex2d(pickerX + pickerWidth, pickerY);
         }
         GL11.glEnd();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -247,7 +247,7 @@ public class ColorButton implements Component {
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    protected void gradient(int minX, int minY, int maxX, int maxY, int startColor, int endColor, boolean left) {
+    protected void gradient(double minX, double minY, double maxX, double maxY, int startColor, int endColor, boolean left) {
         if (left) {
             final float startA = (startColor >> 24 & 0xFF) / 255.0f;
             final float startR = (startColor >> 16 & 0xFF) / 255.0f;
@@ -267,11 +267,11 @@ public class ColorButton implements Component {
             GL11.glBegin(GL11.GL_POLYGON);
             {
                 GL11.glColor4f(startR, startG, startB, startA);
-                GL11.glVertex2f(minX, minY);
-                GL11.glVertex2f(minX, maxY);
+                GL11.glVertex2d(minX, minY);
+                GL11.glVertex2d(minX, maxY);
                 GL11.glColor4f(endR, endG, endB, endA);
-                GL11.glVertex2f(maxX, maxY);
-                GL11.glVertex2f(maxX, minY);
+                GL11.glVertex2d(maxX, maxY);
+                GL11.glVertex2d(maxX, minY);
             }
             GL11.glEnd();
             GL11.glShadeModel(GL11.GL_FLAT);

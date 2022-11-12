@@ -128,7 +128,6 @@ public class ModuleManager {
 		modules.add(new BlockHighlight());
 		//modules.add(new BlockLiner());
 		modules.add(new Breadcrumbs());
-		modules.add(new CameraClip());
 		modules.add(CharmsRewrite.INSTANCE);
 		modules.add(new CityESP());
 		modules.add(new ContainerModifier());
@@ -166,7 +165,6 @@ public class ModuleManager {
 //		modules.add(new Trajectories());
 //		modules.add(new TrajectoriesRewrite());
 		modules.add(new ViewModel());
-		modules.add(new Weather());
 		modules.add(new XRay());
 		//movement
 		modules.add(new AirJump());
@@ -200,6 +198,7 @@ public class ModuleManager {
 		modules.add(new AutoMine());
 		modules.add(new AutoMount());
 		modules.add(new AutoRespawn());
+		modules.add(new CameraClip());
 		modules.add(new ChorusDelay());
 		modules.add(new ForgeBypass());
 		modules.add(new FreeCamBypass());
@@ -264,17 +263,15 @@ public class ModuleManager {
 		//modules.add(new PacketDelay());
 		modules.add(new PortalsModifier());
 		modules.add(new Printer());
-		modules.add(new Reverse());
 		modules.add(new SelfDamage());
 		modules.add(new SkyBlockFeatures());
 		modules.add(new SkylightFix());
 		modules.add(new SlotMapper());
 		modules.add(new Spammer());
-		modules.add(new Spin());
 		modules.add(new TotemPopCounter());
 		modules.add(new Translate());
 		modules.add(new VisualRange());
-		modules.add(new WeaknessLog());
+		modules.add(new Weather());
 		modules.add(new XCarry());
 
 		//modules = modules.stream().filter(module -> {

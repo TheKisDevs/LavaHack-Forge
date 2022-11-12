@@ -36,6 +36,7 @@ public class  NameTags extends Module {
     private final Setting damageDisplay = register(new Setting("Damage Display", this, true));
     private final Setting atheist = register(new Setting("Atheist", this, true));
     private final Setting desc = register(new Setting("Desc", this, false));
+    private final Setting noBots = register(new Setting("No Bots", this, false));
 
     private final MultiThreaddableModulePattern threads = threads();
 
@@ -64,6 +65,14 @@ public class  NameTags extends Module {
             ArrayList<EntityPlayer> list = new ArrayList<>();
 
             for(EntityPlayer player : mc.world.playerEntities) {
+                if(noBots.getValBoolean()) {
+                    try {
+                        mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();//ping = -1
+                    } catch (NullPointerException ignored) {
+                        continue;
+                    }
+                }
+
                 if(player != mc.player && mc.player.getDistance(player) <= range.getValInt() && player != mc.getRenderViewEntity() && player.isEntityAlive()) {
                     if (damageDisplay.getValBoolean()) {
                         if (!tagList.containsKey(player.getName())) {

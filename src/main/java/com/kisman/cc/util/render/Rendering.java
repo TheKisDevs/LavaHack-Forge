@@ -56,11 +56,33 @@ public class Rendering {
         glLineWidth(1.5f);
     }
 
+    public static void setup(boolean depth){
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        if(!depth) GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glLineWidth(1.5f);
+    }
+
     public static void release(){
         glDisable(GL_LINE_SMOOTH);
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GlStateManager.depthMask(true);
         GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
+    }
+
+    public static void release(boolean depth){
+        glDisable(GL_LINE_SMOOTH);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.depthMask(true);
+        if(!depth) GlStateManager.enableDepth();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
@@ -78,10 +100,10 @@ public class Rendering {
         GlStateManager.shadeModel(GL_FLAT);
     }
 
-    public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){
+    public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode) {
         Color color = c.getColor();
         Color color1 = c1.getColor();
-        setup();
+
         switch (mode){
             case BOX:
                 drawSelectionBox(axisAlignedBB, color);
@@ -135,6 +157,11 @@ public class Rendering {
                 restore();
                 break;
         }
+    }
+
+    public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){
+        setup();
+        draw0(axisAlignedBB, lineWidth, c, c1, mode);
         release();
     }
 

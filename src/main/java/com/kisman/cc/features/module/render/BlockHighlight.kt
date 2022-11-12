@@ -61,6 +61,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             renderWorld(
                 renderer.movingLength.valFloat,
                 renderer.fadeLength.valFloat,
+                renderer.alphaFadeLength.valFloat,
                 renderer,
                 null
             )

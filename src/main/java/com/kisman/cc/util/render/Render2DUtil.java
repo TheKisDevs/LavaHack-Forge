@@ -464,7 +464,7 @@ public class Render2DUtil extends GuiScreen {
         } else instance.drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
 
-    public static void drawLeftGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
+    public static void drawLeftGradientRect(double left, double top, double right, double bottom, int startColor, int endColor) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         GlStateManager.disableTexture2D();

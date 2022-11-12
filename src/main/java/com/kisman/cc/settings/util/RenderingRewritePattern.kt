@@ -24,6 +24,7 @@ open class RenderingRewritePattern(
     val scaleGroup = setupGroup(SettingGroup(Setting("Scale", module)))
     val scaleState = setupSetting(scaleGroup.add(Setting("Scale State", module, false).setTitle("State")))
     val scaleOffset = setupSetting(scaleGroup.add(Setting("Scale Offset", module, 0.002, 0.002, 0.2, false)))
+    val depth = setupSetting(Setting("Depth", module, false))
 
     val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
     val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
@@ -51,6 +52,7 @@ open class RenderingRewritePattern(
             group!!.add(abyss)
             group!!.add(lineWidth)
             group!!.add(scaleGroup)
+            group!!.add(depth)
             group!!.add(rainbowGroup)
             group!!.add(colorGroup)
         }
@@ -65,6 +67,7 @@ open class RenderingRewritePattern(
         module.register(scaleGroup)
         module.register(scaleState)
         module.register(scaleOffset)
+        module.register(depth)
         module.register(rainbowGroup)
         module.register(rainbow)
         module.register(rainbowSpeed)
@@ -110,17 +113,31 @@ open class RenderingRewritePattern(
             }
             outAlpha1 = (outAlpha1 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
             outAlpha2 = (outAlpha2 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
-            Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
-            Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
+            draw0(cAabb, colour1, colour2, Rendering.Mode.GRADIENT)
+            draw0(cAabb, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
             return
         }
-        Rendering.draw(
+        draw0(
             Rendering.correct(a),
-            lineWidth.valFloat,
             color1.withAlpha((color1.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
             color2.withAlpha((color2.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
             mode
         )
+    }
+
+    private fun modifyBB(
+        aabb : AxisAlignedBB
+    ) : AxisAlignedBB = aabb.also { if(scaleState.valBoolean) it.grow(scaleOffset.valDouble) }
+    
+    private fun draw0(
+        aabb : AxisAlignedBB,
+        color1 : Colour,
+        color2 : Colour,
+        mode : Rendering.Mode?
+    ) {
+        Rendering.setup(depth.valBoolean)
+        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, color1, color2, mode)
+        Rendering.release(depth.valBoolean)
     }
 
     open fun draw(

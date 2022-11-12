@@ -34,7 +34,7 @@ public class CrystalUtils {
     public static List<Block> valid = Arrays.asList(Blocks.OBSIDIAN, Blocks.BEDROCK, Blocks.ENDER_CHEST, Blocks.ANVIL);
 
     public static boolean canSeePos(BlockPos pos) {
-        return CrystalUtils.mc.world.rayTraceBlocks(new Vec3d(CrystalUtils.mc.player.posX, CrystalUtils.mc.player.posY + (double)CrystalUtils.mc.player.getEyeHeight(), CrystalUtils.mc.player.posZ), new Vec3d((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), false, true, false) == null;
+        return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), false, true, false) == null;
     }
 
     public static boolean canPlaceCrystal(final BlockPos pos) {
@@ -153,6 +153,8 @@ public class CrystalUtils {
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, AxisAlignedBB bb, int interlopedAmount, boolean terrain) {
+        if(entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) return 0;
+
         float doubleExplosionSize = 12.0F;
         double dist = entity.getDistance(posX, posY, posZ);
 

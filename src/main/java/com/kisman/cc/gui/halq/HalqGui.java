@@ -44,9 +44,11 @@ public class HalqGui extends GuiScreen {
             outlineTest = true,
             outlineTest2 = true,
             outlineHeaders = false;
-    public static int diff = 0, offsets = 0, textOffsetX = 5;
-    public static double lineWidth = 1.0;
-
+    public static int diff = 0,
+            textOffsetX = 5;
+    public static double offsetsX = 0,
+            offsetsY = 0,
+            lineWidth = 1.0;
     //constants
     public static final int height = 13;
     public static final int headerOffset = 5;
@@ -110,7 +112,8 @@ public class HalqGui extends GuiScreen {
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
         line = GuiModule.instance.verticalLines.getValBoolean();
         diff = Config.instance.guiGradientDiff.getValInt();
-        offsets = GuiModule.instance.offsets.getValInt();
+        offsetsX = GuiModule.instance.offsetsX.getValDouble();
+        offsetsY = GuiModule.instance.offsetsY.getValDouble();
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
         test2 = GuiModule.instance.test2.getValBoolean();
         textOffsetX = GuiModule.instance.textOffsetX.getValInt();
@@ -208,7 +211,7 @@ public class HalqGui extends GuiScreen {
         }
     }
 
-    public static void drawSuffix(String suffix, String parentText, int x, int y, int width, int height, Colour colour, int step) {
+    public static void drawSuffix(String suffix, String parentText, double x, double y, double width, double height, Colour colour, int step) {
         GL11.glPushMatrix();
         GL11.glScaled(0.5, 0.5, 1);
 
@@ -216,26 +219,26 @@ public class HalqGui extends GuiScreen {
             case Center:
                 switch(step) {
                     case 1 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), y * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (float) y * 2, colour.getRGB());
                         break;
                     case 2 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2)) * 2f, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (float) (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2)) * 2f, colour.getRGB());
                         break;
                     case 3 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) ((x + width / 2) + CustomFontUtil.getStringWidth(parentText)), (float) (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
                         break;
                 }
                 break;
             case Left:
                 switch(step) {
                     case 1 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, y * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (float) y * 2, colour.getRGB());
                         break;
                     case 2 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2f)) * 2f, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (float) (y + (height / 2) - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f / 2f)) * 2f, colour.getRGB());
                         break;
                     case 3 :
-                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
+                        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(suffix, (float) (x + CustomFontUtil.getStringWidth(parentText) + textOffsetX) * 2, (float) (y + height - (Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT / 2f)) * 2, colour.getRGB());
                         break;
                 }
                 break;
@@ -244,7 +247,7 @@ public class HalqGui extends GuiScreen {
         GL11.glPopMatrix();
     }
 
-    public static void drawSuffix(String suffix, String parentText, int x, int y, int width, int height, int count, int step) {
+    public static void drawSuffix(String suffix, String parentText, double x, double y, double width, double height, int count, int step) {
         drawSuffix(
                 suffix,
                 parentText,
@@ -354,49 +357,49 @@ public class HalqGui extends GuiScreen {
         if(componentsOutline) {
             int width0 = LayerControllerKt.getModifiedWidth(component.getLayer(), width);
 
-            if(!full && (offsets > 0 || !offsetsCheck)) {
-                int width1 = width0 - (offsets * 2);
+            if(!full && (offsetsX > 0 || offsetsY > 0 || !offsetsCheck)) {
+                double width1 = width0 - (offsetsX * 2);
 
-                Render2DUtil.drawRectWH(
-                        component.getX() + offsets,
-                        component.getY() + offsets,
+                Render2DUtil.drawRectWH(//h
+                        component.getX() + offsetsX,
+                        component.getY() + offsetsY,
                         width1,
                         lineWidth,
                         outlineColor.getRGB()
                 );
-                Render2DUtil.drawRectWH(
-                        component.getX() + offsets,
-                        component.getY() + offsets + component.getRawHeight() - (offsets * 2) - lineWidth,
+                Render2DUtil.drawRectWH(//h
+                        component.getX() + offsetsX,
+                        component.getY() + offsetsY + component.getRawHeight() - (offsetsY * 2) - lineWidth,
                         width1,
                         lineWidth,
                         outlineColor.getRGB()
                 );
-                Render2DUtil.drawRectWH(
-                        component.getX() + offsets,
-                        component.getY() + offsets,
+                Render2DUtil.drawRectWH(//v
+                        component.getX() + offsetsX,
+                        component.getY() + offsetsY,
                         lineWidth,
-                        component.getRawHeight() - (offsets * 2),
+                        component.getRawHeight() - (offsetsY * 2),
                         outlineColor.getRGB()
                 );
-                Render2DUtil.drawRectWH(
-                        component.getX() + offsets + width1 - lineWidth,
-                        component.getY() + offsets,
+                Render2DUtil.drawRectWH(//v
+                        component.getX() + offsetsX + width1 - lineWidth,
+                        component.getY() + offsetsY,
                         lineWidth,
-                        component.getRawHeight() - (offsets * 2),
+                        component.getRawHeight() - (offsetsY * 2),
                         outlineColor.getRGB()
                 );
             }
 
             if(drawSecondLines) {
                 if(full) {
-                    Render2DUtil.drawRectWH(
+                    Render2DUtil.drawRectWH(//h
                             component.getX(),
                             component.getY(),
                             width0,
                             lineWidth,
                             outlineColor.getRGB()
                     );
-                    Render2DUtil.drawRectWH(
+                    Render2DUtil.drawRectWH(//h
                             component.getX(),
                             component.getY() + component.getRawHeight() - lineWidth,
                             width0,
@@ -405,14 +408,14 @@ public class HalqGui extends GuiScreen {
                     );
                 }
 
-                Render2DUtil.drawRectWH(
+                Render2DUtil.drawRectWH(//v
                         component.getX(),
                         component.getY(),
                         lineWidth,
                         component.getRawHeight(),
                         outlineColor.getRGB()
                 );
-                Render2DUtil.drawRectWH(
+                Render2DUtil.drawRectWH(//v
                         component.getX() + width0 - lineWidth,
                         component.getY(),
                         lineWidth,

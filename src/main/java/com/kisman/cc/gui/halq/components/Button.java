@@ -109,23 +109,23 @@ public class Button implements Openable {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
-                                        new double[] {x + HalqGui.width - HalqGui.offsets, y + offset + HalqGui.offsets},
-                                        new double[] {x + HalqGui.width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
-                                        new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
                                 HalqGui.getGradientColour(count).getColor()
                         )
                 );
             }
-        } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, HalqGui.width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
 
         HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
 
-        if(mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 1);
-        if(mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 2);
-        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsets, HalqGui.height, count, 3);
+        if(mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
+        if(mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
+        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 3);
 
         if(open && !comps.isEmpty()) {
             for(Component comp : comps) {

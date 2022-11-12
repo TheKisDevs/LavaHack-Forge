@@ -38,10 +38,10 @@ public class BindModeButton implements Component {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(
-                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets},
-                                    new double[] {x + HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets}
+                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                             ),
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
                             HalqGui.getGradientColour(count).getColor()
@@ -50,16 +50,16 @@ public class BindModeButton implements Component {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
                             new Vec4d(
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsets},
-                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.offsets},
-                                    new double[] {x + width - HalqGui.offsets, y + offset + HalqGui.height - HalqGui.offsets},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsets}
+                                    new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY}
                             ),
                             HalqGui.getGradientColour(count).getColor(),
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
                     )
             );
-        } else Render2DUtil.drawRectWH(x + HalqGui.offsets, y + offset + HalqGui.offsets, width - HalqGui.offsets * 2, HalqGui.height - HalqGui.offsets * 2, HalqGui.getGradientColour(count).getRGB());
+        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
 
         HalqGui.drawString("Bind Mode: " + values[index], x, y + offset, width, HalqGui.height);
 

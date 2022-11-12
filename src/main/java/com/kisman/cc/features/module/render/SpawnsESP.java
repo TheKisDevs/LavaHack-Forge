@@ -53,21 +53,23 @@ public class SpawnsESP extends Module {
             mc.addScheduledTask(() -> {
                 Rendering.setup();
 
-                ArrayList<Vec3d> vertexes = new ArrayList<>();
+//                ArrayList<Vec3d> vertexes = new ArrayList<>();
                 double deltaX = VecCircle.getVector(circle).x - mc.getRenderManager().renderPosX;
                 double deltaY = VecCircle.getVector(circle).y - mc.getRenderManager().renderPosY;
                 double deltaZ = VecCircle.getVector(circle).z - mc.getRenderManager().renderPosZ;
                 GL11.glLineWidth(width.getValFloat());
                 GL11.glBegin(1);
+                color.getColour().glColor();
                 for (int i = 0; i <= 360; ++i) {
                     Vec3d vec3d = new Vec3d(deltaX + Math.sin((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle), deltaY + (double)(VecCircle.getYaw(circle) * ((float)(System.currentTimeMillis() - VecCircle.getTime(circle)) / (1000.0f * duration.getValDouble()))), deltaZ + Math.cos((double)i * Math.PI / 180.0) * (double)VecCircle.getPitch(circle));
-                    vertexes.add(vec3d);
+                    GL11.glVertex3d(vec3d.x, vec3d.y, vec3d.z);
+//                    GL11.glVertex3d(vertexes.get(n + 1).x, vertexes.get(n + 1).y, vertexes.get(n + 1).z);
                 }
-                for (int n = 0; n < vertexes.size() - 1; ++n) {
+                /*for (int n = 0; n < vertexes.size() - 1; ++n) {
                     color.getColour().glColor();
                     GL11.glVertex3d(vertexes.get(n).x, vertexes.get(n).y, vertexes.get(n).z);
                     GL11.glVertex3d(vertexes.get(n + 1).x, vertexes.get(n + 1).y, vertexes.get(n + 1).z);
-                }
+                }*/
                 GL11.glEnd();
 
                 Rendering.release();

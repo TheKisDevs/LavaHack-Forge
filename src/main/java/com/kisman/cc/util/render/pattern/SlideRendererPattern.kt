@@ -7,7 +7,6 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
-import net.minecraft.client.renderer.entity.Render
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -24,6 +23,7 @@ open class SlideRendererPattern {
     @JvmField var lastUpdateTime = 0L
     @JvmField var startTime = 0L
     @JvmField var scale = 0.0
+    @JvmField val processedPossesList = HashMap<BlockPos, Long>()
 
     open fun reset() {
         lastBlockPos = null
@@ -33,11 +33,13 @@ open class SlideRendererPattern {
         lastUpdateTime = 0L
         startTime = 0L
         scale = 0.0
+        processedPossesList.clear()
     }
 
     open fun handleRenderWorld(
         movingLength : Float,
         fadeLength : Float,
+        alphaFadeLength : Float,
         renderer : RenderingRewritePattern,
         pos : BlockPos?,
         text : String?
@@ -46,6 +48,7 @@ open class SlideRendererPattern {
         renderWorld(
             movingLength,
             fadeLength,
+            alphaFadeLength,
             renderer,
             text
         )
@@ -59,6 +62,7 @@ open class SlideRendererPattern {
         handleRenderWorld(
             renderer.movingLength.valFloat,
             renderer.fadeLength.valFloat,
+            renderer.alphaFadeLength.valFloat,
             renderer,
             pos,
             text
@@ -68,15 +72,18 @@ open class SlideRendererPattern {
     open fun renderWorld(
         movingLength : Float,
         fadeLength : Float,
+        alphaFadeLength : Float,
         renderer : RenderingRewritePattern,
         aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
         text : String?
     ) {
+        var multiplier = -1.0
+
         prevPos?.let { prevPos ->
             (currentPos ?: prevPos).let { currentPos ->
                 scale = scale(fadeLength, renderer)
 
-                val multiplier = multiplier(movingLength, renderer)
+                multiplier = multiplier(movingLength, renderer)
 
                 val renderPos = prevPos.add(currentPos.subtract(prevPos).scale(multiplier))
 
@@ -93,21 +100,79 @@ open class SlideRendererPattern {
                 }
             }
         }
+
+        if(alphaFadeLength != 0f) {
+            val keysToRemove = ArrayList<BlockPos>()
+
+            for(pos in processedPossesList) {
+                if(multiplier == 0.0 && pos.key == currentPos) {
+                    keysToRemove.add(pos.key)
+                    println("renders current pos")
+                    continue
+                }
+
+                val alphaCoeff = alpha(
+                    alphaFadeLength,
+                    renderer,
+                    pos.value
+                )
+
+                println("alpha coeff is $alphaCoeff")
+
+                if(alphaCoeff == 0.0) {
+                    keysToRemove.add(pos.key)
+                    println("removes some pos cuz alpha coeff is 0")
+                    continue
+                }
+
+                val alpha1 = (alphaCoeff * renderer.color1.colour.alpha).toInt()
+                val alpha2 = (alphaCoeff * renderer.color2.colour.alpha).toInt()
+
+                println("alpha coeff that was casted to int $alpha1 for color 1")
+                println("alpha coeff that was casted to int $alpha2 for color 2")
+
+                renderer.draw(
+                    pos.key,
+                    renderer.color1.colour.withAlpha(alpha1),
+                    renderer.color2.colour.withAlpha(alpha2)
+                )
+            }
+
+            for(key in keysToRemove) {
+                processedPossesList.remove(key)
+            }
+        }
     }
 
     open fun renderWorld(
         movingLength : Float,
         fadeLength : Float,
+        alphaFadeLength : Float,
         renderer : RenderingRewritePattern,
         text : String?
     ) {
         renderWorld(
             movingLength,
             fadeLength,
+            alphaFadeLength,
             renderer,
             { it },
             text
         )
+    }
+
+    protected fun alpha(
+        alphaFadeLength: Float,
+        renderer : RenderingRewritePattern,
+        time : Long
+    ) : Double = if(alphaFadeLength != 0f) {
+        if(renderer is SlideRenderingRewritePattern) {
+            renderer.alphaFadeEasing.valEnum.inc(toDelta(time, alphaFadeLength))
+        } else {
+            EasingEnum.Easing.OutQuart.dec(toDelta(time, alphaFadeLength))
+        }
+    } else {
+        1.0
     }
 
     protected fun multiplier(
@@ -162,15 +227,19 @@ open class SlideRendererPattern {
     open fun update(
         pos : BlockPos?
     ) {
-            if(pos != lastBlockPos) {
-                currentPos = if (pos != null) AutoRerUtil.toVec3dCenter(pos) else null
-                prevPos = lastRenderPos ?: currentPos
-                lastUpdateTime = System.currentTimeMillis()
-                if (lastBlockPos == null) {
-                    startTime = System.currentTimeMillis()
-                }
+        if(pos != null) {
+            processedPossesList[pos] = System.currentTimeMillis()
+        }
 
-                lastBlockPos = pos
+        if(pos != lastBlockPos) {
+            currentPos = if (pos != null) AutoRerUtil.toVec3dCenter(pos) else null
+            prevPos = lastRenderPos ?: currentPos
+            lastUpdateTime = System.currentTimeMillis()
+            if (lastBlockPos == null) {
+                startTime = System.currentTimeMillis()
             }
+
+            lastBlockPos = pos
+        }
     }
 }

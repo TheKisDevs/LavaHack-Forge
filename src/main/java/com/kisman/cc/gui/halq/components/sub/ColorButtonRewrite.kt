@@ -60,20 +60,20 @@ class ColorButtonRewrite(
                 AbstractGradient(
                     Vec4d(
                         doubleArrayOf(
-                            x.toDouble() + HalqGui.offsets,
-                            (y_ + offset).toDouble() + HalqGui.offsets
+                            x.toDouble() + HalqGui.offsetsX,
+                            (y_ + offset).toDouble() + HalqGui.offsetsX
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y_ + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsetsX
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsX
                         ),
                         doubleArrayOf(
-                            x.toDouble() + HalqGui.offsets,
-                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            x.toDouble() + HalqGui.offsetsX,
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsX
                         )
                     ),
                     Color(HalqGui.backgroundColor.rgb),
@@ -85,19 +85,19 @@ class ColorButtonRewrite(
                     Vec4d(
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y_ + offset).toDouble() + HalqGui.offsets
+                            (y_ + offset).toDouble() + HalqGui.offsetsX
                         ),
                         doubleArrayOf(
-                            (x + width_).toDouble() - HalqGui.offsets,
-                            (y_ + offset).toDouble() + HalqGui.offsets
+                            (x + width_).toDouble() - HalqGui.offsetsX,
+                            (y_ + offset).toDouble() + HalqGui.offsetsX
                         ),
                         doubleArrayOf(
-                            (x + width_).toDouble() - HalqGui.offsets,
-                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (x + width_).toDouble() - HalqGui.offsetsX,
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsX
                         ),
                         doubleArrayOf(
                             (x + width_ / 2).toDouble(),
-                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsets
+                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsX
                         )
                     ),
                     color?.color,
@@ -105,10 +105,10 @@ class ColorButtonRewrite(
                 )
             )
         } else Render2DUtil.drawRectWH(
-            x.toDouble() + HalqGui.offsets,
-            (y_ + offset).toDouble() + HalqGui.offsets,
-            width_.toDouble() - HalqGui.offsets * 2,
-            height.toDouble() - HalqGui.offsets * 2,
+            x.toDouble() + HalqGui.offsetsX,
+            (y_ + offset).toDouble() + HalqGui.offsetsX,
+            width_.toDouble() - HalqGui.offsetsX * 2,
+            height.toDouble() - HalqGui.offsetsX * 2,
             color?.rgb!!
         )
 

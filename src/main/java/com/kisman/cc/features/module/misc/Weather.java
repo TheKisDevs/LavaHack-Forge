@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.render;
+package com.kisman.cc.features.module.misc;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -13,7 +13,7 @@ public class Weather extends Module {
     private final Setting weatherSlider = register(new Setting("Custom", this, 0, 0, 2, false).setVisible(() -> weatherMode.getValString().equals("Custom")));
 
     public Weather() {
-        super("Weather", Category.RENDER);
+        super("Weather", Category.MISC);
     }
 
     @Override

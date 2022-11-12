@@ -73,34 +73,4 @@ public class Schematica {
             }
         }
     }
-
-    /*@NetworkCheckHandler
-    public boolean checkModList(final Map<String, String> versions, final Side side)
-    {
-        return true;
-    }
-
-    @Mod.EventHandler
-    public void preInit(final FMLPreInitializationEvent event)
-    {
-        proxy.preInit(event);
-    }
-
-    @Mod.EventHandler
-    public void init(final FMLInitializationEvent event)
-    {
-        proxy.init(event);
-    }
-
-    @Mod.EventHandler
-    public void postInit(final FMLPostInitializationEvent event)
-    {
-        proxy.postInit(event);
-    }
-
-    @Mod.EventHandler
-    public void serverStarting(final FMLServerStartingEvent event)
-    {
-        proxy.serverStarting(event);
-    }*/
 }

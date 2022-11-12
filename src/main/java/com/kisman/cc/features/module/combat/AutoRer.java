@@ -18,7 +18,6 @@ import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.collections.Bind;
-import com.kisman.cc.util.collections.Pair;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.RotationSaver;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -54,7 +53,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -197,8 +195,6 @@ public class AutoRer extends Module {
     private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setTitle("Calc").setVisible(() -> !threadMode.checkValString("None"))));
 
     private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
-    private final Setting alphaFade = register(render_.add(new Setting("Alpha Fade", this, false)));
-    private final Setting alphaFadeTicks = register(render_.add(new Setting("Alpha Fade Ticks", this, 20, 2, 100, true).setVisible(alphaFade::getValBoolean)));
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
@@ -226,9 +222,6 @@ public class AutoRer extends Module {
     private String lastThreadMode = threadMode.getValString();
     private boolean lastBroken = false;
     private BlockPos lastTargetPos = null;
-    private Stack<Bind<PlaceInfo, Pair<Double>>> alphaFadeStack = new Stack<>();
-    private Set<BlockPos> blockPosCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private PlaceInfo prevPlaceInfo = null;
 
 
     private final ExtrapolationHelper extrapolationHelper = new ExtrapolationHelper(mtcgDelay.getSupplierLong(), multiThreaddedExtrapolation.getSupplierBoolean(), extrapolationTicks.getSupplierInt(), extrapolationOutOfBlocks.getSupplierBoolean(), extrapolationShrink.getSupplierBoolean());
@@ -327,9 +320,6 @@ public class AutoRer extends Module {
         rotating = false;
         renderPos = null;
         lastBroken = true;
-        alphaFadeStack.clear();
-        blockPosCache.clear();
-        prevPlaceInfo = null;
     }
 
     public void onDisable() {
@@ -514,64 +504,11 @@ public class AutoRer extends Module {
         if(placePos.getBlockPos() != null) renderer.onRenderWorld(
                 renderer_.movingLength.getValFloat(),
                 renderer_.fadeLength.getValFloat(),
+                renderer_.alphaFadeLength.getValFloat(),
                 renderer_,
                 placePos,
                 text.getValBoolean()
         );
-
-        if(!alphaFade.getValBoolean())
-            return;
-
-        double delta = 1.0 / alphaFadeTicks.getValDouble();
-
-        if(prevPlaceInfo != null && prevPlaceInfo.getBlockPos() != placePos.getBlockPos()){
-            block: {
-                if(placePos.getBlockPos() == null)
-                    break block;
-                if(blockPosCache.contains(placePos.getBlockPos())){
-                    int index = -1;
-                    for(int i = 0; i < alphaFadeStack.size(); i++) {
-                        if (alphaFadeStack.get(i).getFirst().getBlockPos() == placePos.getBlockPos()) {
-                            index = i;
-                            break;
-                        }
-                    }
-                    if(index < 0)
-                        break block;
-                    alphaFadeStack.remove(index);
-                }
-            }
-            alphaFadeStack.push(new Bind<>(prevPlaceInfo, new Pair<>(delta, 1.0 - delta)));
-        }
-
-        Stack<Bind<PlaceInfo, Pair<Double>>> newStack = new Stack<>();
-
-        blockPosCache.clear();
-
-        for(int i = alphaFadeStack.size() - 1; i >= 0; i--){
-            Bind<PlaceInfo, Pair<Double>> entry = alphaFadeStack.get(i);
-            if(entry.getFirst().getBlockPos() == null)
-                continue;
-            renderer_.setAlphaSubtract(entry.getSecond().getSecond());
-            renderer.onRenderWorld(
-                    renderer_.movingLength.getValFloat(),
-                    renderer_.fadeLength.getValFloat(),
-                    renderer_,
-                    entry.getFirst(),
-                    text.getValBoolean()
-            );
-            double a = entry.getSecond().getSecond() - entry.getSecond().getFirst();
-            if(a < 0)
-                continue;
-            newStack.add(0, new Bind<>(entry.getFirst(), new Pair<>(entry.getSecond().getFirst(), a)));
-            blockPosCache.add(entry.getFirst().getBlockPos());
-        }
-
-        renderer_.setAlphaSubtract(0);
-
-        alphaFadeStack = newStack;
-
-        prevPlaceInfo = placePos;
     }
 
     private void attackCrystalPredict(int entityID) {

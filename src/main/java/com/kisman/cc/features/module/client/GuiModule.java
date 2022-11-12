@@ -18,7 +18,8 @@ public class GuiModule extends Module {
     public final Setting horizontalLines = register(lineGroup.add(new Setting("Horizontal Lines", this, true).setTitle("Horizontal")));
     public final Setting verticalLines = register(lineGroup.add(new Setting("Vertical Lines", this, true).setTitle("Vertical")));
     public final Setting shadowRects = /*register*/(new Setting("Shadow Rects", this, false));
-    public final Setting offsets = register(new Setting("Offsets test uwu owo", this, 1.0, 0.0, 5.0, true));
+    public final Setting offsetsX = register(new Setting("Offsets test uwu owo", this, 1.0, 0.0, 5.0, false));
+    public final Setting offsetsY = register(new Setting("ONG OFFSETS Y??", this, 1, 0, 5, false));
     public final Setting uwu = register(new Setting("UwU Locate Mod", this, HalqGui.LocateMode.Left));
     public final Setting test2 = register(new Setting("Test 2", this, true));
     public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));

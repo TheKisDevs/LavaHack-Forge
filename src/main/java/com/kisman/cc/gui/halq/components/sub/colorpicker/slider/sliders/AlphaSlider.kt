@@ -60,7 +60,7 @@ class AlphaSlider(
             squareIndex += checkerBoardSquareSize
         }
 
-        Render2DUtil.drawLeftGradientRect(x, y_, x + width_, y_ + height, color?.withAlpha(1)?.rgb!!, 0)
+        Render2DUtil.drawLeftGradientRect(x.toDouble(), y_.toDouble(), x.toDouble() + width_, y_.toDouble() + height, color?.withAlpha(1)?.rgb!!, 0)
         val sliderMinX: Int = (x + width_ - width_ * color?.a1!!).toInt()
         Render2DUtil.drawRect(sliderMinX - 1, y_, sliderMinX + 1, y_ + height, -1)
 

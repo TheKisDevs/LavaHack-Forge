@@ -54,10 +54,10 @@ class OptionElement(
             HalqGui.drawSuffix(
                 IBindable.getName(binder),
                 name,
-                x,
-                y + offset,
-                width,
-                rawHeight,
+                x.toDouble(),
+                y.toDouble() + offset,
+                width.toDouble(),
+                rawHeight.toDouble(),
                 count,
                 3
             )
