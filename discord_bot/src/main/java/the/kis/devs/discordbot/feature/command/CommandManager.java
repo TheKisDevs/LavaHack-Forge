@@ -17,13 +17,15 @@ public class CommandManager implements Globals {
     public static final ArrayList<Command> commands = new ArrayList<>();
 
     static {
+        commands.add(new AvatarCommand());
         commands.add(new TestCommand());
-        commands.add(new RolesListCommand());
         commands.add(new ConfigCommand());
+        commands.add(new EmbedTestCommand());
+        commands.add(new RolesListCommand());
     }
 
     public static void execute(MessageReceivedEvent event) throws ExecutionException, InterruptedException {
-        String message = event.getMessage().getContentDisplay();
+        String message = event.getMessage().getContentStripped();
 
         if(!message.startsWith(PREFIX)) {
             return;
@@ -34,7 +36,6 @@ public class CommandManager implements Globals {
         String[] split = message.split(" ");
 
         for(Command command : commands) {
-            System.out.println(command.command);
             if(command.command.equals(split[0])) {
                 for(IPermission permission : command.permissions) {
                     if(!permission.valid(event.getMember())) {

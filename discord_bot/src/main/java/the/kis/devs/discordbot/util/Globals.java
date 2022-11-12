@@ -8,7 +8,7 @@ import the.kis.devs.discordbot.managers.LoggingManager;
  * @since 1:15 of 23.06.2022
  */
 public interface Globals {
-    String TOKEN = "OTg5Mjg0OTM1ODMzNjI0NTk2.G9kWjs.cKotfYax41dDcJV6IWCXe8NkNNt4Z133eF36LU";
+    String TOKEN = "OTg5Mjg0OTM1ODMzNjI0NTk2.GZ_h2u.d6LOiBLtNryFn-hTnZ6EFVYuLP1ebJKU-jsOOA";
 
     String PREFIX = "-";
 

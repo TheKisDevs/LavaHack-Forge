@@ -2,9 +2,8 @@ package the.kis.devs.discordbot;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import the.kis.devs.discordbot.util.Globals;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * @author _kisman_
@@ -16,8 +15,9 @@ public class DiscordBotMain implements Globals {
 
     public static final DiscordBotController controller = new DiscordBotController();
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
-        builder = JDABuilder.createDefault(TOKEN);
+    public static void main(String[] args) throws InterruptedException {
+        builder = JDABuilder.createDefault(TOKEN)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT);
 
         controller.initBuilder(builder);
 
