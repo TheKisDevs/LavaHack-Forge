@@ -4,10 +4,14 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.ai.EntityAIFollowOwnerFlying;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumHand;
@@ -40,10 +44,16 @@ public class ArrowBlocker extends Module {
     }
 
     private void doArrowBlockerPlace(){
-        List<BlockPos> sphereBlocks = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
-        for(BlockPos pos : sphereBlocks)
-            for(EntityArrow arrow : mc.world.getEntitiesWithinAABB(EntityArrow.class, new AxisAlignedBB(pos)))
-                doArrowPlace(arrow);
+        for(Entity entity : mc.world.entityList){
+            if(entity == null)
+                continue;
+            if(!(entity instanceof EntityArrow))
+                continue;
+            if(mc.player.getDistance(entity) > placeRange.getValDouble())
+                continue;
+            ChatUtility.info().printClientModuleMessage("doing things");
+            doArrowPlace((EntityArrow) entity);
+        }
     }
 
     private void doArrowPlace(EntityArrow arrow){

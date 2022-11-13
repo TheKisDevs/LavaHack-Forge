@@ -32,6 +32,7 @@ public class ScaffoldTest3 extends Module {
     private final Setting tower = register(new Setting("Tower", this, false));
     private final SettingEnum<TowerMode> towerMode = new SettingEnum<>("TowerMode", this, TowerMode.Vanilla).setVisible(tower::getValBoolean).register();
     private final Setting towerFast = register(new Setting("TowerFast", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerAOJUHOUIFOJH = register(new Setting("AOJUHOUIFOJH", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerTicks = register(new Setting("TowerTicks", this, 1, 1, 20, true).setVisible(tower::getValBoolean));
     private final Setting towerMotion = register(new Setting("TowerMotion", this,0.42, 0, 1, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
     private final Setting jump = register(new Setting("Jump", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
@@ -169,9 +170,16 @@ public class ScaffoldTest3 extends Module {
                         //    ticks = 0;
                         //    return;
                         //}
+                        final double x = mc.player.posX;
+                        final double y = mc.player.posY;
+                        final double z = mc.player.posZ;
+                        final boolean onGround = mc.player.onGround;
                         mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
-                        mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
+                        if(towerAOJUHOUIFOJH.getValBoolean())
+                            mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
                         mc.player.jump();
+                        if(towerAOJUHOUIFOJH.getValBoolean())
+                            mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, onGround));
                         //ticks++;
                     }
                 }

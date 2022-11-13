@@ -107,7 +107,6 @@ open class SlideRendererPattern {
             for(pos in processedPossesList) {
                 if(multiplier == 0.0 && pos.key == currentPos) {
                     keysToRemove.add(pos.key)
-                    println("renders current pos")
                     continue
                 }
 
@@ -117,19 +116,13 @@ open class SlideRendererPattern {
                     pos.value
                 )
 
-                println("alpha coeff is $alphaCoeff")
-
                 if(alphaCoeff == 0.0) {
                     keysToRemove.add(pos.key)
-                    println("removes some pos cuz alpha coeff is 0")
                     continue
                 }
 
                 val alpha1 = (alphaCoeff * renderer.color1.colour.alpha).toInt()
                 val alpha2 = (alphaCoeff * renderer.color2.colour.alpha).toInt()
-
-                println("alpha coeff that was casted to int $alpha1 for color 1")
-                println("alpha coeff that was casted to int $alpha2 for color 2")
 
                 renderer.draw(
                     pos.key,
