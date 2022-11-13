@@ -22,5 +22,11 @@ fun setupSocketClient(
     client.connect()
     client.writeMessage { text = "LavaHack-Client" }
 
+    Runtime.getRuntime().addShutdownHook(Thread {
+        if(client.connected) {
+            client.close()
+        }
+    })
+
     return client
 }

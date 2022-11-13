@@ -11,17 +11,6 @@ import net.minecraft.entity.player.EntityPlayer
  */
 object CapeManager {
     private val capes = HashMap<String, Capes>()
-    private val client = SocketClient("161.97.78.143", 25563)
-
-    fun connect() {
-        client.onMessageReceived = {
-            if(it.type == SocketMessage.Type.Text) {
-
-            }
-        }
-
-        setupSocketClient(client)
-    }
 
     fun clear() {
         capes.clear()
