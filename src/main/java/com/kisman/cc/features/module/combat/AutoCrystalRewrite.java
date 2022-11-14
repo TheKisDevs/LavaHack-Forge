@@ -489,7 +489,12 @@ public class AutoCrystalRewrite extends Module {
 
         CrystalInfo crystalInfo = new CrystalInfo(null, -1 , -1);
 
-        for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, playerRelativeAABB(breakRange.getValDouble()))){
+        for(Entity entity : mc.world.loadedEntityList){
+
+            if(!(entity instanceof EntityEnderCrystal))
+                continue;
+
+            EntityEnderCrystal crystal = (EntityEnderCrystal) entity;
 
             if(!isEntityInRange(crystal, breakRange.getValDouble(), breakWallRange.getValDouble()))
                 continue;
