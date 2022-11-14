@@ -11,6 +11,7 @@ import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
+import com.kisman.cc.util.thread.ThreadUtils;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.mojang.authlib.GameProfile;
@@ -87,6 +88,9 @@ public class AutoCrystalRewrite extends Module {
     private final Setting breakRaytrace = register(new Setting("BreakRaytrace", this, true));
     private final Setting noBreakSuicide = register(new Setting("NoBreakSuicide", this, true));
 
+    private final Setting instant = register(new Setting("Instant", this, false));
+    private final Setting instantPacket = register(new Setting("InstantPacket", this, true));
+
     private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));
@@ -119,6 +123,8 @@ public class AutoCrystalRewrite extends Module {
     private final TimerUtils popFocusTimer = new TimerUtils();
 
     private EntityPlayer target = null;
+
+    private List<PositionInfo> placedList = new Vector<>();
 
     private Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
 
@@ -165,14 +171,12 @@ public class AutoCrystalRewrite extends Module {
             setToggled(false);
             return;
         }
-        mc.addScheduledTask(() -> {
+        ThreadUtils.async(() -> {
             long timeOut = inhibitTimeOut.getValInt() * 50L;
             inhibitCrystals.forEach((crystal, time) -> {
                 if((System.currentTimeMillis() - time) >= timeOut)
                     inhibitCrystals.remove(crystal);
             });
-        });
-        mc.addScheduledTask(() -> {
             if(popFocus.getValBoolean() && !popFocusTimer.passedMillis(popFocusTimeOut.getValInt() * 50L))
                 return;
             updateTarget();
@@ -203,9 +207,9 @@ public class AutoCrystalRewrite extends Module {
         if(logic == Logic.PlaceBreak){
             if(timings.getValEnum() == Timings.Sequential){
                 if (!justDoIt)
-                    Thread.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
+                    ThreadUtils.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
                 handlePlace(false);
-                Thread.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
+                ThreadUtils.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
                 handleBreak(false);
                 return;
             }
@@ -215,9 +219,9 @@ public class AutoCrystalRewrite extends Module {
         }
         if(timings.getValEnum() == Timings.Sequential){
             if(!justDoIt)
-                Thread.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
+                ThreadUtils.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
             handleBreak(false);
-            Thread.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
+            ThreadUtils.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
             handlePlace(false);
             return;
         }
@@ -249,6 +253,7 @@ public class AutoCrystalRewrite extends Module {
         }
         lastPlacePos = info.getBlockPos();
         placeCrystal(info.getBlockPos());
+        placedList.add(info);
         if(handleDelay)
             placeTimer.reset();
     }
@@ -404,7 +409,65 @@ public class AutoCrystalRewrite extends Module {
                 }
             }
         }
+
+        if(event.getPacket() instanceof SPacketSpawnObject && instant.getValBoolean()){
+            SPacketSpawnObject packet = (SPacketSpawnObject) event.getPacket();
+            if(packet.getType() != 51)
+                return;
+
+            if(!isPosInRange(new BlockPos(packet.getX(), packet.getY(), packet.getZ()), breakRange.getValDouble(), breakWallRange.getValDouble()))
+                return;
+
+            if(breakRaytrace.getValBoolean() && EntityUtil.canSee(new BlockPos(packet.getX(), packet.getY(), packet.getZ())))
+                return;
+
+            double damage = CrystalUtils.calculateDamage(
+                    mc.world,
+                    packet.getX(),
+                    packet.getY(),
+                    packet.getZ(),
+                    target,
+                    terrain.getValBoolean()
+            );
+
+            double selfDamage = CrystalUtils.calculateDamage(
+                    mc.world,
+                    packet.getX(),
+                    packet.getY(),
+                    packet.getZ(),
+                    mc.player,
+                    terrain.getValBoolean()
+            );
+
+            if(noBreakSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() + mc.player.getAbsorptionAmount()))
+                return;
+
+            damage = getSafetyDamage(damage, selfDamage);
+
+            if(damage < minBreakDamage.getValDouble())
+                return;
+
+            if(selfDamage > maxSelfBreak.getValDouble())
+                return;
+
+            doInstant(packet.getEntityID());
+        }
     });
+
+    private void doInstant(int entityID){
+        Entity entity = mc.world.getEntityByID(entityID);
+        if(entity instanceof EntityEnderCrystal)
+            inhibitCrystals.put((EntityEnderCrystal) entity, System.currentTimeMillis());
+        if(instantPacket.getValBoolean() || !(entity instanceof EntityEnderCrystal)){
+            CPacketUseEntity packet = new CPacketUseEntity();
+            packet.entityId = entityID;
+            packet.action = CPacketUseEntity.Action.ATTACK;
+            mc.player.connection.sendPacket(packet);
+            swing();
+            return;
+        }
+        attackCrystal((EntityEnderCrystal) entity);
+    }
 
     private void removeCrystal(EntityEnderCrystal crystal){
         crystal.setDead();
