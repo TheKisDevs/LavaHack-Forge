@@ -144,7 +144,7 @@ public class  NameTags extends Module {
         }
         String dmgtext = "";
         try {
-            if (damageDisplay) dmgtext = this.damageList.get(player.getName());
+            if (damageDisplay && damageList.containsKey(player.getName())) dmgtext = this.damageList.get(player.getName());
         } catch(Exception ignored) {}
         String name = cross + clrf + playerPing + player.getName() + " " + clr + health + dmgtext;
         name = name.replace(".0", "");
