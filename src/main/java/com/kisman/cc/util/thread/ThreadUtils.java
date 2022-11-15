@@ -31,7 +31,7 @@ public class ThreadUtils {
         long timeLeft = nanos;
         do {
             if(timeLeft > 2000000)
-                Thread.yield();
+                Thread.sleep(0);
             timeLeft = end - System.nanoTime();
             if(Thread.interrupted())
                 throw new InterruptedException();
