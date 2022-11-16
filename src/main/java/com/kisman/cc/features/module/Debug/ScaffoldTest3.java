@@ -55,10 +55,6 @@ public class ScaffoldTest3 extends Module {
 
     private BlockPos last = null;
 
-    private boolean yes = true;
-
-    private int ticks = 0;
-
     @Override
     public void onEnable() {
         if(mc.player == null || mc.world == null){
@@ -87,8 +83,6 @@ public class ScaffoldTest3 extends Module {
         playerY = 0;
         restrictTicks = 0;
         last = null;
-        yes = true;
-        ticks = 0;
     }
 
     @Override
