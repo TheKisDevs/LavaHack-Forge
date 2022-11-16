@@ -59,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
@@ -222,6 +223,15 @@ public class AutoRer extends Module {
     private String lastThreadMode = threadMode.getValString();
     private boolean lastBroken = false;
     private BlockPos lastTargetPos = null;
+
+    public final Supplier<Boolean> shouldSmartSwitch = () -> {
+        if(switch_.getValString().equals("Smart") && placePos.getTarget() == currentTarget && placePos.getBlockPos() != null) {
+            if(placePos.getSelfDamage() >= mc.player.getHealth() + mc.player.getAbsorptionAmount() && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) return false;
+            if(placePos.getTargetDamage() * lethalMult.getValDouble() >= currentTarget.getHealth() + currentTarget.getAbsorptionAmount()) return true;
+        }
+
+        return false;
+    };
 
 
     private final ExtrapolationHelper extrapolationHelper = new ExtrapolationHelper(mtcgDelay.getSupplierLong(), multiThreaddedExtrapolation.getSupplierBoolean(), extrapolationTicks.getSupplierInt(), extrapolationOutOfBlocks.getSupplierBoolean(), extrapolationShrink.getSupplierBoolean());
@@ -806,6 +816,9 @@ public class AutoRer extends Module {
                 case "Silent":
                     InventoryUtil.switchToSlot(crystalSlot, true);
                     break;
+                case "Smart":
+                    if(shouldSmartSwitch.get() && !OffHand.instance.isToggled() || !OffHand.instance.smartSwitchAutoRerSync.getValBoolean()) InventoryUtil.switchToSlot(crystalSlot, false);
+                    break;
             }
         }
 
@@ -1106,7 +1119,7 @@ public class AutoRer extends Module {
     public enum ThreadMode { None, Pool, Sound, While }
     public enum Render { None, Default, Advanced }
     public enum Rotate { Off, Place/*, Break, All*/ }
-    public enum SwitchMode { None, Normal, Silent}
+    public enum SwitchMode { None, Normal, Silent, Smart}
     public enum SwingMode { MainHand, OffHand, CurrentHand, PacketSwing, None }
     public enum SwingLogic { Pre, Post }
     public enum FriendMode { None, AntiTotemFail, AntiTotemPop }

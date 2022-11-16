@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -41,10 +42,14 @@ public class OffHand extends Module {
     private final Setting useUpdateController = register(new Setting("Use UpdateController", this, true));
     private final Setting antiTotemFail = register(new Setting("Anti Totem Fail", this, true));
     private final Setting terrain = register(new Setting("Terrain", this, true));
+    public final Setting smartSwitchAutoRerSync = register(new Setting("Smart Switch Auto Rer Sync", this, false));
 
     private final MultiThreaddableModulePattern threads = threads();
 
     private final AtomicBoolean needTotem = new AtomicBoolean(false);
+
+    @ModuleInstance
+    public static OffHand instance;
 
     public OffHand() {
         super("OffHand", "gg", Category.COMBAT);
@@ -66,8 +71,10 @@ public class OffHand extends Module {
 
         OffhandItems item = mode.getValEnum();
 
-        if (needTotem.get() || health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallDistance.getValDouble() && !mc.player.isElytraFlying())) item = OffhandItems.Totem;
-        if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !rightClickGap.getValBoolean()) || (offhandGapOnSword.getValBoolean() && rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) item = OffhandItems.Gap;
+        if(!smartSwitchAutoRerSync.getValBoolean()) {
+            if (needTotem.get() || health.getValDouble() > (mc.player.getHealth() + mc.player.getAbsorptionAmount()) || mode.getValString().equalsIgnoreCase("Totem") || (totemOnElytra.getValBoolean() && mc.player.isElytraFlying()) || (mc.player.fallDistance >= fallDistance.getValDouble() && !mc.player.isElytraFlying())) item = OffhandItems.Totem;
+            if ((mc.player.getHeldItemMainhand().getItem() instanceof ItemSword && offhandGapOnSword.getValBoolean() && !rightClickGap.getValBoolean()) || (offhandGapOnSword.getValBoolean() && rightClickGap.getValBoolean() && Mouse.isButtonDown(1) && mc.player.getHeldItemMainhand().getItem() instanceof ItemSword)) item = OffhandItems.Gap;
+        } else if(AutoRer.instance.shouldSmartSwitch.get() && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) item = OffhandItems.Crystal;
 
         doOffHand(item.getItem());
     }
