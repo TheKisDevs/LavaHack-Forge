@@ -90,6 +90,7 @@ public class AutoCrystalRewrite extends Module {
 
     private final Setting instant = register(new Setting("Instant", this, false));
     private final Setting instantPacket = register(new Setting("InstantPacket", this, true));
+    private final Setting instantSync = register(new Setting("InstantSync", this, false));
 
     private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
@@ -213,7 +214,7 @@ public class AutoCrystalRewrite extends Module {
                 handleBreak(false);
                 return;
             }
-            handlePlace(!justDoIt);
+            handlePlace(true);
             handleBreak(true);
             return;
         }
@@ -467,6 +468,8 @@ public class AutoCrystalRewrite extends Module {
             return;
         }
         attackCrystal((EntityEnderCrystal) entity);
+        if(instantSync.getValBoolean())
+            removeCrystal((EntityEnderCrystal) entity);
     }
 
     private void removeCrystal(EntityEnderCrystal crystal){

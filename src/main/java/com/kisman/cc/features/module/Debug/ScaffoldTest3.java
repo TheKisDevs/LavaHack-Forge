@@ -31,19 +31,17 @@ public class ScaffoldTest3 extends Module {
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     private final Setting tower = register(new Setting("Tower", this, false));
     private final SettingEnum<TowerMode> towerMode = new SettingEnum<>("TowerMode", this, TowerMode.Vanilla).setVisible(tower::getValBoolean).register();
-    private final Setting towerFast = register(new Setting("TowerFast", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
-    private final Setting towerAOJUHOUIFOJH = register(new Setting("AOJUHOUIFOJH", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerTicks = register(new Setting("TowerTicks", this, 1, 1, 20, true).setVisible(tower::getValBoolean));
+    private final Setting towerStrict = register(new Setting("TowerStrict", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerSetBack = register(new Setting("TowerSetBack", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerMotion = register(new Setting("TowerMotion", this,0.42, 0, 1, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
-    private final Setting jump = register(new Setting("Jump", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
-    private final Setting fallFly = register(new Setting("FallFly", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
+    private final Setting towerGroundSpoof = register(new Setting("TowerGroundSpoof", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
     private final Setting restrict = register(new Setting("Restrict", this, true).setVisible(tower::getValBoolean));
     private final Setting settingRestrictTicks = register(new Setting("RestrictTicks", this, 15, 1, 40, true).setVisible(tower::getValBoolean));
     private final Setting towerBind = register(new Setting("TowerBind", this, Keyboard.KEY_SPACE).setTitle("Bind").setVisible(tower::getValBoolean));
     private final Setting downBind = register(new Setting("Down", this, Keyboard.KEY_NONE));
     private final Setting keepY = register(new Setting("KeeY", this, false));
     private final Setting resetY = register(new Setting("ResetY", this, Keyboard.KEY_NONE).setVisible(keepY::getValBoolean));
-    private final Setting clutch = register(new Setting("Clutch", this, 0, 0, 6, true));
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
 
@@ -56,8 +54,6 @@ public class ScaffoldTest3 extends Module {
     private int restrictTicks = 0;
 
     private BlockPos last = null;
-
-    private int whatDaHeckTicks = 0;
 
     private boolean yes = true;
 
@@ -72,6 +68,7 @@ public class ScaffoldTest3 extends Module {
         playerY = (int) Math.floor(mc.player.posY);
         super.onEnable();
         MinecraftForge.EVENT_BUS.register(this);
+        /*
         int slot = InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
         if(slot == -1)
             return;
@@ -80,6 +77,7 @@ public class ScaffoldTest3 extends Module {
         if(clutch.getValInt() > 0 && BlockUtil.getPossibleSides(pos).isEmpty() && connector == null)
             for(BlockPos blockPos : clutch(pos, clutch.getValInt()))
                 placeBlock(blockPos, slot);
+         */
     }
 
     @Override
@@ -89,7 +87,6 @@ public class ScaffoldTest3 extends Module {
         playerY = 0;
         restrictTicks = 0;
         last = null;
-        whatDaHeckTicks = 0;
         yes = true;
         ticks = 0;
     }
@@ -149,61 +146,29 @@ public class ScaffoldTest3 extends Module {
                         && (!restrict.getValBoolean() || restrictTicks >= settingRestrictTicks.getValInt())
         ) {
             if(towerMode.getValEnum() == TowerMode.Motion){
-                if(fallFly.getValBoolean())
-                    mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
-                if(Math.floor(mc.player.prevPosY) < Math.floor(mc.player.posY))
+                if(towerGroundSpoof.getValBoolean())
                     mc.player.connection.sendPacket(new CPacketPlayer(true));
-                if(jump.getValBoolean() && (mc.player.onGround || Math.floor(mc.player.prevPosY) < Math.floor(mc.player.posY)))
-                    mc.player.jump();
+                else
+                    mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
                 mc.player.motionY = towerMotion.getValDouble();
                 mc.player.fallDistance = 0f;
-            } else if(towerMode.getValEnum() == TowerMode.Vanilla) {
-                if(mc.player.onGround){
-                    //if(yes)
-                    //    mc.player.jump();
-                    //yes = !yes;
-                } else if(newY > playerY){
-                    if(towerFast.getValBoolean()){
-                        mc.player.motionY = -0.42;
-                    } else {
-                        //if(ticks >= 4){
-                        //    ticks = 0;
-                        //    return;
-                        //}
-                        final double x = mc.player.posX;
-                        final double y = mc.player.posY;
-                        final double z = mc.player.posZ;
-                        final boolean onGround = mc.player.onGround;
-                        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
-                        if(towerAOJUHOUIFOJH.getValBoolean())
-                            mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
-                        mc.player.jump();
-                        if(towerAOJUHOUIFOJH.getValBoolean())
-                            mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, onGround));
-                        //ticks++;
-                    }
-                }
-            } else {
-                if(whatDaHeckTicks == 0){
-                    BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-                    fakeJump();
-                    whatDaHeckTicks++;
-                    return;
-                }
-
-                if(whatDaHeckTicks == 1){
-                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
-                    mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
-                    whatDaHeckTicks++;
-                }
-
-                if(whatDaHeckTicks == 2){
-                    whatDaHeckTicks = 0;
-                }
+            } else if(newY > playerY) {
+                final double x = mc.player.posX;
+                final double y = mc.player.posY;
+                final double z = mc.player.posZ;
+                final boolean onGround = mc.player.onGround;
+                mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, newY, mc.player.posZ, true));
+                mc.player.setPosition(mc.player.posX, newY, mc.player.posZ);
+                mc.player.jump();
+                if(!towerStrict.getValBoolean())
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, onGround));
+                if(towerSetBack.getValBoolean())
+                    mc.player.setPosition(x, y, z);
             }
         }
     }
 
+    /*
     private List<BlockPos> clutch(BlockPos pos, int n){
         List<BlockPos> list = new ArrayList<>();
         clutch0(pos, 0, n, list);
@@ -226,6 +191,8 @@ public class ScaffoldTest3 extends Module {
         for(BlockPos blockPos : possiblePositions)
             clutch0(blockPos, cur + 1, n, new ArrayList<>(list));
     }
+
+     */
 
     private void placeBlock(BlockPos pos, int slot){
         if(!mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos) || checkEntities(pos))
@@ -254,17 +221,8 @@ public class ScaffoldTest3 extends Module {
                 .orElse(null);
     }
 
-    private void fakeJump(){
-        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.41999998688698D, mc.player.posZ, true));
-        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 0.7531999805211997D, mc.player.posZ, true));
-        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.00133597911214D, mc.player.posZ, true));
-        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + 1.16610926093821D, mc.player.posZ, true));
-        mc.player.setPosition(mc.player.posX, mc.player.posY + 1.16610926093821D, mc.player.posZ);
-    }
-
     private enum TowerMode {
         Vanilla,
-        Motion,
-        WhatDaHeck
+        Motion
     }
 }
