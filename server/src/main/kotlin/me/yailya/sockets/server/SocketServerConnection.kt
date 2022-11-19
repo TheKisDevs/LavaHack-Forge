@@ -10,7 +10,7 @@ import java.net.Socket
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 
-class SocketServerConnection(override val socket: Socket, private val server: SocketServer) : ISocketRW {
+class SocketServerConnection(override val socket: Socket, private val server: SocketServer) : ISocketServerConnection {
     private val defaultName = "Socket-$index"
 
     companion object {
@@ -21,7 +21,7 @@ class SocketServerConnection(override val socket: Socket, private val server: So
             }
     }
 
-    var name = defaultName
+    override var name = defaultName
     val hasCustomName get() = name != defaultName
 
     var onMessageReceived: (SocketMessage) -> Unit = { }

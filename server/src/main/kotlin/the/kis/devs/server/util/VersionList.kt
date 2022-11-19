@@ -10,5 +10,12 @@ val versions = mapOf(
         "b0.1.6.5-5" to "2.jar",
         "b0.1.6.5-6" to "3.jar",
         "b0.1.6.5-7" to "4.jar"
+    ),
+    "1.4" to mapOf(
+        "b0.1.6.5" to "1.jar",
+        "b0.1.6.5-5" to "2.jar",
+        "b0.1.6.5-6" to "3.jar",
+        "b0.1.6.5-7" to "4.jar",
+        "b0.1.6.5-8" to "5.jar"
     )
 )

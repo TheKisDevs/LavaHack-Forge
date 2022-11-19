@@ -1,6 +1,7 @@
 package the.kis.devs.server.command
 
 import me.yailya.sockets.data.SocketMessage
+import me.yailya.sockets.server.ISocketServerConnection
 import me.yailya.sockets.server.SocketServerConnection
 import the.kis.devs.server.encryption
 import the.kis.devs.server.permission.IPermission
@@ -16,9 +17,9 @@ abstract class Command(
     val command : String
 ) : ICommand {
     val permissions = ArrayList<IPermission>()
-    var connection : SocketServerConnection? = null
+    var connection : ISocketServerConnection? = null
 
-    fun runCommand(line : String, args : List<String>, connection : SocketServerConnection) {
+    fun runCommand(line : String, args : List<String>, connection : ISocketServerConnection) {
         this.connection = connection
 
 //        thread {

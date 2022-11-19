@@ -1,5 +1,6 @@
 package the.kis.devs.server.command
 
+import me.yailya.sockets.server.ISocketServerConnection
 import me.yailya.sockets.server.SocketServerConnection
 import the.kis.devs.server.command.commands.*
 
@@ -21,7 +22,7 @@ object CommandManager {
         TrueCommand
     )
 
-    fun execute(line : String, connection : SocketServerConnection) {
+    fun execute(line : String, connection : ISocketServerConnection) {
         if(line.isEmpty() || line.isBlank()) {
             return
         }

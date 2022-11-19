@@ -3,6 +3,7 @@ package the.kis.devs.server
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServer
 import the.kis.devs.server.command.CommandManager
+import the.kis.devs.server.emulate.EmulateConnection
 import the.kis.devs.server.keyauth.KeyAuthApp
 
 /**
@@ -21,6 +22,8 @@ var PORT = 25563
 var encryption = false
 
 var server : SocketServer? = null
+
+val emulateConnection = EmulateConnection()
 
 fun main(
     args : Array<String>
@@ -51,10 +54,18 @@ fun main(
 
     println("> Server started with address: $ADDRESS, port: $PORT")
 
+    var emulating = false
+
     while (server!!.run) {
         val line = readLine() ?: continue
 
         if (line.isEmpty()) {
+            continue
+        }
+
+        if(emulating) {
+            println("> Emulating \"$line\" message!")
+            CommandManager.execute(line, emulateConnection)
             continue
         }
 
@@ -68,14 +79,18 @@ fun main(
             println("> Encryption is false")
         } else if(line == "encryption status") {
             println("> Encryption is $encryption")
+        } else if(line == "emulate") {
+            emulating = true
+            println("> Turned on emulating mode")
         } else if(line == "help") {
             println(
                 """> Commands:
-                > > exit - stops the server
-                > > encryption <true/false> - changes state of encryption
-                > > encryption status - shows current value of "encryption" field
-                > > help - shows this menu
-                > > message <text> - sends <text> to add connections"""
+> > exit - stops the server
+> > encryption <true/false> - changes state of encryption
+> > encryption status - shows current value of "encryption" field
+> > help - shows this menu
+> > message <text> - sends <text> to add connections
+> > emulate - starts command emulating mode"""
             )
         } else if(line.startsWith("message ")) {
             sendMessage(line.removePrefix("message "))

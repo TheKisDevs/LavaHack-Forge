@@ -2,6 +2,7 @@ package the.kis.devs.server.command.commands
 
 import me.yailya.sockets.data.SocketMessage
 import the.kis.devs.server.command.Command
+import the.kis.devs.server.util.versions
 
 /**
  * Arguments:
@@ -26,8 +27,18 @@ object GetVersionsCommand : Command(
 ) {
     override fun execute(line: String, args: List<String>): List<SocketMessage> {
         if(args.size == 2) {
-            //TODO: REWRITE IT!!!!!!!!!!!
-            return listOf(SocketMessage("2|b0.1.6.5-7&b0.1.6.5-6&b0.1.6.5-5&b0.1.6.5"))
+            var message = "2|"
+
+            for((i, version) in versions[args[1]]!!.keys.reversed().withIndex()) {
+                message += version
+
+                if(i != versions[args[1]]!!.keys.size - 1) {
+                    message += "&"
+                }
+            }
+
+            //"2|b0.1.6.5-7&b0.1.6.5-6&b0.1.6.5-5&b0.1.6.5"
+            return listOf(SocketMessage(message))
         }
 
         return listOf(SocketMessage("0"))
