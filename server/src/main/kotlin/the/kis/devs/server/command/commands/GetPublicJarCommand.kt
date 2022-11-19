@@ -4,7 +4,6 @@ import me.yailya.sockets.data.SocketFile
 import me.yailya.sockets.data.SocketMessage
 import me.yailya.sockets.server.SocketServerConnection
 import the.kis.devs.server.DEFAULT_PATH
-import the.kis.devs.server.LATEST_CLIENT_VERSION
 import the.kis.devs.server.LAVAHACK_CLIENT_NAME
 import the.kis.devs.server.OP_NAME
 import the.kis.devs.server.command.Command

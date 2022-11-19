@@ -1,8 +1,8 @@
 package the.kis.devs.server.command.commands
 
 import me.yailya.sockets.data.SocketMessage
-import the.kis.devs.server.LATEST_CLIENT_VERSION
 import the.kis.devs.server.command.Command
+import the.kis.devs.server.util.versions
 
 /**
  * Arguments:
@@ -27,7 +27,7 @@ object CheckVersionCommand : Command(
 ) {
     override fun execute(line: String, args: List<String>): List<SocketMessage> {
         if(args.size == 2) {
-            return if(LATEST_CLIENT_VERSION == args[1]) {
+            return if(versions.containsKey(args[1])) {
                 listOf(SocketMessage("2"))
             } else {
                 listOf(SocketMessage("1"))
