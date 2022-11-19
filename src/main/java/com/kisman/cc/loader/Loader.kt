@@ -31,7 +31,7 @@ import kotlin.random.Random
 const val address = "161.97.78.143"
 const val port = 25563
 
-const val version = "1.3"
+const val version = "1.4"
 
 var loaded = false
 var versions = emptyArray<String>()
