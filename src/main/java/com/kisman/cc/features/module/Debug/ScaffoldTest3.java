@@ -34,6 +34,10 @@ public class ScaffoldTest3 extends Module {
     private final Setting towerTicks = register(new Setting("TowerTicks", this, 1, 1, 20, true).setVisible(tower::getValBoolean));
     private final Setting towerStrict = register(new Setting("TowerStrict", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerSetBack = register(new Setting("TowerSetBack", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerUpSpoof = register(new Setting("TowerUpSpoof", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerUpSpoofBalance = register(new Setting("TowerUpSpoofBalance", this, 0, 0, 10, true).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerUpSpoofStrict = register(new Setting("TowerUpSpoofStrict", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
+    private final Setting towerUpSpoofBack = register(new Setting("TowerUpSpoofBack", this, true).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Vanilla));
     private final Setting towerMotion = register(new Setting("TowerMotion", this,0.42, 0, 1, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
     private final Setting towerGroundSpoof = register(new Setting("TowerGroundSpoof", this, false).setVisible(() -> tower.getValBoolean() && towerMode.getValEnum() == TowerMode.Motion));
     private final Setting restrict = register(new Setting("Restrict", this, true).setVisible(tower::getValBoolean));
@@ -146,6 +150,21 @@ public class ScaffoldTest3 extends Module {
                     mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
                 mc.player.motionY = towerMotion.getValDouble();
                 mc.player.fallDistance = 0f;
+            } else if(mc.player.posY + (mc.player.motionY - ((mc.player.motionY / 10) * towerUpSpoofBalance.getValDouble())) > Math.ceil(mc.player.posY) && towerUpSpoof.getValBoolean()) {
+                if(towerUpSpoofStrict.getValBoolean()){
+                    double y = mc.player.posY + (mc.player.motionY - ((mc.player.motionY / 10) * towerUpSpoofBalance.getValDouble()));
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, y, mc.player.posZ, false));
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, Math.floor(y), mc.player.posZ, true));
+                    mc.player.setPosition(mc.player.posX, Math.floor(y), mc.player.posZ);
+                    mc.player.jump();
+                    if(towerUpSpoofBack.getValBoolean())
+                        mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, y, mc.player.posZ, false));
+                } else {
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, Math.ceil(mc.player.posY), mc.player.posZ, true));
+                    mc.player.setPosition(mc.player.posX, Math.ceil(mc.player.posY), mc.player.posZ);
+                    mc.player.jump();
+                    mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, Math.ceil(mc.player.posY) + 0.001, mc.player.posZ, false));
+                }
             } else if(newY > playerY) {
                 final double x = mc.player.posX;
                 final double y = mc.player.posY;
