@@ -43,7 +43,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'maven-publish'
 
-version = 'b0.1.6.5-8'
+version = 'b0.1.6.5-9'
 group = 'com.kisman.cc'
 archivesBaseName = 'kisman.cc'
 
@@ -201,7 +201,7 @@ task privateJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'kisman.cc-b0.1.6.5-8'
+    classifier = 'kisman.cc-b0.1.6.5-9'
 }
 
 task publicJar(type : Jar, dependsOn : jar) {
@@ -229,7 +229,7 @@ task publicJar(type : Jar, dependsOn : jar) {
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHack-b0.1.6.5-8'
+    classifier = 'LavaHack-b0.1.6.5-9'
 }
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
