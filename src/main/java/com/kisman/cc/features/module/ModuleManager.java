@@ -23,7 +23,6 @@ public class ModuleManager {
 	public ModuleManager() {
 		modules = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.register(this);
-		Kisman.processAccountData();
 
 //		Loader<Module> loader = new Loader<>();
 //		loader.exclude("com.kisman.cc.features.module.Module");

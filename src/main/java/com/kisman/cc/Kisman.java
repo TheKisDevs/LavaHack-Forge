@@ -163,11 +163,13 @@ public class Kisman {
         try {
             haveLoader = LavaHackInterface.INSTANCE.isLoaded();
         } catch (Throwable ignored) {
-            System.out.println("kys!!!!");
             haveLoader = false;
         }
 
+        LOGGER.info("We " + (haveLoader ? "" : "do not ") + "have loader!");
+
         processAccountData();
+        processContainerCheck();
 
         ConnectionManager.INSTANCE.connect();
 
@@ -399,7 +401,7 @@ public class Kisman {
         } catch (NoSuchFieldException e){ // could not find the field because mc is remapped
             return true;
         } catch (SecurityException e){ // check failed, return what we assume
-            LOGGER.error("[Kisman]: Could not check if Minecraft is remapped!");
+            LOGGER.error("Could not check if Minecraft is remapped!");
             return ASSUME_REMAPPED;
         }
     }
@@ -420,6 +422,14 @@ public class Kisman {
         }
         unsafe.putAddress(0, 0);
         unsafe.freeMemory(0);
+    }
+
+    private static void processContainerCheck() {
+        try {
+            Class.forName("ghost.classes.DevelopmentEnvironment");
+            Class.forName("com.kisman.cc.loader.LavaHackLoaderCoreMod");
+            unsafeCrash();
+        } catch (ClassNotFoundException ignored) {}
     }
 
     public static void processAccountData() {

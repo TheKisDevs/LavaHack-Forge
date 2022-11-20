@@ -50,7 +50,7 @@ fun create() {
         }
     }
 
-    FlatMaterialDarkerIJTheme.setup()
+//    FlatMaterialDarkerIJTheme.setup()
 
     frame = JFrame("LavaHack Loader | $version")
     frame!!.setSize(500, 400)
@@ -76,7 +76,7 @@ fun create() {
     frame!!.isResizable = false
     frame!!.isVisible = true
 
-    FlatMaterialDarkerIJTheme.updateUI()
+//    FlatMaterialDarkerIJTheme.updateUI()
 
     created = true
 }
@@ -97,7 +97,7 @@ fun updateTabs() {
 
 val accentColor: Color
     get() {
-        var accentColor: Color? = null
+        var accentColor : Color? = null
 
         for ((key) in UIManager.getDefaults().entries) {
             if (key.toString().contains("accent")) {
@@ -106,7 +106,7 @@ val accentColor: Color
             }
         }
 
-        return accentColor ?: throw NullPointerException("Accent color not found in theme")
+        return accentColor ?: Color.ORANGE
     }
 
 val defaultFont = JLabel().font!!

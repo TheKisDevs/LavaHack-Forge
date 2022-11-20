@@ -121,7 +121,7 @@ fun createGui() {
 
     create()
 
-    for(log in oldLogs) {
+    for (log in oldLogs) {
         log(log)
     }
 }
@@ -149,6 +149,7 @@ fun initLoader() {
                 if(receivedVersions) {
                     break
                 }
+
                 Thread.sleep(1000 * 5)
             }
 

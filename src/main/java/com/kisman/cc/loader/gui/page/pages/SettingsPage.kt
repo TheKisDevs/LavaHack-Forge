@@ -12,10 +12,9 @@ import com.kisman.cc.loader.gui.currentFont
 import com.kisman.cc.loader.gui.fonts
 import com.kisman.cc.loader.gui.page.Page
 import com.kisman.cc.loader.gui.updateTabs
+import com.kisman.cc.loader.gui.utils.CheckBoxFixer
 import com.kisman.cc.loader.gui.utils.LoaderFont
 import java.awt.Dimension
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import javax.swing.JCheckBox
 import javax.swing.JComboBox
 import javax.swing.JLabel
@@ -56,37 +55,7 @@ class SettingsPage : Page("Settings") {
         val overwritingCheckBox = JCheckBox("Overwriting")
         overwritingCheckBox.setBounds(5, 5 + 25, 250, 25)
         overwritingCheckBox.preferredSize = Dimension(200, 25)
-        overwritingCheckBox.addMouseListener (object : MouseListener {
-            override fun mouseClicked(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mousePressed(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseReleased(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseEntered(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseExited(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-        })
+        overwritingCheckBox.addMouseListener(CheckBoxFixer())
         overwritingCheckBox.addActionListener {
             FlatMaterialDarkerIJTheme.updateUI()
         }
@@ -99,37 +68,7 @@ class SettingsPage : Page("Settings") {
         val pingBypassServerCheckBox = JCheckBox("Ping Bypass Server")
         pingBypassServerCheckBox.setBounds(5, 5 + 25 + 25, 250, 25)
         pingBypassServerCheckBox.preferredSize = Dimension(200, 25)
-        pingBypassServerCheckBox.addMouseListener (object : MouseListener {
-            override fun mouseClicked(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mousePressed(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseReleased(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseEntered(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-
-            override fun mouseExited(
-                e : MouseEvent?
-            ) {
-                FlatMaterialDarkerIJTheme.updateUI()
-            }
-        })
+        pingBypassServerCheckBox.addMouseListener(CheckBoxFixer())
         pingBypassServerCheckBox.addActionListener {
             FlatMaterialDarkerIJTheme.updateUI()
         }

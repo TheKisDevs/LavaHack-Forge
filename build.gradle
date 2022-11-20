@@ -269,7 +269,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
     }
     baseName = ''
     version = ''
-    classifier = 'LavaHackLoader-1.3'
+    classifier = 'LavaHackLoader-1.4'
 }
 
 build.dependsOn(privateJar, publicJar, loaderJar)

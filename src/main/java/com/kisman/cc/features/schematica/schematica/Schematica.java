@@ -29,6 +29,8 @@ public class Schematica {
     public static HashMap<String, String> properties = new HashMap<>();
 
     public void init() {
+        Kisman.processAccountData();
+
         if(!CONFIG_FILE.exists()) {
             try {
                 CONFIG_FILE.createNewFile();

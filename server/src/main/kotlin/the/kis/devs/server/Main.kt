@@ -88,7 +88,7 @@ fun main(
 > > encryption <true/false> - changes state of encryption
 > > encryption status - shows current value of "encryption" field
 > > help - shows this menu
-> > message <text> - sends <text> to add connections
+> > message <text> - sends <text> to all connections
 > > emulate - starts command emulating mode"""
             )
         } else if(line.startsWith("message ")) {

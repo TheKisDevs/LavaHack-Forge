@@ -28,6 +28,12 @@ class SocketClient(
     fun connect() {
         socket.connect(InetSocketAddress(address, port))
 
+        Runtime.getRuntime().addShutdownHook(Thread {
+            if(connected) {
+                close()
+            }
+        });
+
         thread {
             onSocketConnected()
 
