@@ -58,7 +58,7 @@ public class ShaderCharms extends Module {
 
     private final SettingGroup config = register(new SettingGroup(new Setting("Config", this)));
 
-    private final Setting animationSpeed = register(config.add(new Setting("Animation Speed", this, 0, 1, 10, true).setVisible(() -> !mode.checkValString("GRADIENT"))));
+    private final Setting animationSpeed = register(config.add(new Setting("Animation Speed", this, 0, 1, 10, false).setVisible(() -> !mode.checkValString("GRADIENT"))));
 
     private final Setting blur = register(config.add(new Setting("Blur", this, true).setVisible(() -> mode.checkValString("ITEMGLOW"))));
     private final Setting radius = register(config.add(new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("GRADIENT") || mode.checkValString("Outline2"))));
