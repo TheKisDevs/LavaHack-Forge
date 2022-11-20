@@ -34,6 +34,8 @@ public class Burrow2 extends Module {
     private final Setting smartOnGround = register(new Setting("SmartOnGround", this, false));
     public final Setting keepOn = register(new Setting("KeepOn", this, false));
     private final Setting dynamic = register(new Setting("Dynamic", this, false));
+    private final Setting down = register(new Setting("Down", this, false));
+    private final Setting setBack = register(new Setting("SetBack", this, false));
 
     public static Burrow2 instance;
 
@@ -150,11 +152,17 @@ public class Burrow2 extends Module {
             swap(oldSlot, true);
         } else placeBlock(oldPos, slot);
 
+        if(down.getValBoolean() && setBack.getValBoolean())
+            mc.player.setPosition(mc.player.posX, Math.floor(mc.player.posX - 1), mc.player.posZ);
+
         if(!mc.isSingleplayer()) {
             mc.player.setPosition(mc.player.posX, mc.player.posY - 1.16610926093821D, mc.player.posZ);
 
             double off = getOffset();
-            mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + off, mc.player.posZ, false));
+            if(down.getValBoolean())
+                mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY - (setBack.getValBoolean() ? off : off + 1), mc.player.posZ, false));
+            else
+                mc.player.connection.sendPacket(new CPacketPlayer.Position(mc.player.posX, mc.player.posY + off, mc.player.posZ, false));
         }
 
         if(keepOn.getValBoolean())
