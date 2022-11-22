@@ -92,6 +92,7 @@ public class ModuleManager {
 		modules.add(new CrystalPvPHelper());
 		modules.add(Crystals.INSTANCE);
 		modules.add(new DamageIncreaser());
+		modules.add(new FireworkAura());
 //		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
