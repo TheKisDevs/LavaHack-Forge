@@ -110,4 +110,15 @@ public class MixinEntityRenderer {
         if(event.isCancelled())
             ci.cancel();
     }
+
+    @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)
+    private void onRenderArm(float partialTicks, int pass, CallbackInfo ci){
+        Minecraft mc = Minecraft.getMinecraft();
+        if(mc.player == null || mc.world == null)
+            return;
+        if(!mc.player.getHeldItemMainhand().isEmpty)
+            return;
+        if(ViewModel.instance.handHide.getValBoolean())
+            ci.cancel();
+    }
 }
