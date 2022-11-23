@@ -7,6 +7,8 @@ import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.ForgeMappings;
 import com.kisman.cc.features.catlua.mapping.Remapper3000;
 import com.kisman.cc.features.command.CommandManager;
+import com.kisman.cc.features.command.commands.ClientNameCommand;
+import com.kisman.cc.features.command.commands.ClientVersionCommand;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.hud.HudModuleManager;
 import com.kisman.cc.features.module.BindType;
@@ -322,6 +324,7 @@ public class Kisman {
                 case "UwU": return "UwU";
                 case "EarthHack": return "3arthH4ck";
                 case "custom": return Config.instance.customName.getValString();
+                case "ClientName": return ClientNameCommand.NAME;
             }
         }
         return NAME;
@@ -332,6 +335,7 @@ public class Kisman {
             switch (Config.instance.nameMode.getValString()) {
                 case "BloomWare": return "1.0";
                 case "EarthHack": return "1.8.4";
+                case "ClientName": return ClientVersionCommand.VERSION;
                 default : return VERSION;
             }
         }

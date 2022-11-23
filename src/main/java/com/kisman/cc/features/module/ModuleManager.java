@@ -42,6 +42,7 @@ public class ModuleManager {
 		modules.add(new FutureShader());
 		//modules.add(new GhostBlock());
 		modules.add(new GLScissorTest());
+		modules.add(new HealthCancel());
 		modules.add(new HelloWorld());
 		modules.add(new LavaHackOwns());
 //		modules.add(new M2LTest());
