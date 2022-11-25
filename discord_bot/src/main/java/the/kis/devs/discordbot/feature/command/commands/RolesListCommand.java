@@ -2,7 +2,7 @@ package the.kis.devs.discordbot.feature.command.commands;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import the.kis.devs.discordbot.feature.command.Command;
+import the.kis.devs.discordbot.feature.command.NormalCommand;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -11,9 +11,9 @@ import java.util.concurrent.ExecutionException;
  * @author _kisman_
  * @since 15:10 of 23.06.2022
  */
-public class RolesListCommand extends Command {
+public class RolesListCommand extends NormalCommand {
     public RolesListCommand() {
-        super("roleslist");
+        super("roleslist", "shows members roles"/*, new OptionData(OptionType.MENTIONABLE, "member", "type here any member and you will get their roles")*/);
     }
 
     private void sendRoles(Member member, MessageReceivedEvent event) {

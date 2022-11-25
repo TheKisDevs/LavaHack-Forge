@@ -6,16 +6,19 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.MessageEmbed.Provider
 import net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail
 import net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import the.kis.devs.discordbot.feature.command.Command
+import the.kis.devs.discordbot.feature.command.NormalCommand
 import java.time.OffsetDateTime
 
 /**
  * @author _kisman_
  * @since 21:31 of 12.11.2022
  */
-class EmbedTestCommand : Command(
-    "embedtest"
+class EmbedTestCommand : NormalCommand(
+    "embedtest",
+    "tests embeds"
 ) {
     override fun run(
         message : Array<out String>,

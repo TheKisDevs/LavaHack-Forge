@@ -3,7 +3,8 @@ package the.kis.devs.discordbot;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
+import the.kis.devs.discordbot.feature.command.Command;
+import the.kis.devs.discordbot.feature.command.CommandManager;
 import the.kis.devs.discordbot.handlers.MessageHandler;
 
 /**
@@ -22,14 +23,18 @@ public class DiscordBotController {
     public void initSlashCommands(JDA jda) throws InterruptedException {
 //        jda.upsertCommand("uwu", "yooo").queue();
 
-        Guild guild = jda.getGuildById("868099963161313330");
+//        Guild guild = jda.getGuildById("868099963161313330");
 
-        if(guild != null) {
-            guild.upsertCommand("test", "test command").queue();
-        }
+//        if(guild != null) {
+//            guild.upsertCommand("test", "test command").queue();
+//            guild.upsertCommand("kill", "shut up").queue();
+//        }
 
-//        jda.getGuilds().forEach(guild -> {
-//        });
+        jda.getGuilds().forEach(guild -> {
+            for(Command command : CommandManager.commands) {
+                command.registerSlashCommand(guild);
+            }
+        });
 
     }
 }

@@ -1,5 +1,6 @@
 package the.kis.devs.discordbot.managers;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -31,6 +32,10 @@ public class ChannelsManager {
 
     public String send(String channelID, FileUpload... files) throws ExecutionException, InterruptedException {
         return getMessageChannelById(channelID).sendFiles(files).submit().get().getId();
+    }
+
+    public String sendPrivate(String message, String channelID, Member sender) throws InterruptedException, ExecutionException {
+        return getMessageChannelById(channelID).sendMessage(message).submit().get().getId();
     }
 
     public StandardGuildMessageChannel getMessageChannelById(String channelID) throws InterruptedException {

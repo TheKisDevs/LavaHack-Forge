@@ -1,5 +1,6 @@
 package the.kis.devs.discordbot.handlers;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -31,5 +32,10 @@ public class MessageHandler extends ListenerAdapter implements Globals {
         try {CommandManager.execute(event);} catch (ExecutionException | InterruptedException ignored) {}
         NicknameModifier.onMessageReceived(event);
         SenddedMessagesLogger.onMessageReceived(event);
+    }
+
+    @Override
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        try {CommandManager.execute(event);} catch (ExecutionException | InterruptedException ignored) {}
     }
 }

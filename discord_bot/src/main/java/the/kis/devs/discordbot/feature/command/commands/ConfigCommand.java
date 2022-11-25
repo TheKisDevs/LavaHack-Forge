@@ -2,7 +2,7 @@ package the.kis.devs.discordbot.feature.command.commands;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import the.kis.devs.discordbot.DiscordBotConfig;
-import the.kis.devs.discordbot.feature.command.Command;
+import the.kis.devs.discordbot.feature.command.NormalCommand;
 import the.kis.devs.discordbot.permission.permissions.RolePermission;
 
 import java.util.concurrent.ExecutionException;
@@ -11,10 +11,10 @@ import java.util.concurrent.ExecutionException;
  * @author _kisman_
  * @since 1:45 of 23.06.2022
  */
-public class ConfigCommand extends Command {
+public class ConfigCommand extends NormalCommand {
 
     public ConfigCommand() {
-        super("config");
+        super("config", "for developers");
         permissions.add(new RolePermission(STAFF_ROLE_ID));
 
         //Pattern: -config name true/false | -config list
