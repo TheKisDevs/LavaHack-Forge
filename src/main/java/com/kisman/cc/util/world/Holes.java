@@ -7,9 +7,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +18,22 @@ import java.util.stream.Stream;
 public class Holes {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static List<Hole> getHoles(double range){
+        List<BlockPos> blocks = CrystalUtils.getSphere((float) range, true, false);
+        List<Hole> holes = new ArrayList<>();
+        Set<BlockPos> alreadyChecked = new HashSet<>();
+        for(BlockPos pos : blocks){
+            if(alreadyChecked.contains(pos))
+                continue;
+            Hole hole = getHole(pos);
+            if(hole == null)
+                continue;
+            alreadyChecked.addAll(hole.getHoleBlocks());
+            holes.add(hole);
+        }
+        return holes;
+    }
 
     public static Hole getHole(BlockPos pos){
         if(collideCheck(pos, true))
