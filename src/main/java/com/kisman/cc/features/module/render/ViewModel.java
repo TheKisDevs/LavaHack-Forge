@@ -60,6 +60,8 @@ public class ViewModel extends Module {
     public Setting autoRotateLeftY = register(autoRotateG.add(new Setting("AutoRotateLeftY", this, false)));
     public Setting autoRotateLeftZ = register(autoRotateG.add(new Setting("AutoRotateLeftZ", this, false)));
 
+    public Setting handHide = register(new Setting("HandHide", this, false));
+
     //hand pos modifier
     private final SettingGroup handsG = register(new SettingGroup(new Setting("Hands", this)));
     public Setting hands = register(handsG.add(new Setting("Hands", this, false)));

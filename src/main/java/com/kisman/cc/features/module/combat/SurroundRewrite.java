@@ -42,6 +42,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 /**
@@ -58,6 +59,8 @@ public class SurroundRewrite extends Module {
     private final Setting safeDynamic = register(new Setting("Safe Dynamic", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting allEntities = register(new Setting("AllEntities", this, false).setVisible(() -> extension.getValBoolean() && extension.isVisible()));
+    private final Setting blocksPerTickLimit = register(new Setting("BlockPerTicksLimit", this, false));
+    private final Setting blocksPerTick = register(new Setting("BlockPerTick", this, 4, 0, 24, true));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final Setting smartBlock = register(new Setting("Smart Block", this, false));
     private final Setting safeEchest = /*register*/(new Setting("Safe E Chest", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
@@ -110,6 +113,10 @@ public class SurroundRewrite extends Module {
 
     private Function<BlockPos, IBlockState> getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
 
+    private final Queue<BlockPos> blockQueue = new ConcurrentLinkedQueue<>();
+
+    private int ticksPassed = 0;
+
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT, true);
         instance = this;
@@ -139,10 +146,14 @@ public class SurroundRewrite extends Module {
         if(center.getValBoolean() && !centerPlayer()) {
             setToggled(false);
         }
+        ticksPassed = mc.player.ticksExisted;
     }
 
     @Override
     public void update(){
+        if(mc.player == null || mc.world == null)
+            return;
+
         if(eventMode.getValEnum() != RunMode.Update)
             return;
 
@@ -150,6 +161,8 @@ public class SurroundRewrite extends Module {
             doThreaddedSynchronizedSurround();
         else
             doThreaddedSurround();
+
+        ticksPassed = mc.player.ticksExisted;
     }
 
     private void doThreaddedSurround() {
@@ -216,6 +229,7 @@ public class SurroundRewrite extends Module {
         lastY = -1;
         getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
         timer.reset();
+        blockQueue.clear();
     }
 
     private void breakCrystals(List<BlockPos> blocks){

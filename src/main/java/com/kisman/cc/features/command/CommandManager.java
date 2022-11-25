@@ -20,7 +20,10 @@ public class CommandManager extends ChatHandler {
 	public void addCommands() {
 		add(new AntiSpammerCommand());
 		add(new Bind());
+		add(new ClientNameCommand());
+		add(new ClientVersionCommand());
 		add(new ConfigCommand());
+		add(new DisplayTitleCommand());
 		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new GetUUID());

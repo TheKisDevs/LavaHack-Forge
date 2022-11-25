@@ -24,6 +24,7 @@ public class Replenish extends Module {
     private final Setting stackThresholdMode = register(new Setting("StackThreshold", this, "Amount", Arrays.asList("Amount", "Percent")));
     private final Setting stackAmount = register(new Setting("Amount", this, 5, 0, 63, true).setVisible(() -> stackThresholdMode.getValString().equals("Amount")));
     private final Setting stackPercent = register(new Setting("Percent", this, 10, 0, 99, true).setVisible(() -> stackThresholdMode.getValString().equals("Percent")));
+    private final Setting strict = register(new Setting("Strict", this, true));
 
     public Replenish(){
         super("Replenish", Category.PLAYER);
@@ -69,11 +70,16 @@ public class Replenish extends Module {
             if (barStack.isEmpty() || barStack.getItem() == Items.AIR)
                 continue;
 
+            int ts = threshold;
+
+            if(strict.getValBoolean())
+                ts = threshold >= barStack.getMaxStackSize() ? barStack.getMaxStackSize() - 1 : threshold;
+
             for(int a = 9; a < 36; a++){
                 final Item item = mc.player.inventoryContainer.getInventory().get(a).getItem();
                 final ItemStack stack1 = mc.player.inventory.getStackInSlot(a);
 
-                if(item == barStack.getItem() && barStack.getCount() <= threshold && stack1.getCount() >= stackThreshold){
+                if(item == barStack.getItem() && barStack.getCount() <= ts && stack1.getCount() >= stackThreshold){
                     slots.put(i, a);
                     break;
                 }

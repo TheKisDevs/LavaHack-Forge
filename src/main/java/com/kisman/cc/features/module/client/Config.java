@@ -109,7 +109,7 @@ public class Config extends Module {
         }
     });
 
-    public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, UwU, kidmad, EarthHack, Ferret, custom}
+    public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, UwU, kidmad, EarthHack, Ferret, custom, ClientName}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
     public enum AstolfoColorMode {Old, Impr}
     public enum GGBColorMode {Custom, SynsWithGui}

@@ -42,6 +42,7 @@ public class ModuleManager {
 		modules.add(new FutureShader());
 		//modules.add(new GhostBlock());
 		modules.add(new GLScissorTest());
+		modules.add(new HealthCancel());
 		modules.add(new HelloWorld());
 		modules.add(new LavaHackOwns());
 //		modules.add(new M2LTest());
@@ -92,6 +93,7 @@ public class ModuleManager {
 		modules.add(new CrystalPvPHelper());
 		modules.add(Crystals.INSTANCE);
 		modules.add(new DamageIncreaser());
+		modules.add(new FireworkAura());
 //		modules.add(new Flatten());
 		modules.add(new FlattenRewrite());
 		modules.add(new HandRewrite());
