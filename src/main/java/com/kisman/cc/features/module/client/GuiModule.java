@@ -30,6 +30,7 @@ public class GuiModule extends Module {
     public final Setting outlineTest2 = register(new Setting("Outline Test 2", this, true));
     public final Setting componentsOutline = register(new Setting("Components Outline", this, false));
     public final Setting lineWidth = register(new Setting("Line Width", this, 1, 0.1, 2, false));
+    public final Setting colorPickerExtra = register(new Setting("Color Picker Extra", this, false));
 
     public static GuiModule instance;
 

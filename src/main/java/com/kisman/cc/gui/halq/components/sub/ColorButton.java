@@ -4,11 +4,13 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.pingbypass.server.input.Mouse;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
@@ -88,7 +90,14 @@ public class ColorButton implements Component {
             {
                 final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
                 final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
-                Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+
+                if(GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0)){
+                    Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
+                    Gui.drawRect(cursorX - 7, cursorY - 7, cursorX + 7, cursorY + 7, color.getRGB());
+                    Icons.COLOR_PICKER.render(cursorX, cursorY - 18, 16.0, 16.0);
+                } else {
+                    Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+                }
             }
         }
 
