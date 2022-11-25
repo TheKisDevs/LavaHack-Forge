@@ -44,6 +44,7 @@ public class ModuleManager {
 		modules.add(new GLScissorTest());
 		modules.add(new HealthCancel());
 		modules.add(new HelloWorld());
+		modules.add(new HolesTest());
 		modules.add(new LavaHackOwns());
 //		modules.add(new M2LTest());
 		modules.add(new Meow());
