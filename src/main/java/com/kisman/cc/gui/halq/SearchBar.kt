@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.gui.selectionbar.element.IElement
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.render.gui.TextFieldHandler
+import net.minecraft.client.Minecraft
 
 /**
  * @author _kisman_
@@ -16,7 +17,7 @@ class SearchBar : IElement {
         x : Int,
         y : Int
     ) {
-        field = TextFieldHandler(x + Kisman.instance.selectionBar.offset, y + CustomFontUtil.getFontHeight() / 2, 100, CustomFontUtil.getFontHeight())
+        field = TextFieldHandler(x + Kisman.instance.selectionBar.offset, y + CustomFontUtil.getFontHeight() / 2, 100, Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT)
     }
 
     override fun draw(
