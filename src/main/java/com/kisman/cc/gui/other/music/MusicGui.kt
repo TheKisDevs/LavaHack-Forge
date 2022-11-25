@@ -1,7 +1,9 @@
 package com.kisman.cc.gui.other.music
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.gui.KismanGuiScreen
 import com.kisman.cc.gui.MainGui
+import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.net.music.Player
 import com.kisman.cc.util.render.ColorUtils
@@ -13,7 +15,7 @@ import org.lwjgl.opengl.GL11
  * @author _kisman_
  * @since 12:18 of 21.05.2022
  */
-class MusicGui : GuiScreen() {
+class MusicGui : KismanGuiScreen() {
     private var width_ = 100
 
     private var y_ = height / 6 + 48 - 6
@@ -44,7 +46,7 @@ class MusicGui : GuiScreen() {
     }
 
     override fun drawScreen(mouseX : Int, mouseY : Int, ticks : Float) {
-        if(Kisman.instance.selectionBar.selection != MainGui.Guis.Music) {
+        if(Kisman.instance.selectionBar.selection != SelectionBar.Guis.Music) {
             MainGui.openGui(Kisman.instance.selectionBar)
             return
         }
@@ -79,11 +81,11 @@ class MusicGui : GuiScreen() {
 
         Player.setVolume(responder.volume.toFloat())
 
-        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY)
+//        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
+//        Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
         super.mouseClicked(mouseX, mouseY, mouseButton)
         field.mouseClicked(mouseX, mouseY, mouseButton)
     }

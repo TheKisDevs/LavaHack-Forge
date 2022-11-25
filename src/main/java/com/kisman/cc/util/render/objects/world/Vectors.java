@@ -1,8 +1,7 @@
 package com.kisman.cc.util.render.objects.world;
 
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.math.vectors.Vec3dColored;
-import kotlin.Unit;
+import com.kisman.cc.util.math.vectors.xyz.Vec3dColored;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 

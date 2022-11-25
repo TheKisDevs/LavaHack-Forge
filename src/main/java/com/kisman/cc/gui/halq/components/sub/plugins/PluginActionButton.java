@@ -82,7 +82,7 @@ public class PluginActionButton implements Component {
 
     @Override
     public boolean visible() {
-        return (plugin.getLoaded() == (action != Action.LOAD));
+        return (plugin.getLoaded() == (action != Action.LOAD)) && HalqGui.visible(action.name);
     }
 
     public void setWidth(int width) {this.width = width;}

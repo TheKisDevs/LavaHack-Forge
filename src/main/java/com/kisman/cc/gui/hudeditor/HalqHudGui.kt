@@ -1,8 +1,8 @@
 package com.kisman.cc.gui.hudeditor
 
-import com.kisman.cc.gui.MainGui
 import com.kisman.cc.gui.halq.Frame
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.kisman.cc.util.Colour
 
 /**
@@ -41,7 +41,7 @@ class HalqHudGui : HalqGui(
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    override fun gui() : MainGui.Guis {
-        return MainGui.Guis.HudEditor
+    override fun gui() : SelectionBar.Guis {
+        return SelectionBar.Guis.HudEditor
     }
 }

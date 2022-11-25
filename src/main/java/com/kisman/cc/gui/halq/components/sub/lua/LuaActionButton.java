@@ -89,6 +89,11 @@ public class LuaActionButton implements Component {
         return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
+    @Override
+    public boolean visible() {
+        return HalqGui.visible(action.name);
+    }
+
     public enum Action {
         RELOAD("Reload"),
         UNLOAD("Unload");

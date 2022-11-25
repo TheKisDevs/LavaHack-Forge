@@ -208,6 +208,8 @@ public class Frame {
 
         if(open) {
             for(Component comp : components) {
+                if(!comp.visible()) continue;
+
                 doIterationRenderPost(
                         comp,
                         mouseX,
@@ -252,6 +254,8 @@ public class Frame {
         int count1 = count + 1;
 
         for(Component comp : components) {
+            if(!comp.visible()) continue;
+
             comp.setOff(offsetY);
             comp.setCount(count1);
             offsetY += HalqGui.height;

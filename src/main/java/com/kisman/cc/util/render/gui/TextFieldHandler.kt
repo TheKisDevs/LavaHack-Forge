@@ -16,7 +16,15 @@ class TextFieldHandler(
     val w : Int,
     val h : Int,
     val focused_ : Boolean
-) : GuiTextField(0, font, x, y, w, h) {
+) : GuiTextField(INDEX, font, x, y, w, h) {
+    companion object {
+        var INDEX = 1000
+            get() {
+                field++
+                return field
+            }
+    }
+
     constructor(
         x : Int,
         y : Int,

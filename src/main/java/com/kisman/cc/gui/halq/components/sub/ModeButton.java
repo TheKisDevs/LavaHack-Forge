@@ -193,7 +193,7 @@ public class ModeButton implements Openable {
         return HalqGui.height + height1;
     }
 
-    public boolean visible() {return setting.isVisible();}
+    public boolean visible() {return setting.isVisible() && HalqGui.visible(setting.getTitle());}
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}

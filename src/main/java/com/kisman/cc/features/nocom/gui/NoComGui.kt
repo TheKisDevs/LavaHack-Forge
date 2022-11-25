@@ -1,7 +1,7 @@
 package com.kisman.cc.features.nocom.gui
 
-import com.kisman.cc.gui.MainGui
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.selectionbar.SelectionBar
 
 /**
  * @author _kisman_
@@ -17,7 +17,7 @@ class NoComGui : HalqGui(
         ))
     }
 
-    override fun gui(): MainGui.Guis {
+    override fun gui(): SelectionBar.Guis {
         return super.gui()
     }
 }

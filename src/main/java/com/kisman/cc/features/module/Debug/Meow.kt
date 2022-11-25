@@ -1,9 +1,9 @@
 package com.kisman.cc.features.module.Debug
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.gui.MainGui
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
@@ -27,7 +27,7 @@ class Meow : Module(
 
 
     override fun onEnable() {
-        Kisman.instance.selectionBar.selection = MainGui.Guis.Music
+        Kisman.instance.selectionBar.selection = SelectionBar.Guis.Music
         mc.displayGuiScreen(Kisman.instance.musicGui)
         isToggled = false
     }

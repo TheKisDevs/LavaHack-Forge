@@ -2,7 +2,7 @@ package com.kisman.cc.util.enums
 
 import com.kisman.cc.settings.util.ShadersRendererPattern
 import com.kisman.cc.settings.util.shaders.ShaderCharmsRewriteUniform
-import com.kisman.cc.util.math.vectors.Vec3f
+import com.kisman.cc.util.math.vectors.xyz.Vec3f
 import com.kisman.cc.util.render.shader.framebuffer.FramebufferShader
 import com.kisman.cc.util.render.shader.resolution
 import com.kisman.cc.util.render.shader.resolutionUniform

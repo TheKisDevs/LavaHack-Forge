@@ -1,22 +1,25 @@
 package com.kisman.cc.gui.csgo;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.gui.MainGui;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.gui.csgo.components.*;
+import com.kisman.cc.gui.KismanGuiScreen;
+import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.csgo.components.Button;
 import com.kisman.cc.gui.csgo.components.Label;
 import com.kisman.cc.gui.csgo.components.ScrollPane;
+import com.kisman.cc.gui.csgo.components.*;
 import com.kisman.cc.gui.csgo.components.visualpreview.VisualPreviewWindow;
 import com.kisman.cc.gui.csgo.layout.FlowLayout;
 import com.kisman.cc.gui.csgo.layout.GridLayout;
 import com.kisman.cc.gui.particle.ParticleSystem;
+import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.math.MathUtil;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.*;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ClickGuiNew extends GuiScreen {
+public class ClickGuiNew extends KismanGuiScreen {
     private final HashMap<Category, Pane> categoryPaneMap;
     private final Pane spoilerPane;
     private Window window;
@@ -305,7 +308,7 @@ public class ClickGuiNew extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if(Kisman.instance.selectionBar.getSelection() != MainGui.Guis.CSGOGui) {
+        if(Kisman.instance.selectionBar.getSelection() != SelectionBar.Guis.CSGOGui) {
            MainGui.Companion.openGui(Kisman.instance.selectionBar);
            return;
         }
@@ -343,7 +346,7 @@ public class ClickGuiNew extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
+//        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
     }
 
     @Override
@@ -355,8 +358,8 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton)/* throws IOException*/ {
+//        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
         window.mouseMoved(mouseX * 2, mouseY * 2);
         window.mousePressed(mouseButton, mouseX * 2, mouseY * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) {
@@ -396,7 +399,7 @@ public class ClickGuiNew extends GuiScreen {
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) throws IOException {
+    public void keyTyped(char typedChar, int keyCode)/* throws IOException*/ {
         if(keyCode != -1) window.keyPressed(keyCode, typedChar);
         else mc.displayGuiScreen(null);
         super.keyTyped(typedChar, keyCode);

@@ -30,6 +30,7 @@ import com.kisman.cc.gui.hudeditor.HalqHudGui;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
+import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.loader.LavaHackInterface;
 import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
@@ -123,7 +124,7 @@ public class Kisman {
     public HalqHudGui halqHudGui;
     public PingBypassGui pingBypassGui;
     public NoComGui noComGui;
-    public MainGui.SelectionBar selectionBar;
+    public SelectionBar selectionBar;
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
     public MusicGui musicGui;
@@ -220,8 +221,10 @@ public class Kisman {
         mainMenuController = new MainMenuController();
         mainMenuController.init();
 
-        selectionBar = new MainGui.SelectionBar(MainGui.Guis.ClickGui);
+        selectionBar = new SelectionBar(SelectionBar.Guis.ClickGui);
         guiGradient = new MainGui.GuiGradient();
+
+        halqGui.init();
 
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);
@@ -428,9 +431,12 @@ public class Kisman {
     private static void processContainerCheck() {
         try {
             Class.forName("ghost.classes.DevelopmentEnvironment");
-            Class.forName("com.kisman.cc.loader.LavaHackLoaderCoreMod");
-            unsafeCrash();
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException e) {
+            try {
+                Class.forName("com.kisman.cc.loader.LavaHackLoaderCoreMod");
+                unsafeCrash();
+            } catch(ClassNotFoundException ignored) { }
+        }
     }
 
     public static void processAccountData() {

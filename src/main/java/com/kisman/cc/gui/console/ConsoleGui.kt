@@ -4,8 +4,10 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
 import com.kisman.cc.gui.MainGui
 import com.kisman.cc.features.module.client.Config
+import com.kisman.cc.gui.KismanGuiScreen
 import com.kisman.cc.gui.api.Draggable
 import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
+import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
@@ -23,7 +25,7 @@ import java.io.UnsupportedEncodingException
 
 /**@author Dallas/gerald0mc
  */
-class ConsoleGui : GuiScreen(), Draggable {
+class ConsoleGui : KismanGuiScreen(), Draggable {
     private var width1 : Int = 300
     private var height1 : Int = 250 - 25
     private var x : Int = 25
@@ -45,7 +47,7 @@ class ConsoleGui : GuiScreen(), Draggable {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if(Kisman.instance.selectionBar.selection != MainGui.Guis.Console) {
+        if(Kisman.instance.selectionBar.selection != SelectionBar.Guis.Console) {
             MainGui.openGui(Kisman.instance.selectionBar)
             return
         }
@@ -94,7 +96,8 @@ class ConsoleGui : GuiScreen(), Draggable {
         fontRenderer.drawStringWithShadow("${entryString}_", (x + 2).toFloat(),
             (y + height1 - fontRenderer.FONT_HEIGHT).toFloat(), -1)
 
-        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY)
+//        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY)
+        drawSelectionBar(mouseX, mouseY)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -103,7 +106,7 @@ class ConsoleGui : GuiScreen(), Draggable {
             dragX = mouseX - x
             dragY = mouseY - y
         }
-        Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
+//        Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 

@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.combat.autorer
 
-import com.kisman.cc.util.math.vectors.Vec3f
+import com.kisman.cc.util.math.vectors.xyz.Vec3f
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.EntityLivingBase

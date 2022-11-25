@@ -6,6 +6,7 @@ import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
+import com.kisman.cc.util.math.vectors.xyz.ColorableSlidePos
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -44,7 +45,7 @@ open class SlideRendererPattern {
         pos : BlockPos?,
         text : String?
     ) {
-        update(pos)
+        update(pos, renderer)
         renderWorld(
             movingLength,
             fadeLength,
@@ -104,30 +105,33 @@ open class SlideRendererPattern {
         if(alphaFadeLength != 0f) {
             val keysToRemove = ArrayList<BlockPos>()
 
-            for(pos in processedPossesList) {
-                if(multiplier == 0.0 && pos.key == currentPos) {
-                    keysToRemove.add(pos.key)
+            for(entry in processedPossesList) {
+                val pos = entry.key
+                val time = entry.value
+
+                if(multiplier == 0.0 && pos == currentPos) {
+                    keysToRemove.add(pos)
                     continue
                 }
 
                 val alphaCoeff = alpha(
                     alphaFadeLength,
                     renderer,
-                    pos.value
+                    time
                 )
 
                 if(alphaCoeff == 0.0) {
-                    keysToRemove.add(pos.key)
+                    keysToRemove.add(pos)
                     continue
                 }
 
-                val alpha1 = (alphaCoeff * renderer.color1.colour.alpha).toInt()
-                val alpha2 = (alphaCoeff * renderer.color2.colour.alpha).toInt()
+                val alpha1 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour1 else renderer.color1.colour).alpha).toInt()
+                val alpha2 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour2 else renderer.color2.colour).alpha).toInt()
 
                 renderer.draw(
-                    pos.key,
-                    renderer.color1.colour.withAlpha(alpha1),
-                    renderer.color2.colour.withAlpha(alpha2)
+                    pos,
+                    (if(pos is ColorableSlidePos) pos.colour1 else renderer.color1.colour).withAlpha(alpha1),
+                    (if(pos is ColorableSlidePos) pos.colour2 else renderer.color2.colour).withAlpha(alpha2)
                 )
             }
 
@@ -218,21 +222,28 @@ open class SlideRendererPattern {
     }
 
     open fun update(
-        pos : BlockPos?
+        pos : BlockPos?,
+        renderer : RenderingRewritePattern
     ) {
-        if(pos != null) {
-            processedPossesList[pos] = System.currentTimeMillis()
+        val colorablePos = if(pos != null) ColorableSlidePos(
+            pos,
+            renderer.color1.colour,
+            renderer.color2.colour
+        ) else null
+
+        if(colorablePos != null) {
+            processedPossesList[colorablePos!!] = System.currentTimeMillis()
         }
 
-        if(pos != lastBlockPos) {
-            currentPos = if (pos != null) AutoRerUtil.toVec3dCenter(pos) else null
+        if(colorablePos != lastBlockPos) {
+            currentPos = if (colorablePos != null) AutoRerUtil.toVec3dCenter(colorablePos) else null
             prevPos = lastRenderPos ?: currentPos
             lastUpdateTime = System.currentTimeMillis()
             if (lastBlockPos == null) {
                 startTime = System.currentTimeMillis()
             }
 
-            lastBlockPos = pos
+            lastBlockPos = colorablePos
         }
     }
 }

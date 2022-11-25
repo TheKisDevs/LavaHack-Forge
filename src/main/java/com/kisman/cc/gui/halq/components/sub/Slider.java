@@ -109,7 +109,7 @@ public class Slider implements Component {
     }
     @Override public void setOff(int newOff) {this.offset = newOff;}
     @Override public int getHeight() {return HalqGui.height;}
-    public boolean visible() {return setting.isVisible();}
+    public boolean visible() {return setting.isVisible() && HalqGui.visible(setting.getTitle());}
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}
     public void setWidth(int width) {this.width = width;}

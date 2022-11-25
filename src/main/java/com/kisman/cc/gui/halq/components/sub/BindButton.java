@@ -107,7 +107,7 @@ public class BindButton implements Component {
         return HalqGui.height;
     }
 
-    public boolean visible() { return visibleSupplier != null ? visibleSupplier.getAsBoolean() : (!(bindable instanceof Setting) || ((Setting) bindable).isVisible()); }
+    public boolean visible() { return visibleSupplier != null ? visibleSupplier.getAsBoolean() : (!(bindable instanceof Setting) || (((Setting) bindable).isVisible() && HalqGui.visible(((Setting) bindable).getTitle()))); }
 
     public void setCount(int count) {this.count = count;}
     public int getCount() {return count;}

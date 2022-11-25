@@ -1,9 +1,7 @@
 package com.kisman.cc.pingbypass.server.gui
 
-import com.kisman.cc.features.module.Category
-import com.kisman.cc.gui.MainGui
-import com.kisman.cc.gui.halq.Frame
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.kisman.cc.pingbypass.server.features.modules.PingBypassCategory
 
 /**
@@ -19,7 +17,7 @@ class PingBypassGui : HalqGui(true) {
         }
     }
 
-    override fun gui(): MainGui.Guis {
-        return MainGui.Guis.PingBypassGui
+    override fun gui() : SelectionBar.Guis {
+        return SelectionBar.Guis.PingBypassGui
     }
 }

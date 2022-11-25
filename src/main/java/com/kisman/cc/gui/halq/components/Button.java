@@ -219,4 +219,9 @@ public class Button implements Openable {
     public ArrayList<Component> getComponents() {
         return comps;
     }
+
+    @Override
+    public boolean visible() {
+        return HalqGui.visible(this) && HalqGui.visible(mod.getName());
+    }
 }

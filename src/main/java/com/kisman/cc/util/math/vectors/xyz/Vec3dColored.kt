@@ -1,4 +1,4 @@
-package com.kisman.cc.util.math.vectors
+package com.kisman.cc.util.math.vectors.xyz
 
 import com.kisman.cc.util.Colour
 import net.minecraft.util.math.Vec3d

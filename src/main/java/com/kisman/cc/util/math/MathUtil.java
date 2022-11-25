@@ -1,7 +1,7 @@
 package com.kisman.cc.util.math;
 
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.math.vectors.Vec2i;
+import com.kisman.cc.util.math.vectors.xy.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;

@@ -254,7 +254,7 @@ class GroupButton(
     }
 
     override fun visible(): Boolean {
-        return setting.isVisible
+        return setting.isVisible && HalqGui.visible(setting.title) && HalqGui.visible(this)
     }
 
     private fun isMouseOnButton(x: Int, y: Int): Boolean {

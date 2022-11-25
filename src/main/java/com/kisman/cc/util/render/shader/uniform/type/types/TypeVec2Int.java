@@ -1,6 +1,6 @@
 package com.kisman.cc.util.render.shader.uniform.type.types;
 
-import com.kisman.cc.util.math.vectors.Vec2i;
+import com.kisman.cc.util.math.vectors.xy.Vec2i;
 import com.kisman.cc.util.render.shader.uniform.type.Type;
 import org.lwjgl.opengl.GL20;
 

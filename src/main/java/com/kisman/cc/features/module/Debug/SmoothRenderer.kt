@@ -7,7 +7,7 @@ import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
-import com.kisman.cc.util.math.vectors.Vec3dColored
+import com.kisman.cc.util.math.vectors.xyz.Vec3dColored
 import com.kisman.cc.util.math.vectors.VectorUtils
 import com.kisman.cc.util.render.RenderUtil3
 import com.kisman.cc.util.render.objects.world.Object3d

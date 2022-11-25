@@ -1,4 +1,4 @@
-package com.kisman.cc.util.math.vectors;
+package com.kisman.cc.util.math.vectors.xy;
 
 public class Vec2i {
     public int x, y;

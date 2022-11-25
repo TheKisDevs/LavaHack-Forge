@@ -1,4 +1,4 @@
-package com.kisman.cc.util.math.vectors
+package com.kisman.cc.util.math.vectors.xyzw
 
 /**
  * @author _kisman_

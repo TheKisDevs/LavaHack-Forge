@@ -4,11 +4,13 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
+import com.kisman.cc.gui.KismanGuiScreen;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.particle.ParticleSystem;
+import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -20,14 +22,15 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * @author made by _kisman_ for Halq with love <3
  */
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-public class HalqGui extends GuiScreen {
+public class HalqGui extends KismanGuiScreen {
+    public SearchBar searchBar = new SearchBar();
+
     //variables for main gui settings
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
@@ -88,14 +91,19 @@ public class HalqGui extends GuiScreen {
         }
     }
 
+    public void init() {
+        SelectionBar.Guis.ClickGui.getOpen0().invoke();
+        Kisman.instance.selectionBar.setReinit(true);
+    }
+
     @Override
     public void initGui() {
         super.initGui();
         particleSystem = new ParticleSystem();
     }
 
-    protected MainGui.Guis gui() {
-        return MainGui.Guis.ClickGui;
+    protected SelectionBar.Guis gui() {
+        return SelectionBar.Guis.ClickGui;
     }
 
     @Override
@@ -135,6 +143,7 @@ public class HalqGui extends GuiScreen {
             particleSystem.onUpdate();
         }
 
+//
         Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         scrollWheelCheck();
@@ -154,18 +163,20 @@ public class HalqGui extends GuiScreen {
             frame.veryRenderPost(mouseX, mouseY);
         }
 
-        Kisman.instance.selectionBar.drawScreen(mouseX, mouseY);
+        drawSelectionBar(mouseX, mouseY);
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) throws IOException {
+    public void keyTyped(char typedChar, int keyCode)/* throws IOException*/ {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
+        super.keyTyped(typedChar, keyCode);
         for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.components.isEmpty() && !frame.reloading) for(Component mod : frame.components) if(mod.visible()) mod.keyTyped(typedChar, keyCode);
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton)/* throws IOException*/ {
+//        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
+        super.mouseClicked(mouseX, mouseY, mouseButton);
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             if(frame.isMouseOnButton(mouseX, mouseY)) {
@@ -424,6 +435,20 @@ public class HalqGui extends GuiScreen {
                 );
             }
         }
+    }
+
+    public static boolean visible(String name) {
+        return Kisman.instance.halqGui.searchBar.text().isEmpty() || name.toLowerCase().contains(Kisman.instance.halqGui.searchBar.text().toLowerCase());
+    }
+
+    public static boolean visible(Openable openable) {
+        if(Kisman.instance.halqGui.searchBar.text().isEmpty()) return true;
+
+        for(Component component : openable.getComponents()) {
+            if(component.visible()) return true;
+        }
+
+        return false;
     }
 
     public enum LocateMode {

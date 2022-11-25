@@ -146,7 +146,7 @@ public class ColorButton implements Component {
 
     @Override
     public boolean visible() {
-        return setting.isVisible();
+        return setting.isVisible() && HalqGui.visible(setting.getTitle());
     }
 
     public void setCount(int count) {this.count = count;}

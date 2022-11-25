@@ -22,7 +22,7 @@ class AutoRerRenderer : SlideRendererPattern() {
         placeInfo : PlaceInfo,
         text : Boolean
     ) {
-        update(placeInfo)
+        update(placeInfo, renderer)
         renderWorld(
             movingLength,
             fadeLength,
@@ -34,11 +34,12 @@ class AutoRerRenderer : SlideRendererPattern() {
     }
 
     fun update(
-        placeInfo : PlaceInfo
+        placeInfo : PlaceInfo,
+        renderer : RenderingRewritePattern
     ) {
         val newBlockPos = placeInfo.blockPos
 
-        update(newBlockPos)
+        update(newBlockPos, renderer)
 
         if(!placeInfo.selfDamage.isNaN() && !placeInfo.targetDamage.isNaN()) {
             lastSelfDamage = placeInfo.selfDamage

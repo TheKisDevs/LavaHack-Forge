@@ -1,4 +1,4 @@
-package com.kisman.cc.util.math.vectors;
+package com.kisman.cc.util.math.vectors.xyz;
 
 public class Vec3dSimple {
     public double x, y, z;
