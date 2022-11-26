@@ -25,7 +25,7 @@ public class HolesTest extends Module {
             return;
         List<Holes.Hole> holes = Holes.getHoles(range.getValDouble());
         for(Holes.Hole hole : holes){
-            Rendering.draw(hole.getAabb(), 2f, new Colour(255, 255, 255, 120), new Colour(255, 255, 255, 120), Rendering.Mode.BOTH);
+            Rendering.draw(Rendering.correct(hole.getAabb()), 2f, new Colour(255, 255, 255, 120), new Colour(255, 255, 255, 120), Rendering.Mode.BOTH);
         }
     }
 }

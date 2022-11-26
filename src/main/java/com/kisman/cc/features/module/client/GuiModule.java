@@ -33,6 +33,7 @@ public class GuiModule extends Module {
     public final SettingGroup colorPickerGroup = register(new SettingGroup(new Setting("ColorPicker", this)));
     public final Setting colorPickerExtra = register(colorPickerGroup.add(new Setting("Color Picker Extra", this, false).setTitle("Extra")));
     public final Setting colorPickerClearColor = register(colorPickerGroup.add(new Setting("Color Picker Clear Color", this, false).setTitle("Clear Color")));
+    public final Setting colorPickerCopyPaste = register(colorPickerGroup.add(new Setting("Color Picker Copy Paste", this, false).setTitle("Copy Paste")));
 
     public static GuiModule instance;
 

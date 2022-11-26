@@ -1,5 +1,6 @@
 package com.kisman.cc.gui.halq.components.sub;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -13,9 +14,15 @@ import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
 import static com.kisman.cc.util.render.Render2DUtil.drawLeftGradientRect;
@@ -30,6 +37,8 @@ public class ColorButton implements Component {
     private int width = HalqGui.width;
     private int layer;
     private Colour clearColor;
+    private boolean doCopy = true;
+    private boolean doPaste = true;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
@@ -52,9 +61,65 @@ public class ColorButton implements Component {
         this.clearColor = c;
     }
 
+    private void copyColorToClipboard(){
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getColorHex()), null);
+    }
+
+    private String getColorHex(){
+        return Integer.toHexString((color.r << 24) | (color.g << 16) | (color.b << 8) | color.a);
+    }
+
+    private Colour readColorHex(String hex){
+        int color;
+        try {
+            color = parseInt(hex, 16);
+        } catch (NumberFormatException e){
+            Kisman.LOGGER.error("[ColorButton] Could not read hex: " + hex, e);
+            return null;
+        }
+        return new Colour(((color & 0xff) << 24) | (color >> 8));
+    }
+
+    /**
+     * @author Cubic
+     */
+    private static int parseInt(String hex, int radix) throws NumberFormatException {
+        int r = 0;
+        int i = 0;
+        if(hex.equals(""))
+            throw new NumberFormatException();
+        boolean negative = false;
+        char first = hex.charAt(0);
+        if(first == '-') {
+            negative = true;
+            i++;
+        } else if(first == '+')
+            i++;
+        while (i < hex.length()){
+            int c = digit(hex.charAt(i++), radix);
+            r *= radix;
+            r += c;
+        }
+        return negative ? -r : r;
+    }
+
+    /**
+     * @author Cubic
+     */
+    private static int digit(char ch, int radix) throws NumberFormatException {
+        int c = ch < 65 || ch > 90 ? ch : ch - 32;
+        int r = c < 58 ? c - 48 : c - 87;
+        if(r < 0 || r >= radix)
+            throw new NumberFormatException();
+        return r;
+    }
+
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        if(!setting.getColour().equals(color)) color = setting.getColour();
+        if(!setting.getColour().equals(color)){
+            color = setting.getColour();
+            setClearColor(color);
+        }
         this.pickerWidth = width;
         Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadow) {
@@ -144,12 +209,43 @@ public class ColorButton implements Component {
             pickingHue = hueHover;
             pickingAlpha = alphaHover;
         }
+        if(!GuiModule.instance.colorPickerCopyPaste.getValBoolean())
+            return;
+        if(button == 1 && baseHover && doCopy){
+            copyColorToClipboard();
+            doCopy = false;
+        }
+        if(button == 1 && !baseHover)
+            doCopy = true;
+        if(button == 2 && baseHover && doPaste){
+            Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+            if(!transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
+                return;
+            String content;
+            try {
+                content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+            } catch (UnsupportedFlavorException | IOException e) {
+                Kisman.LOGGER.error(e);
+                return;
+            }
+            Colour color = readColorHex(content);
+            if(color == null)
+                return;
+            this.color = color;
+            setClearColor(this.color);
+            doPaste = false;
+        }
+        if(button == 2 && !baseHover)
+            doPaste = true;
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         pickingBase = pickingAlpha = pickingHue = false;
-
+        if(mouseButton == 1)
+            doCopy = true;
+        if(mouseButton == 2)
+            doPaste = true;
     }
 
     @Override
