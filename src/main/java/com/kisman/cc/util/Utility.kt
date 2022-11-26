@@ -118,3 +118,12 @@ fun stackTrace(
 }
 
 fun nullCheck() : Boolean = mc.player != null && mc.world != null && mc.player.connection != null
+
+fun <T : Any> tryCatch(
+    `try` : ReturnableRunnable<T>,
+    `catch` : ReturnableRunnable<T>
+) : T = try {
+    `try`.run()
+} catch(_ : Error) {
+    `catch`.run()
+}

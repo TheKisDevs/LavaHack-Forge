@@ -6,11 +6,13 @@ import net.minecraft.block.BlockLiquid
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import kotlin.math.abs
 
 /**
  * @author _kisman_
@@ -80,3 +82,9 @@ fun sendInteractPacket(
         mc.player.isSneaking = false
     }
 }
+
+fun entityBoxBorderLength(
+    player : EntityPlayer
+) : Double = abs(player.boundingBox.maxX - player.boundingBox.minY)
+
+fun playerBoxBorderLength() : Double = entityBoxBorderLength(mc.player)

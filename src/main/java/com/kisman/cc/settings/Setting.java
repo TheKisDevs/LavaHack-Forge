@@ -47,7 +47,7 @@ public class Setting implements IBindable {
 	private String svalDefault;
 	private String dString;
 	private ArrayList<String> options;
-	private Enum<?> optionEnum;
+	public Enum<?> optionEnum;
 
 	private boolean bval;
 	private boolean bvalDefault;

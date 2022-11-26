@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.MathHelper;
@@ -9,6 +10,9 @@ import net.minecraft.util.math.MathHelper;
 public class CornerClip extends Module {
     public Setting timeout = register(new Setting("Timeout", this, 5,1,10, false));
     public Setting disableSetting = register(new Setting("Auto Disable",this, false));
+
+    @ModuleInstance
+    public static CornerClip instance;
 
     public int disableTicks;
 

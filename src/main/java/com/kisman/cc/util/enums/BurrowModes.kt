@@ -2,9 +2,9 @@ package com.kisman.cc.util.enums
 
 /**
  * @author _kisman_
- * @since 20:34 of 07.10.2022
+ * @since 16:55 of 26.11.2022
  */
-enum class PearlBypassModes(
+enum class BurrowModes(
     val displayName : String
 ) {
     Normal("Normal"),
