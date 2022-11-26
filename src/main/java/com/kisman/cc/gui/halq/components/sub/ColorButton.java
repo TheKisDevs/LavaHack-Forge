@@ -91,7 +91,7 @@ public class ColorButton implements Component {
                 final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
                 final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
 
-                if(GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0)){
+                if(GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0) && pickingBase){
                     Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
                     Gui.drawRect(cursorX - 7, cursorY - 7, cursorX + 7, cursorY + 7, color.getRGB());
                     Icons.COLOR_PICKER.render(cursorX, cursorY - 18, 16.0, 16.0);
