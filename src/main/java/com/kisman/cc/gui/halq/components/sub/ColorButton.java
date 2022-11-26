@@ -29,6 +29,7 @@ public class ColorButton implements Component {
     private boolean baseHover, hueHover, alphaHover, pickingBase, pickingHue, pickingAlpha;
     private int width = HalqGui.width;
     private int layer;
+    private Colour clearColor;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
@@ -40,6 +41,15 @@ public class ColorButton implements Component {
         this.count = count;
         this.layer = layer;
         this.width = LayerControllerKt.getModifiedWidth(layer, width);
+        setClearColor(setting.getColour());
+    }
+
+    private void setClearColor(Colour colour){
+        Colour c = new Colour();
+        c.setHue(Color.RGBtoHSB(colour.r, colour.g, colour.b, null)[0]);
+        c.setSaturation(1.0f);
+        c.setBrightness(1.0f);
+        this.clearColor = c;
     }
 
     @Override
@@ -78,7 +88,11 @@ public class ColorButton implements Component {
 
         if(open) {
             int offsetY = HalqGui.height;
-            drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            if(GuiModule.instance.colorPickerClearColor.getValBoolean()){
+                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), clearColor.r1, clearColor.g1, clearColor.b1, clearColor.a1, mouseX, mouseY);
+            } else {
+                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            }
             offsetY += pickerWidth;
             drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
             offsetY += HalqGui.height - 3;
@@ -114,6 +128,7 @@ public class ColorButton implements Component {
         if (pickingHue) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
             this.color.setHue((restrictedX - (float) x) / pickerWidth);
+            this.clearColor.setHue((restrictedX - (float) x) / pickerWidth);
         }
         if (pickingAlpha) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
