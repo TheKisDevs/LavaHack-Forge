@@ -4,11 +4,13 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.pingbypass.server.input.Mouse;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
+import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.opengl.GL11;
@@ -27,6 +29,7 @@ public class ColorButton implements Component {
     private boolean baseHover, hueHover, alphaHover, pickingBase, pickingHue, pickingAlpha;
     private int width = HalqGui.width;
     private int layer;
+    private Colour clearColor;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
@@ -38,6 +41,15 @@ public class ColorButton implements Component {
         this.count = count;
         this.layer = layer;
         this.width = LayerControllerKt.getModifiedWidth(layer, width);
+        setClearColor(setting.getColour());
+    }
+
+    private void setClearColor(Colour colour){
+        Colour c = new Colour();
+        c.setHue(Color.RGBtoHSB(colour.r, colour.g, colour.b, null)[0]);
+        c.setSaturation(1.0f);
+        c.setBrightness(1.0f);
+        this.clearColor = c;
     }
 
     @Override
@@ -76,7 +88,11 @@ public class ColorButton implements Component {
 
         if(open) {
             int offsetY = HalqGui.height;
-            drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            if(GuiModule.instance.colorPickerClearColor.getValBoolean()){
+                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), clearColor.r1, clearColor.g1, clearColor.b1, clearColor.a1, mouseX, mouseY);
+            } else {
+                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+            }
             offsetY += pickerWidth;
             drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
             offsetY += HalqGui.height - 3;
@@ -88,7 +104,14 @@ public class ColorButton implements Component {
             {
                 final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
                 final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
-                Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+
+                if(GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0) && pickingBase){
+                    Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
+                    Gui.drawRect(cursorX - 7, cursorY - 7, cursorX + 7, cursorY + 7, color.getRGB());
+                    Icons.COLOR_PICKER.render(cursorX, cursorY - 18, 16.0, 16.0);
+                } else {
+                    Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+                }
             }
         }
 
@@ -105,6 +128,7 @@ public class ColorButton implements Component {
         if (pickingHue) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
             this.color.setHue((restrictedX - (float) x) / pickerWidth);
+            this.clearColor.setHue((restrictedX - (float) x) / pickerWidth);
         }
         if (pickingAlpha) {
             float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);

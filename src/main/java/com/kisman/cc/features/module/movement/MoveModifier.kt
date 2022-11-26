@@ -44,6 +44,7 @@ class MoveModifier : Module(
     private val reverseStepGroup = register(blocks.add(SettingGroup(Setting("Reverse Step", this))))
     val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("RStep")))
     private val reverseStepVal = register(reverseStepGroup.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible(reverseStep).setTitle("Height")))
+    private val reverseAntiGlitch = register(reverseStepGroup.add(Setting("Reverse Anti Glitch", this, true).setVisible(reverseStep).setTitle("AntiGlitch")))
     private val reverseStepLagTimeGroup = register(reverseStepGroup.add(SettingGroup(Setting("Lag Time", this))))
     private val reverseStepLagTime = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time", this, false).setTitle("State")))
     private val reverseStepLagTimeVal = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setTitle("Value")))
@@ -328,6 +329,10 @@ class MoveModifier : Module(
             }
             var y = 0.0
             while (y < reverseStepVal.valInt + 0.5) {
+                if(reverseAntiGlitch.valBoolean && y < 0.5){
+                    y += 0.01
+                    continue
+                }
                 if (mc.world.getCollisionBoxes(mc.player, mc.player.entityBoundingBox.offset(0.0, -y, 0.0)).isNotEmpty()) {
                     mc.player.motionY = -10.0
                     break
