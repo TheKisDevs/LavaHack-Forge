@@ -67,7 +67,8 @@ public class MixinPlayerControllerMP {
         EventPlayerDamageBlock.Pre event = new EventPlayerDamageBlock.Pre(pos, facing);
         Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()){
-            cir.setReturnValue(false);
+            cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 
@@ -75,6 +76,16 @@ public class MixinPlayerControllerMP {
     private void onPlayerDamageBlockPost(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir){
         EventPlayerDamageBlock.Post event = new EventPlayerDamageBlock.Post(posBlock, directionFacing);
         Kisman.EVENT_BUS.post(event);
+    }
+
+    @Inject(method = "onPlayerDamageBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;syncCurrentPlayItem()V", shift = At.Shift.AFTER), cancellable = true)
+    private void onPlayerDamageBlockAfter(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir){
+        EventPlayerDamageBlock.After event = new EventPlayerDamageBlock.After(posBlock, directionFacing);
+        Kisman.EVENT_BUS.post(event);
+        if(event.isCancelled()){
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
     }
 
     @Inject(method = "onStoppedUsingItem", at = @At("HEAD"), cancellable = true)

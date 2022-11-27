@@ -37,4 +37,9 @@ public class EventPlayerDamageBlock extends Event {
             super(pos, facing, Era.POST);
         }
     }
+
+    public static class After extends EventPlayerDamageBlock {
+
+        public After(BlockPos pos, EnumFacing facing) {super(pos, facing, Era.PRE);}
+    }
 }

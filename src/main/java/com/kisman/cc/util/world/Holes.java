@@ -74,6 +74,9 @@ public class Holes {
             list.remove(pos);
             list.remove(otherPos);
             for(BlockPos blockPos : list)
+                if(!isHoleBlock(blockPos))
+                    return null;
+            for(BlockPos blockPos : list)
                 safety = updateSafety(getBlockType(blockPos), safety);
             if(safety == null)
                 return null;
@@ -91,6 +94,8 @@ public class Holes {
         EnumFacing secondFacing = getFacing(pos, offsets.get(1));
         if(firstFacing == null || secondFacing == null)
             return null;
+        firstFacing = firstFacing.getOpposite();
+        secondFacing = secondFacing.getOpposite();
         List<BlockPos> list = Arrays.asList(
                 pos,
                 pos.offset(firstFacing),
@@ -120,6 +125,9 @@ public class Holes {
         for(BlockPos blockPos : list)
             offsetList.addAll(Stream.of(EnumFacing.HORIZONTALS).map(blockPos::offset).collect(Collectors.toList()));
         offsetList.removeAll(list);
+        for(BlockPos blockPos : offsetList)
+            if(!isHoleBlock(blockPos))
+                return null;
         Safety safety = null;
         for(BlockPos blockPos : offsetList)
             safety = updateSafety(getBlockType(blockPos), safety);
@@ -173,14 +181,21 @@ public class Holes {
     }
 
     public static boolean isAccessible(BlockPos pos){
+        boolean result1 = false;
         for(int i = 0; i < 2; i++)
-            if(collideCheck(pos.up(i + 1), true))
-                return false;
-        for(EnumFacing facing : EnumFacing.HORIZONTALS)
-            for(int i = 0; i < 2; i++)
-                if(collideCheck(pos.up(i + 1).offset(facing), true))
-                    return false;
-        return true;
+            result1 |= collideCheck(pos.up(i + 1), true);
+        boolean result2 = false;
+        for(EnumFacing facing : EnumFacing.HORIZONTALS) {
+            boolean r = true;
+            for (int i = 0; i < 2; i++) {
+                if (collideCheck(pos.up(i + 1).offset(facing), true)){
+                    r = false;
+                    break;
+                }
+            }
+            result2 |= r;
+        }
+        return (!result1) | result2;
     }
 
     public static boolean collideCheck(BlockPos pos, boolean liquid){
