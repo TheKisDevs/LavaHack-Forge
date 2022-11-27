@@ -9,7 +9,8 @@ public enum Icons implements Globals {
     CHECKED_CHECKBOX(new ResourceLocation("kismancc:icons/enabled1.png")),
     LOGO(new ResourceLocation("kismancc:icons/logo.png")),
     LOGO_NEW(new ResourceLocation("kismancc:icons/sex.png")),
-    COLOR_PICKER(new ResourceLocation("kismancc:icons/color-picker.png"));
+    COLOR_PICKER(new ResourceLocation("kismancc:icons/color-picker.png")),
+    LOADING_SCREEN_IMAGE(new ResourceLocation("kismancc:icons/loadingscreen.png"));
 
     public final ResourceLocation resourceLocation;
 
