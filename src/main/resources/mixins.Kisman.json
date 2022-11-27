@@ -48,6 +48,7 @@
     "MixinScreenShotHelper",
     "MixinServerPing",
     "MixinSimpleReloadableResourceManager",
+    "MixinSplashProgress",
     "MixinTileEntity",
     "MixinVisGraph",
     "MixinWorld",
