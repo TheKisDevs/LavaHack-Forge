@@ -1,6 +1,5 @@
 package com.kisman.cc.settings.util
 
-import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.CharmsRewriteSetting
 import com.kisman.cc.settings.Setting
