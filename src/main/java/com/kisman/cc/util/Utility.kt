@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
@@ -7,6 +9,10 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
@@ -126,4 +132,19 @@ fun <T : Any> tryCatch(
     `try`.run()
 } catch(_ : Error) {
     `catch`.run()
+}
+
+fun <T> clone(
+    `object` : T?
+) : T? {
+    val baos = ByteArrayOutputStream()
+    val ous = ObjectOutputStream(baos)
+
+    ous.writeObject(`object`)
+    ous.close()
+
+    val bais = ByteArrayInputStream(baos.toByteArray())
+    val ois = ObjectInputStream(bais)
+
+    return ois.readObject() as T
 }

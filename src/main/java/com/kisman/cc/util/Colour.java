@@ -5,8 +5,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Colour {
+public class Colour implements Serializable {
     public static final int COLOR_RAINBOW;
     public static final int COLOR_ASTOLFO;
     public static final int COLOR_PRIMARY;

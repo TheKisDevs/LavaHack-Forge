@@ -11,12 +11,15 @@ enum class CharmsRewriteTypes(
 ) {
     Mode(Global),
     Width(Global),
+    NoHurt(Global),
     WireDepth(Wire),
     WireLighting(Wire),
     WireCulling(Wire),
     WireBlend(Wire),
     WireTranslucent(Wire),
     WireTexture2D(Wire),
+    WireCrowdAlpha(Wire),
+    WireCrowdAlphaRange(Wire),
     WireCustomColor(Wire),
     WireColor(Wire),
     ModelDepth(Model),
@@ -25,6 +28,8 @@ enum class CharmsRewriteTypes(
     ModelBlend(Model),
     ModelTranslucent(Model),
     ModelTexture2D(Model),
+    ModelCrowdAlpha(Model),
+    ModelCrowdAlphaRange(Model),
     ModelCustomColor(Model),
     ModelColor(Model)
 }
