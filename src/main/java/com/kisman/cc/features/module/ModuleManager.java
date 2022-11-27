@@ -226,7 +226,8 @@ public class ModuleManager {
 		modules.add(new FakePearl());
 		modules.add(new FastMove());
 		modules.add(new Ghost());
-		modules.add(new HandMine());
+		//modules.add(new HandMine()); deprecated
+		modules.add(new HandMineRewrite());
 		modules.add(new LiquidInteractRewrite());
 		modules.add(new LogoutSpots());
 		modules.add(new MiddleClick());

@@ -67,7 +67,8 @@ public class MixinPlayerControllerMP {
         EventPlayerDamageBlock.Pre event = new EventPlayerDamageBlock.Pre(pos, facing);
         Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()){
-            cir.setReturnValue(false);
+            cir.setReturnValue(true);
+            cir.cancel();
         }
     }
 

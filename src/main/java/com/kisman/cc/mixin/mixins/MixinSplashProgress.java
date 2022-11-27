@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SplashProgress.class)
 public class MixinSplashProgress {
 
+    /*
     @Shadow
     private static Thread thread;
 
@@ -39,4 +40,5 @@ public class MixinSplashProgress {
         checkThreadState();
         ci.cancel();
     }
+     */
 }
