@@ -3,12 +3,11 @@ package com.kisman.cc.features.module.client;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.render.objects.screen.Icons;
-import net.minecraftforge.fml.client.SplashProgress;
 import org.lwjgl.opengl.Display;
 
 public class CustomLoadingScreen extends Module {
 
-    public CustomLoadingScreen(){
+    private CustomLoadingScreen() {
         super("CustomLoadingScreen", Category.CLIENT);
     }
 

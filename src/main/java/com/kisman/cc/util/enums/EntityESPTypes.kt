@@ -1,16 +1,13 @@
 package com.kisman.cc.util.enums
 
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityEnderCrystal
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.item.EntityItemFrame
-import net.minecraft.entity.item.EntityXPOrb
+import net.minecraft.entity.item.*
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityAnimal
 import net.minecraft.entity.player.EntityPlayer
 
 enum class EntityESPTypes(
-        val entityClass: Class<out Entity?>
+        val entityClass : Class<out Entity?>
 ) {
     Player(EntityPlayer::class.java),
     Crystal(EntityEnderCrystal::class.java),
@@ -18,7 +15,10 @@ enum class EntityESPTypes(
     Animal(EntityAnimal::class.java),
     Item(EntityItem::class.java),
     XPOrb(EntityXPOrb::class.java),
-    ItemFrame(EntityItemFrame::class.java);
+    ItemFrame(EntityItemFrame::class.java),
+    ArmorStand(EntityArmorStand::class.java)
+
+    ;
 
 
     companion object {
