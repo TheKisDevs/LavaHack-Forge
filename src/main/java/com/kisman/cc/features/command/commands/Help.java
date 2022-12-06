@@ -54,9 +54,9 @@ public class Help extends Command {
                 String name = valOf(cmd.getCommand());
                 String usage = valOf(cmd.getSyntax());
                 String description = valOf(cmd.getDescription());
-                new ConsoleMessageEvent(TextFormatting.GOLD + "Command: " + name ).post();
-                new ConsoleMessageEvent(TextFormatting.GREEN + "Usage: " + TextFormatting.RESET + usage).post();
-                new ConsoleMessageEvent(TextFormatting.DARK_GREEN + "Description: " + TextFormatting.RESET + description).post();
+                new ConsoleMessageEvent(TextFormatting.GOLD + "> Command: " + name ).post();
+                new ConsoleMessageEvent(TextFormatting.GREEN + ">> Usage: " + TextFormatting.RESET + usage).post();
+                new ConsoleMessageEvent(TextFormatting.DARK_GREEN + ">> Description: " + TextFormatting.RESET + description).post();
             }
             return;
         }
@@ -66,9 +66,9 @@ public class Help extends Command {
             String name = valOf(cmd.getCommand());
             String usage = valOf(cmd.getSyntax());
             String description = valOf(cmd.getDescription());
-            ChatUtility.message().printMessage(ChatFormatting.GOLD + "Command: " + name);
-            ChatUtility.message().printMessage(ChatFormatting.GREEN + "Usage: " + ChatFormatting.RESET + usage);
-            ChatUtility.message().printMessage(ChatFormatting.DARK_GREEN + "Description: " + ChatFormatting.RESET + description);
+            ChatUtility.message().printMessage(ChatFormatting.GOLD + "> Command: " + name);
+            ChatUtility.message().printMessage(ChatFormatting.GREEN + ">> Usage: " + ChatFormatting.RESET + usage);
+            ChatUtility.message().printMessage(ChatFormatting.DARK_GREEN + ">> Description: " + ChatFormatting.RESET + description);
         }
     }
 
