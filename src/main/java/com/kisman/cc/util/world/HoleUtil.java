@@ -4,8 +4,10 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HoleUtil {
@@ -54,6 +56,7 @@ public class HoleUtil {
         if (size == 0) {
             output.setType(HoleType.SINGLE);
             output.setCentre(new AxisAlignedBB(centreBlock));
+            output.posses.add(centreBlock);
             return output;
         }
         // have one open side
@@ -97,6 +100,8 @@ public class HoleUtil {
         double maxZ = Math.max(centreBlock.getZ(), unsafePos.getZ()) + 1;
 
         info.setCentre(new AxisAlignedBB(minX, centreBlock.getY(), minZ, maxX, centreBlock.getY() + 1, maxZ));
+        info.posses.add(centreBlock);
+        info.posses.add(unsafePos);
 
         if (info.getType() != HoleType.CUSTOM) {
             info.setType(HoleType.DOUBLE);
@@ -149,6 +154,7 @@ public class HoleUtil {
         private BlockSafety safety;
 
         private AxisAlignedBB centre;
+        public ArrayList<BlockPos> posses = new ArrayList<>();
 
         public HoleInfo() {
             this(BlockSafety.UNBREAKABLE, HoleType.NONE);

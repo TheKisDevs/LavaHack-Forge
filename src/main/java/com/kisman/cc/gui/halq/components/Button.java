@@ -138,7 +138,7 @@ public class Button implements Openable {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(hud && draggable != null) draggable.mouseClicked(mouseX, mouseY, button);
-        if(isMouseOnButton(mouseX, mouseY) && button == 0) mod.toggle();
+        if(isMouseOnButton(mouseX, mouseY) && button == 0 && mod.toggleable) mod.toggle();
         if(isMouseOnButton(mouseX, mouseY) && button == 1) open = !open;
         if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.mouseClicked(mouseX, mouseY, button);
     }

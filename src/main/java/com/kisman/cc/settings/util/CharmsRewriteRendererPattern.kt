@@ -12,10 +12,13 @@ import com.kisman.cc.util.enums.CharmsRewriteEntityTypes
 import com.kisman.cc.util.enums.CharmsRewriteTypeModes
 import com.kisman.cc.util.enums.CharmsRewriteTypes
 import com.kisman.cc.util.enums.dynamic.CharmsRewriteOptionsEnum
+import com.kisman.cc.util.manager.friend.FriendManager
 import net.minecraft.client.model.ModelBase
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11.*
+import java.awt.Color
 
 /**
  * @author _kisman_
@@ -113,6 +116,14 @@ class CharmsRewriteRendererPattern(
             CharmsRewriteTypes.WireColor
         ))
 
+        if(type == CharmsRewriteEntityTypes.Player) {
+            list.add(CharmsRewriteSetting(
+                wireColorGroup.add(Setting("${type.name} Wire Friend Color", module, Colour(Color.CYAN)).setTitle("Friend")),
+                type,
+                CharmsRewriteTypes.WireFriendColor
+            ))
+        }
+
         for(option in CharmsRewriteOptionsEnum.CharmsRewriteOptions.values()) {
             list.add(CharmsRewriteSetting(
                 modelGroup.add(Setting("${type.name} Model ${option.name}", module, false).setTitle(option.name)),
@@ -145,6 +156,14 @@ class CharmsRewriteRendererPattern(
             type,
             CharmsRewriteTypes.ModelColor
         ))
+
+        if(type == CharmsRewriteEntityTypes.Player) {
+            list.add(CharmsRewriteSetting(
+                modelColorGroup.add(Setting("${type.name} Model Friend Color", module, Colour(Color.CYAN)).setTitle("Friend")),
+                type,
+                CharmsRewriteTypes.ModelFriendColor
+            ))
+        }
 
         list.add(CharmsRewriteSetting(
             group.add(Setting("${type.name} No Hurt", module, false).setTitle("No Hurt")),
@@ -290,7 +309,7 @@ class CharmsRewriteRendererPattern(
 
                 clone(
                     getSettingByType(
-                        (if (mode == CharmsRewriteTypeModes.Wire) CharmsRewriteTypes.WireColor else CharmsRewriteTypes.ModelColor),
+                        (if (mode == CharmsRewriteTypeModes.Wire) (if(entity is EntityPlayer && FriendManager.instance.isFriend(entity)) CharmsRewriteTypes.WireFriendColor else CharmsRewriteTypes.WireColor) else (if(entity is EntityPlayer && FriendManager.instance.isFriend(entity)) CharmsRewriteTypes.ModelFriendColor else CharmsRewriteTypes.ModelColor)),
                         entity
                     )?.colour
                 )?.also { it.alpha = (it.alpha * alphaFactor).toInt().coerceIn(0, 255) }?.glColor()

@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -114,6 +113,7 @@ public class ModuleManager {
 		modules.add(new BetterScreenshot());
 		modules.add(new Cape());
 		modules.add(Changer.INSTANCE);
+		modules.add(new ChunkAnimator());
 //		modules.add(ClientFixer.INSTANCE);
 		modules.add(new Config());
 		modules.add(CustomFontModule.instance);
@@ -125,6 +125,7 @@ public class ModuleManager {
 		modules.add(NoSpoof.INSTANCE);
 		modules.add(new PauseBaritone());
 		modules.add(PingBypass.INSTANCE);
+		modules.add(new ViaForgeModule());
 		//render
 		modules.add(new BlockESP());
 		modules.add(new BlockHighlight());

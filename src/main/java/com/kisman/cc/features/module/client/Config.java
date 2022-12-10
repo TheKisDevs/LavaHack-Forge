@@ -24,7 +24,6 @@ public class Config extends Module {
     private final SettingGroup particles = register(new SettingGroup(new Setting("Particles", this)));
     private final SettingGroup other = register(new SettingGroup(new Setting("Other", this)));
 
-    public Setting capeAPI = register(main.add(new Setting("Cape API", this, true)));
     public Setting astolfoColorMode = new Setting("Astolfo Color Mode", this, AstolfoColorMode.Old);
     public Setting friends = register(main.add(new Setting("Friends", this, true)));
     public Setting nameMode = register(main.add(new Setting("Name Mode", this, NameMode.kismancc)));
@@ -59,9 +58,6 @@ public class Config extends Module {
     public Setting guiBlur = register(gui.add(new Setting("Gui Blur", this, true).setTitle("Blur")));
     public Setting guiVisualPreview = register(gui.add(new Setting("Gui Visual Preview", this, false).setTitle("Visual Preview")));
     public Setting guiShowBinds = register(gui.add(new Setting("Gui Show Binds", this, false).setTitle("Show Binds")));
-    public Setting pulseMin = register(other.add(new Setting("Pulse Min", this, 255, 0, 255, true)));
-    public Setting pulseMax = register(other.add(new Setting("Pulse Max", this, 110, 0, 255, true)));
-    public Setting pulseSpeed = register(other.add(new Setting("Pulse Speed", this, 1.5, 0.1, 10, false)));
     public Setting configurate = register(other.add(new Setting("Configurate", this, true)));
 
     public Setting particlesRenderPoints = register(particles.add(new Setting("Particles Render Points", this, true).setTitle("Render Points")));
@@ -89,7 +85,6 @@ public class Config extends Module {
 
     public Setting particlesStartPointsCount = register(particlesPointsGroup.add(new Setting("Particles Start Points Count", this, 300, 100, 500, true).setTitle("Start Count")));
 
-    public Setting slowRender = register(other.add(new Setting("Slow Render", this, false)));
     public Setting antiOpenGLCrash = register(other.add(new Setting("Anti OpenGL Crash", this, false)));
 
 

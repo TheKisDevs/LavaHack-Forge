@@ -22,6 +22,7 @@ enum class CharmsRewriteTypes(
     WireCrowdAlphaRange(Wire),
     WireCustomColor(Wire),
     WireColor(Wire),
+    WireFriendColor(Wire),
     ModelDepth(Model),
     ModelLighting(Model),
     ModelCulling(Model),
@@ -31,5 +32,6 @@ enum class CharmsRewriteTypes(
     ModelCrowdAlpha(Model),
     ModelCrowdAlphaRange(Model),
     ModelCustomColor(Model),
-    ModelColor(Model)
+    ModelColor(Model),
+    ModelFriendColor(Model)
 }

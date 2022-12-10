@@ -40,7 +40,7 @@ class MoveModifier : Module(
     private val blocks = register(SettingGroup(Setting("Blocks", this)))
     private val stepGroup = register(blocks.add(SettingGroup(Setting("Step", this))))
     private val step = register(stepGroup.add(Setting("Step", this, false)))
-    private val stepVal = register(stepGroup.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible(step).setTitle("Height")))
+    val stepVal = register(stepGroup.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible(step).setTitle("Height")))
     private val reverseStepGroup = register(blocks.add(SettingGroup(Setting("Reverse Step", this))))
     val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("RStep")))
     private val reverseStepVal = register(reverseStepGroup.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible(reverseStep).setTitle("Height")))
@@ -98,6 +98,10 @@ class MoveModifier : Module(
 
     private val lagTimer = TimerUtils()
 
+    companion object {
+        @JvmStatic var instance : MoveModifier? = null
+    }
+
     init {
         step.setDisplayInfo { "[${stepVal.valInt}]" }
         reverseStep.setDisplayInfo { "[${reverseStepVal.valInt}]" }
@@ -105,6 +109,8 @@ class MoveModifier : Module(
         entitySpeed.setDisplayInfo { "[${entitySpeedVal.valInt}]" }
         sprint.setDisplayInfo { "[${sprint.valEnum}]" }
         iceSpeed.setDisplayInfo { "[${iceSpeedVal.valInt}]" }
+
+        instance = this
     }
 
     override fun onEnable() {

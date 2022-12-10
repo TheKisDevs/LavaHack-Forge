@@ -78,6 +78,8 @@
     "viaforge.MixinNetworkManagerChInit"
   ],
   "client": [
+    "MixinChunkRenderContainer",
+    "MixinRenderChunk",
     "MixinTileEntityRendererDispatcher",
     "accessor.AccessorFontRenderer",
     "baritone.MixinChatTabCompleter",

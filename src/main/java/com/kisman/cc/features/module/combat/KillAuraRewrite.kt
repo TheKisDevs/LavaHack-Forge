@@ -56,11 +56,14 @@ class KillAuraRewrite : Module(
 //    private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
 
     companion object {
+        @JvmStatic var instance : KillAuraRewrite? = null
         var target : Entity? = null
     }
 
     init {
         setDisplayInfo { "[${if(target == null) "No targets" else target?.name }]" }
+
+        instance = this
     }
 
     override fun update() {
