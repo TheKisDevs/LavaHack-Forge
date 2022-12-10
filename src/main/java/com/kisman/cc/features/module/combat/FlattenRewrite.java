@@ -373,6 +373,20 @@ public class FlattenRewrite extends Module {
                 addAllIfAbsent(blocks);
                 return null;
             })),
+            SmartSquare(false, task.task(args -> {
+                Vec3d vec = args.fetch(0);
+                Entity entity = args.fetch(1);
+                BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
+                List<BlockPos> list = new ArrayList<>();
+                EnumFacing ignoreFacing = EnumFacing.getFacingFromVector((float) entity.motionX, 0, (float) entity.motionZ);
+                for(EnumFacing facing : EnumFacing.HORIZONTALS){
+                    if(facing == ignoreFacing)
+                        continue;
+                    list.add(pos.offset(facing));
+                }
+                addAllIfAbsent(list);
+                return null;
+            })),
             PlayerPosition(true, task.task(args -> {
                 Vec3d vec = args.fetch(0);
                 Entity entity = args.fetch(1);

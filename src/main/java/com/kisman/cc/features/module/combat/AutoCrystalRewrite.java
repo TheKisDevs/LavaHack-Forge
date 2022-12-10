@@ -769,7 +769,7 @@ public class AutoCrystalRewrite extends Module {
             }
             if(doHorizontal){
                 mX += 0.8;
-                mZ *= 0.8;
+                mZ += 0.8;
             }
             if(doVertical)
                 mY *= mY < 0.0 ? 1.15 : 0.7;

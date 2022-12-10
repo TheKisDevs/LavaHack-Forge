@@ -27,6 +27,7 @@ public class CommandManager extends ChatHandler {
 		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new GetUUID());
+		add(new GhostBlockCommand());
 		add(new Help());
 		add(new IsOnline());
 		add(new ItemNameCommand());
