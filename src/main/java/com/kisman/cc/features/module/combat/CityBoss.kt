@@ -63,8 +63,8 @@ class CityBoss : Module(
     private val autorerTargetSync = register(autorerSync.add(Setting("Auto Rer Target Sync", this, false).setTitle("Target")))
 
     private val renderer = RenderingRewritePattern(this).group(register(SettingGroup(Setting("Render", this)))).preInit().init().also {
-        it.color1.title = "Other Blocks First"
-        it.color2.title = "Other Blocks Second"
+        it.filledColor1.title = "Other Blocks First"
+        it.filledColor2.title = "Other Blocks Second"
     }
 
     private val currentFacingColor1 = register(renderer.colorGroup.add(Setting("Render Color Other Blocks", this, "Current Facing First", Colour(255, 255, 255, 255))))

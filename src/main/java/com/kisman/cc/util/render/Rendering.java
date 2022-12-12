@@ -12,10 +12,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glLineWidth;
 
 /**
  * Is not skidded class
@@ -31,17 +32,116 @@ public class Rendering {
 
     public static Colour DUMMY_COLOR = new Colour(0, 0, 0, 0);
 
+    public enum RenderObject {
+        BOX {
+            @Override
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+                if(gradient) {
+                    prepare();
+                    drawGradientFilledBox(aabb, color1, color2);
+                    restore();
+                } else drawSelectionBox(aabb, color1);
+            }
+        },
+        OUTLINE {
+            @Override
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+                if(gradient) {
+                    prepare();
+                    drawGradientBlockOutline(aabb, color1, color2, (float) values[0]);
+                    restore();
+                } else {
+                    glLineWidth((float) values[0]);
+                    drawSelectionBoundingBox(aabb, color1);
+                }
+            }
+        },
+        WIRE {
+            @Override
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+                glPushMatrix();
+
+                OutlineUtils.setColor(color1);
+                OutlineUtils.renderOne((float) values[0]);
+
+                drawDummyBox(aabb);
+
+                OutlineUtils.renderTwo();
+
+                drawDummyBox(aabb);
+
+                OutlineUtils.renderThree();
+                OutlineUtils.renderFour(Color.WHITE.getRGB()/*color2.getRGB()*/, 1f);
+                OutlineUtils.setColor(gradient ? color2 : color1);
+
+                drawDummyBox(aabb);
+
+                OutlineUtils.renderFive(-1f);
+                OutlineUtils.setColor(Color.WHITE);
+
+                glPopMatrix();
+            }
+
+            private void drawDummyBox(AxisAlignedBB aabb) {
+                drawSelectionBox(aabb, DUMMY_COLOR.getColor());
+            }
+        }
+
+        ;
+
+        abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values);
+        
+        public void draw(AxisAlignedBB aabb, Color color, Object... values) {
+            draw(aabb, color, color, false, values);
+        }
+        
+        public void draw(AxisAlignedBB aabb, Color color1, Color color2, Object... values) {
+            draw(aabb, color1, color2, true, values);
+        }
+    }
+
     public enum Mode {
-        OUTLINE,
-        BOX,
-        BOTH,
-        GRADIENT,
-        OUTLINE_GRADIENT,
-        BOTH_GRADIENT,
-        CUSTOM_OUTLINE,
-        GRADIENT_CUSTOM_OUTLINE,
-        GLOW,
-        REVERSE_GLOW
+        OUTLINE(false, RenderObject.OUTLINE),
+        BOX(false, RenderObject.BOX),
+        WIRE(false, RenderObject.WIRE),
+        BOX_OUTLINE(false, RenderObject.BOX, RenderObject.OUTLINE),
+        BOX_WIRE(false, RenderObject.BOX, RenderObject.WIRE),
+        WIRE_OUTLINE(false, RenderObject.OUTLINE, RenderObject.WIRE),
+        BOX_WIRE_OUTLINE(false, RenderObject.BOX, RenderObject.OUTLINE, RenderObject.WIRE),
+        WIRE_GRADIENT(true, RenderObject.WIRE),
+        BOX_GRADIENT(true, RenderObject.BOX),
+        OUTLINE_GRADIENT(true, RenderObject.OUTLINE),
+        BOX_OUTLINE_GRADIENT(true, RenderObject.BOX, RenderObject.OUTLINE),
+        BOX_WIRE_GRADIENT(true, RenderObject.BOX, RenderObject.WIRE),
+        WIRE_OUTLINE_GRADIENT(true, RenderObject.OUTLINE, RenderObject.WIRE),
+        BOX_WIRE_OUTLINE_GRADIENT(true, RenderObject.BOX, RenderObject.OUTLINE, RenderObject.WIRE, RenderObject.BOX)
+
+        ;
+
+        public final ArrayList<RenderObject> objects;
+        public final boolean gradient;
+
+        Mode(boolean gradient, RenderObject... objects) {
+            this.gradient = gradient;
+            this.objects = new ArrayList<>(Arrays.asList(objects));
+        }
+        
+        public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, Object... values) {
+//            prepare();
+            
+            for(RenderObject object : objects) {
+                //TODO: cleanup it!!!!
+                if(object == RenderObject.BOX) {
+                    object.draw(aabb, filledColor1, filledColor2, gradient, values);
+                } else if(object == RenderObject.OUTLINE) {
+                    object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
+                } else if(object == RenderObject.WIRE) {
+                    object.draw(aabb, wireColor1, wireColor2, gradient, values);
+                }
+            }
+            
+//            restore();
+        }
     }
 
     public static void setup(){
@@ -101,62 +201,72 @@ public class Rendering {
     }
 
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode) {
-        Color color = c.getColor();
-        Color color1 = c1.getColor();
+        draw0(axisAlignedBB, lineWidth, c, c1, c.withAlpha(255), c1.withAlpha(255), c.withAlpha(255), c1.withAlpha(255), mode);
+    }
 
-        switch (mode){
+    public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Colour c2, Colour c3, Colour c4, Colour c5, Mode mode) {
+        Color filledColor1 = c.getColor();
+        Color filledColor2 = c1.getColor();
+        Color outlineColor1 = c2.getColor();
+        Color outlineColor2 = c3.getColor();
+        Color wireColor1 = c4.getColor();
+        Color wireColor2 = c5.getColor();
+        
+        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, lineWidth);
+
+        /*switch (mode){
             case BOX:
-                drawSelectionBox(axisAlignedBB, color);
+                drawSelectionBox(axisAlignedBB, filledColor1);
                 break;
             case OUTLINE:
                 glLineWidth(lineWidth);
-                drawSelectionBoundingBox(axisAlignedBB, new Color(color.getRGB(), false));
+                drawSelectionBoundingBox(axisAlignedBB, new Color(outlineColor1.getRGB(), false));
                 break;
-            case BOTH:
-                drawSelectionBox(axisAlignedBB, color);
+            case BOX_OUTLINE:
+                drawSelectionBox(axisAlignedBB, filledColor1);
                 glLineWidth(lineWidth);
-                drawSelectionBoundingBox(axisAlignedBB, new Color(color.getRGB(), false));
+                drawSelectionBoundingBox(axisAlignedBB, new Color(filledColor1.getRGB(), false));
                 break;
-            case GRADIENT:
+            case BOX_GRADIENT:
                 prepare();
-                drawGradientFilledBox(axisAlignedBB, color, color1);
+                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
                 restore();
                 break;
             case OUTLINE_GRADIENT:
                 prepare();
-                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRGB(), false), new Color(color.getRGB(), false), lineWidth);
+                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRGB(), false), new Color(filledColor1.getRGB(), false), lineWidth);
                 restore();
                 break;
-            case BOTH_GRADIENT:
+            case BOX_OUTLINE_GRADIENT:
                 prepare();
-                drawGradientFilledBox(axisAlignedBB, color, color1);
-                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRGB(), false), new Color(color.getRGB(), false), lineWidth);
+                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
+                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRGB(), false), new Color(filledColor1.getRGB(), false), lineWidth);
                 restore();
                 break;
             case CUSTOM_OUTLINE:
                 prepare();
-                drawGradientBlockOutline(axisAlignedBB, color1, color, lineWidth);
+                drawGradientBlockOutline(axisAlignedBB, filledColor2, filledColor1, lineWidth);
                 restore();
                 break;
             case GRADIENT_CUSTOM_OUTLINE:
                 prepare();
-                drawGradientFilledBox(axisAlignedBB, color, color1);
-                drawGradientBlockOutline(axisAlignedBB, color1, color, lineWidth);
+                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
+                drawGradientBlockOutline(axisAlignedBB, filledColor2, filledColor1, lineWidth);
                 restore();
                 break;
             case GLOW:
                 prepare();
-                drawGradientFilledBox(axisAlignedBB, color, color1);
-                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), 255), new Color(color.getRed(), color.getGreen(), color.getBlue(), 0), lineWidth);
+                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
+                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRed(), filledColor2.getGreen(), filledColor2.getBlue(), 255), new Color(filledColor1.getRed(), filledColor1.getGreen(), filledColor1.getBlue(), 0), lineWidth);
                 restore();
                 break;
             case REVERSE_GLOW:
                 prepare();
-                drawGradientFilledBox(axisAlignedBB, color, color1);
-                drawGradientBlockOutline(axisAlignedBB, new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0), new Color(color.getRed(), color.getGreen(), color.getBlue(), 255), lineWidth);
+                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
+                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRed(), filledColor2.getGreen(), filledColor2.getBlue(), 0), new Color(filledColor1.getRed(), filledColor1.getGreen(), filledColor1.getBlue(), 255), lineWidth);
                 restore();
                 break;
-        }
+        }*/
     }
 
     public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){

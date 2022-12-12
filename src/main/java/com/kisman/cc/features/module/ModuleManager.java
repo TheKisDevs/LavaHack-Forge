@@ -103,6 +103,7 @@ public class ModuleManager {
 		modules.add(new AutoCrystalRewrite());
 		modules.add(new OffHand());
 		modules.add(new Prison());
+		modules.add(new Robot());
 		modules.add(new SelfTrapRewrite());
 		modules.add(new SilentXp());
 		modules.add(new Surround());

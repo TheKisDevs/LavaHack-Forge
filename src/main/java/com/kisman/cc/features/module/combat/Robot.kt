@@ -16,10 +16,7 @@ import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.enums.RobotHoleOperation
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
-import com.kisman.cc.util.world.BlockUtil
-import com.kisman.cc.util.world.Holes
-import com.kisman.cc.util.world.entityPosition
-import com.kisman.cc.util.world.playerPosition
+import com.kisman.cc.util.world.*
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.entity.Entity
@@ -62,6 +59,8 @@ class Robot : Module(
     private val strafing = register(Setting("Strafing", this, false))
     private val renderers = register(SettingGroup(Setting("Renderers", this)))
     private val nextHoleRendererPattern = SlideRenderingRewritePattern(this).group(renderers).preInit().init()
+    private val holeFiller = register(Setting("Hole Filler", this, true))
+    private val autoTrap = register(Setting("Auto Trap", this, true))
 
     private val threads = threads()
 
@@ -121,7 +120,7 @@ class Robot : Module(
     private var holeOperation : RobotHoleOperation? = null
 
     init {
-        super.setDisplayInfo { "[${if(target == null) "no target no fun" else "${target!!.name} | Operation: ${holeOperation?.name ?: "nothing"}"}]" }
+        super.setDisplayInfo { "[${if(target == null) "no target no fun" else "${target!!.name}} | Operation: ${holeOperation?.name ?: "nothing"} | Next Hole: ${if(nextHole == null) "no hole no fun" else "${nextHole!!.x}|${nextHole!!.z}"}"}]" }
     }
 
     private fun reset() {
@@ -288,6 +287,7 @@ class Robot : Module(
 
         val health = mc.player.health + mc.player.absorptionAmount
 
+        targets.update()
         target = targets.target
 
         handleDamage()
@@ -331,7 +331,9 @@ class Robot : Module(
             holeOperation = getHoleOperation(target!!)
             lastHole = mc.player.position
             performHoleOperation(holeOperation!!, target!!)
+            println("safe")
         } else {
+            println("unsafe")
             if(prevPosX != 0.0 && prevPosZ != 0.0) {
                 var i = 0
 
@@ -359,12 +361,12 @@ class Robot : Module(
                 enabledAura = false
             }
 
-            if(AutoTrap.instance.isToggled && enabledTrap) {
+            if(!autoTrap.valBoolean || (AutoTrap.instance.isToggled && enabledTrap)) {
                 disableTrap()
                 enabledTrap = false
             }
 
-            if(HoleFillerRewrite.instance.isToggled) {
+            if(!holeFiller.valBoolean || HoleFillerRewrite.instance.isToggled) {
                 disableFiller()
             }
 
@@ -376,6 +378,8 @@ class Robot : Module(
 
             val isFilled = nextHole != null && mc.world.getBlockState(nextHole!!).block != Blocks.AIR
             nextHole = getNextHole(target!!, false, 10.0)
+
+            print("next hole is ${if(nextHole == null) "" else "non "}null")
 
             if(needsToGoIntoHole || forcedHole || isTowering) {
                 val newNextHole = getNextHole(target!!, true, 10.0)
@@ -389,7 +393,6 @@ class Robot : Module(
             if(nextHole != null) {
                 if(isFilled || nextHole == mc.player.position) {
                     toggleSurround()
-                    //TODO: toggleSurround()
                     resetMovement()
 
                 } else {
@@ -538,7 +541,7 @@ class Robot : Module(
         }
 
         if(operation != RobotHoleOperation.Sword) {
-            if(enabledTrap) {
+            if(enabledTrap || !autoTrap.valBoolean) {
                 disableTrap()
                 enabledTrap = false
             }
@@ -550,7 +553,11 @@ class Robot : Module(
         }
 
         //TODO: нахуй это тут бля
-        enableFiller()
+        if(holeFiller.valBoolean) {
+            enableFiller()
+        } else {
+            disableFiller()
+        }
 
         if(isBeingCevBreakered()) {
             //TODO: multi threading
@@ -601,7 +608,7 @@ class Robot : Module(
                     switchedToSword = true
                 }
 
-                if(isEnemyInSameHole(target) && !isTrapped(target) && !AutoTrap.instance.isToggled) {
+                if(autoTrap.valBoolean && isEnemyInSameHole(target) && !isTrapped(target) && !AutoTrap.instance.isToggled) {
                     enableTrap()
                     enabledTrap = true
                 }
@@ -625,7 +632,7 @@ class Robot : Module(
                         moveOutHole()
                         isMoving = true
                     } else {
-                        if(isEnemyInSameHole(target) && !AutoTrap.instance.isToggled) {
+                        if(autoTrap.valBoolean && isEnemyInSameHole(target) && !AutoTrap.instance.isToggled) {
                             enableTrap()
                             enabledTrap = true
                         }
@@ -1017,13 +1024,14 @@ class Robot : Module(
     }
 
 
+    //TODO: really bad hole check, also will works bad with 2x1 and 2x2 holes
     private fun isEnemyInSameHole(
         player : EntityPlayer
     ) : Boolean = isSafe && isPlayerSafe(player) && mc.player.getDistance(player) < 1f
 
     private fun isPlayerSafe(
         player : EntityPlayer
-    ) : Boolean = Holes.getHole(player.position) != null
+    ) : Boolean = HoleUtil.isInHole(player, false, true)//Holes.getHole(player.position) != null
 
     private fun isTowering(
         player : EntityPlayer

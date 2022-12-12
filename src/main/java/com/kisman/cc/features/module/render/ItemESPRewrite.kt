@@ -20,7 +20,7 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
     private val nameRenderDistance = register(Setting("NameRenderDistance", this, 8.0, 1.0, 30.0, false))
     private val render = register(Setting("Render", this, "Box", listOf("Box", "Glow")))
     private val renderDistance = register(Setting("RenderDistance", this, 8.0, 1.0, 100.0, false))
-    private val renderMode = register(Setting("Render Mode", this, Rendering.Mode.BOTH))
+    private val renderMode = register(Setting("Render Mode", this, Rendering.Mode.BOX_OUTLINE))
     private val outlineWidth = register(Setting("OutlineWidth", this, 2.0, 1.0, 5.0, false))
     private val color = register(Setting("Color", this, "Color", Colour(255, 255, 255, 120)))
     private val color1 = register(Setting("SecondColor", this, "SecondColor", Colour(255, 255, 255, 120)))

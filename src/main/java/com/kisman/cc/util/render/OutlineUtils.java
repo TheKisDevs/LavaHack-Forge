@@ -1,91 +1,108 @@
 package com.kisman.cc.util.render;
 
-import java.awt.Color;
-
-import com.kisman.cc.settings.Setting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.shader.Framebuffer;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.EXTPackedDepthStencil;
 
-public class OutlineUtils{
-    public static void renderOne(float f) {
-        OutlineUtils.checkSetupFBO();
-        GL11.glPushAttrib((int)1048575);
-        GL11.glDisable((int)3008);
-        GL11.glDisable((int)3553);
-        GL11.glDisable((int)2896);
-        GL11.glEnable((int)3042);
-        GL11.glBlendFunc((int)770, (int)771);
-        GL11.glLineWidth((float)f);
-        GL11.glEnable((int)2848);
-        GL11.glEnable((int)2960);
-        GL11.glClear((int)1024);
-        GL11.glClearStencil((int)15);
-        GL11.glStencilFunc((int)512, (int)1, (int)15);
-        GL11.glStencilOp((int)7681, (int)7681, (int)7681);
-        GL11.glPolygonMode((int)1032, (int)6913);
+import java.awt.*;
+
+import static com.kisman.cc.util.Globals.mc;
+import static org.lwjgl.opengl.GL11.*;
+
+public class OutlineUtils {
+    public static void renderOne(float width) {
+        checkSetupFBO();
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glDisable(GL_ALPHA_TEST);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glLineWidth(width);
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_STENCIL_TEST);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glClearStencil(0xF);
+        glStencilFunc(GL_NEVER, 1, 0xF);
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
     public static void renderTwo() {
-        GL11.glStencilFunc((int)512, (int)0, (int)15);
-        GL11.glStencilOp((int)7681, (int)7681, (int)7681);
-        GL11.glPolygonMode((int)1032, (int)6914);
+        glStencilFunc(GL_NEVER, 0, 0xF);
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     public static void renderThree() {
-        GL11.glStencilFunc((int)514, (int)1, (int)15);
-        GL11.glStencilOp((int)7680, (int)7680, (int)7680);
-        GL11.glPolygonMode((int)1032, (int)6913);
+        glStencilFunc(GL_EQUAL, 1, 0xF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
-    public static void renderFour() {
-        OutlineUtils.setColor(new Color(255, 255, 255));
-        GL11.glDepthMask((boolean)false);
-        GL11.glDisable((int)2929);
-        GL11.glEnable((int)10754);
-        GL11.glPolygonOffset((float)Float.intBitsToFloat(Float.floatToIntBits(22.41226f) ^ 0x7E334C4F), (float)Float.intBitsToFloat(Float.floatToIntBits(-1.3566593E-5f) ^ 0x7E97B813));
-        OpenGlHelper.setLightmapTextureCoords((int)OpenGlHelper.lightmapTexUnit, (float)Float.intBitsToFloat(Float.floatToIntBits(0.01000088f) ^ 0x7F53DABB), (float)Float.intBitsToFloat(Float.floatToIntBits(0.011808969f) ^ 0x7F317A68));
+    public static void renderFour(int color, float offset) {
+        setColor(new Color(color));
+        glDepthMask(false);
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(offset, -2000000F);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     }
 
-    public static void renderFive() {
-        GL11.glPolygonOffset((float)Float.intBitsToFloat(Float.floatToIntBits(12.714713f) ^ 0x7ECB6F77), (float)Float.intBitsToFloat(Float.floatToIntBits(1.3271895E-5f) ^ 0x7EAA8E5B));
-        GL11.glDisable((int)10754);
-        GL11.glEnable((int)2929);
-        GL11.glDepthMask((boolean)true);
-        GL11.glDisable((int)2960);
-        GL11.glDisable((int)2848);
-        GL11.glHint((int)3154, (int)4352);
-        GL11.glEnable((int)3042);
-        GL11.glEnable((int)2896);
-        GL11.glEnable((int)3553);
-        GL11.glEnable((int)3008);
-        GL11.glPopAttrib();
+    public static void renderFive(float offset) {
+        glPolygonOffset(-offset, 2000000F);
+        glDisable(GL_POLYGON_OFFSET_LINE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDisable(GL_STENCIL_TEST);
+        glDisable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+        glEnable(GL_BLEND);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_ALPHA_TEST);
+        glPopAttrib();
     }
 
     public static void setColor(Color c) {
-        GL11.glColor4d((double)((float)c.getRed() / Float.intBitsToFloat(Float.floatToIntBits(0.0098663345f) ^ 0x7F5EA668)), (double)((float)c.getGreen() / Float.intBitsToFloat(Float.floatToIntBits(1.0011557f) ^ 0x7CFF25DF)), (double)((float)c.getBlue() / Float.intBitsToFloat(Float.floatToIntBits(0.114814304f) ^ 0x7E9423C3)), (double)((float)c.getAlpha() / Float.intBitsToFloat(Float.floatToIntBits(0.09551593f) ^ 0x7EBC9DDB)));
-    }
-
-    public static void setColor(Setting color) {
-        color.getColour().glColor();
+        glColor4d(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f);
     }
 
     public static void checkSetupFBO() {
-        Framebuffer fbo = Minecraft.getMinecraft().getFramebuffer();
-        if (fbo != null && fbo.depthBuffer > -1) {
-            OutlineUtils.setupFBO(fbo);
+        Framebuffer fbo = mc.getFramebuffer();
+        if (fbo.depthBuffer > -1) {
+            setupFBO(fbo);
             fbo.depthBuffer = -1;
         }
     }
 
-    public static void setupFBO(Framebuffer framebuffer) {
-        EXTFramebufferObject.glDeleteRenderbuffersEXT((int)framebuffer.depthBuffer);
+    /**
+     * Sets up the FBO with depth and stencil
+     *
+     * @param fbo Framebuffer
+     */
+    public static void setupFBO(Framebuffer fbo) {
+        // Deletes old render buffer extensions such as depth
+        // Args: Render Buffer ID
+        EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.depthBuffer);
+        // Generates a new render buffer ID for the depth and stencil extension
         int stencil_depth_buffer_ID = EXTFramebufferObject.glGenRenderbuffersEXT();
-        EXTFramebufferObject.glBindRenderbufferEXT((int)36161, (int)stencil_depth_buffer_ID);
-        EXTFramebufferObject.glRenderbufferStorageEXT((int)36161, (int)34041, (int)Minecraft.getMinecraft().displayWidth, (int)Minecraft.getMinecraft().displayHeight);
-        EXTFramebufferObject.glFramebufferRenderbufferEXT((int)36160, (int)36128, (int)36161, (int)stencil_depth_buffer_ID);
-        EXTFramebufferObject.glFramebufferRenderbufferEXT((int)36160, (int)36096, (int)36161, (int)stencil_depth_buffer_ID);
+        // Binds new render buffer by ID
+        // Args: Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
+        // Adds the depth and stencil extension
+        // Args: Target (GL_RENDERBUFFER_EXT), Extension (GL_DEPTH_STENCIL_EXT),
+        // Width, Height
+        EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT, mc.displayWidth, mc.displayHeight);
+        // Adds the stencil attachment
+        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
+        // (GL_STENCIL_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
+        // Adds the depth attachment
+        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
+        // (GL_DEPTH_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
     }
 }
 

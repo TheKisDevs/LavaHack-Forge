@@ -81,6 +81,6 @@ public class Triangulation extends Module {
         if(raytrace == null)
             return;
         BlockPos objectMouseOver = raytrace.getBlockPos();
-        Rendering.draw(Rendering.correct(new AxisAlignedBB(objectMouseOver)), 2.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOTH);
+        Rendering.draw(Rendering.correct(new AxisAlignedBB(objectMouseOver)), 2.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);
     }
 }

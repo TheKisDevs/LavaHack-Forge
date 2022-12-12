@@ -7,12 +7,8 @@ import com.kisman.cc.settings.util.ChromaRenderingPattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
-import com.kisman.cc.util.thread.Promise;
-import com.kisman.cc.util.thread.PromiseResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -84,7 +80,7 @@ public class BlockOverlay extends Module {
         }
 
         AxisAlignedBB aabb = Rendering.correct(Rendering.scale(this.pos, mutateProgress(progress)));
-        Rendering.draw(aabb, 3.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOTH);
+        Rendering.draw(aabb, 3.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);
 
         /*long millis = System.currentTimeMillis();
 

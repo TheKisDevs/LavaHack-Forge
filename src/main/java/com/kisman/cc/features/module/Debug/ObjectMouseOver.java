@@ -3,7 +3,6 @@ package com.kisman.cc.features.module.Debug;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.math.Trigonometric;
@@ -41,6 +40,6 @@ public class ObjectMouseOver extends Module {
 
         BlockPos pos = rayTraceResult.getBlockPos();
 
-        Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOTH);
+        Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);
     }
 }

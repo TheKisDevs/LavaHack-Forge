@@ -51,8 +51,8 @@ class EntityESPRendererPattern(
                 EntityESPSetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),
                 EntityESPSetting(group.add(pattern.mode), typeE, SettingTypes.CubicMode),
                 EntityESPSetting(group.add(pattern.lineWidth), typeE, SettingTypes.CubicLineWidth),
-                EntityESPSetting(group.add(pattern.color1), typeE, SettingTypes.CubicColor1),
-                EntityESPSetting(group.add(pattern.color2), typeE, SettingTypes.CubicColor2)
+                EntityESPSetting(group.add(pattern.filledColor1), typeE, SettingTypes.CubicColor1),
+                EntityESPSetting(group.add(pattern.filledColor2), typeE, SettingTypes.CubicColor2)
         ))
     }
 

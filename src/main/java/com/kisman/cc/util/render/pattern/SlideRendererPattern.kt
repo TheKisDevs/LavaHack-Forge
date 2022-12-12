@@ -125,13 +125,13 @@ open class SlideRendererPattern {
                     continue
                 }
 
-                val alpha1 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour1 else renderer.color1.colour).alpha).toInt()
-                val alpha2 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour2 else renderer.color2.colour).alpha).toInt()
+                val alpha1 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).alpha).toInt()
+                val alpha2 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).alpha).toInt()
 
                 renderer.draw(
                     pos,
-                    (if(pos is ColorableSlidePos) pos.colour1 else renderer.color1.colour).withAlpha(alpha1),
-                    (if(pos is ColorableSlidePos) pos.colour2 else renderer.color2.colour).withAlpha(alpha2)
+                    (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).withAlpha(alpha1),
+                    (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).withAlpha(alpha2)
                 )
             }
 
@@ -227,8 +227,8 @@ open class SlideRendererPattern {
     ) {
         val colorablePos = if(pos != null) ColorableSlidePos(
             pos,
-            renderer.color1.colour,
-            renderer.color2.colour
+            renderer.filledColor1.colour,
+            renderer.filledColor2.colour
         ) else null
 
         if(colorablePos != null) {

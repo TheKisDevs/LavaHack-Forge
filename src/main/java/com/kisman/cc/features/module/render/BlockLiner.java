@@ -52,7 +52,7 @@ public class BlockLiner extends Module {
 
         for(BlockPos pos : positions){
             AxisAlignedBB aabb = Rendering.correct(new AxisAlignedBB(pos));
-            Rendering.draw(aabb, 2f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOTH);
+            Rendering.draw(aabb, 2f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);
         }
     }
 }

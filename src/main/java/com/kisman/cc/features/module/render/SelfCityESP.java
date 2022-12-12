@@ -84,14 +84,14 @@ public class SelfCityESP extends Module {
                     Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour(), Rendering.Mode.OUTLINE);
                     break;
                 case "Both":
-                    Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour(), Rendering.Mode.BOTH);
+                    Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour(), Rendering.Mode.BOX_OUTLINE);
                     break;
                 case "Gradient":
-                    Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour(), Rendering.Mode.BOTH_GRADIENT);
+                    Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour(), Rendering.Mode.BOX_OUTLINE_GRADIENT);
                     break;
-                case "Glow":
+                /*case "Glow":
                     Rendering.draw(axisAlignedBB, lineWidth.getValFloat(), color.getColour(), color1.getColour().withAlpha(0), Rendering.Mode.GRADIENT_CUSTOM_OUTLINE);
-                    break;
+                    break;*/
             }
         }
     }

@@ -28,9 +28,9 @@ class ModuleSuffixRenderPattern(module : Module, suffix : String) : DelegateRend
     val color2 = group.add(Setting("Render Second Color $suffix", module, "Render Second Color", Colour(0, 120, 255, 255)).setVisible { (
             mode.valEnum == RenderingRewriteModes.FilledGradient ||
                     mode.valEnum == RenderingRewriteModes.OutlineGradient ||
-                    mode.valEnum == RenderingRewriteModes.BothGradient ||
-                    mode.valEnum == RenderingRewriteModes.GlowOutline ||
-                    mode.valEnum == RenderingRewriteModes.Glow
+                    mode.valEnum == RenderingRewriteModes.FilledOutlineGradient// ||
+//                    mode.valEnum == RenderingRewriteModes.GlowOutline ||
+//                    mode.valEnum == RenderingRewriteModes.Glow
             )
     })
 
@@ -70,8 +70,8 @@ class ModuleSuffixRenderPattern(module : Module, suffix : String) : DelegateRend
             } else {
                 outAlpha2 = 0;
             }
-            Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.GRADIENT)
-            Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
+            Rendering.draw(cAabb, lineWidth.valFloat, colour1, colour2, Rendering.Mode.BOX_GRADIENT)
+//            Rendering.draw(cAabb, lineWidth.valFloat, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
             return
         }
         delegate.doRender();
