@@ -31,6 +31,7 @@ object HoleProcessor : SubSystem("Hole Processor") {
 
     @EventHandler
     private val renderBlock = Listener<EventRenderBlock>(EventHook {
+        println("render block")
         if(
             mc.world.getBlockState(it.pos).block == Blocks.AIR
             && mc.world.getBlockState(it.pos.down()).block != Blocks.AIR
