@@ -1,10 +1,18 @@
 package com.kisman.cc.features.module.render;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.network.play.server.SPacketBlockChange;
+import net.minecraft.network.play.server.SPacketChunkData;
+import net.minecraft.network.play.server.SPacketMultiBlockChange;
+import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
@@ -26,13 +34,20 @@ public class BlockSearcher extends Module {
 
     private final Map<Block, Color> colorMap = new ConcurrentHashMap<>();
 
-    private final Map<Block, List<BlockPos>> map = new ConcurrentHashMap<>();
+    private final Map<ChunkPos, Map<Block, List<BlockPos>>> map = new ConcurrentHashMap<>();
 
     private int lastDimension = -1;
 
     @Override
+    public void onEnable() {
+        super.onEnable();
+        Kisman.EVENT_BUS.subscribe(this);
+    }
+
+    @Override
     public void onDisable() {
         super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(this);
         lastDimension = -1;
     }
 
@@ -54,10 +69,42 @@ public class BlockSearcher extends Module {
         }
     }
 
+    @EventHandler
+    private final Listener<PacketEvent.PostReceive> packetListener = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketChunkData){
+            SPacketChunkData packet = (SPacketChunkData) event.getPacket();
+            ChunkPos pos = new ChunkPos(packet.getChunkX(), packet.getChunkZ());
+            map.put(pos, loadChunk(pos));
+        }
+        if(event.getPacket() instanceof SPacketUnloadChunk){
+            SPacketUnloadChunk packet = (SPacketUnloadChunk) event.getPacket();
+            ChunkPos pos = new ChunkPos(packet.getX(), packet.getZ());
+            map.remove(pos);
+        }
+        if(event.getPacket() instanceof SPacketBlockChange){
+            SPacketBlockChange packet = (SPacketBlockChange) event.getPacket();
+            ChunkPos pos = new ChunkPos(packet.getBlockPosition().getX() >> 4, packet.getBlockPosition().getZ() >> 4);
+            Map<Block, List<BlockPos>> subMap = map.computeIfAbsent(pos, t -> new ConcurrentHashMap<>());
+            List<BlockPos> list = subMap.computeIfAbsent(packet.getBlockState().getBlock(), t -> new Vector<>());
+            list.add(packet.getBlockPosition());
+            map.put(pos, subMap);
+        }
+        if(event.getPacket() instanceof SPacketMultiBlockChange){
+            SPacketMultiBlockChange packet = (SPacketMultiBlockChange) event.getPacket();
+            for(SPacketMultiBlockChange.BlockUpdateData data : packet.getChangedBlocks()){
+                ChunkPos pos = new ChunkPos(data.getPos().getX() >> 4, data.getPos().getZ() >> 4);
+                Map<Block, List<BlockPos>> subMap = map.computeIfAbsent(pos, t -> new ConcurrentHashMap<>());
+                List<BlockPos> list = subMap.computeIfAbsent(data.getBlockState().getBlock(), t -> new Vector<>());
+                list.add(data.getPos());
+                map.put(pos, subMap);
+            }
+        }
+    });
+
     private void reload(){
         Thread thread = new Thread(() -> {
             for(ChunkPos pos : sortChunks(getChunks())){
-                map.putAll(loadChunk(pos));
+                map.put(pos, loadChunk(pos));
             }
         });
         thread.start();
