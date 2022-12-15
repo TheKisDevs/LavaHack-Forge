@@ -5,6 +5,8 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.render.Rendering;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
@@ -15,6 +17,8 @@ import net.minecraft.network.play.server.SPacketMultiBlockChange;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -29,7 +33,7 @@ public class BlockSearcher extends Module {
     private final Setting radius = register(new Setting("Radius", this, 4, 1, 16, true));
 
     public BlockSearcher(){
-        super("BlockSearcher", Category.RENDER);
+        super("BlockSearcher", Category.RENDER, true);
     }
 
     private final Map<Block, Color> colorMap = new ConcurrentHashMap<>();
@@ -66,6 +70,23 @@ public class BlockSearcher extends Module {
         if(lastDimension != -1 && lastDimension != mc.player.dimension){
             lastDimension = mc.player.dimension;
             reload();
+        }
+    }
+
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event){
+        for(ChunkPos chunkPos : map.keySet()){
+            for(Block block : colorMap.keySet()){
+                for(BlockPos pos : map.computeIfAbsent(chunkPos, t -> new ConcurrentHashMap<>()).computeIfAbsent(block, t -> new Vector<>())){
+                    Rendering.draw(
+                            mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
+                            1.5f,
+                            new Colour(colorMap.computeIfAbsent(block, t -> new Color(0, 0, 0, 0))),
+                            new Colour(0, 0, 0, 0),
+                            Rendering.Mode.BOX_WIRE
+                    );
+                }
+            }
         }
     }
 
