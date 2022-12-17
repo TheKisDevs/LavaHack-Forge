@@ -125,13 +125,22 @@ open class SlideRendererPattern {
                     continue
                 }
 
-                val alpha1 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).alpha).toInt()
-                val alpha2 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).alpha).toInt()
+//                val alpha1 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).alpha).toInt()
+//                val alpha2 = (alphaCoeff * (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).alpha).toInt()
+
+//                println("$alpha1 $alpha2")
 
                 renderer.draw(
                     pos,
-                    (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).withAlpha(alpha1),
-                    (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).withAlpha(alpha2)
+                    if(pos is ColorableSlidePos) pos.colour1 else renderer.getFilledColor1(),
+                    if(pos is ColorableSlidePos) pos.colour2 else renderer.getFilledColor2(),
+                    if(pos is ColorableSlidePos) pos.colour3 else renderer.getOutlineColor1(),
+                    if(pos is ColorableSlidePos) pos.colour4 else renderer.getOutlineColor2(),
+                    if(pos is ColorableSlidePos) pos.colour5 else renderer.getWireColor1(),
+                    if(pos is ColorableSlidePos) pos.colour6 else renderer.getWireColor2(),
+//                    (if(pos is ColorableSlidePos) pos.colour1 else renderer.filledColor1.colour).withAlpha(alpha1),
+//                    (if(pos is ColorableSlidePos) pos.colour2 else renderer.filledColor2.colour).withAlpha(alpha2),
+                    alphaCoeff
                 )
             }
 
@@ -159,7 +168,7 @@ open class SlideRendererPattern {
     }
 
     protected fun alpha(
-        alphaFadeLength: Float,
+        alphaFadeLength : Float,
         renderer : RenderingRewritePattern,
         time : Long
     ) : Double = if(alphaFadeLength != 0f) {
@@ -227,8 +236,12 @@ open class SlideRendererPattern {
     ) {
         val colorablePos = if(pos != null) ColorableSlidePos(
             pos,
-            renderer.filledColor1.colour,
-            renderer.filledColor2.colour
+            renderer.getFilledColor1(),
+            renderer.getFilledColor2(),
+            renderer.getOutlineColor1(),
+            renderer.getOutlineColor2(),
+            renderer.getWireColor1(),
+            renderer.getWireColor2()
         ) else null
 
         if(colorablePos != null) {

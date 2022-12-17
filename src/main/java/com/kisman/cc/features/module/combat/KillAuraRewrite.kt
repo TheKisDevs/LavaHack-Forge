@@ -2,6 +2,8 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.subsystem.subsystems.Targetable
+import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.entity.EntityUtil
@@ -24,6 +26,7 @@ import net.minecraft.util.EnumHand
  * @author _kisman_
  * @since 11:23 of 06.06.2022
  */
+@Targetable
 class KillAuraRewrite : Module(
     "KillAuraRewrite",
     "Rewrite version of KillAura",
@@ -54,6 +57,10 @@ class KillAuraRewrite : Module(
     private val cooldownCheck = register(checks.add(Setting("Cooldown Check", this, true)))
     private val ccOnlyCrits = register(checks.add(Setting("CC Only Crits", this, true).setVisible { cooldownCheck.valBoolean }))
 //    private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
+
+    //I have problems with reading static fields in kotlin classes
+    @Target
+    private val targetNoStatic : Entity? = null
 
     companion object {
         @JvmStatic var instance : KillAuraRewrite? = null

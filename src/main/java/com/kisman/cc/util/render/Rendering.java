@@ -127,8 +127,6 @@ public class Rendering {
         }
         
         public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, Object... values) {
-//            prepare();
-            
             for(RenderObject object : objects) {
                 //TODO: cleanup it!!!!
                 if(object == RenderObject.BOX) {
@@ -139,8 +137,6 @@ public class Rendering {
                     object.draw(aabb, wireColor1, wireColor2, gradient, values);
                 }
             }
-            
-//            restore();
         }
     }
 
@@ -211,62 +207,10 @@ public class Rendering {
         Color outlineColor2 = c3.getColor();
         Color wireColor1 = c4.getColor();
         Color wireColor2 = c5.getColor();
+
+        System.out.println(c.a + " " + filledColor1.getAlpha());
         
         mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, lineWidth);
-
-        /*switch (mode){
-            case BOX:
-                drawSelectionBox(axisAlignedBB, filledColor1);
-                break;
-            case OUTLINE:
-                glLineWidth(lineWidth);
-                drawSelectionBoundingBox(axisAlignedBB, new Color(outlineColor1.getRGB(), false));
-                break;
-            case BOX_OUTLINE:
-                drawSelectionBox(axisAlignedBB, filledColor1);
-                glLineWidth(lineWidth);
-                drawSelectionBoundingBox(axisAlignedBB, new Color(filledColor1.getRGB(), false));
-                break;
-            case BOX_GRADIENT:
-                prepare();
-                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
-                restore();
-                break;
-            case OUTLINE_GRADIENT:
-                prepare();
-                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRGB(), false), new Color(filledColor1.getRGB(), false), lineWidth);
-                restore();
-                break;
-            case BOX_OUTLINE_GRADIENT:
-                prepare();
-                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
-                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRGB(), false), new Color(filledColor1.getRGB(), false), lineWidth);
-                restore();
-                break;
-            case CUSTOM_OUTLINE:
-                prepare();
-                drawGradientBlockOutline(axisAlignedBB, filledColor2, filledColor1, lineWidth);
-                restore();
-                break;
-            case GRADIENT_CUSTOM_OUTLINE:
-                prepare();
-                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
-                drawGradientBlockOutline(axisAlignedBB, filledColor2, filledColor1, lineWidth);
-                restore();
-                break;
-            case GLOW:
-                prepare();
-                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
-                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRed(), filledColor2.getGreen(), filledColor2.getBlue(), 255), new Color(filledColor1.getRed(), filledColor1.getGreen(), filledColor1.getBlue(), 0), lineWidth);
-                restore();
-                break;
-            case REVERSE_GLOW:
-                prepare();
-                drawGradientFilledBox(axisAlignedBB, filledColor1, filledColor2);
-                drawGradientBlockOutline(axisAlignedBB, new Color(filledColor2.getRed(), filledColor2.getGreen(), filledColor2.getBlue(), 0), new Color(filledColor1.getRed(), filledColor1.getGreen(), filledColor1.getBlue(), 255), lineWidth);
-                restore();
-                break;
-        }*/
     }
 
     public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){

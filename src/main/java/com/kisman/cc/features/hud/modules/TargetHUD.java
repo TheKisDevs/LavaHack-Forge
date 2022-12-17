@@ -2,8 +2,7 @@ package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.hud.HudModule;
-import com.kisman.cc.features.module.combat.AutoRer;
-import com.kisman.cc.features.module.combat.KillAuraRewrite;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.AnimationUtils;
@@ -57,8 +56,7 @@ public class TargetHUD extends HudModule {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        EntityPlayer target = AutoRer.currentTarget;
-        if(target == null && KillAuraRewrite.Companion.getTarget() instanceof EntityPlayer) target = (EntityPlayer) KillAuraRewrite.Companion.getTarget();
+        EntityPlayer target = EnemyManager.INSTANCE.nearestEnemy();
 
         if(target == null) return;
 

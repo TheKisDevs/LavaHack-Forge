@@ -1,7 +1,11 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -25,6 +29,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+@Beta
+@Targetable
 public class CrystalFiller extends Module {
     private final Setting range = register(new Setting("Range", this, 4.8, 1, 6, false));
     private final Setting placeMode = register(new Setting("PlaceMode", this, PlaceMode.Always));
@@ -36,6 +42,7 @@ public class CrystalFiller extends Module {
     private final Setting maxSelfDMG = register(new Setting("MaxSelfDMG", this, 15, 0, 36, true));
     private final Setting render = register(new Setting("Render", this, true));
 
+    @ModuleInstance
     public static CrystalFiller instance;
 
     private final ArrayList<Hole> holes = new ArrayList<>();
@@ -44,16 +51,13 @@ public class CrystalFiller extends Module {
     private int delayTicks = 0;
 
     private BlockPos renderPos = null;
+    @Target
     public EntityPlayer target;
     public Hole targetHole;
 
     public CrystalFiller() {
         super("CrystalFiller", "HoleFiller but crystal", Category.COMBAT);
-
-        instance = this;
     }
-
-    public boolean isBeta() {return true;}
 
     public void onEnable() {
         super.onEnable();

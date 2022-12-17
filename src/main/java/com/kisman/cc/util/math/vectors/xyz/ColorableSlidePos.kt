@@ -10,5 +10,9 @@ import net.minecraft.util.math.BlockPos
 class ColorableSlidePos(
     val pos : BlockPos,
     val colour1 : Colour,
-    val colour2 : Colour
+    val colour2 : Colour,
+    val colour3 : Colour,
+    val colour4 : Colour,
+    val colour5 : Colour,
+    val colour6 : Colour
 ) : BlockPos(pos)

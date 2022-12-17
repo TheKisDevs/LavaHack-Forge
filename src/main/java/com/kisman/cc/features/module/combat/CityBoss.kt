@@ -6,6 +6,8 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.exploit.PacketMine
+import com.kisman.cc.features.subsystem.subsystems.Targetable
+import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
@@ -33,6 +35,7 @@ import java.util.function.Supplier
  */
 @Beta
 @WorkInProgress
+@Targetable
 class CityBoss : Module(
     "CityBoss",
     "Breaks surround of nearest player.",
@@ -83,6 +86,7 @@ class CityBoss : Module(
     private val currentPosses = ArrayList<BlockPos>()
     private var processingBlock : BlockPos? = null
 
+    @Target
     private var player : EntityPlayer? = null
 
     private val caseSettings = mapOf<Cases, Setting>(

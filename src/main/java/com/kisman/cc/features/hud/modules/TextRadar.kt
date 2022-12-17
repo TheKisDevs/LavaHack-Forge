@@ -2,6 +2,7 @@ package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.features.module.combat.AutoRer
+import com.kisman.cc.features.subsystem.subsystems.EnemyManager
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.manager.friend.FriendManager
@@ -27,7 +28,7 @@ class TextRadar : HudModule(
     private val limit = register(Setting("Limit", this, 10.0, 1.0, 100.0, true))
     private val range = register(Setting("Range", this, 10.0, 1.0, 100.0, true))
     private val friendHighlight = register(Setting("Friend Highlight", this, true))
-    private val autoRerTargetHighlight = register(Setting("Auto Rer Target Highlight", this, true))
+    private val targetHighlight = register(Setting("Target Highlight", this, true))
     private val threads = threads()
 
     private val toRender = mutableListOf<String>()
@@ -52,7 +53,7 @@ class TextRadar : HudModule(
                                 "${(player.health + player.absorptionAmount).toInt()} " + (if (FriendManager.instance.isFriend(
                                         player
                                     ) && friendHighlight.valBoolean
-                                ) TextFormatting.AQUA else if (AutoRer.currentTarget == player && autoRerTargetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
+                                ) TextFormatting.AQUA else if (EnemyManager.enemy(player) && targetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
                             )
                         }
                     }

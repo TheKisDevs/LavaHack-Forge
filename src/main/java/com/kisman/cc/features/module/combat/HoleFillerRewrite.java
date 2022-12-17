@@ -2,8 +2,11 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -32,7 +35,9 @@ import java.util.*;
  * @author Cubic
  */
 @PingBypassModule
+@Targetable
 public class HoleFillerRewrite extends Module {
+    @ModuleInstance
     public static HoleFillerRewrite instance;
     
     private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
@@ -64,13 +69,14 @@ public class HoleFillerRewrite extends Module {
 
     private final SlideRendererPattern renderer = new SlideRendererPattern();
 
+    @Target
     private Entity entity = null;
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
         super.setDisplayInfo(() -> entity == null ? "" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
 
-        instance = this;
+//        instance = this;
     }
 
     private List<BlockPos> holes = new ArrayList<>();

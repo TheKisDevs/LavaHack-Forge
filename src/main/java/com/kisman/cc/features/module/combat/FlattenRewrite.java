@@ -3,6 +3,8 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -40,6 +42,7 @@ import java.util.stream.Stream;
  * @author Cubic
  */
 @PingBypassModule
+@Targetable
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
@@ -90,6 +93,7 @@ public class FlattenRewrite extends Module {
     // handle custom delay in separate thread
     private final Thread placeThread;
 
+    @Target
     private Entity enemy = null;
 
     private double enemyY;

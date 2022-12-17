@@ -8,6 +8,8 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -65,6 +67,7 @@ import java.util.function.Supplier;
  * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
  */
 @PingBypassModule
+@Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.ManualTick));
@@ -214,6 +217,7 @@ public class AutoRer extends Module {
     private ScheduledExecutorService executor;
     private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
+    @Target
     public static EntityPlayer currentTarget;
     private Thread thread;
     public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0, null, null, null), renderPos;

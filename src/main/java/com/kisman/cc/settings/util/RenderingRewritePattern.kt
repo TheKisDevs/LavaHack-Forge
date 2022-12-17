@@ -5,12 +5,11 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
-import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.enums.RenderingRewriteModes
+import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import kotlin.math.roundToInt
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class RenderingRewritePattern(
@@ -31,7 +30,6 @@ open class RenderingRewritePattern(
     val rainbowSpeed = setupSetting(rainbowGroup.add(Setting("Rainbow Speed", module, 1.0, 0.25, 5.0, false).setVisible(rainbow).setTitle("Speed")))
     val rainbowSat = setupSetting(rainbowGroup.add(Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat")))
     val rainbowBright = setupSetting(rainbowGroup.add(Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright")))
-//    val rainbowGlow = setupSetting(rainbowGroup.add(Setting("Glow", module, "None", listOf("None", "Glow", "ReverseGlow")).setVisible(rainbow).setTitle("Glow")))
 
     //Colors
     val colorGroup = setupGroup(SettingGroup(Setting("Colors", module)))
@@ -72,7 +70,6 @@ open class RenderingRewritePattern(
         module.register(rainbowSpeed)
         module.register(rainbowSat)
         module.register(rainbowBright)
-//        module.register(rainbowGlow)
         module.register(colorGroup)
         module.register(filledColorGroup)
         module.register(filledColor1)
@@ -122,29 +119,11 @@ open class RenderingRewritePattern(
         }
 
         var a = aabb
+
         if(abyss.valBoolean){
             a = AxisAlignedBB(a.minX, a.minY + 1.0, a.minZ, a.maxX, a.maxY + 0.075, a.maxZ)
         }
-        /*if(!rainbowGlow.valString.equals("None")){
-            val cAabb = Rendering.correct(a)
-            var colour1 = getColor1()
-            colour1 = colour1.withAlpha((colour1.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0))
-            var colour2 = getColor2()
-            colour2 = colour2.withAlpha((colour2.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0))
-            var outAlpha1 = 255
-            var outAlpha2 = 255
-            val reverse = rainbowGlow.valString.equals("ReverseGlow")
-            if(reverse){
-                outAlpha1 = 0
-            } else {
-                outAlpha2 = 0
-            }
-            outAlpha1 = (outAlpha1 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
-            outAlpha2 = (outAlpha2 - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)
-            draw0(cAabb, colour1, colour2, Rendering.Mode.BOX_GRADIENT)
-            draw0(cAabb, colour1.withAlpha(outAlpha1), colour2.withAlpha(outAlpha2), Rendering.Mode.CUSTOM_OUTLINE)
-            return
-        }*/
+
         draw0(
             Rendering.correct(a),
             getFilledColor1(),
@@ -153,15 +132,17 @@ open class RenderingRewritePattern(
             getOutlineColor2(),
             getWireColor1(),
             getWireColor2(),
-//            filledColor1.withAlpha((filledColor1.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
-//            filledColor2.withAlpha((filledColor2.alpha - ((alphaSubtract * 255.0).roundToInt())).coerceAtLeast(0)),
             mode
         )
     }
 
     private fun modifyBB(
         aabb : AxisAlignedBB
-    ) : AxisAlignedBB = aabb.also { if(scaleState.valBoolean) it.grow(scaleOffset.valDouble) }
+    ) : AxisAlignedBB = if(scaleState.valBoolean) {
+        aabb.grow(scaleOffset.valDouble)
+    } else {
+        aabb
+    }
 
     private fun draw0(
         aabb : AxisAlignedBB,
@@ -185,7 +166,7 @@ open class RenderingRewritePattern(
         mode : Rendering.Mode?
     ) {
         Rendering.setup(depth.valBoolean)
-        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, color1, color2, color1, color2, color1, color2, mode)
+        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, color1, color2, mode)
         Rendering.release(depth.valBoolean)
     }
 
@@ -212,6 +193,50 @@ open class RenderingRewritePattern(
             aabb,
             color1,
             color2,
+            (mode.valEnum as RenderingRewriteModes).mode
+        )
+    }
+
+    open fun draw(
+        pos : BlockPos,
+        filledColor1 : Colour,
+        filledColor2 : Colour,
+        outlineColor1 : Colour,
+        outlineColor2 : Colour,
+        wireColor1 : Colour,
+        wireColor2 : Colour,
+        alphaCoeff : Double
+    ) {
+        draw(
+            Minecraft.getMinecraft().world.getBlockState(pos).getSelectedBoundingBox(
+                Minecraft.getMinecraft().world,
+                pos
+            ),
+            filledColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            filledColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            outlineColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            outlineColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            wireColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            wireColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            (mode.valEnum as RenderingRewriteModes).mode
+        )
+    }
+
+    open fun draw(
+        pos : BlockPos,
+        alphaCoeff : Double
+    ) {
+        draw(
+            Minecraft.getMinecraft().world.getBlockState(pos).getSelectedBoundingBox(
+                Minecraft.getMinecraft().world,
+                pos
+            ),
+            getFilledColor1().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            getFilledColor2().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            getOutlineColor1().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            getOutlineColor2().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            getWireColor1().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            getWireColor2().withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
             (mode.valEnum as RenderingRewriteModes).mode
         )
     }
@@ -253,81 +278,41 @@ open class RenderingRewritePattern(
         )
     }
 
-    private fun getFilledColor1() : Colour {
-//        val glow = rainbowGlow.valString
-        /*var alpha = filledColor1.colour.a
-        if(glow.equals("ReverseGlow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, filledColor1.colour.a, rainbowSpeed.valDouble)
-        } else {
-            filledColor1.colour
-        }
+    fun getFilledColor1() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, filledColor1.colour.a, rainbowSpeed.valDouble)
+    } else {
+        filledColor1.colour
     }
 
-    private fun getFilledColor2() : Colour {
-        /*val glow = rainbowGlow.valString
-        var alpha = filledColor2.colour.a
-        if(glow.equals("Glow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, filledColor2.colour.a, rainbowSpeed.valDouble)
-        } else {
-            filledColor2.colour
-        }
+
+    fun getFilledColor2() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, filledColor2.colour.a, rainbowSpeed.valDouble)
+    } else {
+        filledColor2.colour
     }
 
-    private fun getOutlineColor1() : Colour {
-//        val glow = rainbowGlow.valString
-        /*var alpha = filledColor1.colour.a
-        if(glow.equals("ReverseGlow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, outlineColor1.colour.a, rainbowSpeed.valDouble)
-        } else {
-            outlineColor1.colour
-        }
+
+    fun getOutlineColor1() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, outlineColor1.colour.a, rainbowSpeed.valDouble)
+    } else {
+        outlineColor1.colour
     }
 
-    private fun getOutlineColor2() : Colour {
-        /*val glow = rainbowGlow.valString
-        var alpha = filledColor2.colour.a
-        if(glow.equals("Glow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, outlineColor2.colour.a, rainbowSpeed.valDouble)
-        } else {
-            outlineColor2.colour
-        }
+    fun getOutlineColor2() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, outlineColor2.colour.a, rainbowSpeed.valDouble)
+    } else {
+        outlineColor2.colour
     }
 
-    private fun getWireColor1() : Colour {
-//        val glow = rainbowGlow.valString
-        /*var alpha = filledColor1.colour.a
-        if(glow.equals("ReverseGlow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, wireColor1.colour.a, rainbowSpeed.valDouble)
-        } else {
-            wireColor1.colour
-        }
+    fun getWireColor1() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(0, rainbowSat.valInt, rainbowBright.valInt, wireColor1.colour.a, rainbowSpeed.valDouble)
+    } else {
+        wireColor1.colour
     }
 
-    private fun getWireColor2() : Colour {
-        /*val glow = rainbowGlow.valString
-        var alpha = filledColor2.colour.a
-        if(glow.equals("Glow")){
-            alpha = 0
-        }*/
-        return if(rainbow.valBoolean) {
-            RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, wireColor2.colour.a, rainbowSpeed.valDouble)
-        } else {
-            wireColor2.colour
-        }
+    fun getWireColor2() : Colour = if(rainbow.valBoolean) {
+        RainbowUtil.rainbow2(50, rainbowSat.valInt, rainbowBright.valInt, wireColor2.colour.a, rainbowSpeed.valDouble)
+    } else {
+        wireColor2.colour
     }
 }

@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
@@ -21,14 +22,13 @@ import java.util.Arrays;
 public class AntiBot extends Module {
     public Setting mode = register(new Setting("Mode", this, "WellMore", Arrays.asList("Matrix 6.3", "Ping", "Vanish", "Zamorozka")));
 
+    @ModuleInstance
     public static AntiBot instance;
     private boolean clicked = false;
 
 	public AntiBot() {
 		super("AntiBot", "Prevents you from targetting bots", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
-
-        instance = this;
 	}
 
 	public void update() {

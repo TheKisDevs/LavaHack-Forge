@@ -2,6 +2,7 @@ package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -10,6 +11,7 @@ import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.settings.SettingLoader;
 import me.zero.alpine.listener.Listenable;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +35,7 @@ public class Module implements IBindable, Listenable {
 	public boolean hold = false;
 	public boolean block = false;
 	private Supplier<String> displayInfoSupplier = null;
+	public Supplier<EntityPlayer> enemySupplier = null;
 
 	public boolean sendToggleMessages = true;
 
@@ -60,8 +63,32 @@ public class Module implements IBindable, Listenable {
 				} catch (IllegalAccessException ignored) {
 					Kisman.LOGGER.error("Cant create instance of " + name + " module! it may will give crash in the future");
 				}
-			}
+			} else if(field.isAnnotationPresent(Target.class)) processTargetField(field);
 		}
+
+		if(enemySupplier == null) for(Field field : getClass().getFields()) if(field.isAnnotationPresent(Target.class)) if(processTargetField(field)) break;
+		if(enemySupplier == null) enemySupplier = () -> null;
+	}
+
+	private boolean processTargetField(Field field) {
+		try {
+			field.get(this);
+		} catch(IllegalAccessException ignored) {
+			Kisman.LOGGER.error("Cant create enemy supplier of " + name + " module! The module will be ignored in emeny manager!");
+			return true;
+		}
+
+		enemySupplier = () -> {
+			try {
+				return (EntityPlayer) field.get(this);
+			} catch (IllegalAccessException ignored) {
+				//
+			}
+
+			return null;
+		};
+
+		return false;
 	}
 
 	private void printToggleMessage() {

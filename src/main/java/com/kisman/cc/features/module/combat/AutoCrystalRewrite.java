@@ -4,6 +4,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
@@ -48,6 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Cubic
  * @since 5.11.2022
  */
+@Targetable
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
@@ -108,26 +112,27 @@ public class AutoCrystalRewrite extends Module {
 
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
+    @ModuleInstance
     private static AutoCrystalRewrite INSTANCE;
 
     public AutoCrystalRewrite(){
         super("Kys+", Category.COMBAT, true);
-        INSTANCE = this;
     }
 
     private Thread thread = null;
 
-    private TimerUtils placeTimer = new TimerUtils();
+    private final TimerUtils placeTimer = new TimerUtils();
 
-    private TimerUtils breakTimer = new TimerUtils();
+    private final TimerUtils breakTimer = new TimerUtils();
 
     private final TimerUtils popFocusTimer = new TimerUtils();
 
+    @Target
     private EntityPlayer target = null;
 
-    private List<PositionInfo> placedList = new Vector<>();
+    private final List<PositionInfo> placedList = new Vector<>();
 
-    private Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
+    private final Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
 
     private BlockPos lastPlacePos = null;
 

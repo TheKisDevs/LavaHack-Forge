@@ -1,6 +1,8 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -19,6 +21,7 @@ import net.minecraft.util.math.*;
 
 import java.util.*;
 
+@Targetable
 public class AutoTrap extends Module {
     public static AutoTrap instance;
     protected final Setting targetRange = register(new Setting("Target Range", this, 10, 1, 20, true));
@@ -43,6 +46,7 @@ public class AutoTrap extends Module {
     protected Map<BlockPos, Integer> retries = new HashMap<>();
     protected int tries;
     protected TimerUtils retryTimer = new TimerUtils();
+    @Target
     public EntityPlayer target;
     protected boolean didPlace = false;
     protected boolean isSneaking;
