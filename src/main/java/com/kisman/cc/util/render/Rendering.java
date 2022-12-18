@@ -21,6 +21,8 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Is not skidded class
  * _kisman_ wanted this  - Cubic
+ *
+ * ONG ONG ONG kisman UNSKIDDED IT FR????? - Cubic
  */
 public class Rendering {
 
