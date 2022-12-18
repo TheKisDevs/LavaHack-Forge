@@ -1,6 +1,7 @@
 package com.kisman.cc;
 
 import com.kisman.cc.event.EventProcessor;
+import com.kisman.cc.event.KismanEventBus;
 import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
@@ -90,7 +91,7 @@ public class Kisman {
     public static final boolean MODULE_DEBUG = false;
 
     public static final Kisman instance = new Kisman();
-    public static final EventManager EVENT_BUS = new EventManager();
+    public static final EventManager EVENT_BUS = new KismanEventBus();
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static final HashMap<GuiScreen, Float> map = new HashMap<>();
 

@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -114,7 +115,7 @@ public class  NameTags extends Module {
         }
     }
 
-    public void renderNametag(final EntityPlayer player, final double x, final double y, final double z) {
+    public void renderNametag(EntityPlayer player, double x, double y, double z) {
         Rendering.setup();
         TextFormatting clr;
         TextFormatting clrf = TextFormatting.WHITE;
@@ -122,6 +123,8 @@ public class  NameTags extends Module {
         if (FriendManager.instance.isFriend(player.getName())) {
             clrf = TextFormatting.AQUA;
             if (!atheist.getValBoolean()) cross = "\u271d ";
+        } else if(EnemyManager.INSTANCE.enemy(player)) {
+            clrf = TextFormatting.RED;
         }
         int pingy = -1;
         try {pingy = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ignored) {}
@@ -192,7 +195,7 @@ public class  NameTags extends Module {
         Rendering.release();
     }
 
-    public float getNametagSize(final EntityLivingBase player) {
+    public float getNametagSize(EntityLivingBase player) {
         ScaledResolution scaledRes = new ScaledResolution(mc);
         double twoDscale = scaledRes.getScaleFactor() / Math.pow(scaledRes.getScaleFactor(), 2.0);
         double scale = this.scale.getValDouble();

@@ -220,7 +220,7 @@ public class Frame {
     }
 
     public void veryRenderPost(int mouseX, int mouseY) {
-        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
+        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp.visible() && comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
     }
 
     private int[] doRefreshIteration(ArrayList<Component> components, int[] data) {

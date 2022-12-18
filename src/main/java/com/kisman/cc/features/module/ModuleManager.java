@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -10,6 +11,7 @@ import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
+import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -299,6 +301,11 @@ public class ModuleManager {
 	
 	public Module getModule(String name) {
 		for (Module m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
+		return null;
+	}
+
+	public Module getModule(String name, boolean scripts, boolean plugins) {
+		for (Module m : this.modules) if ((plugins || !(m instanceof ModulePlugin)) && (scripts || !(m instanceof ModuleScript)) && m.getName().equalsIgnoreCase(name)) return m;
 		return null;
 	}
 	

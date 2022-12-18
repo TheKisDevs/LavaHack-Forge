@@ -126,12 +126,12 @@ open class RenderingRewritePattern(
 
         draw0(
             Rendering.correct(a),
-            getFilledColor1(),
-            getFilledColor2(),
-            getOutlineColor1(),
-            getOutlineColor2(),
-            getWireColor1(),
-            getWireColor2(),
+            filledColor1,
+            filledColor2,
+            outlineColor1,
+            outlineColor2,
+            wireColor1,
+            wireColor2,
             mode
         )
     }
@@ -212,12 +212,12 @@ open class RenderingRewritePattern(
                 Minecraft.getMinecraft().world,
                 pos
             ),
-            filledColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
-            filledColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
-            outlineColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
-            outlineColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
-            wireColor1.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
-            wireColor2.withAlpha((alphaCoeff * 255).toInt().coerceIn(0..255)),
+            filledColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            filledColor2.withAlpha((alphaCoeff * 255.0).toInt()),
+            outlineColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            outlineColor2.withAlpha((alphaCoeff * 255.0).toInt()),
+            wireColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            wireColor2.withAlpha((alphaCoeff * 255.0).toInt()),
             (mode.valEnum as RenderingRewriteModes).mode
         )
     }
@@ -256,7 +256,9 @@ open class RenderingRewritePattern(
         )
     }
 
-    open fun draw(aabb : AxisAlignedBB) {
+    open fun draw(
+        aabb : AxisAlignedBB
+    ) {
         draw(
             aabb,
             getFilledColor1(),
@@ -269,7 +271,9 @@ open class RenderingRewritePattern(
         )
     }
 
-    open fun draw(pos : BlockPos) {
+    open fun draw(
+        pos : BlockPos
+    ) {
         draw(
             Minecraft.getMinecraft().world.getBlockState(pos).getSelectedBoundingBox(
                 Minecraft.getMinecraft().world,

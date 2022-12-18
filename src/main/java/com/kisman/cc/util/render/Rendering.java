@@ -208,8 +208,6 @@ public class Rendering {
         Color wireColor1 = c4.getColor();
         Color wireColor2 = c5.getColor();
 
-        System.out.println(c.a + " " + filledColor1.getAlpha());
-        
         mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, lineWidth);
     }
 

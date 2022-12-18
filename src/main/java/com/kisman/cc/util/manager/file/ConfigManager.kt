@@ -250,7 +250,7 @@ class ConfigManager(
 
                 when(split2?.get(0)) {
                     config.modulesPrefix -> {
-                        val module = Kisman.instance.moduleManager.getModule(split2[1])
+                        val module = Kisman.instance.moduleManager.getModule(split2[1], false, false)
                         if(module != null) {
                             when(split2[2]) {
                                 "toggle" -> {
