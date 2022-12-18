@@ -13,12 +13,15 @@ import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kisman.cc.features.module.Module.mc;
 
 public class ModuleManager {
 	public List<Module> modules = new ArrayList<>();
@@ -323,7 +326,15 @@ public class ModuleManager {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
-		for(Module m : modules) if(m.isToggled()) m.update();
+		for(Module m : modules) if(m.isToggled()) {
+			try {
+				m.update();
+			} catch(Exception e) {
+				if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " from update method. Disabling!", m);
+				Kisman.LOGGER.error(e);
+				m.setToggled(false);
+			}
+		}
 	}
 
 	public void key(char typedChar, int key, Module mod) {

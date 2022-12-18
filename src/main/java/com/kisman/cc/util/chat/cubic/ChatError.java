@@ -1,6 +1,7 @@
 package com.kisman.cc.util.chat.cubic;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.module.Module;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -12,6 +13,10 @@ class ChatError extends AbstractChatMessage {
 
     private TextComponentTranslation fModule(){
         return new TextComponentTranslation(ChatFormatting.GRAY + "[" + ChatFormatting.RED + formatModule() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET);
+    }
+
+    private TextComponentTranslation fModule(Module module){
+        return new TextComponentTranslation(ChatFormatting.GRAY + "[" + ChatFormatting.RED + module.getName() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET);
     }
 
     private TextComponentTranslation fClass(){
@@ -26,6 +31,16 @@ class ChatError extends AbstractChatMessage {
     @Override
     public void printClientMessage(String message) {
         printClientMessage(new TextComponentTranslation(message));
+    }
+
+    @Override
+    public void printClientModuleMessage(String message, Module module) {
+        printClientModuleMessage(new TextComponentTranslation(message), module);
+    }
+
+    @Override
+    public void printClientModuleMessage(ITextComponent textComponent, Module module) {
+        printMessage(new TextComponentTranslation(getClientPrefix()).appendSibling(fModule(module)).appendSibling(textComponent));
     }
 
     @Override

@@ -143,18 +143,39 @@ public class Module implements IBindable, Listenable {
 
 	public final void enable() {
 		if(toggled) return;
+
 		toggled = true;
-		onEnable();
+
+		boolean flag = false;
+
+		try {
+			onEnable();
+		} catch(Exception e) {
+			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in enable method. Disabling!");
+			Kisman.LOGGER.error(e);
+			flag = true;
+		}
+
 		if(subscribes) MinecraftForge.EVENT_BUS.register(this);
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
 		if(subscribes == null) return;
 		SubscribeMode.register(subscribes, this);
+
+		if(flag) setToggled(false);
 	}
 
 	public final void disable() {
 		if(!toggled) return;
+
 		toggled = false;
-		onDisable();
+
+		try {
+			onDisable();
+		} catch(Exception e) {
+			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in disable method.");
+			Kisman.LOGGER.error(e);
+		}
+
 		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
 		if(subscribes == null) return;

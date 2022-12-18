@@ -75,6 +75,10 @@ public abstract class AbstractChatMessage {
 
     public abstract void printClientMessage(String message);
 
+    public abstract void printClientModuleMessage(String message, Module module);
+
+
+    public abstract void printClientModuleMessage(ITextComponent textComponent, Module module);
 
     public abstract void printClientModuleMessage(ITextComponent textComponent);
 
