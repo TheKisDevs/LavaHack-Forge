@@ -30,6 +30,7 @@ import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketBlockChange;
+import net.minecraft.network.play.server.SPacketDestroyEntities;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -59,8 +60,8 @@ public class SurroundRewrite extends Module {
     private final Setting safeDynamic = register(new Setting("Safe Dynamic", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting extension = register(new Setting("Extension", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
     private final Setting allEntities = register(new Setting("AllEntities", this, false).setVisible(() -> extension.getValBoolean() && extension.isVisible()));
-    private final Setting blocksPerTickLimit = register(new Setting("BlockPerTicksLimit", this, false));
-    private final Setting blocksPerTick = register(new Setting("BlockPerTick", this, 4, 0, 24, true));
+    //private final Setting blocksPerTickLimit = register(new Setting("BlockPerTicksLimit", this, false));
+    //private final Setting blocksPerTick = register(new Setting("BlockPerTick", this, 4, 0, 24, true));
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final Setting smartBlock = register(new Setting("Smart Block", this, false));
     private final Setting safeEchest = /*register*/(new Setting("Safe E Chest", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
@@ -72,6 +73,7 @@ public class SurroundRewrite extends Module {
     private final Setting fightCA = register(new Setting("FightCA", this, false));
     private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
     private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
+    private final Setting detectEntityDestruction = register(new Setting("OnEntityDestruction", this, false));
     private final Setting antiCity = register(new Setting("AntiCity", this, false));
     private final Setting manipulateWorld = register(new Setting("ManipulateWorld", this, false));
     private final Setting postReceive = register(new Setting("PostReceive", this, false));
@@ -140,6 +142,7 @@ public class SurroundRewrite extends Module {
         Kisman.EVENT_BUS.subscribe(eventEntitySpawnListener);
         Kisman.EVENT_BUS.subscribe(packetListener);
         Kisman.EVENT_BUS.subscribe(postPacketListener);
+        Kisman.EVENT_BUS.subscribe(entityDestroyListener);
         timer.reset();
         if(mc.player == null || mc.world == null) return;
         lastY = mc.player.posY;
@@ -226,6 +229,7 @@ public class SurroundRewrite extends Module {
         Kisman.EVENT_BUS.unsubscribe(eventEntitySpawnListener);
         Kisman.EVENT_BUS.unsubscribe(packetListener);
         Kisman.EVENT_BUS.unsubscribe(postPacketListener);
+        Kisman.EVENT_BUS.unsubscribe(entityDestroyListener);
         lastY = -1;
         getBlockStateFunction = blockPos -> mc.world.getBlockState(blockPos);
         timer.reset();
@@ -426,6 +430,20 @@ public class SurroundRewrite extends Module {
         if(!postReceive.getValBoolean())
             return;
         onSPacketBlockChange(new PacketEvent.Receive(event.getPacket()));
+    });
+
+    private final Listener<PacketEvent.PostReceive> entityDestroyListener = new Listener<>(event -> {
+        if(!detectEntityDestruction.getValBoolean())
+            return;
+        if(!(event.getPacket() instanceof SPacketDestroyEntities))
+            return;
+        SPacketDestroyEntities packet = (SPacketDestroyEntities) event.getPacket();
+        for(int entityID : packet.getEntityIDs())
+            mc.world.removeEntityFromWorld(entityID);
+        if(syncronized.getValBoolean())
+            doThreaddedSynchronizedSurround();
+        else
+            doThreaddedSurround();
     });
 
     private void onSPacketBlockChange(PacketEvent.Receive event){
