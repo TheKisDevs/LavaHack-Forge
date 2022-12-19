@@ -46,15 +46,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
     }
     fun enemy(
         player : EntityPlayer
-    ) : Boolean {
-        for(enemy in enemies()) {
-            if(enemy == player) {
-                return true
-            }
-        }
-
-        return false
-    }
+    ) : Boolean = enemies().contains(player)
 }
 
 annotation class Targetable()

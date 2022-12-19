@@ -5,6 +5,7 @@ import me.zero.alpine.event.type.Cancellable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class Event extends Cancellable {
@@ -13,18 +14,31 @@ public class Event extends Cancellable {
     public Event mirrorEvent = null;
 
     private Era era;
+
+    private static boolean hasMirrorEvent = true;
+    private static Class<?>[] classes = new Class<?>[] {};
+    private static Constructor<?> mirrorConstructor = null;
+
     public Event(Object... values) {
-        try {
-            Class<?> clazz = Class.forName("the.kis.devs.api.event.events." + getClass().getSimpleName());
+        if(mirrorConstructor == null && hasMirrorEvent) {
+            if(values.length != 0) {
+                classes = new Class<?>[values.length];
 
-            Class<?>[] classes = new Class<?>[values.length];
-
-            for(int i = 0; i < values.length; i++) {
-                classes[i] = values[i].getClass();
+                for (int i = 0; i < values.length; i++) classes[i] = values[i].getClass();
             }
 
-            mirrorEvent = (Event) clazz.getConstructor(classes).newInstance(values);
-        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException ignored) {}
+            try {
+                mirrorConstructor = Class.forName("the.kis.devs.api.event.events." + Event.class.getSimpleName()).getConstructor(classes);
+            } catch (NoSuchMethodException | ClassNotFoundException ignored) { }
+
+            hasMirrorEvent = mirrorConstructor != null;
+        }
+
+        if(mirrorConstructor != null) {
+            try {
+                mirrorEvent = (Event) mirrorConstructor.newInstance(values);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignored) { }
+        }
     }
 
     public Event(Era era, Object... values) {
