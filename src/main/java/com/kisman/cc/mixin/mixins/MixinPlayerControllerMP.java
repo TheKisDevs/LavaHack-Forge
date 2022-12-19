@@ -3,16 +3,17 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.Event;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-
 import net.minecraft.world.GameType;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -20,6 +21,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinPlayerControllerMP {
     @Shadow public GameType currentGameType;
     @Shadow @Final public Minecraft mc;
+
+    @Shadow public int currentPlayerItem;
+
+    @Shadow @Final public NetHandlerPlayClient connection;
+
+    /**
+     * @author _kisman_
+     * @reason no way ong
+     */
+    @Overwrite
+    public void syncCurrentPlayItem() {
+        try {
+            int i = mc.player.inventory.currentItem;
+            if (i != currentPlayerItem) {
+                currentPlayerItem = i;
+                connection.sendPacket(new CPacketHeldItemChange(currentPlayerItem));
+            }
+        } catch(Exception ignored) { }
+    }
 
     @Inject(method = "getBlockReachDistance", at = @At("HEAD"), cancellable = true)
     public void getBlockReachDistance(CallbackInfoReturnable<Float> callback) {
@@ -32,7 +52,7 @@ public class MixinPlayerControllerMP {
     @Inject(method = "clickBlock", at = @At("HEAD"), cancellable = true)
     private void clickBlock(BlockPos posBlock, EnumFacing directionFacing, CallbackInfoReturnable<Boolean> cir) {
         EventDamageBlock event = new EventDamageBlock(posBlock, directionFacing);
-        Kisman.EVENT_BUS.post(event);
+        Kisman.EVENT_BUS.post( event);
         if (event.isCancelled()) {
             cir.setReturnValue(false);
             cir.cancel();
