@@ -147,10 +147,12 @@ public class ModuleManager {
 		add(new DamageESP());
 		add(new EnchantGlint());
 		add(new EntityESPRewrite());
+		add(new FovModifier());
 //		add(new HoleESP());
 //		add(new HoleESPRewrite());
 		add(new HoleESPRewrite2());
 		add(new HotbarModifier());
+		add(new InfiniteRender());
 		add(new ItemESPRewrite());
 		add(new JumpCircle());
 //		add(new LogoutSpots());
