@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@Deprecated
 public class FovModifier extends Module {
 
     private final Setting fov = register(new Setting("SettingFOV", this, 1, 0, 10, false));
