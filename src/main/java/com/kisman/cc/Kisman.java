@@ -77,6 +77,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+// you can remove this comment
 public class Kisman {
     public static final String forReal = "специальная военная операция российской федерации на украине по защите территорий донбасса от украиских националистических формирований и по денацификации украины";
     public static final String NAME = "LavaHack";
