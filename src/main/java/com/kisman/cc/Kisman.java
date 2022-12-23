@@ -31,6 +31,7 @@ import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.hudeditor.HalqHudGui;
+import com.kisman.cc.gui.loadingscreen.progressbar.ProgressBarController;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.other.music.MusicGui;
 import com.kisman.cc.gui.other.search.SearchGui;
@@ -155,6 +156,8 @@ public class Kisman {
     //Phobos Plugins
     public final PluginHandler pluginHandler = new PluginHandler();
 
+    public ProgressBarController progressBar;
+
     public boolean haveLoader = false;
 
     private Kisman() {}
@@ -180,18 +183,13 @@ public class Kisman {
 
         ConnectionManager.INSTANCE.connect();
 
+        progressBar = new ProgressBarController("LavaHack");
+
+
         aiImpr = new MainAiImpr();
         eventProcessor = new EventProcessor();
         managers = new Managers();
         managers.init();
-        aiImpr.init();
-
-        Display.setTitle(NAME + " | " + VERSION);
-        MinecraftForge.EVENT_BUS.register(this);
-        mc = Minecraft.getMinecraft();
-
-        vectorUtils = new VectorUtils();
-        pluginManager = new PluginManager();
 
         friendManager = new FriendManager();
         settingsManager = new SettingsManager();
@@ -200,6 +198,23 @@ public class Kisman {
         PingBypassModuleManager.INSTANCE.init();
 //        noComModuleManager = new NoComModuleManager();
         hudModuleManager = new HudModuleManager();
+
+        progressBar.init();
+
+        aiImpr.init();
+        eventProcessor.init();
+        moduleManager.init();
+        hudModuleManager.init();
+
+        progressBar.uninit();
+
+        Display.setTitle(NAME + " | " + VERSION);
+        MinecraftForge.EVENT_BUS.register(this);
+        mc = Minecraft.getMinecraft();
+
+        vectorUtils = new VectorUtils();
+        pluginManager = new PluginManager();
+
         clickGuiNew = new ClickGuiNew();
         consoleGui = new ConsoleGui();
         commandManager = new CommandManager();

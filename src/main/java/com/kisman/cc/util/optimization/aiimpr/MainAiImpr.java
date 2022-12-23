@@ -1,5 +1,7 @@
 package com.kisman.cc.util.optimization.aiimpr;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.util.optimization.aiimpr.math.FastTrig;
 import com.kisman.cc.util.optimization.aiimpr.math.FixedEntityLookHelper;
 import net.minecraft.entity.Entity;
@@ -18,8 +20,13 @@ public class MainAiImpr {
     public static boolean REMOVE_LOOK_IDLE = false;
     public static boolean REPLACE_LOOK_HELPER = true;
 
+    public MainAiImpr() {
+        Kisman.instance.progressBar.steps++;
+    }
+
     public void init() {
         FastTrig.init();
+        Kisman.EVENT_BUS.post(new EventProgressBar("AI Improved"));
     }
 
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {

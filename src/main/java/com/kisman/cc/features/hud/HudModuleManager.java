@@ -1,7 +1,7 @@
 package com.kisman.cc.features.hud;
 
-import com.kisman.cc.features.hud.modules.Speed;
-
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.features.hud.modules.*;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -12,10 +12,12 @@ public class HudModuleManager {
 	
 	public HudModuleManager() {
 		MinecraftForge.EVENT_BUS.register(this);
-		init();
+		Kisman.instance.progressBar.steps++;
 	}
 
 	public void init() {
+		Kisman.EVENT_BUS.post(new EventProgressBar("HUD Module Manager"));
+
 		modules.add(new TwoBeeTwoTeeQueue());
 		modules.add(new ArmorHUD());
 		modules.add(ArrayListModule.instance);

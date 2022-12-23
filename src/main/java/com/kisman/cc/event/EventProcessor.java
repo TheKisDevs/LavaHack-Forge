@@ -3,6 +3,7 @@ package com.kisman.cc.event;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventResolutionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
+import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.event.events.lua.EventClientChat;
 import com.kisman.cc.event.events.lua.EventClientTickUpdate;
 import com.kisman.cc.event.events.lua.EventRender2D;
@@ -44,8 +45,13 @@ public class EventProcessor {
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
+        Kisman.instance.progressBar.steps++;
 
         ongoing = new AtomicBoolean(false);
+    }
+
+    public void init() {
+        Kisman.EVENT_BUS.post(new EventProgressBar("Event Processor"));
     }
 
     @SubscribeEvent

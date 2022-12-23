@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
@@ -28,7 +29,12 @@ public class ModuleManager {
 	public List<Module> targetableModules = new ArrayList<>();
 	
 	public ModuleManager() {
+		Kisman.instance.progressBar.steps++;
+	}
+
+	public void init() {
 		MinecraftForge.EVENT_BUS.register(this);
+		Kisman.EVENT_BUS.post(new EventProgressBar("Module Manager"));
 
 //		Loader<Module> loader = new Loader<>();
 //		loader.exclude("com.kisman.cc.features.module.Module");

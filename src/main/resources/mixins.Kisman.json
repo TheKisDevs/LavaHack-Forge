@@ -58,6 +58,7 @@
     "accessor.AccessorEntityPlayer",
     "accessor.AccessorEnumConnectionState",
     "accessor.AccessorNetHandlerPlayClient",
+    "accessor.AccessorProgressBar",
     "accessor.AccessorRenderEnderCrystal",
     "accessor.AccessorShaderGroup",
     "accessor.ISession",
