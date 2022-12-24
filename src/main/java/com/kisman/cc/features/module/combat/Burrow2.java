@@ -34,6 +34,7 @@ public class Burrow2 extends Module {
     private final Setting reconfigCornerClip = register(new Setting("Reconfig Corner Clip", this, false).setVisible(() -> mode.getValEnum() != BurrowModes.Normal));
     private final Setting clipsCount = register(new Setting("Clips Count", this, 1, 1, 5, true).setVisible(() -> mode.getValEnum() != BurrowModes.Normal));
     private final SettingEnum<DiagonalDirections> direction = new SettingEnum<>("Direction", this, DiagonalDirections.XpZp).setVisible(() -> mode.getValEnum() != BurrowModes.Normal).register();
+    private final Setting placeHelpingBlocks = register(new Setting("Place Helping Blocks", this, false).setVisible(() -> mode.getValEnum() != BurrowModes.Normal));
     private final Setting placeDelay = register(new Setting("Place Delay", this, 100, 0, 1000, NumberType.TIME));
     private final Setting offset = register(new Setting("Offset", this, 7, -20, 20, false));
     private final Setting smartOffset = register(new Setting("SmartOffset", this, false));
@@ -239,7 +240,7 @@ public class Burrow2 extends Module {
             mc.player.motionZ = 0;
             mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, !smartOnGround.getValBoolean() || onGround));
 
-            stage = BurrowStages.Placing;
+            stage = placeHelpingBlocks.getValBoolean() ? BurrowStages.PreparePlacing : BurrowStages.Clipping;
         } else if(stage == BurrowStages.PreparePlacing) {
             BlockPos pos1 = oldPos.offset(direction.getValEnum().getDirection1());
             BlockPos pos2 = oldPos.offset(direction.getValEnum().getDirection2());

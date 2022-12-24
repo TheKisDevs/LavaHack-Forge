@@ -1,7 +1,7 @@
 package com.kisman.cc.util.enums
 
-import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.interfaces.Validable
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
@@ -11,24 +11,18 @@ import net.minecraft.util.math.BlockPos
  * @since 9:43 of 01.11.2022
  */
 enum class BlockESPBlocks(
-    val handler : IBlock
+    val handler : Validable<BlockPos>
 ) {
-    Web(object : IBlock {
-        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block == Blocks.WEB
+    Web(object : Validable<BlockPos> {
+        override fun valid(t : BlockPos) : Boolean = mc.world.getBlockState(t).block == Blocks.WEB
     }),
-    NetherPortal(object : IBlock {
-        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block == Blocks.PORTAL
+    NetherPortal(object : Validable<BlockPos> {
+        override fun valid(t : BlockPos) : Boolean = mc.world.getBlockState(t).block == Blocks.PORTAL
     }),
-    EndPortal(object : IBlock {
-        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block == Blocks.END_PORTAL
+    EndPortal(object : Validable<BlockPos> {
+        override fun valid(t : BlockPos) : Boolean = mc.world.getBlockState(t).block == Blocks.END_PORTAL
     }),
-    Burrow(object : IBlock {
-        override fun valid(pos : BlockPos) : Boolean = mc.world.getBlockState(pos).block != Blocks.AIR && mc.world.getEntitiesWithinAABB(EntityPlayer::class.java, mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)).isNotEmpty()
+    Burrow(object : Validable<BlockPos> {
+        override fun valid(t : BlockPos) : Boolean = mc.world.getBlockState(t).block != Blocks.AIR && mc.world.getEntitiesWithinAABB(EntityPlayer::class.java, mc.world.getBlockState(t).getSelectedBoundingBox(mc.world, t)).isNotEmpty()
     })
-}
-
-interface IBlock {
-    fun valid(
-        pos : BlockPos
-    ) : Boolean
 }
