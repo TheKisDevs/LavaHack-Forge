@@ -1,6 +1,7 @@
 package com.kisman.cc.util.enums
 
 import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.passive.EntityAnimal
@@ -16,7 +17,10 @@ enum class CharmsRewriteEntityTypes(
     Crystal(EntityEnderCrystal::class.java),
     Player(EntityPlayer::class.java),
     Monster(EntityMob::class.java),
-    Animal(EntityAnimal::class.java);
+    Animal(EntityAnimal::class.java),
+    ArmorStand(EntityArmorStand::class.java)
+
+    ;
 
     companion object {
         fun get(entity : Entity) : CharmsRewriteEntityTypes? {
