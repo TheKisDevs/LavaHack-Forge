@@ -44,6 +44,7 @@ public class ModuleManager {
 		//Debug
 		add(new BaritoneTest());
 		add(new BlockOverlay());
+		add(new BurrowHelper());
 		add(new ChatPrint());
 		//add(new ChorusTP());
 		add(ClickCooldownReset.INSTANCE);
