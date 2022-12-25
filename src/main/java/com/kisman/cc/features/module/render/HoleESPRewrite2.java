@@ -3,16 +3,15 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.math.Interpolation;
 import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.world.HoleUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
-import com.kisman.cc.util.render.cubic.ModulePrefixRenderPattern;
-import com.kisman.cc.util.render.cubic.RenderBuilder;
-import com.kisman.cc.util.render.cubic.RenderPattern;
+import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -39,13 +38,16 @@ public class HoleESPRewrite2 extends Module {
 
     private final Setting ignoreOwn = register(new Setting("IgnoreOwnHole", this, false));
 
-    private final RenderPattern oRender = new ModulePrefixRenderPattern(this, "Obsidian").init();
+    private final SettingGroup obbyRendererGroup = register(new SettingGroup(new Setting("Obby", this)));
+    private final RenderingRewritePattern obbyRenderer = new RenderingRewritePattern(this).prefix("Obsidian").group(obbyRendererGroup).preInit().init();
     private final Setting oHeight = register(new Setting("HeightObsidian", this, 1.0, 0.0, 1.0, false));
 
-    private final RenderPattern bRender = new ModulePrefixRenderPattern(this, "Bedrock").init();
+    private final SettingGroup bedrockRendererGroup = register(new SettingGroup(new Setting("Bedrock", this)));
+    private final RenderingRewritePattern bedrockRenderer = new RenderingRewritePattern(this).prefix("Bedrock").group(bedrockRendererGroup).preInit().init();
     private final Setting bHeight = register(new Setting("HeightBedrock", this, 1.0, 0.0, 1.0, false));
 
-    private final RenderPattern cRender = new ModulePrefixRenderPattern(this, "Custom").init();
+    private final SettingGroup customRendererGroup = register(new SettingGroup(new Setting("Custom", this)));
+    private final RenderingRewritePattern customRenderer = new RenderingRewritePattern(this).prefix("Custom").group(customRendererGroup).preInit().init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
     private final Setting fadeIn = register(new Setting("FadeIn", this, false));
@@ -137,8 +139,7 @@ public class HoleESPRewrite2 extends Module {
                 double diffY = bb.maxY - bb.minY;
                 double diffZ = bb.maxZ - bb.minZ;
                 BoundingBox boundingBox = bb.scaleNew(entry.getValue() * diffX, entry.getValue() * diffY, entry.getValue() * diffZ);
-                RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
-                renderBuilder.pos(boundingBox).render();
+                rendererFor(entry.getKey().getSecond()).draw(boundingBox.toAABB());
                 //ChatUtility.info().printClientModuleMessage("Double: " + entry.getValue().toString()); // for debug only
                 double newDouble;
                 if(fadeInCool.getValBoolean())
@@ -166,8 +167,7 @@ public class HoleESPRewrite2 extends Module {
                 double diffY = bb.maxY - bb.minY;
                 double diffZ = bb.maxZ - bb.minZ;
                 BoundingBox boundingBox = bb.scaleNew(1.0 - (entry.getValue() * diffX), 1.0 - (entry.getValue() * diffY), 1.0 - (entry.getValue() * diffZ));
-                RenderBuilder renderBuilder = renderBuilderFor(entry.getKey().getSecond());
-                renderBuilder.pos(boundingBox).render();
+                rendererFor(entry.getKey().getSecond()).draw(boundingBox.toAABB());
                 double newDouble;
                 if(fadeOutCool.getValBoolean())
                     newDouble = MathUtil.lerp(entry.getValue(), 1.0, 1.0 / fadeInTicks.getValDouble());
@@ -188,8 +188,7 @@ public class HoleESPRewrite2 extends Module {
                 continue;
             BoundingBox bb = entry.getKey();
             Type type = entry.getValue();
-            RenderBuilder renderBuilder = renderBuilderFor(type);
-            renderBuilder.pos(bb).render();
+            rendererFor(type).draw(bb.toAABB());
         }
     }
 
@@ -288,11 +287,10 @@ public class HoleESPRewrite2 extends Module {
         return bb;
     }
 
-    private RenderBuilder renderBuilderFor(Type type){
-        RenderBuilder renderBuilder = oRender.getRenderBuilder();
-        if(type == Type.BEDROCK) renderBuilder = bRender.getRenderBuilder();
-        if(type == Type.CUSTOM) renderBuilder = cRender.getRenderBuilder();
-        return renderBuilder;
+    private RenderingRewritePattern rendererFor(Type type) {
+        if(type == Type.BEDROCK) return bedrockRenderer;
+        if(type == Type.CUSTOM) return customRenderer;
+        return obbyRenderer;
     }
 
     private enum Type {

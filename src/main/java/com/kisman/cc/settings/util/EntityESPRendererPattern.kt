@@ -5,7 +5,6 @@ import com.kisman.cc.settings.EntityESPSetting
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.render.RenderUtil
 import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.enums.EntityESPModes
 import com.kisman.cc.util.enums.EntityESPTypes
@@ -89,7 +88,7 @@ class EntityESPRendererPattern(
                 EntityESPModes.Box1 -> {
                     entity.glowing = false
                     val color = getSettingByType(SettingTypes.Box1Color, EntityESPTypes.get(entity))!!.colour
-                    RenderUtil.drawESP(entity, color.r1, color.g1, color.b1, 1f, ticks)
+                    Rendering.drawBoxESP(entity, color.r1, color.g1, color.b1, 1f, ticks)
                 }
                 EntityESPModes.Cubic -> {
                     entity.glowing = false

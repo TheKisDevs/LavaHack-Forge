@@ -13,13 +13,13 @@ import net.minecraft.tileentity.TileEntity
  * @since 23:34 of 24.12.2022
  */
 class TileEntityImplementation(
-    val tileEntity : StorageESPTileEntities,
+    val tile : StorageESPTileEntities,
     val module : Module
 ) : ITileEntityImplementation {
-    private val group = module.register(SettingGroup(Setting(tileEntity.name, module)))
-    private val renderer = RenderingRewritePattern(module).group(group).preInit().init()
+    private val group = module.register(SettingGroup(Setting(tile.name, module)))
+    private val renderer = RenderingRewritePattern(module).prefix(tile.name).group(group).preInit().init()
 
-    override fun valid(tile : TileEntity) : Boolean = renderer.isActive() && tileEntity.validator.valid(tile)
+    override fun valid(tile : TileEntity) : Boolean = renderer.isActive() && this.tile.validator.valid(tile)
 
     override fun process(tile : TileEntity) {
         if(valid(tile)) {

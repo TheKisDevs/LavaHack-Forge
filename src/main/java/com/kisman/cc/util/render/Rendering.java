@@ -2,11 +2,14 @@ package com.kisman.cc.util.render;
 
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.cubic.BoundingBox;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +35,7 @@ public class Rendering {
 
     public static BufferBuilder bufferbuilder = tessellator.getBuffer();
 
-    public static Colour DUMMY_COLOR = new Colour(0, 0, 0, 0);
+    public static final Colour DUMMY_COLOR = new Colour(0, 0, 0, 0);
 
     public enum RenderObject {
         BOX {
@@ -801,5 +804,72 @@ public class Rendering {
         tessellator.draw();
         restore();
         release();
+    }
+
+    public static void drawBoxESP(Entity entity, float colorRed, float colorGreen, float colorBlue, float colorAlpha, float ticks) {
+        try {
+            double renderPosX = mc.renderManager.viewerPosX;
+            double renderPosY = mc.renderManager.viewerPosY;
+            double renderPosZ = mc.renderManager.viewerPosZ;
+            double xPos = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks) - renderPosX;
+            double yPos = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks)  + entity.height / 2.0f - renderPosY;
+            double zPos = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks) - renderPosZ;
+
+            float playerViewY = mc.renderManager.playerViewY;
+            float playerViewX = mc.renderManager.playerViewX;
+            boolean thirdPersonView = mc.renderManager.options.thirdPersonView == 2;
+
+            setup();
+            GlStateManager.translate(xPos, yPos, zPos);
+            GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(-playerViewY, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((thirdPersonView ? -1 : 1) * playerViewX, 1.0F, 0.0F, 0.0F);
+            GL11.glColor4f(colorRed, colorGreen, colorBlue, colorAlpha);
+            GL11.glBegin(1);
+
+            GL11.glVertex3d(0, 1, 0.0);
+            GL11.glVertex3d(-0.5, 0.5, 0.0);
+            GL11.glVertex3d(0, 1, 0.0);
+            GL11.glVertex3d(0.5, 0.5, 0.0);
+
+            GL11.glVertex3d(0, 0, 0.0);
+            GL11.glVertex3d(-0.5, 0.5, 0.0);
+            GL11.glVertex3d(0, 0, 0.0);
+            GL11.glVertex3d(0.5, 0.5, 0.0);
+
+            GL11.glEnd();
+            release();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static class TextRendering {
+        public static void drawText(BlockPos pos, String text, int color) {
+            if (pos == null || text == null) return;
+            GlStateManager.pushMatrix();
+            glBillboardDistanceScaled(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, mc.player, 1.0f);
+            GlStateManager.disableDepth();
+            GlStateManager.translate(-(CustomFontUtil.getStringWidth(text) / 2.0), 0.0, 0.0);
+            CustomFontUtil.drawStringWithShadow(text, 0.0f, 0.0f, color);
+            GlStateManager.popMatrix();
+        }
+
+        public static void glBillboardDistanceScaled(float x, float y, float z, EntityPlayer player, float scale) {
+            glBillboard(x, y, z);
+            int distance = (int) player.getDistance(x, y, z);
+            float scaleDistance = distance / 2.0f / (2.0f + (2.0f - scale));
+            if (scaleDistance < 1.0f) scaleDistance = 1.0f;
+            GlStateManager.scale(scaleDistance, scaleDistance, scaleDistance);
+        }
+
+        public static void glBillboard(float x, float y, float z) {
+            float scale = 0.02666667f;
+            GlStateManager.translate(x - mc.getRenderManager().renderViewEntity.posX, y - mc.getRenderManager().renderViewEntity.posY, z - mc.getRenderManager().renderViewEntity.posZ);
+            GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f);
+            GlStateManager.rotate(-mc.player.rotationYaw, 0.0f, 1.0f, 0.0f);
+            GlStateManager.rotate(mc.player.rotationPitch, (mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f, 0.0f, 0.0f);
+            GlStateManager.scale(-scale, -scale, scale);
+        }
     }
 }

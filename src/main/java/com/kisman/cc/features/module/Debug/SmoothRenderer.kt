@@ -9,8 +9,6 @@ import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.math.vectors.xyz.Vec3dColored
 import com.kisman.cc.util.math.vectors.VectorUtils
-import com.kisman.cc.util.render.RenderUtil3
-import com.kisman.cc.util.render.objects.world.Object3d
 import com.kisman.cc.util.render.objects.world.Vectors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.BlockPos
@@ -56,7 +54,7 @@ class SmoothRenderer : Module(
         val vectors : Vectors?
     )
 
-    class Renderer : Object3d() {
+    class Renderer/* : Object3d()*/ {
         @JvmField
         var lastPlaceInfo: PlaceInfo? = null
 
@@ -139,15 +137,15 @@ class SmoothRenderer : Module(
 
                     if(renderPos != null) {
                         GlStateManager.pushMatrix()
-                        prepare(depth,alpha)
+//                        prepare(depth,alpha)
 
 
-                        RenderUtil3.drawBox(renderPos, 150)
-                        RenderUtil3.drawBoundingBox(renderPos, 1.0, 150)
+//                        RenderUtil3.drawBox(renderPos, 150)
+//                        RenderUtil3.drawBoundingBox(renderPos, 1.0, 150)
 
                         GlStateManager.color(1F, 1F, 1F, 1F);
 
-                        release(alpha)
+//                        release(alpha)
                         GlStateManager.popMatrix()
                     }
 

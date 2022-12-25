@@ -778,4 +778,12 @@ public class Render2DUtil extends GuiScreen {
     public static void stopScissor() {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
+
+    public static void glColor(final int hex) {
+        float alpha = (hex >> 24 & 0xFF) / 255.0f;
+        float red = (hex >> 16 & 0xFF) / 255.0f;
+        float green = (hex >> 8 & 0xFF) / 255.0f;
+        float blue = (hex & 0xFF) / 255.0f;
+        GL11.glColor4f(red, green, blue, alpha);
+    }
 }

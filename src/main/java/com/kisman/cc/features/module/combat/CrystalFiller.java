@@ -7,9 +7,10 @@ import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.WorldUtil;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -22,7 +23,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -33,6 +33,7 @@ import java.util.Comparator;
 @Targetable
 public class CrystalFiller extends Module {
     private final Setting range = register(new Setting("Range", this, 4.8, 1, 6, false));
+    private final Setting rayTrace = register(new Setting("Ray Trace", this, true));
     private final Setting placeMode = register(new Setting("PlaceMode", this, PlaceMode.Always));
     private final Setting delay = register(new Setting("Delay", this, 2, 0, 20, true));
     private final Setting targetHoleRange = register(new Setting("TargetHoleRange", this, 4.8, 1, 6, false));
@@ -40,7 +41,9 @@ public class CrystalFiller extends Module {
     private final Setting crystalDMGCheck = register(new Setting("CrystalDMGCheck", this, false));
     private final Setting minDMG = register(new Setting("MinDMG", this, 5, 0, 36, true));
     private final Setting maxSelfDMG = register(new Setting("MaxSelfDMG", this, 15, 0, 36, true));
-    private final Setting render = register(new Setting("Render", this, true));
+
+    private final SettingGroup rendererGroup = register(new SettingGroup(new Setting("Renderer", this)));
+    private final SlideRenderingRewritePattern renderer = new SlideRenderingRewritePattern(this).group(rendererGroup).preInit().init();
 
     @ModuleInstance
     public static CrystalFiller instance;
@@ -57,6 +60,7 @@ public class CrystalFiller extends Module {
 
     public CrystalFiller() {
         super("CrystalFiller", "HoleFiller but crystal", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 
     public void onEnable() {
@@ -70,12 +74,11 @@ public class CrystalFiller extends Module {
     }
 
     public void update() {
-        if(mc.player == null && mc.world == null) return;
+        if(mc.player == null || mc.world == null) return;
 
         target = EntityUtil.getTarget(range.getValFloat());
 
-        if(target == null) super.setDisplayInfo("");
-        else super.setDisplayInfo(TextFormatting.GRAY + "[" + TextFormatting.WHITE + target.getName() + TextFormatting.GRAY + "]");
+        if(target == null) return;
 
         renderPos = null;
         doCrystalFiller();
@@ -83,7 +86,7 @@ public class CrystalFiller extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(render.getValBoolean() && renderPos != null) RenderUtil.drawBlockESP(renderPos, 0.9f, 0, 0);
+        renderer.draw(renderPos);
     }
 
     private void doCrystalFiller() {
@@ -97,15 +100,15 @@ public class CrystalFiller extends Module {
                 final int oldSlot = mc.player.inventory.currentItem;
 
                 switch (switchMode.getValString()) {
-                    case "None": {
+                    case "None" : {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL) return;
                         break;
                     }
-                    case "Normal": {
+                    case "Normal" : {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) InventoryUtil.switchToSlot(crystalSlot, false);
                         break;
                     }
-                    case "Silent": {
+                    case "Silent" : {
                         if (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL && crystalSlot != -1) InventoryUtil.switchToSlot(crystalSlot, true);
                         break;
                     }
@@ -115,7 +118,7 @@ public class CrystalFiller extends Module {
 
                 RayTraceResult result = null;
 
-                if(range.getValBoolean()) result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double) targetHole.pos.getX() + Double.longBitsToDouble(Double.doubleToLongBits(2.0585482766064893) ^ 9214496676598388901L), (double) targetHole.getDownHoleBlock().getY() - Double.longBitsToDouble(Double.doubleToLongBits(18.64274749914699) ^ 9210605105263438863L), (double) this.targetHole.pos.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(3.2686479786919134) ^ 9217221578882085433L)));
+                if(rayTrace.getValBoolean()) result = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double) mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double) targetHole.pos.getX() + Double.longBitsToDouble(Double.doubleToLongBits(2.0585482766064893) ^ 9214496676598388901L), (double) targetHole.getDownHoleBlock().getY() - Double.longBitsToDouble(Double.doubleToLongBits(18.64274749914699) ^ 9210605105263438863L), (double) this.targetHole.pos.getZ() + Double.longBitsToDouble(Double.doubleToLongBits(3.2686479786919134) ^ 9217221578882085433L)));
 
                 final EnumFacing facing = (result == null || result.sideHit == null) ? EnumFacing.UP : result.sideHit;
                 final boolean offhand = mc.player.getHeldItemOffhand().getItem() == Items.END_CRYSTAL;

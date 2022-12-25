@@ -1,24 +1,26 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.render.RenderUtil;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.HoleUtil;
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,6 +41,9 @@ public class CityESP extends Module {
     private final Setting mineMode = register(new Setting("Mine Mode", this, MineMode.Packet));
     private final Setting targetMode = register(new Setting("Target Mode", this, TargetMode.Single));
     private final Setting selectMode = register(new Setting("Select Mode", this, SelectMode.Closest));
+
+    private final SettingGroup rendererGroup = register(new SettingGroup(new Setting("Renderer", this)));
+    private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).group(rendererGroup).preInit().init();
 
     private final HashMap<EntityPlayer, List<BlockPos>> cityable = new HashMap<>();
     private boolean packetMined = false;
@@ -156,14 +161,14 @@ public class CityESP extends Module {
         return cityableSides;
     }
 
-    private void render(List<BlockPos> blockPosList) {
+    private void render(List<BlockPos> posList) {
         switch (selectMode.getValString()) {
             case "Closest": {
-                blockPosList.stream().min(Comparator.comparing(blockPos -> blockPos.distanceSq((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ))).ifPresent(blockPos -> RenderUtil.drawBlockESP(blockPos, 0, 1, 0));
+                posList.stream().min(Comparator.comparing(blockPos -> blockPos.distanceSq((int) mc.player.posX, (int) mc.player.posY, (int) mc.player.posZ))).ifPresent(renderer::draw);
                 break;
             }
             case "All": {
-                for (BlockPos blockPos : blockPosList) RenderUtil.drawBlockESP(blockPos, 0, 1, 0);
+                posList.forEach(renderer::draw);
                 break;
             }
         }

@@ -17,7 +17,7 @@ class BlockImplementation(
     val module : Module
 ) : IBlockImplementation {
     private val group = module.register(SettingGroup(Setting(block.name, module)))
-    private val renderer = RenderingRewritePattern(module).group(group).preInit().init()
+    private val renderer = RenderingRewritePattern(module).prefix(block.name).group(group).preInit().init()
 
     override fun valid(
         pos : BlockPos

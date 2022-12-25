@@ -7,8 +7,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
-import com.kisman.cc.settings.util.BoxRendererPattern
-import com.kisman.cc.util.Colour
+import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.TimerUtils
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -31,17 +30,15 @@ class SkyBlockFeatures : Module(
     Category.MISC
 ) {
     private val esp = register(SettingGroup(Setting("EPS", this)))
-    private val render = register(SettingGroup(Setting("Render", this)))
     private val hyperionExploitG = register(SettingGroup(Setting("Hyperion Exploit", this)))
 
-    private val range = register(esp.add(Setting("Range", this, 30.0, 10.0, 50.0, true)))
+    private val lever = register(esp.add(Setting("Lever", this, false)))
+    private val leverRendererGroup = register(esp.add(SettingGroup(Setting("Renderer", this))))
+    private val leverRenderer = RenderingRewritePattern(this).group(leverRendererGroup).preInit().init()
 
-    private val espLever = register(esp.add(Setting("Lever", this, false)))
-    private val espLeverColor = register(esp.add(Setting("Lever Color", this, Colour(0, 0, 255, 255)).setVisible { espLever.valBoolean }))
     private val crackedStoneBricks = register(esp.add(Setting("Cracked Stone Bricks", this, false)))
-    private val crackedStoneBricksColor = register(esp.add(Setting("Cracked Stone Bricks Color", this, Colour(255, 0, 255, 255)).setVisible { crackedStoneBricks.valBoolean }))
-
-    private val renderer = BoxRendererPattern(this).group(render).preInit().init()
+    private val crackedStoneBricksRendererGroup = register(esp.add(SettingGroup(Setting("Renderer", this))))
+    private val crackedStoneBricksRenderer = RenderingRewritePattern(this).group(leverRendererGroup).preInit().init()
 
     private val hyperionExploit = register(hyperionExploitG.add(Setting("Hyperion Exploit", this, false)))
     private val heAOTESlot = register(hyperionExploitG.add(Setting("HE AOTE Slot", this, 3.0, 1.0, 9.0, true)))
@@ -94,18 +91,17 @@ class SkyBlockFeatures : Module(
 
     private val renderBlock = Listener<EventRenderBlock>(EventHook {
         if(
-            mc.world.getBlockState(it.pos).block == Blocks.LEVER && espLever.valBoolean
+            mc.world.getBlockState(it.pos).block == Blocks.LEVER && lever.valBoolean
 //            || RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(it.pos)) && crackedStoneBricks.valBoolean
         ) {
             toRender.add(it.pos)
-            renderer.draw(1f, espLeverColor.colour, it.pos, espLeverColor.colour.a)
         }
     })
 
     @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
         for(pos in ArrayList(toRender)) {
             val block = mc.world.getBlockState(pos).block
-            if(block == Blocks.LEVER && espLever.valBoolean) renderer.draw(event.partialTicks, espLeverColor.colour, pos, espLeverColor.colour.a)
+            if(block == Blocks.LEVER && lever.valBoolean) leverRenderer.draw(pos)
 //            if(RoomDetectionUtil.whitelistedBlocks.contains(RoomDetectionUtil.getID(pos))) renderer.draw(event.partialTicks, crackedStoneBricksColor.colour, pos, crackedStoneBricksColor.colour.a)
         }
         toRender.clear()

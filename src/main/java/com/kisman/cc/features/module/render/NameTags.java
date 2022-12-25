@@ -6,7 +6,7 @@ import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.render.RenderUtil;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -163,7 +163,7 @@ public class  NameTags extends Module {
         int width = mc.fontRenderer.getStringWidth(name) / 2;
         double widthBackGround = bgAlpha.getValDouble();
         int[] counter = { 1 };
-        RenderUtil.drawSmoothRect((float)(-width - 3), 9.0f, (float)(width + 4), 23.0f, new Color(0, 0, 0, (int)widthBackGround).getRGB());
+        Render2DUtil.drawSmoothRect((float)(-width - 3), 9.0f, (float)(width + 4), 23.0f, new Color(0, 0, 0, (int)widthBackGround).getRGB());
         int[] array = counter;
         int n = 0;
         ++array[n];//9 + 14 / 2 - font.fontHeight / 2

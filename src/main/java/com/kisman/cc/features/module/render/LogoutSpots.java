@@ -8,8 +8,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.render.RenderUtil;
-import com.kisman.cc.util.render.RenderUtil2;
+import com.kisman.cc.util.render.Rendering;
 import com.mojang.authlib.GameProfile;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -130,10 +129,11 @@ public class LogoutSpots extends Module {
         public void render(float particalTicks) {
             switch (mode.getValString()) {
                 case "Box1":
-                    RenderUtil.drawESP(player, color.r1, color.g1, color.b1, 1, particalTicks);
+                    Rendering.drawBoxESP(player, color.r1, color.g1, color.b1, 1, particalTicks);
                     break;
                 case "Box2":
-                    RenderUtil.drawBoxESP(player.getEntityBoundingBox(), color.getColor(), 1, true, true, 100, 255);
+                    //TODO: rendering
+//                    RenderUtil.drawBoxESP(player.getEntityBoundingBox(), color.getColor(), 1, true, true, 100, 255);
                     break;
                 case "Model":
                     GL11.glPushMatrix();
@@ -141,7 +141,58 @@ public class LogoutSpots extends Module {
                     GL11.glPopMatrix();
                     break;
             }
-            RenderUtil2.drawNametag(player.getName() + " just logout at " + player.getPosition().getX() + " " + player.getPosition().getY() + " " + player.getPosition().getZ(), player.getEntityBoundingBox(), scale.getValDouble(), color.getRGB(),  false);
+//            RenderUtil2.drawNametag(player.getName() + " just logout at " + player.getPosition().getX() + " " + player.getPosition().getY() + " " + player.getPosition().getZ(), player.getEntityBoundingBox(), scale.getValDouble(), color.getRGB(),  false);
+            /*
+            * public static void drawNametag(String text, AxisAlignedBB interpolated, double scale, int color, boolean rectangle) {
+        double x = (interpolated.minX + interpolated.maxX) / 2.0;
+        double y = (interpolated.minY + interpolated.maxY) / 2.0;
+        double z = (interpolated.minZ + interpolated.maxZ) / 2.0;
+
+        drawNametag(text, x, y, z, scale, color, rectangle);
+    }
+
+    public static Entity getEntity() {
+        return mc.getRenderViewEntity() == null ? mc.player : mc.getRenderViewEntity();
+    }
+
+    public static void drawNametag(String text, double x, double y, double z, double scale, int color, boolean rectangle) {
+        //double dist = MathHelper.sqrt(x * x + y * y + z * z);
+        double dist = getEntity().getDistance(x + mc.getRenderManager().viewerPosX, y + mc.getRenderManager().viewerPosY, z + mc.getRenderManager().viewerPosZ);
+
+        int textWidth = CustomFontUtil.getStringWidth(text) / 2;
+        double scaling = 0.0018 + scale * dist;
+
+        if (dist <= 8.0) scaling = 0.0245;
+
+        GlStateManager.pushMatrix();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.enablePolygonOffset();
+        GlStateManager.doPolygonOffset(1.0F, -1500000.0f);
+        GlStateManager.disableLighting();
+        GlStateManager.translate(x, y + 0.4f, z);
+        GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
+        float xRot = mc.gameSettings.thirdPersonView == 2 ? -1.0f : 1.0f;
+        GlStateManager.rotate(mc.getRenderManager().playerViewX, xRot, 0.0f, 0.0f);
+        GlStateManager.scale(-scaling, -scaling, scaling);
+        GlStateManager.disableDepth();
+
+        if (rectangle)
+        {
+            GlStateManager.enableBlend();
+            prepare( (float)( -textWidth - 1), (float) -CustomFontUtil.getFontHeight(), (float) (textWidth + 2), 1.0F, 1.8F, 0x55000400, 0x33000000);
+            GlStateManager.disableBlend();
+        }
+
+        GlStateManager.enableBlend();
+        CustomFontUtil.drawStringWithShadow(text, -textWidth, -(mc.fontRenderer.FONT_HEIGHT - 1), color);
+        GlStateManager.disableBlend();
+
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.disablePolygonOffset();
+        GlStateManager.doPolygonOffset(1.0F, 1500000.0f);
+        GlStateManager.popMatrix();
+    }*/
         }
     }
 }

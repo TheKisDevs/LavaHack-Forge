@@ -1,13 +1,15 @@
 package com.kisman.cc.util.render.objects.screen;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static com.kisman.cc.util.render.RenderUtil.glColor;
+import static com.kisman.cc.util.render.Render2DUtil.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 public class AbstractGradient extends Gui {
@@ -87,8 +89,7 @@ public class AbstractGradient extends Gui {
         GL11.glPopMatrix();
     }
 
-    public static void drawGradientRect(final double startX, final double startY, final double endX, final double endY, final boolean sideways, final boolean reversed, final int startColor, final int endColor)
-    {
+    public static void drawGradientRect(double startX, double startY, double endX, double endY, boolean sideways, boolean reversed, int startColor, int endColor) {
         GlStateManager.enableBlend();
         GlStateManager.disableTexture2D();
         GlStateManager.disableAlpha();

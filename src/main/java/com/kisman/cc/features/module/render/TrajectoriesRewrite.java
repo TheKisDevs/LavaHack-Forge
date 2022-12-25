@@ -1,13 +1,15 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.util.render.RenderUtil;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 @Deprecated
 public class TrajectoriesRewrite extends Module {
@@ -88,7 +90,8 @@ public class TrajectoriesRewrite extends Module {
                 GL11.glTranslated(x - mc.renderManager.renderPosX, y - mc.renderManager.renderPosY, z - mc.renderManager.renderPosZ);
                 GL11.glRotatef(mc.player.rotationYaw, 0.0F, (float) (y - mc.renderManager.renderPosY), 0.0F);
                 GL11.glTranslated(-(x - mc.renderManager.renderPosX), -(y - mc.renderManager.renderPosY), -(z - mc.renderManager.renderPosZ));
-                RenderUtil.drawESP(x - 0.35 - mc.renderManager.renderPosX, y - 0.5 - mc.renderManager.renderPosY, z - 0.5 - mc.renderManager.renderPosZ, r, b, g);
+                //TODO: rendering
+//                RenderUtil.drawESP(x - 0.35 - mc.renderManager.renderPosX, y - 0.5 - mc.renderManager.renderPosY, z - 0.5 - mc.renderManager.renderPosZ, r, b, g);
                 disableDefaults();
                 GL11.glPopMatrix();
             }

@@ -1,9 +1,9 @@
 package com.kisman.cc.features.catlua.lua.utils;
 
 import com.kisman.cc.util.*;
+import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.RenderUtil;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
@@ -79,12 +79,11 @@ public class LuaRenderer implements Globals {
     //3D
 
     public void drawBoxESP(LuaBox box, Color c) {
-        RenderUtil.drawBoxESP(box.toAABB(), c, 1, true, true, 100, 255);
+        Rendering.draw0(box.toAABB(), 1f, new Colour(c), Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.Mode.BOX);
     }
 
     public void drawBlockESP(BlockPos pos, Color c) {
-        Colour color = new Colour(c);
-        RenderUtil.drawBlockESP(pos, color.r1, color.g1, color.b1);
+        Rendering.draw0(mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos), 1f, new Colour(c), Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.DUMMY_COLOR, Rendering.Mode.BOX);
     }
 
     public void setup() {
