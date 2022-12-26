@@ -8,7 +8,6 @@ import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.enums.EntityESPModes
 import com.kisman.cc.util.enums.EntityESPTypes
-import com.kisman.cc.util.enums.RenderingRewriteModes
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import java.util.function.Supplier
@@ -17,8 +16,8 @@ import kotlin.collections.ArrayList
 class EntityESPRendererPattern(
         val module : Module
 ) {
-    val groups = ArrayList<SettingGroup>()
-    val settings = ArrayList<EntityESPSetting>()
+    private val groups = ArrayList<SettingGroup>()
+    private val settings = ArrayList<EntityESPSetting>()
 
     private val threads = MultiThreaddableModulePattern(module)
 
@@ -27,8 +26,10 @@ class EntityESPRendererPattern(
     init {
         for(type in EntityESPTypes.values()) {
             val group = SettingGroup(Setting(type.name, module))
+            val patternGroup = group.add(SettingGroup(Setting("Cubic Renderer", module)))
             groups.add(group)
-            settings.addAll(getSettingsByType(type, group))
+            groups.add(patternGroup)
+            settings.addAll(getSettingsByType(type, group, patternGroup))
         }
     }
 
@@ -38,20 +39,21 @@ class EntityESPRendererPattern(
         }
 
         for(setting in settings) {
-            module.register(setting.setting)
+            if(setting.setting != null) {
+                module.register(setting.setting)
+            } else if(setting.pattern != null) {
+                setting.pattern.init()
+            }
         }
     }
 
-    private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup) : ArrayList<EntityESPSetting> {
+    private fun getSettingsByType(typeE : EntityESPTypes, group : SettingGroup, patternGroup : SettingGroup) : ArrayList<EntityESPSetting> {
         val mode = Setting("${typeE.name} Mode", module, EntityESPModes.None)
-        val pattern = RenderingRewritePattern(module).visible(Supplier{ mode.valEnum == EntityESPModes.Cubic }).prefix("${typeE.name} Cubic")
+        val pattern = RenderingRewritePattern(module).group(patternGroup).visible(Supplier{ mode.valEnum == EntityESPModes.Cubic }).prefix("${typeE.name} Cubic").preInit()
         return ArrayList(listOf(
-                EntityESPSetting(group.add(mode), typeE, SettingTypes.Mode),
-                EntityESPSetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), typeE, SettingTypes.Box1Color),
-                EntityESPSetting(group.add(pattern.mode), typeE, SettingTypes.CubicMode),
-                EntityESPSetting(group.add(pattern.lineWidth), typeE, SettingTypes.CubicLineWidth),
-                EntityESPSetting(group.add(pattern.filledColor1), typeE, SettingTypes.CubicColor1),
-                EntityESPSetting(group.add(pattern.filledColor2), typeE, SettingTypes.CubicColor2)
+            EntityESPSetting(group.add(mode), null, typeE, SettingTypes.Mode),
+            EntityESPSetting(group.add(Setting("${typeE.name} Box1 Color", module, "${typeE.name} Box1 Color", Colour(255, 255, 255, 255)).setVisible { mode.valEnum == EntityESPModes.Box1 }), null, typeE, SettingTypes.Box1Color),
+            EntityESPSetting(null, pattern, typeE, SettingTypes.CubicPattern)
         ))
     }
 
@@ -68,7 +70,7 @@ class EntityESPRendererPattern(
             for(entity in mc.world.loadedEntityList) {
                 if(entity == mc.player) continue
                 val mode = getSettingByType(SettingTypes.Mode, EntityESPTypes.get(entity))
-                if(mode != null && mode.valEnum != EntityESPModes.None) list.add(entity)
+                if(mode?.setting != null && mode.setting.valEnum != EntityESPModes.None) list.add(entity)
             }
 
             mc.addScheduledTask { entities = list }
@@ -80,40 +82,41 @@ class EntityESPRendererPattern(
     }
 
     private fun drawEntity(ticks : Float, entity : Entity) {
-        val setting = getSettingByType(SettingTypes.Mode, EntityESPTypes.get(entity))
-        if(setting!!.valEnum != EntityESPModes.None) {
+        val setting = getSettingByType(SettingTypes.Mode, entity)!!.setting!!
+        if(setting.valEnum != EntityESPModes.None) {
             when(setting.valEnum) {
                 EntityESPModes.None -> entity.glowing = false
                 EntityESPModes.Glow -> entity.glowing = true
                 EntityESPModes.Box1 -> {
                     entity.glowing = false
-                    val color = getSettingByType(SettingTypes.Box1Color, EntityESPTypes.get(entity))!!.colour
+                    val color = getSettingByType(SettingTypes.Box1Color, entity)!!.setting!!.colour
                     Rendering.drawBoxESP(entity, color.r1, color.g1, color.b1, 1f, ticks)
                 }
                 EntityESPModes.Cubic -> {
                     entity.glowing = false
-                    Rendering.draw(
-                            Rendering.correct(entity.entityBoundingBox),
-                            getSettingByType(SettingTypes.CubicLineWidth, EntityESPTypes.get(entity))!!.valFloat,
-                            getSettingByType(SettingTypes.CubicColor1, EntityESPTypes.get(entity))!!.colour,
-                            getSettingByType(SettingTypes.CubicColor2, EntityESPTypes.get(entity))!!.colour,
-                            (getSettingByType(SettingTypes.CubicMode, EntityESPTypes.get(entity))!!.valEnum as RenderingRewriteModes).mode
-                    )
+                    getSettingByType(SettingTypes.CubicPattern, entity)!!.pattern!!.draw(entity.entityBoundingBox)
                 }
             }
         }
     }
 
-    private fun getSettingByType(typeS : SettingTypes, typeE : EntityESPTypes?) : Setting? {
+    private fun getSettingByType(typeS : SettingTypes, typeE : EntityESPTypes?) : EntityESPSetting? {
         for(setting in settings) {
             if(setting.typeE == typeE && setting.typeS == typeS) {
-                return setting.setting
+                return setting
             }
         }
         return null
     }
 
+    private fun getSettingByType(
+        typeS : SettingTypes,
+        entity : Entity
+    ) : EntityESPSetting? = getSettingByType(typeS, EntityESPTypes.get(entity))
+
     enum class SettingTypes {
-        Mode, CubicMode, Box1Color, CubicLineWidth, CubicColor1, CubicColor2
+        Mode,
+        Box1Color,
+        CubicPattern
     }
 }

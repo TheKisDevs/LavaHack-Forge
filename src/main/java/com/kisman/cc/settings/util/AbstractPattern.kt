@@ -15,11 +15,13 @@ import java.util.function.Supplier
 abstract class AbstractPattern<T>(
     val module : Module
 ) {
-    var visible : Supplier<Boolean> = (Supplier { true })
+    var visible = Supplier { true }
     var prefix : String? = null
     var group : SettingGroup? = null
 
+    private val allSettings = ArrayList<Setting>()
     private val settings = ArrayList<Setting>()
+    private val groups = ArrayList<SettingGroup>()
 
     open fun visible(visible : Supplier<Boolean>) : T {
         this.visible = visible
@@ -51,11 +53,11 @@ abstract class AbstractPattern<T>(
     }
 
     protected fun setupSetting(setting : Setting) : Setting {
-        return setting.also { settings.add(it) }//setting.setVisible(visible).setName((if(prefix != null) "$prefix " else "") + setting.name)
+        return setting.also { settings.add(it) ; allSettings.add(it) }
     }
 
     protected fun setupGroup(group : SettingGroup) : SettingGroup {
-        return group.setVisible(visible) as SettingGroup
+        return (group.setVisible(visible) as SettingGroup).also { groups.add(it) ; allSettings.add(it) }
     }
 
     protected fun <T> setupArray(array : SettingArray<T>) : SettingArray<T> {
