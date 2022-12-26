@@ -113,7 +113,7 @@ public class AutoCrystalRewrite extends Module {
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
     @ModuleInstance
-    private static AutoCrystalRewrite INSTANCE;
+    public static AutoCrystalRewrite INSTANCE;
 
     public AutoCrystalRewrite(){
         super("Kys+", Category.COMBAT, true);
@@ -128,7 +128,7 @@ public class AutoCrystalRewrite extends Module {
     private final TimerUtils popFocusTimer = new TimerUtils();
 
     @Target
-    private EntityPlayer target = null;
+    public EntityPlayer target = null;
 
     private final List<PositionInfo> placedList = new Vector<>();
 

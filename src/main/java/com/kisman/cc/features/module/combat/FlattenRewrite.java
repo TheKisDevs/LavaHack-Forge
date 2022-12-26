@@ -94,7 +94,7 @@ public class FlattenRewrite extends Module {
     private final Thread placeThread;
 
     @Target
-    private Entity enemy = null;
+    public Entity enemy = null;
 
     private double enemyY;
 

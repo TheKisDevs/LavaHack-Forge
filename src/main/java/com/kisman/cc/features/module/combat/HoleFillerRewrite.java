@@ -70,7 +70,7 @@ public class HoleFillerRewrite extends Module {
     private final SlideRendererPattern renderer = new SlideRendererPattern();
 
     @Target
-    private Entity entity = null;
+    public Entity entity = null;
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
