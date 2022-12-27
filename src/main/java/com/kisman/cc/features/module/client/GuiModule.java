@@ -14,6 +14,7 @@ public class GuiModule extends Module {
     public final Setting background = register(new Setting("Background", this, true));
     public final Setting backgroundColor = register(new Setting("Background Color", this, "Background Color", new Colour(30, 30, 30, 121)).setVisible(background::getValBoolean));
     public final Setting buttonHeight = register(new Setting("Button Height", this, 13, 1, 30, true));
+    public final Setting headerOffset = register(new Setting("Header Offset", this, 5, 0, 20, true));
     public final Setting shadow = register(new Setting("Shadow", this, true));
     public final Setting hideBetaAddon = register(new Setting("Hide Beta Addon", this, false));
     private final SettingGroup lineGroup = register(new SettingGroup(new Setting("Lines", this)));

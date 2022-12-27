@@ -56,8 +56,19 @@ public class HalqGui extends KismanGuiScreen {
             offsetsY = 0,
             lineWidth = 1.0;
     //constants
-    public static int height = 13;
-    public static final int headerOffset = 5;
+    /**
+     * These aren't quite constants anymore.
+     * You should IN NO CASE modify these besides
+     * in the method where there values get updated
+     * from the GuiModule module, which is the
+     * {@link HalqGui#drawScreen(int, int, float)}
+     * method. In no other place should these be
+     * changed EVER. I just wanted to make this
+     * very clear.
+     * - Cubic
+     */
+    public static int height = GuiModule.instance.buttonHeight.getValInt();
+    public static int headerOffset = GuiModule.instance.buttonHeight.getValInt();
     public static final int width = 120;
 
     //frames list
@@ -119,6 +130,7 @@ public class HalqGui extends KismanGuiScreen {
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
         height = GuiModule.instance.buttonHeight.getValInt();
+        headerOffset = GuiModule.instance.headerOffset.getValInt();
         shadow = GuiModule.instance.shadow.getValBoolean();
         hideBetaAddon = GuiModule.instance.hideBetaAddon.getValBoolean();
         test = GuiModule.instance.horizontalLines.getValBoolean();
