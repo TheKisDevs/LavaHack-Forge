@@ -55,7 +55,7 @@ public class HalqGui extends KismanGuiScreen {
             offsetsY = 0,
             lineWidth = 1.0;
     //constants
-    public static final int height = 13;
+    public static int height = 13;
     public static final int headerOffset = 5;
     public static final int width = 120;
 
@@ -117,6 +117,7 @@ public class HalqGui extends KismanGuiScreen {
 
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
+        height = GuiModule.instance.buttonHeight.getValInt();
         shadow = GuiModule.instance.shadow.getValBoolean();
         test = GuiModule.instance.horizontalLines.getValBoolean();
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
@@ -439,6 +440,17 @@ public class HalqGui extends KismanGuiScreen {
                 );
             }
         }
+    }
+
+    @Deprecated
+    public static void drawComponentOverlay(Component component, int mouseX, int mouseY){
+        double x = component.getX() + HalqGui.offsetsX;
+        double y = component.getY() + HalqGui.offsetsY;
+        double width = LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - HalqGui.offsetsX * 2;
+        double height = component.getHeight() - HalqGui.offsetsX * 2;
+        if(mouseX <= component.getX() || mouseX >= x + width || mouseY <= y || mouseY >= y + height)
+            return;
+        Render2DUtil.drawRectWH(x, y, width, height, moduleHoverOverlay.getRGB());
     }
 
     public static boolean visible(String name) {
