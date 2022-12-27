@@ -15,6 +15,7 @@ public class GuiModule extends Module {
     public final Setting backgroundColor = register(new Setting("Background Color", this, "Background Color", new Colour(30, 30, 30, 121)).setVisible(background::getValBoolean));
     public final Setting buttonHeight = register(new Setting("Button Height", this, 13, 1, 30, true));
     public final Setting shadow = register(new Setting("Shadow", this, true));
+    public final Setting hideBetaAddon = register(new Setting("Hide Beta Addon", this, false));
     private final SettingGroup lineGroup = register(new SettingGroup(new Setting("Lines", this)));
     public final Setting horizontalLines = register(lineGroup.add(new Setting("Horizontal Lines", this, true).setTitle("Horizontal")));
     public final Setting verticalLines = register(lineGroup.add(new Setting("Vertical Lines", this, true).setTitle("Vertical")));
