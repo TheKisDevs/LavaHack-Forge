@@ -119,7 +119,11 @@ public class Button implements Openable {
                         )
                 );
             }
-        } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
+
+        if(isMouseOnButton(mouseX, mouseY)){
+            Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.moduleHoverOverlay.getRGB());
+        }
 
         HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
 

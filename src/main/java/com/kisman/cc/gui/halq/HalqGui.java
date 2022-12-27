@@ -36,6 +36,8 @@ public class HalqGui extends KismanGuiScreen {
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static Colour outlineColor = new Colour(Color.BLACK);
+    public static Colour test2Color = new Colour(30, 30, 30, 121);
+    public static Colour moduleHoverOverlay = new Colour(255, 255, 255, 60);
     public static boolean background = true,
             line = true,
             shadow = true,
@@ -124,6 +126,7 @@ public class HalqGui extends KismanGuiScreen {
         offsetsY = GuiModule.instance.offsetsY.getValDouble();
         stringLocateMode = (LocateMode) GuiModule.instance.uwu.getValEnum();
         test2 = GuiModule.instance.test2.getValBoolean();
+        test2Color = GuiModule.instance.test2Color.getColour();
         textOffsetX = GuiModule.instance.textOffsetX.getValInt();
         outlineColor = GuiModule.instance.outlineColor.getColour();
         outlineTest = GuiModule.instance.outlineTest.getValBoolean();
@@ -131,6 +134,7 @@ public class HalqGui extends KismanGuiScreen {
         outlineHeaders = GuiModule.instance.outlineHeaders.getValBoolean();
         componentsOutline = GuiModule.instance.componentsOutline.getValBoolean();
         lineWidth = GuiModule.instance.lineWidth.getValDouble();
+        moduleHoverOverlay = GuiModule.instance.moduleHoverColor.getColour();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();

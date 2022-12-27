@@ -22,6 +22,7 @@ public class GuiModule extends Module {
     public final Setting offsetsY = register(new Setting("ONG OFFSETS Y??", this, 1, 0, 5, false));
     public final Setting uwu = register(new Setting("UwU Locate Mod", this, HalqGui.LocateMode.Left));
     public final Setting test2 = register(new Setting("Test 2", this, true));
+    public final Setting test2Color = register(new Setting("Test 2 Color", this, new Colour(30, 30, 30, 121)));
     public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));
     public final Setting textOffsetX = register(new Setting("Text X Offset", this, 5, 0, 10, true));
     public final Setting outlineColor = register(new Setting("Outline Color", this, new Colour(0, 0, 0, 255)));
@@ -30,6 +31,7 @@ public class GuiModule extends Module {
     public final Setting outlineTest2 = register(new Setting("Outline Test 2", this, true));
     public final Setting componentsOutline = register(new Setting("Components Outline", this, false));
     public final Setting lineWidth = register(new Setting("Line Width", this, 1, 0.1, 2, false));
+    public final Setting moduleHoverColor = register(new Setting("Module Hover Overlay", this, new Colour(255, 255, 255, 60)));
     public final SettingGroup colorPickerGroup = register(new SettingGroup(new Setting("ColorPicker", this)));
     public final Setting colorPickerExtra = register(colorPickerGroup.add(new Setting("Color Picker Extra", this, false).setTitle("Extra")));
     public final Setting colorPickerClearColor = register(colorPickerGroup.add(new Setting("Color Picker Clear Color", this, false).setTitle("Clear Color")));
