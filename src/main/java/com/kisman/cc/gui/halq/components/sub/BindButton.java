@@ -3,14 +3,14 @@ package com.kisman.cc.gui.halq.components.sub;
 import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.client.GuiModule;
-import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
-import com.kisman.cc.util.render.ColorUtils;
 import org.lwjgl.input.Keyboard;
 
 import java.util.function.BooleanSupplier;
@@ -44,6 +44,7 @@ public class BindButton implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        Component.super.drawScreen(mouseX, mouseY);
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadow) {
             if(changing) {

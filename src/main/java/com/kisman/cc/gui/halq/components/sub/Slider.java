@@ -38,6 +38,8 @@ public class Slider implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        Component.super.drawScreen(mouseX, mouseY);
+
         double min = setting.getMin();
         double max = setting.getMax();
 

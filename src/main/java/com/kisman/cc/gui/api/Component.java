@@ -3,7 +3,9 @@ package com.kisman.cc.gui.api;
 import com.kisman.cc.gui.halq.HalqGui;
 
 public interface Component {
-    default void drawScreen(int mouseX, int mouseY) { }
+    default void drawScreen(int mouseX, int mouseY) {
+        HalqGui.currentComponent = this;
+    }
     default void drawScreenPost(int mouseX, int mouseY) {
         HalqGui.renderComponent(this);
         HalqGui.drawComponentOutline(this, true, HalqGui.outlineTest, false);

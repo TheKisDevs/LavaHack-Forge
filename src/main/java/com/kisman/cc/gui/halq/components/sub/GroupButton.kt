@@ -73,6 +73,8 @@ class GroupButton(
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
+        super.drawScreen(mouseX, mouseY)
+
         Render2DUtil.drawRectWH(
             x.toDouble(),
             (y_ + offset).toDouble(),

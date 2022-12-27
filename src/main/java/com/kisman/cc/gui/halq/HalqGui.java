@@ -27,21 +27,20 @@ import java.util.ArrayList;
 /**
  * @author made by _kisman_ for Halq with love <3
  */
-@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class HalqGui extends KismanGuiScreen {
     public SearchBar searchBar = new SearchBar();
 
-    //variables for main gui settings
+
     public static LocateMode stringLocateMode = LocateMode.Left;
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static Colour outlineColor = new Colour(Color.BLACK);
     public static Colour test2Color = new Colour(30, 30, 30, 121);
-    public static Colour moduleHoverOverlay = new Colour(255, 255, 255, 60);
+    public static Colour hoverColor = new Colour(255, 255, 255, 60);
     public static boolean background = true,
             line = true,
             shadow = true,
-            hideBetaAddon,
+            hideAnnotations,
             test = true,
             shadowRects = false,
             test2 = true,
@@ -55,7 +54,7 @@ public class HalqGui extends KismanGuiScreen {
     public static double offsetsX = 0,
             offsetsY = 0,
             lineWidth = 1.0;
-    //constants
+
     /**
      * These aren't quite constants anymore.
      * You should IN NO CASE modify these besides
@@ -67,8 +66,8 @@ public class HalqGui extends KismanGuiScreen {
      * very clear.
      * - Cubic
      */
-    public static int height = GuiModule.instance.buttonHeight.getValInt();
-    public static int headerOffset = GuiModule.instance.buttonHeight.getValInt();
+    public static int height = 13;
+    public static int headerOffset = 5;
     public static final int width = 120;
 
     //frames list
@@ -81,6 +80,10 @@ public class HalqGui extends KismanGuiScreen {
      * {@link com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
      */
     private GuiScreen lastGui = null;
+
+    public static Component currentComponent = null;
+    public static int mouseX = -1;
+    public static int mouseY = -1;
 
     public HalqGui(GuiScreen lastGui) {
         this();
@@ -127,12 +130,14 @@ public class HalqGui extends KismanGuiScreen {
             return;
         }
 
+        HalqGui.mouseX = mouseX;
+        HalqGui.mouseY = mouseY;
+
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
-        height = GuiModule.instance.buttonHeight.getValInt();
-        headerOffset = GuiModule.instance.headerOffset.getValInt();
+        height = GuiModule.instance.componentHeight.getValInt();
         shadow = GuiModule.instance.shadow.getValBoolean();
-        hideBetaAddon = GuiModule.instance.hideBetaAddon.getValBoolean();
+        hideAnnotations = GuiModule.instance.hideAnnotations.getValBoolean();
         test = GuiModule.instance.horizontalLines.getValBoolean();
         shadowRects = GuiModule.instance.shadowRects.getValBoolean();
         line = GuiModule.instance.verticalLines.getValBoolean();
@@ -149,7 +154,7 @@ public class HalqGui extends KismanGuiScreen {
         outlineHeaders = GuiModule.instance.outlineHeaders.getValBoolean();
         componentsOutline = GuiModule.instance.componentsOutline.getValBoolean();
         lineWidth = GuiModule.instance.lineWidth.getValDouble();
-        moduleHoverOverlay = GuiModule.instance.moduleHoverColor.getColour();
+        hoverColor = GuiModule.instance.hoverColor.getColour();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -162,7 +167,6 @@ public class HalqGui extends KismanGuiScreen {
             particleSystem.onUpdate();
         }
 
-//
         Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         scrollWheelCheck();
@@ -231,6 +235,8 @@ public class HalqGui extends KismanGuiScreen {
     }
 
     public static void drawString(String text, int x, int y, int width, int height) {
+        if(currentComponent != null && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) Render2DUtil.drawRectWH(x + offsetsX, y + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, height - HalqGui.offsetsY * 2, HalqGui.hoverColor.getRGB());
+
         switch (stringLocateMode) {
             case Center:
                 CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
@@ -454,17 +460,6 @@ public class HalqGui extends KismanGuiScreen {
                 );
             }
         }
-    }
-
-    @Deprecated
-    public static void drawComponentOverlay(Component component, int mouseX, int mouseY){
-        double x = component.getX() + HalqGui.offsetsX;
-        double y = component.getY() + HalqGui.offsetsY;
-        double width = LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - HalqGui.offsetsX * 2;
-        double height = component.getHeight() - HalqGui.offsetsX * 2;
-        if(mouseX <= component.getX() || mouseX >= x + width || mouseY <= y || mouseY >= y + height)
-            return;
-        Render2DUtil.drawRectWH(x, y, width, height, moduleHoverOverlay.getRGB());
     }
 
     public static boolean visible(String name) {

@@ -28,6 +28,7 @@ public class VisibleBox implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        Component.super.drawScreen(mouseX, mouseY);
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
         if(HalqGui.shadow) {
             if(module.visible) {

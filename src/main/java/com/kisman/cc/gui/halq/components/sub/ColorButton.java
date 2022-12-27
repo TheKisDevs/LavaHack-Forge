@@ -14,7 +14,6 @@ import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -116,6 +115,8 @@ public class ColorButton implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+//        Component.super.drawScreen(mouseX, mouseY);
+
         if(!setting.getColour().equals(color)){
             color = setting.getColour();
             setClearColor(color);

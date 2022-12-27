@@ -34,6 +34,8 @@ class OptionElement(
         mouseX : Int,
         mouseY : Int
     ) {
+        super.drawScreen(mouseX, mouseY)
+
         Render2DUtil.drawRectWH(
             x.toDouble(),
             (y + offset).toDouble(),
