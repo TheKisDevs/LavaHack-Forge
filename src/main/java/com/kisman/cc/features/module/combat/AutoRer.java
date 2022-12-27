@@ -109,6 +109,7 @@ public class AutoRer extends Module {
     private final Setting fastCalc = register(calc.add(new Setting("Fast Calc", this, true)));
     private final Setting heuristics = register(calc.add(new Setting("Heuristic", this, Heuristics.Damage)));
     private final Setting safetyBalance = register(calc.add(new Setting("Safety Balance", this, 0, 0, 20, false).setVisible(heuristics.getValEnum() == Heuristics.Safety)));
+    private final Setting safetyScale = register(calc.add(new Setting("Safety Scale", this, 1, 0, 1, false)));
     private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
     private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
     private final Setting motionCalc = register(motionGroup.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)).setTitle("Calc"));
@@ -778,7 +779,7 @@ public class AutoRer extends Module {
             case MinMax:
                 return targetDamage - selfDamage;
             case Safety:
-                return targetDamage - safetyBalance.getValFloat();
+                return (targetDamage * safetyScale.getValFloat()) - safetyBalance.getValFloat();
         }
         return targetDamage;
     }
