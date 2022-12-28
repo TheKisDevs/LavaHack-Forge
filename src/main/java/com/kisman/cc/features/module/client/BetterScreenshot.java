@@ -13,12 +13,11 @@ import java.util.*;
  * @author BloomWareClient
  */
 public class BetterScreenshot extends Module {
+    @ModuleInstance
     public static BetterScreenshot instance;
 
     public BetterScreenshot() {
         super("BetterScreenshot", "offix sori no mne 'eto otchen nado ni termay repy poshaluysta", Category.CLIENT);
-
-        instance = this;
     }
 
     public static Image getLatestScreenshot() throws IOException {

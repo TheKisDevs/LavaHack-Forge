@@ -50,5 +50,17 @@ interface IBindable {
                 BindType.Mouse -> Mouse.isButtonDown(bindable.getMouseButton())
             }
         }
+
+        @JvmStatic
+        fun bindKey(bindable : IBindable, key : Int) {
+            bindable.setKeyboardKey(key)
+            bindable.setType(BindType.Keyboard)
+        }
+
+        @JvmStatic
+        fun bindButton(bindable : IBindable, button : Int) {
+            bindable.setKeyboardKey(button)
+            bindable.setType(BindType.Mouse)
+        }
     }
 }

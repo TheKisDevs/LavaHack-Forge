@@ -5,12 +5,14 @@ import com.kisman.cc.event.events.EventCape;
 import com.kisman.cc.features.capes.CapeManager;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.enums.CapeEnum;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 
 public class Cape extends Module {
+    @ModuleInstance
     public static Cape instance;
 
     public SettingEnum<CapeEnum> mode = new SettingEnum<>("Cape Mode", this, CapeEnum.Gradient).register();
@@ -18,8 +20,6 @@ public class Cape extends Module {
     public Cape() {
         super("Cape", "Custom cape", Category.CLIENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
-
-        instance = this;
     }
 
     public void onEnable() {

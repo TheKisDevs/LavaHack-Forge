@@ -40,7 +40,7 @@ public class HalqGui extends KismanGuiScreen {
     public static boolean background = true,
             line = true,
             shadow = true,
-            hideAnnotations,
+            hideAnnotations = false,
             test = true,
             shadowRects = false,
             test2 = true,
@@ -136,6 +136,7 @@ public class HalqGui extends KismanGuiScreen {
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
         height = GuiModule.instance.componentHeight.getValInt();
+        headerOffset = GuiModule.instance.headerOffset.getValInt();
         shadow = GuiModule.instance.shadow.getValBoolean();
         hideAnnotations = GuiModule.instance.hideAnnotations.getValBoolean();
         test = GuiModule.instance.horizontalLines.getValBoolean();

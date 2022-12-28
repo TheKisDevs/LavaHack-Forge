@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -14,6 +15,7 @@ import me.zero.alpine.listener.Listener;
 import org.lwjgl.input.Keyboard;
 
 public class Config extends Module {
+    @ModuleInstance
     public static Config instance;
 
     private final Setting connection = register(new Setting("Connection", this, true));
@@ -90,7 +92,6 @@ public class Config extends Module {
 
     public Config() {
         super("Config", Category.CLIENT);
-        instance = this;
         Kisman.EVENT_BUS.subscribe(settingChangeBoolean);
     }
 

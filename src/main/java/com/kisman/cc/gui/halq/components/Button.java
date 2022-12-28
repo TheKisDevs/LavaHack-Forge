@@ -122,8 +122,11 @@ public class Button implements Openable {
         } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
         HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
 
-        if(mod.isBeta() && !HalqGui.hideAnnotations) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
-        if(mod.isAddon() && !HalqGui.hideAnnotations) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
+        if(!HalqGui.hideAnnotations) {
+            if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
+            if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
+        }
+
         if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 3);
 
         if(open && !comps.isEmpty()) {

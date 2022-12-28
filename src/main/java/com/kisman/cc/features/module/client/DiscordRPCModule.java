@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.enums.RPCImages;
 
 public class DiscordRPCModule extends Module {
+    @ModuleInstance
     public static DiscordRPCModule instance;
 
     public Setting impr = register(new Setting("Impr RPC", this, true));
@@ -14,8 +15,6 @@ public class DiscordRPCModule extends Module {
 
     public DiscordRPCModule() {
         super("DiscordRPC", "", Category.CLIENT);
-        instance = this;
-
         super.setToggled(true);
     }
 

@@ -40,7 +40,14 @@ public class CustomMainMenu {
             "kisman left LavaHack Development",
             "earthhack skid fr",
             "fr",
-            "auto crystsa pp v??/?"
+            "auto crystsa pp v??/?",
+            "owned by catdog.cc",
+            "bruh",
+            "made by Cubic#1411",
+            "zenov is still crying",
+            "hitmanqq lost his mum",
+            "NOpig is mad",
+            "_fastol_ pls leave crystal pvp"
     };
 
     public static void update() {
