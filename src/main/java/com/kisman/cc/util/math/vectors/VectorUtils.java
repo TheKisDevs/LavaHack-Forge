@@ -18,10 +18,9 @@ import static org.lwjgl.opengl.GL11.*;
 // Credits to ForgeHax [MIT] inspiring this
 
 public class VectorUtils {
-    private Minecraft mc = Minecraft.getMinecraft();
-    private Matrix4f modelMatrix = new Matrix4f();
-    private Matrix4f projectionMatrix = new Matrix4f();
-    private ScaledResolution resolution = new ScaledResolution(mc);
+    private final Minecraft mc = Minecraft.getMinecraft();
+    private final Matrix4f modelMatrix = new Matrix4f();
+    private final Matrix4f projectionMatrix = new Matrix4f();
     Vec3d camPos = new Vec3d(0.0, 0.0, 0.0);
 
     public VectorUtils() {
@@ -36,13 +35,12 @@ public class VectorUtils {
     public void updateMatrix(RenderWorldLastEvent event) {
         if (mc.renderViewEntity == null) return;
 
-        Vec3d viewerPos = ActiveRenderInfo.projectViewFromEntity(mc.getRenderViewEntity(), mc.getRenderPartialTicks());
+        Vec3d viewerPos = ActiveRenderInfo.projectViewFromEntity(mc.renderViewEntity, mc.getRenderPartialTicks());
         Vec3d relativeCamPos = ActiveRenderInfo.getCameraPosition();
 
         loadMatrix(modelMatrix, GL_MODELVIEW_MATRIX);
         loadMatrix(projectionMatrix, GL_PROJECTION_MATRIX);
         camPos = viewerPos.add(relativeCamPos);
-        resolution = new ScaledResolution(mc);
     }
 
     public void loadMatrix(Matrix4f matrix, int glBit) {

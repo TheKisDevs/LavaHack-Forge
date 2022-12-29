@@ -125,9 +125,13 @@ public class RotationUtils {
         return player != null ? getRotationTo(player.getPositionEyes(1.0f), posTo) : Vec2f.ZERO;
     }
 
-    public static void lookAtVec3d(final Vec3d vec3d) {
+    public static void lookAtVec3d(Vec3d vec3d) {
         final float[] angle = AngleUtil.calculateAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d(vec3d.x, vec3d.y, vec3d.z));
         setPlayerRotations(angle[0], angle[1]);
+    }
+
+    public static void lookAtEntity(Entity entity) {
+        lookAtVec3d(new Vec3d(entity.getPosition()));
     }
 
     public static void setPlayerRotations(final float yaw, final float pitch) {

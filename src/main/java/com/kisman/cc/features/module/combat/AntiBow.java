@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.manager.RotationManager;
+import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 
@@ -65,7 +65,8 @@ public class AntiBow extends Module {
             if(!mc.player.getHeldItemMainhand().getItem().equals(Items.SHIELD)) InventoryUtil.switchToSlot(shieldSlot, true);
 
             mc.gameSettings.keyBindUseItem.pressed = true;
-            RotationManager.look(target, packet.getValBoolean());
+            //TODO: packet
+            RotationUtils.lookAtEntity(target);
             bool = true;
         }
     }
