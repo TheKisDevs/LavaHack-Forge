@@ -4,13 +4,15 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.FadeRenderingRewritePattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.enums.FadeLogic;
 import com.kisman.cc.util.math.Interpolation;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
+import com.kisman.cc.util.render.objects.world.Box;
 import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -39,15 +41,15 @@ public class HoleESPRewrite2 extends Module {
     private final Setting ignoreOwn = register(new Setting("IgnoreOwnHole", this, false));
 
     private final SettingGroup obbyRendererGroup = register(new SettingGroup(new Setting("Obby", this)));
-    private final RenderingRewritePattern obbyRenderer = new RenderingRewritePattern(this).prefix("Obsidian").group(obbyRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern obbyRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Obsidian").group(obbyRendererGroup).preInit().init();
     private final Setting oHeight = register(new Setting("HeightObsidian", this, 1.0, 0.0, 1.0, false));
 
     private final SettingGroup bedrockRendererGroup = register(new SettingGroup(new Setting("Bedrock", this)));
-    private final RenderingRewritePattern bedrockRenderer = new RenderingRewritePattern(this).prefix("Bedrock").group(bedrockRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern bedrockRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Bedrock").group(bedrockRendererGroup).preInit().init();
     private final Setting bHeight = register(new Setting("HeightBedrock", this, 1.0, 0.0, 1.0, false));
 
     private final SettingGroup customRendererGroup = register(new SettingGroup(new Setting("Custom", this)));
-    private final RenderingRewritePattern customRenderer = new RenderingRewritePattern(this).prefix("Custom").group(customRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern customRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Custom").group(customRendererGroup).preInit().init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
     private final Setting fadeIn = register(new Setting("FadeIn", this, false));
@@ -64,6 +66,7 @@ public class HoleESPRewrite2 extends Module {
 
     // sorted map solves flickering problem i hope
     private Map<BoundingBox, Type> map = new TreeMap<>(comparator);
+    private Map<BoundingBox, Long> timeStamps = new TreeMap<>(comparator);
 
     private Map<Bind<BoundingBox, Type>, Double> newHoles = new TreeMap<>(comparatorBind);
 
@@ -96,6 +99,10 @@ public class HoleESPRewrite2 extends Module {
     private void doHoleESPLogic() {
         mc.addScheduledTask(() -> {
             Map<BoundingBox, Type> holes = getHoles();
+            Map<BoundingBox, Long> timeStamps = new TreeMap<>(comparator);
+
+            for(BoundingBox bb : holes.keySet()) timeStamps.put(bb, System.currentTimeMillis());
+
             if(fadeOut.getValBoolean()){
                 for(Map.Entry<BoundingBox, Type> entry : map.entrySet()){
                     if(!holes.containsKey(entry.getKey()))
@@ -113,6 +120,7 @@ public class HoleESPRewrite2 extends Module {
                 newHoles.clear();
             }
             map = holes;
+            this.timeStamps = timeStamps;
         });
     }
 
@@ -188,7 +196,10 @@ public class HoleESPRewrite2 extends Module {
                 continue;
             BoundingBox bb = entry.getKey();
             Type type = entry.getValue();
-            rendererFor(type).draw(bb.toAABB());
+            Vec3d center = Box.Companion.byAABB(bb.toAABB()).center();
+            try {
+                rendererFor(type).draw(bb.toAABB(), timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
+            } catch(Exception ignored) {}
         }
     }
 
@@ -287,7 +298,7 @@ public class HoleESPRewrite2 extends Module {
         return bb;
     }
 
-    private RenderingRewritePattern rendererFor(Type type) {
+    private FadeRenderingRewritePattern rendererFor(Type type) {
         if(type == Type.BEDROCK) return bedrockRenderer;
         if(type == Type.CUSTOM) return customRenderer;
         return obbyRenderer;

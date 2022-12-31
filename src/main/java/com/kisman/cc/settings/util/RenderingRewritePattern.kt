@@ -223,6 +223,28 @@ open class RenderingRewritePattern(
     }
 
     open fun draw(
+        bb : AxisAlignedBB,
+        filledColor1 : Colour,
+        filledColor2 : Colour,
+        outlineColor1 : Colour,
+        outlineColor2 : Colour,
+        wireColor1 : Colour,
+        wireColor2 : Colour,
+        alphaCoeff : Double
+    ) {
+        draw(
+            bb,
+            filledColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            filledColor2.withAlpha((alphaCoeff * 255.0).toInt()),
+            outlineColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            outlineColor2.withAlpha((alphaCoeff * 255.0).toInt()),
+            wireColor1.withAlpha((alphaCoeff * 255.0).toInt()),
+            wireColor2.withAlpha((alphaCoeff * 255.0).toInt()),
+            (mode.valEnum as RenderingRewriteModes).mode
+        )
+    }
+
+    open fun draw(
         pos : BlockPos,
         alphaCoeff : Double
     ) {

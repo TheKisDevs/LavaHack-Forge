@@ -5,9 +5,11 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
@@ -21,7 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 import kotlin.math.min
 
-@Suppress("PrivatePropertyName")
+@Suppress("PrivatePropertyName", "LocalVariableName")
 class BlockHighlight : Module("BlockHighlight", "Highlights object you are looking at", Category.RENDER) {
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
@@ -41,6 +43,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         private var lastBB: AxisAlignedBB? = null
         private var bb : AxisAlignedBB? = null
         private var facing : EnumFacing? = null
+        private val processedBBsList = HashMap<AxisAlignedBB, Long>()
 
         override fun reset() {
             super.reset()
@@ -56,7 +59,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             facing : EnumFacing?,
             renderer : SlideRenderingRewritePattern
         ) {
-            update(bb)
+            update(bb, renderer)
             this.facing = facing
             renderWorld(
                 renderer.movingLength.valFloat,
@@ -65,9 +68,50 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
                 renderer,
                 null
             )
+
+            if(renderer.alphaFadeLength.valFloat != 0f) {
+                val multiplier = multiplier(renderer.movingLength.valFloat, renderer)
+                val keysToRemove = ArrayList<AxisAlignedBB>()
+
+                for(entry in processedBBsList) {
+                    val bb_ = entry.key
+                    val time = entry.value
+
+                    if(multiplier == 0.0 && bb_ == currentPos) {
+                        keysToRemove.add(bb_)
+                        continue
+                    }
+
+                    val alphaCoeff = alpha(
+                        renderer.alphaFadeLength.valFloat,
+                        renderer,
+                        time
+                    )
+
+                    if(alphaCoeff == 0.0) {
+                        keysToRemove.add(bb_)
+                        continue
+                    }
+
+                    renderer.draw(
+                        bb_,
+                        if(bb_ is ColorableSlideBB) bb_.colour1 else renderer.getFilledColor1(),
+                        if(bb_ is ColorableSlideBB) bb_.colour2 else renderer.getFilledColor2(),
+                        if(bb_ is ColorableSlideBB) bb_.colour3 else renderer.getOutlineColor1(),
+                        if(bb_ is ColorableSlideBB) bb_.colour4 else renderer.getOutlineColor2(),
+                        if(bb_ is ColorableSlideBB) bb_.colour5 else renderer.getWireColor1(),
+                        if(bb_ is ColorableSlideBB) bb_.colour6 else renderer.getWireColor2(),
+                        alphaCoeff
+                    )
+                }
+
+                for(key in keysToRemove) {
+                    processedBBsList.remove(key)
+                }
+            }
         }
 
-        override  fun toRenderBox(
+        override fun toRenderBox(
             vec3d : Vec3d,
             scale : Double
         ) : AxisAlignedBB {
@@ -103,7 +147,29 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             }
         }
 
-        private fun update(bb : AxisAlignedBB?) {
+        private fun updateBBs(
+            bb : AxisAlignedBB?,
+            renderer : RenderingRewritePattern
+        ) : ColorableSlideBB? {
+            val colorableBB = if(bb != null) ColorableSlideBB(
+                bb,
+                renderer.getFilledColor1(),
+                renderer.getFilledColor2(),
+                renderer.getOutlineColor1(),
+                renderer.getOutlineColor2(),
+                renderer.getWireColor1(),
+                renderer.getWireColor2()
+            ) else null
+
+            if(colorableBB != null) {
+                processedBBsList[colorableBB] = System.currentTimeMillis()
+            }
+
+            return colorableBB
+        }
+
+        private fun update(bb : AxisAlignedBB?, renderer : RenderingRewritePattern) {
+            updateBBs(bb, renderer)
             this.bb = bb
             vec = getVec(bb)
             if (vec != lastVec) {

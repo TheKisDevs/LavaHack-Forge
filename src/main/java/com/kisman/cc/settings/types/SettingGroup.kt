@@ -24,7 +24,7 @@ open class SettingGroup(
         return group
     }
 
-    open fun add(enum : SettingEnum<*>) : SettingEnum<*> {
+    open fun <T : Enum<*>> add(enum : SettingEnum<T>) : SettingEnum<T> {
         enum.parent_ = this
         settings.add(enum)
         return enum

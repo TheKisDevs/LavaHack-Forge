@@ -48,8 +48,8 @@ abstract class AbstractPattern<T>(
         return this as T
     }
 
-    protected fun setupEnum(setting : SettingEnum<*>) : SettingEnum<*> {
-        return setupSetting(setting) as SettingEnum<*>
+    protected fun <T : Enum<*>> setupEnum(setting : SettingEnum<T>) : SettingEnum<T> {
+        return setupSetting(setting) as SettingEnum<T>
     }
 
     protected fun setupSetting(setting : Setting) : Setting {
