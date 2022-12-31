@@ -786,4 +786,27 @@ public class Render2DUtil extends GuiScreen {
         float blue = (hex & 0xFF) / 255.0f;
         GL11.glColor4f(red, green, blue, alpha);
     }
+
+    public static void drawArrow(double x, double y, double width, double overAllWidth, double offset, int color){
+        double slope = offset / (overAllWidth * 0.5f);
+        double adjustedY = y + slope * ((overAllWidth * 0.5f) - width);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        glColor(color);
+        vertexbuffer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(x, y, 0);
+        vertexbuffer.pos(x + width, y, 0);
+        vertexbuffer.pos(x + (overAllWidth * 0.5), adjustedY, 0);
+        vertexbuffer.pos(x + (overAllWidth * 0.5), y + offset, 0);
+        vertexbuffer.pos(x + overAllWidth - width, y, 0);
+        vertexbuffer.pos(x + overAllWidth, y, 0);
+        vertexbuffer.pos(x + (overAllWidth * 0.5), y + offset, 0);
+        vertexbuffer.pos(x + (overAllWidth * 0.5), adjustedY, 0);
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
 }
