@@ -66,8 +66,8 @@ public class HalqGui extends KismanGuiScreen {
      * very clear.
      * - Cubic
      */
-    public static int height = 13;
-    public static int headerOffset = 5;
+    public static int height = GuiModule.instance.componentHeight.getValInt(); //13;
+    public static int headerOffset = GuiModule.instance.headerOffset.getValInt(); //5;
     public static final int width = 120;
 
     //frames list
