@@ -5,10 +5,10 @@ import com.kisman.cc.features.module.client.PingBypass;
 import com.kisman.cc.features.pingbypass.gui.GuiAddPingBypass;
 import com.kisman.cc.features.pingbypass.gui.GuiButtonPingBypassOptions;
 import com.kisman.cc.gui.alts.AltManagerGUI;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
-import com.kisman.cc.features.viaforge.gui.GuiProtocolSelector;
 import com.kisman.cc.util.render.ColorUtils;
-import net.minecraft.client.gui.*;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.text.TextFormatting;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
@@ -28,7 +28,7 @@ public class KismanMainMenuGui extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
         GL11.glPushMatrix();
         GL11.glScalef(2.0F, 2.0F, 2.0F);
-        CustomFontUtil.drawCenteredStringWithShadow(Kisman.getName() + " " + Kisman.getVersion(), width / 4, 6, ColorUtils.astolfoColors(100, 100));
+        CustomFontUtil.drawCenteredStringWithShadow(Kisman.getName() + " " + Kisman.getVersion(), width / 4f, 6, ColorUtils.astolfoColors(100, 100));
         GL11.glPopMatrix();
     }
 
@@ -60,7 +60,7 @@ public class KismanMainMenuGui extends GuiScreen {
                 Kisman.openLink("https://www.youtube.com/channel/UCWxQLRT9CXqcK6YyiKHrrNw");
                 break;
             case 4:
-                mc.displayGuiScreen(new GuiProtocolSelector(this));
+                mc.displayGuiScreen(Kisman.instance.viaForgeGui.setLastGui(this));
                 break;
             case 5:
                 mc.displayGuiScreen(new AltManagerGUI(this));

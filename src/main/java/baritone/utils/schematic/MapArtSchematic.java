@@ -17,6 +17,7 @@
 
 package baritone.utils.schematic;
 
+import baritone.Baritone;
 import baritone.api.schematic.IStaticSchematic;
 import baritone.api.schematic.MaskSchematic;
 import net.minecraft.block.BlockAir;
@@ -50,8 +51,8 @@ public class MapArtSchematic extends MaskSchematic {
                 if (lowestBlockY.isPresent()) {
                     heightMap[x][z] = lowestBlockY.getAsInt();
                 } else {
-                    System.out.println("Column " + x + "," + z + " has no blocks, but it's apparently map art? wtf");
-                    System.out.println("Letting it be whatever");
+                    Baritone.LOGGER.info("Column " + x + "," + z + " has no blocks, but it's apparently map art? wtf");
+                    Baritone.LOGGER.info("Letting it be whatever");
                     heightMap[x][z] = 256;
                 }
             }

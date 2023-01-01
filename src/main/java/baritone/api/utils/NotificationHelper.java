@@ -17,6 +17,7 @@
 
 package baritone.api.utils;
 
+import baritone.Baritone;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
@@ -60,7 +61,7 @@ public class NotificationHelper {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("SystemTray is not supported");
+            Baritone.LOGGER.error("SystemTray is not supported");
         }
     }
 

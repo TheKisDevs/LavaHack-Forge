@@ -5,7 +5,9 @@ import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.module.client.ViaForgeModule;
 import com.kisman.cc.features.plugins.ModulePlugin;
+import com.kisman.cc.features.viaforge.gui.ViaForgeGuiKt;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -97,6 +99,8 @@ public class Button implements Openable {
                 }
             }
         }
+
+        if(mod instanceof ViaForgeModule) ViaForgeGuiKt.component = this;
     }
 
     @Override

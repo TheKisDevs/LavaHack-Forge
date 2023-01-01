@@ -5,6 +5,8 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
+import com.kisman.cc.settings.types.SettingArray;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unchecked")
 public class Module implements IBindable, Listenable {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
@@ -117,6 +120,14 @@ public class Module implements IBindable, Listenable {
 	public SettingGroup register(SettingGroup group) {
 		setmgr.rSetting(group);
 		return group;
+	}
+
+	public <T extends Enum<?>> SettingEnum<T> register(SettingEnum<T> setting) {
+		return (SettingEnum<T>) register((Setting) setting);
+	}
+
+	public <T> SettingArray<T> register(SettingArray<T> setting) {
+		return (SettingArray<T>) register((Setting) setting);
 	}
 
 	private boolean isBeta0(){

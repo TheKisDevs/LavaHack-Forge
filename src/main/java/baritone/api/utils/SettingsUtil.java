@@ -17,6 +17,7 @@
 
 package baritone.api.utils;
 
+import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import net.minecraft.block.Block;
@@ -73,7 +74,7 @@ public class SettingsUtil {
             forEachLine(SETTINGS_PATH, line -> {
                 Matcher matcher = SETTING_PATTERN.matcher(line);
                 if (!matcher.matches()) {
-                    System.out.println("Invalid syntax in setting file: " + line);
+                    Baritone.LOGGER.error("Invalid syntax in setting file: " + line);
                     return;
                 }
 
@@ -82,34 +83,34 @@ public class SettingsUtil {
                 try {
                     parseAndApply(settings, settingName, settingValue);
                 } catch (Exception ex) {
-                    System.out.println("Unable to parse line " + line);
+                    Baritone.LOGGER.error("Unable to parse line " + line);
                     ex.printStackTrace();
                 }
             });
         } catch (NoSuchFileException ignored) {
-            System.out.println("Baritone settings file not found, resetting.");
+            Baritone.LOGGER.error("Baritone settings file not found, resetting.");
         } catch (Exception ex) {
-            System.out.println("Exception while reading Baritone settings, some settings may be reset to default values!");
+            Baritone.LOGGER.error("Exception while reading Baritone settings, some settings may be reset to default values!");
             ex.printStackTrace();
         }
     }
 
     public static synchronized void save(Settings settings) {
         try (BufferedWriter out = Files.newBufferedWriter(SETTINGS_PATH)) {
-            for (Settings.Setting setting : modifiedSettings(settings)) {
+            for (Settings.Setting<?> setting : modifiedSettings(settings)) {
                 out.write(settingToString(setting) + "\n");
             }
         } catch (Exception ex) {
-            System.out.println("Exception thrown while saving Baritone settings!");
+            Baritone.LOGGER.error("Exception thrown while saving Baritone settings!");
             ex.printStackTrace();
         }
     }
 
-    public static List<Settings.Setting> modifiedSettings(Settings settings) {
-        List<Settings.Setting> modified = new ArrayList<>();
-        for (Settings.Setting setting : settings.allSettings) {
+    public static List<Settings.Setting<?>> modifiedSettings(Settings settings) {
+        List<Settings.Setting<?>> modified = new ArrayList<>();
+        for (Settings.Setting<?> setting : settings.allSettings) {
             if (setting.value == null) {
-                System.out.println("NULL SETTING?" + setting.getName());
+                Baritone.LOGGER.error("NULL SETTING?" + setting.getName());
                 continue;
             }
             if (javaOnlySetting(setting)) {

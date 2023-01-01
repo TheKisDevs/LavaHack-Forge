@@ -17,6 +17,7 @@
 
 package baritone.cache;
 
+import baritone.Baritone;
 import baritone.api.cache.IWaypoint;
 import baritone.api.cache.IWaypointCollection;
 import baritone.api.cache.Waypoint;
@@ -50,7 +51,7 @@ public class WaypointCollection implements IWaypointCollection {
                 Files.createDirectories(directory);
             } catch (IOException ignored) {}
         }
-        System.out.println("Would save waypoints to " + directory);
+        Baritone.LOGGER.info("Would save waypoints to " + directory);
         this.waypoints = new HashMap<>();
         load();
     }

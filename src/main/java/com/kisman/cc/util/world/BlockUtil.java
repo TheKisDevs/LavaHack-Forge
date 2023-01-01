@@ -1,15 +1,21 @@
 package com.kisman.cc.util.world;
 
+import com.kisman.cc.util.enums.dynamic.RotationEnum;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 
 import java.util.*;
@@ -263,7 +269,7 @@ public class BlockUtil {
     /**
      * Skidded lel
      */
-    public static void placeBlock2(final BlockPos pos, final EnumHand hand, final boolean rotate, final boolean packet){
+    public static void placeBlock2(BlockPos pos, EnumHand hand, boolean rotate, boolean packet){
         EnumFacing side = getFirstFacing(pos);
         if (side == null) return;
 
@@ -299,6 +305,33 @@ public class BlockUtil {
         mc.rightClickDelayTimer = 4;
 
         mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+    }
+
+    public static void placeBlock2(BlockPos pos, EnumHand hand, RotationEnum.Rotation rotator, boolean packet){
+        EnumFacing side = getFirstFacing(pos);
+        if (side == null) return;
+
+        BlockPos neighbour = pos.offset(side);
+        EnumFacing opposite = side.getOpposite();
+
+        Vec3d hitVec = new Vec3d(neighbour).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
+
+        if (!mc.player.isSneaking()) {
+            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+            mc.player.setSneaking(true);
+        }
+
+        if (rotator != null) rotator.getTaskR().doTask(rotator.getTaskCBlock().doTask(pos), false);
+
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
+
+        rightClickBlock(neighbour, hitVec, hand, opposite, packet);
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.rightClickDelayTimer = 4;
+
+        mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SNEAKING));
+
+        if (rotator != null) rotator.getTaskR().doTask(rotator.getTaskCBlock().doTask(pos), true);
     }
 
     public static void placeBlock2(final BlockPos pos, final EnumHand hand, final boolean rotate, final boolean packet, EnumFacing direction){

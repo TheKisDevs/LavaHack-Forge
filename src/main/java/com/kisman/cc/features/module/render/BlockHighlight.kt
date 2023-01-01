@@ -23,12 +23,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 import kotlin.math.min
 
-@Suppress("PrivatePropertyName", "LocalVariableName")
+@Suppress("LocalVariableName")
 class BlockHighlight : Module("BlockHighlight", "Highlights object you are looking at", Category.RENDER) {
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
 
-    private val renderer_ = SlideRenderingRewritePattern(this).preInit().init()
+    private val pattern = SlideRenderingRewritePattern(this).preInit().init()
 
     //Crystal info
     private val ciGroup = register(SettingGroup(Setting("Crystal Info", this)))
@@ -55,19 +55,22 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         }
 
         override fun onRenderWorld(
-            bb : AxisAlignedBB,
+            bb : AxisAlignedBB?,
             facing : EnumFacing?,
             renderer : SlideRenderingRewritePattern
         ) {
             update(bb, renderer)
             this.facing = facing
-            renderWorld(
-                renderer.movingLength.valFloat,
-                renderer.fadeLength.valFloat,
-                renderer.alphaFadeLength.valFloat,
-                renderer,
-                null
-            )
+
+            if(bb != null) {
+                renderWorld(
+                    renderer.movingLength.valFloat,
+                    renderer.fadeLength.valFloat,
+                    renderer.alphaFadeLength.valFloat,
+                    renderer,
+                    null
+                )
+            }
 
             if(renderer.alphaFadeLength.valFloat != 0f) {
                 val multiplier = multiplier(renderer.movingLength.valFloat, renderer)
@@ -203,45 +206,39 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         event : RenderWorldLastEvent
     ) {
         if (mc.objectMouseOver == null) return
+
         val hitObject = mc.objectMouseOver
-        var box: Box? = null
-        var bb : AxisAlignedBB? = null
-        var shouldReturn = false
 
-        var facing : EnumFacing? = null
-
-        when (hitObject.typeOfHit) {
+        val bb = when (hitObject.typeOfHit) {
             RayTraceResult.Type.ENTITY -> {
                 if (entities.valBoolean) {
-                    val viewEntity = mc.renderViewEntity ?: mc.player
-                    val eyePos = viewEntity.getPositionEyes(event.partialTicks)
-                    val entity = hitObject.entityHit ?: return
-                    val lookVec = viewEntity.lookVec
-                    val sightEnd = eyePos.add(lookVec.scale(6.0))
-                    facing = entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
-                    box = Box.byAABB(entity.entityBoundingBox.also { bb = it })
+                    hitObject.entityHit.entityBoundingBox
+                } else {
+                    null
                 }
             }
-            RayTraceResult.Type.BLOCK -> {
-                box = Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos))
-                facing = hitObject.sideHit
-                bb = box.toAABB()
-            }
-            else -> {
-                shouldReturn = true
-                bb = null
-            }
+            RayTraceResult.Type.BLOCK -> Box.byAABB(mc.world.getBlockState(hitObject.blockPos).getSelectedBoundingBox(mc.world, hitObject.blockPos)).toAABB()
+            else -> null
         }
 
-        if (box == null || bb == null) return
+        val facing = if(hitObject.typeOfHit == RayTraceResult.Type.ENTITY) {
+            val viewEntity = mc.renderViewEntity ?: mc.player
+            val eyePos = viewEntity.getPositionEyes(event.partialTicks)
+            val entity = hitObject.entityHit ?: return
+            val lookVec = viewEntity.lookVec
+            val sightEnd = eyePos.add(lookVec.scale(6.0))
+            entity.entityBoundingBox.calculateIntercept(eyePos, sightEnd)?.sideHit ?: return
+        } else {
+            hitObject.sideHit
+        }
 
         renderer.onRenderWorld(
-            bb!!,
+            bb,
             if(hitSideOnly.valBoolean) facing else null,
-            renderer_
+            pattern
         )
 
-        if(crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
+        if(bb != null && crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
             val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
             val text = "${
                 String.format("%.1f", AutoRerUtil.getSelfDamageByCrystal(crystalInfoTerrain.valBoolean, hitObject.blockPos))
@@ -260,7 +257,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
 
     private interface IRenderer {
         fun onRenderWorld(
-            bb : AxisAlignedBB,
+            bb : AxisAlignedBB?,
             facing : EnumFacing?,
             renderer : SlideRenderingRewritePattern
         )

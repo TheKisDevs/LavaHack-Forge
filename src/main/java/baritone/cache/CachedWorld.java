@@ -82,7 +82,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
         }
         this.directory = directory.toString();
         this.dimension = dimension;
-        System.out.println("Cached world directory: " + directory);
+        Baritone.LOGGER.info("Cached world directory: " + directory);
         Baritone.getExecutor().execute(new PackerThread());
         Baritone.getExecutor().execute(() -> {
             try {
@@ -159,7 +159,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
     @Override
     public final void save() {
         if (!Baritone.settings().chunkCaching.value) {
-            System.out.println("Not saving to disk; chunk caching is disabled.");
+            Baritone.LOGGER.info("Not saving to disk; chunk caching is disabled.");
             allRegions().forEach(region -> {
                 if (region != null) {
                     region.removeExpired();
@@ -175,7 +175,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
             }
         });
         long now = System.nanoTime() / 1000000L;
-        System.out.println("World save took " + (now - start) + "ms");
+        Baritone.LOGGER.info("World save took " + (now - start) + "ms");
         prune();
     }
 
@@ -245,7 +245,7 @@ public final class CachedWorld implements ICachedWorld, Helper {
             }
         });
         long now = System.nanoTime() / 1000000L;
-        System.out.println("World load took " + (now - start) + "ms");
+        Baritone.LOGGER.info("World load took " + (now - start) + "ms");
     }
 
     @Override

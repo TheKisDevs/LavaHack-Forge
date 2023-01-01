@@ -154,11 +154,7 @@ public class Frame {
         if(HalqGui.shadowRects) {
             ShadowRectObject obj = new ShadowRectObject(x, y, x + HalqGui.width, y + HalqGui.height, HalqGui.getGradientColour(count), HalqGui.getGradientColour(count).withAlpha(0), 5, Collections.singletonList(RectSides.Bottom));
             obj.draw();
-        } else {
-            Render2DUtil.drawRectWH(x, y, HalqGui.width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
-//            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x - HalqGui.headerOffset, y}, new double[]{x, y}, new double[]{x, y + HalqGui.height}, new double[]{x - HalqGui.headerOffset, y + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30), HalqGui.getGradientColour(count).getColor()));
-//            if (HalqGui.shadow) Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[]{x + HalqGui.width, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y}, new double[]{x + HalqGui.width + HalqGui.headerOffset, y + HalqGui.height}, new double[]{x + HalqGui.width, y + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.getGradientColour(count).getColor(), 30)));
-        }
+        } else Render2DUtil.drawRectWH(x, y, HalqGui.width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
 
         HalqGui.drawString((customName ? name : cat.getName()), x, y, HalqGui.width, HalqGui.height);
 

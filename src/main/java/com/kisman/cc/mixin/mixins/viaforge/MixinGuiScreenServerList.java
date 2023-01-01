@@ -1,15 +1,17 @@
 package com.kisman.cc.mixin.mixins.viaforge;
 
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.viaforge.ViaForge;
-import com.kisman.cc.features.viaforge.gui.GuiProtocolSelector;
 import com.kisman.cc.features.viaforge.protocol.ProtocolCollection;
-import net.minecraft.client.gui.*;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenServerList;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@SuppressWarnings("ConstantConditions")
 @Mixin(GuiScreenServerList.class)
 public class MixinGuiScreenServerList extends GuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
@@ -19,7 +21,7 @@ public class MixinGuiScreenServerList extends GuiScreen {
 
     @Inject(method = "actionPerformed", at = @At("RETURN"))
     public void injectActionPerformed(GuiButton p_actionPerformed_1_, CallbackInfo ci) {
-        if (p_actionPerformed_1_.id == 1337) mc.displayGuiScreen(new GuiProtocolSelector(this));
+        if (p_actionPerformed_1_.id == 1337) mc.displayGuiScreen(Kisman.instance.viaForgeGui.setLastGui(this));
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))

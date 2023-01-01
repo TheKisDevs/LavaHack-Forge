@@ -35,6 +35,8 @@ import baritone.utils.InputOverrideHandler;
 import baritone.utils.PathingControlManager;
 import baritone.utils.player.PrimaryPlayerContext;
 import net.minecraft.client.Minecraft;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,9 +51,10 @@ import java.util.concurrent.TimeUnit;
  * @since 7/31/2018
  */
 public class Baritone implements IBaritone {
+    public static final Logger LOGGER = LogManager.getLogger("LavaHack Batitone");
 
-    private static ThreadPoolExecutor threadPool;
-    private static File dir;
+    private static final ThreadPoolExecutor threadPool;
+    private static final File dir;
 
     static {
         threadPool = new ThreadPoolExecutor(4, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
@@ -64,29 +67,29 @@ public class Baritone implements IBaritone {
         }
     }
 
-    private GameEventHandler gameEventHandler;
+    private final GameEventHandler gameEventHandler;
 
-    private PathingBehavior pathingBehavior;
-    private LookBehavior lookBehavior;
-    private InventoryBehavior inventoryBehavior;
-    private WaypointBehavior waypointBehavior;
-    private InputOverrideHandler inputOverrideHandler;
+    private final PathingBehavior pathingBehavior;
+    private final LookBehavior lookBehavior;
+    private final InventoryBehavior inventoryBehavior;
+    private final WaypointBehavior waypointBehavior;
+    private final InputOverrideHandler inputOverrideHandler;
 
-    private FollowProcess followProcess;
-    private MineProcess mineProcess;
-    private GetToBlockProcess getToBlockProcess;
-    private CustomGoalProcess customGoalProcess;
-    private BuilderProcess builderProcess;
-    private ExploreProcess exploreProcess;
-    private BackfillProcess backfillProcess;
-    private FarmProcess farmProcess;
+    private final FollowProcess followProcess;
+    private final MineProcess mineProcess;
+    private final GetToBlockProcess getToBlockProcess;
+    private final CustomGoalProcess customGoalProcess;
+    private final BuilderProcess builderProcess;
+    private final ExploreProcess exploreProcess;
+    private final BackfillProcess backfillProcess;
+    private final FarmProcess farmProcess;
 
-    private PathingControlManager pathingControlManager;
-    private SelectionManager selectionManager;
-    private CommandManager commandManager;
+    private final PathingControlManager pathingControlManager;
+    private final SelectionManager selectionManager;
+    private final CommandManager commandManager;
 
-    private IPlayerContext playerContext;
-    private WorldProvider worldProvider;
+    private final IPlayerContext playerContext;
+    private final WorldProvider worldProvider;
 
     public BlockStateInterface bsi;
 

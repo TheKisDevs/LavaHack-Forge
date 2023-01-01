@@ -25,6 +25,7 @@ import com.kisman.cc.features.rpc.RPC;
 import com.kisman.cc.features.schematica.schematica.Schematica;
 import com.kisman.cc.features.subsystem.SubSystemManager;
 import com.kisman.cc.features.viaforge.ViaForge;
+import com.kisman.cc.features.viaforge.gui.ViaForgeGui;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
@@ -130,6 +131,7 @@ public class Kisman {
     public HalqHudGui halqHudGui;
     public PingBypassGui pingBypassGui;
     public NoComGui noComGui;
+    public ViaForgeGui viaForgeGui;
     public SelectionBar selectionBar;
     public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
@@ -238,6 +240,7 @@ public class Kisman {
         halqHudGui = new HalqHudGui();
         pingBypassGui = new PingBypassGui();
 //        noComGui = new NoComGui();
+        viaForgeGui = new ViaForgeGui();
 
         mainMenuController = new MainMenuController();
         mainMenuController.init();

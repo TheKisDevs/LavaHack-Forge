@@ -95,6 +95,11 @@ public class HalqGui extends KismanGuiScreen {
         return this;
     }
 
+    public HalqGui(GuiScreen lastGui, boolean notFullInit) {
+        this(notFullInit);
+        setLastGui(lastGui);
+    }
+
     public HalqGui(@SuppressWarnings("unused") boolean notFullInit) {
         this.particleSystem = new ParticleSystem();
     }

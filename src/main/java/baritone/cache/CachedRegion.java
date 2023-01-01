@@ -121,7 +121,7 @@ public final class CachedRegion implements ICachedRegion {
                 Files.createDirectories(path);
 
             }
-            System.out.println("Saving region " + x + "," + z + " to disk " + path);
+            Baritone.LOGGER.info("Saving region " + x + "," + z + " to disk " + path);
             Path regionFile = getRegionFile(path, this.x, this.z);
             if (!Files.exists(regionFile)) {
                 Files.createFile(regionFile);
@@ -180,7 +180,7 @@ public final class CachedRegion implements ICachedRegion {
                 }
             }
             hasUnsavedChanges = false;
-            System.out.println("Saved region successfully");
+            Baritone.LOGGER.info("Saved region successfully");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -198,7 +198,7 @@ public final class CachedRegion implements ICachedRegion {
                 return;
             }
 
-            System.out.println("Loading region " + x + "," + z + " from disk " + path);
+            Baritone.LOGGER.info("Loading region " + x + "," + z + " from disk " + path);
             long start = System.nanoTime() / 1000000L;
 
             try (
@@ -298,7 +298,7 @@ public final class CachedRegion implements ICachedRegion {
             removeExpired();
             hasUnsavedChanges = false;
             long end = System.nanoTime() / 1000000L;
-            System.out.println("Loaded region successfully in " + (end - start) + "ms");
+            Baritone.LOGGER.info("Loaded region successfully in " + (end - start) + "ms");
         } catch (Exception ex) { // corrupted files can cause NullPointerExceptions as well as IOExceptions
             ex.printStackTrace();
         }
@@ -314,7 +314,7 @@ public final class CachedRegion implements ICachedRegion {
         for (int x = 0; x < 32; x++) {
             for (int z = 0; z < 32; z++) {
                 if (this.chunks[x][z] != null && this.chunks[x][z].cacheTimestamp < oldestAcceptableAge) {
-                    System.out.println("Removing chunk " + (x + 32 * this.x) + "," + (z + 32 * this.z) + " because it was cached " + (now - this.chunks[x][z].cacheTimestamp) / 1000L + " seconds ago, and max age is " + expiry);
+                    Baritone.LOGGER.info("Removing chunk " + (x + 32 * this.x) + "," + (z + 32 * this.z) + " because it was cached " + (now - this.chunks[x][z].cacheTimestamp) / 1000L + " seconds ago, and max age is " + expiry);
                     this.chunks[x][z] = null;
                 }
             }

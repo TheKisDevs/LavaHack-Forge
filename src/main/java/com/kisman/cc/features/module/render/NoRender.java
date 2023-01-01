@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventIngameOverlay;
+import com.kisman.cc.event.events.EventRenderAttackIndicator;
 import com.kisman.cc.event.events.EventSetupFog;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.*;
@@ -46,6 +47,7 @@ public class NoRender extends Module {
     private final Setting fire = register(new Setting("Fire", this, false));
     private final Setting lava = register(new Setting("Lava", this, false));
     private final Setting water = register(new Setting("Water", this, false));
+    private final Setting crosshair = register(new Setting("Crosshair", this, false));
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -60,10 +62,12 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.subscribe(portal_);
         Kisman.EVENT_BUS.subscribe(overlay_);
         Kisman.EVENT_BUS.subscribe(send);
+        Kisman.EVENT_BUS.subscribe(crosshair_);
     }
 
     public void onDisable() {
         super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(crosshair_);
         Kisman.EVENT_BUS.unsubscribe(send);
         Kisman.EVENT_BUS.unsubscribe(overlay_);
         Kisman.EVENT_BUS.unsubscribe(portal_);
@@ -71,6 +75,10 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.unsubscribe(bossBar_);
         Kisman.EVENT_BUS.unsubscribe(setupFog);
     }
+
+    @EventHandler private final Listener<EventRenderAttackIndicator> crosshair_ = new Listener<>(event -> {
+        if(crosshair.getValBoolean()) event.cancel();
+    });
 
     @EventHandler private final Listener<EventIngameOverlay.BossBar> bossBar_ = new Listener<>(event -> {
         if(bossBar.getValBoolean()) event.cancel();
@@ -99,21 +107,6 @@ public class NoRender extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
 
-        // bruh are you serious? - Cubic
-        /*
-        if(potion.getValBoolean()) {
-            if(mc.player.isPotionActive(Potion.getPotionById(25))) mc.player.removeActivePotionEffect(Potion.getPotionById(25));
-            if(mc.player.isPotionActive(Potion.getPotionById(2))) mc.player.removeActivePotionEffect(Potion.getPotionById(2));
-            if(mc.player.isPotionActive(Potion.getPotionById(4))) mc.player.removeActivePotionEffect(Potion.getPotionById(4));
-            if(mc.player.isPotionActive(Potion.getPotionById(9))) mc.player.removeActivePotionEffect(Potion.getPotionById(9));
-            if(mc.player.isPotionActive(Potion.getPotionById(15))) mc.player.removeActivePotionEffect(Potion.getPotionById(15));
-            if(mc.player.isPotionActive(Potion.getPotionById(17))) mc.player.removeActivePotionEffect(Potion.getPotionById(17));
-            if(mc.player.isPotionActive(Potion.getPotionById(18))) mc.player.removeActivePotionEffect(Potion.getPotionById(18));
-            if(mc.player.isPotionActive(Potion.getPotionById(27))) mc.player.removeActivePotionEffect(Potion.getPotionById(27));
-            if(mc.player.isPotionActive(Potion.getPotionById(20))) mc.player.removeActivePotionEffect(Potion.getPotionById(20));
-        }
-         */
-
         if(potion.getValBoolean()){
             Map<Potion, PotionEffect> map = new HashMap<>();
             for(Map.Entry<Potion, PotionEffect> effect : mc.player.activePotionsMap.entrySet())
@@ -140,14 +133,7 @@ public class NoRender extends Module {
 
     @SubscribeEvent
     public void renderBlockEvent(RenderBlockOverlayEvent event) {
-        /*
-        if(mc.player != null && mc.world != null) {
-            if(block.getValBoolean() && event.getOverlayType() == RenderBlockOverlayEvent.OverlayType.BLOCK) event.setCanceled(true);
-            if(lava.getValBoolean() && event.getBlockForOverlay().getBlock().equals(Blocks.LAVA)) event.setCanceled(true);
-        }
-         */
-        if(mc.player == null || mc.world == null)
-            return;
+        if(mc.player == null || mc.world == null) return;
 
         RenderBlockOverlayEvent.OverlayType overlayType = event.getOverlayType();
 

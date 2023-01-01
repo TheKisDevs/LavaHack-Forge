@@ -12,6 +12,7 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.dynamic.RotationEnum;
 import com.kisman.cc.util.world.*;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
@@ -54,7 +55,7 @@ public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = threads();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
     private final Setting syncronized = register(new Setting("Syncronized", this, false));
-    private final SettingEnum<Vectors> mode = new SettingEnum<>("Mode", this, Vectors.Normal).register();
+    private final SettingEnum<Vectors> mode = register(new SettingEnum<>("Mode", this, Vectors.Normal));
     private final Setting rangeCheck = register(new Setting("RangeCheck", this, false));
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5.5, 1, 10, false).setVisible(rangeCheck::getValBoolean));
     private final Setting safeDynamic = register(new Setting("Safe Dynamic", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
@@ -65,21 +66,20 @@ public class SurroundRewrite extends Module {
     private final Setting block = register(new Setting("Block", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest")));
     private final Setting smartBlock = register(new Setting("Smart Block", this, false));
     private final Setting safeEchest = /*register*/(new Setting("Safe E Chest", this, false).setVisible(() -> mode.getValEnum() == Vectors.Dynamic));
-    private final SettingEnum<SwapEnum.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum.Swap.Silent).register();
+    private final SettingEnum<SwapEnum.Swap> swap = register(new SettingEnum<>("Switch", this, SwapEnum.Swap.Silent));
     private final Setting swapWhen = register(new Setting("SwitchWhen", this, SwapWhen.Place));
     private final Setting center = register(new Setting("Center", this, false));
     private final Setting smartCenter = register(new Setting("SmartCenter", this, false));
     private final Setting smartHelpingBlocks = register(new Setting("SmartHelping", this, false));
     private final Setting fightCA = register(new Setting("FightCA", this, false));
     private final Setting detectSound = register(new Setting("DetectSound", this).setVisible(fightCA::getValBoolean));
-    private final SettingEnum<FightCAEntityMode> detectEntity = new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean).register();
+    private final SettingEnum<FightCAEntityMode> detectEntity = register(new SettingEnum<>("DetectEntity", this, FightCAEntityMode.Off).setVisible(fightCA::getValBoolean));
     private final Setting detectEntityDestruction = register(new Setting("OnEntityDestruction", this, false));
     private final Setting antiCity = register(new Setting("AntiCity", this, false));
     private final Setting manipulateWorld = register(new Setting("ManipulateWorld", this, false));
     private final Setting postReceive = register(new Setting("PostReceive", this, false));
     private final Setting toggle = register(new Setting("Toggle", this, Toggle.OffGround));
     private final Setting toggleHeight = register(new Setting("ToggleHeight", this, 0.4, 0.0, 1.0, false).setVisible(() -> toggle.getValEnum() == Toggle.PositiveYChange || toggle.getValEnum() == Toggle.Combo));
-    private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting feetBlocks = register(new Setting("FeetBlocks", this, false));
     private final Setting heightLimit = register(new Setting("HeightLimit", this, 256, 0, 256, true));
@@ -105,6 +105,8 @@ public class SurroundRewrite extends Module {
     private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false).setTitle("Client Side")));
     private final Setting cbNoSuicide = register(crystalBreaker.add(new Setting("CbNoSuicide", this, true).setTitle("No Suicide")));
     private final Setting cbTerrain = register(crystalBreaker.add(new Setting("CbTerrain", this, true).setVisible(cbNoSuicide::getValBoolean)));
+
+    private final SettingEnum<RotationEnum.Rotation> rotator = register(new SettingEnum<>("Rotate", this, RotationEnum.Rotation.None));
 
     public static SurroundRewrite instance;
 
@@ -364,7 +366,7 @@ public class SurroundRewrite extends Module {
             if(rangeCheck.getValBoolean() && mc.player.getDistanceSq(pos) > placeRange.getValDouble())
                 continue;
             swap.getValEnum().doSwap(slot, false, SwapWhen.Place);
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotator.getValEnum(), packet.getValBoolean());
             swap.getValEnum().doSwap(oldSlot, true, SwapWhen.Place);
         }
     }

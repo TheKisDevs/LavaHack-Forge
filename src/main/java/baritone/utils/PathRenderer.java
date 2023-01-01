@@ -17,6 +17,7 @@
 
 package baritone.utils;
 
+import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.event.events.RenderEvent;
 import baritone.api.pathing.calc.IPath;
@@ -69,9 +70,9 @@ public final class PathRenderer implements IRenderer {
         Entity renderView = Helper.mc.getRenderViewEntity();
 
         if (renderView.world != BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().world()) {
-            System.out.println("I have no idea what's going on");
-            System.out.println("The primary baritone is in a different world than the render view entity");
-            System.out.println("Not rendering the path");
+            Baritone.LOGGER.error("I have no idea what's going on");
+            Baritone.LOGGER.error("The primary baritone is in a different world than the render view entity");
+            Baritone.LOGGER.error("Not rendering the path");
             return;
         }
 

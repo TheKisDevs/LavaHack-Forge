@@ -166,9 +166,9 @@ public class ModuleManager {
 		add(new MotionBlur());
 		add(new NameTags());
 //		add(new NoBobbing());
-		add(new NoCrosshair());
+//		add(new NoCrosshair());
 		add(new NoRender());
-//		add(new PearlTracer());
+		add(new PearlTracer());
 		add(new PopCharms());
 		add(new ScreenTint());
 		add(new SelfCityESP());
