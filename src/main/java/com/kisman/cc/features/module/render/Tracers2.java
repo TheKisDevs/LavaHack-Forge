@@ -36,7 +36,7 @@ public class Tracers2 extends Module {
         double y = entity.posY + (entity.boundingBox.maxY / 2.0) - mc.renderManager.viewerPosY;
         double z = entity.posZ - mc.renderManager.viewerPosZ;
 
-        Rendering.setup();
+        Rendering.start();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         GL11.glLineWidth(3.0f);
@@ -44,6 +44,6 @@ public class Tracers2 extends Module {
         buf.pos(0.0, 0.0, 0.0).color(255, 255, 255, 255).endVertex();
         buf.pos(x, y, z).color(255, 255, 255, 255).endVertex();
         tessellator.draw();
-        Rendering.release();
+        Rendering.end();
     }
 }

@@ -42,9 +42,7 @@ public class Rendering {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
                 if(gradient) {
-                    prepare();
                     drawGradientFilledBox(aabb, color1, color2);
-                    restore();
                 } else drawSelectionBox(aabb, color1);
             }
         },
@@ -52,9 +50,7 @@ public class Rendering {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
                 if(gradient) {
-                    prepare();
                     drawGradientBlockOutline(aabb, color1, color2, (float) values[0]);
-                    restore();
                 } else {
                     glLineWidth((float) values[0]);
                     drawSelectionBoundingBox(aabb, color1);
@@ -131,33 +127,78 @@ public class Rendering {
             this.objects = new ArrayList<>(Arrays.asList(objects));
         }
         
-        public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, Object... values) {
+        public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, boolean depth, Object... values) {
             for(RenderObject object : objects) {
-                //TODO: cleanup it!!!!
-                if(object == RenderObject.BOX) {
-                    object.draw(aabb, filledColor1, filledColor2, gradient, values);
-                } else if(object == RenderObject.OUTLINE) {
-                    object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
-                } else if(object == RenderObject.WIRE) {
-                    object.draw(aabb, wireColor1, wireColor2, gradient, values);
+                if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, values);
+                else {
+                    start(depth);
+
+                    if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, values);
+                    else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
+
+                    end(depth);
                 }
             }
         }
     }
 
-    public static void setup(){
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-        glLineWidth(1.5f);
+    public static void start(boolean depth) {
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        if(!depth) GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST);
+        GL11.glDisable(GL11.GL_LIGHTING);
     }
 
-    public static void setup(boolean depth){
+    public static void start() {
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST);
+        GL11.glDisable(GL11.GL_LIGHTING);
+    }
+
+    public static void end() {
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDepthMask(true);
+        GL11.glCullFace(GL11.GL_BACK);
+        GL11.glPopMatrix();
+        GL11.glPopAttrib();
+    }
+
+    public static void end(boolean depth) {
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        if(!depth) GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDepthMask(true);
+        GL11.glCullFace(GL11.GL_BACK);
+        GL11.glPopMatrix();
+        GL11.glPopAttrib();
+    }
+
+    public static void setup(boolean depth) {
         GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
         if(!depth) GlStateManager.disableDepth();
@@ -165,9 +206,22 @@ public class Rendering {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(false);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
         glLineWidth(1.5f);
     }
+
+    public static void setup() {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+        glLineWidth(1.5f);
+    }
+
 
     public static void release(){
         glDisable(GL_LINE_SMOOTH);
@@ -189,23 +243,19 @@ public class Rendering {
         GlStateManager.popMatrix();
     }
 
-    public static void prepare(){
-        GlStateManager.disableCull();
-        GlStateManager.disableAlpha();
-        GlStateManager.shadeModel(GL_SMOOTH);
-    }
-
-    public static void restore(){
-        GlStateManager.enableCull();
-        GlStateManager.enableAlpha();
-        GlStateManager.shadeModel(GL_FLAT);
-    }
-
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode) {
-        draw0(axisAlignedBB, lineWidth, c, c1, c.withAlpha(255), c1.withAlpha(255), c.withAlpha(255), c1.withAlpha(255), mode);
+        draw0(axisAlignedBB, lineWidth, c, c1, mode, false);
+    }
+
+    public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode, boolean depth) {
+        draw0(axisAlignedBB, lineWidth, c, c1, c.withAlpha(255), c1.withAlpha(255), c.withAlpha(255), c1.withAlpha(255), mode, depth);
     }
 
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Colour c2, Colour c3, Colour c4, Colour c5, Mode mode) {
+        draw0(axisAlignedBB, lineWidth, c, c1, c2, c3, c4, c5, mode, false);
+    }
+
+    public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Colour c2, Colour c3, Colour c4, Colour c5, Mode mode, boolean depth) {
         Color filledColor1 = c.getColor();
         Color filledColor2 = c1.getColor();
         Color outlineColor1 = c2.getColor();
@@ -213,13 +263,11 @@ public class Rendering {
         Color wireColor1 = c4.getColor();
         Color wireColor2 = c5.getColor();
 
-        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, lineWidth);
+        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, false, lineWidth);
     }
 
     public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){
-        setup();
         draw0(axisAlignedBB, lineWidth, c, c1, mode);
-        release();
     }
 
     public static AxisAlignedBB correct(AxisAlignedBB aabb){
@@ -270,22 +318,20 @@ public class Rendering {
         double yAdd = (aabb.maxY - aabb.minY) * 0.5;
         AxisAlignedBB aabb1 = new AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.minY + yAdd, aabb.maxZ);
         AxisAlignedBB aabb2 = new AxisAlignedBB(aabb.minX, aabb.minY + yAdd, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
-        prepare();
+        start();
         drawGradientFilledBox(aabb1, colour1.getColor(), colour2.getColor());
         drawGradientFilledBox(aabb2, colour2.getColor(), colour3.getColor());
-        restore();
+        end();
     }
 
     public static void drawTripleGradient2(AxisAlignedBB aabb, Colour colour1, Colour colour2, Colour colour3){
         double yAdd = (aabb.maxY - aabb.minY) * 0.5;
         AxisAlignedBB aabb1 = new AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.minY + yAdd, aabb.maxZ);
         AxisAlignedBB aabb2 = new AxisAlignedBB(aabb.minX, aabb.minY + yAdd, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
-        setup();
-        prepare();
+        start();
         drawTopOpenGradientBox(aabb2, colour1.getColor(), colour2.getColor());
         drawBottomOpenedGradientBox(aabb1, colour2.getColor(), colour3.getColor());
-        restore();
-        release();
+        end();
     }
 
     public static void drawTopOpenGradientBox(AxisAlignedBB bb, Color startColor, Color endColor){
@@ -433,12 +479,12 @@ public class Rendering {
     }
 
     public static void drawGradientFilledBox(AxisAlignedBB bb, Color startColor, Color endColor) {
-        GlStateManager.pushMatrix();
+        /*GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
         GlStateManager.disableDepth();
         GlStateManager.tryBlendFuncSeparate((int) 770, (int) 771, (int) 0, (int) 1);
         GlStateManager.disableTexture2D();
-        GlStateManager.depthMask((boolean) false);
+        GlStateManager.depthMask((boolean) false);*/
         float alpha = (float) endColor.getAlpha() / 255.0f;
         float red = (float) endColor.getRed() / 255.0f;
         float green = (float) endColor.getGreen() / 255.0f;
@@ -475,11 +521,11 @@ public class Rendering {
         bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         tessellator.draw();
-        GlStateManager.depthMask((boolean) true);
+        /*GlStateManager.depthMask((boolean) true);
         GlStateManager.enableDepth();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();*/
     }
 
     public static void drawGradientBlockOutline(AxisAlignedBB bb, Color startColor, Color endColor, float linewidth) {
@@ -491,15 +537,15 @@ public class Rendering {
         float green1 = (float)endColor.getGreen() / 255.0f;
         float blue1 = (float)endColor.getBlue() / 255.0f;
         float alpha1 = (float)endColor.getAlpha() / 255.0f;
-        GlStateManager.pushMatrix();
+        /*GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
         GlStateManager.disableDepth();
         GlStateManager.tryBlendFuncSeparate((int)770, (int)771, (int)0, (int)1);
         GlStateManager.disableTexture2D();
-        GlStateManager.depthMask((boolean)false);
-        GL11.glEnable((int)2848);
+        GlStateManager.depthMask((boolean)false);*/
+        /*GL11.glEnable((int)2848);
         GL11.glHint((int)3154, (int)4354);
-        GL11.glLineWidth((float)linewidth);
+        GL11.glLineWidth((float)linewidth);*/
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
@@ -520,12 +566,12 @@ public class Rendering {
         bufferbuilder.pos(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         tessellator.draw();
-        GL11.glDisable((int)2848);
+        /*GL11.glDisable((int)2848);
         GlStateManager.depthMask((boolean)true);
         GlStateManager.enableDepth();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();*/
     }
 
     /**
@@ -549,8 +595,7 @@ public class Rendering {
         int green3 = c3.getGreen();
         int blue3 = c3.getBlue();
         int alpha3 = c3.getAlpha();
-        setup();
-        prepare();
+        start();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -606,16 +651,14 @@ public class Rendering {
         buf.pos(bb2.minX, bb2.minY, bb2.maxZ).color(red3, green3, blue3, alpha3).endVertex();
 
         tessellator.draw();
-        restore();
-        release();
+        end();
     }
 
     /**
      * @author Cubic
      */
     public static void drawChrome(AxisAlignedBB bb, EnumFacing facing, Color c1, Color c2, Color c3, Color c4){
-        setup();
-        prepare();
+        start();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -658,8 +701,7 @@ public class Rendering {
                 break;
         }
         tessellator.draw();
-        restore();
-        release();
+        end();
     }
 
     /**
@@ -667,8 +709,7 @@ public class Rendering {
      * @author Cubic
      */
     public static void drawChromaOutline(AxisAlignedBB bb, EnumFacing facing, float lineWidth, Color c1, Color c2, Color c3, Color c4){
-        setup();
-        prepare();
+        start();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         GL11.glLineWidth(lineWidth);
@@ -754,13 +795,11 @@ public class Rendering {
                 break;
         }
         tessellator.draw();
-        restore();
-        release();
+        end();
     }
 
     public static void drawChromaBox(AxisAlignedBB bb, Color c1, Color c2, Color c3, Color c4){
-        setup();
-        prepare();
+        start();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -802,8 +841,7 @@ public class Rendering {
         buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
 
         tessellator.draw();
-        restore();
-        release();
+        end();
     }
 
     public static void drawBoxESP(Entity entity, float colorRed, float colorGreen, float colorBlue, float colorAlpha, float ticks) {
@@ -819,7 +857,7 @@ public class Rendering {
             float playerViewX = mc.renderManager.playerViewX;
             boolean thirdPersonView = mc.renderManager.options.thirdPersonView == 2;
 
-            setup();
+            start();
             GlStateManager.translate(xPos, yPos, zPos);
             GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
             GlStateManager.rotate(-playerViewY, 0.0F, 1.0F, 0.0F);
@@ -838,7 +876,7 @@ public class Rendering {
             GL11.glVertex3d(0.5, 0.5, 0.0);
 
             GL11.glEnd();
-            release();
+            end();
         } catch (Exception exception) {
             exception.printStackTrace();
         }

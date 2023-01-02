@@ -84,7 +84,7 @@ class Trails : Module(
         }
 
         if(trace != null) {
-            Rendering.setup()
+            Rendering.start()
             GL11.glLineWidth(lineWidth.valFloat)
 
             for(pos in positions) {
@@ -115,7 +115,7 @@ class Trails : Module(
 
             GL11.glEnd()
 
-            Rendering.release()
+            Rendering.end()
         }
     }
 

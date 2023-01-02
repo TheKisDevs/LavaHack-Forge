@@ -9,6 +9,7 @@ import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.interfaces.Drawable
 import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
@@ -24,7 +25,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Suppress("LocalVariableName")
-class BlockHighlight : Module("BlockHighlight", "Highlights object you are looking at", Category.RENDER) {
+class BlockHighlight : Module(
+    "BlockHighlight",
+    "Highlights object you are looking at",
+    Category.RENDER
+), Drawable {
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
 
@@ -189,6 +194,9 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
         }
     }
 
+    private var bb : AxisAlignedBB? = null
+    private var facing : EnumFacing? = null
+
     companion object {
         var instance : BlockHighlight? = null
     }
@@ -209,7 +217,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
 
         val hitObject = mc.objectMouseOver
 
-        val bb = when (hitObject.typeOfHit) {
+        bb = when (hitObject.typeOfHit) {
             RayTraceResult.Type.ENTITY -> {
                 if (entities.valBoolean) {
                     hitObject.entityHit.entityBoundingBox
@@ -221,7 +229,7 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             else -> null
         }
 
-        val facing = if(hitObject.typeOfHit == RayTraceResult.Type.ENTITY) {
+        facing = if(hitObject.typeOfHit == RayTraceResult.Type.ENTITY) {
             val viewEntity = mc.renderViewEntity ?: mc.player
             val eyePos = viewEntity.getPositionEyes(event.partialTicks)
             val entity = hitObject.entityHit ?: return
@@ -232,11 +240,13 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             hitObject.sideHit
         }
 
-        renderer.onRenderWorld(
-            bb,
-            if(hitSideOnly.valBoolean) facing else null,
-            pattern
-        )
+        if(pattern.canRender()) {
+            renderer.onRenderWorld(
+                bb,
+                if(hitSideOnly.valBoolean) facing else null,
+                pattern
+            )
+        }
 
         if(bb != null && crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
             val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
@@ -248,11 +258,19 @@ class BlockHighlight : Module("BlockHighlight", "Highlights object you are looki
             }"
 
             TextOnBlockObject(
-                    text,
-                    hitObject.blockPos,
-                    crystalInfoColor.colour
+                text,
+                hitObject.blockPos,
+                crystalInfoColor.colour
             ).draw(event.partialTicks)
         }
+    }
+
+    override fun draw() {
+        renderer.onRenderWorld(
+            bb,
+            if(hitSideOnly.valBoolean) facing else null,
+            pattern
+        )
     }
 
     private interface IRenderer {

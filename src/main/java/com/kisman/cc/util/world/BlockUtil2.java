@@ -3,7 +3,6 @@ package com.kisman.cc.util.world;
 import com.kisman.cc.settings.util.EasingsPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -11,18 +10,13 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
@@ -164,39 +158,5 @@ public class BlockUtil2 {
             }
         }
         return !sideCheck || getPlaceableSide(position) != null;
-    }
-
-    public static CPacketPlayer.Rotation placeBlockGetRotate(BlockPos blockPos, EnumHand hand, boolean checkAction, ArrayList<EnumFacing> forceSide, boolean swingArm, boolean sneak) {
-        if (mc.player == null || mc.world == null || mc.playerController == null) return null;
-        if (!mc.world.getBlockState(blockPos).getMaterial().isReplaceable()) return null;
-        EnumFacing side = forceSide != null ? BlockUtil.getPlaceableSideExlude(blockPos, forceSide) : BlockUtil.getPlaceableSide(blockPos);
-        if (side == null) return null;
-        BlockPos neighbour = blockPos.offset(side);
-        EnumFacing opposite = side.getOpposite();
-        if (!BlockUtil.canBeClicked(neighbour)) return null;
-        Vec3d hitVec = new Vec3d(neighbour).add(new Vec3d(0.5, 0.5, 0.5)).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
-        Block neighbourBlock = mc.world.getBlockState(neighbour).getBlock();
-
-        if (!mc.player.isSneaking() && BlockUtil.blackList.contains(neighbourBlock) || BlockUtil.shulkerList.contains(neighbourBlock) && sneak) {
-            mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SNEAKING));
-            mc.player.setSneaking(true);
-        }
-
-        EnumActionResult action = mc.playerController.processRightClickBlock(mc.player, mc.world, neighbour, opposite, hitVec, hand);
-        if (!checkAction || action == EnumActionResult.SUCCESS) {
-            if (swingArm) {
-                mc.player.swingArm(hand);
-                mc.rightClickDelayTimer = 4;
-            } else mc.player.connection.sendPacket(new CPacketAnimation(hand));
-        }
-
-        return getFaceVectorPacket(hitVec, true);
-    }
-
-    public static CPacketPlayer.Rotation getFaceVectorPacket(Vec3d vec, Boolean roundAngles) {
-        float[] rotations = RotationUtils.getNeededRotations2(vec);
-        CPacketPlayer.Rotation e = new CPacketPlayer.Rotation(rotations[0], roundAngles ? MathHelper.normalizeAngle((int) rotations[1], 360) : rotations[1], mc.player.onGround);
-        mc.player.connection.sendPacket(e);
-        return e;
     }
 }

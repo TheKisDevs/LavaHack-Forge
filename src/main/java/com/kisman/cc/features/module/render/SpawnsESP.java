@@ -51,7 +51,7 @@ public class SpawnsESP extends Module {
             }
 
             mc.addScheduledTask(() -> {
-                Rendering.setup();
+                Rendering.start();
 
 //                ArrayList<Vec3d> vertexes = new ArrayList<>();
                 double deltaX = VecCircle.getVector(circle).x - mc.getRenderManager().renderPosX;
@@ -72,7 +72,7 @@ public class SpawnsESP extends Module {
                 }*/
                 GL11.glEnd();
 
-                Rendering.release();
+                Rendering.end();
             });
         }
     }

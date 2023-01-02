@@ -37,7 +37,6 @@
     "MixinNetworkManager",
     "MixinParticleManager",
     "MixinPlayerControllerMP",
-    "MixinRender",
     "MixinRenderEnderCrystal",
     "MixinRenderEntityItem",
     "MixinRendererLivingEntity",

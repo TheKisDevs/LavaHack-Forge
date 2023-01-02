@@ -1,15 +1,19 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.render.ShaderCharms
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
+import com.kisman.cc.util.clone
 import com.kisman.cc.util.enums.RenderingRewriteModes
+import com.kisman.cc.util.interfaces.Drawable
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import java.util.function.Supplier
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class RenderingRewritePattern(
@@ -24,6 +28,7 @@ open class RenderingRewritePattern(
     val scaleState = setupSetting(scaleGroup.add(Setting("Scale State", module, false).setTitle("State")))
     val scaleOffset = setupSetting(scaleGroup.add(Setting("Scale Offset", module, 0.002, 0.002, 0.2, false)))
     val depth = setupSetting(Setting("Depth", module, false))
+    val shader = setupSetting(Setting("Shader", module, false))
 
     val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
     val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
@@ -50,6 +55,9 @@ open class RenderingRewritePattern(
             group!!.add(lineWidth)
             group!!.add(scaleGroup)
             group!!.add(depth)
+            if(module is Drawable) {
+                group!!.add(shader)
+            }
             group!!.add(rainbowGroup)
             group!!.add(colorGroup)
         }
@@ -65,6 +73,9 @@ open class RenderingRewritePattern(
         module.register(scaleState)
         module.register(scaleOffset)
         module.register(depth)
+        if(module is Drawable) {
+            module.register(shader)
+        }
         module.register(rainbowGroup)
         module.register(rainbow)
         module.register(rainbowSpeed)
@@ -81,10 +92,21 @@ open class RenderingRewritePattern(
         module.register(wireColor1)
         module.register(wireColor2)
 
+        if(module is Drawable) {
+            //TODO: fix it
+            if(ShaderCharms.modules.containsKey(module)) {
+//                ShaderCharms.modules[module] = Supplier { clone(ShaderCharms.modules[module]!!)!!.get() || module.toggled && isActive() && !canRender() }
+            } else {
+                ShaderCharms.modules[module] = Supplier { module.toggled && isActive() && !canRender() }
+            }
+        }
+
         return this
     }
 
     open fun isActive() : Boolean = mode.valEnum != RenderingRewriteModes.None
+
+    open fun canRender() : Boolean = !shader.valBoolean
 
     open fun draw(
         aabb : AxisAlignedBB,
@@ -154,8 +176,9 @@ open class RenderingRewritePattern(
         wireColor2 : Colour,
         mode : Rendering.Mode?
     ) {
+        //TODO: remove it and cleanup!!!
         Rendering.setup(depth.valBoolean)
-        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, mode)
+        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, mode, depth.valBoolean)
         Rendering.release(depth.valBoolean)
     }
 
@@ -165,9 +188,7 @@ open class RenderingRewritePattern(
         color2 : Colour,
         mode : Rendering.Mode?
     ) {
-        Rendering.setup(depth.valBoolean)
-        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, color1, color2, mode)
-        Rendering.release(depth.valBoolean)
+        Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, color1, color2, mode, depth.valBoolean)
     }
 
     open fun draw(

@@ -34,19 +34,19 @@ public class CubicGL {
     }
 
     public static void setup(){
-        Rendering.setup();
+        Rendering.start();
     }
 
     public static void prepare(){
-        Rendering.prepare();
+        Rendering.start();
     }
 
     public static void restore(){
-        Rendering.restore();
+        Rendering.end();
     }
 
     public static void release(){
-        Rendering.restore();
+        Rendering.end();
     }
 
     public static void drawRect(int x1, int y1, int x2, int y2, Color color){

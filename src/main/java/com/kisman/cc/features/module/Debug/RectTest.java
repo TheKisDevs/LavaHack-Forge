@@ -57,8 +57,8 @@ public class RectTest extends Module {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        Rendering.setup();
-        Rendering.prepare();
+        Rendering.start();
+//        Rendering.prepare();
         boolean original = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         scissors();
@@ -71,8 +71,7 @@ public class RectTest extends Module {
         tessellator.draw();
         if(!original)
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        Rendering.restore();
-        Rendering.release();
+        Rendering.end();
     }
 
     private void scissors(){

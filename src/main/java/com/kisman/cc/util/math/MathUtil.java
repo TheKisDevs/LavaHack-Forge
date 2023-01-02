@@ -45,7 +45,7 @@ public class MathUtil {
         return new Point(Mouse.getX() / scaleFactor, mc.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1);
     }
 
-    public static Vec3d getInterpolatedRenderPos(final Entity entity, final float ticks) {
+    public static Vec3d getInterpolatedRenderPos(Entity entity, float ticks) {
         return interpolateEntity(entity, ticks).subtract(Minecraft.getMinecraft().getRenderManager().viewerPosX, Minecraft.getMinecraft().getRenderManager().viewerPosY, Minecraft.getMinecraft().getRenderManager().viewerPosZ);
     }
 
@@ -55,7 +55,7 @@ public class MathUtil {
                 entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * time);
     }
 
-    public static double getInputFromPercent(final double value, final double minInput, final double maxInput) {
+    public static double getInputFromPercent(double value, double minInput, double maxInput) {
         return (value * (maxInput - minInput)) / 100 + minInput;
     }
 

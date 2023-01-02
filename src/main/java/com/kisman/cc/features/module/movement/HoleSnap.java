@@ -109,7 +109,7 @@ public class HoleSnap extends Module {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
 
-        Rendering.setup();
+        Rendering.start();
 
         GL11.glLineWidth(lineWidth.getValFloat());
         bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
@@ -119,7 +119,7 @@ public class HoleSnap extends Module {
                 .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         tessellator.draw();
 
-        Rendering.release();
+        Rendering.end();
     }
 
     @EventHandler

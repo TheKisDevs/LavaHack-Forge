@@ -8,45 +8,47 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 public abstract class Shader {
+    public String name;
     public int program;
     public Map<String, Integer> uniformsMap;
 
-    public Shader(final String fragmentShader) {
-        int vertexShaderID;
-        int fragmentShaderID;
+    public Shader(String fragmentShader) {
+        this.name = fragmentShader;
+
+        int vertexShaderID = 0;
+        int fragmentShaderID = 0;
+
         try {
-            final InputStream vertexStream = this.getClass().getResourceAsStream("/assets/kismancc/shader/vertex.vert");
-            vertexShaderID = this.createShader(IOUtils.toString(vertexStream, Charset.defaultCharset()), 35633);
+            InputStream vertexStream = this.getClass().getResourceAsStream("/assets/kismancc/shader/vertex.vert");
+            if(vertexStream != null) vertexShaderID = this.createShader(IOUtils.toString(vertexStream, Charset.defaultCharset()), ARBVertexShader.GL_VERTEX_SHADER_ARB);
             IOUtils.closeQuietly(vertexStream);
-            final InputStream fragmentStream = this.getClass().getResourceAsStream("/assets/kismancc/shader/fragment/" + fragmentShader);
-            fragmentShaderID = this.createShader(IOUtils.toString(fragmentStream, Charset.defaultCharset()), 35632);
+            InputStream fragmentStream = this.getClass().getResourceAsStream("/assets/kismancc/shader/fragment/" + fragmentShader);
+            if(fragmentStream != null) fragmentShaderID = this.createShader(IOUtils.toString(fragmentStream, Charset.defaultCharset()), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
             IOUtils.closeQuietly(fragmentStream);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (vertexShaderID == 0 || fragmentShaderID == 0) {
-            return;
-        }
-        this.program = ARBShaderObjects.glCreateProgramObjectARB();
-        if (this.program == 0) {
-            return;
-        }
-        ARBShaderObjects.glAttachObjectARB(this.program, vertexShaderID);
-        ARBShaderObjects.glAttachObjectARB(this.program, fragmentShaderID);
-        ARBShaderObjects.glLinkProgramARB(this.program);
-        ARBShaderObjects.glValidateProgramARB(this.program);
+
+        if (vertexShaderID == 0 || fragmentShaderID == 0) return;
+
+        program = ARBShaderObjects.glCreateProgramObjectARB();
+        if (program == 0) return;
+
+        ARBShaderObjects.glAttachObjectARB(program, vertexShaderID);
+        ARBShaderObjects.glAttachObjectARB(program, fragmentShaderID);
+        ARBShaderObjects.glLinkProgramARB(program);
+        ARBShaderObjects.glValidateProgramARB(program);
     }
 
     public void startShader() {
         GL11.glPushMatrix();
-        GL20.glUseProgram(this.program);
-        if (this.uniformsMap == null) {
-            this.uniformsMap = new HashMap<>();
-            this.setupUniforms();
+        GL20.glUseProgram(program);
+        if (uniformsMap == null) {
+            uniformsMap = new HashMap<>();
+            setupUniforms();
         }
-        this.updateUniforms();
+        updateUniforms();
     }
 
     public void stopShader() {
@@ -57,14 +59,14 @@ public abstract class Shader {
     public void setupUniforms() {}
     public void updateUniforms() {}
 
-    public int createShader(final String shaderSource, final int shaderType) {
+    public int createShader(String shaderSource, int shaderType) {
         int shader = 0;
         try {
             shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
             if (shader == 0) return 0;
             ARBShaderObjects.glShaderSourceARB(shader, shaderSource);
             ARBShaderObjects.glCompileShaderARB(shader);
-            if (ARBShaderObjects.glGetObjectParameteriARB(shader, 35713) == 0) throw new RuntimeException("Error creating shader: " + this.getLogInfo(shader));
+            if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE) throw new RuntimeException("Error creating shader: " + this.getLogInfo(shader));
             return shader;
         } catch (Exception e) {
             ARBShaderObjects.glDeleteObjectARB(shader);
@@ -72,23 +74,23 @@ public abstract class Shader {
         }
     }
 
-    public String getLogInfo(final int i) {
-        return ARBShaderObjects.glGetInfoLogARB(i, ARBShaderObjects.glGetObjectParameteriARB(i, 35716));
+    public String getLogInfo(int i) {
+        return ARBShaderObjects.glGetInfoLogARB(i, ARBShaderObjects.glGetObjectParameteriARB(i, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB));
     }
 
-    public void setUniform(final String uniformName, final int location) {
-        this.uniformsMap.put(uniformName, location);
+    public void setUniform(String uniformName, int location) {
+        uniformsMap.put(uniformName, location);
     }
 
-    public void setupUniform(final String uniformName) {
-        this.setUniform(uniformName, GL20.glGetUniformLocation(this.program, uniformName));
+    public void setupUniform(String uniformName) {
+        setUniform(uniformName, GL20.glGetUniformLocation(this.program, uniformName));
     }
 
-    public int getUniform(final String uniformName) {
-        return this.uniformsMap.get(uniformName);
+    public int getUniform(String uniformName) {
+        return uniformsMap.get(uniformName);
     }
 
     public int getProgramId() {
-        return this.program;
+        return program;
     }
 }

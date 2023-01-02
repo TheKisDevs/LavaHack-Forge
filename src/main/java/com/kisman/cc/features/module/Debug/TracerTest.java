@@ -45,7 +45,7 @@ public class TracerTest extends Module {
         if(entity == null)
             return;
 
-        Rendering.setup();
+        Rendering.start();
         GL11.glLineWidth(2.0f);
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         Tessellator tessellator = Tessellator.getInstance();
@@ -54,6 +54,6 @@ public class TracerTest extends Module {
         buf.pos(Display.getWidth() / 2.0, Display.getHeight() / 2.0, 0.0).endVertex();
         buf.pos(entity.posX - mc.getRenderManager().viewerPosX, entity.posY - mc.getRenderManager().viewerPosY, entity.posZ - mc.getRenderManager().viewerPosZ);
         tessellator.draw();
-        Rendering.release();
+        Rendering.end();
     }
 }

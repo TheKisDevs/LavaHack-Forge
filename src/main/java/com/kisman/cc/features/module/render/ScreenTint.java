@@ -54,8 +54,8 @@ public class ScreenTint  extends Module {
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        Rendering.setup();
-        Rendering.prepare();
+        Rendering.start();
+//        Rendering.prepare();
         /*boolean original = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GLUtil.scissors(100, 100, 800, 800);*/
@@ -74,8 +74,7 @@ public class ScreenTint  extends Module {
         //GlStateManager.disableBlend();
         /*if(!original)
             GL11.glDisable(GL11.GL_SCISSOR_TEST);*/
-        Rendering.restore();
-        Rendering.release();
+        Rendering.end();
     }
 
     private Color[] getColor(){

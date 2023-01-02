@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.FadeRenderingRewritePattern;
@@ -9,6 +10,7 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.enums.FadeLogic;
+import com.kisman.cc.util.interfaces.Drawable;
 import com.kisman.cc.util.math.Interpolation;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
@@ -24,8 +26,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class HoleESPRewrite2 extends Module {
-    private final MultiThreaddableModulePattern multiThread = threads();
+public class HoleESPRewrite2 extends Module implements Drawable {
+    private final MultiThreaddableModulePattern threads = threads();
 
     private final Setting oHoles = register(new Setting("Obsidian", this, true).setTitle("Obby"));
     private final Setting bHoles = register(new Setting("Bedrock", this, true));
@@ -72,6 +74,9 @@ public class HoleESPRewrite2 extends Module {
 
     private Map<Bind<BoundingBox, Type>, Double> oldHoles = new TreeMap<>(comparatorBind);
 
+    @ModuleInstance
+    public static HoleESPRewrite2 instance;
+
     public HoleESPRewrite2(){
         super("HoleESPRewrite2", Category.RENDER);
     }
@@ -79,7 +84,7 @@ public class HoleESPRewrite2 extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-        multiThread.reset();
+        threads.reset();
     }
 
     @Override
@@ -90,10 +95,23 @@ public class HoleESPRewrite2 extends Module {
         oldHoles.clear();
     }
 
+    @Override
+    public void update() {
+        threads.update(this::doHoleESPLogic);
+    }
+
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        multiThread.update(this::doHoleESPLogic);
-        doHoleESP();
+        if(rendererFor(Type.OBSIDIAN).canRender() && rendererFor(Type.BEDROCK).canRender() && rendererFor(Type.CUSTOM).canRender()) {
+            System.out.println("drawing hole esp");
+            doHoleESP(false);
+        }
+    }
+
+    @Override
+    public void draw() {
+        System.out.println("drawing shader hole esp");
+        doHoleESP(true);
     }
 
     private void doHoleESPLogic() {
@@ -124,7 +142,7 @@ public class HoleESPRewrite2 extends Module {
         });
     }
 
-    private void doHoleESP() {
+    public void doHoleESP(boolean callingFromDraw/*i will need it later...*/) {
         Map<BoundingBox, Type> renderNormally = new TreeMap<>(comparator);
         renderNormally.putAll(map);
         Map<Bind<BoundingBox, Type>, Double> requestAdd = new TreeMap<>(comparatorBind);

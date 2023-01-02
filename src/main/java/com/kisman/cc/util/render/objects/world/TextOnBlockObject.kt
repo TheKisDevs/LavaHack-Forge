@@ -17,7 +17,7 @@ class TextOnBlockObject(
     override val type : Object3dTypes = Object3dTypes.Text
 
     override fun draw(ticks: Float) {
-        Rendering.setup()
+        Rendering.start()
         glBillboardDistanceScaled(
                 Vec3d(
                         pos.x + 0.5,
@@ -36,6 +36,6 @@ class TextOnBlockObject(
 
         CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, color.rgb)
 
-        Rendering.release()
+        Rendering.end()
     }
 }
