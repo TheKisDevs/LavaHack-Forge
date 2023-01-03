@@ -6,7 +6,6 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
-import com.kisman.cc.util.clone
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import com.kisman.cc.util.interfaces.Drawable
 import com.kisman.cc.util.render.Rendering
@@ -93,11 +92,27 @@ open class RenderingRewritePattern(
         module.register(wireColor2)
 
         if(module is Drawable) {
-            //TODO: fix it
-            if(ShaderCharms.modules.containsKey(module)) {
-//                ShaderCharms.modules[module] = Supplier { clone(ShaderCharms.modules[module]!!)!!.get() || module.toggled && isActive() && !canRender() }
-            } else {
-                ShaderCharms.modules[module] = Supplier { module.toggled && isActive() && !canRender() }
+            module.renderPatterns.add(this)
+
+            ShaderCharms.modules[module] = Supplier {
+                fun processPattern(
+                    pattern : RenderingRewritePattern
+                ) : Boolean = pattern.isActive() && !pattern.canRender()
+
+                fun processPatterns() : Boolean {
+                    var flag = false
+
+                    for(pattern in module.renderPatterns) {
+                        if(processPattern(pattern)) {
+                            flag = true
+                            continue
+                        }
+                    }
+
+                    return flag
+                }
+
+                module.toggled && processPatterns()
             }
         }
 
@@ -107,6 +122,10 @@ open class RenderingRewritePattern(
     open fun isActive() : Boolean = mode.valEnum != RenderingRewriteModes.None
 
     open fun canRender() : Boolean = !shader.valBoolean
+
+    open fun canRender(
+        callingFromDraw : Boolean
+    ) : Boolean = (callingFromDraw && !canRender()) || (!callingFromDraw && canRender())
 
     open fun draw(
         aabb : AxisAlignedBB,

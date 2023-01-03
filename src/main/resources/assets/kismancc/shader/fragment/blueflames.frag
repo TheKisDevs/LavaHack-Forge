@@ -81,9 +81,7 @@ void main() {
 
 	float alpha = 0;
 	if (centerCol.a != 0) {
-		//alpha = (c.r + c.g + c.b) / 3;
-		//alpha = min(alpha*20, 1.0);
-		alpha = calcLuma(c)*10;
+		alpha = calcLuma(c) * 10 * centerCol.a;
 	} else {
 		alpha = glowShader();
 	}

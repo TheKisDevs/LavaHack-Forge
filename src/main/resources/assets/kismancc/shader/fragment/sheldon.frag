@@ -177,10 +177,9 @@ void main() {
 
 	vec4 result = vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 1.0 );
 
-	float alpha = 0;
-	if (centerCol.a != 0) {
-		alpha = 1.0;
-	} else {
+	float alpha = centerCol.a;
+
+	if(centerCol.a == 0) {
 		alpha = glowShader();
 	}
 

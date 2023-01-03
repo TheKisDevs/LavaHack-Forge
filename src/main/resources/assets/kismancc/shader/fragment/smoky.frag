@@ -256,12 +256,9 @@ void main() {
 	vec3 result = forCol2 + backCol2;
 
 	vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
-	float alpha = 0;
+	float alpha = centerCol.a;
 
-	if (centerCol.a != 0) {
-		//alpha = calcLuma(result)*1.5;
-		alpha = 1.0;
-	} else {
+	if(centerCol.a == 0) {
 		alpha = glowShader();
 	}
 

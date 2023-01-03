@@ -62,10 +62,9 @@ void main() {
     float r2 = noise(gl_FragCoord.xy*noise(vec2(cos(time*0.01), sin(time*0.01))));
     float r3 = noise(gl_FragCoord.xy*noise(vec2(sin(time*0.05), cos(time*0.05))));
 
-    float alpha = 0;
-    if (centerCol.a != 0) {
-        alpha = 1.0;
-    } else {
+    float alpha = centerCol.a;
+
+    if(centerCol.a == 0) {
         alpha = glowShader();
     }
 

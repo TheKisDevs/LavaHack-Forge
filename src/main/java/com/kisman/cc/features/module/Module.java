@@ -9,6 +9,7 @@ import com.kisman.cc.settings.types.SettingArray;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.settings.SettingLoader;
 import me.zero.alpine.listener.Listenable;
@@ -19,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
@@ -41,6 +43,8 @@ public class Module implements IBindable, Listenable {
 	public Supplier<EntityPlayer> enemySupplier = null;
 
 	public boolean sendToggleMessages = true;
+
+	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}

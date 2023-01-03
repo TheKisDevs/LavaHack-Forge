@@ -74,7 +74,7 @@ vec3 nrand3( vec2 co )
 	return c;
 }
 
-float glowShader() {
+float glowShader(float originalAlpha) {
 	float radius = 2.5;
 	float quality = 1.0;
 	float divider = 158.0;
@@ -87,7 +87,7 @@ float glowShader() {
 			vec4 currentColor = texture2D(texture, gl_TexCoord[0].xy + vec2(texelSize.x * x, texelSize.y * y));
 
 			if (currentColor.a != 0)
-			alpha += divider > 0 ? max(0.0, (maxSample - distance(vec2(x, y), vec2(0))) / divider) : 1;
+			alpha += divider > 0 ? max(0.0, (maxSample - distance(vec2(x, y), vec2(0))) / divider) : originalAlpha;
 		}
 	}
 
@@ -129,11 +129,10 @@ void main() {
 	vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
 	vec4 result = mix(freqs[3]-.3, 1., v) * vec4(1.5*freqs[2] * t * t* t , 1.2*freqs[1] * t * t, freqs[3]*t, 1.0)+c2+starcolor;
 
-	float alpha = 0;
-	if (centerCol.a != 0) {
-		alpha = 1.0;
-	} else {
-		alpha = glowShader();
+	float alpha = centerCol.a;
+
+	if(centerCol.a == 0) {
+		alpha = glowShader(centerCol.a);
 	}
 
 	gl_FragColor = vec4(result.rgb, alpha);

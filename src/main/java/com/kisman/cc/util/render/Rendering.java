@@ -132,10 +132,18 @@ public class Rendering {
                 if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, values);
                 else {
                     start(depth);
+//                    glPushAttrib(GL_ALL_ATTRIB_BITS);
+//                    glPushMatrix();
+//                    glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+
+                    if(gradient) prepare();
 
                     if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, values);
                     else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
 
+                    if(gradient) restore();
+//                    GL11.glPopMatrix();
+//                    GL11.glPopAttrib();
                     end(depth);
                 }
             }
@@ -143,34 +151,44 @@ public class Rendering {
     }
 
     public static void start(boolean depth) {
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-        GL11.glPushMatrix();
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        if(!depth) GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST);
-        GL11.glDisable(GL11.GL_LIGHTING);
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glPushMatrix();
+        glDisable(GL_ALPHA_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        if(!depth) glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+        glDisable(GL_LIGHTING);
+        glLineWidth(1.5f);
     }
 
     public static void start() {
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-        GL11.glPushMatrix();
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthMask(false);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_FASTEST);
-        GL11.glDisable(GL11.GL_LIGHTING);
-    }
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glPushMatrix();
+        glDisable(GL_ALPHA_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+        glDisable(GL_LIGHTING);
+        glLineWidth(1.5f);
+    }/*GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glLineWidth(1.5f);*/
 
     public static void end() {
         GL11.glEnable(GL11.GL_LIGHTING);
@@ -196,7 +214,13 @@ public class Rendering {
         GL11.glCullFace(GL11.GL_BACK);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
-    }
+    }/*glDisable(GL_LINE_SMOOTH);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();*/
 
     public static void setup(boolean depth) {
         GlStateManager.pushMatrix();
@@ -206,7 +230,7 @@ public class Rendering {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(false);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glLineWidth(1.5f);
     }
 
@@ -218,10 +242,9 @@ public class Rendering {
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(false);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glLineWidth(1.5f);
     }
-
 
     public static void release(){
         glDisable(GL_LINE_SMOOTH);
@@ -241,6 +264,18 @@ public class Rendering {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
+    }
+
+    public static void prepare(){
+        GlStateManager.disableCull();
+        GlStateManager.disableAlpha();
+        GlStateManager.shadeModel(GL_SMOOTH);
+    }
+
+    public static void restore(){
+        GlStateManager.enableCull();
+        GlStateManager.enableAlpha();
+        GlStateManager.shadeModel(GL_FLAT);
     }
 
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode) {
@@ -542,8 +577,8 @@ public class Rendering {
         GlStateManager.disableDepth();
         GlStateManager.tryBlendFuncSeparate((int)770, (int)771, (int)0, (int)1);
         GlStateManager.disableTexture2D();
-        GlStateManager.depthMask((boolean)false);*/
-        /*GL11.glEnable((int)2848);
+        GlStateManager.depthMask((boolean)false);
+        GL11.glEnable((int)2848);
         GL11.glHint((int)3154, (int)4354);
         GL11.glLineWidth((float)linewidth);*/
         Tessellator tessellator = Tessellator.getInstance();

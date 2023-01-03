@@ -122,11 +122,9 @@ void main(void) {
 	);
 
 	color = (f *f * f + 0.6 * f * f + 0.9 * f) * color;
-	float alpha = 0;
+	float alpha = centerCol.a;
 
-	if (centerCol.a != 0) {
-		alpha = 1.0;
-	} else {
+	if(centerCol.a == 0) {
 		alpha = glowShader();
 	}
 

@@ -102,15 +102,13 @@ public class HoleESPRewrite2 extends Module implements Drawable {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
-        if(rendererFor(Type.OBSIDIAN).canRender() && rendererFor(Type.BEDROCK).canRender() && rendererFor(Type.CUSTOM).canRender()) {
-            System.out.println("drawing hole esp");
+        if(rendererFor(Type.OBSIDIAN).canRender() || rendererFor(Type.BEDROCK).canRender() || rendererFor(Type.CUSTOM).canRender()) {
             doHoleESP(false);
         }
     }
 
     @Override
     public void draw() {
-        System.out.println("drawing shader hole esp");
         doHoleESP(true);
     }
 
@@ -216,7 +214,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
             Type type = entry.getValue();
             Vec3d center = Box.Companion.byAABB(bb.toAABB()).center();
             try {
-                rendererFor(type).draw(bb.toAABB(), timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
+                if((callingFromDraw && !rendererFor(type).canRender()) || (!callingFromDraw && rendererFor(type).canRender())) rendererFor(type).draw(bb.toAABB(), timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
             } catch(Exception ignored) {}
         }
     }

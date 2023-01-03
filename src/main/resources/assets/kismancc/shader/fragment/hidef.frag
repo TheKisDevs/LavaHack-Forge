@@ -207,13 +207,11 @@ void main() {
 //  backCol2.bg = mix(backCol2.gb, backCol2.bg, 0.5*(cos(time*0.01) + 1.0));
 
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
-    float alpha = 0;
+    float alpha = centerCol.a;
 
     vec3 result = forCol2 + backCol2;
 
-    if (centerCol.a != 0) {
-        alpha = 1.0;
-    } else {
+    if(centerCol.a == 0) {
         alpha = glowShader();
     }
 

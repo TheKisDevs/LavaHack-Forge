@@ -19,10 +19,10 @@ class TileEntityImplementation(
     private val group = module.register(SettingGroup(Setting(tile.name, module)))
     private val renderer = RenderingRewritePattern(module).prefix(tile.name).group(group).preInit().init()
 
-    override fun valid(tile : TileEntity) : Boolean = renderer.isActive() && this.tile.validator.valid(tile)
+    override fun valid(tile : TileEntity, callingFromDraw : Boolean?) : Boolean = renderer.isActive() && this.tile.validator.valid(tile) && (callingFromDraw == null || renderer.canRender(callingFromDraw))
 
-    override fun process(tile : TileEntity) {
-        if(valid(tile)) {
+    override fun process(tile : TileEntity, callingFromDraw : Boolean) {
+        if(valid(tile, callingFromDraw)) {
             renderer.draw(tile.pos)
         }
     }

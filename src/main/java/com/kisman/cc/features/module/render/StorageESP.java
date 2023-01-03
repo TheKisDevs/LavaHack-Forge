@@ -6,6 +6,7 @@ import com.kisman.cc.features.module.render.storageesp.TileEntityImplementation;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.enums.StorageESPTileEntities;
+import com.kisman.cc.util.interfaces.Drawable;
 import com.kisman.cc.util.interfaces.ITileEntityImplementation;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class StorageESP extends Module{
+public class StorageESP extends Module implements Drawable {
     private final Setting distance = register(new Setting("Distance(Squared)", this, 4000, 10, 4000, true));
 
     private final ArrayList<ITileEntityImplementation> implementations = new ArrayList<>(Arrays.asList(
@@ -48,11 +49,20 @@ public class StorageESP extends Module{
         threads.update(() -> {
             ArrayList<TileEntity> list = new ArrayList<>();
 
-            for(TileEntity tile : mc.world.loadedTileEntityList) if(mc.player.getDistanceSq(tile.getPos()) < distance.getValInt()) for(ITileEntityImplementation impl : implementations) if(impl.valid(tile)) list.add(tile);
+            for(TileEntity tile : mc.world.loadedTileEntityList) if(mc.player.getDistanceSq(tile.getPos()) < distance.getValInt()) for(ITileEntityImplementation impl : implementations) if(impl.valid(tile, null)) list.add(tile);
 
             mc.addScheduledTask(() -> entities = list);
         });
 
-        for(TileEntity tile : entities) for(ITileEntityImplementation impl : implementations) impl.process(tile);
+        doStorageESP(false);
+    }
+
+    @Override
+    public void draw() {
+        doStorageESP(true);
+    }
+
+    private void doStorageESP(boolean callingFromDraw) {
+        for(TileEntity tile : entities) for(ITileEntityImplementation impl : implementations) impl.process(tile, callingFromDraw);
     }
 }

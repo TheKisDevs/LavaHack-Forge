@@ -198,10 +198,9 @@ void main() {
 
 	mainImage(result, gl_FragCoord.xy);
 
-	float alpha = 0;
-	if (centerCol.a != 0) {
-		alpha = 1.0;
-	} else {
+	float alpha = centerCol.a;
+
+	if(centerCol.a == 0) {
 		alpha = glowShader();
 	}
 

@@ -8,6 +8,6 @@ import net.minecraft.util.math.BlockPos
  * @since 23:36 of 24.12.2022
  */
 interface ITileEntityImplementation {
-    fun valid(tile : TileEntity) : Boolean
-    fun process(tile : TileEntity)
+    fun valid(tile : TileEntity, callingFromDraw : Boolean?) : Boolean
+    fun process(tile : TileEntity, callingFromDraw : Boolean)
 }
