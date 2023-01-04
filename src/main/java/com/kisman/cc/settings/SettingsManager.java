@@ -1,9 +1,9 @@
 package com.kisman.cc.settings;
 
-import java.util.*;
-
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.SettingGroup;
+
+import java.util.ArrayList;
 
 /**
  *  Made by HeroCode
@@ -45,7 +45,7 @@ public class SettingsManager {
 		for(Setting set : getSettings()) {
 			if(set == null) continue;
 			if(ignoreGroups && (set.isGroup() || set instanceof SettingGroup)) continue;
-			if(set.getName().equalsIgnoreCase(name) && set.getParentMod() == mod) return set;
+			if(name.equalsIgnoreCase(set.getName()) && set.getParentMod() == mod) return set;
 		}
 		return null;
 	}

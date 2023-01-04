@@ -67,7 +67,7 @@ void main(){
 			alpha = 1.0 - finalColor.r;
 		}
 
-		alpha *= centerCol.a
+		alpha *= centerCol.a;
 	} else {
 		alpha = glowShader();
 	}

@@ -21,7 +21,8 @@ enum class ShaderModes {
     Sheldon,
     Smoky,
     SNOW,
-    Techno
+    Techno,
+    Circle
 //    Outline2,
 //    InertiaOutline
 }

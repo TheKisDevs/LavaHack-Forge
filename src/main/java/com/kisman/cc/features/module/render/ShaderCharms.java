@@ -10,6 +10,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.enums.ShaderModes;
 import com.kisman.cc.util.interfaces.Drawable;
@@ -62,8 +63,8 @@ public class ShaderCharms extends Module {
     private final Setting animationSpeed = register(config.add(new Setting("Animation Speed", this, 0, 1, 10, false).setVisible(() -> !mode.checkValString("GRADIENT"))));
 
     private final Setting blur = register(config.add(new Setting("Blur", this, true).setVisible(() -> mode.checkValString("ITEMGLOW"))));
-    private final Setting radius = register(config.add(new Setting("Radius", this, 2, 0.1f, 10, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("GRADIENT") || mode.checkValString("Outline2"))));
-    private final Setting mix = register(config.add(new Setting("Mix", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("Outline2"))));
+    private final Setting radius = register(config.add(new Setting("Radius", this, 2, 0.1f, 10, false)));
+    private final Setting mix = register(config.add(new Setting("Mix", this, 1, 0, 1, false)));
     private final Setting red = register(config.add(new Setting("Red", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
     private final Setting green = register(config.add(new Setting("Green", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
     private final Setting blue = register(config.add(new Setting("Blue", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
@@ -72,7 +73,7 @@ public class ShaderCharms extends Module {
     private final Setting saturation = register(config.add(new Setting("Saturation", this, 36, 0, 100, NumberType.PERCENT)));
     private final Setting brightness = register(config.add(new Setting("Brightness", this, 100, 0, 100, NumberType.PERCENT)));
 
-    private final Setting quality = register(config.add(new Setting("Quality", this, 1, 0, 20, false).setVisible(() -> mode.checkValString("GRADIENT") || mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE"))));
+    private final Setting quality = register(config.add(new Setting("Quality", this, 1, 0, 20, false)));
     private final Setting gradientAlpha = register(config.add(new Setting("Gradient Alpha", this, false).setVisible(() -> mode.checkValString("GRADIENT"))));
     private final Setting alphaGradient = register(config.add(new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> mode.checkValString("GRADIENT"))));
     private final Setting duplicateOutline = register(config.add(new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> mode.checkValString("GRADIENT"))));
@@ -85,6 +86,23 @@ public class ShaderCharms extends Module {
     private final Setting rainbowSpeed = register(config.add(new Setting("Rainbow Speed", this, 0.4, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
     private final Setting rainbowStrength = register(config.add(new Setting("Rainbow Strength", this, 0.3, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
     private final Setting rainbowSaturation = register(config.add(new Setting("Rainbow Saturation", this, 0.5, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
+
+    private final Setting color1 = register(config.add(new Setting("Color 1", this, new Colour(255, 0, 0, 255))));
+    private final Setting color2 = register(config.add(new Setting("Color 2", this, new Colour(255, 0, 0, 255))));
+    private final Setting filledColor = register(config.add(new Setting("Filled Color", this, new Colour(255, 0, 0, 255))));
+    private final Setting outlineColor = register(config.add(new Setting("Outline Color", this, new Colour(255, 0, 0, 255))));
+    private final Setting customAlpha = register(config.add(new Setting("Custom Alpha", this, true)));
+    private final Setting filled = register(config.add(new Setting("Filled", this, false)));
+    private final Setting rainbowFilled = register(config.add(new Setting("Rainbow Filled", this, false)));
+    private final Setting rainbowAlpha = register(config.add(new Setting("Rainbow Alpha")));
+    private final Setting circle = register(config.add(new Setting("Circle", this, false)));
+    private final Setting circleRadius = register(config.add(new Setting("Circle Radius", this, 2, 0.1, 10, false)));
+    private final Setting glow = register(config.add(new Setting("Glow", this, false)));
+    //glow radius is just radius
+    private final Setting outline = register(config.add(new Setting("Outline", this, false)));
+    private final Setting fadeOutline = register(config.add(new Setting("Fade Outline", this, false)));
+    //outline radius is just radius
+
 
 //    private final Setting useImage = register(config.add(new Setting("Use Image", this, false)));
 //    private final Setting imageMix = register(config.add(new Setting("Image Mix", this, 0.5, 0, 1, false)));
@@ -175,7 +193,7 @@ public class ShaderCharms extends Module {
                 //shitty code tbh
 
                 FramebufferShader framebufferShader = null;
-                boolean itemglow = false, gradient = false, glow = false, outline = false;
+                boolean itemglow = false, gradient = false, glow = false, outline = false, circle = false;
 
                 switch (mode.getValString()) {
                     case "AQUA":
@@ -248,6 +266,10 @@ public class ShaderCharms extends Module {
                     case "Techno":
                         framebufferShader = TechnoShader.TECHNO_SHADER;
                         break;
+                    case "Circle":
+                        framebufferShader = CircleShader.INSTANCE;
+                        circle = true;
+                        break;
                 }
 
                 if (framebufferShader == null) return;
@@ -298,7 +320,26 @@ public class ShaderCharms extends Module {
                     ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
                     ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
                     ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
+                } else if(circle) {
+                    CircleShader.color1 = color1.getColour();
+                    CircleShader.color2 = color2.getColour();
+                    CircleShader.filledColor = filledColor.getColour();
+                    CircleShader.outlineColor = outlineColor.getColour();
+                    CircleShader.customAlpha = customAlpha.getValBoolean();
+                    CircleShader.rainbow = rainbowFilled.getValBoolean();
+                    CircleShader.circle = this.circle.getValBoolean();
+                    CircleShader.filled = filled.getValBoolean();
+                    CircleShader.glow = this.glow.getValBoolean();
+                    CircleShader.outline = this.outline.getValBoolean();
+                    CircleShader.fadeOutline = fadeOutline.getValBoolean();
+                    CircleShader.mix = mix.getValFloat();
+                    CircleShader.rainbowAlpha = rainbowAlpha.getValFloat();
+                    CircleShader.circleRadius = circleRadius.getValFloat();
+                    CircleShader.glowRadius = radius.getValFloat();
+                    CircleShader.outlineRadius = radius.getValFloat();
+                    CircleShader.quality = quality.getValFloat();
                 }
+
                 framebufferShader.startDraw(event.getPartialTicks());
 
                 if(flag2) {
