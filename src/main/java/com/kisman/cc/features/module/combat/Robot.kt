@@ -740,7 +740,8 @@ class Robot : Module(
         if(slot != -1) {
 //            InventoryUtil.switchToSlot(slot, false)
             mc.player.inventory.currentItem = slot
-            BlockUtil.placeBlock(pos)
+            //TODO: rotate and packet settings
+            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, false, false)
             mc.player.inventory.currentItem = oldSlot
         }
     }

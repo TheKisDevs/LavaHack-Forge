@@ -8,6 +8,7 @@ import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
@@ -16,6 +17,7 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.enums.dynamic.RotationEnum;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.HoleUtil;
@@ -51,7 +53,7 @@ public class HoleFillerRewrite extends Module {
     private final Setting customHoles = register(holesGroup.add(new Setting("CustomHoles", this, true).setTitle("Custom")));
     private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
     private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
-    private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
+    private final SettingEnum<RotationEnum.Rotation> rotate = register(logic.add(new SettingEnum<>("Rotate", this, RotationEnum.Rotation.None)));
     private final Setting packet = register(logic.add(new Setting("Packet", this, false)));
     private final Setting place = register(logic.add(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay"))));
     private final Setting entityCheck = register(logic.add(new Setting("Entity Check", this, false)));
@@ -74,9 +76,7 @@ public class HoleFillerRewrite extends Module {
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", Category.COMBAT);
-        super.setDisplayInfo(() -> entity == null ? "" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
-
-//        instance = this;
+        super.setDisplayInfo(() -> entity == null ? " no target no fun" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
     }
 
     private List<BlockPos> holes = new ArrayList<>();
@@ -286,7 +286,7 @@ public class HoleFillerRewrite extends Module {
         if(mc.player == null || mc.player.inventory == null) return;
         int oldSlot = mc.player.inventory.currentItem;
         doSwitch(slot, false);
-        BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);
+        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValEnum(), packet.getValBoolean());
         doSwitch(oldSlot, true);
         mc.playerController.updateController();
     }
