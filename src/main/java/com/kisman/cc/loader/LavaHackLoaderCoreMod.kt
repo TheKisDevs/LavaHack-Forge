@@ -28,11 +28,13 @@ class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
         MixinEnvironment.getDefaultEnvironment().obfuscationContext = "searge"
     }
 
-    override fun getModContainerClass(): String? = null
-    override fun getASMTransformerClass(): Array<String> = emptyArray()
-    override fun getSetupClass(): String? = null
-    override fun injectData(data: MutableMap<String, Any>?) {}
-    override fun getAccessTransformerClass(): String? = null
+    override fun getModContainerClass() : String? = null
+    override fun getASMTransformerClass() : Array<String> = emptyArray()
+    override fun getSetupClass() : String? = null
+    override fun injectData(
+        data : MutableMap<String, Any>?
+    ) { }
+    override fun getAccessTransformerClass() : String? = null
 
     companion object {
         @JvmStatic private val thread = Thread.currentThread()

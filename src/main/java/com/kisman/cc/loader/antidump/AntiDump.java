@@ -2,9 +2,10 @@ package com.kisman.cc.loader.antidump;
 
 import com.kisman.cc.loader.LavaHackLoaderCoreMod;
 import com.kisman.cc.loader.LoaderKt;
+import com.kisman.cc.loader.Utility;
 import com.kisman.cc.loader.gui.GuiNewKt;
-import com.kisman.cc.loader.sockets.client.SocketClient;
-import com.kisman.cc.loader.sockets.data.SocketMessage;
+import com.kisman.cc.loader.websockets.WebClient;
+import com.kisman.cc.loader.websockets.WebSocketsManagerKt;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -16,7 +17,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -77,10 +81,9 @@ public class AntiDump {
                             LoaderKt.setStatus("Found illegal noverify argument!");
                             JOptionPane.showMessageDialog(null, "Please remove -noverify argument");
                             GuiNewKt.close();
-                            SocketClient client = new SocketClient(LoaderKt.address, LoaderKt.port);
-                            LoaderKt.setupSocketClient(client);
-                            client.writeMessage(new SocketMessage("sendmessage User with key \"" + key + "\" have illegal -noverify argument!"));
-                            //TODO: ban this key for 1 day
+                            WebClient client = WebSocketsManagerKt.setupClient(WebSocketsManagerKt.getDUMMY_MESSAGE_PROCESSOR());
+                            client.send("sendmessage User with key \"" + key + "\" have illegal -noverify argument!");
+                            Utility.popupErrorDialog("Please remove -noverify argument!", true);
                         } else {
                             LavaHackLoaderCoreMod.getLOGGER().info("Found illegal program arguments!");
                             dumpDetected();

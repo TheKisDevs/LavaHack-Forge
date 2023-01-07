@@ -4,7 +4,7 @@
 
 package me.yailya.sockets.server
 
-import me.yailya.sockets.Constants
+import the.kis.devs.server.util.Constants
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.util.*

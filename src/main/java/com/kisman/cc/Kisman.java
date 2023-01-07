@@ -42,8 +42,8 @@ import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
-import com.kisman.cc.sockets.command.ConnectionManager;
-import com.kisman.cc.util.AccountData;
+import com.kisman.cc.util.AccountDataCheckerKt;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.manager.ServerManager;
@@ -53,6 +53,7 @@ import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.thread.kisman.ThreadManager;
+import com.kisman.cc.websockets.WebSocketsManagerKt;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -63,6 +64,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -78,10 +80,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 
 // you can remove this comment
 public class Kisman {
-    public static final String forReal = "специальная военная операция российской федерации на украине по защите территорий донбасса от украиских националистических формирований и по денацификации украины";
+    public static final String HASH = RandomStringUtils.random(10, true, true);
+
     public static final String NAME = "LavaHack";
     public static final String MODID = "kisman";
     public static final String VERSION = "b0.1.6.5-9";
@@ -172,6 +176,10 @@ public class Kisman {
     public void init() throws IOException, NoSuchFieldException, IllegalAccessException {
         if(init) return;
 
+        LOGGER.info("Initializing LavaHack " + VERSION);
+
+        long timeStamp = System.currentTimeMillis();
+
         //TODO: rewrite it
         try {
             haveLoader = LavaHackInterface.INSTANCE.isLoaded();
@@ -182,9 +190,10 @@ public class Kisman {
         LOGGER.info("We " + (haveLoader ? "" : "do not ") + "have loader!");
 
         processAccountData();
-        processContainerCheck();
+//        processContainerCheck();
+        processResourceCacheCheck();
 
-        ConnectionManager.INSTANCE.connect();
+        WebSocketsManagerKt.initClient();
 
         progressBar = new ProgressBarController("LavaHack");
 
@@ -264,6 +273,8 @@ public class Kisman {
         catch (Exception e) {LOGGER.error("[ViaForge] ViaForge did not loaded! If you need it, restart the client");}
 
         Schematica.instance.init();
+
+        LOGGER.info("Initialized LavaHack " + VERSION + "! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
 
         init = true;
     }
@@ -472,7 +483,19 @@ public class Kisman {
         try {
             Class.forName("ghost.classes.DevelopmentEnvironment");
         } catch(Throwable ignored) {
-            AccountData.check();
+            AccountDataCheckerKt.check();
+        }
+    }
+
+    public static void processResourceCacheCheck() {
+        try {
+            Class.forName("ghost.classes.DevelopmentEnvironment");
+        } catch(Throwable ignored) {
+            try {
+                for (Map.Entry<String, byte[]> entry : UtilityKt.resourceCache().entrySet()) if (entry.getKey().contains("lavahack") || entry.getKey().contains("kisman")) throw new Exception();
+
+                unsafeCrash();
+            } catch(Throwable ignored2) { }
         }
     }
 }

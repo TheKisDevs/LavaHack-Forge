@@ -1,24 +1,18 @@
 package com.kisman.cc.features.module.client;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.sockets.command.ConnectionManager;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.enums.GradientModes;
-import me.zero.alpine.listener.Listener;
 import org.lwjgl.input.Keyboard;
 
 public class Config extends Module {
     @ModuleInstance
     public static Config instance;
-
-    private final Setting connection = register(new Setting("Connection", this, true));
 
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup gui = register(new SettingGroup(new Setting("Gui", this)));
@@ -92,18 +86,7 @@ public class Config extends Module {
 
     public Config() {
         super("Config", Category.CLIENT);
-        Kisman.EVENT_BUS.subscribe(settingChangeBoolean);
     }
-
-    private final Listener<EventSettingChange.BooleanSetting> settingChangeBoolean = new Listener<>(event -> {
-        if (event.setting.equals(connection)) {
-            if(connection.getValBoolean()) {
-                if(!ConnectionManager.INSTANCE.getClient().getConnected()) ConnectionManager.INSTANCE.getClient().connect();
-            } else {
-                if(ConnectionManager.INSTANCE.getClient().getConnected()) ConnectionManager.INSTANCE.getClient().close();
-            }
-        }
-    });
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, UwU, kidmad, EarthHack, Ferret, custom, ClientName}
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}

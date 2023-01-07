@@ -1,4 +1,4 @@
-@file:Suppress("NON_EXHAUSTIVE_WHEN", "UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST")
 
 package com.kisman.cc.loader
 
@@ -8,13 +8,16 @@ import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
 import com.kisman.cc.loader.antidump.runScanner
 import com.kisman.cc.loader.gui.*
-import com.kisman.cc.loader.sockets.client.SocketClient
-import com.kisman.cc.loader.sockets.data.SocketMessage.Type.*
+import com.kisman.cc.loader.websockets.IMessageProcessor
+import com.kisman.cc.loader.websockets.WebClient
+import com.kisman.cc.loader.websockets.data.SocketMessage
+import com.kisman.cc.loader.websockets.setupClient
 import com.kisman.cc.util.AccountData
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarOutputStream
@@ -31,7 +34,7 @@ import kotlin.random.Random
 const val address = "161.97.78.143"
 const val port = 25563
 
-const val version = "1.4"
+const val version = "2.0"
 
 var loaded = false
 var versions = emptyArray<String>()
@@ -72,9 +75,7 @@ fun load(
         return
     }
 
-    val client = SocketClient(address, port)
-
-    setupSocketClient(client)
+    var client : WebClient? = null
 
     fun processBytes(
         bytes : ByteArray
@@ -85,31 +86,36 @@ fun load(
 
         loadIntoResourceCache(bytes)
         close()
-        client.close()
+        client!!.close()
         AccountData.key = key
         AccountData.properties = properties
         AccountData.processors = processors.toInt()
         LavaHackLoaderCoreMod.resume()
     }
 
-    client.onMessageReceived = {
-        when(it.type) {
-            Text -> {
-                status = when (it.text) {
-                    "0" -> "Invalid arguments of \"getpublicjar\" command!"
-                    "1" -> "Invalid key or HWID | Loader is outdated!"
-                    "2" -> "Key and HWID is valid!"
-                    "3" -> "You have no access for selected version!"
-                    else -> "Invalid answer of \"getpublicjar\" command"
-                }
+    val messageProcessor = object : IMessageProcessor {
+        override fun processMessage(
+            message : String
+        ) {
+            status = when (message) {
+                "0" -> "Invalid arguments of \"getpublicjar\" command!"
+                "1" -> "Invalid key or HWID | Loader is outdated!"
+                "2" -> "Key and HWID is valid!"
+                "3" -> "You have no access for selected version!"
+                else -> "Invalid answer of \"getpublicjar\" command"
             }
-            File -> processBytes(it.file!!.byteArray)
-            Bytes -> processBytes(it.byteArray)
         }
+
+        override fun processMessage(
+            buff : ByteBuffer
+        ) {
+            processBytes(SocketMessage(buff.array()).file!!.byteArray)
+        }
+
     }
 
-
-    client.writeMessage { text = "getpublicjar $key $version $properties $processors $versionToLoad" }
+    client = setupClient(messageProcessor)
+    client.send("getpublicjar $key $version $properties $processors $versionToLoad")
 
     LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is trying to download classes...")
 
@@ -155,7 +161,7 @@ fun initLoader() {
 
             createGui()
         } catch(e : Exception) {
-            LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x")
+            LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x", e)
             Utility.unsafeCrash()
         }
     }
@@ -173,16 +179,16 @@ private fun downloadLibraries() {
         return
     }
 
-    val client = SocketClient(
+    /*val client = SocketClient(
         address,
         port
-    )
+    )*/
 
     var librariesCount = 0
     var receivedLibraries = 0
     var bytes : ByteArray? = null
 
-    client.onMessageReceived = {
+    /*client.onMessageReceived = {
         when(it.type) {
             Text -> {
                 librariesCount = Integer.parseInt(it.text!!)
@@ -196,19 +202,19 @@ private fun downloadLibraries() {
                 receivedLibraries++
             }
         }
-    }
+    }*/
 
     status = "Started downloading libraries"
 
-    setupSocketClient(client)
+//    setupSocketClient(client)
 
-    client.writeMessage { text = "getlibraries" }
+//    client.writeMessage { text = "getlibraries" }
 
     if(!folder.exists()) {
         Files.createFile(folder.toPath())
     }
 
-    while(client.connected) {
+    /*while(client.connected) {
         if(bytes != null) {
             if(library.exists()) {
                 library.delete()
@@ -222,111 +228,93 @@ private fun downloadLibraries() {
             break
         }
 
-        /*if(receivedLibraries >= librariesCount) {
+        *//*if(receivedLibraries >= librariesCount) {
             break
-        }*/
-    }
+        }*//*
+    }*/
 
     loadIntoClassLoader(Files.readAllBytes(library.toPath()))
 
     status = "Loaded libraries into class loader"
 }
 
-fun setupSocketClient(
-    client : SocketClient
-) : SocketClient {
-    try {
-        client.connect()
-        client.writeMessage { text = "LavaHack-Client" }
-    } catch(e : Exception) {
-        LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x2")
-        Utility.unsafeCrash()
-    }
-
-    return client
-}
-
-fun reportIssue(
-    message : String
-) {
-    val client = setupSocketClient(SocketClient("161.97.78.143", 25563))
-    client.writeMessage { text = "sendmessage Received new message: \"$message\"" }
-    client.close()
-}
-
 fun versionCheck(version : String) {
     LavaHackLoaderCoreMod.LOGGER.info("VersionCheck was started!")
 
-    val client = SocketClient(address, port)
+    var client : WebClient? = null
 
-    client.onMessageReceived = {
-        when(it.type) {
-            Text -> {
-                val answer = it.text!!
-                //TODO: remove this line!!!!
-                LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: raw answer is \"$answer\"")
-                status = when (answer) {
-                    "0" -> "Invalid arguments of \"checkversion\" command!"
-                    "1" -> "Your loader is outdated! Please update it!"
-                    "2" -> "Loader is on latest version!"
-                    else -> "kill yourself <3"
-                }
+    val messageProcessor = object : IMessageProcessor {
+        override fun processMessage(
+            message : String
+        ) {
+            LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: raw answer is \"$message\"")
 
-                LavaHackLoaderCoreMod.LOGGER.info(status)
-
-                if(answer != "2") {
-                    Utility.unsafeCrash()
-                }
-
-                receivedVersionCheckAnswer = true
-
-                client.close()
+            status = when (message) {
+                "0" -> "Invalid arguments of \"checkversion\" command!"
+                "1" -> "Your loader is outdated! Please update it!"
+                "2" -> "Loader is on latest version!"
+                else -> "kill yourself <3"
             }
+
+            LavaHackLoaderCoreMod.LOGGER.info(status)
+
+            if (message != "2") {
+                Utility.unsafeCrash()
+            }
+
+            receivedVersionCheckAnswer = true
+
+            client!!.close()
         }
+
+        override fun processMessage(
+            buff : ByteBuffer
+        ) { }
     }
 
-    setupSocketClient(client)
-
-    client.writeMessage { text = "checkversion $version" }
+    client = setupClient(messageProcessor)
+    client.send("checkversion $version")
 }
 
 fun versions(version : String) {
     LavaHackLoaderCoreMod.LOGGER.info("VersionsList was started!")
 
-    val client = SocketClient(address, port)
+    var client : WebClient? = null
 
-    client.onMessageReceived = {
-        when(it.type) {
-            Text -> {
-                val answer = it.text!!
-                //TODO: remove this line!!!!
-                LavaHackLoaderCoreMod.LOGGER.info("VersionsList: raw answer is \"$answer\"")
-                when (answer) {
-                    "0" -> status = "Invalid arguments of \"getversions\" command!"
-                    "1" -> status = "Invalid loader version!"
-                    else -> {
-                        if(answer.startsWith("2")) {
-                            status = "Successfully received version list"
-                            versions = answer.split("|")[1].split("&").toTypedArray()
-                            receivedVersions = true
-                        }
+    val messageProcessor = object : IMessageProcessor {
+        override fun processMessage(
+            message : String
+        ) {
+            LavaHackLoaderCoreMod.LOGGER.info("VersionsList: raw answer is \"$message\"")
+            when (message) {
+                "0" -> status = "Invalid arguments of \"getversions\" command!"
+                "1" -> status = "Invalid loader version!"
+                else -> {
+                    if(message.startsWith("2")) {
+                        status = "Successfully received version list"
+                        versions = message.split("|")[1].split("&").toTypedArray()
+                        receivedVersions = true
                     }
                 }
-
-                LavaHackLoaderCoreMod.LOGGER.info(status)
-
-                if(status != "Successfully received version list") {
-                    Utility.unsafeCrash()
-                }
-
-                client.close()
             }
+
+            LavaHackLoaderCoreMod.LOGGER.info(status)
+
+            if(status != "Successfully received version list") {
+                Utility.unsafeCrash()
+            }
+
+            client!!.close()
         }
+
+        override fun processMessage(
+            buff : ByteBuffer
+        ) { }
+
     }
 
-    setupSocketClient(client)
-
-    client.writeMessage { text = "getversions $version" }
+    client = setupClient(messageProcessor)
+    client.send("getversions $version")
 }
 
 fun loadIntoClassLoader(bytes : ByteArray) {
@@ -349,8 +337,11 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     var classesCount = 0
     var resourcesCount = 0
 
+    var firstClassName : String? = null
+    var firstClassBytes : ByteArray? = null
+
     ZipInputStream(bytes.inputStream()).use { zipStream ->
-        var zipEntry: ZipEntry?
+        var zipEntry : ZipEntry?
         while (zipStream.nextEntry.also { zipEntry = it } != null) {
             var name = zipEntry!!.name
             if (name.endsWith(".class")) {
@@ -362,6 +353,11 @@ fun loadIntoResourceCache(bytes : ByteArray) {
                     loadIntoClassLoader(zipStream.readBytes())
                 } else {
                     resourceCache[name] = zipStream.readBytes()
+
+                    if(firstClassName == null) {
+                        firstClassName = name
+                        firstClassBytes = resourceCache[name]
+                    }
                 }
 
                 classesCount++
@@ -407,6 +403,9 @@ fun loadIntoResourceCache(bytes : ByteArray) {
     status = "Done!"
 
     LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is done!")
+
+    AccountData.firstLoadedClassName = firstClassName!!
+    AccountData.firstLoadedClassBytes = firstClassBytes!!
 }
 
 fun loadIntoCustomClassLoader(

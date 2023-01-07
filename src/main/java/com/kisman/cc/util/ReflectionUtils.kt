@@ -1,7 +1,7 @@
 package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.sockets.reportIssue
+import com.kisman.cc.websockets.reportIssue
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import sun.misc.Unsafe;
 
+import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,5 +172,14 @@ public class Utility {
             String toClean
     ) {
         return toClean.replaceAll("\\s", "");
+    }
+
+    public static void popupErrorDialog(
+            String message,
+            boolean exit
+    ) {
+        JOptionPane.showMessageDialog(null, message, "LavaHack Loader " + LoaderKt.version, JOptionPane.ERROR_MESSAGE);
+
+        if(exit) unsafeCrash();
     }
 }

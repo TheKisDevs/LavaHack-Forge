@@ -128,15 +128,6 @@ public class Colour implements Serializable {
         setColour(Colour.fromHSB(hsb, a));
     }
 
-    public static ColourEnum getEnumByInt(int mode) {
-        for(ColourEnum colorEnum : ColourEnum.values()) if(colorEnum.mode == mode) return colorEnum;
-        return ColourEnum.Static;
-    }
-
-    public static Colour getColourByMode(int mode) {
-        return getEnumByInt(mode).getColour();
-    }
-
     public void syns(Colour color) {
         this.r = color.r;
         this.g = color.g;

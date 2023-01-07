@@ -1,8 +1,5 @@
 package com.kisman.cc.features.capes
 
-import com.kisman.cc.sockets.client.SocketClient
-import com.kisman.cc.sockets.data.SocketMessage
-import com.kisman.cc.sockets.setupSocketClient
 import net.minecraft.entity.player.EntityPlayer
 
 /**

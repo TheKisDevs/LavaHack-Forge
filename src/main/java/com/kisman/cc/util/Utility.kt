@@ -8,6 +8,8 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.launchwrapper.Launch
+import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -19,6 +21,7 @@ import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 import java.util.*
+import javax.swing.JOptionPane
 
 /**
  * @author _kisman_
@@ -162,3 +165,24 @@ fun toAABB(
     EnumFacing.WEST -> AxisAlignedBB(aabb.minX, aabb.minY, aabb.minZ, aabb.minX, aabb.maxY, aabb.maxZ)
     EnumFacing.EAST -> AxisAlignedBB(aabb.maxX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ)
 }
+
+fun popupDialog(
+    message : String,
+    exit : Boolean,
+    type : Int
+) {
+    JOptionPane.showMessageDialog(null, message, "LavaHack ${Kisman.VERSION}", type)
+
+    if(exit) {
+        Kisman.unsafeCrash()
+    }
+}
+
+fun popupErrorDialog(
+    message : String,
+    exit : Boolean
+) {
+    popupDialog(message, exit, JOptionPane.ERROR_MESSAGE)
+}
+
+fun resourceCache() : Map<String, ByteArray> = LaunchClassLoader::class.java.getDeclaredField("resourceCache").also { it.isAccessible = true } [Launch.classLoader] as Map<String, ByteArray>

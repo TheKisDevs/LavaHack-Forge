@@ -4,7 +4,7 @@
 
 package me.yailya.sockets.client
 
-import me.yailya.sockets.data.SocketMessage
+import the.kis.devs.server.data.SocketMessage
 import me.yailya.sockets.interfaces.ISocketRW
 import java.net.InetSocketAddress
 import java.net.Socket

@@ -1,9 +1,11 @@
 package com.kisman.cc.loader.antidump
 
 import com.kisman.cc.loader.*
-import com.kisman.cc.loader.sockets.client.SocketClient
+import com.kisman.cc.loader.websockets.DUMMY_MESSAGE_PROCESSOR
+import com.kisman.cc.loader.websockets.setupClient
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlin.concurrent.thread
 
 /**
  * @author _kisman_
@@ -51,12 +53,12 @@ val illegalProcesses = listOf(
 )
 
 fun runScanner() {
-    Thread {
+    thread {
         try {
             if(Utility.runningOnWindows()) {
                 val process = Runtime.getRuntime().exec("tasklist")
                 val reader = BufferedReader(InputStreamReader(process.inputStream))
-                var line: String? = null
+                var line : String? = null
 
                 while (reader.readLine().also { line = it } != null) {
                     val processName = line!!.split(" ")[0]
@@ -67,13 +69,12 @@ fun runScanner() {
                 }
             }
         } catch (e : Exception) {
-            val client = SocketClient(
-                address,
-                port
-            )
-            setupSocketClient(client)
-            client.writeMessage { text = "sendmessage got error code 0x1" }
+            setupClient(DUMMY_MESSAGE_PROCESSOR).also {
+                it.send("sendmessage got error code 0x1")
+                it.close()
+            }
+
             LavaHackLoaderCoreMod.LOGGER.info("Error Code: 0x1")
         }
-    } .start()
+    }
 }

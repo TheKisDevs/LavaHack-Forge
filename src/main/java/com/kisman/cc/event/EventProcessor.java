@@ -87,7 +87,6 @@ public class EventProcessor {
             new EventResolutionUpdate(oldWidth, oldHeight).post();
         }
         if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
-        if(Config.instance != null) Kisman.canUseImprAstolfo = Config.instance.astolfoColorMode.checkValString(Config.AstolfoColorMode.Impr.name());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

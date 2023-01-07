@@ -4,8 +4,8 @@
 
 package me.yailya.sockets.interfaces
 
-import me.yailya.sockets.Constants
-import me.yailya.sockets.data.SocketMessage
+import the.kis.devs.server.util.Constants
+import the.kis.devs.server.data.SocketMessage
 import java.net.Socket
 import java.nio.ByteBuffer
 

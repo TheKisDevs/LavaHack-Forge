@@ -1,7 +1,6 @@
 package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.features.hud.HudModule
-import com.kisman.cc.features.module.combat.AutoRer
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
@@ -31,7 +30,7 @@ class TextRadar : HudModule(
     private val targetHighlight = register(Setting("Target Highlight", this, true))
     private val threads = threads()
 
-    private val toRender = mutableListOf<String>()
+    private var toRender = mutableListOf<String>()
 
     override fun onEnable() {
         super.onEnable()
@@ -41,24 +40,24 @@ class TextRadar : HudModule(
 
     override fun update() {
         threads.update(Runnable {
-            mc.addScheduledTask {
-                toRender.clear()
+            val list = mutableListOf<String>()
 
-                for((index, player) in mc.world.playerEntities.withIndex()) {
-                    if(player != mc.player) {
-                        val distanceToPlayer = mc.player.getDistance(player)
+            for((index, player) in mc.world.playerEntities.withIndex()) {
+                if(player != mc.player) {
+                    val distanceToPlayer = mc.player.getDistance(player)
 
-                        if (distanceToPlayer <= range.valDouble && limit.valInt > index) {
-                            toRender.add(
-                                "${(player.health + player.absorptionAmount).toInt()} " + (if (FriendManager.instance.isFriend(
-                                        player
-                                    ) && friendHighlight.valBoolean
-                                ) TextFormatting.AQUA else if (EnemyManager.enemy(player) && targetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
-                            )
-                        }
+                    if (distanceToPlayer <= range.valDouble && limit.valInt > index) {
+                        list.add(
+                            "${(player.health + player.absorptionAmount).toInt()} " + (if (FriendManager.instance.isFriend(
+                                    player
+                                ) && friendHighlight.valBoolean
+                            ) TextFormatting.AQUA else if (EnemyManager.enemy(player) && targetHighlight.valBoolean) TextFormatting.RED else "") + " ${player.name + TextFormatting.RESET} ${distanceToPlayer.toInt()}"
+                        )
                     }
                 }
             }
+
+            mc.addScheduledTask { toRender = list }
         })
     }
 

@@ -1,29 +1,34 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.features.module.client.DevelopmentHelper;
-import com.kisman.cc.util.enums.DevelopmentHelperSlotTypes;
-import com.kisman.cc.gui.other.container.ItemESP;
 import com.kisman.cc.features.module.render.ContainerModifier;
-import com.kisman.cc.sockets.SocketsManagerKt;
-import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.gui.other.container.ItemESP;
+import com.kisman.cc.util.enums.DevelopmentHelperSlotTypes;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
+import com.kisman.cc.websockets.WebSocketsManagerKt;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.*;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 import java.util.Set;
 
-@SuppressWarnings({"unused", "IntegerDivisionInFloatingPointContext"})
+@SuppressWarnings({"unused", "IntegerDivisionInFloatingPointContext", "ConstantConditions"})
 @Mixin(value = GuiContainer.class, priority = 10000)
 public class MixinGuiContainer extends GuiScreen {
     @Shadow protected int guiLeft, guiTop, xSize, ySize;
@@ -66,7 +71,7 @@ public class MixinGuiContainer extends GuiScreen {
                     itemESP.getGuiTextField().drawTextBox();
                 } catch(Exception e) {
                     if(flag2) {
-                        SocketsManagerKt.reportIssue("Got exception in drawScreen tail inject hook by ItemESP, stack trace: " + e);
+                        WebSocketsManagerKt.reportIssue("Got exception in drawScreen tail inject hook by ItemESP, stack trace: " + e);
                         flag2 = false;
                     }
                 }
@@ -85,7 +90,7 @@ public class MixinGuiContainer extends GuiScreen {
                 if(!itemESP.getGuiTextField().getText().isEmpty()) for(Slot slot : inventorySlots.inventorySlots) if(slot.getHasStack() && slot.getStack().getDisplayName().toLowerCase().contains(itemESP.getGuiTextField().getText().toLowerCase()))  itemESP.getItemStacks().add(slot.getStack());
             } catch(Exception e) {
                 if(flag3) {
-                    SocketsManagerKt.reportIssue("Got exception in drawScreen head inject hook by ItemESP, stack trace: " + e);
+                    WebSocketsManagerKt.reportIssue("Got exception in drawScreen head inject hook by ItemESP, stack trace: " + e);
                     flag3 = false;
                 }
             }
@@ -100,7 +105,7 @@ public class MixinGuiContainer extends GuiScreen {
             if(ContainerModifier.instance.itemESP.getValBoolean()) itemESP.getGuiTextField().textboxKeyTyped(typedChar, keyCode);
         } catch(Exception e) {
             if(flag4) {
-                SocketsManagerKt.reportIssue("Got exception in keyTyped head inject hook by ItemESP, stack trace: " + e);
+                WebSocketsManagerKt.reportIssue("Got exception in keyTyped head inject hook by ItemESP, stack trace: " + e);
                 flag4 = false;
             }
         }
@@ -116,7 +121,7 @@ public class MixinGuiContainer extends GuiScreen {
                 if(itemESP.getGuiTextField().isFocused()) ci.cancel();
             } catch(Exception e) {
                 if(flag5) {
-                    SocketsManagerKt.reportIssue("Got exception in mouseClicked head inject hook by ItemESP, stack trace: " + e);
+                    WebSocketsManagerKt.reportIssue("Got exception in mouseClicked head inject hook by ItemESP, stack trace: " + e);
                     flag5 = false;
                 }
             }
@@ -135,7 +140,7 @@ public class MixinGuiContainer extends GuiScreen {
             }
         } catch(Exception e) {
             if(flag) {
-                SocketsManagerKt.reportIssue("Got exception in drawSlot invoke inject hook by ItemESP, stack trace: " + e);
+                WebSocketsManagerKt.reportIssue("Got exception in drawSlot invoke inject hook by ItemESP, stack trace: " + e);
                 flag = false;
             }
         }

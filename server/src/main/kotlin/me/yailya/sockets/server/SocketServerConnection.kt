@@ -4,10 +4,8 @@
 
 package me.yailya.sockets.server
 
-import me.yailya.sockets.data.SocketMessage
-import me.yailya.sockets.interfaces.ISocketRW
+import the.kis.devs.server.data.SocketMessage
 import java.net.Socket
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.concurrent.thread
 
 class SocketServerConnection(override val socket: Socket, private val server: SocketServer) : ISocketServerConnection {
