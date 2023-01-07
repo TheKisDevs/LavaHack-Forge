@@ -173,10 +173,12 @@ class ConfigManager(
                         if(module != null) {
                             when(split2[2]) {
                                 "toggle" -> {
-                                    try {
-                                        val toggle = java.lang.Boolean.parseBoolean(split1[1])
-                                        if(module.isToggled != toggle) module.isToggled = toggle
-                                    } catch (ignored : Exception) {}
+                                    if(module.toggleable) {
+                                        try {
+                                            val toggle = java.lang.Boolean.parseBoolean(split1[1])
+                                            if (module.isToggled != toggle) module.isToggled = toggle
+                                        } catch (ignored: Exception) { }
+                                    }
                                 }
                                 "hold" -> {
                                     try {
