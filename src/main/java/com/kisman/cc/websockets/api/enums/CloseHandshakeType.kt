@@ -1,8 +1,8 @@
-package com.kisman.cc.websockets.api.enums;
+package com.kisman.cc.websockets.api.enums
 
 /**
  * Enum which represents type of handshake is required for a close
  */
-public enum CloseHandshakeType {
-  NONE, ONEWAY, TWOWAY
+enum class CloseHandshakeType {
+    NONE, ONEWAY, TWOWAY
 }

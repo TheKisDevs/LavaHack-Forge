@@ -1,9 +1,8 @@
-package com.kisman.cc.loader.websockets.api.enums;
+package com.kisman.cc.loader.websockets.api.enums
 
 /**
  * Enum which contains the different valid opcodes
  */
-public enum Opcode {
-  CONTINUOUS, TEXT, BINARY, PING, PONG, CLOSING
-  // more to come
+enum class Opcode {
+    CONTINUOUS, TEXT, BINARY, PING, PONG, CLOSING // more to come
 }

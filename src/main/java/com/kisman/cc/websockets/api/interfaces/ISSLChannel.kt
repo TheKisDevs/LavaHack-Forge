@@ -23,22 +23,20 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  */
+package com.kisman.cc.websockets.api.interfaces
 
-package com.kisman.cc.websockets.api.interfaces;
-
-import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngine
 
 /**
  * Interface which specifies all required methods a SSLSocketChannel has to make public.
  *
  * @since 1.4.1
  */
-public interface ISSLChannel {
-
-  /**
-   * Get the ssl engine used for the de- and encryption of the communication.
-   *
-   * @return the ssl engine of this channel
-   */
-  SSLEngine getSSLEngine();
+interface ISSLChannel {
+    /**
+     * Get the ssl engine used for the de- and encryption of the communication.
+     *
+     * @return the ssl engine of this channel
+     */
+    val sSLEngine : SSLEngine?
 }
