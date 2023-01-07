@@ -82,13 +82,12 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-// you can remove this comment
 public class Kisman {
     public static final String HASH = RandomStringUtils.random(10, true, true);
 
     public static final String NAME = "LavaHack";
     public static final String MODID = "kisman";
-    public static final String VERSION = "b0.1.6.5-9";
+    public static final String VERSION = "b0.1.7";
     public static final String fileName = "kisman.cc/";
     public static final String luaName = "Lua/";
     public static final String mappingName = "Mapping/";
