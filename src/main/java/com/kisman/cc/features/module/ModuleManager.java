@@ -215,6 +215,7 @@ public class ModuleManager {
 		add(new AntiHunger());
 		add(new AntiWeakness());
 		add(new ArrowBlocker());
+		add(new AutoEat());
 		add(new AutoMine());
 		add(new AutoMount());
 		add(new AutoRespawn());
