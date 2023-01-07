@@ -214,6 +214,7 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'com/kisman/cc/mixin/**'
         include 'com/kisman/cc/settings/**'
         include 'com/kisman/cc/util/**'
+        include 'com/kisman/cc/websockets/**'
         include 'com/kisman/cc/pingbypass/**'
         include 'com/kisman/cc/Kisman.class'
         include 'com/kisman/cc/KismanStatic.class'
@@ -224,7 +225,6 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'mixins.kisman.refmap.json'
         include 'assets/kismancc/**'
         include 'Main.class'
-        include 'com/kisman/cc/sockets/**'
         include 'me/**'
     }
     baseName = ''
@@ -242,6 +242,7 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'com/kisman/cc/mixin/**'
         exclude 'com/kisman/cc/settings/**'
         exclude 'com/kisman/cc/util/**'
+        exclude 'com/kisman/cc/websockets/**'
         exclude 'com/kisman/cc/pingbypass/**'
         exclude 'com/kisman/cc/Kisman.class'
         exclude 'com/kisman/cc/KismanStatic.class'
@@ -252,7 +253,6 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'assets/kismancc/**'
         exclude 'org/cubic/**'
         exclude 'Main.class'
-        exclude 'com/kisman/cc/sockets/**'
         exclude 'me/**'
         exclude 'ghost/classes/**'
     }
