@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.hud.modules.arraylist.IArrayListElement;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
-public class Module implements IBindable, Listenable {
+public class Module implements IBindable, Listenable, IArrayListElement {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 
@@ -45,6 +46,10 @@ public class Module implements IBindable, Listenable {
 	public boolean sendToggleMessages = true;
 
 	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
+
+	public float xCoeff = 1;
+	public float xCoeffPrev = 1;
+//	public long startTime = 1L;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -232,5 +237,35 @@ public class Module implements IBindable, Listenable {
 
 	protected void dontSendToggleMessages() {
 		sendToggleMessages = false;
+	}
+
+	/*@Override
+	public long getStartTime() {
+		return startTime;
+	}
+
+	@Override
+	public void setStartTime(long l) {
+		this.startTime = l;
+	}*/
+
+	@Override
+	public float getXCoeff() {
+		return xCoeff;
+	}
+
+	@Override
+	public void setXCoeff(float v) {
+		this.xCoeff = v;
+	}
+
+	@Override
+	public float getXCoeffPrev() {
+		return xCoeffPrev;
+	}
+
+	@Override
+	public void setXCoeffPrev(float v) {
+		this.xCoeffPrev = v;
 	}
 }

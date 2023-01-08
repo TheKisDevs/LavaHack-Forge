@@ -80,7 +80,9 @@
   ],
   "client": [
     "MixinChunkRenderContainer",
+    "MixinRender",
     "MixinRenderChunk",
+    "MixinRenderXPOrb",
     "MixinTileEntityRendererDispatcher",
     "accessor.AccessorFontRenderer",
     "baritone.MixinChatTabCompleter",

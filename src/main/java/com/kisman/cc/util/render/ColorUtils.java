@@ -99,7 +99,7 @@ public class ColorUtils {
         return Color.getHSBColor((float) ((rainbowState %= 248.0) / 248.0), 0.5f, 0.6f).getRGB();
     }
 
-    public static void glColor(final int hex, final int alpha) {
+    public static void glColor(int hex, int alpha) {
         final float red = (hex >> 16 & 0xFF) / 255F;
         final float green = (hex >> 8 & 0xFF) / 255F;
         final float blue = (hex & 0xFF) / 255F;
@@ -112,7 +112,7 @@ public class ColorUtils {
     public static int getColor(int a, int r, int g, int b) {return a << 24 | r << 16 | g << 8 | b;}
     public static int getColor(int r, int g, int b) {return 255 << 24 | r << 16 | g << 8 | b;}
     public static int getColor(Color color) {return color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24;}
-    public static Color rainbow(final int delay, final float s, final float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);}
+    public static Color rainbow(int delay, float s, float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);}
     public static int getRed(int color) {return new Color(color).getRed();}
     public static int getGreen(int color) {return new Color(color).getGreen();}
     public static int getBlue(int color) {return new Color(color).getBlue();}

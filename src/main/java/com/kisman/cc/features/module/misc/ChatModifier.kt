@@ -24,7 +24,7 @@ class ChatModifier : Module(
     val ttf = register(Setting("TTF", this, false))
 
     @SubscribeEvent fun onChat(event: ClientChatEvent) {
-        var firstchar = arrayOf('/', '.', ',', ';', ':', '-', '+', Kisman.instance.commandManager.cmdPrefixStr)
+        var firstchar = arrayOf('/', '.', ',', ';', ':', '-', '+', Kisman.instance.commandManager.prefixString)
         if (!firstchar.contains(event.message[0])) {
             if(greenText.valBoolean) {
                 event.message = "> ${event.message}"

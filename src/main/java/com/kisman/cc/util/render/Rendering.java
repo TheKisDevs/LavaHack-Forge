@@ -1,6 +1,8 @@
 package com.kisman.cc.util.render;
 
+import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
@@ -13,12 +15,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
+import static com.kisman.cc.util.render.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -27,6 +33,7 @@ import static org.lwjgl.opengl.GL11.*;
  *
  * ONG ONG ONG kisman UNSKIDDED IT FR????? - Cubic
  */
+@SuppressWarnings("CollectionAddAllCanBeReplacedWithConstructor")
 public class Rendering {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -60,7 +67,8 @@ public class Rendering {
         WIRE {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
-                glPushMatrix();
+                drawWire(aabb, (float) values[0], color1, gradient ? color2 : color1);
+                /*glPushMatrix();
 
                 OutlineUtils.setColor(color1);
                 OutlineUtils.renderOne((float) values[0]);
@@ -72,7 +80,7 @@ public class Rendering {
                 drawDummyBox(aabb);
 
                 OutlineUtils.renderThree();
-                OutlineUtils.renderFour(Color.WHITE.getRGB()/*color2.getRGB()*/, 1f);
+                OutlineUtils.renderFour(Color.WHITE.getRGB()*//*color2.getRGB()*//*, 1f);
                 OutlineUtils.setColor(gradient ? color2 : color1);
 
                 drawDummyBox(aabb);
@@ -80,7 +88,7 @@ public class Rendering {
                 OutlineUtils.renderFive(-1f);
                 OutlineUtils.setColor(Color.WHITE);
 
-                glPopMatrix();
+                glPopMatrix();*/
             }
 
             private void drawDummyBox(AxisAlignedBB aabb) {
@@ -131,7 +139,7 @@ public class Rendering {
             for(RenderObject object : objects) {
                 if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, values);
                 else {
-                    start(depth);
+                    if(Config.instance.test.getValBoolean()) start(depth);
 //                    glPushAttrib(GL_ALL_ATTRIB_BITS);
 //                    glPushMatrix();
 //                    glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
@@ -144,10 +152,27 @@ public class Rendering {
                     if(gradient) restore();
 //                    GL11.glPopMatrix();
 //                    GL11.glPopAttrib();
-                    end(depth);
+                    if(Config.instance.test.getValBoolean()) end(depth);
                 }
             }
         }
+    }
+
+    public static void start1(boolean depth) {
+//        mc.getTextureManager().bindTexture()
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        if(!depth) glDisable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    public static void end1(boolean depth) {
+        glColor(Color.WHITE);
+        glEnable(GL_TEXTURE_2D);
+        if(!depth) glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glPopMatrix();
     }
 
     public static void start(boolean depth) {
@@ -276,6 +301,73 @@ public class Rendering {
         GlStateManager.enableCull();
         GlStateManager.enableAlpha();
         GlStateManager.shadeModel(GL_FLAT);
+    }
+
+    public static void drawWire(AxisAlignedBB bb, float lineWidth, Color color1, Color color2) {
+        Vec3d point1 = new Vec3d(bb.minX, bb.minY, bb.minZ);
+        Vec3d point2 = new Vec3d(bb.minX, bb.maxY, bb.minZ);
+        Vec3d point3 = new Vec3d(bb.minX, bb.maxY, bb.maxZ);
+        Vec3d point4 = new Vec3d(bb.minX, bb.minY, bb.maxZ);
+        Vec3d point5 = new Vec3d(bb.maxX, bb.minY, bb.minZ);
+        Vec3d point6 = new Vec3d(bb.maxX, bb.maxY, bb.minZ);
+        Vec3d point7 = new Vec3d(bb.maxX, bb.minY, bb.maxZ);
+        Vec3d point8 = new Vec3d(bb.maxX, bb.minY, bb.maxZ);
+
+        double distance1 = UtilityKt.distanceSq(point1);
+        double distance2 = UtilityKt.distanceSq(point2);
+        double distance3 = UtilityKt.distanceSq(point3);
+        double distance4 = UtilityKt.distanceSq(point4);
+        double distance5 = UtilityKt.distanceSq(point5);
+        double distance6 = UtilityKt.distanceSq(point6);
+        double distance7 = UtilityKt.distanceSq(point7);
+        double distance8 = UtilityKt.distanceSq(point8);
+
+        HashMap<Double, Vec3d> distancePairs = new HashMap<>();
+        HashMap<Vec3d, Color> colorPairs = new HashMap<>();
+        HashSet<Vec3d> vertexes = new HashSet<>();
+
+        distancePairs.put(distance1, point1);
+        distancePairs.put(distance2, point2);
+        distancePairs.put(distance3, point3);
+        distancePairs.put(distance4, point4);
+        distancePairs.put(distance5, point5);
+        distancePairs.put(distance6, point6);
+        distancePairs.put(distance7, point7);
+        distancePairs.put(distance8, point8);
+
+        colorPairs.put(point1, color2);
+        colorPairs.put(point2, color1);
+        colorPairs.put(point3, color1);
+        colorPairs.put(point4, color2);
+        colorPairs.put(point5, color2);
+        colorPairs.put(point6, color1);
+        colorPairs.put(point7, color2);
+        colorPairs.put(point8, color1);
+
+        vertexes.addAll(distancePairs.values());
+
+        double maxDistance = Double.MIN_VALUE;
+        double minDistance = Double.MAX_VALUE;
+
+        for(double distance : distancePairs.keySet()) {
+            if(distance < minDistance) minDistance = distance;
+            if(distance > maxDistance) maxDistance = distance;
+        }
+
+        vertexes.remove(distancePairs.get(maxDistance));
+        vertexes.remove(distancePairs.get(minDistance));
+
+        glLineWidth(lineWidth);
+
+        bufferbuilder.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+
+        for(Vec3d vec : vertexes) {
+            Color color = colorPairs.get(vec);
+
+            bufferbuilder.pos(vec.x, vec.y, vec.z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+        }
+
+        tessellator.draw();
     }
 
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode) {

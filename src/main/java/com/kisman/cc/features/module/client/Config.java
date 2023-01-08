@@ -14,6 +14,9 @@ public class Config extends Module {
     @ModuleInstance
     public static Config instance;
 
+    public final Setting test = register(new Setting("Test", this, true));
+    public final Setting test2 = register(new Setting("Test 2", this, false));
+
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup gui = register(new SettingGroup(new Setting("Gui", this)));
     private final SettingGroup glow = register(new SettingGroup(new Setting("Glow", this)));

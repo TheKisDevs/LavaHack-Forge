@@ -95,13 +95,10 @@ public class HoleESPRewrite2 extends Module implements Drawable {
         oldHoles.clear();
     }
 
-    @Override
-    public void update() {
-        threads.update(this::doHoleESPLogic);
-    }
-
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
+        threads.update(this::doHoleESPLogic);
+
         if(rendererFor(Type.OBSIDIAN).canRender() || rendererFor(Type.BEDROCK).canRender() || rendererFor(Type.CUSTOM).canRender()) {
             doHoleESP(false);
         }

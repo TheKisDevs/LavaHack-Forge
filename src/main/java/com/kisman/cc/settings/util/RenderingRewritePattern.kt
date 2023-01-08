@@ -1,6 +1,7 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.features.module.render.ShaderCharms
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -196,9 +197,19 @@ open class RenderingRewritePattern(
         mode : Rendering.Mode?
     ) {
         //TODO: remove it and cleanup!!!
-        Rendering.setup(depth.valBoolean)
+        if(Config.instance.test2.valBoolean) {
+            Rendering.start1(depth.valBoolean)
+        } else {
+            Rendering.setup(depth.valBoolean)
+        }
+
         Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, mode, depth.valBoolean)
-        Rendering.release(depth.valBoolean)
+
+        if(Config.instance.test2.valBoolean) {
+            Rendering.end1(depth.valBoolean)
+        } else {
+            Rendering.release(depth.valBoolean)
+        }
     }
 
     private fun draw0(

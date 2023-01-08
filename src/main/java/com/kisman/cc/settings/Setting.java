@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
+import com.kisman.cc.features.hud.modules.arraylist.IArrayListElement;
 import com.kisman.cc.features.module.BindType;
 import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.Module;
@@ -19,7 +20,11 @@ import org.lwjgl.input.Keyboard;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class Setting implements IBindable {
+public class Setting implements IBindable, IArrayListElement {
+	public float xCoeff = 1;
+	public float xCoeffPrev = 1;
+//	public long startTime = 1L;
+
 	public Supplier<Boolean> visibleSupplier = () -> true;
 
 	public boolean haveDisplayInfo = false;
@@ -685,4 +690,34 @@ public class Setting implements IBindable {
 
 		return message;
 	}
+
+	@Override
+	public float getXCoeff() {
+		return xCoeff;
+	}
+
+	@Override
+	public void setXCoeff(float v) {
+		this.xCoeff = v;
+	}
+
+	@Override
+	public float getXCoeffPrev() {
+		return xCoeffPrev;
+	}
+
+	@Override
+	public void setXCoeffPrev(float v) {
+		this.xCoeffPrev = v;
+	}
+
+	/*@Override
+	public long getStartTime() {
+		return startTime;
+	}
+
+	@Override
+	public void setStartTime(long l) {
+		this.startTime = l;
+	}*/
 }

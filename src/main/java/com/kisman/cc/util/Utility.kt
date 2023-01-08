@@ -6,6 +6,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.launchwrapper.Launch
@@ -13,6 +14,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -186,3 +188,12 @@ fun popupErrorDialog(
 }
 
 fun resourceCache() : Map<String, ByteArray> = LaunchClassLoader::class.java.getDeclaredField("resourceCache").also { it.isAccessible = true } [Launch.classLoader] as Map<String, ByteArray>
+
+fun distanceSq(
+    entity : Entity,
+    vec : Vec3d
+) : Double = entity.getDistanceSq(vec.x, vec.y, vec.z)
+
+fun distanceSq(
+    vec : Vec3d
+) : Double = distanceSq(mc.player, vec)

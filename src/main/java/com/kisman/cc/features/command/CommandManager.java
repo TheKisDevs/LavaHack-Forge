@@ -9,8 +9,8 @@ import java.util.HashMap;
 public class CommandManager extends ChatHandler {
     public static HashMap<String, Command> commands = new HashMap<>();
 	
-	public char cmdPrefix = '-';
-	public String cmdPrefixStr = "" + cmdPrefix;
+	public char prefixChar  = '-';
+	public String prefixString = String.valueOf(prefixChar);
 
 	public CommandManager()
 	{
@@ -41,7 +41,7 @@ public class CommandManager extends ChatHandler {
 		add(new RollBackCommand());
 		add(new RollBackDupeCommand());
         add(new ShutdownCommand());
-        add(new Toggle());
+        add(new ToggleCommand());
 		add(new MusicCommand());
 	}
 
@@ -61,7 +61,7 @@ public class CommandManager extends ChatHandler {
 	}
 
 	public void runCommands(String s) {
-		String readString = s.trim().substring(Character.toString(cmdPrefix).length()).trim();
+		String readString = s.trim().substring(Character.toString(prefixChar).length()).trim();
 		boolean hasArgs = readString.trim().contains(" ");
 		String commandName = hasArgs ? readString.split(" ")[0] : readString.trim();
 		String[] args = hasArgs ? readString.substring(commandName.length()).trim().split(" ") : new String[0];

@@ -17,6 +17,7 @@ import com.kisman.cc.util.interfaces.Drawable;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.Rendering;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -32,6 +33,7 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -41,6 +43,12 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class ShaderCharms extends Module {
+    private final Setting testtest = register(new Setting("Test Test", this, false));
+    private final Setting testtest2 = register(new Setting("Test Test 2", this, false));
+    private final Setting testtest3 = register(new Setting("Test Test 3", this, false));
+    private final Setting testtest4 = register(new Setting("Test Test 4", this, false));
+    private final Setting testtest5 = register(new Setting("Test Test 5", this, false));
+    private final Setting testtest6 = register(new Setting("Test Test 6", this, false));
     private final Setting range = register(new Setting("Range", this, 32, 8, 64, true));
     public final Setting mode = register(new Setting("Mode", this, ShaderModes.SMOKE));
 
@@ -133,6 +141,11 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent event) {
+        if(testtest6.getValBoolean()) {
+            GlStateManager.disableDepth();
+            GlStateManager.depthMask(false);
+        }
+
         if(items.getValBoolean() && itemsFix.getValBoolean() && !criticalSection) event.setCanceled(true);
     }
 
@@ -191,6 +204,11 @@ public class ShaderCharms extends Module {
 
             if(flag || flag2 || flag3) {
                 //shitty code tbh
+
+                if(testtest4.getValBoolean()) {
+                    Rendering.setup();
+                    Rendering.release();
+                }
 
                 FramebufferShader framebufferShader = null;
                 boolean itemglow = false, gradient = false, glow = false, outline = false, circle = false;
@@ -276,13 +294,33 @@ public class ShaderCharms extends Module {
 
                 framebufferShader.animationSpeed = animationSpeed.getValInt();
 
-                GlStateManager.pushMatrix();
-                GlStateManager.pushAttrib();
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                GlStateManager.enableDepth();
-                GlStateManager.depthMask(true);
-                GlStateManager.enableAlpha();
+
+
+                if(testtest.getValBoolean()) {
+                    GlStateManager.matrixMode(5889);
+                    GlStateManager.pushMatrix();
+                    GlStateManager.matrixMode(5888);
+                    GlStateManager.pushMatrix();
+                } else {
+                    GlStateManager.pushMatrix();
+                    GlStateManager.pushAttrib();
+                    GlStateManager.enableBlend();
+                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    GlStateManager.enableDepth();
+                    GlStateManager.depthMask(true);
+                    GlStateManager.enableAlpha();
+                }
+
+                if(testtest3.getValBoolean()) {
+                    GlStateManager.disableLighting();
+                    GlStateManager.depthMask(false);
+                    GL11.glDisable(2929);
+                }
+
+                if(testtest5.getValBoolean()) {
+                    GlStateManager.enableDepth();
+                    GlStateManager.depthMask(false);
+                }
 
                 if (itemglow) {
                     ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
@@ -349,22 +387,43 @@ public class ShaderCharms extends Module {
                     }
                 }
 
+                if(flag) for(Drawable module : modulesToRender) module.draw();
+
                 if(flag3) {
                     criticalSection = true;
                     mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
                     criticalSection = false;
                 }
 
-                if(flag) for(Drawable module : modulesToRender) module.draw();
-
                 framebufferShader.stopDraw();
                 if (gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
 
-                GlStateManager.disableBlend();
-                GlStateManager.disableAlpha();
-                GlStateManager.disableDepth();
-                GlStateManager.popAttrib();
-                GlStateManager.popMatrix();
+                if(testtest5.getValBoolean()) {
+                    GlStateManager.disableDepth();
+                }
+
+                if(testtest.getValBoolean()) {
+                    GlStateManager.color(1f, 1f, 1f);
+                    GlStateManager.matrixMode(5889);
+                    GlStateManager.popMatrix();
+                    GlStateManager.matrixMode(5888);
+                    GlStateManager.popMatrix();
+                } else {
+                    GlStateManager.disableBlend();
+                    GlStateManager.disableAlpha();
+                    GlStateManager.disableDepth();
+                    GlStateManager.popAttrib();
+                    GlStateManager.popMatrix();
+                }
+
+                /*if(testtest3.getValBoolean()) {
+                    Rendering.release();
+                }*/
+
+            }
+
+            if(!flag3 && testtest2.getValBoolean()) {
+                mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
             }
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {

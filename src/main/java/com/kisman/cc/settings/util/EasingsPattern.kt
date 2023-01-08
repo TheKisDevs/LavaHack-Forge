@@ -51,15 +51,8 @@ class EasingsPattern(
         return this
     }
 
-    fun mutateProgress(progress : Double) : Double {
-        return if(mode.valEnum == EasingMode.Normal) normalMode.valEnum.task.doTask(progress) else reverseMode.valEnum.task.doTask(progress)
-    }
-
-    fun mutateBB(bb : AxisAlignedBB, progress : Double) : AxisAlignedBB {
-        return Rendering.scale(bb, mutateProgress(progress))
-    }
-
-    fun mutateBlockBB(pos : BlockPos, progress : Double) : AxisAlignedBB {
-        return Rendering.scale(pos, mutateProgress(progress))
-    }
+    fun mutateProgress(progress : Double) : Double = if(mode.valEnum == EasingMode.Normal) normalMode.valEnum.task.doTask(progress) else reverseMode.valEnum.task.doTask(progress)
+    fun mutateProgress(progress : Float) : Float = mutateProgress(progress.toDouble()).toFloat()
+    fun mutateBB(bb : AxisAlignedBB, progress : Double) : AxisAlignedBB = Rendering.scale(bb, mutateProgress(progress))
+    fun mutateBlockBB(pos : BlockPos, progress : Double) : AxisAlignedBB = Rendering.scale(pos, mutateProgress(progress))
 }

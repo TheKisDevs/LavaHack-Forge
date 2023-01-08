@@ -91,7 +91,7 @@ public class EventProcessor {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessage(ClientChatEvent event) {
-        if(event.getMessage().startsWith(Kisman.instance.commandManager.cmdPrefixStr)) {
+        if(event.getMessage().startsWith(Kisman.instance.commandManager.prefixString)) {
             try {
                 Kisman.instance.commandManager.runCommands(event.getMessage().substring(0));
                 event.setCanceled(true);
