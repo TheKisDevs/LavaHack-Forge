@@ -31,6 +31,8 @@ public class AntiDump {
 
     private static boolean flag = false;
 
+    private static final long checkAddress;
+
     private static final String[] naughtyFlags = {
             "-XBootclasspath",
             "-javaagent",
@@ -61,12 +63,38 @@ public class AntiDump {
         }
 
         unsafe = ref;
+
+        checkAddress = unsafe.allocateMemory(8);
+        unsafe.putLong(checkAddress, 0xFFFFFFFFCDED249DL);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> unsafe.freeMemory(checkAddress)));
+        checkFlags();
+    }
+
+    public static long computeHash(){
+        StringBuilder sb = new StringBuilder();
+        long hash = 0;
+        for(int i = 0; i < 6; i++)
+            sb.append(naughtyFlags[i]);
+        hash |= sb.toString().hashCode();
+        sb = new StringBuilder();
+        for(int i = 6; i < 13; i++)
+            sb.append(naughtyFlags[i]);
+        hash <<= 16;
+        hash |= sb.toString().hashCode();
+        return hash;
+    }
+
+    public static void checkFlags(){
+        if(computeHash() == unsafe.getLong(checkAddress))
+            return;
+        dumpDetected();
     }
 
     /* CookieFuckery */
     public static boolean check(
             String key
     ) {
+        checkFlags();
         try {
             Field jvmField = ManagementFactory.getRuntimeMXBean().getClass().getDeclaredField("jvm");
             jvmField.setAccessible(true);
