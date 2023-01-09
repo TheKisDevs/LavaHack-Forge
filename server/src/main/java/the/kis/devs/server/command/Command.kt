@@ -23,7 +23,7 @@ abstract class Command(
     ) {
         this.connection = connection
 
-        thread {
+//        thread {
             for(message in execute(line, args)) {
                 println("Answer by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
 
@@ -38,6 +38,6 @@ abstract class Command(
                     connection.send(message.byteArray)
                 }
             }
-        }
+//        }
     }
 }

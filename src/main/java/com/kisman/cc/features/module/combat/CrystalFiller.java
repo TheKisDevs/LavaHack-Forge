@@ -12,7 +12,6 @@ import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.CrystalUtils;
-import com.kisman.cc.util.world.WorldUtil;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -151,9 +150,9 @@ public class CrystalFiller extends Module {
     }
 
     private boolean isValidHole(Hole hole) {
-        if(WorldUtil.getDistance(mc.player, hole.pos) > range.getValDouble()) return false;
+        if(mc.player.getDistance(hole.pos.getX(), hole.pos.getY(), hole.pos.getZ()) > range.getValDouble()) return false;
         if(placeMode.getValString().equals(PlaceMode.Smart.name()) && target != null) {
-            if(WorldUtil.getDistance(target, hole.pos) > targetHoleRange.getValDouble()) return false;
+            if(target.getDistance(hole.pos.getX(), hole.pos.getY(), hole.pos.getZ()) > targetHoleRange.getValDouble()) return false;
             if(crystalDMGCheck.getValBoolean()) {
                 final float tempDMG = CrystalUtils.calculateDamage(mc.world, hole.pos, target);
                 final float tempSelfDMG = CrystalUtils.calculateDamage(mc.world, hole.pos, mc.player);

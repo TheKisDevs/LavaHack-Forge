@@ -390,7 +390,7 @@ public class Rendering {
         Color wireColor1 = c4.getColor();
         Color wireColor2 = c5.getColor();
 
-        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, false, lineWidth);
+        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, depth, lineWidth);
     }
 
     public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){

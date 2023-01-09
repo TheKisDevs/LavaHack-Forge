@@ -7,12 +7,14 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.enums.ShaderModes;
+import com.kisman.cc.util.collections.Pair;
+import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.interfaces.Drawable;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
@@ -50,7 +52,8 @@ public class ShaderCharms extends Module {
     private final Setting testtest5 = register(new Setting("Test Test 5", this, false));
     private final Setting testtest6 = register(new Setting("Test Test 6", this, false));
     private final Setting range = register(new Setting("Range", this, 32, 8, 64, true));
-    public final Setting mode = register(new Setting("Mode", this, ShaderModes.SMOKE));
+//    public final Setting mode = register(new Setting("Mode", this, ShaderModes.SMOKE));
+    public final SettingEnum<Shaders> mode = register(new SettingEnum<>("Mode", this, Shaders.AQUA));
 
     private final MultiThreaddableModulePattern threads = threads();
 
@@ -120,11 +123,12 @@ public class ShaderCharms extends Module {
 
     private boolean criticalSection = false;
     private boolean flag = false;
+    private boolean flag5 = false;
 
     private ArrayList<Entity> entities = new ArrayList<>();
 
-    public static HashMap<Drawable, Supplier<Boolean>> modules = new HashMap<>();
-    private final ArrayList<Drawable> modulesToRender = new ArrayList<>();
+    public static HashMap<Drawable, Pair<Supplier<Boolean>>> modules = new HashMap<>();
+    private final HashMap<Drawable, Boolean> modulesToRender = new HashMap<>();
 
     public ShaderCharms() {
         super("ShaderCharms", Category.RENDER);
@@ -151,12 +155,14 @@ public class ShaderCharms extends Module {
 
     public void update() {
         modulesToRender.clear();
+        flag5 = false;
 
-        for(Map.Entry<Drawable, Supplier<Boolean>> entry : modules.entrySet()) {
+        for(Map.Entry<Drawable, Pair<Supplier<Boolean>>> entry : modules.entrySet()) {
             Drawable module = entry.getKey();
-            Supplier<Boolean> supplier = entry.getValue();
+            Pair<Supplier<Boolean>> suppliers = entry.getValue();
 
-            if(supplier.get()) modulesToRender.add(module);
+            if(suppliers.getFirst().get()) modulesToRender.put(module, suppliers.getSecond().get());
+            if(!flag5) flag5 = flag;
         }
 
         flag = !modulesToRender.isEmpty();
@@ -203,98 +209,15 @@ public class ShaderCharms extends Module {
             boolean flag3 = items.getValBoolean() && mc.gameSettings.thirdPersonView == 0;
 
             if(flag || flag2 || flag3) {
-                //shitty code tbh
-
                 if(testtest4.getValBoolean()) {
                     Rendering.setup();
                     Rendering.release();
                 }
 
-                FramebufferShader framebufferShader = null;
-                boolean itemglow = false, gradient = false, glow = false, outline = false, circle = false;
+                if(flag && flag5) for(Drawable module : modulesToRender.keySet()) if(modulesToRender.get(module)) module.draw();
 
-                switch (mode.getValString()) {
-                    case "AQUA":
-                        framebufferShader = AquaShader.AQUA_SHADER;
-                        break;
-                    case "RED":
-                        framebufferShader = RedShader.RED_SHADER;
-                        break;
-                    case "SMOKE":
-                        framebufferShader = SmokeShader.SMOKE_SHADER;
-                        break;
-                    case "FLOW":
-                        framebufferShader = FlowShader.FLOW_SHADER;
-                        break;
-                    case "ITEMGLOW":
-                        framebufferShader = ItemShader.ITEM_SHADER;
-                        itemglow = true;
-                        break;
-                    case "PURPLE":
-                        framebufferShader = PurpleShader.PURPLE_SHADER;
-                        break;
-                    case "GRADIENT":
-                        framebufferShader = GradientOutlineShader.INSTANCE;
-                        gradient = true;
-                        break;
-                    case "UNU":
-                        framebufferShader = UnuShader.UNU_SHADER;
-                        break;
-                    case "GLOW":
-                        framebufferShader = GlowShader.GLOW_SHADER;
-                        glow = true;
-                        break;
-                    case "OUTLINE":
-                        framebufferShader = OutlineShader.OUTLINE_SHADER;
-                        outline = true;
-                        break;
-                    case "BlueFlames":
-                        framebufferShader = BlueFlamesShader.BlueFlames_SHADER;
-                        break;
-                    case "CodeX":
-                        framebufferShader = CodeXShader.CodeX_SHADER;
-                        break;
-                    case "Crazy":
-                        framebufferShader = CrazyShader.CRAZY_SHADER;
-                        break;
-                    case "Golden":
-                        framebufferShader = GoldenShader.GOLDEN_SHADER;
-                        break;
-                    case "HideF":
-                        framebufferShader = HideFShader.HideF_SHADER;
-                        break;
-                    case "HolyFuck":
-                        framebufferShader = HolyFuckShader.HolyFuckF_SHADER;
-                        break;
-                    case "HotShit":
-                        framebufferShader = HotShitShader.HotShit_SHADER;
-                        break;
-                    case "Kfc":
-                        framebufferShader = KfcShader.KFC_SHADER;
-                        break;
-                    case "Sheldon":
-                        framebufferShader = SheldonShader.SHELDON_SHADER;
-                        break;
-                    case "Smoky":
-                        framebufferShader = SmokyShader.SMOKY_SHADER;
-                        break;
-                    case "SNOW":
-                        framebufferShader = SnowShader.SNOW_SHADER;
-                        break;
-                    case "Techno":
-                        framebufferShader = TechnoShader.TECHNO_SHADER;
-                        break;
-                    case "Circle":
-                        framebufferShader = CircleShader.INSTANCE;
-                        circle = true;
-                        break;
-                }
-
-                if (framebufferShader == null) return;
-
+                FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
                 framebufferShader.animationSpeed = animationSpeed.getValInt();
-
-
 
                 if(testtest.getValBoolean()) {
                     GlStateManager.matrixMode(5889);
@@ -322,7 +245,7 @@ public class ShaderCharms extends Module {
                     GlStateManager.depthMask(false);
                 }
 
-                if (itemglow) {
+                if (mode.getValEnum() == Shaders.ITEMGLOW) {
                     ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
                     ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
                     ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
@@ -332,7 +255,7 @@ public class ShaderCharms extends Module {
                     ((ItemShader) framebufferShader).mix = mix.getValFloat();
                     ((ItemShader) framebufferShader).alpha = 1f;
                     ((ItemShader) framebufferShader).useImage = false;
-                } else if (gradient) {
+                } else if (mode.getValEnum() == Shaders.GRADIENT) {
                     ((GradientOutlineShader) framebufferShader).color = getColor();
                     ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
                     ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
@@ -343,13 +266,13 @@ public class ShaderCharms extends Module {
                     ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
                     ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
                     ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
-                } else if(glow) {
+                } else if(mode.getValEnum() == Shaders.GLOW) {
                     ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
                     ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
                     ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
                     ((GlowShader) framebufferShader).radius = radius.getValFloat();
                     ((GlowShader) framebufferShader).quality = quality.getValFloat();
-                } else if(outline) {
+                } else if(mode.getValEnum() == Shaders.OUTLINE) {
                     ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
                     ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
                     ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
@@ -358,7 +281,7 @@ public class ShaderCharms extends Module {
                     ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
                     ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
                     ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
-                } else if(circle) {
+                } else if(mode.getValEnum() == Shaders.Circle) {
                     CircleShader.color1 = color1.getColour();
                     CircleShader.color2 = color2.getColour();
                     CircleShader.filledColor = filledColor.getColour();
@@ -387,7 +310,7 @@ public class ShaderCharms extends Module {
                     }
                 }
 
-                if(flag) for(Drawable module : modulesToRender) module.draw();
+                if(flag) for(Drawable module : modulesToRender.keySet()) module.draw();
 
                 if(flag3) {
                     criticalSection = true;
@@ -396,7 +319,7 @@ public class ShaderCharms extends Module {
                 }
 
                 framebufferShader.stopDraw();
-                if (gradient) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
+                if (mode.getValEnum() == Shaders.GRADIENT) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
 
                 if(testtest5.getValBoolean()) {
                     GlStateManager.disableDepth();

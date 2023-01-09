@@ -1,8 +1,8 @@
 package com.kisman.cc.util.math.vectors
 
-import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
@@ -13,3 +13,15 @@ import kotlin.math.roundToInt
 fun d2i(
     vec : Vec3d
 ) : Vec3i = Vec3i(vec.x.roundToInt(), vec.y.roundToInt(), vec.z.roundToInt())
+
+fun vecToString(
+    vec : Vec3d
+) : String = StringBuilder().also {
+    it.append('(')
+    it.append(floor(vec.x).toInt())
+    it.append(", ")
+    it.append(floor(vec.y).toInt())
+    it.append(", ")
+    it.append(floor(vec.z).toInt())
+    it.append(")")
+} .toString()

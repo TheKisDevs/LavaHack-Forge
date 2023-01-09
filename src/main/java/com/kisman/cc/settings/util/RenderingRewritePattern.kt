@@ -4,9 +4,12 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.features.module.render.ShaderCharms
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
+import com.kisman.cc.util.collections.Pair
+import com.kisman.cc.util.enums.Era
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import com.kisman.cc.util.interfaces.Drawable
 import com.kisman.cc.util.render.Rendering
@@ -28,7 +31,9 @@ open class RenderingRewritePattern(
     val scaleState = setupSetting(scaleGroup.add(Setting("Scale State", module, false).setTitle("State")))
     val scaleOffset = setupSetting(scaleGroup.add(Setting("Scale Offset", module, 0.002, 0.002, 0.2, false)))
     val depth = setupSetting(Setting("Depth", module, false))
-    val shader = setupSetting(Setting("Shader", module, false))
+    val shaderGroup = setupGroup(SettingGroup(Setting("Shader", module)))
+    val shader = setupSetting(shaderGroup.add(Setting("Shader", module, false)))
+    val shaderSecondLayer = setupSetting(shaderGroup.add(Setting("Shader Second Layer", module, false).setTitle("Second Layer")))
 
     val rainbowGroup = setupGroup(SettingGroup(Setting("Rainbow", module)))
     val rainbow = setupSetting(rainbowGroup.add(Setting("Rainbow", module, false)))
@@ -36,7 +41,6 @@ open class RenderingRewritePattern(
     val rainbowSat = setupSetting(rainbowGroup.add(Setting("Saturation", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Sat")))
     val rainbowBright = setupSetting(rainbowGroup.add(Setting("Brightness", module, 100.0, 0.0, 100.0, true).setVisible(rainbow).setTitle("Bright")))
 
-    //Colors
     val colorGroup = setupGroup(SettingGroup(Setting("Colors", module)))
     val filledColorGroup = setupGroup(colorGroup.add(SettingGroup(Setting("Filled", module))))
     val filledColor1 = setupSetting(filledColorGroup.add(Setting("Render Color", module, "First", Colour(255, 0, 0, 255))))
@@ -56,7 +60,7 @@ open class RenderingRewritePattern(
             group!!.add(scaleGroup)
             group!!.add(depth)
             if(module is Drawable) {
-                group!!.add(shader)
+                group!!.add(shaderGroup)
             }
             group!!.add(rainbowGroup)
             group!!.add(colorGroup)
@@ -74,7 +78,9 @@ open class RenderingRewritePattern(
         module.register(scaleOffset)
         module.register(depth)
         if(module is Drawable) {
+            module.register(shaderGroup)
             module.register(shader)
+            module.register(shaderSecondLayer)
         }
         module.register(rainbowGroup)
         module.register(rainbow)
@@ -95,26 +101,42 @@ open class RenderingRewritePattern(
         if(module is Drawable) {
             module.renderPatterns.add(this)
 
-            ShaderCharms.modules[module] = Supplier {
-                fun processPattern(
-                    pattern : RenderingRewritePattern
-                ) : Boolean = pattern.isActive() && !pattern.canRender()
+            ShaderCharms.modules[module] = Pair<Supplier<Boolean>>(
+                Supplier {
+                    fun processPattern(
+                        pattern : RenderingRewritePattern
+                    ) : Boolean = pattern.isActive() && !pattern.canRender()
 
-                fun processPatterns() : Boolean {
-                    var flag = false
-
-                    for(pattern in module.renderPatterns) {
-                        if(processPattern(pattern)) {
-                            flag = true
-                            continue
+                    fun processPatterns() : Boolean {
+                        for(pattern in module.renderPatterns) {
+                            if(processPattern(pattern)) {
+                                return true
+                            }
                         }
+
+                        return false
                     }
 
-                    return flag
-                }
+                    module.toggled && processPatterns()
+                },
+                Supplier {
+                    fun processPattern(
+                        pattern : RenderingRewritePattern
+                    ) : Boolean = pattern.canRenderSecondLayer()
 
-                module.toggled && processPatterns()
-            }
+                    fun processPatterns() : Boolean {
+                        for(pattern in module.renderPatterns) {
+                            if(processPattern(pattern)) {
+                                return true
+                            }
+                        }
+
+                        return false
+                    }
+
+                    processPatterns()
+                }
+            )
         }
 
         return this
@@ -127,6 +149,8 @@ open class RenderingRewritePattern(
     open fun canRender(
         callingFromDraw : Boolean
     ) : Boolean = (callingFromDraw && !canRender()) || (!callingFromDraw && canRender())
+
+    open fun canRenderSecondLayer() : Boolean = !canRender() && shaderSecondLayer.valBoolean
 
     open fun draw(
         aabb : AxisAlignedBB,

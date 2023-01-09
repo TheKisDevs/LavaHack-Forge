@@ -1,52 +1,61 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-//import com.kisman.cc.util.Rotation;
-//import com.kisman.cc.util.Rotation.*;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.world.*;
+import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
+import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.network.play.client.*;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
-import static com.kisman.cc.features.module.combat.Surround.Center.*;
+import static com.kisman.cc.features.module.combat.Surround.Center.TELEPORT;
 
 public class Surround extends Module {
-    private Setting surroundVec = new Setting("SurroundVec", this, SurroundVectors.BASE);
-    private Setting completion = new Setting("Completion", this, Completion.AIR);
-    private Setting center = new Setting("Center", this, TELEPORT);
-    private Setting switch_ = new Setting("Switch", this, SwitchModes.Silent);
-    private Setting hand = new Setting("Hand", this, PlayerUtil.Hand.MAINHAND);
-    private Setting blocksPerTick = new Setting("BlocksPerTick", this, 4, 0, 10, true);
-    private Setting raytrace = new Setting("RayTrace", this, false);
-    private Setting packet = new Setting("Packet", this, false);
-    private Setting confirm = new Setting("Confirm", this, false);
+    private final Setting surroundVec = new Setting("SurroundVec", this, SurroundVectors.BASE);
+    private final Setting completion = new Setting("Completion", this, Completion.AIR);
+    private final Setting center = new Setting("Center", this, TELEPORT);
+    private final Setting switch_ = new Setting("Switch", this, SwitchModes.Silent);
+    private final Setting hand = new Setting("Hand", this, PlayerUtil.Hand.MAINHAND);
+    private final Setting blocksPerTick = new Setting("BlocksPerTick", this, 4, 0, 10, true);
+    private final Setting raytrace = new Setting("RayTrace", this, false);
+    private final Setting packet = new Setting("Packet", this, false);
+    private final Setting confirm = new Setting("Confirm", this, false);
     private final Setting noInteract = new Setting("No Interact", this, false);
-    private Setting rewrite = new Setting("Rewrite", this, false);
-    private Setting dynamic = new Setting("Rewrite Dynamic", this, false);
-    private Setting support = new Setting("Rewrite Support", this, SupportModes.None);
-    private Setting retries = new Setting("Rewrite Retries", this, 5, 0, 20, true);
-    private Setting protectRetries = new Setting("Rewrite Protect Retries", this, 5, 0, 20, true);
-    private Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
-    private Setting crystalBreaker = new Setting("Rewrite Crystal Breaker", this, true);
-    private Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, NumberType.TIME);
-    private Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
-    private Setting rewriteProtected = new Setting("Rewrite Protect Vec", this, false);
+    private final Setting rewrite = new Setting("Rewrite", this, false);
+    private final Setting dynamic = new Setting("Rewrite Dynamic", this, false);
+    private final Setting support = new Setting("Rewrite Support", this, SupportModes.None);
+    private final Setting retries = new Setting("Rewrite Retries", this, 5, 0, 20, true);
+    private final Setting protectRetries = new Setting("Rewrite Protect Retries", this, 5, 0, 20, true);
+    private final Setting rewriteRotate = new Setting("Rewrite Rotate", this, RotateModes.Silent);
+    private final Setting crystalBreaker = new Setting("Rewrite Crystal Breaker", this, true);
+    private final Setting breakDelay = new Setting("Rewrite Break Delay", this, 10, 0, 100, NumberType.TIME);
+    private final Setting breakRange = new Setting("Rewrite Break Range", this, 5, 1, 6, false);
+    private final Setting rewriteProtected = new Setting("Rewrite Protect Vec", this, false);
 
-//    private Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
-//    private Setting rotateCenter = new Setting("RotateCenter", this, false);
-//    private Setting rotateRandom = new Setting("RotateRandom", this, false);
+//    private final Setting rotate = new Setting("Rotate", this, Rotation.Rotate.NONE);
+//    private final Setting rotateCenter = new Setting("RotateCenter", this, false);
+//    private final Setting rotateRandom = new Setting("RotateRandom", this, false);
 
     public static Surround instance;
 
@@ -55,11 +64,11 @@ public class Surround extends Module {
     private int tries, tries2;
     private int surroundPlaced = 0;
     private BlockPos oldPos = BlockPos.ORIGIN;
-    private BlockPos surroundPosition = BlockPos.ORIGIN;
+//    private BlockPos surroundPosition = BlockPos.ORIGIN;
     //TODO: new rotation
 //    private Rotation surroundRotation = new Rotation(Float.NaN, Float.NaN, (Rotate) rotate.getValEnum());
-    private TimerUtils breakTimer = new TimerUtils();
-    private ArrayList<BlockPos> protectOffsets = new ArrayList<>();
+//    private TimerUtils breakTimer = new TimerUtils();
+    private final ArrayList<BlockPos> protectOffsets = new ArrayList<>();
 
     public Surround() {
         super("Surround", "Surround", Category.COMBAT);
@@ -110,7 +119,7 @@ public class Surround extends Module {
                     zPosition += 0.3 * zDirection;
                 }
 
-                TeleportUtil.teleportPlayer(xPosition, mc.player.posY, zPosition);
+                teleportPlayer(xPosition, mc.player.posY, zPosition);
                 break;
             }
             case "MOTION": {
@@ -119,6 +128,12 @@ public class Surround extends Module {
                 break;
             }
         }
+    }
+
+    private void teleportPlayer(double x, double y, double z) {
+        mc.player.setVelocity(0, 0, 0);
+        mc.player.setPosition(x, y, z);
+        mc.player.connection.sendPacket(new CPacketPlayer.Position(x, y, z, true));
     }
 
     public void update() {
@@ -175,7 +190,7 @@ public class Surround extends Module {
         if(!rewrite.getValBoolean()) {
             for (Vec3d surroundVectors : getEnumByName(surroundVec.getValString()).vectors) {
                 if (Objects.equals(BlockUtil.getBlockResistance(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)))), BlockUtil.BlockResistance.BLANK) && surroundPlaced <= blocksPerTick.getValDouble()) {
-                    surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
+//                    surroundPosition = new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ)));
 
 //                    if (RaytraceUtil.raytraceBlock(surroundPosition, RaytraceUtil.Raytrace.NORMAL) && raytrace.getValBoolean()) return;
 //                    if (surroundPosition != BlockPos.ORIGIN) {

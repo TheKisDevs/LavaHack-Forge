@@ -10,7 +10,6 @@ import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -268,15 +267,16 @@ public class AutoCrystalRewrite extends Module {
         RayTraceResult result = mc.world.rayTraceBlocks(BlockUtil.getEyesPos(), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
         EnumFacing facing = result == null ? (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN) : (placeRaytrace.getValBoolean() ? result.sideHit : (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN));
         float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
-        float[] rots = AngleUtil.calculateAngles(pos);
-        if(rotate.getValBoolean())
-            handleRotate(rots, oldRots);
+        //TODO: rotation enum
+//        float[] rots = AngleUtil.calculateAngles(pos);
+//        if(rotate.getValBoolean())
+//            handleRotate(rots, oldRots);
         if(packetPlace.getValBoolean())
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, facing, getCrystalHand(), 0, 0, 0));
         else
             mc.playerController.processRightClickBlock(mc.player, mc.world, pos, facing, new Vec3d(0, 0, 0), getCrystalHand());
-        if(rotate.getValBoolean())
-            handleRotate(oldRots, rots);
+//        if(rotate.getValBoolean())
+//            handleRotate(oldRots, rots);
     }
 
     public EnumHand getCrystalHand(){
@@ -293,16 +293,17 @@ public class AutoCrystalRewrite extends Module {
 
     private void attackCrystal(EntityEnderCrystal crystal){
         float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
-        float[] rots = AngleUtil.calculateAngles(crystal);
-        if(rotate.getValBoolean())
-            handleRotate(rots, oldRots);
+        //TODO: cubic can you rewrite it with rotation enum
+//        float[] rots = AngleUtil.calculateAngles(crystal);
+//        if(rotate.getValBoolean())
+//            handleRotate(rots, oldRots);
         if(packetBreak.getValBoolean())
             mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         else
             mc.playerController.attackEntity(mc.player, crystal);
         swing();
-        if(rotate.getValBoolean())
-            handleRotate(oldRots, rots);
+//        if(rotate.getValBoolean())
+//            handleRotate(oldRots, rots);
     }
 
     private void swing(){

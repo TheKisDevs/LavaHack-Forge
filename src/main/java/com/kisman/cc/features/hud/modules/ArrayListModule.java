@@ -114,7 +114,12 @@ public class ArrayListModule extends HudModule {
             if(test2.getValBoolean()) {
                 flag2 = element.active();
             }
-            float xCoeff = (element.active() && flag && (test.getValBoolean() || xCoeffPrev == element.getElement().getXCoeff())) ? 1 : (float) AnimationUtils.animate(element.active() && flag2 ? 1 : 0, element.getElement().getXCoeff(), speed.getValDouble());//element.getElement().getXCoeff();
+            float xCoeff = (float) AnimationUtils.animate(element.active() && flag2 ? 1 : 0, element.getElement().getXCoeff(), speed.getValDouble());//element.getElement().getXCoeff();
+
+            if(element.active() && flag && (test.getValBoolean() || xCoeff == xCoeffPrev)) {
+                xCoeff = 1;
+            }
+
             element.getElement().setXCoeff(xCoeff);
             element.getElement().setXCoeffPrev(xCoeffPrev);
 

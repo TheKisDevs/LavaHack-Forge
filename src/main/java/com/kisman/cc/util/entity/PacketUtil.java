@@ -10,23 +10,18 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 
 public class PacketUtil implements Globals {
-    public static void handlePosLook(SPacketPlayerPosLook packetIn,
-                                     Entity entity,
-                                     boolean noRotate) {
+    public static void handlePosLook(SPacketPlayerPosLook packetIn, Entity entity, boolean noRotate) {
         handlePosLook(packetIn, entity, noRotate, false);
     }
 
-    public static void handlePosLook(SPacketPlayerPosLook packet,
-                                     Entity entity,
-                                     boolean noRotate,
-                                     boolean event) {
+    public static void handlePosLook(SPacketPlayerPosLook packet, Entity entity, boolean noRotate, boolean event) {
         double x = packet.getX();
         double y = packet.getY();
         double z = packet.getZ();
         float yaw = packet.getYaw();
         float pitch = packet.getPitch();
 
-        if ( packet.getFlags().contains(SPacketPlayerPosLook.EnumFlags.X) ) {
+        if (packet.getFlags().contains(SPacketPlayerPosLook.EnumFlags.X)) {
             x += entity.posX;
         } else {
             entity.motionX = 0.0D;
@@ -79,28 +74,17 @@ public class PacketUtil implements Globals {
         mc.addScheduledTask(PacketUtil::loadTerrain);
     }
 
-    public static CPacketPlayer positionRotation(double x,
-                                                 double y,
-                                                 double z,
-                                                 float yaw,
-                                                 float pitch,
-                                                 boolean onGround) {
+    public static CPacketPlayer positionRotation(double x, double y, double z, float yaw, float pitch, boolean onGround) {
         return new CPacketPlayer.PositionRotation(x, y, z, yaw, pitch, onGround);
     }
-    public static void loadTerrain()
-    {
+    public static void loadTerrain() {
         // This might get called asynchronously so better be safe
-        mc.addScheduledTask(() ->
-        {
-            if (!((AccessorNetHandlerPlayClient) mc.player.connection)
-                    .isDoneLoadingTerrain())
-            {
+        mc.addScheduledTask(() -> {
+            if (!((AccessorNetHandlerPlayClient) mc.player.connection).isDoneLoadingTerrain()) {
                 mc.player.prevPosX = mc.player.posX;
                 mc.player.prevPosY = mc.player.posY;
                 mc.player.prevPosZ = mc.player.posZ;
-                ((AccessorNetHandlerPlayClient) mc.player.connection)
-                        .setDoneLoadingTerrain(true);
-
+                ((AccessorNetHandlerPlayClient) mc.player.connection).setDoneLoadingTerrain(true);
                 mc.displayGuiScreen(null);
             }
         });
