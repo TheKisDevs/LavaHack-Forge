@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.client;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -14,6 +15,7 @@ public class Config extends Module {
     @ModuleInstance
     public static Config instance;
 
+    public final Setting rotationTakeOff = register(new Setting("Rotation Take Off", this, 10.0, 0.0, 50.0, NumberType.TIME));
     public final Setting test = register(new Setting("Test", this, true));
     public final Setting test2 = register(new Setting("Test 2", this, false));
 
@@ -22,8 +24,6 @@ public class Config extends Module {
     private final SettingGroup glow = register(new SettingGroup(new Setting("Glow", this)));
     private final SettingGroup particles = register(new SettingGroup(new Setting("Particles", this)));
     private final SettingGroup other = register(new SettingGroup(new Setting("Other", this)));
-
-    public Setting astolfoColorMode = new Setting("Astolfo Color Mode", this, AstolfoColorMode.Old);
     public Setting friends = register(main.add(new Setting("Friends", this, true)));
     public Setting nameMode = register(main.add(new Setting("Name Mode", this, NameMode.kismancc)));
     public Setting customName = register(main.add(new Setting("Custom Name", this, "kisman.cc", "kisman.cc", true).setVisible(() -> nameMode.getValBoolean())));
@@ -89,6 +89,8 @@ public class Config extends Module {
 
     public Config() {
         super("Config", Category.CLIENT);
+
+        RotationSystem.takeOffDelaySetting = rotationTakeOff;
     }
 
     public enum NameMode {kismancc, LavaHack, TheKisDevs, kidman, TheClient, BloomWare, UwU, kidmad, EarthHack, Ferret, custom, ClientName}

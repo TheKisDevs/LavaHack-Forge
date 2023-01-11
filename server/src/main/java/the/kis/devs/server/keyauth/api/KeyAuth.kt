@@ -16,22 +16,22 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 class KeyAuth(
-    val appname: String,
-    val ownerid: String,
-    val version: String,
-    val url: String
+    private val appname : String,
+    private val ownerid : String,
+    private val version : String,
+    private val url : String
 ) {
-    var sessionid: String? = null
+    var sessionid : String? = null
     var initialized = false
-    var userData: UserData? = null
+    var userData : UserData? = null
 
     companion object {
         init {
             try {
                 val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-                    override fun getAcceptedIssuers(): Array<X509Certificate>? { return null }
-                    override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String) {}
-                    override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String) {}
+                    override fun getAcceptedIssuers() : Array<X509Certificate>? { return null }
+                    override fun checkClientTrusted(certs : Array<X509Certificate>, authType : String) {}
+                    override fun checkServerTrusted(certs : Array<X509Certificate>, authType : String) {}
                 })
                 val sslcontext = SSLContext.getInstance("SSL")
                 sslcontext.init(
@@ -70,9 +70,8 @@ class KeyAuth(
         key : String, 
         hwid : String
     ) : Boolean {
-        if (!initialized) {
-            init()
-        }
+        init()
+
         val response : HttpResponse<String>
 
         try {

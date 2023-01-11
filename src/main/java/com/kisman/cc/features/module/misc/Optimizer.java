@@ -1,8 +1,10 @@
 package com.kisman.cc.features.module.misc;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.Display;
@@ -16,29 +18,30 @@ public class Optimizer extends Module {
     public final Setting entityRenderRange = register(new Setting("Entity Render Range", this, 50, 0, 50, true).setVisible(customEntityRenderRange::getValBoolean));
     private final Setting lostFocus = register(new Setting("Lost Focus", this, false));
 
+    @ModuleInstance
     public static Optimizer instance;
 
     private int maxFpsActive;
 
     public Optimizer() {
         super("Optimizer", Category.MISC);
-
-        instance = this;
     }
 
     public void onEnable() {
-        MainAiImpr.ENABLED = true;
+        super.onEnable();
+        AIImprovementsMod.STATE = true;
         maxFpsActive = mc.gameSettings.limitFramerate;
     }
 
     public void onDisable() {
-        MainAiImpr.ENABLED = MainAiImpr.REMOVE_LOOK_AI = MainAiImpr.REMOVE_LOOK_IDLE = MainAiImpr.REPLACE_LOOK_HELPER = false;
+        super.onDisable();
+        AIImprovementsMod.STATE = false;
     }
 
     public void update() {
-        MainAiImpr.REMOVE_LOOK_AI = removeLookAi.getValBoolean();
-        MainAiImpr.REMOVE_LOOK_IDLE = removeLookIdle.getValBoolean();
-        MainAiImpr.REPLACE_LOOK_HELPER = replaceLookHelper.getValBoolean();
+        AIImprovementsMod.REMOVE_LOOK_AI = removeLookAi.getValBoolean();
+        AIImprovementsMod.REMOVE_LOOK_IDLE = removeLookIdle.getValBoolean();
+        AIImprovementsMod.REPLACE_LOOK_HELPER = replaceLookHelper.getValBoolean();
     }
 
     @SubscribeEvent

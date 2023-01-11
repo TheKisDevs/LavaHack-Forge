@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.render.crystalmodifier
 import com.kisman.cc.features.module.render.CrystalModifier
 import com.kisman.cc.features.module.render.crystalmodifier.RubiksCrystalUtil.*
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.math.Trigonometric.toRadians
+import com.kisman.cc.util.math.toRadians
 import net.minecraft.client.model.ModelEnderCrystal
 import net.minecraft.client.model.ModelRenderer
 import net.minecraft.client.renderer.GlStateManager.*

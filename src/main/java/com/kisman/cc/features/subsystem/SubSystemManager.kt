@@ -10,7 +10,8 @@ import com.kisman.cc.features.subsystem.subsystems.*
 class SubSystemManager {
     var subsystems = listOf(
         EnemyManager,
-        HoleProcessor
+        HoleProcessor,
+        RotationSystem
     )
 
     fun init() {

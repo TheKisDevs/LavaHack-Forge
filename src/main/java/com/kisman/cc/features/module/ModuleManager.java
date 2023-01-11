@@ -42,13 +42,13 @@ public class ModuleManager {
 //		modules = loader.loadAllFromPackage("com.kisman.cc.features.module");
 
 		//Debug
-		add(new BaritoneTest());
+//		add(new BaritoneTest());
 		add(new BlockOverlay());
 		add(new BurrowHelper());
 		add(new ChatPrint());
 		//add(new ChorusTP());
 		add(ClickCooldownReset.INSTANCE);
-		add(new EventSystemTest());
+//		add(new EventSystemTest());
 		add(new FallbackableFontTest());
 		add(new FastFallTest());
 		add(new FrostWalk());
@@ -64,20 +64,20 @@ public class ModuleManager {
 		add(new ModuleInstancingJava());
 		add(new ModuleInstancingKt());
 		add(new MoveInspector());
-		add(new NoMove());
+//		add(new NoMove());
 		add(new ObjectMouseOver());
 		add(new PacketIDGetterTest());
 		add(new PacketMineProviderTest());
 		add(new RectTest());
-		add(new ScaffoldTest());
-		add(new ScaffoldTest2());
+//		add(new ScaffoldTest());
+//		add(new ScaffoldTest2());
 		add(new ScaffoldTest3());
 		add(new ScreenShaders());
 		add(new SmoothRenderer());
 		add(SwingTest.INSTANCE);
-		add(new TextFieldTest());
-		add(new TowerTest());
-		add(new TracerTest());
+//		add(new TextFieldTest());
+//		add(new TowerTest());
+//		add(new TracerTest());
 		add(new Triangulation());
 
 		//combat
@@ -341,7 +341,8 @@ public class ModuleManager {
 				m.update();
 			} catch(Exception e) {
 				if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " from update method. Disabling!", m);
-				Kisman.LOGGER.error(e);
+				Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from update method from " + m.getName() + ". Disabling!", e);
+				e.printStackTrace();
 				m.setToggled(false);
 			}
 		}

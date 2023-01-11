@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.subsystem.subsystems.RotationSystemKt;
+import com.kisman.cc.features.subsystem.subsystems.RotationProviderKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
@@ -63,7 +63,7 @@ public class AntiBow extends Module {
 
             mc.gameSettings.keyBindUseItem.pressed = true;
 
-            RotationSystemKt.rotateEntity(target, rotator.getValEnum());
+            RotationProviderKt.rotateEntity(target, rotator.getValEnum());
 
             flag = true;
         }

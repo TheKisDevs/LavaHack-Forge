@@ -3,6 +3,7 @@ package com.kisman.cc;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.event.KismanEventBus;
 import com.kisman.cc.features.Binder;
+import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.ForgeMappings;
@@ -50,7 +51,6 @@ import com.kisman.cc.util.manager.ServerManager;
 import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
-import com.kisman.cc.util.optimization.aiimpr.MainAiImpr;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.thread.kisman.ThreadManager;
 import com.kisman.cc.websockets.WebSocketsManagerKt;
@@ -148,8 +148,6 @@ public class Kisman {
     public PluginManager pluginManager;
     public SubSystemManager subSystemManager;
 
-    public MainAiImpr aiImpr;
-
     //catlua
     public Remapper3000 remapper3000;
     public ForgeMappings forgeMappings;
@@ -197,7 +195,8 @@ public class Kisman {
         progressBar = new ProgressBarController("LavaHack");
 
 
-        aiImpr = new MainAiImpr();
+        AIImprovementsMod.preInit();
+
         eventProcessor = new EventProcessor();
         managers = new Managers();
         managers.init();
@@ -212,7 +211,8 @@ public class Kisman {
 
         progressBar.init();
 
-        aiImpr.init();
+        AIImprovementsMod.init();
+
         eventProcessor.init();
         moduleManager.init();
         hudModuleManager.init();

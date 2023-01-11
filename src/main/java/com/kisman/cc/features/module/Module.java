@@ -49,7 +49,6 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 
 	public float xCoeff = 1;
 	public float xCoeffPrev = 1;
-//	public long startTime = 1L;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -172,7 +171,8 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 			onEnable();
 		} catch(Exception e) {
 			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in enable method. Disabling!");
-			Kisman.LOGGER.error(e);
+			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from enable method from " + getName() + ". Disabling!", e);
+			e.printStackTrace();
 			flag = true;
 		}
 
@@ -193,7 +193,8 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 			onDisable();
 		} catch(Exception e) {
 			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in disable method.");
-			Kisman.LOGGER.error(e);
+			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from disable method from " + getName() + ". Disabling!", e);
+			e.printStackTrace();
 		}
 
 		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);

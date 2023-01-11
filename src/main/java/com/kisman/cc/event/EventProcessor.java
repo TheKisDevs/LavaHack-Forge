@@ -25,7 +25,6 @@ import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -52,11 +51,6 @@ public class EventProcessor {
 
     public void init() {
         Kisman.EVENT_BUS.post(new EventProgressBar("Event Processor"));
-    }
-
-    @SubscribeEvent
-    public void onEntityJoinWorldEvent(EntityJoinWorldEvent event) {
-        if(Kisman.instance.aiImpr != null) Kisman.instance.aiImpr.onEntityJoinWorld(event);
     }
 
     @SubscribeEvent

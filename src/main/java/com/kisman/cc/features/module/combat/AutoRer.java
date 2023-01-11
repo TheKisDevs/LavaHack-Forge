@@ -8,6 +8,7 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.mixin.accessors.IEntityPlayer;
@@ -21,11 +22,8 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.RotationSaver;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic;
-import com.kisman.cc.util.enums.RotationLogic;
-import com.kisman.cc.util.enums.dynamic.RotationEnum;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.thread.kisman.ThreadHandler;
@@ -41,7 +39,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketSoundEffect;
@@ -64,13 +61,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
- * @author _kisman_(Logic, Renderer logic), Cubic(Renderer)
+ * @author _kisman_(Logic, Renderer logic, Some part of renderer), Cubic(Some part of renderer)
  */
 @PingBypassModule
 @Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
-    private final Setting mode = register(new Setting("Mode", this, Mode.ManualTick));
+    private final Setting mode = /*register*/(new Setting("Mode", this, Mode.ManualTick));
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
     private final SettingGroup calc = register(new SettingGroup(new Setting("Calc", this)));
@@ -90,12 +87,12 @@ public class AutoRer extends Module {
     private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
     private final Setting multiThreaddedExtrapolation = register(multiThreadGroup.add(new Setting("MT Extrapolation", this, true).setTitle("Extrapolation")));
     private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
+    //TODO: usage where??
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     private final SettingGroup stages = register(main.add(new SettingGroup(new Setting("Stages", this))));
     private final Setting calcStage = register(stages.add(new Setting("Calc Stage", this, EventMode.Tick).setTitle("Calc")));
     private final Setting logicStage = register(stages.add(new Setting("Logic Stage", this, EventMode.Tick).setTitle("Logic")));
-//    private final SettingGroup resync = register(stages.add(new SettingGroup()))
     public final Setting lagProtect = register(main.add(new Setting("Lag Protect", this, false)));
     public final Setting placeRange = register(ranges.add(new Setting("Place Range", this, 6, 0, 6, false).setTitle("Place")));
     private final Setting placeWallRange = register(ranges.add(new Setting("Place Wall Range", this, 4.5f, 0, 6, false).setTitle("Place Wall")));
@@ -119,13 +116,13 @@ public class AutoRer extends Module {
     private final Setting swingLogic = register(main.add(new Setting("Swing Logic", this, SwingLogic.Pre).setVisible(() -> swing.getValEnum() != SwingMode.None)));
     private final Setting instant = register(helpers.add(new Setting("Instant", this, true)));
     private final Setting instantCalc = register(helpers.add(new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean)));
-    private final Setting instantRotate = register(helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean)));
+    //TODO: i will unregister it later oky??
+    private final Setting instantRotate = /*register*/(helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean)));
     private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, false)));
     private final Setting sound = register(helpers.add(new Setting("Sound", this, false)));
     public final Setting sync = register(helpers.add(new Setting("Sync", this, false)));
     private final Setting syncMode = register(helpers.add(new Setting("Sync Mode", this, SyncMode.None).setTitle("Sync")));
-    private final Setting rotate = register(helpers.add(new Setting("Rotate", this, Rotate.Off)));
-    private final SettingEnum<RotationEnum.Rotation> rotateMode = new SettingEnum<>("Rotate Mode", this, RotationEnum.Rotation.None).setVisible(() -> !rotate.checkValString("None")).group(helpers).register();
+    private final Setting rotateLogic = register(helpers.add(new Setting("Rotate Logic", this, RotateLogic.Off)));
     private final Setting calcDistSort = register(helpers.add(new Setting("Calc Dist Sort", this, false)));
     private final DamageSyncPattern damageSync = new DamageSyncPattern(this).group(helpers).preInit().init();
     private final Setting damageSyncPlace = register(damageSync.getGroup_().add(new Setting("Damage Sync Place", this, DamageSyncMode.None).setTitle("Place")));
@@ -181,7 +178,6 @@ public class AutoRer extends Module {
     private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
     private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
     private final SettingGroup sequentialGroup = register(delay.add(new SettingGroup(new Setting("Sequential", this))));
-    //    private final Setting sequentialPlaceDelay = register(sequentialGroup.add(new Setting("Sequential Place Delay", this, 0, 0, 20, true).setTitle("Place")));
     private final Setting sequentialBreakDelay = register(sequentialGroup.add(new Setting("Sequential Break Delay", this, 0, 0, 20, true).setTitle("Break")));
     private final Setting multiplication = register(delay.add(new Setting("Multiplication", this, 1, 1, 10, true).setTitle("Multi")));
 
@@ -195,7 +191,6 @@ public class AutoRer extends Module {
     public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setTitle("Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
     public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setTitle("Sync").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
     public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setTitle("Sync Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    private final Setting threadPacketRots = register(thread_.add(new Setting("Thread Packet Rots", this, false).setTitle("Rotations").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()) && !rotate.checkValString(Rotate.Off.name()))));
     private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setTitle("Sound Player").setVisible(() -> threadMode.checkValString("Sound"))));
     private final Setting threadCalc = register(thread_.add(new Setting("Thread Calc", this, true).setTitle("Calc").setVisible(() -> !threadMode.checkValString("None"))));
 
@@ -527,24 +522,13 @@ public class AutoRer extends Module {
     }
 
     private void attackCrystalPredict(int entityID) {
-        boolean flag = instantRotate.getValBoolean() && !motionCrystal.getValBoolean() && (rotate.checkValString("Break") || rotate.checkValString("All"));
-        RotationSaver saver = new RotationSaver().save();
-        if(flag) rotateToEntity(entityID);
+        //TODO: rotation system usage where????
         CPacketUseEntity packet = new CPacketUseEntity();
         packet.entityId = entityID;
         packet.action = CPacketUseEntity.Action.ATTACK;
         mc.player.connection.sendPacket(packet);
         breakTimer.reset();
         predictTimer.reset();
-        if(flag) loadSaver(saver);
-    }
-
-    private void rotateToEntity(int entityID) {
-        rotateMode.getValEnum().getTaskR().doTask(rotateMode.getValEnum().getTaskCEntity().doTask(entityID, RotationLogic.Default), false);
-    }
-
-    private void loadSaver(RotationSaver saver) {
-        rotateMode.getValEnum().getTaskRFromSaver().doTask(saver, true);
     }
 
     private BlockPos doInstant(int entityID, BlockPos pos) {
@@ -834,30 +818,6 @@ public class AutoRer extends Module {
         if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
     }
 
-    private RotationSaver handlePlacePreRotate(boolean thread, EventPlayerMotionUpdate event) {
-        RotationSaver saver = new RotationSaver().save();
-
-        if(rotate.checkValString("Place") || rotate.checkValString("All")) {
-            try {
-                float[] rots = rotateMode.getValEnum().getTaskCBlock().doTask(placePos.getBlockPos());//RotationUtils.calcAngle(mc.player.getPositionEyes(mc.getRenderPartialTicks()), new Vec3d((placePos.getBlockPos().getX() + 0.5f), (placePos.getBlockPos().getY() - 0.5f), (placePos.getBlockPos().getZ() + 0.5f)));
-                if (!thread) {
-                    if (!motionCrystal.getValBoolean()) {
-                        rotateMode.getValEnum().getTaskR().doTask(rots, false);
-                    } else if (event != null) {
-                        event.setYaw(rots[0]);
-                        event.setPitch(rots[1]);
-                    }
-                } else if (threadPacketRots.getValBoolean()) mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
-            } catch (Exception ignored) {}
-        }
-
-        return saver;
-    }
-
-    private void handlePlacePostRotate(RotationSaver saver) {
-        if((rotate.checkValString("Place") || rotate.checkValString("All"))) loadSaver(saver);
-    }
-
     private void handlePlaceFull(boolean thread, EventPlayerMotionUpdate event) {
         handlePlaceClientSide();
 
@@ -879,10 +839,7 @@ public class AutoRer extends Module {
             facing = result == null || result.sideHit == null ? EnumFacing.UP : result.sideHit;
         }
 
-        RotationSaver saver = handlePlacePreRotate(thread, event);
-
         handlePlace(facing, offhand);
-        handlePlacePostRotate(saver);
         handlePlacePostSwitch(slots[0]);
 
         if(hand != null) mc.player.setActiveHand(hand);
@@ -890,6 +847,7 @@ public class AutoRer extends Module {
 
     private void handlePlace(EnumFacing facing, boolean offhand) {
         if(placePos.getBlockPos() != null && mc.player.connection != null) {
+            if(rotateLogic.getValEnum() == RotateLogic.Place || rotateLogic.getValEnum() == RotateLogic.Both) RotationSystem.handleRotate(placePos.getBlockPos());
             if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
             if(packetPlace.getValBoolean() && mc.player.connection != null) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(placePos.getBlockPos(), facing, getPlaceHand(offhand), 0, 0, 0));
             else mc.playerController.processRightClickBlock(mc.player, mc.world, placePos.getBlockPos(), facing, new Vec3d(0, 0, 0), getPlaceHand(offhand));
@@ -1032,23 +990,14 @@ public class AutoRer extends Module {
     }
 
     private void handleBreakFull() {
-        RotationSaver saver = handleBreakPreRotate();
-
         handleBreak();
-        handleBreakPostRotate(saver);
         handleBreakSync();
-    }
-
-    private RotationSaver handleBreakPreRotate() {
-        RotationSaver saver = new RotationSaver().save();
-
-        if(rotate.checkValString("Break") || rotate.checkValString("All")) rotateToEntity(breakPos.getCrystal().getEntityId());
-
-        return saver;
     }
 
     private void handleBreak() {
         if(breakPos == null || breakPos.getCrystal() == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
+
+        if(rotateLogic.getValEnum() == RotateLogic.Break || rotateLogic.getValEnum() == RotateLogic.Both) RotationSystem.handleRotate(breakPos.getCrystal());
 
         lastHitEntity = breakPos.getCrystal();
 
@@ -1065,10 +1014,6 @@ public class AutoRer extends Module {
 
         getTimer(true).reset();
         lastBroken = true;
-    }
-
-    private void handleBreakPostRotate(RotationSaver saver) {
-        if((rotate.checkValString("Break") || rotate.checkValString("All"))) loadSaver(saver);
     }
 
     private void handleBreakSync() {
@@ -1123,13 +1068,12 @@ public class AutoRer extends Module {
     public enum Mode { ManualTick, ManualRender, FastTick, FastRender }
     public enum ThreadMode { None, Pool, Sound, While }
     public enum Render { None, Default, Advanced }
-    public enum Rotate { Off, Place/*, Break, All*/ }
+    public enum RotateLogic { Off, Place, Break, Both }
     public enum SwitchMode { None, Normal, Silent, Smart}
     public enum SwingMode { MainHand, OffHand, CurrentHand, PacketSwing, None }
     public enum SwingLogic { Pre, Post }
     public enum FriendMode { None, AntiTotemFail, AntiTotemPop }
     public enum LogicMode { PlaceBreak, BreakPlace }
-    public enum RotateMode { Normal, Silent }
     public enum AntiCevBreakerMode { None, Cev, Civ, Both }
     public enum BreakPriority { Damage, CevBreaker }
     public enum DelayMode { Default, FromTo }
@@ -1171,17 +1115,6 @@ public class AutoRer extends Module {
             this.damage = damage;
             if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
             this.isTotemPopped = isTotemPopped;
-        }
-    }
-
-    public static class FastAutoRer implements Runnable {
-        public static FastAutoRer instance = new FastAutoRer();
-
-        private FastAutoRer() {}
-
-        @Override
-        public void run() {
-
         }
     }
 
