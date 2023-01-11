@@ -52,7 +52,7 @@ object RotationSystem : SubSystem(
             reset()
             it.cancel()
             timer.reset()
-            lastPacket = packet as CPacketPlayer
+            lastPacket = packet/* as CPacketPlayer*/
         }
     })
 
