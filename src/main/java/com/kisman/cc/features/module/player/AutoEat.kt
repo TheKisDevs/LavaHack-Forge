@@ -4,6 +4,7 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
+import net.minecraft.inventory.ClickType
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
@@ -22,15 +23,29 @@ class AutoEat : Module(
     private val whileHandActive = register(Setting("While Hand Active", this, true))
     private val offhand = register(Setting("Offhand", this, false))
     private val smartHand = register(Setting("Smart Hand", this, false))
+    private val updateController = register(Setting("Update Controller", this, true))
 
     override fun update() {
         if(mc.player == null || mc.world == null) return
         if(!check()) return
-        val hand = getHand() ?: return
     }
 
     private fun check() : Boolean {
         return mc.player.health <= health.valInt || mc.player.foodStats.foodLevel <= hunger.valInt
+    }
+
+    private fun doSwap() : Boolean {
+        val hand = getHand() ?: return false
+        val slot = if (fromInventory.valBoolean) searchInventory() else searchHotbar()
+        if(slot == -1) return false
+        if(hand == EnumHand.OFF_HAND){
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player)
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, 45, 0, ClickType.PICKUP, mc.player)
+            mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slot, 0, ClickType.PICKUP, mc.player)
+            if (updateController.valBoolean) mc.playerController.updateController()
+            return true
+        }
+        return true
     }
 
     private fun getHand() : EnumHand? {
@@ -43,7 +58,7 @@ class AutoEat : Module(
     private fun searchInventory() : Int {
         var bestSlot = -1
         var stack : ItemStack? = null
-        for(i in 1..mc.player.inventoryContainer.inventory.size){
+        for(i in 1..mc.player.inventoryContainer.inventory.size - 9){
             if(i >= 5 || i <= 8) continue
             val itemStack = bestFood(stack, mc.player.inventoryContainer.inventory[i])
             if(itemStack == stack) continue
@@ -62,7 +77,7 @@ class AutoEat : Module(
             stack = itemStack
             bestSlot = i
         }
-        return bestSlot
+        return mc.player.inventoryContainer.inventory.size - 1 - bestSlot
     }
 
     private fun bestFood(first: ItemStack?, second: ItemStack) : ItemStack? {
