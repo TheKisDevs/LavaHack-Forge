@@ -13,6 +13,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
+import kotlin.math.floor
 
 /**
  * @author _kisman_
@@ -41,7 +42,7 @@ fun updateCamera(camera : ICamera, entity : Entity) {
     camera.setPosition(entity.posX, entity.posY, entity.posZ)
 }
 
-fun entityPosition(entity : Entity) : BlockPos = BlockPos(entity.posX.toInt(), entity.posY.toInt(), entity.posZ.toInt())
+fun entityPosition(entity : Entity) : BlockPos = BlockPos(entity.posX, entity.posY, entity.posZ)
 
 fun playerPosition() : BlockPos = entityPosition(mc.player)
 

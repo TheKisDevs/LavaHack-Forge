@@ -34,9 +34,6 @@ class AutoAnchor : Module(
     private val targetRange = register(Setting("Target Range", this, 10.0, 1.0, 50.0, true))
     private val delay = register(Setting("Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME))
     private val placer = PlacementPattern(this, true).preInit().init()
-//    private val test = register(Setting("Test", this, true))
-//    private val test2 = register(Setting("Test 2", this, true))
-//    private val test3 = register(Setting("Test 3", this, false))
     private val threads = threads()
     private val anchorRendererGroup = register(SettingGroup(Setting("Anchor Renderer", this)))
     private val anchorPattern = SlideRenderingRewritePattern(this).group(anchorRendererGroup).prefix("Anchor").preInit().init()
@@ -88,17 +85,6 @@ class AutoAnchor : Module(
             placePos = entityPosition(target!!).up(2)
 
             val placeBlock = mc.world.getBlockState(placePos!!).block
-
-            /*if(test.valBoolean) {
-                placePos = placePos!!.west()
-            }
-
-            if(test2.valBoolean) {
-                placePos = placePos!!.east()
-            }*/
-
-//            println("fr2 ${placePos!!.x} ${placePos!!.y} ${placePos!!.z} ${placeBlock == Blocks.AIR} ${placeBlock.localizedName}/* ${pos.x} ${pos.y} ${pos.z}*/")
-//            println("fr3 ${placePos == Blocks.OBSIDIAN} ${placePos == anchorPos}")
 
             if (placeBlock == Blocks.AIR) {
                 val slot = InventoryUtil.findBlockExtended(RESPAWN_ANCHOR, 0, 9)
