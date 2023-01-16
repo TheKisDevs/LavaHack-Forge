@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @Targetable
 class AutoAnchor : Module(
     "AutoAnchor",
-    "Only for 1.16+ servers",
+    "Killing enemies with anchors. Only for 1.16+ servers",
     Category.COMBAT
 ) {
     private val targetRange = register(Setting("Target Range", this, 10.0, 1.0, 50.0, true))
