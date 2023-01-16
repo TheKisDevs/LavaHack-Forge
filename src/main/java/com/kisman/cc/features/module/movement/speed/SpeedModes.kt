@@ -9,6 +9,7 @@ import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.manager.Managers
 import com.kisman.cc.util.movement.MovementUtil
+import com.kisman.cc.util.world.playerPosition
 import net.minecraft.init.Blocks
 import net.minecraft.init.MobEffects
 import net.minecraft.network.play.client.CPacketEntityAction
@@ -221,7 +222,7 @@ enum class SpeedModes(
         }
 
         private fun getMotion(): Motion? {
-            val posToCheck = EntityUtil.getRoundedBlockPos(mc.player)
+            val posToCheck = playerPosition()
             if (mc.world.getBlockState(posToCheck) == Blocks.AIR && lastPos != null) {
                 if (posToCheck != lastPos) {
                     if (lastPos?.add(0, 0, -1) == posToCheck) return Motion.mZ
@@ -229,7 +230,7 @@ enum class SpeedModes(
                     if (lastPos?.add(1, 0, 0) == posToCheck) return Motion.X
                     if (lastPos?.add(-1, 0, 0) == posToCheck) return Motion.mX
                 }
-            } else lastPos = EntityUtil.getRoundedBlockPos(mc.player)
+            } else lastPos = playerPosition()
             return null
         }
     }),

@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -24,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@WorkInProgress
 public class FireworkAura extends Module {
 
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));

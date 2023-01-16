@@ -65,6 +65,7 @@ public class ArrayListModule extends HudModule {
     private final Setting glowBackground = register(glowGroup.add(new Setting("Glow Background", this, false)));
 
     private HashSet<IArrayListElement> prevElements = new HashSet<>();
+    private HashSet<IArrayListElement> prevElements2 = new HashSet<>();
 
     public ArrayListModule() {
         super("ArrayList", "Displays your enables modules!");
@@ -92,9 +93,14 @@ public class ArrayListModule extends HudModule {
         float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(staticColor), ColorUtils.getGreen(staticColor), ColorUtils.getBlue(staticColor), null);
 
         HashSet<IArrayListElement> prevElementsNew = new HashSet<>();
+        HashSet<IArrayListElement> prevElementsNew2 = new HashSet<>();
 
         for(ArrayListElement element : elements) {
             prevElementsNew.add(element.getElement());
+
+            if(element.getElement().getXCoeff() == 1) {
+                prevElementsNew2.add(element.getElement());
+            }
 
             int finalColor = gradient.getValEnum().getGetter().get(gradient.getValEnum().equals(Gradients.None) ? staticColor : (count * diff.getValInt()), hsb[1]);
 
@@ -109,14 +115,20 @@ public class ArrayListModule extends HudModule {
             }
 
             boolean flag = prevElements.contains(element.getElement());
+            boolean flag3 = prevElements2.contains(element.getElement());
             float xCoeffPrev = element.getElement().getXCoeff();
             boolean flag2 = !flag;
             if(test2.getValBoolean()) {
                 flag2 = element.active();
             }
+
+            if(!flag) {
+                element.done = false;
+            }
+
             float xCoeff = (float) AnimationUtils.animate(element.active() && flag2 ? 1 : 0, element.getElement().getXCoeff(), speed.getValDouble());//element.getElement().getXCoeff();
 
-            if(element.active() && flag && (test.getValBoolean() || xCoeff == xCoeffPrev)) {
+            if(element.active() && flag && (test.getValBoolean() || flag3)) {
                 xCoeff = 1;
             }
 
@@ -144,6 +156,7 @@ public class ArrayListModule extends HudModule {
         }
 
         prevElements = prevElementsNew;
+        prevElements2 = prevElementsNew2;
     }
 
     private void drawBackground(double x, double y, double x1, double y1) {Render2DUtil.drawRect(x, y, x1, y1, ColorUtils.injectAlpha(Color.BLACK, backgroundAlpha.getValInt()).getRGB());}

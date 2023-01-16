@@ -1,10 +1,14 @@
 package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.IBindable;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.ShaderPattern;
 import com.kisman.cc.util.Colour;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -41,6 +45,10 @@ public class GuiModule extends Module {
     public final Setting colorPickerExtra = register(colorPickerGroup.add(new Setting("Color Picker Extra", this, false).setTitle("Extra")));
     public final Setting colorPickerClearColor = register(colorPickerGroup.add(new Setting("Color Picker Clear Color", this, false).setTitle("Clear Color")));
     public final Setting colorPickerCopyPaste = register(colorPickerGroup.add(new Setting("Color Picker Copy Paste", this, false).setTitle("Copy Paste")));
+
+    public final SettingGroup shadersGroup = register(new SettingGroup(new Setting("Shaders", this)));
+    public final Setting shaderState = register(shadersGroup.add(new Setting("Shader State", this, false).setTitle("State")));
+    public final ShaderPattern shaders = new ShaderPattern(this).group(shadersGroup).prefix("Shaders").preInit().init();
 
     @ModuleInstance
     public static GuiModule instance;

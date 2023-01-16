@@ -41,7 +41,7 @@ fun updateCamera(camera : ICamera, entity : Entity) {
     camera.setPosition(entity.posX, entity.posY, entity.posZ)
 }
 
-fun entityPosition(entity : Entity) : BlockPos = BlockPos(entity.posX, entity.posY, entity.posZ)
+fun entityPosition(entity : Entity) : BlockPos = BlockPos(entity.posX.toInt(), entity.posY.toInt(), entity.posZ.toInt())
 
 fun playerPosition() : BlockPos = entityPosition(mc.player)
 

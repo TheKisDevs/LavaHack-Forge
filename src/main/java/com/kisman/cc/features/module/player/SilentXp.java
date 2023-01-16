@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.combat;
+package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
@@ -22,7 +22,7 @@ public class SilentXp extends Module {
     private final TimerUtils timer = new TimerUtils();
 
     public SilentXp() {
-        super("SilentXP", "SilentXp", Category.COMBAT);
+        super("SilentXP", "SilentXp", Category.PLAYER);
     }
 
     public void onEnable() {

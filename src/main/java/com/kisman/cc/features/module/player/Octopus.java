@@ -35,44 +35,44 @@ public class Octopus extends Module {
     private final Setting slot1Key = register(slot1.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot2 = register(new SettingGroup(new Setting("Slot 2", this)));
-    private final Setting slot2Active = register(slot2.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot2Mode = register(slot2.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot2Key = register(slot2.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot2Active = register(slot2.add(new Setting("Slot2Active", this, true).setTitle("Active")));
+    private final Setting slot2Mode = register(slot2.add(new Setting("Slot2Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot2Key = register(slot2.add(new Setting("Slot2Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot3 = register(new SettingGroup(new Setting("Slot 3", this)));
-    private final Setting slot3Active = register(slot3.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot3Mode = register(slot3.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot3Key = register(slot3.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot3Active = register(slot3.add(new Setting("Slot3Active", this, true).setTitle("Active")));
+    private final Setting slot3Mode = register(slot3.add(new Setting("Slot3Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot3Key = register(slot3.add(new Setting("Slot3Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot4 = register(new SettingGroup(new Setting("Slot 4", this)));
-    private final Setting slot4Active = register(slot4.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot4Mode = register(slot4.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot4Key = register(slot4.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot4Active = register(slot4.add(new Setting("Slot4Active", this, true).setTitle("Active")));
+    private final Setting slot4Mode = register(slot4.add(new Setting("Slot4Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot4Key = register(slot4.add(new Setting("Slot4Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot5 = register(new SettingGroup(new Setting("Slot 5", this)));
-    private final Setting slot5Active = register(slot5.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot5Mode = register(slot5.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot5Key = register(slot5.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot5Active = register(slot5.add(new Setting("Slot5Active", this, true).setTitle("Active")));
+    private final Setting slot5Mode = register(slot5.add(new Setting("Slot5Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot5Key = register(slot5.add(new Setting("Slot5Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot6 = register(new SettingGroup(new Setting("Slot 6", this)));
-    private final Setting slot6Active = register(slot6.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot6Mode = register(slot6.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot6Key = register(slot6.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot6Active = register(slot6.add(new Setting("Slot6Active", this, true).setTitle("Active")));
+    private final Setting slot6Mode = register(slot6.add(new Setting("Slot6Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot6Key = register(slot6.add(new Setting("SlotKey", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot7 = register(new SettingGroup(new Setting("Slot 7", this)));
-    private final Setting slot7Active = register(slot7.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot7Mode = register(slot7.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot7Key = register(slot7.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot7Active = register(slot7.add(new Setting("Slot7Active", this, true).setTitle("Active")));
+    private final Setting slot7Mode = register(slot7.add(new Setting("Slot7Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot7Key = register(slot7.add(new Setting("Slot7Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot8 = register(new SettingGroup(new Setting("Slot 8", this)));
-    private final Setting slot8Active = register(slot8.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot8Mode = register(slot8.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot8Key = register(slot8.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot8Active = register(slot8.add(new Setting("Slot8Active", this, true).setTitle("Active")));
+    private final Setting slot8Mode = register(slot8.add(new Setting("Slot8Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot8Key = register(slot8.add(new Setting("Slot8Key", this, 0).setTitle("Keybind")));
 
     private final SettingGroup slot9 = register(new SettingGroup(new Setting("Slot 9", this)));
-    private final Setting slot9Active = register(slot9.add(new Setting("Slot1Active", this, true).setTitle("Active")));
-    private final Setting slot9Mode = register(slot9.add(new Setting("Slot1Mode", this, DEFAULT)).setTitle("Mode"));
-    private final Setting slot9Key = register(slot9.add(new Setting("Slot1Key", this, 0).setTitle("Keybind")));
+    private final Setting slot9Active = register(slot9.add(new Setting("Slot9Active", this, true).setTitle("Active")));
+    private final Setting slot9Mode = register(slot9.add(new Setting("Slot9Mode", this, DEFAULT)).setTitle("Mode"));
+    private final Setting slot9Key = register(slot9.add(new Setting("Slot9Key", this, 0).setTitle("Keybind")));
 
     public Octopus(){
         super("Octopus", Category.PLAYER);

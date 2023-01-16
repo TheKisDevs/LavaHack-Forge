@@ -20,6 +20,9 @@ import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.render.shader.ShaderHelperKt;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -52,7 +55,6 @@ public class ShaderCharms extends Module {
     private final Setting testtest5 = register(new Setting("Test Test 5", this, false));
     private final Setting testtest6 = register(new Setting("Test Test 6", this, false));
     private final Setting range = register(new Setting("Range", this, 32, 8, 64, true));
-//    public final Setting mode = register(new Setting("Mode", this, ShaderModes.SMOKE));
     public final SettingEnum<Shaders> mode = register(new SettingEnum<>("Mode", this, Shaders.AQUA));
 
     private final MultiThreaddableModulePattern threads = threads();
@@ -67,36 +69,36 @@ public class ShaderCharms extends Module {
     private final Setting enderPearls = register(types.add(new Setting("Ender Pearls", this, false)));
     private final Setting itemsEntity = register(types.add(new Setting("Items(Entity)", this, false)));
     public final Setting items = register(types.add(new Setting("Items", this, true)));
-    private final Setting itemsFix = register(types.add(new Setting("Items Fix", this, false).setVisible(items::getValBoolean)));
+    private final Setting itemsFix = register(types.add(new Setting("Items Fix", this, false)));
 
     private final SettingGroup config = register(new SettingGroup(new Setting("Config", this)));
 
-    private final Setting animationSpeed = register(config.add(new Setting("Animation Speed", this, 0, 1, 10, false).setVisible(() -> !mode.checkValString("GRADIENT"))));
+    private final Setting animationSpeed = register(config.add(new Setting("Animation Speed", this, 0, 1, 10, false)));
 
-    private final Setting blur = register(config.add(new Setting("Blur", this, true).setVisible(() -> mode.checkValString("ITEMGLOW"))));
+    private final Setting blur = register(config.add(new Setting("Blur", this, true)));
     private final Setting radius = register(config.add(new Setting("Radius", this, 2, 0.1f, 10, false)));
     private final Setting mix = register(config.add(new Setting("Mix", this, 1, 0, 1, false)));
-    private final Setting red = register(config.add(new Setting("Red", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
-    private final Setting green = register(config.add(new Setting("Green", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
-    private final Setting blue = register(config.add(new Setting("Blue", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("OUTLINE") || mode.checkValString("Outline2") || mode.checkValString("InertiaOutline"))));
-    private final Setting rainbow = config.add(new Setting("RainBow", this, true).setVisible(() -> mode.checkValString("ITEMGLOW") || mode.checkValString("GLOW") || mode.checkValString("Outline2")));
+    private final Setting red = register(config.add(new Setting("Red", this, 1, 0, 1, false)));
+    private final Setting green = register(config.add(new Setting("Green", this, 1, 0, 1, false)));
+    private final Setting blue = register(config.add(new Setting("Blue", this, 1, 0, 1, false)));
+    private final Setting rainbow = register(config.add(new Setting("RainBow", this, true)));
     private final Setting delay = register(config.add(new Setting("Delay", this, 100, 1, 2000, true)));
     private final Setting saturation = register(config.add(new Setting("Saturation", this, 36, 0, 100, NumberType.PERCENT)));
     private final Setting brightness = register(config.add(new Setting("Brightness", this, 100, 0, 100, NumberType.PERCENT)));
 
     private final Setting quality = register(config.add(new Setting("Quality", this, 1, 0, 20, false)));
-    private final Setting gradientAlpha = register(config.add(new Setting("Gradient Alpha", this, false).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting alphaGradient = register(config.add(new Setting("Alpha Gradient Value", this, 255, 0, 255, true).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting duplicateOutline = register(config.add(new Setting("Duplicate Outline", this, 1, 0, 20, false).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting moreGradientOutline = register(config.add(new Setting("More Gradient", this, 1, 0, 10, false).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting creepyOutline = register(config.add(new Setting("Creepy", this, 1, 0, 20, false).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting alpha = register(config.add(new Setting("Alpha", this, 1, 0, 1, false).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting numOctavesOutline = register(config.add(new Setting("Num Octaves", this, 5, 1, 30, true).setVisible(() -> mode.checkValString("GRADIENT"))));
-    private final Setting speedOutline = register(config.add(new Setting("Speed", this, 0.1, 0.001, 0.1, false).setVisible(() -> mode.checkValString("GRADIENT"))));
+    private final Setting gradientAlpha = register(config.add(new Setting("Gradient Alpha", this, false)));
+    private final Setting alphaGradient = register(config.add(new Setting("Alpha Gradient Value", this, 255, 0, 255, true)));
+    private final Setting duplicateOutline = register(config.add(new Setting("Duplicate Outline", this, 1, 0, 20, false)));
+    private final Setting moreGradientOutline = register(config.add(new Setting("More Gradient", this, 1, 0, 10, false)));
+    private final Setting creepyOutline = register(config.add(new Setting("Creepy", this, 1, 0, 20, false)));
+    private final Setting alpha = register(config.add(new Setting("Alpha", this, 1, 0, 1, false)));
+    private final Setting numOctavesOutline = register(config.add(new Setting("Num Octaves", this, 5, 1, 30, true)));
+    private final Setting speedOutline = register(config.add(new Setting("Speed", this, 0.1, 0.001, 0.1, false)));
 
-    private final Setting rainbowSpeed = register(config.add(new Setting("Rainbow Speed", this, 0.4, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
-    private final Setting rainbowStrength = register(config.add(new Setting("Rainbow Strength", this, 0.3, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
-    private final Setting rainbowSaturation = register(config.add(new Setting("Rainbow Saturation", this, 0.5, 0, 1, false).setVisible(() -> mode.checkValString("OUTLINE") || mode.checkValString("InertiaOutline"))));
+    private final Setting rainbowSpeed = register(config.add(new Setting("Rainbow Speed", this, 0.4, 0, 1, false)));
+    private final Setting rainbowStrength = register(config.add(new Setting("Rainbow Strength", this, 0.3, 0, 1, false)));
+    private final Setting rainbowSaturation = register(config.add(new Setting("Rainbow Saturation", this, 0.5, 0, 1, false)));
 
     private final Setting color1 = register(config.add(new Setting("Color 1", this, new Colour(255, 0, 0, 255))));
     private final Setting color2 = register(config.add(new Setting("Color 2", this, new Colour(255, 0, 0, 255))));
@@ -113,6 +115,10 @@ public class ShaderCharms extends Module {
     private final Setting outline = register(config.add(new Setting("Outline", this, false)));
     private final Setting fadeOutline = register(config.add(new Setting("Fade Outline", this, false)));
     //outline radius is just radius
+
+    private final Setting speed = register(config.add(new Setting("Speed", this, 20.0, 0.0, 50.0, false)));
+    private final Setting step = register(config.add(new Setting("Step", this, 10.0, 1.0, 30.0, true)));
+    private final Setting ratio = register(config.add(new Setting("Ratio", this, 1.0, 0.0, 1.0, false)));
 
 
 //    private final Setting useImage = register(config.add(new Setting("Use Image", this, false)));
@@ -216,23 +222,6 @@ public class ShaderCharms extends Module {
 
                 if(flag && flag5) for(Drawable module : modulesToRender.keySet()) if(modulesToRender.get(module)) module.draw();
 
-                FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
-                framebufferShader.animationSpeed = animationSpeed.getValInt();
-
-                if(testtest.getValBoolean()) {
-                    GlStateManager.matrixMode(5889);
-                    GlStateManager.pushMatrix();
-                    GlStateManager.matrixMode(5888);
-                    GlStateManager.pushMatrix();
-                } else {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.pushAttrib();
-                    GlStateManager.enableBlend();
-                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                    GlStateManager.enableDepth();
-                    GlStateManager.depthMask(true);
-                    GlStateManager.enableAlpha();
-                }
 
                 if(testtest3.getValBoolean()) {
                     GlStateManager.disableLighting();
@@ -245,63 +234,86 @@ public class ShaderCharms extends Module {
                     GlStateManager.depthMask(false);
                 }
 
-                if (mode.getValEnum() == Shaders.ITEMGLOW) {
-                    ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
-                    ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
-                    ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
-                    ((ItemShader) framebufferShader).radius = radius.getValFloat();
-                    ((ItemShader) framebufferShader).quality = quality.getValFloat();
-                    ((ItemShader) framebufferShader).blur = blur.getValBoolean();
-                    ((ItemShader) framebufferShader).mix = mix.getValFloat();
-                    ((ItemShader) framebufferShader).alpha = 1f;
-                    ((ItemShader) framebufferShader).useImage = false;
-                } else if (mode.getValEnum() == Shaders.GRADIENT) {
-                    ((GradientOutlineShader) framebufferShader).color = getColor();
-                    ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
-                    ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
-                    ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
-                    ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
-                } else if(mode.getValEnum() == Shaders.GLOW) {
-                    ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
-                    ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
-                    ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
-                    ((GlowShader) framebufferShader).radius = radius.getValFloat();
-                    ((GlowShader) framebufferShader).quality = quality.getValFloat();
-                } else if(mode.getValEnum() == Shaders.OUTLINE) {
-                    ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
-                    ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
-                    ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
-                    ((OutlineShader) framebufferShader).radius = radius.getValFloat();
-                    ((OutlineShader) framebufferShader).quality = quality.getValFloat();
-                    ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
-                    ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
-                    ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
-                } else if(mode.getValEnum() == Shaders.Circle) {
-                    CircleShader.color1 = color1.getColour();
-                    CircleShader.color2 = color2.getColour();
-                    CircleShader.filledColor = filledColor.getColour();
-                    CircleShader.outlineColor = outlineColor.getColour();
-                    CircleShader.customAlpha = customAlpha.getValBoolean();
-                    CircleShader.rainbow = rainbowFilled.getValBoolean();
-                    CircleShader.circle = this.circle.getValBoolean();
-                    CircleShader.filled = filled.getValBoolean();
-                    CircleShader.glow = this.glow.getValBoolean();
-                    CircleShader.outline = this.outline.getValBoolean();
-                    CircleShader.fadeOutline = fadeOutline.getValBoolean();
-                    CircleShader.mix = mix.getValFloat();
-                    CircleShader.rainbowAlpha = rainbowAlpha.getValFloat();
-                    CircleShader.circleRadius = circleRadius.getValFloat();
-                    CircleShader.glowRadius = radius.getValFloat();
-                    CircleShader.outlineRadius = radius.getValFloat();
-                    CircleShader.quality = quality.getValFloat();
-                }
+                Function0<Unit> uniforms = () -> {
+                    FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
+                    framebufferShader.animationSpeed = animationSpeed.getValInt();
 
-                framebufferShader.startDraw(event.getPartialTicks());
+                    if (mode.getValEnum() == Shaders.ITEMGLOW) {
+                        ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
+                        ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
+                        ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                        ((ItemShader) framebufferShader).radius = radius.getValFloat();
+                        ((ItemShader) framebufferShader).quality = quality.getValFloat();
+                        ((ItemShader) framebufferShader).blur = blur.getValBoolean();
+                        ((ItemShader) framebufferShader).mix = mix.getValFloat();
+                        ((ItemShader) framebufferShader).alpha = 1f;
+                        ((ItemShader) framebufferShader).useImage = false;
+                    } else if (mode.getValEnum() == Shaders.GRADIENT) {
+                        ((GradientOutlineShader) framebufferShader).color = getColor();
+                        ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                        ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                        ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                        ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+
+                        ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
+                    } else if(mode.getValEnum() == Shaders.GLOW) {
+                        ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
+                        ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
+                        ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                        ((GlowShader) framebufferShader).radius = radius.getValFloat();
+                        ((GlowShader) framebufferShader).quality = quality.getValFloat();
+                    } else if(mode.getValEnum() == Shaders.OUTLINE) {
+                        ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
+                        ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
+                        ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                        ((OutlineShader) framebufferShader).radius = radius.getValFloat();
+                        ((OutlineShader) framebufferShader).quality = quality.getValFloat();
+                        ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
+                        ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
+                        ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
+                    } else if(mode.getValEnum() == Shaders.Circle) {
+                        CircleShader.color1 = color1.getColour();
+                        CircleShader.color2 = color2.getColour();
+                        CircleShader.filledColor = filledColor.getColour();
+                        CircleShader.outlineColor = outlineColor.getColour();
+                        CircleShader.customAlpha = customAlpha.getValBoolean();
+                        CircleShader.rainbow = rainbowFilled.getValBoolean();
+                        CircleShader.circle = this.circle.getValBoolean();
+                        CircleShader.filled = filled.getValBoolean();
+                        CircleShader.glow = this.glow.getValBoolean();
+                        CircleShader.outline = this.outline.getValBoolean();
+                        CircleShader.fadeOutline = fadeOutline.getValBoolean();
+                        CircleShader.mix = mix.getValFloat();
+                        CircleShader.rainbowAlpha = rainbowAlpha.getValFloat();
+                        CircleShader.circleRadius = circleRadius.getValFloat();
+                        CircleShader.glowRadius = radius.getValFloat();
+                        CircleShader.outlineRadius = radius.getValFloat();
+                        CircleShader.quality = quality.getValFloat();
+                    } else if(mode.getValEnum() == Shaders.Circle2) {
+                        Circle2Shader.rgba = filledColor.getColour();
+                        Circle2Shader.rgba1 = filledColor.getColour();
+                        Circle2Shader.step = step.getValFloat();
+                        Circle2Shader.speed = speed.getValFloat();
+                        Circle2Shader.mix = mix.getValFloat();
+                        Circle2Shader.customAlpha = customAlpha.getValBoolean();
+                        Circle2Shader.alpha = alpha.getValFloat();
+                    } else if(mode.getValEnum() == Shaders.Outline3) {
+                        Outline3Shader.outlineColor = outlineColor.getColour();
+                        Outline3Shader.filledColor = filledColor.getColour();
+                        Outline3Shader.filledMix = mix.getValFloat();
+                        Outline3Shader.radius = radius.getValFloat();
+                        Outline3Shader.ratio = ratio.getValFloat();
+                    }
+
+                    return Unit.INSTANCE;
+                };
+
+                ShaderHelperKt.startShader(mode.getValEnum(), uniforms, event.getPartialTicks());
 
                 if(flag2) {
                     for (Entity entity : entities) {
@@ -318,30 +330,7 @@ public class ShaderCharms extends Module {
                     criticalSection = false;
                 }
 
-                framebufferShader.stopDraw();
-                if (mode.getValEnum() == Shaders.GRADIENT) ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
-
-                if(testtest5.getValBoolean()) {
-                    GlStateManager.disableDepth();
-                }
-
-                if(testtest.getValBoolean()) {
-                    GlStateManager.color(1f, 1f, 1f);
-                    GlStateManager.matrixMode(5889);
-                    GlStateManager.popMatrix();
-                    GlStateManager.matrixMode(5888);
-                    GlStateManager.popMatrix();
-                } else {
-                    GlStateManager.disableBlend();
-                    GlStateManager.disableAlpha();
-                    GlStateManager.disableDepth();
-                    GlStateManager.popAttrib();
-                    GlStateManager.popMatrix();
-                }
-
-                /*if(testtest3.getValBoolean()) {
-                    Rendering.release();
-                }*/
+                ShaderHelperKt.endShader(mode.getValEnum());
 
             }
 
@@ -350,8 +339,7 @@ public class ShaderCharms extends Module {
             }
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {
-                super.setToggled(false);
-                ChatUtility.error().printClientModuleMessage("[ShaderCharms] Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
+                ChatUtility.error().printClientModuleMessage("Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
             }
         }
     }

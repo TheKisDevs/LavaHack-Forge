@@ -16,6 +16,7 @@ import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -250,7 +251,7 @@ public class FlattenRewrite extends Module {
         if(mc.player.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > placeRange.getValDouble())
             return;
         swap(slot, false, SwapWhen.Place);
-        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+        BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), true, packet.getValBoolean());
         swap(oldSlot, true, SwapWhen.Place);
     }
 

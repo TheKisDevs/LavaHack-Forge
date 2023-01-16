@@ -7,7 +7,6 @@ import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.world.RotationUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +47,7 @@ public class AntiBot extends Module {
             for (EntityPlayer entity : mc.world.playerEntities) {
                 if (entity != mc.player && !entity.isDead) {
                     boolean contains = RotationUtils.isInFOV(entity, mc.player, 100.0) && AntiBot.mc.player.getDistance(entity) <= 6.5 && entity.canEntityBeSeen(mc.player);
-                    boolean speedAnalysis = entity.getActivePotionEffect(MobEffects.SPEED) == null && entity.getActivePotionEffect(MobEffects.JUMP_BOOST) == null && entity.getActivePotionEffect(MobEffects.LEVITATION) == null && !entity.isInWater() && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA && EntityUtil.getSpeedBPS(entity) >= 11.9;
+                    boolean speedAnalysis = entity.getActivePotionEffect(MobEffects.SPEED) == null && entity.getActivePotionEffect(MobEffects.JUMP_BOOST) == null && entity.getActivePotionEffect(MobEffects.LEVITATION) == null && !entity.isInWater() && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() != Items.ELYTRA;
                     if (!contains || !speedAnalysis || entity.isDead) continue;
                     entity.isDead = true;
                     ChatUtility.complete().printClientModuleMessage(entity.getName() + " was been deleted!");

@@ -1,41 +1,40 @@
 package com.kisman.cc.util.entity;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.combat.AntiBot;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import com.kisman.cc.util.manager.friend.FriendManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.*;
-import net.minecraft.init.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.passive.EntityAmbientCreature;
+import net.minecraft.entity.passive.EntitySquid;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityUtil {
     private static final DamageSource EXPLOSION_SOURCE;
 
     private static final Minecraft mc = Minecraft.getMinecraft();
-
-    public static boolean isBlockAboveHead(EntityPlayer target) {
-        AxisAlignedBB bb = new AxisAlignedBB(target.posX - 0.3, target.posY + (double) target.getEyeHeight(), target.posZ + 0.3, target.posX + 0.3, target.posY + 2.5, target.posZ - 0.3);
-        return !mc.world.getCollisionBoxes(target, bb).isEmpty();
-    }
-
-    public static float getHealth(EntityPlayer entity) {
-        return entity.getHealth();
-    }
 
     public static boolean isFluid(double y) {
         return mc.world.getBlockState(new BlockPos(mc.player.posX, mc.player.posY + y, mc.player.posZ)).getBlock().equals(Blocks.WATER);
@@ -43,14 +42,6 @@ public class EntityUtil {
 
     public static boolean canSee(BlockPos blockPos) {
         return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 1.5, blockPos.getZ() + 0.5), false, true, false) == null;
-    }
-
-    public static double getSpeedBPS(final Entity entity) {
-        final double tX = Math.abs(entity.posX - entity.prevPosX);
-        final double tZ = Math.abs(entity.posZ - entity.prevPosZ);
-        double length = Math.sqrt(tX * tX + tZ * tZ);
-        length *= EntityUtil.mc.getRenderPartialTicks();
-        return length * 20.0;
     }
 
     public static boolean isOnLiquid() {
@@ -62,19 +53,6 @@ public class EntityUtil {
             }
         }
         return false;
-    }
-
-    public static boolean intersectsWithEntity(final BlockPos pos) {
-        for (final Entity entity : mc.world.loadedEntityList) {
-            if (entity.equals(mc.player)) continue;
-            if (entity instanceof EntityItem) continue;
-            if (new AxisAlignedBB(pos).intersects(entity.getEntityBoundingBox())) return true;
-        }
-        return false;
-    }
-
-    public static BlockPos getRoundedBlockPos(final Entity entity) {
-        return new BlockPos(MathUtil.roundVec(entity.getPositionVector(), 0));
     }
 
     public static boolean stopSneaking(final boolean isSneaking) {
@@ -95,8 +73,15 @@ public class EntityUtil {
         return currentTarget;
     }
 
-    public static EntityPlayer getTarget(final float range) {
-        return getTarget(range, range);
+    public static EntityPlayer getTarget(float range) {
+        EntityPlayer currentTarget = null;
+
+        for (EntityPlayer player : mc.world.playerEntities) {
+            if(!antibotCheck(player) && AntiBot.instance.isToggled() && AntiBot.instance.mode.checkValString("Zamorozka")) continue;
+            if (currentTarget == null || mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
+        }
+
+        return currentTarget;
     }
 
     public static Entity getTarget(float range, float wallRange, boolean players, boolean passive, boolean monsters) {
@@ -148,29 +133,11 @@ public class EntityUtil {
     public static boolean isNeutralMob(Entity entity) {
         return entity instanceof EntityPigZombie || entity instanceof EntityWolf || entity instanceof EntityEnderman;
     }
-
-    /**
-     * If the mob is friendly (not aggressive)
-     */
-    public static boolean isFriendlyMob(Entity entity) {
-        return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity)) || (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager || entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
-    }
-
     /**
      * If the mob is hostile
      */
     public static boolean isHostileMob(Entity entity) {
         return (entity.isCreatureType(EnumCreatureType.MONSTER, false) && !EntityUtil.isNeutralMob(entity));
-    }
-
-    public static Block isColliding(double posX, double posY, double posZ) {
-        Block block = null;
-        if (mc.player != null) {
-            final AxisAlignedBB bb = mc.player.getRidingEntity() != null ? mc.player.getRidingEntity().getEntityBoundingBox().contract(0.0d, 0.0d, 0.0d).offset(posX, posY, posZ) : mc.player.getEntityBoundingBox().contract(0.0d, 0.0d, 0.0d).offset(posX, posY, posZ);
-            int y = (int) bb.minY;
-            for (int x = MathHelper.floor(bb.minX); x < MathHelper.floor(bb.maxX) + 1; x++) for (int z = MathHelper.floor(bb.minZ); z < MathHelper.floor(bb.maxZ) + 1; z++) block = mc.world.getBlockState(new BlockPos(x, y, z)).getBlock();
-        }
-        return block;
     }
 
     public static boolean isInLiquid(boolean feet) {
@@ -193,159 +160,6 @@ public class EntityUtil {
         return false;
     }
 
-    public static boolean isInLiquid() {
-        return isInLiquid(false);
-    }
-
-    public static float calculate(final double posX, final double posY, final double posZ, final EntityLivingBase entity) {
-        final double v = (1.0 - entity.getDistance(posX, posY, posZ) / 12.0) * getBlockDensity(new Vec3d(posX, posY, posZ), entity.getEntityBoundingBox());
-        return getBlastReduction(entity, getDamageMultiplied((float)((v * v + v) / 2.0 * 85.0 + 1.0)));
-    }
-
-    public static float getBlastReduction(final EntityLivingBase entity, final float damageI) {
-        float damage = damageI;
-        damage = CombatRules.getDamageAfterAbsorb(damage, (float)entity.getTotalArmorValue(), (float)entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
-        damage *= 1.0f - MathHelper.clamp((float) EnchantmentHelper.getEnchantmentModifierDamage(entity.getArmorInventoryList(), EntityUtil.EXPLOSION_SOURCE), 0.0f, 20.0f) / 25.0f;
-        if (entity.isPotionActive(MobEffects.RESISTANCE)) return damage - damage / 4.0f;
-        return damage;
-    }
-
-    public static float getDamageMultiplied(final float damage) {
-        final int diff = EntityUtil.mc.world.getDifficulty().getDifficultyId();
-        return damage * ((diff == 0) ? 0.0f : ((diff == 2) ? 1.0f : ((diff == 1) ? 0.5f : 1.5f)));
-    }
-
-    public static float getBlockDensity(final Vec3d vec, final AxisAlignedBB bb) {
-        final double d0 = 1.0 / ((bb.maxX - bb.minX) * 2.0 + 1.0);
-        final double d2 = 1.0 / ((bb.maxY - bb.minY) * 2.0 + 1.0);
-        final double d3 = 1.0 / ((bb.maxZ - bb.minZ) * 2.0 + 1.0);
-        final double d4 = (1.0 - Math.floor(1.0 / d0) * d0) / 2.0;
-        final double d5 = (1.0 - Math.floor(1.0 / d3) * d3) / 2.0;
-        float j2 = 0.0f;
-        float k2 = 0.0f;
-        for (float f = 0.0f; f <= 1.0f; f += (float)d0) {
-            for (float f2 = 0.0f; f2 <= 1.0f; f2 += (float)d2) {
-                for (float f3 = 0.0f; f3 <= 1.0f; f3 += (float)d3) {
-                    final double d6 = bb.minX + (bb.maxX - bb.minX) * f;
-                    final double d7 = bb.minY + (bb.maxY - bb.minY) * f2;
-                    final double d8 = bb.minZ + (bb.maxZ - bb.minZ) * f3;
-                    if (rayTraceBlocks(new Vec3d(d6 + d4, d7, d8 + d5), vec, false, false, false) == null) ++j2;
-                    ++k2;
-                }
-            }
-        }
-        return j2 / k2;
-    }
-
-    public static RayTraceResult rayTraceBlocks(Vec3d vec31, final Vec3d vec32, final boolean stopOnLiquid, final boolean ignoreBlockWithoutBoundingBox, final boolean returnLastUncollidableBlock) {
-        final int i = MathHelper.floor(vec32.x);
-        final int j = MathHelper.floor(vec32.y);
-        final int k = MathHelper.floor(vec32.z);
-        int l = MathHelper.floor(vec31.x);
-        int i2 = MathHelper.floor(vec31.y);
-        int j2 = MathHelper.floor(vec31.z);
-        BlockPos blockpos = new BlockPos(l, i2, j2);
-        final IBlockState iblockstate = EntityUtil.mc.world.getBlockState(blockpos);
-        final Block block = iblockstate.getBlock();
-        if ((!ignoreBlockWithoutBoundingBox || iblockstate.getCollisionBoundingBox(mc.world, blockpos) != Block.NULL_AABB) && block.canCollideCheck(iblockstate, stopOnLiquid))
-        return iblockstate.collisionRayTrace(mc.world, blockpos, vec31, vec32);
-
-        RayTraceResult raytraceresult2 = null;
-    int k2 = 200;
-        while (k2-- >= 0) {
-        if (Double.isNaN(vec31.x) || Double.isNaN(vec31.y) || Double.isNaN(vec31.z)) {
-            return null;
-        }
-        if (l == i && i2 == j && j2 == k) {
-            return returnLastUncollidableBlock ? raytraceresult2 : null;
-        }
-        boolean flag2 = true;
-        boolean flag3 = true;
-        boolean flag4 = true;
-        double d0 = 999.0;
-        double d2 = 999.0;
-        double d3 = 999.0;
-        if (i > l) {
-            d0 = l + 1.0;
-        }
-        else if (i < l) {
-            d0 = l + 0.0;
-        }
-        else {
-            flag2 = false;
-        }
-        if (j > i2) {
-            d2 = i2 + 1.0;
-        }
-        else if (j < i2) {
-            d2 = i2 + 0.0;
-        }
-        else {
-            flag3 = false;
-        }
-        if (k > j2) {
-            d3 = j2 + 1.0;
-        }
-        else if (k < j2) {
-            d3 = j2 + 0.0;
-        }
-        else {
-            flag4 = false;
-        }
-        double d4 = 999.0;
-        double d5 = 999.0;
-        double d6 = 999.0;
-        final double d7 = vec32.x - vec31.x;
-        final double d8 = vec32.y - vec31.y;
-        final double d9 = vec32.z - vec31.z;
-        if (flag2) {
-            d4 = (d0 - vec31.x) / d7;
-        }
-        if (flag3) {
-            d5 = (d2 - vec31.y) / d8;
-        }
-        if (flag4) {
-            d6 = (d3 - vec31.z) / d9;
-        }
-        if (d4 == -0.0) {
-            d4 = -1.0E-4;
-        }
-        if (d5 == -0.0) {
-            d5 = -1.0E-4;
-        }
-        if (d6 == -0.0) {
-            d6 = -1.0E-4;
-        }
-        EnumFacing enumfacing;
-        if (d4 < d5 && d4 < d6) {
-            enumfacing = ((i > l) ? EnumFacing.WEST : EnumFacing.EAST);
-            vec31 = new Vec3d(d0, vec31.y + d8 * d4, vec31.z + d9 * d4);
-        }
-        else if (d5 < d6) {
-            enumfacing = ((j > i2) ? EnumFacing.DOWN : EnumFacing.UP);
-            vec31 = new Vec3d(vec31.x + d7 * d5, d2, vec31.z + d9 * d5);
-        }
-        else {
-            enumfacing = ((k > j2) ? EnumFacing.NORTH : EnumFacing.SOUTH);
-            vec31 = new Vec3d(vec31.x + d7 * d6, vec31.y + d8 * d6, d3);
-        }
-        l = MathHelper.floor(vec31.x) - ((enumfacing == EnumFacing.EAST) ? 1 : 0);
-        i2 = MathHelper.floor(vec31.y) - ((enumfacing == EnumFacing.UP) ? 1 : 0);
-        j2 = MathHelper.floor(vec31.z) - ((enumfacing == EnumFacing.SOUTH) ? 1 : 0);
-        blockpos = new BlockPos(l, i2, j2);
-        final IBlockState iblockstate2 = EntityUtil.mc.world.getBlockState(blockpos);
-        final Block block2 = iblockstate2.getBlock();
-        if (ignoreBlockWithoutBoundingBox && iblockstate2.getMaterial() != Material.PORTAL && iblockstate2.getCollisionBoundingBox(mc.world, blockpos) == Block.NULL_AABB) {
-            continue;
-        }
-        if (block2.canCollideCheck(iblockstate2, stopOnLiquid) && !(block2 instanceof BlockWeb)) {
-            return iblockstate2.collisionRayTrace(mc.world, blockpos, vec31, vec32);
-        }
-        raytraceresult2 = new RayTraceResult(RayTraceResult.Type.MISS, vec31, enumfacing, blockpos);
-    }
-        return returnLastUncollidableBlock ? raytraceresult2 : null;
-    }
-
     public static Vec3d getInterpolatedAmount(Entity entity, double ticks) {
         return getInterpolatedAmount(entity, ticks, ticks, ticks);
     }
@@ -361,17 +175,6 @@ public class EntityUtil {
                 (entity.posZ - entity.lastTickPosZ) * z
         );
     }
-
-    public static float clamp(float val, float min, float max) {
-        if (val <= min) {
-            val = min;
-        }
-        if (val >= max) {
-            val = max;
-        }
-        return val;
-    }
-
     public static List<BlockPos> getSphere(BlockPos loc, float r, int h, boolean hollow, boolean sphere, int plus_y) {
         List<BlockPos> circleBlocks = new ArrayList<>();
         int cx = loc.getX();
@@ -409,34 +212,8 @@ public class EntityUtil {
         return squareBlocks;
     }
 
-    public static double[] calculateLookAt(double px, double py, double pz, Entity me) {
-        double dirx = me.posX - px;
-        double diry = me.posY - py;
-        double dirz = me.posZ - pz;
-
-        double len = Math.sqrt(dirx * dirx + diry * diry + dirz * dirz);
-
-        dirx /= len;
-        diry /= len;
-        dirz /= len;
-
-        double pitch = Math.asin(diry);
-        double yaw = Math.atan2(dirz, dirx);
-
-        pitch = pitch * 180.0d / Math.PI;
-        yaw = yaw * 180.0d / Math.PI;
-
-        yaw += 90f;
-
-        return new double[]{yaw, pitch};
-    }
-
     public static boolean basicChecksEntity(Entity pl) {
         return pl.getName().equals(mc.player.getName()) || pl.isDead;
-    }
-
-    public static BlockPos getPosition(Entity pl) {
-        return new BlockPos(Math.floor(pl.posX), Math.floor(pl.posY), Math.floor(pl.posZ));
     }
 
     public static List<BlockPos> getBlocksIn(Entity pl) {
@@ -530,12 +307,6 @@ public class EntityUtil {
                 Double.longBitsToDouble(Double.doubleToRawLongBits(motion[1] * 19.99999970197678) + 1),
                 motion[2] * 4.0
         };
-    }
-
-    public static <T extends Entity> List<T> getEntities(Class<T> type, AxisAlignedBB aabb){
-        return mc.world.getEntitiesWithinAABB(type, aabb.expand(5, 5, 5)).stream()
-                .filter(e -> aabb.intersects(e.getEntityBoundingBox()))
-                .collect(Collectors.toList());
     }
 
     public static double applySpeedEffect(EntityLivingBase entity, double speed){

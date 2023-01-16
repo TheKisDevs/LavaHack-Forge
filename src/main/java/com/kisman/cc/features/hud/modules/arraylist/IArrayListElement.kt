@@ -7,5 +7,4 @@ package com.kisman.cc.features.hud.modules.arraylist
 interface IArrayListElement {
     var xCoeff : Float
     var xCoeffPrev : Float
-//    var startTime : Long
 }

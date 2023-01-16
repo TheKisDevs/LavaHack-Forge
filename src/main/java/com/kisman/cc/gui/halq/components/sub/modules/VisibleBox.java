@@ -30,6 +30,8 @@ public class VisibleBox implements Component {
     public void drawScreen(int mouseX, int mouseY) {
         Component.super.drawScreen(mouseX, mouseY);
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             if(module.visible) {
                 Render2DUtil.drawAbstract(
@@ -46,6 +48,7 @@ public class VisibleBox implements Component {
                 );
             }
         } else if(HalqGui.test2 || module.visible) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, module.visible ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        HalqGui.release();
 
         HalqGui.drawString("Visible", x, y + offset, width, HalqGui.height);
     }

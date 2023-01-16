@@ -1,43 +1,29 @@
 package com.kisman.cc.util.entity.player;
 
 import com.kisman.cc.util.enums.SoftBlocks;
-import net.minecraft.block.*;
+import com.kisman.cc.util.world.block.ExtendedBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.*;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class InventoryUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
-
-    public static void put(int slot, ItemStack stack) {
-        if (slot == -2) mc.player.inventory.setItemStack(stack);
-
-        mc.player.inventoryContainer.putStackInSlot(slot, stack);
-
-        int invSlot = containerToSlots(slot);
-
-        if (invSlot != -1) mc.player.inventory.setInventorySlotContents(invSlot, stack);
-    }
-
-    public static int containerToSlots(int containerSlot) {
-        if (containerSlot < 5 || containerSlot > 45) return -1;
-        if (containerSlot <= 9) return 44 - containerSlot;
-        if (containerSlot < 36) return containerSlot;
-        if (containerSlot < 45) return containerSlot - 36;
-        return 40;
-    }
-
 
     public static int findValidScaffoldBlockHotbarSlot() {
         for(int i = 0; i <= 9; i++) {
@@ -172,11 +158,6 @@ public class InventoryUtil {
         }
     }
 
-    public static void meow(int slot) {
-        if(slot == -1) return;
-        mc.player.inventory.currentItem = slot;
-    }
-
     public static int findWeaponSlot(int min, int max, boolean shieldBreak) {
         for(int i = min; i <= max; i++) {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
@@ -188,20 +169,10 @@ public class InventoryUtil {
         return -1;
     }
 
-    public static boolean isArmorLow(final EntityPlayer player, final int durability) {
-        for (int i = 0; i < 4; ++i) if (getDamageInPercent(player.inventory.armorInventory.get(i)) < durability) return true;
-
-        return false;
-    }
-
-    public static float getDamageInPercent(final ItemStack stack) {
+    public static float getDamageInPercent(ItemStack stack) {
         final float green = (stack.getMaxDamage() - ( float ) stack.getItemDamage()) / stack.getMaxDamage();
         final float red = 1.0f - green;
         return ( float ) (100 - ( int ) (red * 100.0f));
-    }
-
-    public static float getDamageInFloat(ItemStack stack) {
-        return 1 - ((stack.getMaxDamage() - ( float ) stack.getItemDamage()) / stack.getMaxDamage());
     }
 
     public static int findItem(Item item, int min, int max) {
@@ -209,29 +180,6 @@ public class InventoryUtil {
             ItemStack stack = mc.player.inventory.getStackInSlot(i);
             if (stack.getItem() != item) continue;
             return i;
-        }
-
-        return -1;
-    }
-
-    public static int findChestplate(int min, int max) {
-        for(int i = min; i <= max; i++) {
-            ItemStack stack = mc.player.inventory.getStackInSlot(i);
-            if (stack.getItem() == Items.CHAINMAIL_CHESTPLATE && stack.getItem() == Items.DIAMOND_CHESTPLATE && stack.getItem() == Items.IRON_CHESTPLATE && stack.getItem() == Items.GOLDEN_CHESTPLATE && stack.getItem() == Items.LEATHER_CHESTPLATE) return i;
-        }
-
-        return -1;
-    }
-
-    public static int findAntiWeaknessTool() {
-        return findAntiWeaknessTool(0, 9);
-    }
-
-    public static int findAntiWeaknessTool(int min, int max) {
-        for(int i = min; i <= max; ++i) {
-            ItemStack stack = mc.player.inventory.getStackInSlot(i);
-
-            if(stack.getItem() instanceof ItemSword || stack.getItem() instanceof ItemPickaxe) return i;
         }
 
         return -1;
@@ -248,82 +196,44 @@ public class InventoryUtil {
         return -1;
     }
 
-    public static void switchToSlot(int slot, Switch switchMode) {
-        if(mc.player == null) return;
+    public static int findBlockExtended(Block block, int min, int max) {
+        if(block instanceof ExtendedBlock) {
+            ExtendedBlock extended = (ExtendedBlock) block;
 
-        if (slot != -1 && mc.player.inventory.currentItem != slot) {
-            switch (switchMode) {
-                case NORMAL:
-                    mc.player.inventory.currentItem = slot;
-                    mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-                    break;
-                case PACKET:
-                    mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
-                    break;
-            }
-        }
+            for(int i = min; i <= max; i++) if(extended.isIt(i)) return i;
 
-        mc.playerController.updateController();
-//        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
+            return -1;
+        } else return findBlock(block, min, max);
     }
 
-    public static void switchToSlot(Item item, Switch switchMode) {
-        if (getItemSlot(item, Inventory.HOTBAR, true) != -1 && mc.player.inventory.currentItem != getItemSlot(item, Inventory.HOTBAR, true))
-            switchToSlot(getItemSlot(item, Inventory.HOTBAR, true), switchMode);
+    public static int findBlockExtendedExclude(Block block, int min, int max, ExtendedBlock... excludes) {
+        if(block instanceof ExtendedBlock) {
+            ExtendedBlock extended = (ExtendedBlock) block;
 
-//        ((IPlayerControllerMP) mc.playerController).syncCurrentPlayItem();
-    }
+            if(!Arrays.asList(excludes).contains(extended)) for (int i = min; i <= max; i++) if (extended.isIt(i)) return i;
 
-    public static void switchToSlotGhost(final int slot) {
-        if (slot != -1 && InventoryUtil.mc.player.inventory.currentItem != slot) {
-            InventoryUtil.mc.player.connection.sendPacket((Packet)new CPacketHeldItemChange(slot));
+            return -1;
+        } else {
+            for (int i = min; i <= max; i++) for(ExtendedBlock exclude : excludes) if(exclude.isIt(i)) return -1;
+
+            return findBlock(block, min, max);
         }
     }
 
-    public static void switchToSlotGhost(final Block block) {
-        if (getBlockInHotbar(block) != -1 && InventoryUtil.mc.player.inventory.currentItem != getBlockInHotbar(block)) {
-            InventoryUtil.mc.player.connection.sendPacket((Packet)new CPacketHeldItemChange(getBlockInHotbar(block)));
-        }
+    public static void switchToSlotGhost(int slot) {
+        if (slot != -1 && InventoryUtil.mc.player.inventory.currentItem != slot) InventoryUtil.mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
     }
 
-    public static void switchToSlotGhost(final Item item) {
-        if (getHotbarItemSlot(item) != -1 && InventoryUtil.mc.player.inventory.currentItem != getHotbarItemSlot(item)) {
-            switchToSlotGhost(getHotbarItemSlot(item));
-        }
+    public static int getHotbarItemSlot(Item item) {
+        for (int i = 0; i < 9; ++i) if (InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
+        return -1;
     }
 
-    public static int getHotbarItemSlot(final Item item) {
+    public static int getBlockInHotbar(Block block) {
         for (int i = 0; i < 9; ++i) {
-            if (InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem() == item) {
-                return i;
-            }
-        }
-        return -1;
-    }
+            Item item = InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem();
 
-    public static int getBlockInHotbar(final Block block) {
-        for (int i = 0; i < 9; ++i) {
-            final Item item = InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem();
-            if (item instanceof ItemBlock && ((ItemBlock)item).getBlock().equals(block)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public static int getBlockInHotbar(boolean onlyObby) {
-        for(int i = 0; i <9; i++) if(mc.player.inventory.getStackInSlot(i).getItem() instanceof ItemBlock) return i;
-        return -1;
-    }
-
-    public static int getItemSlot(Item item, Inventory inventory, boolean hotbar) {
-        switch (inventory) {
-            case HOTBAR:
-                for (int i = 0; i < 9; i++) if (mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
-                break;
-            case INVENTORY:
-                for (int i = hotbar ? 9 : 0; i < 45; i++) if (mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
-                break;
+            if (item instanceof ItemBlock && ((ItemBlock) item).getBlock().equals(block)) return i;
         }
 
         return -1;
@@ -356,22 +266,6 @@ public class InventoryUtil {
         return -1;
     }
 
-    public static int findFirstBlockSlot(Class<? extends Block> blockToFind, int lower, int upper) {
-        int slot = -1;
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-
-        for (int i = lower; i <= upper; i++) {
-            ItemStack stack = mainInventory.get(i);
-
-            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) continue;
-            if (blockToFind.isInstance(((ItemBlock) stack.getItem()).getBlock())) {
-                slot = i;
-                break;
-            }
-        }
-        return slot;
-    }
-
     public static List<Integer> findAllItemSlots(Class<? extends Item> itemToFind) {
         List<Integer> slots = new ArrayList<>();
         List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
@@ -385,35 +279,6 @@ public class InventoryUtil {
         return slots;
     }
 
-    public static List<Integer> findAllItemSlots(Item itemToFind) {
-        List<Integer> slots = new ArrayList<>();
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-
-        for (int i = 0; i < 36; i++) {
-            if (itemToFind != mainInventory.get(i).item) continue;
-            slots.add(i);
-        }
-        return slots;
-    }
-
-    public static List<Integer> findAllBlockSlots(Class<? extends Block> blockToFind) {
-        List<Integer> slots = new ArrayList<>();
-        List<ItemStack> mainInventory = mc.player.inventory.mainInventory;
-
-        for (int i = 0; i < 36; i++) {
-            ItemStack stack = mainInventory.get(i);
-
-            if (stack == ItemStack.EMPTY || !(stack.getItem() instanceof ItemBlock)) {
-                continue;
-            }
-
-            if (blockToFind.isInstance(((ItemBlock) stack.getItem()).getBlock())) {
-                slots.add(i);
-            }
-        }
-        return slots;
-    }
-
     //rerhack
     public static boolean isArmorUnderPercent(EntityPlayer player, float percent) {
         for (int i = 3; i >= 0; --i) {
@@ -421,17 +286,5 @@ public class InventoryUtil {
             if (getDamageInPercent(stack) < percent) return true;
         }
         return false;
-    }
-
-    public static int getRoundedDamage(ItemStack stack) {
-        return (int)getDamageInPercent(stack);
-    }
-
-    public enum Switch {
-        NORMAL, PACKET, NONE
-    }
-
-    public enum Inventory {
-        INVENTORY, HOTBAR, CRAFTING
     }
 }

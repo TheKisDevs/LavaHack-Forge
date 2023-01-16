@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.PacketUtil;
 import com.kisman.cc.util.entity.player.PlayerUtil;
@@ -20,6 +21,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FreeCamRewrite extends Module {
+    @ModuleInstance
     public static FreeCamRewrite instance;
 
     private final Setting speed = register(new Setting("Speed", this, 1, 0, 10, false));
@@ -27,7 +29,6 @@ public class FreeCamRewrite extends Module {
 
     public FreeCamRewrite() {
         super("FreeCamRewrite", Category.PLAYER);
-        instance = this;
     }
 
     @Override
@@ -102,8 +103,7 @@ public class FreeCamRewrite extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Receive> listener2 = new Listener<>(event -> {
-        mc.addScheduledTask(() ->
-        {
+        mc.addScheduledTask(() -> {
             if (mc.player == null) return;
 
             PacketUtil.handlePosLook((SPacketPlayerPosLook) event.getPacket(),

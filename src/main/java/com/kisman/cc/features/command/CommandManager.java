@@ -24,6 +24,7 @@ public class CommandManager extends ChatHandler {
 		add(new ClientVersionCommand());
 		add(new ConfigCommand());
 		add(new DisplayTitleCommand());
+		add(new FakePlayerCommand());
 		//add(new FormatCommand());
 		add(new FriendCommand());
 		add(new GetUUID());

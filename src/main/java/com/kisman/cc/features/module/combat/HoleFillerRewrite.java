@@ -17,14 +17,13 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.enums.dynamic.RotationEnum;
+import com.kisman.cc.util.enums.HandModes;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.HoleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -42,7 +41,7 @@ public class HoleFillerRewrite extends Module {
     @ModuleInstance
     public static HoleFillerRewrite instance;
     
-    private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
+    private final SettingGroup logic = register(new SettingGroup(new Setting("Lo     gic", this)));
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
 
     private final SettingGroup holesGroup = register(logic.add(new SettingGroup(new Setting("Holes", this))));
@@ -53,8 +52,10 @@ public class HoleFillerRewrite extends Module {
     private final Setting customHoles = register(holesGroup.add(new Setting("CustomHoles", this, true).setTitle("Custom")));
     private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
     private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
-    private final SettingEnum<RotationEnum.Rotation> rotate = register(logic.add(new SettingEnum<>("Rotate", this, RotationEnum.Rotation.None)));
+    private final Setting rotate = register(logic.add(new Setting("Rotate", this, false)));
     private final Setting packet = register(logic.add(new Setting("Packet", this, false)));
+    private final SettingEnum<HandModes> hand = register(logic.add(new SettingEnum<>("Hand", this, HandModes.MainHand)));
+    private final Setting raytrace = register(logic.add(new Setting("RayTrace", this, true)));
     private final Setting place = register(logic.add(new Setting("Place", this, "Instant", Arrays.asList("Instant", "Tick", "Delay"))));
     private final Setting entityCheck = register(logic.add(new Setting("Entity Check", this, false)));
     private final Setting delay = register(logic.add(new Setting("Delay", this, 50, 0, 500, NumberType.TIME).setVisible(() -> place.getValString().equals("Delay"))));
@@ -286,7 +287,7 @@ public class HoleFillerRewrite extends Module {
         if(mc.player == null || mc.player.inventory == null) return;
         int oldSlot = mc.player.inventory.currentItem;
         doSwitch(slot, false);
-        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValEnum(), packet.getValBoolean());
+        BlockUtil2.placeBlock(pos, hand.getValEnum().getHand(), packet.getValBoolean(), raytrace.getValBoolean(), rotate.getValBoolean());
         doSwitch(oldSlot, true);
         mc.playerController.updateController();
     }

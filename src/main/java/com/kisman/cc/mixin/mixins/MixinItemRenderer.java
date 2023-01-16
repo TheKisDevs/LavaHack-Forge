@@ -77,7 +77,7 @@ public class MixinItemRenderer {
         Vec3d rotate = new Vec3d(0.0, 0.0, 0.0);
         Vec3d scale = new Vec3d(1, 1, 1);
 
-        boolean isEating = PlayerUtil.IsEating();
+        boolean isEating = PlayerUtil.isEating();
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
         boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 

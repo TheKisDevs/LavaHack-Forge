@@ -57,6 +57,8 @@ public class Slider implements Component {
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         int width = (int) (this.width * (setting.getValDouble() - min) / (max - min));
+
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
@@ -70,8 +72,8 @@ public class Slider implements Component {
                             ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
                     )
             );
-        }
-        else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        HalqGui.release();
 
         HalqGui.drawString(toRender, x, y + offset, this.width, HalqGui.height);
     }

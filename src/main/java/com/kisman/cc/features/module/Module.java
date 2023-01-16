@@ -240,16 +240,6 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 		sendToggleMessages = false;
 	}
 
-	/*@Override
-	public long getStartTime() {
-		return startTime;
-	}
-
-	@Override
-	public void setStartTime(long l) {
-		this.startTime = l;
-	}*/
-
 	@Override
 	public float getXCoeff() {
 		return xCoeff;

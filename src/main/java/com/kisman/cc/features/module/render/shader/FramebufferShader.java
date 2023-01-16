@@ -32,6 +32,59 @@ public abstract class FramebufferShader extends Shader {
         mc.entityRenderer.setupCameraTransform(partialTicks, 0);
     }
 
+    public void setup3() {
+        framebuffer = setupFrameBuffer(framebuffer);
+        framebuffer.framebufferClear();
+        framebuffer.bindFramebuffer(true);
+    }
+
+    public void start3() {
+        GlStateManager.enableAlpha();
+        GlStateManager.pushMatrix();
+        GlStateManager.pushAttrib();
+    }
+
+    public void stop3() {
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        mc.getFramebuffer().bindFramebuffer(true);
+        GlStateManager.popMatrix();
+        GlStateManager.popAttrib();
+    }
+
+    public void drawFBO3() {
+        GlStateManager.enableAlpha();
+        GlStateManager.pushMatrix();
+        GlStateManager.pushAttrib();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        startShader();
+        drawFramebuffer(framebuffer);
+        stopShader();
+        GlStateManager.popMatrix();
+        GlStateManager.popAttrib();
+    }
+
+    public void startDraw2() {
+        GlStateManager.enableAlpha();
+        GlStateManager.pushMatrix();
+        GlStateManager.pushAttrib();
+        framebuffer = setupFrameBuffer(framebuffer);
+        framebuffer.framebufferClear();
+        framebuffer.bindFramebuffer(true);
+    }
+
+    public void stopDraw2() {
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        mc.getFramebuffer().bindFramebuffer(true);
+        startShader();
+        drawFramebuffer(framebuffer);
+        stopShader();
+        GlStateManager.popMatrix();
+        GlStateManager.popAttrib();
+    }
+
     public void stopDraw() {
         mc.gameSettings.entityShadows = this.entityShadows;
         GL11.glEnable(GL11.GL_BLEND);

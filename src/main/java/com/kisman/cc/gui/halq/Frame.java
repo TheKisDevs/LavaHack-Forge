@@ -151,10 +151,12 @@ public class Frame {
             y = mouseY - dragY;
         }
 
+        HalqGui.prepare();
         if(HalqGui.shadowRects) {
             ShadowRectObject obj = new ShadowRectObject(x, y, x + HalqGui.width, y + HalqGui.height, HalqGui.getGradientColour(count), HalqGui.getGradientColour(count).withAlpha(0), 5, Collections.singletonList(RectSides.Bottom));
             obj.draw();
         } else Render2DUtil.drawRectWH(x, y, HalqGui.width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
+        HalqGui.release();
 
         HalqGui.drawString((customName ? name : cat.getName()), x, y, HalqGui.width, HalqGui.height);
 

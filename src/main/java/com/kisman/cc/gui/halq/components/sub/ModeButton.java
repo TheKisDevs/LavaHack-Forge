@@ -84,6 +84,7 @@ public class ModeButton implements Openable {
 
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
@@ -110,6 +111,7 @@ public class ModeButton implements Openable {
                     )
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        HalqGui.release();
 
         HalqGui.drawString(setting.getTitle() + ": " + selected.getName(), x, y + offset, width, HalqGui.height);
 

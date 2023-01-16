@@ -138,5 +138,5 @@ class OptionElement(
 
     override fun getLayer() : Int = layer
 
-    override fun visible(): Boolean = visible.asBoolean && combobox.selected != this
+    override fun visible() : Boolean = visible.asBoolean && combobox.selected != this
 }

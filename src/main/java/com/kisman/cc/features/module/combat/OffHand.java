@@ -90,12 +90,12 @@ public class OffHand extends Module {
 
     private void doOffHand(Item item) {
         if (mc.player.getHeldItemOffhand().getItem() != item) {
-            int slot = hotbarFirst.getValBoolean() ? PlayerUtil.GetRecursiveItemSlot(item) : PlayerUtil.GetItemSlot(item);
+            int slot = hotbarFirst.getValBoolean() ? PlayerUtil.getRecursiveItemSlot(item) : PlayerUtil.getItemSlot(item);
 
             if (slot == -1 && item != fallingMode.getValEnum().getItem() && mc.player.getHeldItemOffhand().getItem() != fallingMode.getValEnum().getItem()) {
-                slot = PlayerUtil.GetRecursiveItemSlot(fallingMode.getValEnum().getItem());
+                slot = PlayerUtil.getRecursiveItemSlot(fallingMode.getValEnum().getItem());
 
-                if ((slot == -1 && fallingMode.getValEnum().getItem() != Items.TOTEM_OF_UNDYING) || item != Items.TOTEM_OF_UNDYING && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) slot = PlayerUtil.GetRecursiveItemSlot(Items.TOTEM_OF_UNDYING);
+                if ((slot == -1 && fallingMode.getValEnum().getItem() != Items.TOTEM_OF_UNDYING) || item != Items.TOTEM_OF_UNDYING && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) slot = PlayerUtil.getRecursiveItemSlot(Items.TOTEM_OF_UNDYING);
             }
 
             if (slot != -1) {

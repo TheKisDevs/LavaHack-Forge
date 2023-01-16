@@ -55,10 +55,10 @@ public class Refill extends Module {
                 slots[i].item = getItemFromValue(settings[i]);
                 slots[i].updateRequirestSlot();
 
-                if (slots[i].item != null && slots[i].requirestSlot != -1 && mc.currentScreen == null && slots[i].slot != -1 && mc.player.inventoryContainer.getInventory().get(slots[i].slot).getItem() != slots[i].item) {
-                    mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slots[i].requirestSlot, 0, ClickType.PICKUP, mc.player);
+                if (slots[i].item != null && slots[i].requiredSlot != -1 && mc.currentScreen == null && slots[i].slot != -1 && mc.player.inventoryContainer.getInventory().get(slots[i].slot).getItem() != slots[i].item) {
+                    mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slots[i].requiredSlot, 0, ClickType.PICKUP, mc.player);
                     mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slots[i].slot, 0, ClickType.PICKUP, mc.player);
-                    mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slots[i].requirestSlot, 0, ClickType.PICKUP, mc.player);
+                    mc.playerController.windowClick(mc.player.inventoryContainer.windowId, slots[i].requiredSlot, 0, ClickType.PICKUP, mc.player);
                     mc.playerController.updateController();
                 }
             }
@@ -107,7 +107,7 @@ public class Refill extends Module {
 
     public static class Slot {
         public final int slot;
-        public int requirestSlot = -1;
+        public int requiredSlot = -1;
         public Item item;
 
         public Slot(int slot, Item item) {
@@ -116,7 +116,7 @@ public class Refill extends Module {
         }
 
         public void updateRequirestSlot() {
-            if(item != null) requirestSlot = InventoryUtil.findItemInInventory(item);
+            if(item != null) requiredSlot = InventoryUtil.findItemInInventory(item);
         }
     }
 }

@@ -48,12 +48,14 @@ public class HalqGui extends KismanGuiScreen {
             componentsOutline = false,
             outlineTest = true,
             outlineTest2 = true,
-            outlineHeaders = false;
+            outlineHeaders = false,
+            shaderState = false;
     public static int diff = 0,
             textOffsetX = 5;
     public static double offsetsX = 0,
             offsetsY = 0,
             lineWidth = 1.0;
+    public static float ticks = 0;
 
     /**
      * These aren't quite constants anymore.
@@ -130,6 +132,8 @@ public class HalqGui extends KismanGuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        ticks = partialTicks;
+
         if(Kisman.instance.selectionBar.getSelection() != gui()) {
             MainGui.Companion.openGui(Kisman.instance.selectionBar);
             return;
@@ -161,6 +165,7 @@ public class HalqGui extends KismanGuiScreen {
         componentsOutline = GuiModule.instance.componentsOutline.getValBoolean();
         lineWidth = GuiModule.instance.lineWidth.getValDouble();
         hoverColor = GuiModule.instance.hoverColor.getColour();
+        shaderState = GuiModule.instance.shaderState.getValBoolean();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -177,6 +182,10 @@ public class HalqGui extends KismanGuiScreen {
 
         scrollWheelCheck();
 
+        /*if(shaderState) {
+            GuiModule.instance.shaders.setup4();
+        }*/
+
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.render(mouseX, mouseY);
@@ -187,6 +196,10 @@ public class HalqGui extends KismanGuiScreen {
             frame.renderPost(mouseX, mouseY);
             frame.refresh();
         }
+
+        /*if(shaderState) {
+            GuiModule.instance.shaders.drawFBO4();
+        }*/
 
         for(Frame frame : frames) if(!frame.reloading) {
             frame.veryRenderPost(mouseX, mouseY);
@@ -335,6 +348,8 @@ public class HalqGui extends KismanGuiScreen {
         if(!component.visible()) return;
 
         if(HalqGui.line) {
+            prepare();
+
             Render2DUtil.drawRectWH(
                     component.getX(),
                     component.getY(),
@@ -349,12 +364,16 @@ public class HalqGui extends KismanGuiScreen {
                     component.getRawHeight(),
                     HalqGui.getGradientColour(component.getCount()).getRGB()
             );
+
+            release();
         }
 
         if(component instanceof Openable) {
             Openable openable = (Openable) component;
 
             if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
+                prepare();
+
                 Render2DUtil.drawRectWH(
                         component.getX(),
                         component.getY() + component.getRawHeight(),
@@ -375,6 +394,8 @@ public class HalqGui extends KismanGuiScreen {
                         1,
                         HalqGui.getGradientColour(openable.getComponents().get(openable.getComponents().size() - 1).getCount()).getRGB()
                 );
+
+                release();
             }
         }
     }
@@ -480,6 +501,14 @@ public class HalqGui extends KismanGuiScreen {
         }
 
         return false;
+    }
+
+    public static void prepare() {
+        if(shaderState) GuiModule.instance.shaders.start2(ticks);
+    }
+
+    public static void release() {
+        if(shaderState) GuiModule.instance.shaders.end2();
     }
 
     public enum LocateMode {

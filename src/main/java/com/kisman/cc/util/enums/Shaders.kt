@@ -31,5 +31,7 @@ enum class Shaders(
     Smoky(SmokyShader.SMOKY_SHADER),
     SNOW(SnowShader.SNOW_SHADER),
     Techno(TechnoShader.TECHNO_SHADER),
-    Circle(CircleShader)
+    Circle(CircleShader),
+    Circle2(Circle2Shader),
+    Outline3(Outline3Shader)
 }

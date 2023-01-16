@@ -1,14 +1,12 @@
-package com.kisman.cc.features.module.combat.blocker;
+package com.kisman.cc.features.module.combat.blocker.modules;
 
+import com.kisman.cc.features.module.combat.blocker.BlockerModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.world.RotationUtils;
-import net.minecraft.block.*;
+import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.util.EnumFacing;

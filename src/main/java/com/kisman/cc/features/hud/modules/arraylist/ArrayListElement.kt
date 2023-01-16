@@ -13,6 +13,8 @@ class ArrayListElement(
     val raw : String,
     val type : ElementTypes
 ) {
+    @JvmField var done = false
+
     constructor(
         element : IArrayListElement,
         name : String,

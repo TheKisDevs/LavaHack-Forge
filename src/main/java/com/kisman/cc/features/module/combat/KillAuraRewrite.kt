@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem
 import com.kisman.cc.features.subsystem.subsystems.Targetable
 import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.settings.Setting
@@ -11,7 +12,6 @@ import com.kisman.cc.util.entity.RotationSaver
 import com.kisman.cc.util.enums.KillAuraWeapons
 import com.kisman.cc.util.enums.RotationLogic
 import com.kisman.cc.util.enums.SwingHands
-import com.kisman.cc.util.enums.dynamic.RotationEnum
 import com.kisman.cc.util.enums.dynamic.SwapEnum2
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -34,8 +34,7 @@ class KillAuraRewrite : Module(
 ) {
     private val logic = register(SettingGroup(Setting("Logic", this)))
     private val swap = register(logic.add(Setting("Swap", this, SwapEnum2.Swap.None)))
-    private val rotation = register(logic.add(Setting("Rotation", this, RotationEnum.Rotation.None)))
-    private val rotationLogic = register(logic.add(Setting("Rotation Logic", this, RotationLogic.Default).setVisible { rotation.valBoolean }))
+    private val rotate = register(logic.add(Setting("Rotate", this, false)))
     private val weapon = register(logic.add(Setting("Weapon", this, KillAuraWeapons.Sword)))
     private val shieldBreaker = register(logic.add(Setting("Shield Breaker", this, false)))
     private val swing = register(logic.add(Setting("Swing", this, SwingHands.PacketSwing)))
@@ -68,7 +67,7 @@ class KillAuraRewrite : Module(
     }
 
     init {
-        setDisplayInfo { "[${if(target == null) "No targets" else target?.name }]" }
+        setDisplayInfo { "[${if(target == null) "no target no fun" else target?.name }]" }
 
         instance = this
     }
@@ -79,7 +78,6 @@ class KillAuraRewrite : Module(
         val oldSlot = mc.player.inventory.currentItem
         val saver = RotationSaver().save()
         val swapper = swap.valEnum as SwapEnum2.Swap
-        val rotator = rotation.valEnum as RotationEnum.Rotation
         val weaponSlot = getWeaponSlot()
 
         if(cooldownCheck.valBoolean && oldSlot != weaponSlot && swapper == SwapEnum2.Swap.None) {
@@ -97,7 +95,10 @@ class KillAuraRewrite : Module(
         }
 
         swapper.task.doTask(weaponSlot, false)
-        rotator.taskR.doTask(rotator.taskCEntity.doTask(target?.entityId, rotationLogic.valEnum as RotationLogic), false)
+
+        if(rotate.valBoolean) {
+            RotationSystem.handleRotate(target!!)
+        }
 
         if(cooldownCheck.valBoolean && oldSlot == weaponSlot && swapper != SwapEnum2.Swap.None) {
             if(mc.player.getCooledAttackStrength(0f) > (if(ccOnlyCrits.valBoolean) 0.95f else 1f)) {
@@ -119,7 +120,6 @@ class KillAuraRewrite : Module(
             }
         }
 
-        rotator.taskRFromSaver.doTask(saver, true)
         swapper.task.doTask(oldSlot, true)
     }
 

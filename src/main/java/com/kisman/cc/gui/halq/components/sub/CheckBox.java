@@ -40,6 +40,8 @@ public class CheckBox implements Openable {
     public void drawScreen(int mouseX, int mouseY) {
         Openable.super.drawScreen(mouseX, mouseY);
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             if(setting.getValBoolean()) {
                 Render2DUtil.drawAbstract(
@@ -56,6 +58,7 @@ public class CheckBox implements Openable {
                 );
             }
         } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        HalqGui.release();
 
         if(Config.instance.guiShowBinds.getValBoolean() && setting.Companion.valid(setting)) {
             HalqGui.drawSuffix(

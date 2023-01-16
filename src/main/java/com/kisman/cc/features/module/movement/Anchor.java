@@ -1,18 +1,20 @@
 package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
-
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 @PingBypassModule
 public class Anchor extends Module {
@@ -74,7 +76,7 @@ public class Anchor extends Module {
         }
 
         if (mc.player.rotationPitch >= pitch.getValInt()) {
-            if (isBlockHole(PlayerUtil.getPlayerPos().down(1)) || isBlockHole(PlayerUtil.getPlayerPos().down(2)) || isBlockHole(PlayerUtil.getPlayerPos().down(3)) || isBlockHole(PlayerUtil.getPlayerPos().down(4))) {
+            if (isBlockHole(WorldUtilKt.playerPosition().down(1)) || isBlockHole(WorldUtilKt.playerPosition().down(2)) || isBlockHole(WorldUtilKt.playerPosition().down(3)) || isBlockHole(WorldUtilKt.playerPosition().down(4))) {
                 if(mode.getValString().equals(Mode.Motion.name())) {
                     Vec3d center = getCenter(mc.player.posX, mc.player.posY, mc.player.posZ);
 
@@ -93,7 +95,7 @@ public class Anchor extends Module {
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
                     if (!mc.player.onGround) this.jumped = mc.gameSettings.keyBindJump.isKeyDown();
         
-                    if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 1.125 && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid()) {
+                    if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 1.125 && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid(false)) {
                         if (!mc.player.onGround) ++this.packets;
                         if (!mc.player.onGround && !mc.player.isInsideOfMaterial(Material.WATER) && !mc.player.isInsideOfMaterial(Material.LAVA) && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.player.isOnLadder() && this.packets > 0) {
                             final BlockPos blockPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
@@ -129,12 +131,12 @@ public class Anchor extends Module {
             } else using = false;
         }
 
-        if(isBlockHole(PlayerUtil.getPlayerPos())) using = false;
+        if(isBlockHole(WorldUtilKt.playerPosition())) using = false;
 
         if(using && timer.getValBoolean()) EntityUtil.setTimer(timerValue.getValFloat());
         else EntityUtil.resetTimer();
 
-        if(isBlockHole(PlayerUtil.getPlayerPos())) {
+        if(isBlockHole(WorldUtilKt.playerPosition())) {
             if(disableAfterComplete.getValBoolean()) super.setToggled(false);
             if(using) using = false;
         }

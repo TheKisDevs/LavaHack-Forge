@@ -1,5 +1,6 @@
 package com.kisman.cc.util.world;
 
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.util.EasingsPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
@@ -21,6 +22,7 @@ import java.util.Random;
 
 import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
 
+@SuppressWarnings("ConstantConditions")
 public class BlockUtil2 {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -137,14 +139,33 @@ public class BlockUtil2 {
     }
 
     public static boolean placeBlock(BlockPos position, EnumHand hand, boolean packet) {
+        return placeBlock(position, hand, packet, true);
+    }
+
+    public static boolean placeBlock(BlockPos position, EnumHand hand, boolean packet, boolean raytrace) {
+        return placeBlock(position, hand, packet, raytrace, false);
+    }
+
+    public static boolean placeBlock(BlockPos position, EnumHand hand, boolean packet, boolean raytrace, boolean rotate) {
         if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
         if (getPlaceableSide(position) == null) return false;
-        clickBlock(position, getPlaceableSide(position), hand, packet);
+        clickBlock(position, getPlaceableSide(position), hand, packet, rotate);
         mc.player.connection.sendPacket(new CPacketAnimation(hand));
         return true;
     }
 
-    public static void clickBlock(BlockPos position, EnumFacing side, EnumHand hand, boolean packet) {
+    public static EnumFacing raytraceFacing(BlockPos pos) {
+        EnumFacing facing = null;
+
+        try {
+            facing = mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ), new Vec3d(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5)).sideHit;
+        } catch(Throwable ignored) {}
+
+        return facing == null ? EnumFacing.UP : facing;
+    }
+
+    public static void clickBlock(BlockPos position, EnumFacing side, EnumHand hand, boolean packet, boolean rotate) {
+        if(rotate) RotationSystem.handleRotate(position);
         if (packet) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(position.offset(side), side.getOpposite(), hand, Float.intBitsToFloat(Float.floatToIntBits(17.735476f) ^ 0x7E8DE241), Float.intBitsToFloat(Float.floatToIntBits(26.882437f) ^ 0x7ED70F3B), Float.intBitsToFloat(Float.floatToIntBits(3.0780227f) ^ 0x7F44FE53)));
         else mc.playerController.processRightClickBlock(mc.player, mc.world, position.offset(side), side.getOpposite(), new Vec3d(position), hand);
     }

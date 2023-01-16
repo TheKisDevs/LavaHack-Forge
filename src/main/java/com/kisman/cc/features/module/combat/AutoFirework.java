@@ -2,12 +2,12 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -24,6 +24,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.*;
 
+@WorkInProgress
 public class AutoFirework extends Module {
     public static AutoFirework instance;
     
@@ -46,7 +47,7 @@ public class AutoFirework extends Module {
 
 
 
-    private final Setting switchMode = register(new Setting("SwitchMode", this, InventoryUtil.Switch.NORMAL));
+//    private final Setting switchMode = register(new Setting("SwitchMode", this, InventoryUtil.Switch.NORMAL));
 //    private final Setting switchObbyReturn = register(new Setting("SwitchReturnObby", this, true));
     private final Setting switchFireReturn = register(new Setting("SwitchReturnFirework", this, true));
 
@@ -81,7 +82,7 @@ public class AutoFirework extends Module {
     }
 
     public void onEnable() {
-        startPos = EntityUtil.getRoundedBlockPos(mc.player);
+//        startPos = EntityUtil.getRoundedBlockPos(mc.player);
         lastHotbarSlot = mc.player.inventory.currentItem;
         retries.clear();
     }
@@ -123,7 +124,8 @@ public class AutoFirework extends Module {
                     mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(playerPos, facing, fireHand.getValString().equalsIgnoreCase("Default") ? EnumHand.OFF_HAND : fireHand.getValString().equalsIgnoreCase("MainHand") ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, 0, 0, 0));
 
                     //switch return
-                    if(switchFireReturn.getValBoolean()) InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
+                    //TODO: swap enum
+//                    if(switchFireReturn.getValBoolean()) InventoryUtil.switchToSlot(oldSlot, (InventoryUtil.Switch) switchMode.getValEnum());
 
                     //reset timer
                     delayTimer.reset();
@@ -134,7 +136,7 @@ public class AutoFirework extends Module {
     }
 
     private boolean needPause() {
-        if(pauseWhileEating.getValBoolean() && PlayerUtil.IsEating()) return true;
+//        if(pauseWhileEating.getValBoolean() && PlayerUtil.IsEating()) return true;
         if(minHealthPause.getValBoolean() && mc.player.getHealth() + mc.player.getAbsorptionAmount() < requiredHealth.getValDouble()) return true;
         return pauseIfHittingBlock.getValBoolean() && mc.playerController.isHittingBlock && mc.player.getHeldItemMainhand().getItem() instanceof ItemTool;
     }
@@ -180,10 +182,11 @@ public class AutoFirework extends Module {
         }
         final int obbySlot3 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
         if (!super.isToggled()) return true;
-        if (!startPos.equals(EntityUtil.getRoundedBlockPos(mc.player))) {
-            setToggled(false);
-            return true;
-        }
+        //TODO no way
+//        if (!startPos.equals(EntityUtil.getRoundedBlockPos(mc.player))) {
+//            setToggled(false);
+//            return true;
+//        }
         if (retryTimer.passedMillis(2000L)) {
             retries.clear();
             retryTimer.reset();

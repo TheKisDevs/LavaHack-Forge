@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
@@ -67,7 +68,6 @@ import java.util.function.Supplier;
 @Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 public class AutoRer extends Module {
-    private final Setting mode = /*register*/(new Setting("Mode", this, Mode.ManualTick));
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
     private final SettingGroup calc = register(new SettingGroup(new Setting("Calc", this)));
@@ -116,8 +116,7 @@ public class AutoRer extends Module {
     private final Setting swingLogic = register(main.add(new Setting("Swing Logic", this, SwingLogic.Pre).setVisible(() -> swing.getValEnum() != SwingMode.None)));
     private final Setting instant = register(helpers.add(new Setting("Instant", this, true)));
     private final Setting instantCalc = register(helpers.add(new Setting("Instant Calc", this, true).setVisible(instant::getValBoolean)));
-    //TODO: i will unregister it later oky??
-    private final Setting instantRotate = /*register*/(helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean)));
+    private final Setting instantRotate = register(helpers.add(new Setting("Instant Rotate", this, true).setVisible(instant::getValBoolean)));
     private final Setting inhibit = register(helpers.add(new Setting("Inhibit", this, false)));
     private final Setting sound = register(helpers.add(new Setting("Sound", this, false)));
     public final Setting sync = register(helpers.add(new Setting("Sync", this, false)));
@@ -198,6 +197,7 @@ public class AutoRer extends Module {
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
 
+    @ModuleInstance
     public static AutoRer instance;
 
     public final List<PlaceInfo> placedList = new ArrayList<>();
@@ -244,8 +244,6 @@ public class AutoRer extends Module {
     public AutoRer() {
         super("AutoRer", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
-
-        instance = this;
     }
 
     /*public void thread() {
@@ -350,7 +348,7 @@ public class AutoRer extends Module {
     }
 
     private ScheduledExecutorService getExecutor() {
-        final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(RAutoRer.getInstance(this), 0L, this.threadDelay.getValLong(), TimeUnit.MILLISECONDS);
         return service;
     }
@@ -522,7 +520,7 @@ public class AutoRer extends Module {
     }
 
     private void attackCrystalPredict(int entityID) {
-        //TODO: rotation system usage where????
+        if(instantRotate.getValBoolean()) RotationSystem.handleRotate(mc.world.getEntityByID(entityID));
         CPacketUseEntity packet = new CPacketUseEntity();
         packet.entityId = entityID;
         packet.action = CPacketUseEntity.Action.ATTACK;

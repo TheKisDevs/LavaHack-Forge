@@ -1,7 +1,6 @@
 package com.kisman.cc.util.world;
 
 import com.kisman.cc.util.AngleUtil;
-import com.kisman.cc.util.math.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,23 +17,6 @@ import static com.kisman.cc.util.Globals.mc;
 
 @SideOnly(Side.CLIENT)
 public class RotationUtils {
-    public static float[] lookAtRandomed(Entity entityIn) {
-        double diffX = entityIn.posX - mc.player.posX;
-        double diffZ = entityIn.posZ - mc.player.posZ;
-        double diffY;
-
-        if (entityIn instanceof EntityLivingBase) diffY = entityIn.posY + entityIn.getEyeHeight() - (mc.player.posY + mc.player.getEyeHeight()) - 0.4;
-        else diffY = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (mc.player.posY + mc.player.getEyeHeight());
-
-        double dist = MathHelper.sqrt(diffX * diffX + diffZ * diffZ);
-
-        float yaw = ((float) (((Math.atan2(diffZ, diffX) * 180.0 / Math.PI) - 90.0f)) + MathUtil.getRandom(-2, 2));
-        float pitch = ((float) (-(Math.atan2(diffY, dist) * 180.0 / Math.PI)) + MathUtil.getRandom(-2, 2));
-        yaw = mc.player.rotationYaw + getFixedRotation(MathHelper.wrapDegrees(yaw - mc.player.rotationYaw));
-        pitch = mc.player.rotationPitch + getFixedRotation(MathHelper.wrapDegrees(pitch - mc.player.rotationPitch));
-        return new float[] {yaw, pitch};
-    }
-
     public static double yawDist(BlockPos pos) {
         if(pos != null) {
             Vec3d difference = new Vec3d(pos).subtract ( mc.player.getPositionEyes ( mc.getRenderPartialTicks ( ) ) );

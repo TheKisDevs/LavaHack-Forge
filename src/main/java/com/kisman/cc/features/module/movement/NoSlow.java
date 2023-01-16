@@ -13,8 +13,8 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.movement.MovementUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.GuiChat;
@@ -92,7 +92,7 @@ public class NoSlow extends Module {
             else Blocks.SLIME_BLOCK.setDefaultSlipperiness(0.6f);
         }
 
-        if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && PlayerUtil.isMoving(mc.player) && mode.getValString().equals("None")) {
+        if (mc.player.isHandActive() && !mc.player.isRiding() && mc.player.fallDistance > 0.7 && MovementUtil.isMoving() && mode.getValString().equals("None")) {
             mc.player.motionX *= 0.9;
             mc.player.motionZ *= 0.9;
         }
@@ -226,7 +226,7 @@ public class NoSlow extends Module {
                 && items.getValBoolean()
                 && mc.player.isHandActive()
                 && !mc.player.isRiding()
-        ) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, PlayerUtil.GetLocalPlayerPosFloored(), EnumFacing.DOWN));
+        ) mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, WorldUtilKt.playerPosition(), EnumFacing.DOWN));
 
         else if(
                 strict.getValBoolean()

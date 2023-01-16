@@ -46,6 +46,8 @@ public class BindButton implements Component {
     public void drawScreen(int mouseX, int mouseY) {
         Component.super.drawScreen(mouseX, mouseY);
         Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             if(changing) {
                 Render2DUtil.drawAbstract(
@@ -62,6 +64,7 @@ public class BindButton implements Component {
                 );
             }
         } else if(HalqGui.test2 || changing) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, changing ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        HalqGui.release();
 
         HalqGui.drawString(changing ? "Press a key..." : bindable.getButtonName() + ": " + bindable.Companion.getName(bindable) , x, y + offset, width, HalqGui.height);
     }

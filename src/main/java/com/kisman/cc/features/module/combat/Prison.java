@@ -8,6 +8,7 @@ import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -94,7 +95,7 @@ public class Prison extends Module {
             if(Math.sqrt(mc.player.getDistanceSq(pos)) > placeRange.getValDouble())
                 continue;
             swap.getValEnum().getTask().doTask(slot, false);
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), true, packet.getValBoolean());
             swap.getValEnum().getTask().doTask(oldSlot, true);
         }
     }

@@ -31,7 +31,7 @@ public class AntiHunger extends Module {
     @Override
     public void onEnable() {
 
-        if (mc.player.isSprinting() || mc.player.isSprinting()) {
+        if (mc.player != null && mc.world != null && mc.player.isSprinting() || mc.player.isSprinting()) {
             previousSprint = true;
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
 
@@ -44,12 +44,10 @@ public class AntiHunger extends Module {
 
     @Override
     public void onDisable() {
-        if(mc.player == null || mc.world == null) return;
         super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(send);
 
-
-        if (previousSprint) {
+        if (mc.player != null && mc.world != null && previousSprint) {
             previousSprint = false;
             mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
         }
@@ -57,26 +55,16 @@ public class AntiHunger extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Send> send = new Listener<>(event -> {
-
         if (event.getPacket() instanceof CPacketPlayer) {
-
             if (groundSpoof.getValBoolean()) {
-
                 if (!mc.player.isRiding() && !mc.player.isElytraFlying()) {
-
                     ((CPacketPlayer) event.getPacket()).onGround = true;
                 }
             }
-        }
-
-        else if (event.getPacket() instanceof CPacketEntityAction) {
-
+        } else if (event.getPacket() instanceof CPacketEntityAction) {
             CPacketEntityAction packet = (CPacketEntityAction) event.getPacket();
-
             if (packet.getAction().equals(CPacketEntityAction.Action.START_SPRINTING) || packet.getAction().equals(CPacketEntityAction.Action.STOP_SPRINTING)) {
-
                 if (stopSprint.getValBoolean()) {
-
                     event.cancel();
                 }
             }

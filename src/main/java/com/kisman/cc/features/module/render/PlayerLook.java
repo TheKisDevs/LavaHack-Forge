@@ -1,7 +1,8 @@
-package com.kisman.cc.features.module.exploit;
+package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@WorkInProgress
 public class PlayerLook extends Module {
     private final Setting single = register(new Setting("Single", this, true));
     private final Setting self = register(new Setting("Self", this, true));
@@ -48,7 +50,7 @@ public class PlayerLook extends Module {
             entities = mc.world.loadedEntityList.stream().filter(entity -> entity != mc.player && entity.getDistanceSq(mc.player) <= (range * range)).collect(Collectors.toList());
         }
 
-        if(self.getValBoolean()) entities.add(mc.player);
+        if(self.getValBoolean() && !single.getValBoolean()) entities.add(mc.player);
 
         if(entities.isEmpty())
             return;

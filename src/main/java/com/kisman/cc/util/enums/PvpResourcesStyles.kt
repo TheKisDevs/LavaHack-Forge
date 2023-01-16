@@ -6,5 +6,6 @@ package com.kisman.cc.util.enums
  */
 enum class PvpResourcesStyles {
     Vertical,
+    Horizontal,
     Square
 }

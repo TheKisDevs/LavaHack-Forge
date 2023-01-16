@@ -44,7 +44,7 @@ enum class Cases {
                 BlockPos.ORIGIN.offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing),
-                BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).up()
+                `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).up())
             )
         }
     },
@@ -55,7 +55,7 @@ enum class Cases {
             BlockPos.ORIGIN.offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing),
-            BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).up()
+            `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).up())
         )
     },
     RightDiagonalCase {
@@ -65,7 +65,7 @@ enum class Cases {
             BlockPos.ORIGIN.offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing),
-            BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).up()
+            `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).up())
         )
     }
     ;
@@ -76,15 +76,18 @@ enum class Cases {
 
     fun howManyAirs(
         facing : EnumFacing,
-        pos : BlockPos
+        pos : BlockPos,
+        newVersion : Boolean
     ) : Int {
         var airs = 0
 
         for(pos1 in posses(facing)) {
-            val pos2 = pos.add(pos1)
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
 
-            if(mc.world.getBlockState(pos2).block == Blocks.AIR) {
-                airs++
+                if (mc.world.getBlockState(pos2).block == Blocks.AIR) {
+                    airs++
+                }
             }
         }
 
@@ -94,15 +97,18 @@ enum class Cases {
     fun howManyAirs(
         facing : EnumFacing,
         pos : BlockPos,
+        newVersion : Boolean,
         down : Int
     ) : Int {
         var airs = 0
 
         for(pos1 in down(down, facing)) {
-            val pos2 = pos.add(pos1)
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
 
-            if(mc.world.getBlockState(pos2).block == Blocks.AIR) {
-                airs++
+                if(mc.world.getBlockState(pos2).block == Blocks.AIR) {
+                    airs++
+                }
             }
         }
 
@@ -112,13 +118,16 @@ enum class Cases {
     fun isItInRange(
         facing : EnumFacing,
         pos : BlockPos,
-        range : Double
+        range : Double,
+        newVersion : Boolean
     ) : Boolean {
         for(pos1 in posses(facing)) {
-            val pos2 = pos.add(pos1)
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
 
-            if(mc.player.getDistanceSq(pos2) > (range * range)) {
-                return false
+                if (mc.player.getDistanceSq(pos2) > (range * range)) {
+                    return false
+                }
             }
         }
 
@@ -129,28 +138,16 @@ enum class Cases {
         facing : EnumFacing,
         pos : BlockPos,
         range : Double,
+        newVersion : Boolean,
         down : Int
     ) : Boolean {
         for(pos1 in down(down, facing)) {
-            val pos2 = pos.add(pos1)
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
 
-            if(mc.player.getDistanceSq(pos2) > (range * range)) {
-                return false
-            }
-        }
-
-        return true
-    }
-
-    fun isIt(
-        facing : EnumFacing,
-        pos : BlockPos
-    ) : Boolean {
-        for(pos1 in posses(facing)) {
-            val pos2 = pos.add(pos1)
-
-            if(mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
-                return false
+                if (mc.player.getDistanceSq(pos2) > (range * range)) {
+                    return false
+                }
             }
         }
 
@@ -160,12 +157,34 @@ enum class Cases {
     fun isIt(
         facing : EnumFacing,
         pos : BlockPos,
+        newVersion : Boolean
+    ) : Boolean {
+        for(pos1 in posses(facing)) {
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
+
+                if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    fun isIt(
+        facing : EnumFacing,
+        pos : BlockPos,
+        newVersion : Boolean,
         down : Int
     ) : Boolean {
         for(pos1 in down(down, facing)) {
-            val pos2 = pos.add(pos1)
-            if(mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
-                return false
+            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+                val pos2 = pos.add(pos1)
+
+                if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                    return false
+                }
             }
         }
 

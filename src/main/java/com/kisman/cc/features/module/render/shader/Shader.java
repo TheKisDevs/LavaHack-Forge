@@ -86,6 +86,10 @@ public abstract class Shader {
         setUniform(uniformName, GL20.glGetUniformLocation(this.program, uniformName));
     }
 
+    public void setupUniforms(String... names) {
+        for(String name : names) setupUniform(name);
+    }
+
     public int getUniform(String uniformName) {
         return uniformsMap.get(uniformName);
     }

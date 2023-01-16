@@ -35,6 +35,8 @@ public class BindModeButton implements Component {
         Component.super.drawScreen(mouseX, mouseY);
         this.index = module.hold ? 1 : 0;
         Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
+
+        HalqGui.prepare();
         if(HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     new AbstractGradient(
@@ -61,6 +63,7 @@ public class BindModeButton implements Component {
                     )
             );
         } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        HalqGui.release();
 
         HalqGui.drawString("Bind Mode: " + values[index], x, y + offset, width, HalqGui.height);
 

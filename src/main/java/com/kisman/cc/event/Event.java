@@ -1,12 +1,14 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.util.collections.Bind;
 import me.zero.alpine.event.type.Cancellable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 
 public class Event extends Cancellable {
     private boolean isPingBypass;
@@ -15,30 +17,33 @@ public class Event extends Cancellable {
 
     private Era era;
 
-    private static boolean hasMirrorEvent = true;
-    private static Class<?>[] classes = new Class<?>[] {};
-    private static Constructor<?> mirrorConstructor = null;
+    public static HashMap<Class<? extends Event>, Bind<Boolean, Constructor<?>>> mirrorEventMap = new HashMap<>();
 
     public Event(Object... values) {
-        if(mirrorConstructor == null && hasMirrorEvent) {
+        if(!mirrorEventMap.containsKey(getClass())) {
+            Class<?>[] classes = new Class<?>[] {};
+
             if(values.length != 0) {
                 classes = new Class<?>[values.length];
 
                 for (int i = 0; i < values.length; i++) classes[i] = values[i].getClass();
             }
 
+            Constructor<?> mirrorConstructor = null;
+            boolean hasMirrorEvent = true;
+
             try {
                 mirrorConstructor = Class.forName("the.kis.devs.api.event.events." + Event.class.getSimpleName()).getConstructor(classes);
             } catch (NoSuchMethodException | ClassNotFoundException ignored) { }
 
             hasMirrorEvent = mirrorConstructor != null;
+
+            mirrorEventMap.put(getClass(), new Bind<>(hasMirrorEvent, mirrorConstructor));
         }
 
-        if(mirrorConstructor != null) {
-            try {
-                mirrorEvent = (Event) mirrorConstructor.newInstance(values);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignored) { }
-        }
+        if(mirrorEventMap.containsKey(getClass())) if(mirrorEventMap.get(getClass()).getFirst() && mirrorEventMap.get(getClass()).getSecond() != null) try {
+            mirrorEvent = (Event) mirrorEventMap.get(getClass()).getSecond().newInstance(values);
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException ignored) { }
     }
 
     public Event(Era era, Object... values) {

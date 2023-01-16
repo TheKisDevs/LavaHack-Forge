@@ -85,9 +85,9 @@ public class ModuleManager {
 		add(new AntiBot());
 		add(new AntiBow());
 		add(new AntiTrap());
+		add(new AutoAnchor());
 		add(new AutoAnvil());
 		add(new AutoArmor());
-		add(new AutoClicker());
 		add(AutoCrystalPvP.INSTANCE);
 		add(new AutoFirework());
 		add(new AutoObsidian());
@@ -119,8 +119,7 @@ public class ModuleManager {
 		add(new Prison());
 		add(new Robot());
 		add(new SelfTrapRewrite());
-		add(new SilentXp());
-		add(new Surround());
+//		add(new Surround());
 		add(new SurroundRewrite());
 //		add(new TrapDoorBurrow());
 		//client
@@ -169,6 +168,7 @@ public class ModuleManager {
 //		add(new NoCrosshair());
 		add(new NoRender());
 		add(new PearlTracer());
+		add(new PlayerLook());
 		add(new PopCharms());
 		add(new ScreenTint());
 		add(new SelfCityESP());
@@ -211,6 +211,7 @@ public class ModuleManager {
 		add(new Spider());
 		add(new TargetStrafe());
 		//player
+		add(new AirPlace());
 		add(AntiDesync.INSTANCE);
 		add(new AntiHunger());
 		add(new AntiWeakness());
@@ -231,6 +232,7 @@ public class ModuleManager {
 		add(new Refill());
 		add(new Replenish());
 		add(new RotateModifier());
+		add(new SilentXp());
 		add(new Velocity());
 		add(new YawLock());
 		add(new YawStep());
@@ -256,7 +258,6 @@ public class ModuleManager {
 		add(new PacketEat());
 		add(new PacketFly());
 		add(new PacketMine());
-		add(new PlayerLook());
 		//add(new PreciseStrongholdFinder());
 		add(new SilentClose());
 		add(new SoundCoordLogger());

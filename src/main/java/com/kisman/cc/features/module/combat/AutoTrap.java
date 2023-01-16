@@ -12,6 +12,7 @@ import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.RotationUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -73,7 +74,7 @@ public class AutoTrap extends Module {
     public void onEnable() {
         if(mc.player == null || mc.world == null) return;
 
-        startPos = EntityUtil.getRoundedBlockPos(mc.player);
+        startPos = WorldUtilKt.playerPosition();
         oldSlot = mc.player.inventory.currentItem;
         retries.clear();
     }
@@ -187,7 +188,7 @@ public class AutoTrap extends Module {
         if (obbySlot2 == -1) setToggled(false);
         final int obbySlot3 = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
         if (!super.isToggled()) return true;
-        if (!startPos.equals(EntityUtil.getRoundedBlockPos(mc.player))) {
+        if (!startPos.equals(WorldUtilKt.playerPosition())) {
             setToggled(false);
             return true;
         }

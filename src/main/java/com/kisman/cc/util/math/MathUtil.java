@@ -4,7 +4,6 @@ import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.math.vectors.xy.Vec2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -17,20 +16,9 @@ import java.util.List;
 import java.util.*;
 
 public class MathUtil {
-    public static double[] getCircleCentre(double[] coord, double radius) {
-        return new double[] {coord[0] + radius, coord[1] + radius};
-    }
 
     public static double degToRad(double deg) {
         return deg * (float) (Math.PI / 180.0f);
-    }
-
-    public static Vec3d direction(float yaw) {
-        return new Vec3d(Math.cos(degToRad(yaw + 90f)), 0, Math.sin(degToRad(yaw + 90f)));
-    }
-
-    public static AxisAlignedBB blockPosToDefaultBB(BlockPos pos) {
-        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), 1, 1, 1);
     }
 
     /**
@@ -55,20 +43,8 @@ public class MathUtil {
                 entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * time);
     }
 
-    public static double getInputFromPercent(double value, double minInput, double maxInput) {
-        return (value * (maxInput - minInput)) / 100 + minInput;
-    }
-
-    public static Vec3d mult(Vec3d factor, Vec3d multiplier) {
-        return new Vec3d(factor.x * multiplier.x, factor.y * multiplier.y, factor.z * multiplier.z);
-    }
-
     public static Vec3d mult(Vec3d factor, float multiplier) {
         return new Vec3d(factor.x * multiplier, factor.y * multiplier, factor.z * multiplier);
-    }
-
-    public static Vec3d div(Vec3d factor, Vec3d divisor) {
-        return new Vec3d(factor.x / divisor.x, factor.y / divisor.y, factor.z / divisor.z);
     }
 
     public static Vec3d div(Vec3d factor, float divisor) {
@@ -99,30 +75,10 @@ public class MathUtil {
         return new double[]{posX, posZ};
     }
 
-    public static double roundDouble(double number, int scale) {
-        BigDecimal bd = new BigDecimal(number);
-        bd = bd.setScale(scale, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
-
     public static float roundFloat(double number, int scale) {
         BigDecimal bd = BigDecimal.valueOf(number);
         bd = bd.setScale(scale, RoundingMode.FLOOR);
         return bd.floatValue();
-    }
-
-    private static final Random random = new Random();
-
-    public static int getRandom(int min, int max) {
-        return min + random.nextInt(max - min + 1);
-    }
-
-    public static double getRandom(double min, double max) {
-        return MathHelper.clamp(min + random.nextDouble() * max, min, max);
-    }
-
-    public static float getRandom(float min, float max) {
-        return MathHelper.clamp(min + random.nextFloat() * max, min, max);
     }
 
     public static int clamp(int num, int min, int max) {
@@ -151,10 +107,6 @@ public class MathUtil {
 
     public static double wrapDegrees(double value) {
         return MathHelper.wrapDegrees(value);
-    }
-
-    public static Vec3d roundVec(Vec3d vec3d, int places) {
-        return new Vec3d(MathUtil.round(vec3d.x, places), MathUtil.round(vec3d.y, places), MathUtil.round(vec3d.z, places));
     }
 
     public static double square(double input) {
@@ -232,41 +184,6 @@ public class MathUtil {
         double posX = (double) forward * speed * cos + (double) side * speed * sin;
         double posZ = (double) forward * speed * sin - (double) side * speed * cos;
         return new double[]{posX, posZ};
-    }
-
-    public static List<Vec3d> getBlockBlocks(Entity entity) {
-        ArrayList<Vec3d> vec3ds = new ArrayList<>();
-        AxisAlignedBB bb = entity.getEntityBoundingBox();
-        double y = entity.posY;
-        double minX = MathUtil.round(bb.minX, 0);
-        double minZ = MathUtil.round(bb.minZ, 0);
-        double maxX = MathUtil.round(bb.maxX, 0);
-        double maxZ = MathUtil.round(bb.maxZ, 0);
-        if (minX != maxX) {
-            vec3ds.add(new Vec3d(minX, y, minZ));
-            vec3ds.add(new Vec3d(maxX, y, minZ));
-            if (minZ != maxZ) {
-                vec3ds.add(new Vec3d(minX, y, maxZ));
-                vec3ds.add(new Vec3d(maxX, y, maxZ));
-                return vec3ds;
-            }
-        } else if (minZ != maxZ) {
-            vec3ds.add(new Vec3d(minX, y, minZ));
-            vec3ds.add(new Vec3d(minX, y, maxZ));
-            return vec3ds;
-        }
-        vec3ds.add(entity.getPositionVector());
-        return vec3ds;
-    }
-
-    public static boolean areVec3dsAligned(Vec3d vec3d1, Vec3d vec3d2) {
-        return MathUtil.areVec3dsAlignedRetarded(vec3d1, vec3d2);
-    }
-
-    public static boolean areVec3dsAlignedRetarded(Vec3d vec3d1, Vec3d vec3d2) {
-        BlockPos pos1 = new BlockPos(vec3d1);
-        BlockPos pos2 = new BlockPos(vec3d2.x, vec3d1.y, vec3d2.z);
-        return pos1.equals(pos2);
     }
 
     public static double distance(float x, float y, float x1, float y1) {

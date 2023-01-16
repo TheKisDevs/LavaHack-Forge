@@ -45,6 +45,7 @@ class CityBoss : Module(
     private val blockRangeCheck = register(Setting("Block Range Check", this, false))
     private val blockRange = register(Setting("Block Range", this, 5.0, 1.0, 6.0, false))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
+    private val newVersion = register(Setting("New Version", this, false).setTitle("1.13"))
 //    private val smartDown = register(Setting("Smart Down", this, false))
     private val mineMode = register(Setting("Mine Mode", this, MineMode.Client))
 
@@ -248,10 +249,10 @@ class CityBoss : Module(
 
         val maxAirs = 0
 
-        val eastMax = eastCase?.howManyAirs(EnumFacing.EAST, playerPosition) ?: -1
-        val westMax = westCase?.howManyAirs(EnumFacing.WEST, playerPosition) ?: -1
-        val southMax = southCase?.howManyAirs(EnumFacing.SOUTH, playerPosition) ?: -1
-        val northMax = northCase?.howManyAirs(EnumFacing.NORTH, playerPosition) ?: -1
+        val eastMax = eastCase?.howManyAirs(EnumFacing.EAST, playerPosition, newVersion.valBoolean) ?: -1
+        val westMax = westCase?.howManyAirs(EnumFacing.WEST, playerPosition, newVersion.valBoolean) ?: -1
+        val southMax = southCase?.howManyAirs(EnumFacing.SOUTH, playerPosition, newVersion.valBoolean) ?: -1
+        val northMax = northCase?.howManyAirs(EnumFacing.NORTH, playerPosition, newVersion.valBoolean) ?: -1
 
         var finalCase : Cases? = null
         var finalFacing : EnumFacing? = null
@@ -317,8 +318,8 @@ class CityBoss : Module(
         var bestCase : Cases? = null
 
         for(case in Cases.values()) {
-            if(caseSettings[case]!!.valBoolean && (if(down.valInt == 0) case.isIt(facing, pos) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble)) else case.isIt(facing, pos, down.valInt) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble, down.valInt)))) {
-                val newAirs = if(down.valInt == 0) case.howManyAirs(facing, pos) else case.howManyAirs(facing, pos, down.valInt)
+            if(caseSettings[case]!!.valBoolean && (if(down.valInt == 0) case.isIt(facing, pos, newVersion.valBoolean) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble, newVersion.valBoolean)) else case.isIt(facing, pos, newVersion.valBoolean, down.valInt) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble, newVersion.valBoolean, down.valInt)))) {
+                val newAirs = if(down.valInt == 0) case.howManyAirs(facing, pos, newVersion.valBoolean) else case.howManyAirs(facing, pos, newVersion.valBoolean, down.valInt)
                 if(newAirs < airs) {
                     airs = newAirs
                     bestCase = case

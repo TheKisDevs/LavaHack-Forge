@@ -82,6 +82,9 @@ class GroupButton(
             HalqGui.height.toDouble(),
             HalqGui.backgroundColor.rgb
         )
+
+        HalqGui.prepare()
+
         if (HalqGui.shadow) {
             Render2DUtil.drawAbstract(
                     AbstractGradient(
@@ -138,6 +141,8 @@ class GroupButton(
                 height.toDouble() - HalqGui.offsetsY * 2,
                 HalqGui.getGradientColour(count).rgb
         )
+
+        HalqGui.release()
 
         HalqGui.drawString("${setting.title}...", x, y_ + offset, width_, HalqGui.height)
 

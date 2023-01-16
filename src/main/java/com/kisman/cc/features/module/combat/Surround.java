@@ -2,10 +2,10 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
@@ -31,12 +31,14 @@ import java.util.Objects;
 
 import static com.kisman.cc.features.module.combat.Surround.Center.TELEPORT;
 
+@WorkInProgress
+@Deprecated
 public class Surround extends Module {
     private final Setting surroundVec = new Setting("SurroundVec", this, SurroundVectors.BASE);
     private final Setting completion = new Setting("Completion", this, Completion.AIR);
     private final Setting center = new Setting("Center", this, TELEPORT);
     private final Setting switch_ = new Setting("Switch", this, SwitchModes.Silent);
-    private final Setting hand = new Setting("Hand", this, PlayerUtil.Hand.MAINHAND);
+//    private final Setting hand = new Setting("Hand", this, PlayerUtil.Hand.MAINHAND);
     private final Setting blocksPerTick = new Setting("BlocksPerTick", this, 4, 0, 10, true);
     private final Setting raytrace = new Setting("RayTrace", this, false);
     private final Setting packet = new Setting("Packet", this, false);
@@ -79,7 +81,7 @@ public class Surround extends Module {
         setmgr.rSetting(completion);
         setmgr.rSetting(center);
         setmgr.rSetting(switch_);
-        setmgr.rSetting(hand);
+//        setmgr.rSetting(hand);
         setmgr.rSetting(blocksPerTick);
         setmgr.rSetting(raytrace);
         setmgr.rSetting(packet);
@@ -212,7 +214,7 @@ public class Surround extends Module {
                     if(noInteract.getValBoolean()) mc.player.setSneaking(true);
                     BlockUtil.placeBlock(new BlockPos(surroundVectors.add(new Vec3d(mc.player.posX, Math.round(mc.player.posY), mc.player.posZ))), packet.getValBoolean(), confirm.getValBoolean());
                     if(noInteract.getValBoolean()) mc.player.setSneaking(sneak);
-                    PlayerUtil.swingArm((PlayerUtil.Hand) hand.getValEnum());
+//                    PlayerUtil.swingArm((PlayerUtil.Hand) hand.getValEnum());
                     surroundPlaced++;
                 }
             }

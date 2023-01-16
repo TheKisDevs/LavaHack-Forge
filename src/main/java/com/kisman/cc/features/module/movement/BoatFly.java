@@ -37,7 +37,7 @@ public class BoatFly extends Module {
                 e.motionX = dir[0];
                 e.motionZ = dir[1];
             } else {
-                float dir = MovementUtil.getDirection2();
+                float dir = MovementUtil.getDirection();
                 mc.player.motionX -= (MathHelper.sin(dir) * speed.getValFloat());
                 mc.player.motionZ += (MathHelper.cos(dir) * speed.getValFloat());
             }

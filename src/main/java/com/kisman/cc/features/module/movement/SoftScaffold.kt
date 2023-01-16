@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.movement
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.world.BlockUtil2
@@ -10,12 +11,14 @@ import com.kisman.cc.util.entity.player.PlayerUtil
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.enums.dynamic.SwapEnum2
+import com.kisman.cc.util.world.playerPosition
 import net.minecraft.util.EnumHand
 
 /**
  * @author _kisman_
  * @since 10:35 of 04.06.2022
  */
+@WorkInProgress
 class SoftScaffold : Module(
     "SoftScaffold",
     "Like default Scaffold but for soft(no solid) blocks.",
@@ -56,7 +59,7 @@ class SoftScaffold : Module(
             switcher.task.doTask(softBlockSlot, false)
 
             if(mc.player.onGround) {
-                val pos = PlayerUtil.GetLocalPlayerPosFloored()
+                val pos = playerPosition()
 
                 BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.valBoolean)
             }

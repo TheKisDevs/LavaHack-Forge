@@ -85,7 +85,7 @@ public class Jesus extends Module {
                 mc.player.motionY = 0.06f;
                 mc.player.jumpMovementFactor = 0.01f;
             }
-        } else if(mode.checkValString("Entity") && mc.player.isRiding() && EntityUtil.isInLiquid()) {
+        } else if(mode.checkValString("Entity") && mc.player.isRiding() && EntityUtil.isInLiquid(false)) {
             mc.player.motionY = 0.08500000238418583F;
             mc.player.ridingEntity.motionY = 0.08500000238418583F;
         }

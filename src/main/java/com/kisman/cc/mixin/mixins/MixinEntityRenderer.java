@@ -6,15 +6,24 @@ import baritone.api.event.events.RenderEvent;
 import com.google.common.base.Predicate;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
-import com.kisman.cc.features.module.render.*;
+import com.kisman.cc.features.module.player.CameraClip;
+import com.kisman.cc.features.module.render.NoRender;
+import com.kisman.cc.features.module.render.ViewModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.util.glu.Project;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -62,10 +71,7 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"), expect = 0)
     private RayTraceResult rayTraceBlocks(WorldClient worldClient, Vec3d start, Vec3d end) {
-        EventOrientCamera event = new EventOrientCamera();
-        Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()) return null;
-        else return worldClient.rayTraceBlocks(start, end);
+        return CameraClip.instance.isToggled() ? null : worldClient.rayTraceBlocks(start, end);
     }
 
     @Redirect(method={"setupCameraTransform"}, at=@At(value="INVOKE", target="Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))

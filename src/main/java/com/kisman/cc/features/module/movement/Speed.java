@@ -10,9 +10,9 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.movement.MovementUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
@@ -155,15 +155,15 @@ public class Speed extends Module {
         } else if(speedMode.getValString().equalsIgnoreCase("YPort")) doYPortSpeed();
         else if(speedMode.getValString().equalsIgnoreCase("Strafe New") && !mc.player.isElytraFlying()) {
             if(!Managers.instance.passed(lagTime.getValInt())) return;
-            if(stage == 1 && PlayerUtil.isMoving(mc.player)) speed = 1.35 * MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()) - 0.01;
-            else if(stage == 2 && PlayerUtil.isMoving(mc.player) && mc.player.onGround) {
+            if(stage == 1 && MovementUtil.isMoving()) speed = 1.35 * MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()) - 0.01;
+            else if(stage == 2 && MovementUtil.isMoving() && mc.player.onGround) {
                 mc.player.motionY = 0.3999 + MovementUtil.getJumpSpeed();
                 speed *= boost ? 1.6835 : 1.395;
             } else if(stage == 3) {
                 speed = dist  - 0.66 * (dist - MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()));
                 boost = !boost;
             } else {
-                if((mc.world.getCollisionBoxes(null, mc.player.getEntityBoundingBox().offset(0.0, mc.player.motionY, 0.0)).size() > 0 || mc.player.collidedVertically) && stage > 0) stage = PlayerUtil.isMoving(mc.player) ? 1 : 0;
+                if((mc.world.getCollisionBoxes(null, mc.player.getEntityBoundingBox().offset(0.0, mc.player.motionY, 0.0)).size() > 0 || mc.player.collidedVertically) && stage > 0) stage = MovementUtil.isMoving() ? 1 : 0;
                 speed = dist - dist / 159;
             }
 
@@ -171,8 +171,8 @@ public class Speed extends Module {
             speed = Math.max(speed, MovementUtil.getSpeed(slow.getValBoolean(), strafeSpeed.getValDouble()));
             MovementUtil.strafe((float) speed);
 
-            if(PlayerUtil.isMoving(mc.player)) stage++;
-        } else if(speedMode.getValString().equalsIgnoreCase("Matrix Bhop") && PlayerUtil.isMoving(mc.player)) {
+            if(MovementUtil.isMoving()) stage++;
+        } else if(speedMode.getValString().equalsIgnoreCase("Matrix Bhop") && MovementUtil.isMoving()) {
             mc.gameSettings.keyBindJump.pressed = false;
 
             if (mc.player.onGround) {
@@ -187,7 +187,7 @@ public class Speed extends Module {
             }
         } else if(speedMode.getValString().equalsIgnoreCase("Matrix 6.4")) {
             if (mc.player.ticksExisted % 4 == 0) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_FALL_FLYING));
-            if (!PlayerUtil.isMoving(mc.player)) return;
+            if (!MovementUtil.isMoving()) return;
             if (mc.player.onGround) {
                 mc.gameSettings.keyBindJump.pressed = false;
                 mc.player.jump();
@@ -202,10 +202,10 @@ public class Speed extends Module {
                 mc.player.jumpMovementFactor = 0.025f;
             }
         } else if(speedMode.getValString().equalsIgnoreCase("Sunrise Strafe")) {
-            if (PlayerUtil.isMoving(mc.player)) {
+            if (MovementUtil.isMoving()) {
                 if (mc.player.onGround) {
                     mc.player.jump();
-                    MovementUtil.strafe(MovementUtil.calcMoveYaw(mc.player.rotationYaw), MovementUtil.getSpeed() * 1.02);
+                    MovementUtil.strafe(MovementUtil.getDirection(), MovementUtil.getSpeed() * 1.02);
                 }
             } else {
                 mc.player.motionX = 0.0;
@@ -341,11 +341,11 @@ public class Speed extends Module {
     }
 
     private void doYPortSpeed() {
-        if(!PlayerUtil.isMoving(mc.player) || (mc.player.isInWater() && !yWater.getValBoolean()) && (mc.player.isInLava() && !yLava.getValBoolean()) || mc.player.collidedHorizontally) return;
+        if(!MovementUtil.isMoving() || (mc.player.isInWater() && !yWater.getValBoolean()) && (mc.player.isInLava() && !yLava.getValBoolean()) || mc.player.collidedHorizontally) return;
         if(mc.player.onGround) {
             EntityUtil.setTimer(1.15f);
             mc.player.jump();
-            PlayerUtil.setSpeed(mc.player, PlayerUtil.getBaseMoveSpeed() + yPortSpeed.getValInt());
+            MovementUtil.setMotion(MovementUtil.DEFAULT_SPEED + yPortSpeed.getValInt());
         } else {
             mc.player.motionY = -1;
             EntityUtil.resetTimer();
@@ -430,7 +430,7 @@ public class Speed extends Module {
     }
 
     private Motion getMotion() {
-        BlockPos posToCheck = new BlockPos(EntityUtil.getRoundedBlockPos(mc.player).getX(), EntityUtil.getRoundedBlockPos(mc.player).getY(), EntityUtil.getRoundedBlockPos(mc.player).getZ());
+        BlockPos posToCheck = WorldUtilKt.playerPosition();
         if(getBlock(posToCheck) == Blocks.AIR && lastPos != null) {
             if(posToCheck != lastPos) {
                 if(lastPos.add(0, 0, -1).equals(posToCheck)) return Motion.mY;
@@ -438,7 +438,7 @@ public class Speed extends Module {
                 if(lastPos.add(1, 0, 0).equals(posToCheck)) return Motion.X;
                 if(lastPos.add(-1, 0, 0).equals(posToCheck)) return Motion.mX;
             }
-        } else lastPos = new BlockPos(EntityUtil.getRoundedBlockPos(mc.player).getX(), EntityUtil.getRoundedBlockPos(mc.player).getY(), EntityUtil.getRoundedBlockPos(mc.player).getZ());
+        } else lastPos = WorldUtilKt.playerPosition();
         return null;
     }
 

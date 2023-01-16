@@ -2,11 +2,9 @@ package com.kisman.cc.util.movement;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MovementInput;
-import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Objects;
 
@@ -48,22 +46,6 @@ public class MovementUtil {
         }
     }
 
-    public static float getDirection2() {
-        float var1 = mc.player.rotationYaw;
-        if (mc.player.moveForward < 0.0F) var1 += 180.0F;
-        float forward = 1.0F;
-        if (mc.player.moveForward < 0.0F) forward = -0.5F;
-        else if (mc.player.moveForward > 0.0F) forward = 0.5F;
-        if (mc.player.moveStrafing > 0.0F) var1 -= 90.0F * forward;
-        if (mc.player.moveStrafing < 0.0F) var1 += 90.0F * forward;
-        var1 *= 0.017453292F;
-        return var1;
-    }
-
-    public static double getMotion(EntityPlayer entity) {
-        return Math.abs(entity.motionX) + Math.abs(entity.motionZ);
-    }
-
     public static double[] forward(final double speed) {
         float forward = Minecraft.getMinecraft().player.movementInput.moveForward;
         float side = Minecraft.getMinecraft().player.movementInput.moveStrafe;
@@ -80,11 +62,6 @@ public class MovementUtil {
         final double posX = forward * speed * cos + side * speed * sin;
         final double posZ = forward * speed * sin - side * speed * cos;
         return new double[]{posX, posZ};
-    }
-
-    public static boolean isBlockAboveHead() {
-        AxisAlignedBB bb = new AxisAlignedBB(mc.player.posX - 0.3, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ + 0.3, mc.player.posX + 0.3, mc.player.posY + 2.5, mc.player.posZ - 0.3);
-        return !MovementUtil.mc.world.getCollisionBoxes(mc.player, bb).isEmpty();
     }
 
     public static double getBaseMoveSpeed() {
@@ -150,17 +127,17 @@ public class MovementUtil {
     }
 
     public static float getDirection() {
-        float var1 = mc.player.rotationYaw;
-        if (mc.player.moveForward < 0.0f) var1 += 180.0f;
+        float yaw = mc.player.rotationYaw;
+        if (mc.player.moveForward < 0.0f) yaw += 180.0f;
 
         float forward = 1.0f;
 
         if (mc.player.moveForward < 0.0f) forward = -0.5f;
         else if (mc.player.moveForward > 0.0f) forward = 0.5f;
-        if (mc.player.moveStrafing > 0.0f) var1 -= 90.0f * forward;
-        if (mc.player.moveStrafing < 0.0f) var1 += 90.0f * forward;
+        if (mc.player.moveStrafing > 0.0f) yaw -= 90.0f * forward;
+        if (mc.player.moveStrafing < 0.0f) yaw += 90.0f * forward;
 
-        return var1 *= (float)Math.PI / 180;
+        return yaw * ((float) Math.PI / 180);
     }
 
     public static void hClip(double off) {
@@ -168,34 +145,8 @@ public class MovementUtil {
         mc.player.setPosition(mc.player.posX + (-Math.sin(yaw) * off), mc.player.posY, mc.player.posZ + (Math.cos(yaw) * off));
     }
 
-    public static float getRoundedForward() {
-        return getRoundedMovementInput(mc.player.movementInput.moveForward);
-    }
-
-    public static float getRoundedStrafing() {
-        return getRoundedMovementInput(mc.player.movementInput.moveStrafe);
-    }
-
-    private static final float getRoundedMovementInput(float input) {
+    private static float getRoundedMovementInput(float input) {
         return (input > 0.0F) ? 1.0F : ((input < 0.0F) ? -1.0F : 0.0F);
-    }
-
-    public static float calcMoveYaw(float targetYaw) {
-        float moveForward = getRoundedForward();
-        float moveString = getRoundedStrafing();
-        float yawIn = targetYaw;
-        float strafe = 90 * moveString;
-        strafe *= (moveForward != 0.0F) ? (moveForward * 0.5F) : 1.0F;
-        float yaw = yawIn - strafe;
-        yaw -= ((moveForward < 0.0F) ? 180 : 0);
-        yaw = (float) Math.toRadians(yaw);
-
-        float sens = mc.gameSettings.mouseSensitivity / 0.005F;
-        float f = 0.005F * sens;
-        float gcd = f * f * f * 1.2F;
-        yaw -= yaw % gcd;
-
-        return yaw;
     }
 
     public static double[] strafe(double speed) {

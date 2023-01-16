@@ -78,7 +78,7 @@ public class NoFall extends Module {
                 Vec3d positionVector = mc.player.getPositionVector();
                 RayTraceResult rayTraceBlocks = mc.world.rayTraceBlocks(positionVector, new Vec3d(positionVector.x, positionVector.y - 3.0, positionVector.z), true);
 
-                if (mc.player.fallDistance < 5.0f || rayTraceBlocks == null || rayTraceBlocks.typeOfHit != RayTraceResult.Type.BLOCK || mc.world.getBlockState(rayTraceBlocks.getBlockPos()).getBlock() instanceof BlockLiquid || EntityUtil.isInLiquid() || EntityUtil.isInLiquid(true)) return;
+                if (mc.player.fallDistance < 5.0f || rayTraceBlocks == null || rayTraceBlocks.typeOfHit != RayTraceResult.Type.BLOCK || mc.world.getBlockState(rayTraceBlocks.getBlockPos()).getBlock() instanceof BlockLiquid || EntityUtil.isInLiquid(false) || EntityUtil.isInLiquid(true)) return;
                 if (event.getEra() == Event.Era.PRE) event.setPitch(90.0f);
                 else {
                     RayTraceResult rayTraceBlocks2 = mc.world.rayTraceBlocks(positionVector, new Vec3d(positionVector.x, positionVector.y - 5.0, positionVector.z), true);

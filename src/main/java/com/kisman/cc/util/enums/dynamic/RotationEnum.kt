@@ -84,10 +84,11 @@ class RotationEnum {
             },
             taskCEntity.task { arg: ArgumentFetcher ->
                 return@task (
-                        when(arg.fetch<RotationLogic>(1) as RotationLogic) {
+                        com.kisman.cc.util.world.RotationUtils.getRotation(com.kisman.cc.util.enums.dynamic.RotationEnum.Companion.mc.world.getEntityByID(arg.fetch(0)))
+                        /*when(arg.fetch<RotationLogic>(1) as RotationLogic) {
                             RotationLogic.Default -> RotationUtils.getRotation(mc.world.getEntityByID(arg.fetch(0)))
-                            RotationLogic.WellMore -> RotationUtils.lookAtRandomed(mc.world.getEntityByID(arg.fetch(0)))
-                        }
+//                            RotationLogic.WellMore -> RotationUtils.lookAtRandomed(mc.world.getEntityByID(arg.fetch(0)))
+                        }*/
                 )
             },
             taskCBlock.task { arg: ArgumentFetcher ->
