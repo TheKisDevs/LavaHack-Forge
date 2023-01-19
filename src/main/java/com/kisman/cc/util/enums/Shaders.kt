@@ -33,5 +33,6 @@ enum class Shaders(
     Techno(TechnoShader.TECHNO_SHADER),
     Circle(CircleShader),
     Circle2(Circle2Shader),
-    Outline3(Outline3Shader)
+    Outline3(Outline3Shader),
+    Gradient2(Gradient2Shader)
 }

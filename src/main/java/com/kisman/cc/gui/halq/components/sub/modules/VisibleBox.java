@@ -1,16 +1,18 @@
 package com.kisman.cc.gui.halq.components.sub.modules;
 
 import com.kisman.cc.features.module.client.GuiModule;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 
-public class VisibleBox implements Component {
+public class VisibleBox extends ShaderableImplementation implements Component {
     private final Module module;
     private int x, y, offset, count;
     private int width = HalqGui.width;
@@ -28,29 +30,32 @@ public class VisibleBox implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Component.super.drawScreen(mouseX, mouseY);
-        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        super.drawScreen(mouseX, mouseY);
 
-        HalqGui.prepare();
-        if(HalqGui.shadow) {
-            if(module.visible) {
-                Render2DUtil.drawAbstract(
-                        new AbstractGradient(
-                                new Vec4d(
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                                ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
-                                HalqGui.getGradientColour(count).getColor()
-                        )
-                );
-            }
-        } else if(HalqGui.test2 || module.visible) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, module.visible ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
-        HalqGui.release();
+        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString("Visible", x, y + offset, width, HalqGui.height);
+        Runnable shaderRunnable1 = () -> {
+            if(HalqGui.shadow) {
+                if(module.visible) {
+                    Render2DUtil.drawAbstract(
+                            new AbstractGradient(
+                                    new Vec4d(
+                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                    ),
+                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                    HalqGui.getGradientColour(count).getColor()
+                            )
+                    );
+                }
+            } else if(HalqGui.test2 || module.visible) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, module.visible ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        };
+
+        Runnable shaderRunnable2 = () -> HalqGui.drawString("Visible", x, y + offset, width, HalqGui.height);
+
+        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
     }
 
     @Override

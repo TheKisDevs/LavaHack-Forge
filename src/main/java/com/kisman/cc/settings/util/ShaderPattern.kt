@@ -21,7 +21,7 @@ class ShaderPattern(
 ) : AbstractPattern<ShaderPattern>(
     module
 ) {
-    private val mode = setupEnum(SettingEnum("Mode", module, Shaders.AQUA))
+    @JvmField val mode = setupEnum(SettingEnum("Mode", module, Shaders.AQUA))
 
     private val config = setupGroup(SettingGroup(Setting("Config", module)))
 
@@ -30,9 +30,9 @@ class ShaderPattern(
     private val blur = setupSetting(config.add(Setting("Blur", module, true)))
     private val radius = setupSetting(config.add(Setting("Radius", module, 2.0, 0.1, 10.0, false)))
     private val mix = setupSetting(config.add(Setting("Mix", module, 1.0, 0.0, 1.0, false)))
-    private val red = setupSetting(config.add(Setting("Red", module, 1.0, 0.0, 1.0, false)))
-    private val green = setupSetting(config.add(Setting("Green", module, 1.0, 0.0, 1.0, false)))
-    private val blue = setupSetting(config.add(Setting("Blue", module, 1.0, 0.0, 1.0, false)))
+    @JvmField val red = setupSetting(config.add(Setting("Red", module, 1.0, 0.0, 1.0, false)))
+    @JvmField val green = setupSetting(config.add(Setting("Green", module, 1.0, 0.0, 1.0, false)))
+    @JvmField val blue = setupSetting(config.add(Setting("Blue", module, 1.0, 0.0, 1.0, false)))
     private val rainbow = setupSetting(config.add(Setting("RainBow", module, true)))
     private val delay = setupSetting(config.add(Setting("Delay", module, 100.0, 1.0, 2000.0, true)))
     private val saturation = setupSetting(config.add(Setting("Saturation", module, 36.0, 0.0, 100.0, NumberType.PERCENT)))

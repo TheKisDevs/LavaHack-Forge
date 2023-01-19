@@ -1,16 +1,18 @@
 package com.kisman.cc.gui.halq.components.sub.modules;
 
 import com.kisman.cc.features.module.client.GuiModule;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 
-public class BindModeButton implements Component {
+public class BindModeButton extends ShaderableImplementation implements Component {
     private final Module module;
     private int x, y, offset, count, index;
     private final String[] values;
@@ -32,49 +34,54 @@ public class BindModeButton implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Component.super.drawScreen(mouseX, mouseY);
+        super.drawScreen(mouseX, mouseY);
         this.index = module.hold ? 1 : 0;
-        Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
 
-        HalqGui.prepare();
-        if(HalqGui.shadow) {
-            Render2DUtil.drawAbstract(
-                    new AbstractGradient(
-                            new Vec4d(
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                            ),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
-                            HalqGui.getGradientColour(count).getColor()
-                    )
-            );
-            Render2DUtil.drawAbstract(
-                    new AbstractGradient(
-                            new Vec4d(
-                                    new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                    new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY}
-                            ),
-                            HalqGui.getGradientColour(count).getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
-                    )
-            );
-        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
-        HalqGui.release();
+        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
 
-        HalqGui.drawString("Bind Mode: " + values[index], x, y + offset, width, HalqGui.height);
+        Runnable shaderRunnable1 = () -> {
+            if(HalqGui.shadow) {
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                ),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                HalqGui.getGradientColour(count).getColor()
+                        )
+                );
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[] {x + width / 2, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                ),
+                                HalqGui.getGradientColour(count).getColor(),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                        )
+                );
+            } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        };
 
-        if(open) {
-            int offsetY = offset + HalqGui.height;
-            for(int i = 0; i < values.length; i++) {
-                if(i == index) continue;
-                HalqGui.drawCenteredString(values[i], x, y + offsetY, width, HalqGui.height);
-                offsetY += HalqGui.height;
+        Runnable shaderRunnable2 = () -> {
+            HalqGui.drawString("Bind Mode: " + values[index], x, y + offset, width, HalqGui.height);
+
+            if (open) {
+                int offsetY = offset + HalqGui.height;
+                for (int i = 0; i < values.length; i++) {
+                    if (i == index) continue;
+                    HalqGui.drawCenteredString(values[i], x, y + offsetY, width, HalqGui.height);
+                    offsetY += HalqGui.height;
+                }
             }
-        }
+        };
+
+        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
     }
 
     @Override

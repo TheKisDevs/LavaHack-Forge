@@ -3,6 +3,7 @@ package com.kisman.cc.gui.halq.components.sub;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.pingbypass.server.input.Mouse;
@@ -27,7 +28,7 @@ import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
 import static com.kisman.cc.util.render.Render2DUtil.drawLeftGradientRect;
 
 @SuppressWarnings("SuspiciousNameCombination")
-public class ColorButton implements Component {
+public class ColorButton extends ShaderableImplementation implements Component {
     private final Setting setting;
     private Colour color;
     private int x, y, offset, pickerWidth, height, count;
@@ -115,71 +116,71 @@ public class ColorButton implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-//        Component.super.drawScreen(mouseX, mouseY);
-
         if(!setting.getColour().equals(color)){
             color = setting.getColour();
             setClearColor(color);
         }
         this.pickerWidth = width;
-        Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
-        if(HalqGui.shadow) {
-            Render2DUtil.drawAbstract(
-                    new AbstractGradient(
-                            new Vec4d(
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                            ),
-                            color.getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
-                    )
-            );
-            Render2DUtil.drawAbstract(
-                    new AbstractGradient(
-                            new Vec4d(
-                                    new double[] {x + width / 2f, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                    new double[] {x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY}
-                            ),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
-                            color.getColor()
-                    )
-            );
-        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
+        normalRender = () -> {
+            Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
+            if (HalqGui.shadow) {
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width / 2f, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                ),
+                                color.getColor(),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                        )
+                );
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[]{x + width / 2f, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                ),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                color.getColor()
+                        )
+                );
+            } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
 
-        HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+            HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
 
-        if(open) {
-            int offsetY = HalqGui.height;
-            if(GuiModule.instance.colorPickerClearColor.getValBoolean()){
-                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), clearColor.r1, clearColor.g1, clearColor.b1, clearColor.a1, mouseX, mouseY);
-            } else {
-                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
-            }
-            offsetY += pickerWidth;
-            drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
-            offsetY += HalqGui.height - 3;
-            drawAlphaSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
-            height = offsetY + HalqGui.height - 3;
-
-            updateValue(mouseX, mouseY, x + HalqGui.offsetsX, y + offset + HalqGui.height + HalqGui.offsetsY);
-
-            {
-                final int cursorX = (int) (x + color.RGBtoHSB()[1]*pickerWidth);
-                final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2]*pickerWidth);
-
-                if(GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0) && pickingBase){
-                    Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
-                    Gui.drawRect(cursorX - 7, cursorY - 7, cursorX + 7, cursorY + 7, color.getRGB());
-                    Icons.COLOR_PICKER.render(cursorX, cursorY - 18, 16.0, 16.0);
+            if (open) {
+                int offsetY = HalqGui.height;
+                if (GuiModule.instance.colorPickerClearColor.getValBoolean()) {
+                    drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), clearColor.r1, clearColor.g1, clearColor.b1, clearColor.a1, mouseX, mouseY);
                 } else {
-                    Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+                    drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+                }
+                offsetY += pickerWidth;
+                drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
+                offsetY += HalqGui.height - 3;
+                drawAlphaSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+                height = offsetY + HalqGui.height - 3;
+
+                updateValue(mouseX, mouseY, x + HalqGui.offsetsX, y + offset + HalqGui.height + HalqGui.offsetsY);
+
+                {
+                    final int cursorX = (int) (x + color.RGBtoHSB()[1] * pickerWidth);
+                    final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2] * pickerWidth);
+
+                    if (GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0) && pickingBase) {
+                        Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
+                        Gui.drawRect(cursorX - 7, cursorY - 7, cursorX + 7, cursorY + 7, color.getRGB());
+                        Icons.COLOR_PICKER.render(cursorX, cursorY - 18, 16.0, 16.0);
+                    } else {
+                        Gui.drawRect(cursorX - 2, cursorY - 2, cursorX + 2, cursorY + 2, -1);
+                    }
                 }
             }
-        }
+        };
 
         setting.setColour(color);
     }

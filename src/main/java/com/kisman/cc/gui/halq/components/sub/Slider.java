@@ -2,10 +2,12 @@ package com.kisman.cc.gui.halq.components.sub;
 
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.halq.util.TextUtilKt;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -15,7 +17,7 @@ import org.lwjgl.input.Keyboard;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Slider implements Component {
+public class Slider extends ShaderableImplementation implements Component {
     private final Setting setting;
     private int x, y, offset, count;
     private boolean dragging;
@@ -38,7 +40,7 @@ public class Slider implements Component {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Component.super.drawScreen(mouseX, mouseY);
+        super.drawScreen(mouseX, mouseY);
 
         double min = setting.getMin();
         double max = setting.getMax();
@@ -54,28 +56,30 @@ public class Slider implements Component {
 
         String toRender = bool ? customValue + "_" : setting.getTitle() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble());
 
-        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         int width = (int) (this.width * (setting.getValDouble() - min) / (max - min));
 
-        HalqGui.prepare();
-        if(HalqGui.shadow) {
-            Render2DUtil.drawAbstract(
-                    new AbstractGradient(
-                            new Vec4d(
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                    new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                    new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                            ),
-                            HalqGui.getGradientColour(count).getColor(),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
-                    )
-            );
-        } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
-        HalqGui.release();
+        Runnable shaderRunnable1 = () -> {
+            if (HalqGui.shadow) {
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                ),
+                                HalqGui.getGradientColour(count).getColor(),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                        )
+                );
+            } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+        };
 
-        HalqGui.drawString(toRender, x, y + offset, this.width, HalqGui.height);
+        Runnable shaderRunnable2 = () -> HalqGui.drawString(toRender, x, y + offset, this.width, HalqGui.height);
+
+        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
     }
 
     @Override

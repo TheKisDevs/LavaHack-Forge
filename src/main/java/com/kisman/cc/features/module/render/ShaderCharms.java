@@ -308,6 +308,12 @@ public class ShaderCharms extends Module {
                         Outline3Shader.filledMix = mix.getValFloat();
                         Outline3Shader.radius = radius.getValFloat();
                         Outline3Shader.ratio = ratio.getValFloat();
+                    } else if(mode.getValEnum() == Shaders.Gradient2) {
+                        Circle2Shader.rgba = filledColor.getColour();
+                        Circle2Shader.rgba1 = filledColor.getColour();
+                        Circle2Shader.step = step.getValFloat();
+                        Circle2Shader.speed = speed.getValFloat();
+                        Circle2Shader.mix = mix.getValFloat();
                     }
 
                     return Unit.INSTANCE;

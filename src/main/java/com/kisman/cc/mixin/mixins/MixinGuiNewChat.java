@@ -81,10 +81,13 @@ public class MixinGuiNewChat {
         ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
         int modifiedColor = color;
         int newY = (int) y;
-        if (this.lineBeingDrawn <= this.newLines && chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
-            int opacity = (int) (((int) y >> 24 & 0xFF) * animationPercent);
-            newY = ((int) y & 0xFFFFFF) | opacity << 24;
-            modifiedColor = ColorUtils.injectAlpha(color, opacity).getRGB();
+
+        if(chatModifier.isToggled()) {
+            if (lineBeingDrawn <= newLines && chatModifier.getAnimation().getValBoolean()) {
+                int opacity = (int) (((int) y >> 24 & 0xFF) * animationPercent);
+                newY = ((int) y & 0xFFFFFF) | opacity << 24;
+                modifiedColor = ColorUtils.injectAlpha(color, opacity).getRGB();
+            } else if(chatModifier.getCustomAlpha().getValBoolean()) modifiedColor = ColorUtils.injectAlpha(color, chatModifier.getCustomAlphaVal().getValInt()).getRGB();
         }
 
         if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, modifiedColor);

@@ -3,6 +3,7 @@ package com.kisman.cc.gui.halq.components.sub.combobox
 import com.kisman.cc.features.Binder
 import com.kisman.cc.features.module.IBindable
 import com.kisman.cc.gui.api.Component
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.sub.ModeButton
 import com.kisman.cc.gui.halq.util.getModifiedWidth
@@ -24,7 +25,8 @@ class OptionElement(
     var offset : Int,
     private var count : Int,
     private var layer : Int
-) : Component {
+) : ShaderableImplementation(),
+    Component {
     private var width = getModifiedWidth(
         layer,
         HalqGui.width
@@ -34,35 +36,37 @@ class OptionElement(
         mouseX : Int,
         mouseY : Int
     ) {
-        super.drawScreen(mouseX, mouseY)
+        super<ShaderableImplementation>.drawScreen(mouseX, mouseY)
 
-        Render2DUtil.drawRectWH(
-            x.toDouble(),
-            (y + offset).toDouble(),
-            width.toDouble(),
-            height.toDouble(),
-            HalqGui.backgroundColor.rgb
-        )
-
-        HalqGui.drawString(
-            name,
-            x,
-            y + offset,
-            width,
-            rawHeight
-        )
-
-        if(IBindable.valid(binder)) {
-            HalqGui.drawSuffix(
-                IBindable.getName(binder),
-                name,
+        normalRender = Runnable {
+            Render2DUtil.drawRectWH(
                 x.toDouble(),
-                y.toDouble() + offset,
+                (y + offset).toDouble(),
                 width.toDouble(),
-                rawHeight.toDouble(),
-                count,
-                3
+                height.toDouble(),
+                HalqGui.backgroundColor.rgb
             )
+
+            HalqGui.drawString(
+                name,
+                x,
+                y + offset,
+                width,
+                rawHeight
+            )
+
+            if (IBindable.valid(binder)) {
+                HalqGui.drawSuffix(
+                    IBindable.getName(binder),
+                    name,
+                    x.toDouble(),
+                    y.toDouble() + offset,
+                    width.toDouble(),
+                    rawHeight.toDouble(),
+                    count,
+                    3
+                )
+            }
         }
     }
 

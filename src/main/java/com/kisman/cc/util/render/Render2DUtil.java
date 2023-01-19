@@ -324,6 +324,7 @@ public class Render2DUtil extends GuiScreen {
 
     public static void drawRect(double left, double top, double right, double bottom, int color) {
         double j;
+
         if (left < right) {
             j = left;
             left = right;
@@ -336,16 +337,17 @@ public class Render2DUtil extends GuiScreen {
             bottom = j;
         }
 
-        float f3 = (float)(color >> 24 & 255) / 255.0F;
-        float f = (float)(color >> 16 & 255) / 255.0F;
-        float f1 = (float)(color >> 8 & 255) / 255.0F;
-        float f2 = (float)(color & 255) / 255.0F;
+        float red = (float)(color >> 16 & 255) / 255.0F;
+        float green = (float)(color >> 8 & 255) / 255.0F;
+        float blue = (float)(color & 255) / 255.0F;
+        float alpha = (float)(color >> 24 & 255) / 255.0F;
+        GlStateManager.pushMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.enableBlend();
         GlStateManager.disableTexture2D();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color(f, f1, f2, f3);
+        GlStateManager.color(red, green, blue, alpha);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
         bufferbuilder.pos(left, bottom, 0.0D).endVertex();
         bufferbuilder.pos(right, bottom, 0.0D).endVertex();
@@ -354,6 +356,7 @@ public class Render2DUtil extends GuiScreen {
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
     }
 
     public static void drawPolygonPart(final double x, final double y, final int radius, final int part, final int color, final int endcolor) {
@@ -509,7 +512,6 @@ public class Render2DUtil extends GuiScreen {
 
         ShaderShell.BLUR.attach();
 
-        ShaderShell.BLUR.attach();
         ShaderShell.BLUR.set1I("sampler", 0);
         ShaderShell.BLUR.set1F("radius", radius);
         ShaderShell.BLUR.set1F("radiusFactor", radiusFactor);
@@ -551,7 +553,6 @@ public class Render2DUtil extends GuiScreen {
 
         ShaderShell.ROUNDED_RECT.attach();
 
-        ShaderShell.ROUNDED_RECT.attach();
         ShaderShell.ROUNDED_RECT.set4F("color", red, green, blue, alpha);
         ShaderShell.ROUNDED_RECT.set2F("resolution", sr().getScaledWidth(), sr().getScaledHeight());
         ShaderShell.ROUNDED_RECT.set2F("center", (startX + (endX - startX) / 2) * 2, (startY + (endY - startY) / 2) * 2);

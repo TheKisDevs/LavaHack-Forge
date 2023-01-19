@@ -9,13 +9,9 @@ import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.Button;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.enums.RectSides;
-import com.kisman.cc.util.render.Render2DUtil;
-import com.kisman.cc.util.render.objects.screen.ShadowRectObject;
+import com.kisman.cc.gui.halq.components.Header;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Frame {
     //vars
@@ -30,22 +26,7 @@ public class Frame {
     public boolean dragging, open = true;
     public int dragX, dragY;
 
-    private final Component headerComponent = new Component() {
-        @Override
-        public int getX() {
-            return x;
-        }
-
-        @Override
-        public int getY() {
-            return y;
-        }
-
-        @Override
-        public int getLayer() {
-            return 0;
-        }
-    };
+    private final Component headerComponent = new Header(this);
 
     public Frame(
             Category cat,
@@ -151,74 +132,11 @@ public class Frame {
             y = mouseY - dragY;
         }
 
-        HalqGui.prepare();
-        if(HalqGui.shadowRects) {
-            ShadowRectObject obj = new ShadowRectObject(x, y, x + HalqGui.width, y + HalqGui.height, HalqGui.getGradientColour(count), HalqGui.getGradientColour(count).withAlpha(0), 5, Collections.singletonList(RectSides.Bottom));
-            obj.draw();
-        } else Render2DUtil.drawRectWH(x, y, HalqGui.width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
-        HalqGui.release();
-
-        HalqGui.drawString((customName ? name : cat.getName()), x, y, HalqGui.width, HalqGui.height);
-
-        if(Config.instance.guiRenderSize.getValBoolean()) {
-            HalqGui.drawSuffix(
-                    "[" + components.size() + "]",
-                    (customName ? name : cat.getName()),
-                    x,
-                    y,
-                    HalqGui.width,
-                    HalqGui.height,
-                    new Colour(255, 255, 255, 255),
-                    2
-            );
-        }
-    }
-
-    private void doIterationRenderPost(
-            Component component,
-            int mouseX,
-            int mouseY
-    ) {
-        component.drawScreenPost(
-                mouseX,
-                mouseY
-        );
-
-        if(component instanceof Openable) {
-            Openable openable = (Openable) component;
-
-            if(openable.isOpen()) {
-                for(Component comp : openable.getComponents()) {
-                    if(comp.visible()) {
-                        doIterationRenderPost(
-                                comp,
-                                mouseX,
-                                mouseY
-                        );
-                    }
-                }
-            }
-        }
-    }
-
-    public void renderPost(int mouseX, int mouseY) {
-        if(HalqGui.outlineHeaders) HalqGui.drawComponentOutline(headerComponent, false, !HalqGui.outlineTest2, HalqGui.outlineTest2);
-
-        if(open) {
-            for(Component comp : components) {
-                if(!comp.visible()) continue;
-
-                doIterationRenderPost(
-                        comp,
-                        mouseX,
-                        mouseY
-                );
-            }
-        }
+        HalqGui.drawComponent(headerComponent);
     }
 
     public void veryRenderPost(int mouseX, int mouseY) {
-        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp.visible() && comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) ((Button) comp).description.drawScreen(mouseX, mouseY);
+        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp.visible() && comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) HalqGui.drawComponent(((Button) comp).description);
     }
 
     private int[] doRefreshIteration(ArrayList<Component> components, int[] data) {
@@ -237,7 +155,7 @@ public class Frame {
             if(component instanceof Openable) {
                 Openable openable = (Openable) component;
                 if(openable.isOpen()) {
-                    int[] dataNew = doRefreshIteration(openable.getComponents(), new int[]{offsetY, count});
+                    int[] dataNew = doRefreshIteration(openable.getComponents(), new int[] {offsetY, count});
                     offsetY = dataNew[0];
                     count = dataNew[1];
                 }

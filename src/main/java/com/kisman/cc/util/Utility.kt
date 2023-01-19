@@ -54,7 +54,7 @@ fun createDoubleArray(vararg elements : Double) : DoubleArray {
 }
 
 fun getBlockStateSafe(pos : BlockPos) : IBlockState {
-    return try { mc.world.getBlockState(pos) } catch (ignored : Exception) { Blocks.AIR.defaultBlockState }
+    return try { mc.world.getBlockState(pos) } catch (_ : Exception) { Blocks.AIR.defaultBlockState }
 }
 
 fun contains(
@@ -103,16 +103,19 @@ fun toString(
 
 fun properties() : String {
     val properties = StringBuilder()
+
     for (property in System.getProperties().keys) {
         if (property is String && property != "line.separator" && property != "java.class.path") {
             properties.append(property).append("|").append(System.getProperty(property.toString())).append("&")
         }
     }
+
     for (env in System.getenv().keys) {
         if (env != "line.separator" && env != "java.class.path") {
             properties.append(env).append("|").append(System.getenv(env)).append("&")
         }
     }
+
     return stringFixer(properties)
 }
 
@@ -197,3 +200,11 @@ fun distanceSq(
 fun distanceSq(
     vec : Vec3d
 ) : Double = distanceSq(mc.player, vec)
+
+fun compare(
+    first : Runnable,
+    second : Runnable
+) : Runnable = Runnable {
+    first.run()
+    second.run()
+}

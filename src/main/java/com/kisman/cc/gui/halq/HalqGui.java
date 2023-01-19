@@ -8,10 +8,15 @@ import com.kisman.cc.gui.KismanGuiScreen;
 import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
+import com.kisman.cc.gui.halq.components.Description;
+import com.kisman.cc.gui.halq.components.Header;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
@@ -61,7 +66,7 @@ public class HalqGui extends KismanGuiScreen {
      * These aren't quite constants anymore.
      * You should IN NO CASE modify these besides
      * in the method where there values get updated
-     * from the GuiModule module, which is the
+     * from the Gui module, which is the
      * {@link HalqGui#drawScreen(int, int, float)}
      * method. In no other place should these be
      * changed EVER. I just wanted to make this
@@ -86,6 +91,9 @@ public class HalqGui extends KismanGuiScreen {
     public static Component currentComponent = null;
     public static int mouseX = -1;
     public static int mouseY = -1;
+
+    private static Runnable shaderableThing = () -> {};
+    private static Runnable postRenderThing = () -> {};
 
     public HalqGui(GuiScreen lastGui) {
         this();
@@ -182,24 +190,32 @@ public class HalqGui extends KismanGuiScreen {
 
         scrollWheelCheck();
 
-        /*if(shaderState) {
-            GuiModule.instance.shaders.setup4();
-        }*/
+        shaderableThing = () -> {};
+        postRenderThing = () -> {};
 
         for(Frame frame : frames) {
             if(frame.reloading) continue;
+
             frame.render(mouseX, mouseY);
+
             if(frame.open) for(Component comp : frame.components) if(comp.visible()) {
                 comp.updateComponent(frame.x, frame.y);
-                comp.drawScreen(mouseX, mouseY);
+                drawComponent(comp);
             }
-            frame.renderPost(mouseX, mouseY);
+
             frame.refresh();
         }
 
-        /*if(shaderState) {
-            GuiModule.instance.shaders.drawFBO4();
-        }*/
+        if(shaderState) {
+            GuiModule.instance.shaders.start2(ticks);
+
+            shaderableThing.run();
+
+            GuiModule.instance.shaders.end();
+
+
+            postRenderThing.run();
+        }
 
         for(Frame frame : frames) if(!frame.reloading) {
             frame.veryRenderPost(mouseX, mouseY);
@@ -209,14 +225,14 @@ public class HalqGui extends KismanGuiScreen {
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode)/* throws IOException*/ {
+    public void keyTyped(char typedChar, int keyCode) {
         if(keyCode == 1) mc.displayGuiScreen(lastGui == null ? null : lastGui);
         super.keyTyped(typedChar, keyCode);
         for(Frame frame : frames) if(frame.open && keyCode != 1 && !frame.components.isEmpty() && !frame.reloading) for(Component mod : frame.components) if(mod.visible()) mod.keyTyped(typedChar, keyCode);
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton)/* throws IOException*/ {
+    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 //        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
         super.mouseClicked(mouseX, mouseY, mouseButton);
         for(Frame frame : frames) {
@@ -348,8 +364,6 @@ public class HalqGui extends KismanGuiScreen {
         if(!component.visible()) return;
 
         if(HalqGui.line) {
-            prepare();
-
             Render2DUtil.drawRectWH(
                     component.getX(),
                     component.getY(),
@@ -364,16 +378,12 @@ public class HalqGui extends KismanGuiScreen {
                     component.getRawHeight(),
                     HalqGui.getGradientColour(component.getCount()).getRGB()
             );
-
-            release();
         }
 
         if(component instanceof Openable) {
             Openable openable = (Openable) component;
 
             if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
-                prepare();
-
                 Render2DUtil.drawRectWH(
                         component.getX(),
                         component.getY() + component.getRawHeight(),
@@ -394,8 +404,57 @@ public class HalqGui extends KismanGuiScreen {
                         1,
                         HalqGui.getGradientColour(openable.getComponents().get(openable.getComponents().size() - 1).getCount()).getRGB()
                 );
+            }
+        }
+    }
 
-                release();
+    public static void renderComponent(
+            Component component,
+            int color
+    ) {
+        if(!component.visible()) return;
+
+        if(HalqGui.line) {
+            Render2DUtil.drawRectWH(
+                    component.getX(),
+                    component.getY(),
+                    1,
+                    component.getRawHeight(),
+                    color
+            );
+            Render2DUtil.drawRectWH(
+                    component.getX() + LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - 1,
+                    component.getY(),
+                    1,
+                    component.getRawHeight(),
+                    color
+            );
+        }
+
+        if(component instanceof Openable) {
+            Openable openable = (Openable) component;
+
+            if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
+                Render2DUtil.drawRectWH(
+                        component.getX(),
+                        component.getY() + component.getRawHeight(),
+                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
+                        1,
+                        color
+                );
+
+                int height = doIterationUpdateComponent(
+                        openable.getComponents(),
+                        0
+                );
+
+                Render2DUtil.drawRectWH(
+                        component.getX(),
+                        component.getY() + component.getRawHeight() + height - 1,
+                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
+                        1,
+                        color
+                );
             }
         }
     }
@@ -503,12 +562,46 @@ public class HalqGui extends KismanGuiScreen {
         return false;
     }
 
-    public static void prepare() {
-        if(shaderState) GuiModule.instance.shaders.start2(ticks);
+    public static void drawComponent(Component component) {
+        component.drawScreen(mouseX, mouseY);
+
+        boolean flag = !(component instanceof Header) && !(component instanceof Description);
+
+        if(component instanceof ShaderableImplementation) {
+            ShaderableImplementation shaderable = (ShaderableImplementation) component;
+
+            shaderable.normalRender().run();
+
+            if(shaderState) {
+                addShaderRunnable(shaderable.shaderRender().getFirst());
+                addPostRenderRunnable(shaderable.shaderRender().getSecond());
+
+                if(flag) {
+                    addShaderRunnable(() -> renderComponent(component));
+                    addPostRenderRunnable(() -> {
+                        if(GuiModule.instance.shaders.mode.getValEnum() == Shaders.ITEMGLOW) renderComponent(component, new Color(GuiModule.instance.shaders.red.getValFloat(), GuiModule.instance.shaders.green.getValFloat(), GuiModule.instance.shaders.blue.getValFloat()).getRGB());
+
+                        drawComponentOutline(component, true, HalqGui.outlineTest, false);
+                    });
+                }
+            } else {
+                shaderable.shaderRender().getFirst().run();
+                shaderable.shaderRender().getSecond().run();
+
+                if(flag) {
+                    renderComponent(component);
+                    drawComponentOutline(component, true, HalqGui.outlineTest, false);
+                }
+            }
+        }
     }
 
-    public static void release() {
-        if(shaderState) GuiModule.instance.shaders.end2();
+    private static void addShaderRunnable(Runnable runnable) {
+        shaderableThing = UtilityKt.compare(shaderableThing, runnable);
+    }
+
+    private static void addPostRenderRunnable(Runnable runnable) {
+        postRenderThing = UtilityKt.compare(postRenderThing, runnable);
     }
 
     public enum LocateMode {

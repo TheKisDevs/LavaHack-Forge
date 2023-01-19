@@ -5,21 +5,24 @@ import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.features.module.client.ViaForgeModule;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.features.viaforge.gui.ViaForgeGuiKt;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.*;
-import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
+import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -29,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 @SuppressWarnings("UnusedAssignment")
-public class Button implements Openable {
+public class Button extends ShaderableImplementation implements Openable {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
     public final DraggableBox draggable;
@@ -105,42 +108,46 @@ public class Button implements Openable {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        if(hud && draggable != null) draggable.drawScreen(mouseX, mouseY);
+        if(hud && draggable != null) HalqGui.drawComponent(draggable);
 
-        Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
-        HalqGui.prepare();
-        if(HalqGui.shadow) {
-            if(mod.isToggled()) {
-                Render2DUtil.drawAbstract(
-                        new AbstractGradient(
-                                new Vec4d(
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                                ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), 30),
-                                HalqGui.getGradientColour(count).getColor()
-                        )
-                );
+        Runnable shaderRunnable1 = () -> {
+            if (HalqGui.shadow) {
+                if (mod.isToggled()) {
+                    Render2DUtil.drawAbstract(
+                            new AbstractGradient(
+                                    new Vec4d(
+                                            new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[]{x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[]{x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                            new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                    ),
+                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                    HalqGui.getGradientColour(count).getColor()
+                            )
+                    );
+                }
+            } else if (HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
+        };
+
+        Runnable shaderRunnable2 = () -> {
+            HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
+
+            if (!HalqGui.hideAnnotations) {
+                if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
+                if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
             }
-        } else if(HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
-        HalqGui.release();
 
-        HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
+            if (Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 3);
+        };
 
-        if(!HalqGui.hideAnnotations) {
-            if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
-            if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
-        }
-
-        if(Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 3);
+        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
 
         if(open && !comps.isEmpty()) {
             for(Component comp : comps) {
                 if(!comp.visible()) continue;
-                comp.drawScreen(mouseX, mouseY);
+                HalqGui.drawComponent(comp);
             }
         }
     }

@@ -3,10 +3,12 @@ package com.kisman.cc.gui.halq.components.sub
 import com.kisman.cc.features.module.client.GuiModule
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.Openable
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.util.getModifiedWidth
 import com.kisman.cc.gui.halq.util.getXOffset
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.util.collections.Bind
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.objects.screen.AbstractGradient
@@ -20,8 +22,9 @@ class GroupButton(
     var offset : Int,
     var count_ : Int,
     var layer_ : Int
-) : Openable {
-    val comps : ArrayList<Component> = ArrayList()
+) : ShaderableImplementation(),
+    Openable {
+    private val comps : ArrayList<Component> = ArrayList()
 
     private var width_ : Int = HalqGui.width
 
@@ -73,84 +76,86 @@ class GroupButton(
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
-        super.drawScreen(mouseX, mouseY)
+        super<Openable>.drawScreen(mouseX, mouseY)
 
-        Render2DUtil.drawRectWH(
-            x.toDouble(),
-            (y_ + offset).toDouble(),
-            width_.toDouble(),
-            HalqGui.height.toDouble(),
-            HalqGui.backgroundColor.rgb
-        )
-
-        HalqGui.prepare()
-
-        if (HalqGui.shadow) {
-            Render2DUtil.drawAbstract(
-                    AbstractGradient(
-                            Vec4d(
-                                    doubleArrayOf(
-                                            x.toDouble() + HalqGui.offsetsX,
-                                            (y_ + offset).toDouble() + HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            (x + width_ / 2).toDouble(),
-                                            (y_ + offset).toDouble() + HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            (x + width_ / 2).toDouble(),
-                                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            x.toDouble() + HalqGui.offsetsX,
-                                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
-                                    )
-                            ),
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt),
-                            HalqGui.getGradientColour(count).color
-                    )
+        normalRender = Runnable {
+            Render2DUtil.drawRectWH(
+                x.toDouble(),
+                (y_ + offset).toDouble(),
+                width_.toDouble(),
+                HalqGui.height.toDouble(),
+                HalqGui.backgroundColor.rgb
             )
-            Render2DUtil.drawAbstract(
+        }
+
+        val shaderRunnable1 = Runnable {
+            if (HalqGui.shadow) {
+                Render2DUtil.drawAbstract(
                     AbstractGradient(
-                            Vec4d(
-                                    doubleArrayOf(
-                                            (x + width_ / 2).toDouble(),
-                                            (y_ + offset).toDouble() + HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            (x + width_).toDouble() - HalqGui.offsetsX,
-                                            (y_ + offset).toDouble() + HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            (x + width_).toDouble() - HalqGui.offsetsX,
-                                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
-                                    ),
-                                    doubleArrayOf(
-                                            (x + width_ / 2).toDouble(),
-                                            (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
-                                    )
+                        Vec4d(
+                            doubleArrayOf(
+                                x.toDouble() + HalqGui.offsetsX,
+                                (y_ + offset).toDouble() + HalqGui.offsetsY
                             ),
-                            HalqGui.getGradientColour(count).color,
-                            ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt)
+                            doubleArrayOf(
+                                (x + width_ / 2).toDouble(),
+                                (y_ + offset).toDouble() + HalqGui.offsetsY
+                            ),
+                            doubleArrayOf(
+                                (x + width_ / 2).toDouble(),
+                                (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
+                            ),
+                            doubleArrayOf(
+                                x.toDouble() + HalqGui.offsetsX,
+                                (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
+                            )
+                        ),
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt),
+                        HalqGui.getGradientColour(count).color
                     )
-            )
-        } else Render2DUtil.drawRectWH(
+                )
+                Render2DUtil.drawAbstract(
+                    AbstractGradient(
+                        Vec4d(
+                            doubleArrayOf(
+                                (x + width_ / 2).toDouble(),
+                                (y_ + offset).toDouble() + HalqGui.offsetsY
+                            ),
+                            doubleArrayOf(
+                                (x + width_).toDouble() - HalqGui.offsetsX,
+                                (y_ + offset).toDouble() + HalqGui.offsetsY
+                            ),
+                            doubleArrayOf(
+                                (x + width_).toDouble() - HalqGui.offsetsX,
+                                (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
+                            ),
+                            doubleArrayOf(
+                                (x + width_ / 2).toDouble(),
+                                (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
+                            )
+                        ),
+                        HalqGui.getGradientColour(count).color,
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt)
+                    )
+                )
+            } else Render2DUtil.drawRectWH(
                 x.toDouble() + HalqGui.offsetsX,
                 (y_ + offset).toDouble() + HalqGui.offsetsY,
                 width_.toDouble() - HalqGui.offsetsX * 2,
                 height.toDouble() - HalqGui.offsetsY * 2,
                 HalqGui.getGradientColour(count).rgb
-        )
+            )
+        }
 
-        HalqGui.release()
+        val shaderRunnable2 = Runnable { HalqGui.drawString("${setting.title}...", x, y_ + offset, width_, HalqGui.height) }
 
-        HalqGui.drawString("${setting.title}...", x, y_ + offset, width_, HalqGui.height)
+        shaderRender = Bind(shaderRunnable1, shaderRunnable2)
 
         if(open) {
             if(comps.isNotEmpty()) {
                 for(comp in comps) {
                     if(!comp.visible()) continue
-                    comp.drawScreen(mouseX, mouseY)
+                    HalqGui.drawComponent(comp)
                 }
             }
         }

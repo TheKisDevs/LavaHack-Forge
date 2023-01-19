@@ -4,9 +4,11 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class CheckBox implements Openable {
+public class CheckBox extends ShaderableImplementation implements Openable {
     private final Setting setting;
     private int x, y, offset, count;
     private int width = HalqGui.width;
@@ -38,44 +40,49 @@ public class CheckBox implements Openable {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Openable.super.drawScreen(mouseX, mouseY);
-        Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        super.drawScreen(mouseX, mouseY);
 
-        HalqGui.prepare();
-        if(HalqGui.shadow) {
-            if(setting.getValBoolean()) {
-                Render2DUtil.drawAbstract(
-                        new AbstractGradient(
-                                new Vec4d(
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
-                                ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
-                                HalqGui.getGradientColour(count).getColor()
-                        )
+        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+
+        Runnable shaderRunnable1 = () -> {
+            if(HalqGui.shadow) {
+                if(setting.getValBoolean()) {
+                    Render2DUtil.drawAbstract(
+                            new AbstractGradient(
+                                    new Vec4d(
+                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
+                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
+                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                    ),
+                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                    HalqGui.getGradientColour(count).getColor()
+                            )
+                    );
+                }
+            } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+        };
+
+        Runnable shaderRunnable2 = () -> {
+            if (Config.instance.guiShowBinds.getValBoolean() && setting.Companion.valid(setting)) {
+                HalqGui.drawSuffix(
+                        setting.Companion.getName(setting),
+                        setting.getTitle(),
+                        x,
+                        y + offset,
+                        width,
+                        HalqGui.height,
+                        count,
+                        3
                 );
             }
-        } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
-        HalqGui.release();
 
-        if(Config.instance.guiShowBinds.getValBoolean() && setting.Companion.valid(setting)) {
-            HalqGui.drawSuffix(
-                    setting.Companion.getName(setting),
-                    setting.getTitle(),
-                    x,
-                    y + offset,
-                    width,
-                    HalqGui.height,
-                    count,
-                    3
-            );
-        }
+            HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+        };
 
-        HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
 
-        if(open) bind.drawScreen(mouseX, mouseY);
+        if(open)HalqGui.drawComponent(bind);
     }
 
     @Override

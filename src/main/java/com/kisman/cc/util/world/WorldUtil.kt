@@ -1,12 +1,15 @@
 package com.kisman.cc.util.world
 
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.getBlockStateSafe
+import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
@@ -89,3 +92,11 @@ fun entityBoxBorderLength(
 ) : Double = abs(player.boundingBox.maxX - player.boundingBox.minY)
 
 fun playerBoxBorderLength() : Double = entityBoxBorderLength(mc.player)
+
+fun placeable(
+    block : Block
+) : Boolean = block == Blocks.AIR || block == Blocks.WATER || block == Blocks.FLOWING_WATER || block == Blocks.LAVA || block == Blocks.FLOWING_LAVA
+
+fun placeable(
+    pos : BlockPos
+) : Boolean = placeable(getBlockStateSafe(pos).block) && pos.y >= 0 && pos.y <= 255
