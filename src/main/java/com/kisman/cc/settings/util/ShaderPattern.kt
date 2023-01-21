@@ -110,7 +110,7 @@ class ShaderPattern(
             framebufferShader.rainbowSpeed = rainbowSpeed.valFloat
             framebufferShader.rainbowStrength = rainbowStrength.valFloat
             framebufferShader.saturation = rainbowSaturation.valFloat
-        } else if (mode.valEnum === Shaders.Circle) {
+        }/* else if (mode.valEnum === Shaders.Circle) {
             CircleShader.color1 = color1.colour
             CircleShader.color2 = color2.colour
             CircleShader.filledColor = filledColor.colour
@@ -128,7 +128,7 @@ class ShaderPattern(
             CircleShader.glowRadius = radius.valFloat
             CircleShader.outlineRadius = radius.valFloat
             CircleShader.quality = quality.valFloat
-        }
+        }*/
     }
 
     override fun preInit() : ShaderPattern {

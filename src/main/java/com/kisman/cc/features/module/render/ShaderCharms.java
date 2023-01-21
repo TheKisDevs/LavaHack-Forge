@@ -276,7 +276,7 @@ public class ShaderCharms extends Module {
                         ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
                         ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
                         ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
-                    } else if(mode.getValEnum() == Shaders.Circle) {
+                    }/* else if(mode.getValEnum() == Shaders.Circle) {
                         CircleShader.color1 = color1.getColour();
                         CircleShader.color2 = color2.getColour();
                         CircleShader.filledColor = filledColor.getColour();
@@ -314,7 +314,7 @@ public class ShaderCharms extends Module {
                         Gradient2Shader.step = step.getValFloat();
                         Gradient2Shader.speed = speed.getValFloat();
                         Gradient2Shader.mix = mix.getValFloat();
-                    }
+                    }*/
 
                     return Unit.INSTANCE;
                 };
