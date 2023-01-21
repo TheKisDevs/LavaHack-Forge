@@ -10,6 +10,7 @@ import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.Button;
 import com.kisman.cc.gui.halq.components.Header;
+import com.kisman.cc.util.annotations.FakeThing;
 
 import java.util.ArrayList;
 
@@ -74,8 +75,10 @@ public class Frame {
 
         if(!cat.equals(Category.LUA)) {
             for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                components.add(new Button(mod, x, y, offsetY, count1++));
-                offsetY += HalqGui.height;
+                if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
+                    components.add(new Button(mod, x, y, offsetY, count1++));
+                    offsetY += HalqGui.height;
+                }
             }
         } else {
             if(!Kisman.instance.scriptManager.scripts.isEmpty()) {

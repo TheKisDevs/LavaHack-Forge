@@ -15,7 +15,8 @@ public class HudModuleManager {
 	public ArrayList<HudModule> modules = new ArrayList<>();
 	public ArrayList<ShaderableHudModule> shaderableModules = new ArrayList<>();
 
-	public final ShaderPattern shaders = new ShaderPattern(new FakeHudModule("Shaders")).init();
+	private final HudModule fakeModule = new FakeHudModule("Shaders");
+	public final ShaderPattern shaders = new ShaderPattern(fakeModule).init();
 
 	public HudModuleManager() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -48,6 +49,8 @@ public class HudModuleManager {
 		add(new TextRadar());
 		add(new Tps());
 		add(new Welcomer());
+
+		add(fakeModule);
 	}
 
 	private void add(HudModule module) {
