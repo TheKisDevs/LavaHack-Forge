@@ -1,6 +1,7 @@
 package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.features.hud.HudModule
+import com.kisman.cc.features.hud.ShaderableHudModule
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
@@ -16,10 +17,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author _kisman_
  * @since 17:20 of 14.09.2022
  */
-class TextRadar : HudModule(
+class TextRadar : ShaderableHudModule(
     "TextRadar",
     "troll hack moment :sunglasses:",
-    true
+    true,
+    false,
+    false
 ) {
     private val offsets = register(Setting("Offsets", this, 0.0, 0.0, 5.0, true))
     private val astolfo = register(Setting("Astolfo", this, true))
@@ -61,17 +64,21 @@ class TextRadar : HudModule(
         })
     }
 
-    @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
+    override fun handleRender() {
         setW(0.0)
         setH(0.0)
 
+        println(toRender.clear())
+
         for((index, line) in toRender.withIndex()) {
-            CustomFontUtil.drawStringWithShadow(
-                line,
-                getX(),
-                getY() + index * (CustomFontUtil.getFontHeight() + offsets.valInt),
-                if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else color.colour.rgb
-            )
+            addShader(Runnable {
+                drawStringWithShadow(
+                    line,
+                    getX(),
+                    getY() + index * (CustomFontUtil.getFontHeight() + offsets.valInt),
+                    if(astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else color.colour.rgb
+                )
+            })
 
             setW(getW().max(CustomFontUtil.getStringWidth(line).toDouble()))
             setH(((index + 1) * (CustomFontUtil.getFontHeight() + offsets.valInt)).toDouble())

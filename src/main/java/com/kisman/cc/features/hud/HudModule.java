@@ -3,11 +3,14 @@ package com.kisman.cc.features.hud;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.gui.api.Draggable;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.HudModuleColorPattern;
 import net.minecraft.client.Minecraft;
 
 public class HudModule extends Module implements Draggable {
 	protected static Minecraft mc = Minecraft.getMinecraft();
+
+	public final Setting shaderSetting = new Setting("Shader", this, false);
 
 	public boolean drag = false;
 	private double x = 0, y = 0, w = 0, h = 0;

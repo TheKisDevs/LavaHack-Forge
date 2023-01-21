@@ -117,35 +117,8 @@ public class PotionHud extends HudModule {
     }
 
     private Comparator<PotionEffect> getComparator(){
-        if(sortMode.getValString().equals("Alphabetical")){
-            return Comparator.comparing(PotionEffect::getEffectName);
-        }
-        if(sortMode.getValString().equals("Length")){
-            return Comparator.comparingInt(effect -> (I18n.format(effect.getEffectName()) + (effect.getAmplifier() > 0 ? " " + effect.getAmplifier() : "") + Potion.getPotionDurationString(effect, 1)).length());
-        }
+        if(sortMode.getValString().equals("Alphabetical")) return Comparator.comparing(PotionEffect::getEffectName);
+        if(sortMode.getValString().equals("Length")) return Comparator.comparingInt(effect -> (I18n.format(effect.getEffectName()) + (effect.getAmplifier() > 0 ? " " + effect.getAmplifier() : "") + Potion.getPotionDurationString(effect, 1)).length());
         return Comparator.comparingInt(PotionEffect::getDuration);
     }
-
-    /*
-    private final static class SortEnum {
-
-        private static final AbstractTask.DelegateAbstractTask<Comparator<PotionEffect>> task = AbstractTask.typesResolve();
-
-        private enum SortModes {
-            Alphabetical(task.task(args -> Comparator.comparing(PotionEffect::getEffectName))),
-            Length(task.task(args -> Comparator.comparingInt(o -> o.getEffectName().length()))),
-            PotionDuration(task.task(args -> Comparator.comparingInt(PotionEffect::getDuration)));
-
-            private final AbstractTask<Comparator<PotionEffect>> abstractTask;
-
-            SortModes(AbstractTask<Comparator<PotionEffect>> task){
-                this.abstractTask = task;
-            }
-
-            private AbstractTask<Comparator<PotionEffect>> getTask(){
-                return this.abstractTask;
-            }
-        }
-    }
-     */
 }

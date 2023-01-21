@@ -22,6 +22,7 @@ import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.util.annotations.FakeThing;
 import com.kisman.cc.util.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -65,12 +66,14 @@ public class Button extends ShaderableImplementation implements Openable {
             offsetY += HalqGui.height;
             comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
         } else {
-            comps.add(new BindButton(mod, x, y, offsetY, count1++, 1));
-            offsetY += HalqGui.height;
-            comps.add(new VisibleBox(mod, x, y, offsetY, count1++, 1));
-            offsetY += HalqGui.height;
-            comps.add(new BindModeButton(mod, x, y, offsetY, count1++, 1));
-            offsetY += HalqGui.height;
+            if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
+                comps.add(new BindButton(mod, x, y, offsetY, count1++, 1));
+                offsetY += HalqGui.height;
+                comps.add(new VisibleBox(mod, x, y, offsetY, count1++, 1));
+                offsetY += HalqGui.height;
+                comps.add(new BindModeButton(mod, x, y, offsetY, count1++, 1));
+                offsetY += HalqGui.height;
+            }
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {
                 for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {

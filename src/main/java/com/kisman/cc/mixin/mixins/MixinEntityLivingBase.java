@@ -76,7 +76,8 @@ public abstract class MixinEntityLivingBase extends Entity {
 
     @Inject(
             method = "jump",
-            at = @At("HEAD")
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void preMoveRelative(CallbackInfo ci) {
         // noinspection ConstantConditions

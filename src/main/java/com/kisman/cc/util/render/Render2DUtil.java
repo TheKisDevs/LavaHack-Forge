@@ -341,7 +341,6 @@ public class Render2DUtil extends GuiScreen {
         float green = (float)(color >> 8 & 255) / 255.0F;
         float blue = (float)(color & 255) / 255.0F;
         float alpha = (float)(color >> 24 & 255) / 255.0F;
-        GlStateManager.pushMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         GlStateManager.enableBlend();
@@ -356,7 +355,6 @@ public class Render2DUtil extends GuiScreen {
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
     }
 
     public static void drawPolygonPart(final double x, final double y, final int radius, final int part, final int color, final int endcolor) {

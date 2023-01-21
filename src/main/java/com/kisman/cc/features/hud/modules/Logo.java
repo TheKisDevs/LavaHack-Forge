@@ -1,22 +1,19 @@
 package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
-
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.Icons;
-import com.kisman.cc.util.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-public class Logo extends HudModule {
+public class Logo extends ShaderableHudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
     private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
     private final Setting mode = register(new Setting("Mode", this, LogoMode.CSGO));
@@ -27,11 +24,10 @@ public class Logo extends HudModule {
     private final Setting csgoVersion = register(new Setting("CSGO Version", this, false));
 
     public Logo() {
-        super("Logo", "lava-hack on top");
+        super("Logo", "lava-hack on top", false, true, false);
     }
 
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent.Text event) {
+    public void handleRender() {
         String name = Kisman.getName();
         String version = Kisman.getVersion();
 
@@ -40,10 +36,11 @@ public class Logo extends HudModule {
 
             if(glow.getValBoolean()) {
                 int glowOffset = this.glowOffset.getValInt();
-                Render2DUtil.drawGlow(1 - glowOffset, 1 - glowOffset, 1 + CustomFontUtil.getStringWidth(name + version) + glowOffset, 1 + CustomFontUtil.getFontHeight() + glowOffset, color);
+
+                preNormalRender = () -> Render2DUtil.drawGlow(1 - glowOffset, 1 - glowOffset, 1 + CustomFontUtil.getStringWidth(name + version) + glowOffset, 1 + CustomFontUtil.getFontHeight() + glowOffset, color);
             }
 
-            CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
+            shaderRender = () -> drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
         } else if(mode.checkValString("CSGO")) {
             String text = name + (csgoVersion.getValBoolean() ? TextFormatting.GRAY + " | " + TextFormatting.RESET + Kisman.getVersion() : "") + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
@@ -52,40 +49,48 @@ public class Logo extends HudModule {
             int width = 4 + CustomFontUtil.getStringWidth(text);
             int height = 4 + CustomFontUtil.getFontHeight();
 
-            Gui.drawRect(x + 3, y + 3, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
-            Gui.drawRect(x + 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
-            Gui.drawRect(x + 2, y + 2, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
-            Gui.drawRect(x + 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
-            Gui.drawRect(x + 1, y + 1, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x + 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x - 3, y - 8, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
-            Gui.drawRect(x - 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
-            Gui.drawRect(x - 2, y - 7, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
-            Gui.drawRect(x - 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
-            Gui.drawRect(x - 1, y - 6, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x - 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x, y - 5, x + width, y + height, (color));
-            Gui.drawRect(x - 3, y - 1, x + width + 3, y + height + 3, (ColorUtils.getColor(33, 33, 42)));
-            Gui.drawRect(x - 2, y - 2, x + width + 2, y + height + 2, (ColorUtils.getColor(45, 45, 55)));
-            Gui.drawRect(x - 1, y - 3, x + width + 1, y + height + 1, (ColorUtils.getColor(60, 60, 70)));
-            Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
+            preNormalRender = () -> {
+                Gui.drawRect(x + 3, y + 3, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
+                Gui.drawRect(x + 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
+                Gui.drawRect(x + 2, y + 2, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
+                Gui.drawRect(x + 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
+                Gui.drawRect(x + 1, y + 1, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
+                Gui.drawRect(x + 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
+                Gui.drawRect(x - 3, y - 8, x + width + 3, y + height - 3, (ColorUtils.getColor(33, 33, 42)));
+                Gui.drawRect(x - 3, y, x + width + 3, y + height, (ColorUtils.getColor(33, 33, 42)));
+                Gui.drawRect(x - 2, y - 7, x + width + 2, y + height - 2, (ColorUtils.getColor(45, 45, 55)));
+                Gui.drawRect(x - 2, y, x + width + 2, y + height, (ColorUtils.getColor(45, 45, 55)));
+                Gui.drawRect(x - 1, y - 6, x + width + 1, y + height - 1, (ColorUtils.getColor(60, 60, 70)));
+                Gui.drawRect(x - 1, y, x + width + 1, y + height, (ColorUtils.getColor(60, 60, 70)));
+                Gui.drawRect(x - 3, y - 1, x + width + 3, y + height + 3, (ColorUtils.getColor(33, 33, 42)));
+                Gui.drawRect(x - 2, y - 2, x + width + 2, y + height + 2, (ColorUtils.getColor(45, 45, 55)));
+                Gui.drawRect(x - 1, y - 3, x + width + 1, y + height + 1, (ColorUtils.getColor(60, 60, 70)));
+                Gui.drawRect(x, y - 4, x + width, y + height, (ColorUtils.getColor(34, 34, 40)));
+            };
 
-            CustomFontUtil.drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2, color);
+            shaderRender = () -> {
+                drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2 + (shaderSetting.getValBoolean() ? 1 : 0), color);
+                Gui.drawRect(x, y - 5, x + width, y - 4, color);
+            };
         } else if(mode.checkValString("GishCode")) {
             int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
 
-            GL11.glPushMatrix();
+            shaderRender = () -> {
+                GL11.glPushMatrix();
 
-            GL11.glScaled(1.5, 1.5, 1.5);
-            mc.fontRenderer.drawStringWithShadow("LavaHack", 4, 4, color);
-            GL11.glScaled(0.6, 0.6, 0.6);
-            mc.fontRenderer.drawStringWithShadow(TextFormatting.GRAY + Kisman.getVersion(), 84, 4, -1);
-            mc.fontRenderer.drawStringWithShadow(TextFormatting.GRAY + "1.12.2", 84, 14, -1);
+                GL11.glScaled(1.5, 1.5, 1.5);
+                mc.fontRenderer.drawString("LavaHack", 4, 4, color, !shaderSetting.getValBoolean());
+                GL11.glScaled(0.6, 0.6, 0.6);
+                mc.fontRenderer.drawString(TextFormatting.GRAY + Kisman.getVersion(), 84, 4, -1, !shaderSetting.getValBoolean());
+                mc.fontRenderer.drawString(TextFormatting.GRAY + "1.12.2", 84, 14, -1, !shaderSetting.getValBoolean());
 
-            GL11.glPopMatrix();
+                GL11.glPopMatrix();
+            };
         } else {
-            if(image.checkValString("Old")) Icons.LOGO.render(0, 0, 50, 50);
-            else if(image.checkValString("New")) Icons.LOGO_NEW.render(0, 0, 80, 80 , new Colour(ColorUtils.astolfoColors(100, 100)));
+            shaderRender = () -> {
+                if (image.checkValString("Old")) Icons.LOGO.render(0, 0, 50, 50);
+                else if (image.checkValString("New")) Icons.LOGO_NEW.render(0, 0, 80, 80, new Colour(ColorUtils.astolfoColors(100, 100)));
+            };
         }
     }
 

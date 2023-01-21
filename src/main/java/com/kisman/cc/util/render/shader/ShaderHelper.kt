@@ -29,19 +29,7 @@ fun startShader(
     shader.buffer.startDraw(ticks)
 }
 
-fun endShader(
-    shader : Shaders
-) {
-    shader.buffer.stopDraw()
-
-    GlStateManager.color(1f, 1f, 1f)
-    GlStateManager.matrixMode(5889)
-    GlStateManager.popMatrix()
-    GlStateManager.matrixMode(5888)
-    GlStateManager.popMatrix()
-}
-
-fun startShader2(
+fun startShader(
     shader : Shaders,
     uniforms : () -> Unit
 ) {
@@ -55,43 +43,17 @@ fun startShader2(
     shader.buffer.startDraw2()
 }
 
-fun endShader2(
+
+fun endShader(
     shader : Shaders
 ) {
-    shader.buffer.stopDraw2()
+    shader.buffer.stopDraw()
 
     GlStateManager.color(1f, 1f, 1f)
     GlStateManager.matrixMode(5889)
     GlStateManager.popMatrix()
     GlStateManager.matrixMode(5888)
     GlStateManager.popMatrix()
-}
-
-fun startShader3(
-    shader : Shaders,
-    uniforms : () -> Unit
-) {
-    GlStateManager.enableBlend()
-    GlStateManager.color(1f, 1f, 1f, 1f)
-    GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-
-    val buffer = shader.buffer.setupFrameBuffer(FramebufferShader.framebuffer)
-
-    mc.framebuffer.bindFramebuffer(true)
-
-    GL20.glUseProgram(shader.buffer.program)
-
-    uniforms()
-
-    GL11.glBindTexture(GL11.GL_TEXTURE_2D, buffer.framebufferTexture)
-}
-
-fun endShader3() {
-    GL20.glUseProgram(0)
-
-    GlStateManager.color(1f, 1f, 1f, 1f)
-    GlStateManager.bindTexture(0)
-    GL11.glEnable(GL11.GL_BLEND)
 }
 
 fun createFrameBuffer(

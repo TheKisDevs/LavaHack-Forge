@@ -21,7 +21,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.roundToInt
 
 /**
  * @author _kisman_
@@ -47,6 +46,7 @@ class AutoAnchor : Module(
     private val helpingBlocksPattern = SlideRenderingRewritePattern(this).group(helpingBlocksRendererGroup).prefix("Helping Blocks").preInit().init()
     private val airPlace = register(Setting("Air Place", this, false))
     private val helpingBlocksOffset = register(Setting("Helping Blocks Offset", this, "X", listOf("X", "Z")))
+    private val test = register(Setting("Fast Place", this, false))
 
     private val anchorRenderer = SlideRendererPattern()
     private val glowstoneRenderer = SlideRendererPattern()
@@ -118,29 +118,29 @@ class AutoAnchor : Module(
             var shouldPlaceHelpingBlocks = true
 
             if(!airPlace.valBoolean) {
-                val placePosRounded = BlockPos(target!!.posX.roundToInt(), target!!.posY.roundToInt(), target!!.posZ.roundToInt())
+                for(offset in possesForCheck) {
+                    val pos = placePos!!.add(offset)
 
-                for(pos in possesForCheck) {
                     if(mc.world.getBlockState(pos).block != Blocks.AIR) {
                         shouldPlaceHelpingBlocks = false
                     }
                 }
 
                 if(shouldPlaceHelpingBlocks) {
-                    val xLength = placePos!!.x + 0.7 + placePosRounded.x
-                    val zLength = placePos!!.z + 0.7 + placePosRounded.z
+                    val xLength = target!!.posX - placePos!!.x
+                    val zLength = target!!.posZ - placePos!!.z
 
-                    val xOffset = if(xLength < 0) {
+                    val xOffset = if(xLength > 0.7) {
                         -1
-                    } else if(xLength > 0) {
+                    } else if(xLength < 0.7) {
                         1
                     } else {
                         0
                     }
 
-                    val zOffset = if(zLength < 0) {
+                    val zOffset = if(zLength > 0.7) {
                         -1
-                    } else if(zLength > 0) {
+                    } else if(zLength < 0.7) {
                         1
                     } else {
                         0
@@ -149,10 +149,10 @@ class AutoAnchor : Module(
                     val offset = BlockPos(if(helpingBlocksOffset.valString == "X") xOffset else 0, 0, if(helpingBlocksOffset.valString == "Z") zOffset else 0)
 
                     for(y in helpingPosses.keys) {
-                        val pos = placePosRounded.add(0, y, 0).add(offset)
+                        val pos = placePos!!.down(2).add(0, y, 0).add(offset)
 
                         if(placeable(pos)) {
-                            val slot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9)
+                            val slot = InventoryUtil.findBlockExtendedExclude(Blocks.OBSIDIAN, 0, 9, RESPAWN_ANCHOR)
 
                             placer.placeBlockSwitch(pos, slot)
 
@@ -163,7 +163,6 @@ class AutoAnchor : Module(
                             }
                         }
                     }
-
                 }
             }
 
@@ -186,6 +185,14 @@ class AutoAnchor : Module(
                     val slot = InventoryUtil.findBlock(Blocks.GLOWSTONE, 0, 9)
 
                     placer.placeBlockSwitch(anchorPos!!.up(), slot)
+
+                    if(test.valBoolean) {
+                        placer.placeBlockSwitch(anchorPos!!.up(), slot)
+                        placer.placeBlockSwitch(anchorPos!!.up(), slot)
+                        placer.placeBlockSwitch(anchorPos!!.up(), slot)
+                        placer.placeBlockSwitch(anchorPos!!.up(), slot)
+                    }
+
 
                     timer.reset()
 

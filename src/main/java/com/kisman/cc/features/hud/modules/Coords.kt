@@ -1,10 +1,8 @@
 package com.kisman.cc.features.hud.modules
 
-import com.kisman.cc.features.hud.HudModule
+import com.kisman.cc.features.hud.ShaderableHudModule
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.client.event.RenderGameOverlayEvent
 import com.kisman.cc.util.render.ColorUtils
 import net.minecraft.util.math.MathHelper
 import com.kisman.cc.util.render.customfont.CustomFontUtil
@@ -14,11 +12,12 @@ import kotlin.math.max
 
 import com.kisman.cc.util.math.max
 
-@Suppress("UNUSED_PARAMETER")
-class Coords : HudModule(
+class Coords : ShaderableHudModule(
     "Coords",
     "Show your current coords, rotations",
-    true
+    true,
+    false,
+    false
 ) {
     private var posX = 0
     private var posZ = 0
@@ -41,8 +40,7 @@ class Coords : HudModule(
 
     private val random = Random()
 
-    @SubscribeEvent
-    fun onRender(event : RenderGameOverlayEvent.Text) {
+    override fun handleRender() {
         if (mc.player.dimension == 0) {
             posX = mc.player.posX.toInt()
             posZ = mc.player.posZ.toInt()
@@ -73,12 +71,14 @@ class Coords : HudModule(
 
             width = max(width, CustomFontUtil.getStringWidth(coordString).toDouble())
 
-            CustomFontUtil.drawStringWithShadow(
-                coordString,
-                getX(),
-                getY() + getH() - CustomFontUtil.getFontHeight(),
-                color
-            )
+            addShader(Runnable {
+                drawStringWithShadow(
+                    coordString,
+                    getX(),
+                    getY() + getH() - CustomFontUtil.getFontHeight(),
+                    color
+                )
+            })
 
             height += CustomFontUtil.getFontHeight() + offsets.valInt
         }
@@ -92,12 +92,14 @@ class Coords : HudModule(
 
             width = width.max(CustomFontUtil.getStringWidth(rotationString).toDouble())
 
-            CustomFontUtil.drawStringWithShadow(
-                rotationString,
-                getX(),
-                getY() + getH() - CustomFontUtil.getFontHeight() - height,
-                color
-            )
+            addShader(Runnable {
+                drawStringWithShadow(
+                    rotationString,
+                    getX(),
+                    getY() + getH()/* - CustomFontUtil.getFontHeight()*/ - height,
+                    color
+                )
+            })
 
             height += CustomFontUtil.getFontHeight()
         }

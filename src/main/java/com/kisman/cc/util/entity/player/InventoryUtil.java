@@ -211,27 +211,37 @@ public class InventoryUtil {
             ExtendedBlock extended = (ExtendedBlock) block;
 
             if(!Arrays.asList(excludes).contains(extended)) for (int i = min; i <= max; i++) if (extended.isIt(i)) return i;
-
-            return -1;
         } else {
-            for (int i = min; i <= max; i++) for(ExtendedBlock exclude : excludes) if(exclude.isIt(i)) return -1;
+            for (int i = min; i <= max; i++) for(ExtendedBlock exclude : excludes) {
+                if(exclude.isIt(i)) break;
 
-            return findBlock(block, min, max);
+                ItemStack stack = mc.player.inventory.getStackInSlot(i);
+
+                if (!(stack.getItem() instanceof ItemBlock)) continue;
+
+                ItemBlock item = (ItemBlock) stack.getItem();
+
+                if (item.getBlock() != block) continue;
+
+                return i;
+            }
         }
+
+        return -1;
     }
 
     public static void switchToSlotGhost(int slot) {
-        if (slot != -1 && InventoryUtil.mc.player.inventory.currentItem != slot) InventoryUtil.mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
+        if (slot != -1 && mc.player.inventory.currentItem != slot) mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
     }
 
     public static int getHotbarItemSlot(Item item) {
-        for (int i = 0; i < 9; ++i) if (InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
+        for (int i = 0; i < 9; ++i) if (mc.player.inventory.getStackInSlot(i).getItem() == item) return i;
         return -1;
     }
 
     public static int getBlockInHotbar(Block block) {
         for (int i = 0; i < 9; ++i) {
-            Item item = InventoryUtil.mc.player.inventory.getStackInSlot(i).getItem();
+            Item item = mc.player.inventory.getStackInSlot(i).getItem();
 
             if (item instanceof ItemBlock && ((ItemBlock) item).getBlock().equals(block)) return i;
         }

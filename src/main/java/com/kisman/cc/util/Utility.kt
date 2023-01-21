@@ -29,6 +29,9 @@ import javax.swing.JOptionPane
  * @author _kisman_
  * @since 15:24 of 30.07.2022
  */
+
+@JvmField val emptyRunnable = Runnable { }
+
 fun getPing(player : EntityPlayer) : Int {
     return getPing(player.uniqueID)
 }

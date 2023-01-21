@@ -196,42 +196,12 @@ class ShaderPattern(
         startShader(mode.valEnum, uniforms, ticks)
     }
 
+    fun start() {
+        startShader(mode.valEnum, uniforms)
+    }
+
     fun end() {
         endShader(mode.valEnum)
-    }
-
-    fun start2(
-        ticks : Float
-    ) {
-        startShader2(mode.valEnum, uniforms)
-    }
-
-    fun end2() {
-        endShader2(mode.valEnum)
-    }
-
-    fun start3() {
-        startShader3(mode.valEnum, uniforms)
-    }
-
-    fun end3() {
-        endShader3()
-    }
-
-    fun setup4() {
-        mode.valEnum.buffer.setup3()
-    }
-
-    fun start4() {
-        mode.valEnum.buffer.start3()
-    }
-
-    fun end4() {
-        mode.valEnum.buffer.stop3()
-    }
-
-    fun drawFBO4() {
-        mode.valEnum.buffer.drawFBO3()
     }
 
     fun getColor() : Color = if (rainbow.valBoolean) {

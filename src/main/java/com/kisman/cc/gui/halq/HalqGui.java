@@ -207,7 +207,7 @@ public class HalqGui extends KismanGuiScreen {
         }
 
         if(shaderState) {
-            GuiModule.instance.shaders.start2(ticks);
+            GuiModule.instance.shaders.start();
 
             shaderableThing.run();
 

@@ -1,26 +1,24 @@
 package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.ColorUtils;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Ping extends HudModule {
+public class Ping extends ShaderableHudModule {
     private final Setting astolfo = register(new Setting("Astolfo", this, true));
 
     public Ping() {
-        super("Ping", "", true);
+        super("Ping", "", true, false, false);
     }
 
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent.Text event) {
+    public void handleRender() {
         String str = "Ping: " + TextFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing());
         setW(CustomFontUtil.getStringWidth(str));
         setH(CustomFontUtil.getFontHeight());
-        CustomFontUtil.drawStringWithShadow(str, getX(), getY(), astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1);
+
+        shaderRender = () -> drawStringWithShadow(str, getX(), getY(), astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : -1);
     }
 }

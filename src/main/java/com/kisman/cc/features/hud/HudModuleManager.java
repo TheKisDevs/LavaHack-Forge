@@ -3,13 +3,20 @@ package com.kisman.cc.features.hud;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.features.hud.modules.*;
+import com.kisman.cc.settings.util.ShaderPattern;
+import com.kisman.cc.util.UtilityKt;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 
 public class HudModuleManager {
-    public ArrayList<HudModule> modules = new ArrayList<>();
-	
+	public ArrayList<HudModule> modules = new ArrayList<>();
+	public ArrayList<ShaderableHudModule> shaderableModules = new ArrayList<>();
+
+	public final ShaderPattern shaders = new ShaderPattern(new FakeHudModule("Shaders")).init();
+
 	public HudModuleManager() {
 		MinecraftForge.EVENT_BUS.register(this);
 		Kisman.instance.progressBar.steps++;
@@ -18,33 +25,67 @@ public class HudModuleManager {
 	public void init() {
 		Kisman.EVENT_BUS.post(new EventProgressBar("HUD Module Manager"));
 
-		modules.add(new TwoBeeTwoTeeQueue());
-		modules.add(new ArmorHUD());
-		modules.add(ArrayListModule.instance);
-		modules.add(new BindList());
-		modules.add(new Coords());
-		modules.add(new CrystalPerSecond());
-		modules.add(new CurrentConfig());
-		modules.add(new Fps());
-		modules.add(new Indicators());
-		modules.add(new InventoryHud());
-		modules.add(new Logo());
-		modules.add(new PearlCooldown());
-		modules.add(new Ping());
-		modules.add(new PotionHud());
-		modules.add(new PvpInfo());
-		modules.add(new PvpResources());
-		modules.add(new Radar());
-		modules.add(new ServerIp());
-		modules.add(new Speed());
-		modules.add(new TargetHUD());
-		modules.add(new TextRadar());
-		modules.add(new Tps());
-		modules.add(new Welcomer());
+		add(new TwoBeeTwoTeeQueue());
+		add(new ArmorHUD());
+		add(ArrayListModule.instance);
+		add(new BindList());
+		add(new Coords());
+		add(new CrystalPerSecond());
+		add(new CurrentConfig());
+		add(new Fps());
+		add(new Indicators());
+		add(new InventoryHud());
+		add(new Logo());
+		add(new PearlCooldown());
+		add(new Ping());
+		add(new PotionHud());
+		add(new PvpInfo());
+		add(new PvpResources());
+		add(new Radar());
+		add(new ServerIp());
+		add(new Speed());
+		add(new TargetHUD());
+		add(new TextRadar());
+		add(new Tps());
+		add(new Welcomer());
+	}
+
+	private void add(HudModule module) {
+		modules.add(module);
+
+		if(module instanceof ShaderableHudModule) shaderableModules.add((ShaderableHudModule) module);
 	}
 	
 	public HudModule getModule(String name) {
 		for (HudModule m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
 		return null;
+	}
+
+	@SubscribeEvent
+	public void onRender(RenderGameOverlayEvent.Text event) {
+		Runnable preNormalRender = () -> {};
+		Runnable shaderRender = () -> {};
+		Runnable postNormalRender = () -> {};
+
+		boolean canDraw = false;
+
+		for(ShaderableHudModule module : shaderableModules) if(module.isToggled() && module.shaderSetting.getValBoolean()) {
+			if(module.preRender) preNormalRender = UtilityKt.compare(preNormalRender, module.preNormalRender);
+			if(module.postRender) postNormalRender = UtilityKt.compare(postNormalRender, module.postNormalRender);
+
+			shaderRender = UtilityKt.compare(shaderRender, module.shaderRender);
+
+			canDraw = true;
+		}
+
+		if(canDraw) {
+			preNormalRender.run();
+
+			shaders.start();
+			shaderRender.run();
+			shaders.end();
+
+			postNormalRender.run();
+		}
 	}
 }
