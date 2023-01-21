@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL20;
 public class FlowShader extends FramebufferShader {
     public static FlowShader FLOW_SHADER;
     public float time;
-    public float timeMult = 0.05f;
+    public float timeMult = 0.001f; // 0.05f
 
     public FlowShader() {
         super("flow.frag");
