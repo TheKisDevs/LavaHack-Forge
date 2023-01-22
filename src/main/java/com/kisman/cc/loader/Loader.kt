@@ -99,9 +99,10 @@ fun load(
         ) {
             status = when (message) {
                 "0" -> "Invalid arguments of \"getpublicjar\" command!"
-                "1" -> "Invalid key or HWID | Loader is outdated!"
+                "1" -> "Invalid key or HWID or Loader is outdated!"
                 "2" -> "Key and HWID is valid!"
                 "3" -> "You have no access for selected version!"
+                "4" -> "You have tried to dump/Already dumped LavaHack"
                 else -> "Invalid answer of \"getpublicjar\" command"
             }
         }
@@ -462,12 +463,6 @@ fun loadIntoCustomClassLoader(
                 customClassLoader.findClass(it)
             }
         }
-
-        /*try {
-            customClassLoader.findClass("Main").newInstance()
-        } catch(e : Exception) {
-            e.printStackTrace()
-        }*/
     }
 
     LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting resources...")

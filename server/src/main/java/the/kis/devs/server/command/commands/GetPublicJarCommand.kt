@@ -27,7 +27,7 @@ import java.io.File
  *
  * `0` - Invalid Arguments
  *
- * `1` - Invalid Key or HWID | Client is outdated
+ * `1` - Invalid Key or HWID or Client is outdated
  *
  * `2` - Valid Key, HWID, Client is latest
  *
@@ -56,13 +56,13 @@ object GetPublicJarCommand : Command(
             }
 
             val authAnswer = AuthCommand.execute("", listOf("auth", args[1], HWID(args[3], args[4].toInt()).hwid))//TODO: need try catch
-            
-            println("auth answer ${authAnswer[0].text}")
+
+            debug("Auth command answer is ${authAnswer[0].text}")
 
             if(authAnswer[0].text == "2") {
                 val checkVersionAnswer = CheckVersionCommand.execute("", listOf("checkversion", args[2]))
 
-                println("check version answer ${checkVersionAnswer[0].text}")
+                debug("CheckVersion command answer is ${checkVersionAnswer[0].text}")
 
                 if(checkVersionAnswer[0].text == "2") {
                     val versionIndex = args[5].replace("_", " ")
@@ -70,7 +70,7 @@ object GetPublicJarCommand : Command(
 
                     val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar/$versionFile"))
 
-                    println("get file answer ${getFileAnswer[0].text}")
+                    println("GetFile command answer is ${getFileAnswer[0].text}")
 
                     if(getFileAnswer[0].text == "2") {
 

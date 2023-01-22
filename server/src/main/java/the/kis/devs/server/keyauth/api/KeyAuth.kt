@@ -66,6 +66,17 @@ class KeyAuth(
         return false
     }
 
+    fun handleLicense(
+        key : String,
+        hwid : String
+    ) : Boolean = if(!license(key, hwid)) {
+        init()
+
+        license(key, hwid)
+    } else {
+        true
+    }
+
     fun license(
         key : String, 
         hwid : String

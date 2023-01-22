@@ -38,4 +38,10 @@ abstract class Command(
             }
         }
     }
+
+    protected fun debug(
+        message : String
+    ) {
+        println("Debug message by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"$message\"")
+    }
 }
