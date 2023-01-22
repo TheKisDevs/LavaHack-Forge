@@ -40,7 +40,7 @@ object AuthCommand : Command(
 ) {
     override fun execute(line: String, args: List<String>) : List<SocketMessage> {
         return if(args.size == 3) {
-            if(KeyAuthApp.keyAuth.license(args[1], args[2])) {
+            if(KeyAuthApp.keyAuth.handleLicense(args[1], args[2])) {
                 listOf(SocketMessage("2"))
             } else {
                 listOf(SocketMessage("1"))
