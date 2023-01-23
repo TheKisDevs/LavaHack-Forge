@@ -70,7 +70,7 @@ object GetPublicJarCommand : Command(
 
                     val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar/$versionFile"))
 
-                    println("GetFile command answer is ${getFileAnswer[0].text}")
+                    debug("GetFile command answer is ${getFileAnswer[0].text}")
 
                     if(getFileAnswer[0].text == "2") {
 
