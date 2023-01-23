@@ -41,7 +41,10 @@ public class FakePlayer extends Module {
     }
 
     public void update() {
-        if(mc.player == null || mc.world == null || player == null) super.setToggled(false);
+        if(mc.player == null || mc.world == null || player == null) {
+            super.setToggled(false);
+            return;
+        }
 
         if(move.getValBoolean()) {
             try {

@@ -9,6 +9,8 @@ public class KfcShader extends FramebufferShader {
     public static KfcShader KFC_SHADER;
     public float time;
     public float timeMult = 0.01f;
+    public float radius = 5;
+    public float quality = 1;
 
     public KfcShader() {
         super("kfc.frag");
@@ -16,14 +18,16 @@ public class KfcShader extends FramebufferShader {
 
     @Override
     public void setupUniforms() {
-        this.setupUniform("resolution");
-        this.setupUniform("time");
+        setupUniforms("resolution", "time", "radius", "quality");
     }
 
     @Override
     public void updateUniforms() {
-        GL20.glUniform2f(this.getUniform("resolution"), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth(), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight());
-        GL20.glUniform1f(this.getUniform("time"), time);
+        GL20.glUniform2f(getUniform("resolution"), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth(), (float)new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight());
+        GL20.glUniform1f(getUniform("time"), time);
+        GL20.glUniform1f(getUniform("radius"), radius);
+        GL20.glUniform1f(getUniform("quality"), quality);
+
         time += timeMult * animationSpeed;
     }
 

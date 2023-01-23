@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketEntityAction
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
@@ -100,3 +101,13 @@ fun placeable(
 fun placeable(
     pos : BlockPos
 ) : Boolean = placeable(getBlockStateSafe(pos).block) && pos.y >= 0 && pos.y <= 255
+
+fun raytrace(
+    pos : BlockPos,
+    state : Boolean,
+    facing : EnumFacing
+) : EnumFacing = if(state) {
+    BlockUtil2.raytraceFacing(pos)
+} else {
+    facing
+}

@@ -1,12 +1,9 @@
 package com.kisman.cc.util.render.shader
 
-import com.kisman.cc.features.module.render.shader.FramebufferShader
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.enums.Shaders
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL20
 
 
 /**

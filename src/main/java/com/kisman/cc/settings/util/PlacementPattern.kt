@@ -82,11 +82,9 @@ class PlacementPattern(
         val oldSlot = mc.player.inventory.currentItem
 
         if(slot != -1) {
-            switch.valEnum.task.doTask(slot, false)
-
+            switch(slot, false)
             place(pos)
-
-            switch.valEnum.task.doTask(oldSlot, true)
+            switch(oldSlot, true)
         }
     }
 
@@ -97,11 +95,9 @@ class PlacementPattern(
         val oldSlot = mc.player.inventory.currentItem
 
         if(slot != -1) {
-            switch.valEnum.task.doTask(slot, false)
-
+            switch(slot, false)
             place(pos)
-
-            switch.valEnum.task.doTask(oldSlot, true)
+            switch(oldSlot, true)
         }
     }
 
@@ -109,5 +105,12 @@ class PlacementPattern(
         pos : BlockPos
     ) {
         BlockUtil2.placeBlock(pos, hand.valEnum.hand, packet.valBoolean, raytrace.valBoolean, rotate.valBoolean)
+    }
+
+    fun switch(
+        slot : Int,
+        silent : Boolean
+    ) {
+        switch.valEnum.task.doTask(slot, silent)
     }
 }

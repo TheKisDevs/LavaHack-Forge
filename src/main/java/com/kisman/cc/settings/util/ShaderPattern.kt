@@ -110,7 +110,11 @@ class ShaderPattern(
             framebufferShader.rainbowSpeed = rainbowSpeed.valFloat
             framebufferShader.rainbowStrength = rainbowStrength.valFloat
             framebufferShader.saturation = rainbowSaturation.valFloat
-        }/* else if (mode.valEnum === Shaders.Circle) {
+        } else if(mode.valEnum == Shaders.Kfc) {
+            (framebufferShader as KfcShader).radius = radius.valFloat
+            framebufferShader.quality = quality.valFloat
+        }
+    /* else if (mode.valEnum === Shaders.Circle) {
             CircleShader.color1 = color1.colour
             CircleShader.color2 = color2.colour
             CircleShader.filledColor = filledColor.colour

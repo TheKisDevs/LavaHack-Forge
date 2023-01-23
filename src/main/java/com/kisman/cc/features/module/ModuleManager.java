@@ -49,7 +49,7 @@ public class ModuleManager {
 		//add(new ChorusTP());
 		add(ClickCooldownReset.INSTANCE);
 //		add(new EventSystemTest());
-		add(new FallbackableFontTest());
+//		add(new FallbackableFontTest());
 		add(new FastFallTest());
 		add(new FrostWalk());
 		add(new FutureShader());
