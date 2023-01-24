@@ -68,27 +68,27 @@ fun toRadians(
 
 fun sin(
     radians : Float
-) : Float = processFastFloatFunction(sinMap, asinMap, { sin(it) }, radians, false)
+) : Float = processFastFloatFunction(sinMap, asinMap, { kotlin.math.sin(it) }, radians, false)
 
 fun cos(
     radians : Float
-) : Float = processFastFloatFunction(cosMap, acosMap, { cos(it) }, radians, false)
+) : Float = processFastFloatFunction(cosMap, acosMap, { kotlin.math.cos(it) }, radians, false)
 
 fun tan(
     radians : Float
-) : Float = processFastFloatFunction(tanMap, atanMap, { tan(it) }, radians, false)
+) : Float = processFastFloatFunction(tanMap, atanMap, { kotlin.math.tan(it) }, radians, false)
 
 fun asin(
     radians : Float
-) : Float = processFastFloatFunction(sinMap, asinMap, { asin(it) }, radians, true)
+) : Float = processFastFloatFunction(sinMap, asinMap, { kotlin.math.asin(it) }, radians, true)
 
 fun acos(
     radians : Float
-) : Float = processFastFloatFunction(cosMap, acosMap, { acos(it) }, radians, true)
+) : Float = processFastFloatFunction(cosMap, acosMap, { kotlin.math.acos(it) }, radians, true)
 
 fun atan(
     radians : Float
-) : Float = processFastFloatFunction(tanMap, atanMap, { atan(it) }, radians, true)
+) : Float = processFastFloatFunction(tanMap, atanMap, { kotlin.math.atan(it) }, radians, true)
 
 
 fun atan2(
@@ -97,5 +97,5 @@ fun atan2(
 ) : Float = if (atan2Map.containsKey(Pair(x, y))) {
     atan2Map[Pair(x, y)]!!
 } else {
-    atan2(x, y).also { atan2Map[Pair(x, y)] = it }
+    kotlin.math.atan2(x, y).also { atan2Map[Pair(x, y)] = it }
 }
