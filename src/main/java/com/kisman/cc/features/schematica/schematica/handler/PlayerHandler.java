@@ -13,18 +13,18 @@ public class PlayerHandler {
     private PlayerHandler() {}
 
     @SubscribeEvent
-    public void onPlayerLoggedIn(final PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP) {
             try {
                 PacketHandler.INSTANCE.sendTo(new MessageCapabilities(ConfigurationHandler.printerEnabled, ConfigurationHandler.saveEnabled, ConfigurationHandler.loadEnabled), (EntityPlayerMP) event.player);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 Reference.logger.error("Failed to send capabilities!", ex);
             }
         }
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.player instanceof EntityPlayerMP) {
             DownloadHandler.INSTANCE.transferMap.remove(event.player);
         }

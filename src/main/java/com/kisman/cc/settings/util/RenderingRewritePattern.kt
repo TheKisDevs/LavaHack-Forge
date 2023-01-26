@@ -220,20 +220,9 @@ open class RenderingRewritePattern(
         wireColor2 : Colour,
         mode : Rendering.Mode?
     ) {
-        //TODO: remove it and cleanup!!!
-        if(Config.instance.test2.valBoolean) {
-            Rendering.start1(depth.valBoolean)
-        } else {
-            Rendering.setup(depth.valBoolean)
-        }
-
+        Rendering.setup(depth.valBoolean)
         Rendering.draw0(modifyBB(aabb), lineWidth.valFloat, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, mode, depth.valBoolean)
-
-        if(Config.instance.test2.valBoolean) {
-            Rendering.end1(depth.valBoolean)
-        } else {
-            Rendering.release(depth.valBoolean)
-        }
+        Rendering.release(depth.valBoolean)
     }
 
     private fun draw0(

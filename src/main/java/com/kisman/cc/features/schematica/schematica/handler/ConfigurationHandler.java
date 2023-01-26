@@ -8,16 +8,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class ConfigurationHandler {
     public static final ConfigurationHandler INSTANCE = new ConfigurationHandler();
@@ -286,13 +280,6 @@ public class ConfigurationHandler {
     }
 
     private ConfigurationHandler() {}
-
-    @SubscribeEvent
-    public void onConfigurationChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equalsIgnoreCase(Reference.MODID)) {
-            loadConfiguration();
-        }
-    }
 
     public static boolean isExtraAirBlock(final Block block) {
         return extraAirBlockList.contains(block);

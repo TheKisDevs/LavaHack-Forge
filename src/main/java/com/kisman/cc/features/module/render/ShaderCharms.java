@@ -11,7 +11,6 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.collections.Pair;
 import com.kisman.cc.util.enums.Shaders;
@@ -19,12 +18,10 @@ import com.kisman.cc.util.interfaces.Drawable;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
-import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.shader.ShaderHelperKt;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.client.gui.GuiDownloadTerrain;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityEnderPearl;
@@ -38,7 +35,6 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -48,13 +44,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class ShaderCharms extends Module {
-    private final Setting testtest = register(new Setting("Test Test", this, false));
-    private final Setting testtest2 = register(new Setting("Test Test 2", this, false));
-    private final Setting testtest3 = register(new Setting("Test Test 3", this, false));
-    private final Setting testtest4 = register(new Setting("Test Test 4", this, false));
-    private final Setting testtest5 = register(new Setting("Test Test 5", this, false));
-    private final Setting testtest6 = register(new Setting("Test Test 6", this, false));
-    private final Setting range = register(new Setting("Range", this, 32, 8, 64, true));
     public final SettingEnum<Shaders> mode = register(new SettingEnum<>("Mode", this, Shaders.AQUA));
 
     private final MultiThreaddableModulePattern threads = threads();
@@ -100,6 +89,7 @@ public class ShaderCharms extends Module {
     private final Setting rainbowStrength = register(config.add(new Setting("Rainbow Strength", this, 0.3, 0, 1, false)));
     private final Setting rainbowSaturation = register(config.add(new Setting("Rainbow Saturation", this, 0.5, 0, 1, false)));
 
+/*
     private final Setting color1 = register(config.add(new Setting("Color 1", this, new Colour(255, 0, 0, 255))));
     private final Setting color2 = register(config.add(new Setting("Color 2", this, new Colour(255, 0, 0, 255))));
     private final Setting filledColor = register(config.add(new Setting("Filled Color", this, new Colour(255, 0, 0, 255))));
@@ -119,6 +109,7 @@ public class ShaderCharms extends Module {
     private final Setting speed = register(config.add(new Setting("Speed", this, 20.0, 0.0, 50.0, false)));
     private final Setting step = register(config.add(new Setting("Step", this, 10.0, 1.0, 30.0, true)));
     private final Setting ratio = register(config.add(new Setting("Ratio", this, 1.0, 0.0, 1.0, false)));
+*/
 
 
 //    private final Setting useImage = register(config.add(new Setting("Use Image", this, false)));
@@ -151,11 +142,6 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent event) {
-        if(testtest6.getValBoolean()) {
-            GlStateManager.disableDepth();
-            GlStateManager.depthMask(false);
-        }
-
         if(items.getValBoolean() && itemsFix.getValBoolean() && !criticalSection) event.setCanceled(true);
     }
 
@@ -215,24 +201,7 @@ public class ShaderCharms extends Module {
             boolean flag3 = items.getValBoolean() && mc.gameSettings.thirdPersonView == 0;
 
             if(flag || flag2 || flag3) {
-                if(testtest4.getValBoolean()) {
-                    Rendering.setup();
-                    Rendering.release();
-                }
-
                 if(flag && flag5) for(Drawable module : modulesToRender.keySet()) if(modulesToRender.get(module)) module.draw();
-
-
-                if(testtest3.getValBoolean()) {
-                    GlStateManager.disableLighting();
-                    GlStateManager.depthMask(false);
-                    GL11.glDisable(2929);
-                }
-
-                if(testtest5.getValBoolean()) {
-                    GlStateManager.enableDepth();
-                    GlStateManager.depthMask(false);
-                }
 
                 Function0<Unit> uniforms = () -> {
                     FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
@@ -342,10 +311,6 @@ public class ShaderCharms extends Module {
 
                 ShaderHelperKt.endShader(mode.getValEnum());
 
-            }
-
-            if(!flag3 && testtest2.getValBoolean()) {
-                mc.entityRenderer.renderHand(event.getPartialTicks(), 2);
             }
         } catch (Exception ignored) {
             if(Config.instance.antiOpenGLCrash.getValBoolean()) {

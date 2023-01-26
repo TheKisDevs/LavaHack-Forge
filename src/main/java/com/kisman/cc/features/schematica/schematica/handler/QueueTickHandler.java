@@ -21,24 +21,24 @@ public class QueueTickHandler {
     private QueueTickHandler() {}
 
     @SubscribeEvent
-    public void onClientTick(final TickEvent.ClientTickEvent event) {
+    public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             return;
         }
 
         // TODO: find a better way... maybe?
         try {
-            final EntityPlayerSP player = Minecraft.getMinecraft().player;
+            EntityPlayerSP player = Minecraft.getMinecraft().player;
             if (player != null && player.connection != null && !player.connection.getNetworkManager().isLocalChannel()) {
                 processQueue();
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             Reference.logger.error("Something went wrong...", e);
         }
     }
 
     @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent event) {
+    public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             return;
         }
@@ -47,18 +47,18 @@ public class QueueTickHandler {
     }
 
     private void processQueue() {
-        if (this.queue.size() == 0) {
+        if (queue.size() == 0) {
             return;
         }
 
-        final SchematicContainer container = this.queue.poll();
+        SchematicContainer container = this.queue.poll();
         if (container == null) {
             return;
         }
 
         if (container.hasNext()) {
             if (container.isFirst()) {
-                final TextComponentTranslation component = new TextComponentTranslation(Names.Command.Save.Message.SAVE_STARTED, container.chunkCount, container.file.getName());
+                TextComponentTranslation component = new TextComponentTranslation(Names.Command.Save.Message.SAVE_STARTED, container.chunkCount, container.file.getName());
                 container.player.sendMessage(component);
             }
 
@@ -66,13 +66,13 @@ public class QueueTickHandler {
         }
 
         if (container.hasNext()) {
-            this.queue.offer(container);
+            queue.offer(container);
         } else {
             SchematicFormat.writeToFileAndNotify(container.file, container.format, container.schematic, container.player);
         }
     }
 
-    public void queueSchematic(final SchematicContainer container) {
-        this.queue.offer(container);
+    public void queueSchematic(SchematicContainer container) {
+        queue.offer(container);
     }
 }

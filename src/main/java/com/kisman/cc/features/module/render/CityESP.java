@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+@WorkInProgress
 public class CityESP extends Module {
     private final Setting range = register(new Setting("Range", this, 20, 1, 30, true));
     private final Setting down = register(new Setting("Down", this, 1, 0, 3, true));

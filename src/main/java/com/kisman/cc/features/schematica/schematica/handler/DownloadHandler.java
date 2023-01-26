@@ -25,7 +25,7 @@ public class DownloadHandler {
     private DownloadHandler() {}
 
     @SubscribeEvent
-    public void onServerTick(final TickEvent.ServerTickEvent event) {
+    public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             return;
         }
@@ -34,12 +34,12 @@ public class DownloadHandler {
     }
 
     private void processQueue() {
-        if (this.transferMap.size() == 0) {
+        if (transferMap.size() == 0) {
             return;
         }
 
-        final EntityPlayerMP player = this.transferMap.keySet().iterator().next();
-        final SchematicTransfer transfer = this.transferMap.remove(player);
+        EntityPlayerMP player = transferMap.keySet().iterator().next();
+        SchematicTransfer transfer = transferMap.remove(player);
 
         if (transfer == null) {
             return;
@@ -66,26 +66,26 @@ public class DownloadHandler {
             return;
         }
 
-        this.transferMap.put(player, transfer);
+        transferMap.put(player, transfer);
     }
 
-    private void sendBegin(final EntityPlayerMP player, final SchematicTransfer transfer) {
+    private void sendBegin(EntityPlayerMP player, SchematicTransfer transfer) {
         transfer.setState(SchematicTransfer.State.BEGIN);
 
-        final MessageDownloadBegin message = new MessageDownloadBegin(transfer.schematic);
+        MessageDownloadBegin message = new MessageDownloadBegin(transfer.schematic);
         PacketHandler.INSTANCE.sendTo(message, player);
     }
 
-    private void sendChunk(final EntityPlayerMP player, final SchematicTransfer transfer) {
+    private void sendChunk(EntityPlayerMP player, SchematicTransfer transfer) {
         transfer.setState(SchematicTransfer.State.CHUNK);
 
         Reference.logger.trace("Sending chunk {},{},{}", transfer.baseX, transfer.baseY, transfer.baseZ);
-        final MessageDownloadChunk message = new MessageDownloadChunk(transfer.schematic, transfer.baseX, transfer.baseY, transfer.baseZ);
+        MessageDownloadChunk message = new MessageDownloadChunk(transfer.schematic, transfer.baseX, transfer.baseY, transfer.baseZ);
         PacketHandler.INSTANCE.sendTo(message, player);
     }
 
-    private void sendEnd(final EntityPlayerMP player, final SchematicTransfer transfer) {
-        final MessageDownloadEnd message = new MessageDownloadEnd(transfer.name);
+    private void sendEnd(EntityPlayerMP player, SchematicTransfer transfer) {
+        MessageDownloadEnd message = new MessageDownloadEnd(transfer.name);
         PacketHandler.INSTANCE.sendTo(message, player);
     }
 }

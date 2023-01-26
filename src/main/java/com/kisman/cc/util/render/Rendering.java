@@ -1,6 +1,5 @@
 package com.kisman.cc.util.render;
 
-import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.render.cubic.BoundingBox;
@@ -139,10 +138,7 @@ public class Rendering {
             for(RenderObject object : objects) {
                 if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, values);
                 else {
-                    if(Config.instance.test.getValBoolean()) start(depth);
-//                    glPushAttrib(GL_ALL_ATTRIB_BITS);
-//                    glPushMatrix();
-//                    glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+                    start(depth);
 
                     if(gradient) prepare();
 
@@ -150,9 +146,8 @@ public class Rendering {
                     else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
 
                     if(gradient) restore();
-//                    GL11.glPopMatrix();
-//                    GL11.glPopAttrib();
-                    if(Config.instance.test.getValBoolean()) end(depth);
+
+                    end(depth);
                 }
             }
         }

@@ -79,13 +79,7 @@ class PlacementPattern(
             InventoryUtil.findBlockExtended(block, 0, 9)
         }
 
-        val oldSlot = mc.player.inventory.currentItem
-
-        if(slot != -1) {
-            switch(slot, false)
-            place(pos)
-            switch(oldSlot, true)
-        }
+        placeBlockSwitch(pos, slot)
     }
 
     fun placeBlockSwitch(

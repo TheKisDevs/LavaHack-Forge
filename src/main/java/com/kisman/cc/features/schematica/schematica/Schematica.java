@@ -9,7 +9,6 @@ import com.kisman.cc.features.schematica.schematica.proxy.ClientProxy;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +38,6 @@ public class Schematica {
             }
         }
 
-        Reference.logger = LogManager.getLogger("LavaHack Schematica");
         ConfigurationHandler.init(CONFIG_FILE);
 
         proxy.preInit();
@@ -61,7 +59,7 @@ public class Schematica {
         StringWriter sw = new StringWriter();
 
         try {
-            InputStream is = getClass().getResourceAsStream("assets/schematica/lang/eu_us.lang");
+            InputStream is = getClass().getResourceAsStream("/assets/schematica/lang/eu_us.lang");
             if(is == null) throw new Exception();
             IOUtils.copy(is, sw, Charset.defaultCharset());
         } catch (Exception e) {

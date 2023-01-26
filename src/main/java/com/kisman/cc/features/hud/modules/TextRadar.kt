@@ -1,6 +1,5 @@
 package com.kisman.cc.features.hud.modules
 
-import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.features.hud.ShaderableHudModule
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager
 import com.kisman.cc.settings.Setting
@@ -10,8 +9,6 @@ import com.kisman.cc.util.math.max
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import net.minecraft.util.text.TextFormatting
-import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
  * @author _kisman_
@@ -60,15 +57,13 @@ class TextRadar : ShaderableHudModule(
                 }
             }
 
-            mc.addScheduledTask { toRender = list }
+            mc.addScheduledTask { toRender = list ; println(list.size) }
         })
     }
 
     override fun handleRender() {
         setW(0.0)
         setH(0.0)
-
-        println(toRender.clear())
 
         for((index, line) in toRender.withIndex()) {
             addShader(Runnable {

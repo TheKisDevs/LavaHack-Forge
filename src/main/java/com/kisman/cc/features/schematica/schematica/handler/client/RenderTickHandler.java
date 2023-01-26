@@ -17,31 +17,31 @@ public class RenderTickHandler {
     private RenderTickHandler() {}
 
     @SubscribeEvent
-    public void onRenderTick(final TickEvent.RenderTickEvent event) {
-        final SchematicWorld schematic = ClientProxy.schematic;
+    public void onRenderTick(TickEvent.RenderTickEvent event) {
+        SchematicWorld schematic = ClientProxy.schematic;
 
         ClientProxy.objectMouseOver = schematic != null ? rayTrace(schematic, 1.0f) : null;
     }
 
-    private RayTraceResult rayTrace(final SchematicWorld schematic, final float partialTicks) {
-        final Entity renderViewEntity = this.minecraft.getRenderViewEntity();
+    private RayTraceResult rayTrace(SchematicWorld schematic, float partialTicks) {
+        Entity renderViewEntity = minecraft.getRenderViewEntity();
         if (renderViewEntity == null) {
             return null;
         }
 
-        final double blockReachDistance = this.minecraft.playerController.getBlockReachDistance();
+        double blockReachDistance = this.minecraft.playerController.getBlockReachDistance();
 
-        final double posX = renderViewEntity.posX;
-        final double posY = renderViewEntity.posY;
-        final double posZ = renderViewEntity.posZ;
+        double posX = renderViewEntity.posX;
+        double posY = renderViewEntity.posY;
+        double posZ = renderViewEntity.posZ;
 
         renderViewEntity.posX -= schematic.position.x;
         renderViewEntity.posY -= schematic.position.y;
         renderViewEntity.posZ -= schematic.position.z;
 
-        final Vec3d vecPosition = renderViewEntity.getPositionEyes(partialTicks);
-        final Vec3d vecLook = renderViewEntity.getLook(partialTicks);
-        final Vec3d vecExtendedLook = vecPosition.addVector(vecLook.x * blockReachDistance, vecLook.y * blockReachDistance, vecLook.z * blockReachDistance);
+        Vec3d vecPosition = renderViewEntity.getPositionEyes(partialTicks);
+        Vec3d vecLook = renderViewEntity.getLook(partialTicks);
+        Vec3d vecExtendedLook = vecPosition.addVector(vecLook.x * blockReachDistance, vecLook.y * blockReachDistance, vecLook.z * blockReachDistance);
 
         renderViewEntity.posX = posX;
         renderViewEntity.posY = posY;

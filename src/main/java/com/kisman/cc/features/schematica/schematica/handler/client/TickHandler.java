@@ -3,7 +3,6 @@ package com.kisman.cc.features.schematica.schematica.handler.client;
 import com.kisman.cc.features.schematica.schematica.Schematica;
 import com.kisman.cc.features.schematica.schematica.client.printer.SchematicPrinter;
 import com.kisman.cc.features.schematica.schematica.client.world.SchematicWorld;
-import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
 import com.kisman.cc.features.schematica.schematica.proxy.ClientProxy;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import net.minecraft.client.Minecraft;
@@ -18,17 +17,7 @@ public class TickHandler {
 
     private final Minecraft minecraft = Minecraft.getMinecraft();
 
-    private int ticks = -1;
-
     private TickHandler() {}
-
-    @SubscribeEvent
-    public void onClientConnect(final FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        /* TODO: is this still needed?
-        Reference.logger.info("Scheduling client settings reset.");
-        ClientProxy.isPendingReset = true;
-        */
-    }
 
     @SubscribeEvent
     public void onClientDisconnect(final FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
@@ -37,25 +26,23 @@ public class TickHandler {
     }
 
     @SubscribeEvent
-    public void onClientTick(final TickEvent.ClientTickEvent event) {
+    public void onClientTick(TickEvent.ClientTickEvent event) {
         if (this.minecraft.isGamePaused() || event.phase != TickEvent.Phase.END) {
             return;
         }
 
-        this.minecraft.mcProfiler.startSection("schematica");
-        final WorldClient world = this.minecraft.world;
-        final EntityPlayerSP player = this.minecraft.player;
-        final SchematicWorld schematic = ClientProxy.schematic;
+        minecraft.mcProfiler.startSection("schematica");
+        WorldClient world = this.minecraft.world;
+        EntityPlayerSP player = this.minecraft.player;
+        SchematicWorld schematic = ClientProxy.schematic;
         if (world != null && player != null && schematic != null && schematic.isRendering) {
-            this.minecraft.mcProfiler.startSection("printer");
-            final SchematicPrinter printer = SchematicPrinter.INSTANCE;
+            minecraft.mcProfiler.startSection("printer");
+            SchematicPrinter printer = SchematicPrinter.INSTANCE;
             if (printer.isEnabled() && printer.isPrinting()) {
-                this.ticks = ConfigurationHandler.placeDelay;
-
                 printer.print(world, player);
             }
 
-            this.minecraft.mcProfiler.endSection();
+            minecraft.mcProfiler.endSection();
         }
 
         if (ClientProxy.isPendingReset) {
@@ -64,6 +51,6 @@ public class TickHandler {
             Reference.logger.info("Client settings have been reset.");
         }
 
-        this.minecraft.mcProfiler.endSection();
+        minecraft.mcProfiler.endSection();
     }
 }

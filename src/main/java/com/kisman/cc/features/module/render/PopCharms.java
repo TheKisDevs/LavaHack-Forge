@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+@WorkInProgress
 public class PopCharms extends Module {
     public Setting selfPop = new Setting("SelfPop", this, false);
     private Setting angle = new Setting("Angle", this, false);

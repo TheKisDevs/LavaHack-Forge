@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.util.interfaces.AdvancedRunnable;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.AbstractObject;
@@ -36,7 +37,17 @@ public class Render2DUtil extends GuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.disableBlend();
-        CustomFontUtil.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - CustomFontUtil.getStringWidth(s)), (float) (yPosition + 6 + 3), new Color(255, 255, 255, 255).hashCode());
+        CustomFontUtil.drawStringWithShadow(s, (float) (xPosition + 19 - 2 - CustomFontUtil.getStringWidth(s)), (float) (yPosition + 6 + 3), -1);
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
+    }
+
+    public static void renderItemOverlayIntoGUI(int xPosition, int yPosition, AdvancedRunnable renderer, String string) {
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.disableBlend();
+        renderer.run(xPosition, yPosition, string);
         GlStateManager.enableLighting();
         GlStateManager.enableDepth();
         GlStateManager.enableBlend();

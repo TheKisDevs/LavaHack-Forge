@@ -61,8 +61,10 @@ public class Frame {
         int count1 = 0;
 
         for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
-            components.add(new Button(mod, x, y, offsetY, count1++));
-            offsetY += HalqGui.height;
+            if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
+                components.add(new Button(mod, x, y, offsetY, count1++));
+                offsetY += HalqGui.height;
+            }
         }
     }
 

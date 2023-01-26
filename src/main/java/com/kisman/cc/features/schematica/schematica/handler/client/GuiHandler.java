@@ -9,7 +9,7 @@ public class GuiHandler {
     public static final GuiHandler INSTANCE = new GuiHandler();
 
     @SubscribeEvent
-    public void onGuiOpen(final GuiOpenEvent event) {
+    public void onGuiOpen(GuiOpenEvent event) {
         if (SchematicPrinter.INSTANCE.isPrinting()) {
             if (event.getGui() instanceof GuiEditSign) {
                 event.setGui(null);

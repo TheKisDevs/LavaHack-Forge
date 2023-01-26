@@ -16,8 +16,6 @@ public class Config extends Module {
     public static Config instance;
 
     public final Setting rotationTakeOff = register(new Setting("Rotation Take Off", this, 10.0, 0.0, 50.0, NumberType.TIME));
-    public final Setting test = register(new Setting("Test", this, true));
-    public final Setting test2 = register(new Setting("Test 2", this, false));
 
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup gui = register(new SettingGroup(new Setting("Gui", this)));
@@ -89,6 +87,8 @@ public class Config extends Module {
 
     public Config() {
         super("Config", Category.CLIENT);
+        super.setToggled(true);
+        super.toggleable = false;
 
         RotationSystem.takeOffDelaySetting = rotationTakeOff;
     }

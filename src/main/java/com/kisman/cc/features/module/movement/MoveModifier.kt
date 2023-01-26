@@ -45,6 +45,7 @@ class MoveModifier : Module(
     val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("RStep")))
     private val reverseStepVal = register(reverseStepGroup.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible(reverseStep).setTitle("Height")))
     private val reverseAntiGlitch = register(reverseStepGroup.add(Setting("Reverse Anti Glitch", this, true).setVisible(reverseStep).setTitle("AntiGlitch")))
+    private val reverseStepLiquids = register(reverseStepGroup.add(Setting("Reverse Step Liquids", this, true).setTitle("Liquids")))
     private val reverseStepLagTimeGroup = register(reverseStepGroup.add(SettingGroup(Setting("Lag Time", this))))
     private val reverseStepLagTime = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time", this, false).setTitle("State")))
     private val reverseStepLagTimeVal = register(reverseStepLagTimeGroup.add(Setting("Reverse Step Lag Time Value", this, 500.0, 0.0, 2000.0, NumberType.TIME).setTitle("Value")))
@@ -328,7 +329,7 @@ class MoveModifier : Module(
     }
 
     private fun doReverseStep() {
-        if (reverseStep.valBoolean && mc.player.onGround && !mc.player.isInWater && !mc.player.isOnLadder) {
+        if (reverseStep.valBoolean && mc.player.onGround && (reverseStepLiquids.valBoolean || (!mc.player.isInWater && !mc.player.isInLava)) && !mc.player.isOnLadder) {
             if (lagTimer.passedMillis(if (reverseStepLagTime.valBoolean) reverseStepLagTimeVal.valLong else 500L)) {
                 lagTimer.reset()
                 if (reverseStepLagTime.valBoolean) return
