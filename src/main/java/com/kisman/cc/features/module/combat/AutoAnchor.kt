@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.features.module.combat.autoanchor.PlaceInfo
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem
 import com.kisman.cc.features.subsystem.subsystems.Target
@@ -19,10 +20,8 @@ import com.kisman.cc.util.enums.AutoAnchorGlowStonePlacement
 import com.kisman.cc.util.enums.AutoAnchorPlacement
 //import com.kisman.cc.util.enums.Safety
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
-import com.kisman.cc.util.world.CrystalUtils
+import com.kisman.cc.util.world.*
 import com.kisman.cc.util.world.block.RESPAWN_ANCHOR
-import com.kisman.cc.util.world.entityPosition
-import com.kisman.cc.util.world.placeable
 import net.minecraft.block.BlockDynamicLiquid
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
@@ -37,17 +36,27 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.function.Supplier
 
 /**
+ * Shader system flags:
+ *
+ * 1 - anchor
+ *
+ * 2 - glowstone
+ *
+ * 3 - helping blocks
+ *
  * @author _kisman_
  * @since 13:23 of 15.01.2023
  */
 @Suppress("UNUSED_PARAMETER")
 @Targetable
-class AutoAnchor : Module(
+class AutoAnchor : ShaderableModule(
     "AutoAnchor",
     "Killing enemies with anchors. Only for 1.16+ servers",
-    Category.COMBAT
+    Category.COMBAT,
+    true
 ) {
     private val targetRange = register(Setting("Target Range", this, 10.0, 1.0, 50.0, true))
     private val delay = register(Setting("Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME))
@@ -68,7 +77,7 @@ class AutoAnchor : Module(
     private val placeRange = register(Setting("Place Range", this, 5.0, 1.0, 6.0, false))
     private val minDamage = register(Setting("Min Damage", this, 36.0, 0.0, 36.0, true))
     private val maxDamage = register(Setting("Max Damage", this, 8.0, 0.0, 36.0, true))
-    private val raytraceState = register(Setting("RayTrace", this, false))
+//    private val raytraceState = register(Setting("RayTrace", this, false))
     private val terrain = register(Setting("Terrain", this, true))
     private val entityCheck = register(Setting("Entity Check", this, true))
     private val interpolationTicks = register(Setting("Interpolation Ticks", this, 0.0, 0.0, 10.0, true))
@@ -106,6 +115,12 @@ class AutoAnchor : Module(
 
     init {
         super.setDisplayInfo { "[${if(target == null) "no target no fun" else target!!.name}]" }
+
+        addFlags(
+            Supplier { anchorPattern.canRender() },
+            Supplier { glowstonePattern.canRender() },
+            Supplier { helpingBlocksPattern.canRender() }
+        )
     }
 
     override fun onEnable() {
@@ -331,7 +346,7 @@ class AutoAnchor : Module(
                                             center.y + 1.0,
                                             center.z + 1.0
                                         )
-                                    ) { it !is EntityEnderCrystal }.size == 0
+                                    ).size == 0
                     )
                 ) {
                     return true
@@ -346,16 +361,16 @@ class AutoAnchor : Module(
         var anchorPos : BlockPos? = null
         var glowstonePos : BlockPos? = null
 
-        for(center in CrystalUtils.getSphere(placeRange.valFloat, true, false)) {
+        for(center in sphere(placeRange.valFloat)) {
             val offset = offset(center)
 
             if(placeCheck(center) && placeable(center) && offset != null) {
                 val pos = center.offset(offset)
 
-                val selfDamage = CrystalUtils.calculateDamage(mc.world, center.x + 0.5, center.y + 0.5, center.z + 0.5, mc.player, 0, terrain.valBoolean)
+                val selfDamage = damageByAnchor(terrain.valBoolean, center)
 
                 if(selfDamage <= maxDamage.valInt && selfDamage <= minSelfDamage) {
-                    val targetDamage = CrystalUtils.calculateDamage(mc.world, center.x + 0.5, center.y + 0.5, center.z + 0.5, target!!, interpolationTicks.valInt, terrain.valBoolean)
+                    val targetDamage = damageByAnchor(target!!, terrain.valBoolean, center, interpolationTicks.valInt)
 
                     if(targetDamage > minDamage.valInt && targetDamage > maxTargetDamage) {
                         minSelfDamage = selfDamage
@@ -388,14 +403,27 @@ class AutoAnchor : Module(
     @SubscribeEvent fun onRenderWorld(
         event : RenderWorldLastEvent
     ) {
-        anchorRenderer.handleRenderWorld(anchorPattern, renderAnchorPos, null)
-        glowstoneRenderer.handleRenderWorld(glowstonePattern, renderGlowStonePos, null)
+        handleDraw()
+    }
 
-        for(entry in renderHelpingPosses.entries) {
-            val pos = entry.key
-            val renderer = helpingPosses[entry.value]
+    override fun draw0(
+        flags : Array<Boolean>
+    ) {
+        if(flags[0]) {
+            anchorRenderer.handleRenderWorld(anchorPattern, renderAnchorPos, null)
+        }
 
-            renderer!!.handleRenderWorld(helpingBlocksPattern, pos, null)
+        if(flags[1]) {
+            glowstoneRenderer.handleRenderWorld(glowstonePattern, renderGlowStonePos, null)
+        }
+
+        if(flags[2]) {
+            for(entry in renderHelpingPosses.entries) {
+                val pos = entry.key
+                val renderer = helpingPosses[entry.value]
+
+                renderer!!.handleRenderWorld(helpingBlocksPattern, pos, null)
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.kisman.cc.util.enums
 
-import com.kisman.cc.util.interfaces.Validable
+import com.kisman.cc.util.Colour
+import com.kisman.cc.util.client.interfaces.Validable
 import net.minecraft.tileentity.*
 
 /**
@@ -8,16 +9,17 @@ import net.minecraft.tileentity.*
  * @since 23:41 of 24.12.2022
  */
 enum class StorageESPTileEntities(
-    clazz : Class<out TileEntity>
+    clazz : Class<out TileEntity>,
+    val color : Colour
 ) {
-    Chest(TileEntityChest::class.java),
-    EnderChest(TileEntityEnderChest::class.java),
-    Furnace(TileEntityFurnace::class.java),
-    FlowerPot(TileEntityFlowerPot::class.java),
-    Dispenser(TileEntityDispenser::class.java),
-    Dropper(TileEntityDropper::class.java),
-    Hopper(TileEntityHopper::class.java),
-    Shulker(TileEntityShulkerBox::class.java)
+    Chest(TileEntityChest::class.java, Colour(0.94f, 0.6f, 0.11f)),
+    EnderChest(TileEntityEnderChest::class.java, Colour(0.53f, 0.11f, 0.94f)),
+    Furnace(TileEntityFurnace::class.java, Colour(0.34f, 0.32f, 0.34f)),
+    FlowerPot(TileEntityFlowerPot::class.java, Colour(0.27f, 0.18f, 0f)),
+    Dispenser(TileEntityDispenser::class.java, Colour(0.34f, 0.32f, 0.34f)),
+    Dropper(TileEntityDropper::class.java, Colour(0.34f, 0.32f, 0.34f)),
+    Hopper(TileEntityHopper::class.java, Colour(0.53f, 0.11f, 0.34f)),
+    Shulker(TileEntityShulkerBox::class.java, Colour(0.8f, 0.08f, 0.93f))
 
     ;
 

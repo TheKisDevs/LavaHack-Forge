@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.types.SettingArray
-import com.kisman.cc.util.collections.LimitedSortedMap
+import com.kisman.cc.util.client.collections.LimitedSortedMap
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.minecraft.*
 import net.minecraft.util.text.TextFormatting

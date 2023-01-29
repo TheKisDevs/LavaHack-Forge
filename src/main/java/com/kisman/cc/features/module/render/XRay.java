@@ -1,31 +1,32 @@
 package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ShaderableModule;
 import com.kisman.cc.features.module.render.xray.BlockImplementation;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
+import com.kisman.cc.util.client.interfaces.IBlockImplementation;
 import com.kisman.cc.util.enums.XRayBlocks;
-import com.kisman.cc.util.interfaces.IBlockImplementation;
 import com.kisman.cc.util.world.CrystalUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class XRay extends Module {
+public class XRay extends ShaderableModule {
     public Setting range = register(new Setting("Range", this, 50, 0, 50, false));
 
-    private final ArrayList<IBlockImplementation> implementations = new ArrayList<>(Arrays.asList(
-            new BlockImplementation(XRayBlocks.Coal, this),
-            new BlockImplementation(XRayBlocks.Iron, this),
-            new BlockImplementation(XRayBlocks.Gold, this),
-            new BlockImplementation(XRayBlocks.Lapis, this),
-            new BlockImplementation(XRayBlocks.Redstone, this),
-            new BlockImplementation(XRayBlocks.Diamond, this),
-            new BlockImplementation(XRayBlocks.Emerald, this)
+    private final ArrayList<BlockImplementation> implementations = new ArrayList<>(Arrays.asList(
+            new BlockImplementation(XRayBlocks.Coal, this, 0),
+            new BlockImplementation(XRayBlocks.Iron, this, 1),
+            new BlockImplementation(XRayBlocks.Gold, this, 2),
+            new BlockImplementation(XRayBlocks.Lapis, this, 3),
+            new BlockImplementation(XRayBlocks.Redstone, this, 4),
+            new BlockImplementation(XRayBlocks.Diamond, this, 5),
+            new BlockImplementation(XRayBlocks.Emerald, this, 6)
     ));
 
     private ArrayList<BlockPos> blocks = new ArrayList<>();
@@ -33,7 +34,7 @@ public class XRay extends Module {
     private final MultiThreaddableModulePattern threads = threads();
 
     public XRay() {
-        super("XRay", "Shows ores", Category.RENDER);
+        super("XRay", "Shows ores", Category.RENDER, true);
     }
 
     @Override
@@ -53,10 +54,11 @@ public class XRay extends Module {
             mc.addScheduledTask(() -> blocks = list);
         });
 
-        for(BlockPos pos : blocks) {
-            for(IBlockImplementation impl : implementations) {
-                impl.process(pos);
-            }
-        }
+        handleDraw();
+    }
+
+    @Override
+    public void draw0(Boolean@NotNull[] flags) {
+        for(BlockPos pos : blocks) for(BlockImplementation impl : implementations) if(flags[impl.getFlag()]) impl.process(pos);
     }
 }

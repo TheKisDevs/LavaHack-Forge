@@ -1,4 +1,4 @@
-package com.kisman.cc.util.providers
+package com.kisman.cc.util.client.providers
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventDamageBlock
@@ -105,7 +105,11 @@ object PacketMineProvider : Listenable {
         } catch(_ : Exception) {}
     })
 
-    private fun blockProgressCheck() : Boolean = getBlockProgress(position!!, mc.player.inventory.getStackInSlot(InventoryUtil.findBestToolSlot(position)), start) <= 1 - speed
+    private fun blockProgressCheck() : Boolean = getBlockProgress(
+        position!!, mc.player.inventory.getStackInSlot(InventoryUtil.findBestToolSlot(
+            position
+        )), start
+    ) <= 1 - speed
 
     private val damageBlock = Listener<EventDamageBlock>(EventHook {
         if(handleBlockClick(it.blockPos, it.faceDirection)) {

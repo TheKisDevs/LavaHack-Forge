@@ -61,7 +61,7 @@ class TextRadar : ShaderableHudModule(
         })
     }
 
-    override fun handleRender() {
+    override fun draw() {
         setW(0.0)
         setH(0.0)
 

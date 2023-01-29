@@ -9,6 +9,8 @@ precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform float radius;
+uniform float quality;
 
 float random(vec2 ab) {
     float f = (cos(dot(ab ,vec2(21.9898,78.233))) * 43758.5453);
@@ -33,8 +35,6 @@ float noise(in vec2 xy) {
 }
 
 float glowShader() {
-    float radius = 2.0;
-    float quality = 1.0;
     float divider = 158.0;
     float maxSample = 10.0;
     vec2 texelSize = vec2(1.0 / resolution.x * (radius * quality), 1.0 / resolution.y * (radius * quality));

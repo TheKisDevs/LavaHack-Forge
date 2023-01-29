@@ -64,7 +64,7 @@ public class ArrayListModule extends ShaderableHudModule {
         super("ArrayList", "Displays your enables modules!", false, true, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         ArrayList<ArrayListElement> elements = new ArrayList<>();
         ScaledResolution sr = new ScaledResolution(mc);
 

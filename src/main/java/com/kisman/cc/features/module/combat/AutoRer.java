@@ -3,10 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.combat.autorer.*;
 import com.kisman.cc.features.module.combat.autorer.render.AutoRerRenderer;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
@@ -21,7 +18,7 @@ import com.kisman.cc.settings.util.DamageSyncPattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
-import com.kisman.cc.util.collections.Bind;
+import com.kisman.cc.util.client.collections.Bind;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic;
@@ -34,6 +31,7 @@ import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -67,7 +65,7 @@ import java.util.function.Supplier;
 @PingBypassModule
 @Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
-public class AutoRer extends Module {
+public class AutoRer extends ShaderableModule {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
     private final SettingGroup calc = register(new SettingGroup(new Setting("Calc", this)));
@@ -134,6 +132,7 @@ public class AutoRer extends Module {
     private final Setting extrapolationOutOfBlocks = register(extrapolationGroup.add(new Setting("Extrapolation Out Of Blocks", this, false).setTitle("Out Of Blocks")));
     private final Setting extrapolationShrink = register(extrapolationGroup.add(new Setting("Extrapolation Shrink", this, false).setTitle("Shrink")));
     private final Setting extrapolationRender = register(extrapolationGroup.add(new Setting("Extrapolation Render", this, false).setTitle("Render")));
+    private final Setting interpolationTicks = register(helpers.add(new Setting("Interpolation Ticks", this, 0, 0, 10, true).setTitle("Interpolation")));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false)));
@@ -241,8 +240,10 @@ public class AutoRer extends Module {
 
     private final AutoRerRenderer renderer = new AutoRerRenderer();
 
+    private final AutoRerTargetFinder targets = new AutoRerTargetFinder(targetLogic.getSupplierEnum0(), placeRange.getSupplierFloat(), this, targetRange.getSupplierDouble(), () -> 50L, () -> multiThreaddedTargetGetter.getValBoolean() || multiThreaddedSphereGetter.getValBoolean());
+
     public AutoRer() {
-        super("AutoRer", Category.COMBAT);
+        super("AutoRer", "", Category.COMBAT, false);
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
     }
 
@@ -286,9 +287,6 @@ public class AutoRer extends Module {
     }
 
     private void handleLogic() {
-        AutoRerUtil.Companion.getTargetFinder().update();
-        currentTarget = AutoRerUtil.Companion.getTargetFinder().getTarget();
-
         if (extrapolationState.getValBoolean()) extrapolationHelper.update();
 
         if(logic.checkValString("PlaceBreak")) {
@@ -300,9 +298,18 @@ public class AutoRer extends Module {
         }
     }
 
+    private void handleLogicMultiplication() {
+        if(multiplication.getValInt() == 1) {
+            handleLogic();
+        } else {
+            for(int i = 0; i <= multiplication.getValInt(); i++) {
+                handleLogic();
+            }
+        }
+    }
+
     public void onEnable() {
         super.onEnable();
-        AutoRerUtil.Companion.onEnable();
         reset();
 
         if(!threadMode.checkValString("None")) processMultiThreading();
@@ -324,6 +331,7 @@ public class AutoRer extends Module {
         clearTimer.reset();
         predictTimer.reset();
         manualTimer.reset();
+        targets.reset();
         currentTarget = null;
         rotating = false;
         renderPos = null;
@@ -386,8 +394,10 @@ public class AutoRer extends Module {
     public void update() {
         if(mc.player == null || mc.world == null || mc.isGamePaused) return;
 
+        currentTarget = targets.updateAndGet();
+
         if(calcStage.getValEnum() == EventMode.Tick) handleCalc();
-        if(logicStage.getValEnum() == EventMode.Tick) handleLogic();
+        if(logicStage.getValEnum() == EventMode.Tick) handleLogicMultiplication();
 
         if(!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
             if (this.executor != null) this.executor.shutdown();
@@ -499,16 +509,21 @@ public class AutoRer extends Module {
     @SubscribeEvent
     public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
         if(calcStage.getValEnum() == EventMode.Update) handleCalc();
-        if(logicStage.getValEnum() == EventMode.Update) handleLogic();
+        if(logicStage.getValEnum() == EventMode.Update) handleLogicMultiplication();
     }
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(calcStage.getValEnum() == EventMode.Render3D) handleCalc();
-        if(logicStage.getValEnum() == EventMode.Render3D) handleLogic();
+        if(logicStage.getValEnum() == EventMode.Render3D) handleLogicMultiplication();
 
         if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) renderer_.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
 
+        handleDraw(renderer_);
+    }
+
+    @Override
+    public void draw() {
         if(placePos.getBlockPos() != null) renderer.onRenderWorld(
                 renderer_.movingLength.getValFloat(),
                 renderer_.fadeLength.getValFloat(),
@@ -554,7 +569,7 @@ public class AutoRer extends Module {
                 z,
                 entity,
                 bb,
-                0,
+                entity == mc.player ? 0 : interpolationTicks.getValInt(),
                 terrain.getValBoolean()
         );
     }
@@ -564,9 +579,9 @@ public class AutoRer extends Module {
             EntityPlayer entity
     ) {
         return calculateDamage(
-                pos.getX(),
-                pos.getY(),
-                pos.getZ(),
+                pos.getX() + 0.5,
+                pos.getY() + 1,
+                pos.getZ() + 0.5,
                 entity
         );
     }
@@ -584,9 +599,9 @@ public class AutoRer extends Module {
                     if (mc.player.getDistance(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) >= (canSee ? breakRange.getValDouble() : breakWallRange.getValDouble())) break;
 
                     if(instantCalc.getValBoolean() && currentTarget != null) {
-                        float targetDamage = CrystalUtils.calculateDamage(pos, currentTarget, terrain.getValBoolean());
+                        float targetDamage = calculateDamage(pos, currentTarget);
                         if(targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt())) {
-                            float selfDamage = CrystalUtils.calculateDamage(pos, mc.player, terrain.getValBoolean());
+                            float selfDamage = calculateDamage(pos, mc.player);
                             if(selfDamage <= maxSelfDMG.getValInt() && selfDamage + 2 <= mc.player.getHealth() + mc.player.getAbsorptionAmount() && selfDamage < targetDamage) toRemove = doInstant(packet.getEntityID(), pos);
                         }
                     } else toRemove = doInstant(packet.getEntityID(), pos);
@@ -614,15 +629,15 @@ public class AutoRer extends Module {
     @EventHandler
     private final Listener<PacketEvent.Send> listener1 = new Listener<>(event -> {
         if (event.getPacket() instanceof CPacketPlayerTryUseItemOnBlock && mc.player.getHeldItem(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getHand()).getItem() == Items.END_CRYSTAL) {
-            if(fourthCheck.getValBoolean() && !isPosValid(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos())) {
+            CPacketPlayerTryUseItemOnBlock packet = (CPacketPlayerTryUseItemOnBlock) event.getPacket();
+            if(fourthCheck.getValBoolean() && !isPosValid(packet.getPos())) {
                 event.cancel();
                 return;
             }
 
             try {
-                PlaceInfo info = AutoRerUtil.Companion.getPlaceInfo(((CPacketPlayerTryUseItemOnBlock) event.getPacket()).getPos(), currentTarget, terrain.getValBoolean());
-                placedList.add(info);
-            } catch (Exception ignored) {}
+                if(instant.getValBoolean() || sync.getValBoolean()) placedList.add(placeInfo(currentTarget, packet.getPos(), terrain.getValBoolean()));
+            } catch (Exception ignored) { }
         }
 
         if(event.getPacket() instanceof CPacketUseEntity) {
@@ -644,6 +659,10 @@ public class AutoRer extends Module {
             }
         }
     });
+
+    private PlaceInfo placeInfo(EntityLivingBase target, BlockPos pos, boolean terrain) {
+        return new PlaceInfo(target, pos, WorldUtilKt.damageByCrystal(terrain, pos, 0), WorldUtilKt.damageByCrystal(target, terrain, pos, 0), null, null, null);
+    }
 
     private boolean isSemiSafe(EntityPlayer player) {
         BlockPos pos = WorldUtilKt.entityPosition(player);
@@ -717,7 +736,7 @@ public class AutoRer extends Module {
         double maxDamage = 0.5;
         double selfDamage_ = 0;
         BlockPos placePos = null;
-        List<BlockPos> sphere = CrystalUtils.getSphere(placeRange.getValFloat(), true, false);
+        List<BlockPos> sphere = WorldUtilKt.sphere(placeRange.getValFloat());
 
         if(calcDistSort.getValBoolean()) {
             Collections.sort(sphere);
@@ -729,13 +748,13 @@ public class AutoRer extends Module {
 
             if(thirdCheck.getValBoolean() && !isPosValid(pos)) continue;
             if(canPlaceCrystal(pos, secondCheck.getValBoolean(), true, needToMultiPlace(), firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) {
-                float targetDamage = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, currentTarget);
+                float targetDamage = calculateDamage(pos, currentTarget);
 
                 Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
                 if(damageSyncPlace.getValEnum() == DamageSyncMode.Smart) targetDamage = targetResult.getSecond();
                 if(targetResult.getFirst() && ((needToFacePlace() && (facePlaceDamageCheck(targetDamage) || facePlaceArmorBreakerCheck())) || targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount())) {
-                    float selfDamage = calculateDamage(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, mc.player);
+                    float selfDamage = calculateDamage(pos, mc.player);
 
                     Bind<Boolean, Float> selfResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
@@ -901,7 +920,7 @@ public class AutoRer extends Module {
 
                 if (mc.player.getDistance(entity) < (mc.player.canEntityBeSeen(entity) ? breakRange.getValDouble() : breakWallRange.getValDouble())) {
                     Friend friend = getNearFriendWithMaxDamage(entity);
-                    float targetDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                    float targetDamage = calculateDamage(WorldUtilKt.entityPosition(entity), currentTarget);
 
                     Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
@@ -913,7 +932,7 @@ public class AutoRer extends Module {
                     }
 
                     if (targetResult.getFirst() && (targetDamage > minDMG.getValInt() || targetDamage * lethalMult.getValDouble() > currentTarget.getHealth() + currentTarget.getAbsorptionAmount() || InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt()))) {
-                        float selfDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, mc.player, terrain.getValBoolean());
+                        float selfDamage = calculateDamage(WorldUtilKt.entityPosition(entity), mc.player);
 
                         Bind<Boolean, Float> selfResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
 
@@ -1044,7 +1063,7 @@ public class AutoRer extends Module {
         for(EntityPlayer player : mc.world.playerEntities) {
             if(mc.player == player) continue;
             if(FriendManager.instance.isFriend(player)) {
-                double friendDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+                double friendDamage = calculateDamage(WorldUtilKt.entityPosition(entity), player);
                 if(friendDamage <= maxFriendDMG.getValInt() || friendDamage * lethalMult.getValDouble() >= player.getHealth() + player.getAbsorptionAmount()) friendsWithMaxDamage.add(new Friend(player, friendDamage, friendDamage * lethalMult.getValDouble() >= player.getHealth() + player.getAbsorptionAmount()));
             }
         }
@@ -1053,7 +1072,7 @@ public class AutoRer extends Module {
         double maxDamage = 0.5;
 
         for(Friend friend : friendsWithMaxDamage) {
-            double friendDamage = CrystalUtils.calculateDamage(mc.world, entity.posX, entity.posY, entity.posZ, currentTarget, terrain.getValBoolean());
+            double friendDamage = calculateDamage(WorldUtilKt.entityPosition(entity), friend.friend);
             if(friendDamage > maxDamage) {
                 maxDamage = friendDamage;
                 nearFriendWithMaxDamage = new Friend(friend.friend, friendDamage);

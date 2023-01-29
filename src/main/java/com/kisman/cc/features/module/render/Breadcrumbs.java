@@ -15,8 +15,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -32,12 +31,9 @@ public class Breadcrumbs extends Module {
 
     public Breadcrumbs(){
         super("Breadcrumbs", Category.RENDER);
-        lastX = 0;
-        lastY = 0;
-        lastZ = 0;
     }
 
-    private final Queue<AxisAlignedBB> lines = new ConcurrentLinkedQueue<>();
+    private final ArrayList<AxisAlignedBB> lines = new ArrayList<>();
 
     private final TimerUtils smoothTimer = new TimerUtils();
 
@@ -51,6 +47,8 @@ public class Breadcrumbs extends Module {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
+        System.out.println("renda");
+
         if(smooth.getValBoolean()){
             if(!smoothTimer.passedMillis(50))
                 return;
@@ -70,7 +68,7 @@ public class Breadcrumbs extends Module {
 
     private void draw(){
         AxisAlignedBB aabb = new AxisAlignedBB(lastX, lastY, lastZ, mc.player.posX, mc.player.posY, mc.player.posZ);
-        lines.offer(aabb);
+        lines.add(aabb);
 
         int r = color.getColour().getRed();
         int g = color.getColour().getGreen();

@@ -5,7 +5,7 @@ import com.kisman.cc.gui.api.shaderable.ShaderableImplementation
 import com.kisman.cc.gui.halq.Frame
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.collections.Bind
+import com.kisman.cc.util.client.collections.Bind
 import com.kisman.cc.util.enums.RectSides
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.objects.screen.ShadowRectObject

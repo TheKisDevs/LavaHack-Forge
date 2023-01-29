@@ -2,7 +2,7 @@ package com.kisman.cc.util.world
 
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.collections.Bind
+import com.kisman.cc.util.client.collections.Bind
 import net.minecraft.entity.Entity
 import java.util.function.Supplier
 

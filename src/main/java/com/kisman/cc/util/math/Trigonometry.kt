@@ -1,6 +1,6 @@
 package com.kisman.cc.util.math
 
-import com.kisman.cc.util.collections.Pair
+import com.kisman.cc.util.client.collections.Pair
 import kotlin.math.PI
 
 /**

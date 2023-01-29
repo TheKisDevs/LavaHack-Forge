@@ -1,12 +1,13 @@
 package com.kisman.cc.features.module.render.blockesp
 
-import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.enums.BlockESPBlocks
-import com.kisman.cc.util.interfaces.IBlockImplementation
+import com.kisman.cc.util.client.interfaces.IBlockImplementation
 import net.minecraft.util.math.BlockPos
+import java.util.function.Supplier
 
 /**
  * @author _kisman_
@@ -14,10 +15,15 @@ import net.minecraft.util.math.BlockPos
  */
 class BlockImplementation(
     val block : BlockESPBlocks,
-    val module : Module
+    val module : ShaderableModule,
+    val flag : Int
 ) : IBlockImplementation {
     private val group = module.register(SettingGroup(Setting(block.toString(), module)))
     private val renderer = RenderingRewritePattern(module).prefix(block.name).group(group).preInit().init()
+
+    init {
+        module.addFlag(Supplier { renderer.canRender() })
+    }
 
     override fun valid(
         pos : BlockPos

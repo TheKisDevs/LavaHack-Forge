@@ -1,4 +1,4 @@
-package com.kisman.cc.util.collections
+package com.kisman.cc.util.client.collections
 
 /**
  * @author _kisman_

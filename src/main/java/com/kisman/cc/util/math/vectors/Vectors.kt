@@ -14,6 +14,10 @@ fun d2i(
     vec : Vec3d
 ) : Vec3i = Vec3i(vec.x.roundToInt(), vec.y.roundToInt(), vec.z.roundToInt())
 
+fun i2d(
+    vec : Vec3i
+) : Vec3d = Vec3d(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
+
 fun vecToString(
     vec : Vec3d
 ) : String = StringBuilder().also {

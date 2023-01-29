@@ -1,7 +1,7 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.util.collections.Bind;
+import com.kisman.cc.util.client.collections.Bind;
 import me.zero.alpine.event.type.Cancellable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;

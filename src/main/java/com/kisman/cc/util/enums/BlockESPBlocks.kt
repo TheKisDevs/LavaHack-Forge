@@ -1,7 +1,7 @@
 package com.kisman.cc.util.enums
 
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.interfaces.Validable
+import com.kisman.cc.util.client.interfaces.Validable
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos

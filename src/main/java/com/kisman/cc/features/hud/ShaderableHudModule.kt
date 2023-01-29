@@ -1,6 +1,7 @@
 package com.kisman.cc.features.hud
 
 import com.kisman.cc.util.compare
+import com.kisman.cc.util.client.interfaces.Drawable
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -15,7 +16,7 @@ abstract class ShaderableHudModule(
     drag : Boolean,
     @JvmField val preRender : Boolean,
     @JvmField val postRender : Boolean
-) : ShaderableModule,
+) : Drawable,
     HudModule(
         name,
         desc,
@@ -46,7 +47,7 @@ abstract class ShaderableHudModule(
         event : RenderGameOverlayEvent.Text
     ) {
         reset()
-        handleRender()
+        draw()
 
         if(!shaderSetting.valBoolean) {
             preNormalRender.run()

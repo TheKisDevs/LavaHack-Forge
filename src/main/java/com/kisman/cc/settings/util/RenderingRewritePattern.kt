@@ -1,17 +1,14 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.features.module.render.ShaderCharms
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.RainbowUtil
-import com.kisman.cc.util.collections.Pair
-import com.kisman.cc.util.enums.Era
+import com.kisman.cc.util.client.collections.Pair
 import com.kisman.cc.util.enums.RenderingRewriteModes
-import com.kisman.cc.util.interfaces.Drawable
+import com.kisman.cc.util.client.interfaces.Drawable
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB

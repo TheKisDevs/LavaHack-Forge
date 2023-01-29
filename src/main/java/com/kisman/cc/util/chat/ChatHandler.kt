@@ -18,23 +18,33 @@ abstract class ChatHandler {
 
     class Instance : ChatHandler()
 
-    open fun message(message: String) {
+    open fun message(
+        message : String
+    ) {
         if (mc.currentScreen is ConsoleGui) ConsoleMessageEvent(TextFormatting.GRAY.toString() + "[" + TextFormatting.WHITE + Kisman.getName() + TextFormatting.GRAY + "] " + message).post() else ChatUtility.message().printClientMessage(message)
     }
 
-    open fun warning(message: String) {
+    open fun warning(
+        message : String
+    ) {
         if (mc.currentScreen is ConsoleGui) ConsoleMessageEvent(TextFormatting.GRAY.toString() + "[" + TextFormatting.GOLD + Kisman.getName() + TextFormatting.GRAY + "] " + message).post() else ChatUtility.warning().printClientMessage(message)
     }
 
-    open fun complete(message: String) {
+    open fun complete(
+        message : String
+    ) {
         if (mc.currentScreen is ConsoleGui) ConsoleMessageEvent(TextFormatting.GRAY.toString() + "[" + TextFormatting.LIGHT_PURPLE + Kisman.getName() + TextFormatting.GRAY + "] " + message).post() else ChatUtility.complete().printClientMessage(message)
     }
 
-    open fun error(message: String) {
+    open fun error(
+        message : String
+    ) {
         if (mc.currentScreen is ConsoleGui) ConsoleMessageEvent(TextFormatting.GRAY.toString() + "[" + TextFormatting.RED + Kisman.getName() + TextFormatting.GRAY + "] " + message).post() else ChatUtility.error().printClientMessage(message)
     }
 
-    open fun print(message: String?) {
+    open fun print(
+        message : String
+    ) {
         if (mc.currentScreen is ConsoleGui) ConsoleMessageEvent(message!!).post() else ChatUtility.message().printMessage(message)
     }
 }

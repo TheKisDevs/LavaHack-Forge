@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.Module
 import com.kisman.cc.mixin.accessors.IMinecraft
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.minecraft.leftClick
-import com.kisman.cc.util.providers.PacketMineProvider
+import com.kisman.cc.util.client.providers.PacketMineProvider
 
 /**
  * @author _kisman_
@@ -21,17 +21,21 @@ class PacketMineProviderTest : Module(
     override fun onEnable() {
         super.onEnable()
 
-        if(mc.player == null || mc.world == null || mc.objectMouseOver == null || mc.objectMouseOver.blockPos == null) {
+        if(mc.player == null || mc.world == null || mc.objectMouseOver == null) {
             return
         }
 
-        if(mode.valEnum == Mode.PacketMineProvider) {
-            PacketMineProvider.handleBlockClick(mc.objectMouseOver.blockPos, mc.objectMouseOver.sideHit)
-        } else if(mode.valEnum == Mode.PlayerDamageBlock) {
-            mc.playerController.onPlayerDamageBlock(mc.objectMouseOver.blockPos, mc.objectMouseOver.sideHit)
-        } else {
-            leftClick()
-            (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
+        when (mode.valEnum) {
+            Mode.PacketMineProvider -> {
+                PacketMineProvider.handleBlockClick(mc.objectMouseOver.blockPos, mc.objectMouseOver.sideHit)
+            }
+            Mode.PlayerDamageBlock -> {
+                mc.playerController.onPlayerDamageBlock(mc.objectMouseOver.blockPos, mc.objectMouseOver.sideHit)
+            }
+            else -> {
+                leftClick()
+                (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
+            }
         }
 
         toggle()

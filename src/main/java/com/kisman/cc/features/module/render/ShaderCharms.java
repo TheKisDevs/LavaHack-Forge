@@ -3,8 +3,10 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.ShaderableModule;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
+import com.kisman.cc.features.module.render.shader.GlowableShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -12,9 +14,9 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.collections.Pair;
+import com.kisman.cc.util.client.collections.Pair;
 import com.kisman.cc.util.enums.Shaders;
-import com.kisman.cc.util.interfaces.Drawable;
+import com.kisman.cc.util.client.interfaces.Drawable;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
@@ -58,7 +60,6 @@ public class ShaderCharms extends Module {
     private final Setting enderPearls = register(types.add(new Setting("Ender Pearls", this, false)));
     private final Setting itemsEntity = register(types.add(new Setting("Items(Entity)", this, false)));
     public final Setting items = register(types.add(new Setting("Items", this, true)));
-    private final Setting itemsFix = register(types.add(new Setting("Items Fix", this, false)));
 
     private final SettingGroup config = register(new SettingGroup(new Setting("Config", this)));
 
@@ -142,7 +143,7 @@ public class ShaderCharms extends Module {
 
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent event) {
-        if(items.getValBoolean() && itemsFix.getValBoolean() && !criticalSection) event.setCanceled(true);
+        if(items.getValBoolean() && !criticalSection) event.setCanceled(true);
     }
 
     public void update() {
@@ -158,16 +159,6 @@ public class ShaderCharms extends Module {
         }
 
         flag = !modulesToRender.isEmpty();
-    }
-
-    public boolean entityTypeCheck(Entity entity) {
-        return entity != mc.player && ((entity instanceof EntityPlayer && players.getValBoolean())
-                || (entity instanceof EntityPlayer && friends.getValBoolean() && FriendManager.instance.isFriend(entity.getName()))
-                || (entity instanceof EntityEnderCrystal && crystals.getValBoolean())
-                || ((entity instanceof EntityMob || entity instanceof EntitySlime) && mobs.getValBoolean())
-                || ((entity instanceof EntityEnderPearl) && enderPearls.getValBoolean())
-                || ((entity instanceof EntityItem) && itemsEntity.getValBoolean())
-                || (entity instanceof EntityAnimal && animals.getValBoolean()));
     }
 
     @SubscribeEvent
@@ -207,7 +198,10 @@ public class ShaderCharms extends Module {
                     FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
                     framebufferShader.animationSpeed = animationSpeed.getValInt();
 
-                    if (mode.getValEnum() == Shaders.ITEMGLOW) {
+                    if(framebufferShader instanceof GlowableShader) {
+                        ((GlowableShader) framebufferShader).radius = radius.getValFloat();
+                        ((GlowableShader) framebufferShader).quality = quality.getValFloat();
+                    } else if (mode.getValEnum() == Shaders.ITEMGLOW) {
                         ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
                         ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
                         ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
@@ -301,7 +295,15 @@ public class ShaderCharms extends Module {
                     }
                 }
 
-                if(flag) for(Drawable module : modulesToRender.keySet()) module.draw();
+                if(flag) for(Drawable module : modulesToRender.keySet()) {
+                    if(module instanceof ShaderableModule) {
+                        ShaderableModule shaderable = (ShaderableModule) module;
+
+                        shaderable.handleDrawShadered();
+                    } else {
+                        module.draw();
+                    }
+                }
 
                 if(flag3) {
                     criticalSection = true;

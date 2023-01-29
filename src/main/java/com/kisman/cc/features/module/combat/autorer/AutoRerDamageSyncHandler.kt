@@ -1,6 +1,6 @@
 package com.kisman.cc.features.module.combat.autorer
 
-import com.kisman.cc.util.collections.Bind
+import com.kisman.cc.util.client.collections.Bind
 import com.kisman.cc.util.world.DamageSyncHandler
 import net.minecraft.entity.Entity
 import java.util.function.Supplier

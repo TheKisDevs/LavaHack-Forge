@@ -37,6 +37,12 @@ open class TargetFinder(
         targetFinderTHandler.reset()
     }
 
+    fun updateAndGet() : EntityPlayer? {
+        update()
+
+        return target
+    }
+
     fun update() {
         targetFinderTHandler.update(Runnable {
             try {

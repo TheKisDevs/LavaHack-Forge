@@ -14,7 +14,7 @@ public class Ping extends ShaderableHudModule {
         super("Ping", "", true, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         String str = "Ping: " + TextFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing());
         setW(CustomFontUtil.getStringWidth(str));
         setH(CustomFontUtil.getFontHeight());

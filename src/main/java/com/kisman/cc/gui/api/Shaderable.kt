@@ -1,6 +1,6 @@
 package com.kisman.cc.gui.api
 
-import com.kisman.cc.util.collections.Bind
+import com.kisman.cc.util.client.collections.Bind
 
 /**
  * @author _kisman_

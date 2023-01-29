@@ -11,7 +11,7 @@ public class Tps extends ShaderableHudModule {
         super("Tps", "", false, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         ScaledResolution sr = new ScaledResolution(mc);
         String str = TextFormatting.WHITE + "TPS: " + TextFormatting.GRAY + Kisman.instance.serverManager.getTps();
         shaderRender = () -> drawStringWithShadow(str, sr.getScaledWidth() - 1 - CustomFontUtil.getStringWidth(str), sr.getScaledHeight() - 3 - (CustomFontUtil.getFontHeight() * 2), -1);

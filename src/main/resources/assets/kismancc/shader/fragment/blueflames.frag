@@ -5,13 +5,13 @@ precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform float radius;
+uniform float quality;
 
 #define hash(a) fract(sin(a)*12345.0) 
 #define noise(p) ((old_noise(p, 883.0, 971.0) + old_noise(p + 0.5, 113.0, 157.0)) * 0.5)
 
 float glowShader() {
-	float radius = 3.3;
-	float quality = 1.0;
 	float divider = 158.0;
 	float maxSample = 10.0;
 	vec2 texelSize = vec2(1.0 / resolution.x * (radius * quality), 1.0 / resolution.y * (radius * quality));

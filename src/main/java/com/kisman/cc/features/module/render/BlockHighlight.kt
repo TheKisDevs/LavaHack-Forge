@@ -1,20 +1,19 @@
 package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
+import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.interfaces.Drawable
 import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
 import com.kisman.cc.util.toAABB
+import com.kisman.cc.util.world.damageByCrystal
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
@@ -25,11 +24,11 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Suppress("LocalVariableName")
-class BlockHighlight : Module(
+class BlockHighlight : ShaderableModule(
     "BlockHighlight",
     "Highlights object you are looking at",
     Category.RENDER
-), Drawable {
+) {
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
 
@@ -240,20 +239,14 @@ class BlockHighlight : Module(
             hitObject.sideHit
         }
 
-        if(pattern.canRender()) {
-            renderer.onRenderWorld(
-                bb,
-                if(hitSideOnly.valBoolean) facing else null,
-                pattern
-            )
-        }
+        handleDraw(pattern)
 
         if(bb != null && crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
             val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
             val text = "${
-                String.format("%.1f", AutoRerUtil.getSelfDamageByCrystal(crystalInfoTerrain.valBoolean, hitObject.blockPos))
+                String.format("%.1f", damageByCrystal(crystalInfoTerrain.valBoolean, hitObject.blockPos))
             }/${
-                if(target != null) String.format("%.1f", AutoRerUtil.getDamageByCrystal(target, crystalInfoTerrain.valBoolean, hitObject.blockPos))
+                if(target != null) String.format("%.1f", damageByCrystal(target, crystalInfoTerrain.valBoolean, hitObject.blockPos))
                 else "0.0"
             }"
 

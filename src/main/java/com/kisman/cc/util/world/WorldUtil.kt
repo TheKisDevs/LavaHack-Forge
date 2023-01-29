@@ -17,7 +17,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
-import kotlin.math.floor
+import kotlin.math.max
 
 /**
  * @author _kisman_
@@ -111,3 +111,37 @@ fun raytrace(
 } else {
     facing
 }
+
+fun damageByCrystal(
+    target : Entity,
+    terrain : Boolean,
+    crystal : BlockPos,
+    interpolation : Int = 0
+) : Float = if(mc.world == null) {
+    0f
+} else {
+     CrystalUtils.calculateDamage(mc.world, crystal.x + 0.5f, crystal.y + 1, crystal.z + 0.5, target, terrain, interpolation, true)
+}
+
+fun damageByCrystal(
+    terrain : Boolean,
+    crystal : BlockPos,
+    interpolation : Int = 0
+) : Float = damageByCrystal(mc.player, terrain, crystal, interpolation)
+
+fun damageByAnchor(
+    target : Entity,
+    terrain : Boolean,
+    anchor : BlockPos,
+    interpolation : Int = 0
+) : Float = max(0f, damageByCrystal(target, terrain, anchor, interpolation) - 1f)
+
+fun damageByAnchor(
+    terrain : Boolean,
+    anchor : BlockPos,
+    interpolation : Int = 0
+) : Float = damageByAnchor(mc.player, terrain, anchor, interpolation)
+
+fun sphere(
+    radius : Float
+) : List<BlockPos> = CrystalUtils.getSphere(radius, true, false)

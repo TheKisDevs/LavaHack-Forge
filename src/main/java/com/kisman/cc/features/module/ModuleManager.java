@@ -84,7 +84,7 @@ public class ModuleManager {
 //		add(new AutoCrystal());
 		add(new AntiBot());
 		add(new AntiBow());
-		add(new AntiTrap());
+//		add(new AntiTrap());
 		add(new AutoAnchor());
 		add(new AutoAnvil());
 		add(new AutoArmor());
@@ -95,6 +95,7 @@ public class ModuleManager {
 		add(new AutoQuiver());
 		add(new AutoRer());
 		add(new AutoTrap());
+		add(new Avoid());
 		add(new Blocker());
 		add(new BowAimBot());
 		add(new BowSpam());

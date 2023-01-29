@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -37,7 +34,7 @@ import java.util.*;
  */
 @PingBypassModule
 @Targetable
-public class HoleFillerRewrite extends Module {
+public class HoleFillerRewrite extends ShaderableModule {
     @ModuleInstance
     public static HoleFillerRewrite instance;
     
@@ -65,7 +62,7 @@ public class HoleFillerRewrite extends Module {
     private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
     private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
 
-    private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
+    private final SlideRenderingRewritePattern pattern = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = threads();
     private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
@@ -76,7 +73,7 @@ public class HoleFillerRewrite extends Module {
     public Entity entity = null;
 
     public HoleFillerRewrite(){
-        super("HoleFillerRewrite", Category.COMBAT);
+        super("HoleFillerRewrite", "", Category.COMBAT, false);
         super.setDisplayInfo(() -> entity == null ? " no target no fun" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
     }
 
@@ -120,14 +117,13 @@ public class HoleFillerRewrite extends Module {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if(renderer_.isActive()) {
-            renderer.handleRenderWorld(
-                    renderer_,
-                    placePos,
-                    null
+        handleDraw(pattern);
+    }
 
-            );
-        }
+    @Override
+    public void draw() {
+        if(place.checkValString("Instant")) for (BlockPos hole : holes) renderer.handleRenderWorld(pattern, hole, null);
+        else renderer.handleRenderWorld(pattern, placePos, null);
     }
 
     private void placeHoleBlocks(Entity entity){

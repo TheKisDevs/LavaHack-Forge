@@ -40,7 +40,7 @@ class Coords : ShaderableHudModule(
 
     private val random = Random()
 
-    override fun handleRender() {
+    override fun draw() {
         if (mc.player.dimension == 0) {
             posX = mc.player.posX.toInt()
             posZ = mc.player.posZ.toInt()

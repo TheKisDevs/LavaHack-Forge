@@ -1,12 +1,11 @@
 package com.kisman.cc.util.render.pattern
 
-import com.kisman.cc.features.module.combat.autorer.AutoRerUtil
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
-import com.kisman.cc.util.math.vectors.xyz.ColorablePos
+import com.kisman.cc.util.math.vectors.i2d
 import com.kisman.cc.util.math.vectors.xyz.ColorableSlidePos
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import net.minecraft.util.math.AxisAlignedBB
@@ -250,7 +249,7 @@ open class SlideRendererPattern {
         val colorablePos = updatePosses(pos, renderer)
 
         if(colorablePos != lastBlockPos) {
-            currentPos = if (colorablePos != null) AutoRerUtil.toVec3dCenter(colorablePos) else null
+            currentPos = if (colorablePos != null) i2d(colorablePos) else null
             prevPos = lastRenderPos ?: currentPos
             lastUpdateTime = System.currentTimeMillis()
             if (lastBlockPos == null) {

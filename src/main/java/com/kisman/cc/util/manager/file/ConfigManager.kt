@@ -7,7 +7,8 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.IBindable
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.manager.friend.FriendManager
-import com.kisman.cc.util.ColourUtilKt
+import com.kisman.cc.util.fromColorConfig
+import com.kisman.cc.util.toColorConfig
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -117,13 +118,7 @@ class ConfigManager(
                                 writer.newLine()
                             }
                             if (setting.isColorPicker) {
-                                writer.write(
-                                    "${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${
-                                        ColourUtilKt.toConfig(
-                                            setting.colour
-                                        )
-                                    }"
-                                )
+                                writer.write("${prefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${toColorConfig(setting.colour)}")
                                 writer.newLine()
                             }
                         }
@@ -162,8 +157,13 @@ class ConfigManager(
 
         @Throws(IOException::class)
         fun load(reader : BufferedReader) {
-            var line: String?
+            var line : String?
+
             while(reader.readLine().also { line = it } != null) {
+                if(line!!.startsWith("#")) {
+                    continue
+                }
+
                 val split1 = line?.split("=")
                 val split2 = split1?.get(0)?.split(".")
 
@@ -272,7 +272,7 @@ class ConfigManager(
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
                                                 if (setting.isCombo && setting.binders.containsKey(split1[1].split("\"")[1])) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
-                                                if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
+                                                if (setting.isColorPicker) setting.colour = fromColorConfig(split1[1], setting.colour)
                                             } catch (_ : Exception) {}
                                         }
                                     }
@@ -392,7 +392,7 @@ class ConfigManager(
                                                 if (setting.isCheck) setting.valBoolean = java.lang.Boolean.parseBoolean(split1[1])
                                                 if (setting.isCombo) setting.valString = split1[1].split("\"")[1]
                                                 if (setting.isSlider) setting.valDouble = java.lang.Double.parseDouble(split1[1])
-                                                if (setting.isColorPicker) setting.colour = ColourUtilKt.fromConfig(split1[1], setting.colour)
+                                                if (setting.isColorPicker) setting.colour = fromColorConfig(split1[1], setting.colour)
                                             } catch (ignored : Exception) { }
                                         }
                                     }
@@ -403,7 +403,7 @@ class ConfigManager(
                     config.hudEditorPrefix -> {
                         when(split2[1]) {
                             "color" -> {
-                                Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour = ColourUtilKt.fromConfig(split1[1], Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour)
+                                Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour = fromColorConfig(split1[1], Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour)
                             }
                         }
                     }
@@ -412,7 +412,6 @@ class ConfigManager(
                     }
                 }
             }
-
         }
     }
 
@@ -490,7 +489,7 @@ class ConfigManager(
                                 writer.newLine()
                             }
                             if(setting.isColorPicker) {
-                                writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${ColourUtilKt.toConfig(setting.colour)}")
+                                writer.write("${config.modulesPrefix}.${module.name}.${config.settingsPrefix}.${setting.name}=${toColorConfig(setting.colour)}")
                                 writer.newLine()
                             }
                         }
@@ -555,7 +554,7 @@ class ConfigManager(
                                 writer.newLine()
                             }
                             if(setting.isColorPicker) {
-                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${ColourUtilKt.toConfig(setting.colour)}")
+                                writer.write("${config.hudModulesPrefix}.${hud.name}.${config.settingsPrefix}.${setting.name}=${toColorConfig(setting.colour)}")
                                 writer.newLine()
                             }
                         }
@@ -563,7 +562,7 @@ class ConfigManager(
                 }
             }
 
-            writer.write("${config.hudEditorPrefix}.color=${ColourUtilKt.toConfig(Kisman.instance.halqHudGui.color)}")
+            writer.write("${config.hudEditorPrefix}.color=${toColorConfig(Kisman.instance.halqHudGui.color)}")
             writer.newLine()
 
             if(FriendManager.instance.friends.isNotEmpty()) {

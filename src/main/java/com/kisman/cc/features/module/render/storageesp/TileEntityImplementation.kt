@@ -5,7 +5,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.enums.StorageESPTileEntities
-import com.kisman.cc.util.interfaces.ITileEntityImplementation
+import com.kisman.cc.util.client.interfaces.ITileEntityImplementation
 import net.minecraft.tileentity.TileEntity
 
 /**
@@ -18,6 +18,11 @@ class TileEntityImplementation(
 ) : ITileEntityImplementation {
     private val group = module.register(SettingGroup(Setting(tile.name, module)))
     private val renderer = RenderingRewritePattern(module).prefix(tile.name).group(group).preInit().init()
+
+    init {
+        renderer.filledColor1.colour = tile.color
+        renderer.outlineColor1.colour = tile.color
+    }
 
     override fun valid(tile : TileEntity, callingFromDraw : Boolean?) : Boolean = renderer.isActive() && this.tile.validator.valid(tile) && (callingFromDraw == null || renderer.canRender(callingFromDraw))
 

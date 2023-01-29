@@ -76,7 +76,7 @@ object Outline2Shader {
 
         for(entity in mc.world.loadedEntityList) {
             if(mc.player.getDistance(entity) > range) continue
-            if(!ShaderCharms.instance.entityTypeCheck(entity)) continue
+//            if(!ShaderCharms.instance.entityTypeCheck(entity)) continue
 
             val renderer = mc.renderManager.getEntityRenderObject<Entity>(entity) ?: continue
 

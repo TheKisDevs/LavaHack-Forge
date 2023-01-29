@@ -1,6 +1,7 @@
 package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.render.shader.GlowableShader
 import com.kisman.cc.features.module.render.shader.shaders.*
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
@@ -73,7 +74,10 @@ class ShaderPattern(
 
         framebufferShader.animationSpeed = animationSpeed.valInt
 
-        if (mode.valEnum === Shaders.ITEMGLOW) {
+        if(framebufferShader is GlowableShader) {
+            framebufferShader.radius = radius.valFloat
+            framebufferShader.quality = quality.valFloat
+        } else if (mode.valEnum === Shaders.ITEMGLOW) {
             (framebufferShader as ItemShader).red = getColor().red / 255f
             framebufferShader.green = getColor().green / 255f
             framebufferShader.blue = getColor().blue / 255f

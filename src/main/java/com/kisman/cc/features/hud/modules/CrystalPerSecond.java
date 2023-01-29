@@ -16,7 +16,7 @@ public class CrystalPerSecond extends ShaderableHudModule {
         super("CrystalPerSecond", true, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
         String text = "Crystal/Sec: " + TextFormatting.GRAY + Managers.instance.cpsManager.getCPS();
         shaderRender = () -> drawStringWithShadow(text, getX(), getY(), color);

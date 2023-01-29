@@ -22,13 +22,11 @@ import java.util.List;
      private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, NumberType.TIME));
      private final Setting noThorns = register(new Setting("No Thorns", this, true));
 
-     public static AutoArmor instance;
      private final TimerUtils timer = new TimerUtils();
 
      public AutoArmor() {
          super("AutoArmor", "ebate srate lox!", Category.COMBAT);
-
-         instance = this;
+         super.setDisplayInfo(() -> "[" + delay.getValInt() + "]");
      }
 
      public void onEnable() {
@@ -37,7 +35,6 @@ import java.util.List;
 
      public void update() {
          if(mc.player == null || mc.world == null) return;
-         super.setDisplayInfo("[" + delay.getValInt() + "]");
          if(!timer.passedMillis(delay.getValLong())) return; else timer.reset();
          if (mc.player.ticksExisted % 2 == 0) return;
          if (mc.currentScreen instanceof GuiContainer && !(mc.currentScreen instanceof InventoryEffectRenderer)) return;

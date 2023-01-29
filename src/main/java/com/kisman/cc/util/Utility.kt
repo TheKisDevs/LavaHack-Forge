@@ -4,6 +4,7 @@ package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.client.interfaces.runnables.ReturnableRunnable
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
@@ -210,4 +211,21 @@ fun compare(
 ) : Runnable = Runnable {
     first.run()
     second.run()
+}
+
+fun toColorConfig(
+    color : Colour
+) : String = "${color.r}:${color.g}:${color.b}:${color.a}"
+
+fun fromColorConfig(
+    config : String,
+    color : Colour
+) : Colour = try {
+    val split = config.split(':')
+
+    Colour(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]))
+} catch (
+    ignored : NumberFormatException
+) {
+    color
 }

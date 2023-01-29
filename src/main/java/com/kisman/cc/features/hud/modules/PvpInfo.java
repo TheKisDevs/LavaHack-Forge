@@ -15,7 +15,7 @@ public class PvpInfo extends ShaderableHudModule {
         super("PvpInfo", "PvpInfo", true, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         int y = (int) getY();
         int height = offsets.getValInt() + CustomFontUtil.getFontHeight();
         setW(CustomFontUtil.getStringWidth("SURRr: OFF"));

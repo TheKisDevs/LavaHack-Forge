@@ -40,7 +40,7 @@ class Speed : ShaderableHudModule(
         timer.reset()
     }
 
-    override fun handleRender() {
+    override fun draw() {
         if(timer.passedMillis(1000L)) {
             prevPosX = mc.player.prevPosX
             prevPosZ = mc.player.prevPosZ

@@ -1,6 +1,6 @@
 package com.kisman.cc.util.enums.dynamic;
 
-import com.kisman.cc.util.providers.AbstractTaskProvider;
+import com.kisman.cc.util.client.providers.AbstractTaskProvider;
 import com.kisman.cc.util.ReflectionUtilsKt;
 import com.kisman.cc.util.math.MathUtil;
 import org.cubic.dynamictask.AbstractTask;

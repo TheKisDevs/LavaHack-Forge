@@ -12,7 +12,7 @@ public class ServerIp extends ShaderableHudModule {
         super("ServerIp", "", true, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         setW(CustomFontUtil.getStringWidth("Server: " + (mc.isSingleplayer() ? "SingePlayer" : mc.getCurrentServerData().serverIP.toLowerCase())));
         setH(CustomFontUtil.getFontHeight());
 

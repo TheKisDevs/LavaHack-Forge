@@ -1,4 +1,4 @@
-package com.kisman.cc.util.interfaces
+package com.kisman.cc.util.client.interfaces.runnables
 
 /**
  * @author _kisman_

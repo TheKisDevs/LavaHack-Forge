@@ -1,4 +1,4 @@
-package com.kisman.cc.util.providers;
+package com.kisman.cc.util.client.providers;
 
 import org.cubic.dynamictask.*;
 

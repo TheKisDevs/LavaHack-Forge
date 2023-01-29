@@ -1,6 +1,6 @@
 package com.kisman.cc.features.hud
 
-import com.kisman.cc.util.annotations.FakeThing
+import com.kisman.cc.util.client.annotations.FakeThing
 
 /**
  * @author _kisman_

@@ -1,7 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.util.interfaces.AdvancedRunnable;
+import com.kisman.cc.util.client.interfaces.runnables.AdvancedRunnable;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.AbstractObject;

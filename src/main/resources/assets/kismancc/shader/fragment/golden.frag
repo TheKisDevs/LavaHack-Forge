@@ -5,6 +5,8 @@ precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform float radius;
+uniform float quality;
 
 #define iterations 15
 
@@ -23,8 +25,6 @@ uniform sampler2D texture;
 #define saturation 1.60
 
 float glowShader() {
-	float radius = 2.5;
-	float quality = 1.0;
 	float divider = 158.0;
 	float maxSample = 10.0;
 	vec2 texelSize = vec2(1.0 / resolution.x * (radius * quality), 1.0 / resolution.y * (radius * quality));
@@ -89,10 +89,9 @@ void main() {
 	}
 	v=mix(vec3(length(v)),v,saturation); //color adjust
 
-	float alpha = 0;
-	if (centerCol.a != 0) {
-		alpha = 1.0;
-	} else {
+	float alpha = centerCol.a;
+
+	if(alpha == 0) {
 		alpha = glowShader();
 	}
 

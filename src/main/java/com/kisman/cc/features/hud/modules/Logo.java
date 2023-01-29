@@ -27,7 +27,7 @@ public class Logo extends ShaderableHudModule {
         super("Logo", "lava-hack on top", false, true, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         String name = Kisman.getName();
         String version = Kisman.getVersion();
 

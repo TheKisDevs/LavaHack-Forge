@@ -2,7 +2,7 @@ package com.kisman.cc.gui.api.shaderable
 
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.Shaderable
-import com.kisman.cc.util.collections.Bind
+import com.kisman.cc.util.client.collections.Bind
 
 /**
  * @author _kisman_

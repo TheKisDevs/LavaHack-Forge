@@ -15,7 +15,7 @@ public class Fps extends ShaderableHudModule {
     }
 
     @Override
-    public void handleRender() {
+    public void draw() {
         setW(CustomFontUtil.getStringWidth("Fps: " + Minecraft.getDebugFPS()));
         setH(CustomFontUtil.getFontHeight());
 

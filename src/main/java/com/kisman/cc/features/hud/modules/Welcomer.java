@@ -15,7 +15,7 @@ public class Welcomer extends ShaderableHudModule {
         super("Welcomer", true, false, false);
     }
 
-    public void handleRender() {
+    public void draw() {
         int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
 
         setW(CustomFontUtil.getStringWidth("Welcome to " + Kisman.getName() + ", " + mc.player.getName() + "!"));

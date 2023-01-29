@@ -1,10 +1,9 @@
 package com.kisman.cc.features.module.Debug;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.collections.Pair;
+import com.kisman.cc.util.client.collections.Pair;
 import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;

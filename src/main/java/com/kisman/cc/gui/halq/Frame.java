@@ -10,7 +10,7 @@ import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.halq.components.Button;
 import com.kisman.cc.gui.halq.components.Header;
-import com.kisman.cc.util.annotations.FakeThing;
+import com.kisman.cc.util.client.annotations.FakeThing;
 
 import java.util.ArrayList;
 

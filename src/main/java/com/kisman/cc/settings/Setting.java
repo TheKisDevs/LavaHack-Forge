@@ -10,7 +10,6 @@ import com.kisman.cc.features.module.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.ColourUtilKt;
 import com.kisman.cc.util.UtilityKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -267,7 +266,7 @@ public class Setting implements IBindable, IArrayListElement {
 		if(isCheck()) return String.valueOf(getValBoolean());
 		if(isSlider()) return String.valueOf(onlyint ? getValInt() : getValDouble());
 		if(isString()) return getValString();
-		if(isColorPicker()) return ColourUtilKt.Companion.toConfig(colour);
+		if(isColorPicker()) return UtilityKt.toColorConfig(colour);
 		return super.toString();
 	}
 

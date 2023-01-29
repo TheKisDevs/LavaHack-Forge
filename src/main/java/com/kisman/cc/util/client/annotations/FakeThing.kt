@@ -1,4 +1,4 @@
-package com.kisman.cc.util.annotations
+package com.kisman.cc.util.client.annotations
 
 /**
  * @author _kisman_

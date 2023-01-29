@@ -123,7 +123,7 @@ public class SurroundRewrite extends Module {
 
     private final Queue<BlockPos> blockQueue = new ConcurrentLinkedQueue<>();
 
-    private int ticksPassed = 0;
+//    private int ticksPassed = 0;
 
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT, true);
@@ -154,7 +154,7 @@ public class SurroundRewrite extends Module {
         if(center.getValBoolean() && !centerPlayer()) {
             setToggled(false);
         }
-        ticksPassed = mc.player.ticksExisted;
+//        ticksPassed = mc.player.ticksExisted;
     }
 
     @Override
@@ -170,7 +170,7 @@ public class SurroundRewrite extends Module {
         else
             doThreaddedSurround();
 
-        ticksPassed = mc.player.ticksExisted;
+//        ticksPassed = mc.player.ticksExisted;
     }
 
     private void doThreaddedSurround() {

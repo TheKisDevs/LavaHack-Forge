@@ -360,7 +360,7 @@ public class CrystalUtils {
         return calculateDamage(world, pos.getX(), pos.getY(), pos.getZ(), entity, 0);
     }
 
-    public static float calculateDamage(@Nullable WorldClient world, float fl, int i, double d, @NotNull Entity target, boolean terrain, boolean kotlin) {
-        return calculateDamage(world, fl, i, d, target, terrain);
+    public static float calculateDamage(@Nullable WorldClient world, float fl, int i, double d, @NotNull Entity target, boolean terrain, int interpolation, boolean kotlin) {
+        return calculateDamage(world, fl, i, d, target, interpolation, terrain);
     }
 }

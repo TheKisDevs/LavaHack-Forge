@@ -5,7 +5,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.collections.Bind;
+import com.kisman.cc.util.client.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;

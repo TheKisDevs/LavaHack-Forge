@@ -3,7 +3,7 @@ package com.kisman.cc.features.hud.modules;
 import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.enums.PvpResourcesStyles;
-import com.kisman.cc.util.interfaces.AdvancedRunnable;
+import com.kisman.cc.util.client.interfaces.runnables.AdvancedRunnable;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.item.Item;
@@ -30,7 +30,7 @@ public class PvpResources extends ShaderableHudModule {
         return mc.player.inventory.mainInventory.stream().filter(itemStack -> itemStack.getItem() == item).mapToInt(ItemStack::getCount).sum() + ((mc.player.getHeldItemOffhand().getItem() == item) ? mc.player.getHeldItemOffhand().getCount() : 0);
     }
 
-    public void handleRender() {
+    public void draw() {
         final int x = (int) getX();
         final int y = (int) getY();
 

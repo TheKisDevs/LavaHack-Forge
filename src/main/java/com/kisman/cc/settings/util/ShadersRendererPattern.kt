@@ -5,8 +5,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.ShadersSetting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.collections.Bind
-import com.kisman.cc.util.enums.ShaderCharmsOverlaying
+import com.kisman.cc.util.client.collections.Bind
 import com.kisman.cc.util.enums.ShadersObjectTypes
 import com.kisman.cc.util.enums.ShadersSettingTypes
 import com.kisman.cc.util.enums.ShadersShaders
@@ -54,8 +53,8 @@ class ShadersRendererPattern(
                     HashMap<
                             Int,
                             ShadersSetting
+                            >
                     >
-            >
     >()
 
     private val validEntities = HashMap<
