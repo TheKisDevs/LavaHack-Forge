@@ -3,12 +3,11 @@ package com.kisman.cc.loader.security;
 import com.kisman.cc.loader.LoaderKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sun.reflect.Reflection;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -20,12 +19,12 @@ public class SecureMap<K, V> implements Map<K, V> {
 
     private final long address;
 
-    public SecureMap(boolean concurrent){
-        this.address = Unsecure.getAddress(concurrent ? new ConcurrentHashMap<K, V>() : new HashMap<K, V>());
+    public SecureMap(Map<K, V> map){
+        this.address = Unsecure.getAddress(map);
     }
 
     private Map<K, V> get(){
-        if(ClassContext.getCallerClass(2) != SecureMap.class || ClassContext.getCallerClass(3) != LoaderKt.class)
+        if(Reflection.getCallerClass(2) != SecureMap.class || Reflection.getCallerClass(3) != LoaderKt.class)
             throw new SecurityException("You cannot access this method");
         Object[] object = new Object[]{null};
         long baseOffset = unsafe.arrayBaseOffset(Object.class);
