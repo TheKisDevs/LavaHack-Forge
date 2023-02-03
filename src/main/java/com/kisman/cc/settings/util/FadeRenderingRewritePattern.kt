@@ -71,7 +71,6 @@ class FadeRenderingRewritePattern(
         visible : Supplier<Boolean>
     ) : FadeRenderingRewritePattern = super.visible(visible) as FadeRenderingRewritePattern
 
-
     override fun group(
         group : SettingGroup
     ) : FadeRenderingRewritePattern = super.group(group) as FadeRenderingRewritePattern
@@ -217,7 +216,8 @@ class FadeRenderingRewritePattern(
             modifyColor(outlineColor2, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
             modifyColor(wireColor1, wireColorFadeDelay.valLong, wireColorFadeLogic.valEnum),
             modifyColor(wireColor2, wireColorFadeDelay.valLong, wireColorFadeLogic.valEnum),
-            mode
+            mode,
+            emptyList()
         )
     }
 }

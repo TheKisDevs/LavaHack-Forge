@@ -2,6 +2,8 @@ package com.kisman.cc.util.render;
 
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.client.collections.Triple;
+import com.kisman.cc.util.enums.DirectionVertexes;
 import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
@@ -23,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static com.kisman.cc.util.render.ColorUtils.glColor;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -46,26 +47,30 @@ public class Rendering {
     public enum RenderObject {
         BOX {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
                     drawGradientFilledBox(aabb, color1, color2);
-                } else drawSelectionBox(aabb, color1);
+                } else {
+                    if(partial) drawPartialSelectionBox(aabb, color1, sides);
+                    else drawSelectionBox(aabb, color1);
+                }
             }
         },
         OUTLINE {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
                     drawGradientBlockOutline(aabb, color1, color2, (float) values[0]);
                 } else {
                     glLineWidth((float) values[0]);
-                    drawSelectionBoundingBox(aabb, color1);
+                    if(partial) drawPartialSelectionBoundingBox(aabb, color1, sides);
+                    else drawSelectionBoundingBox(aabb, color1);
                 }
             }
         },
         WIRE {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 drawWire(aabb, (float) values[0], color1, gradient ? color2 : color1);
                 /*glPushMatrix();
 
@@ -97,14 +102,14 @@ public class Rendering {
 
         ;
 
-        abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, Object... values);
+        abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values);
         
         public void draw(AxisAlignedBB aabb, Color color, Object... values) {
-            draw(aabb, color, color, false, values);
+            draw(aabb, color, color, false, false, new DirectionVertexes[] { }, values);
         }
         
         public void draw(AxisAlignedBB aabb, Color color1, Color color2, Object... values) {
-            draw(aabb, color1, color2, true, values);
+            draw(aabb, color1, color2, true, false, new DirectionVertexes[] { }, values);
         }
     }
 
@@ -133,17 +138,17 @@ public class Rendering {
             this.gradient = gradient;
             this.objects = new ArrayList<>(Arrays.asList(objects));
         }
-        
-        public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, boolean depth, Object... values) {
+
+        public void draw(AxisAlignedBB aabb, Color filledColor1, Color filledColor2, Color outlineColor1, Color outlineColor2, Color wireColor1, Color wireColor2, boolean depth, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
             for(RenderObject object : objects) {
-                if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, values);
+                if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, partial, sides, values);
                 else {
                     start(depth);
 
                     if(gradient) prepare();
 
-                    if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, values);
-                    else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, values);
+                    if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, partial, sides, values);
+                    else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, partial, sides, values);
 
                     if(gradient) restore();
 
@@ -151,23 +156,6 @@ public class Rendering {
                 }
             }
         }
-    }
-
-    public static void start1(boolean depth) {
-//        mc.getTextureManager().bindTexture()
-        glPushMatrix();
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        if(!depth) glDisable(GL_DEPTH_TEST);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-
-    public static void end1(boolean depth) {
-        glColor(Color.WHITE);
-        glEnable(GL_TEXTURE_2D);
-        if(!depth) glEnable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
-        glPopMatrix();
     }
 
     public static void start(boolean depth) {
@@ -200,16 +188,7 @@ public class Rendering {
         glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
         glDisable(GL_LIGHTING);
         glLineWidth(1.5f);
-    }/*GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-        glLineWidth(1.5f);*/
-
+    }
     public static void end() {
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_LINE_SMOOTH);
@@ -234,13 +213,7 @@ public class Rendering {
         GL11.glCullFace(GL11.GL_BACK);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
-    }/*glDisable(GL_LINE_SMOOTH);
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();*/
+    }
 
     public static void setup(boolean depth) {
         GlStateManager.pushMatrix();
@@ -378,6 +351,10 @@ public class Rendering {
     }
 
     public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Colour c2, Colour c3, Colour c4, Colour c5, Mode mode, boolean depth) {
+        draw0(axisAlignedBB, lineWidth, c, c1, c2, c3, c4, c5, mode, depth, false, new ArrayList());
+    }
+
+    public static void draw0(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Colour c2, Colour c3, Colour c4, Colour c5, Mode mode, boolean depth, boolean partial, ArrayList<DirectionVertexes> sides) {
         Color filledColor1 = c.getColor();
         Color filledColor2 = c1.getColor();
         Color outlineColor1 = c2.getColor();
@@ -385,7 +362,7 @@ public class Rendering {
         Color wireColor1 = c4.getColor();
         Color wireColor2 = c5.getColor();
 
-        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, depth, lineWidth);
+        mode.draw(axisAlignedBB, filledColor1, filledColor2, outlineColor1, outlineColor2, wireColor1, wireColor2, depth, partial, sides, lineWidth);
     }
 
     public static void draw(AxisAlignedBB axisAlignedBB, float lineWidth, Colour c, Colour c1, Mode mode){
@@ -540,6 +517,24 @@ public class Rendering {
         tessellator.draw();
     }
 
+    public static void drawPartialSelectionBox(AxisAlignedBB bb, Color color, ArrayList<DirectionVertexes> sides) {
+        bufferbuilder.begin(GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        addPartialVertexes(bufferbuilder, bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ, color, sides);
+        tessellator.draw();
+    }
+
+    public static void addPartialVertexes(BufferBuilder builder, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Color color, ArrayList<DirectionVertexes> sides) {
+        for(DirectionVertexes side : sides) {
+            for(Triple<DirectionVertexes.AxisValues> vertex : side.vertexes) {
+                builder.pos(
+                        side.valueOf(vertex, DirectionVertexes.Directions.X, minX, maxX),
+                        side.valueOf(vertex, DirectionVertexes.Directions.Y, minY, maxY),
+                        side.valueOf(vertex, DirectionVertexes.Directions.Z, minZ, maxZ)
+                ).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
+            }
+        }
+    }
+
     public static void addChainedFilledBoxVertices(BufferBuilder builder, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Color color) {
         builder.pos(minX, minY, minZ).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
         builder.pos(minX, minY, minZ).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
@@ -579,6 +574,12 @@ public class Rendering {
         tessellator.draw();
     }
 
+    public static void drawPartialSelectionBoundingBox(AxisAlignedBB axisAlignedBB, Color color, ArrayList<DirectionVertexes> sides) {
+        bufferbuilder.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        addPartialVertexes(bufferbuilder, axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ, color, sides);
+        tessellator.draw();
+    }
+
     public static void addChainedBoundingBoxVertices(BufferBuilder buffer, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, Color color) {
         buffer.pos(minX, minY, minZ).color(color.getRed(), color.getGreen(), color.getBlue(), 0.0F).endVertex();
         buffer.pos(minX, minY, minZ).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).endVertex();
@@ -601,12 +602,6 @@ public class Rendering {
     }
 
     public static void drawGradientFilledBox(AxisAlignedBB bb, Color startColor, Color endColor) {
-        /*GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.tryBlendFuncSeparate((int) 770, (int) 771, (int) 0, (int) 1);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask((boolean) false);*/
         float alpha = (float) endColor.getAlpha() / 255.0f;
         float red = (float) endColor.getRed() / 255.0f;
         float green = (float) endColor.getGreen() / 255.0f;
@@ -643,11 +638,6 @@ public class Rendering {
         bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         tessellator.draw();
-        /*GlStateManager.depthMask((boolean) true);
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();*/
     }
 
     public static void drawGradientBlockOutline(AxisAlignedBB bb, Color startColor, Color endColor, float linewidth) {
@@ -659,15 +649,6 @@ public class Rendering {
         float green1 = (float)endColor.getGreen() / 255.0f;
         float blue1 = (float)endColor.getBlue() / 255.0f;
         float alpha1 = (float)endColor.getAlpha() / 255.0f;
-        /*GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.tryBlendFuncSeparate((int)770, (int)771, (int)0, (int)1);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask((boolean)false);
-        GL11.glEnable((int)2848);
-        GL11.glHint((int)3154, (int)4354);
-        GL11.glLineWidth((float)linewidth);*/
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
@@ -688,12 +669,6 @@ public class Rendering {
         bufferbuilder.pos(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         tessellator.draw();
-        /*GL11.glDisable((int)2848);
-        GlStateManager.depthMask((boolean)true);
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();*/
     }
 
     /**
@@ -1006,7 +981,6 @@ public class Rendering {
 
     public static class TextRendering {
         public static void drawText(BlockPos pos, String text, int color) {
-            if (pos == null || text == null) return;
             GlStateManager.pushMatrix();
             glBillboardDistanceScaled(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, mc.player, 1.0f);
             GlStateManager.disableDepth();

@@ -12,10 +12,7 @@ uniform float maxSample;
 void main() {
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
 
-     if(centerCol.a != 0) {
-         gl_FragColor = vec4(centerCol.rgb, 0);
-     } else {
-
+     if(centerCol.a == 0) {
          float alpha = 0;
 
          for (float x = -radius; x < radius; x++) {
@@ -27,5 +24,7 @@ void main() {
              }
          }
          gl_FragColor = vec4(color, alpha);
+     } else {
+         gl_FragColor = centerCol
      }
 }

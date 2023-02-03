@@ -3,8 +3,9 @@ package com.kisman.cc.features.module.Debug;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.util.ChromaRenderingPattern;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.enums.DirectionVertexes;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,7 +15,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BlockOverlay extends Module {
-    private final ChromaRenderingPattern rendering = new ChromaRenderingPattern(this).init();
+//    private final ChromaRenderingPattern rendering = new ChromaRenderingPattern(this).init();
+    private final RenderingRewritePattern renderer = new RenderingRewritePattern(this, true).init();
 
     /*
     private final Setting color1 = register(new Setting("Color1", this, "Color1", new Colour(255, 255, 255, 120)));
@@ -22,6 +24,7 @@ public class BlockOverlay extends Module {
     private final Setting color3 = register(new Setting("Color3", this, "Color3", new Colour(255, 255, 255, 120)));
      */
 
+    private final Setting thing = register(new Setting("Thing", this, false));
     private final Setting mode = register(new Setting("Mode", this, Mode.Curve));
     private final Setting speed = register(new Setting("Speed", this, 20, 1, 100, true));
 
@@ -55,13 +58,16 @@ public class BlockOverlay extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        if(!isToggled())
-            return;
-
         BlockPos pos = mc.objectMouseOver.getBlockPos();
 
         if(pos == null)
             return;
+
+        if(thing.getValBoolean()) {
+            renderer.draw(Rendering.correct(new AxisAlignedBB(pos)), DirectionVertexes.Xp, DirectionVertexes.Yp, DirectionVertexes.Zp);
+
+            return;
+        }
 
 //        AxisAlignedBB aabb = Rendering.correct(new AxisAlignedBB(pos));
         //EnumFacing facing = mc.objectMouseOver.sideHit;
