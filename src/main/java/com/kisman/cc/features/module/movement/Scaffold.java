@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.Debug;
+package com.kisman.cc.features.module.movement;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -20,13 +20,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ScaffoldTest3 extends Module {
+public class Scaffold extends Module {
 
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     private final Setting tower = register(new Setting("Tower", this, false));
@@ -49,8 +46,8 @@ public class ScaffoldTest3 extends Module {
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
 
-    public ScaffoldTest3(){
-        super("ScaffoldTest3", Category.DEBUG);
+    public Scaffold(){
+        super("Scaffold", Category.MOVEMENT);
     }
 
     private int playerY;

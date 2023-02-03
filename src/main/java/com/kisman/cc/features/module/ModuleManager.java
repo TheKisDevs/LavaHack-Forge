@@ -71,7 +71,7 @@ public class ModuleManager {
 		add(new RectTest());
 //		add(new ScaffoldTest());
 //		add(new ScaffoldTest2());
-		add(new ScaffoldTest3());
+		add(new Scaffold());
 		add(new ScreenShaders());
 		add(new SmoothRenderer());
 		add(SwingTest.INSTANCE);
@@ -205,7 +205,7 @@ public class ModuleManager {
 		add(new NoWeb());
 		add(new Phase());
 		add(new SafeWalk());
-		add(new ScaffoldRewrite());
+		add(new Scaffold());
 		add(new SoftScaffold());
 		add(new Speed());
 //		add(SpeedRewrite.INSTANCE);
