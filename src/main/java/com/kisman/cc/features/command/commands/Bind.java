@@ -2,7 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.Command;
-import com.kisman.cc.features.module.BindType;
+import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.features.module.Module;
 
 import org.lwjgl.input.Keyboard;

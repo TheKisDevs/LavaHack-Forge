@@ -75,6 +75,7 @@ public class HoleFillerRewrite extends ShaderableModule {
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", "", Category.COMBAT, false);
         super.setDisplayInfo(() -> entity == null ? " no target no fun" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
+        super.displayName = "HoleFiller";
     }
 
     private List<BlockPos> holes = new ArrayList<>();

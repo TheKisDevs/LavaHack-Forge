@@ -14,7 +14,7 @@ replay_pid*.log
 options.txt
 .idea
 .fleet
-.vscode/
+.vscode
 auth/.vs/
 auth/SocketAuth/obj/
 auth/SocketAuth/bin/

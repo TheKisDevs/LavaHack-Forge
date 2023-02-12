@@ -2,7 +2,7 @@ package com.kisman.cc.features.hud.modules
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
-import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
@@ -35,7 +35,7 @@ class BindList : HudModule(
         if(modules.valBoolean) {
             for (module in Kisman.instance.moduleManager.modules) {
                 if (IBindable.valid(module)) {
-                    list += Element("${module.name} [${IBindable.getName(module)}]", module.isToggled)
+                    list += Element("${module.displayName} [${IBindable.getName(module)}]", module.isToggled)
                 }
             }
         }
@@ -43,7 +43,7 @@ class BindList : HudModule(
         if(hudModules.valBoolean) {
             for (module in Kisman.instance.hudModuleManager.modules) {
                 if (IBindable.valid(module)) {
-                    list += Element("${module.name} [${IBindable.getName(module)}]", module.isToggled)
+                    list += Element("${module.displayName} [${IBindable.getName(module)}]", module.isToggled)
                 }
             }
         }

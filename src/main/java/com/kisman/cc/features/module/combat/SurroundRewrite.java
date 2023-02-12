@@ -127,6 +127,7 @@ public class SurroundRewrite extends Module {
 
     public SurroundRewrite(){
         super("SurroundRewrite", Category.COMBAT, true);
+        super.displayName = "Surround";
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

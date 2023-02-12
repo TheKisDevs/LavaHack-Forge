@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.IBindable;
+import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.gui.halq.HalqGui;

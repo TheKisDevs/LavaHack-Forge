@@ -1,5 +1,6 @@
-package com.kisman.cc.features.module
+package com.kisman.cc.util.client.interfaces
 
+import com.kisman.cc.util.enums.BindType
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 

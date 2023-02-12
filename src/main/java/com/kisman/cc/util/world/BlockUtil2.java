@@ -126,6 +126,11 @@ public class BlockUtil2 {
         return mc.world.getBlockState(pos).getPlayerRelativeBlockHardness(mc.player, mc.world, pos);
     }
 
+    //i think this method is useless xd
+    public static float getHardness2(BlockPos pos) {
+        return mc.world.getBlockState(pos).getBlockHardness(mc.world, pos);
+    }
+
     public static boolean isPositionPlaceable(BlockPos position, boolean sideCheck, boolean entityCheck) {
         if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
         if (entityCheck) {

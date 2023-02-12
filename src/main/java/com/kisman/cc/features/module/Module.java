@@ -13,6 +13,8 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.client.interfaces.IBindable;
+import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.settings.SettingLoader;
 import me.zero.alpine.listener.Listenable;
 import net.minecraft.client.Minecraft;
@@ -30,7 +32,10 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 
-	private String name, description, displayInfo;
+	private final String name;
+	private String description;
+	public String displayName;
+	private String displayInfo;
 	private int key;
 	public int mouse = -1;
 	public BindType bindType = BindType.Keyboard;
@@ -58,6 +63,7 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 	public Module(String name, String description, Category category, int key, boolean subscribes) {
 		this.name = name;
 		this.description = description;
+		this.displayName = name;
 		this.displayInfo = "";
 		this.key = key;
 		this.category = getClass().isAnnotationPresent(WorkInProgress.class) ? Category.WIP : category;
@@ -104,7 +110,7 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 	}
 
 	private void printToggleMessage() {
-		if (sendToggleMessages && Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + getName() + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
+		if (sendToggleMessages && Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Module " + (isToggled() ? TextFormatting.GREEN : TextFormatting.RED) + displayName + TextFormatting.GRAY + " has been " + (isToggled() ? "enabled" : "disabled") + "!");
 	}
 
 	public void setToggled(boolean toggled) {

@@ -69,6 +69,7 @@ class KillAuraRewrite : Module(
     init {
         setDisplayInfo { "[${if(target == null) "no target no fun" else target?.name }]" }
 
+        displayName = "KillAura"
         instance = this
     }
 

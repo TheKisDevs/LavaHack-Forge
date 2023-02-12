@@ -2,9 +2,9 @@ package com.kisman.cc.util.manager.file
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
-import com.kisman.cc.features.module.BindType
+import com.kisman.cc.util.enums.BindType
 import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.fromColorConfig

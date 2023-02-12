@@ -45,6 +45,7 @@ public class SelfTrapRewrite extends Module {
 
     public SelfTrapRewrite(){
         super("SelfTrapRewrite", Category.COMBAT, true);
+        super.displayName = "SelfTrap";
     }
 
     private EnumFacing headEnumFacing = null;

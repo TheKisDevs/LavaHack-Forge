@@ -2,7 +2,7 @@ package com.kisman.cc.pingbypass.server.protocol.packet.packets.c2s
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.Binder
-import com.kisman.cc.features.module.BindType
+import com.kisman.cc.util.enums.BindType
 import com.kisman.cc.pingbypass.server.protocol.ProtocolIds
 import com.kisman.cc.pingbypass.server.protocol.packet.packets.C2SPacket
 import net.minecraft.network.NetworkManager

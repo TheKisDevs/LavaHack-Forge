@@ -30,6 +30,10 @@ class ItemESPRewrite : Module("ItemESPRewrite", Category.RENDER) {
 
     private val glowingEntities = HashSet<Entity>(64)
 
+    init {
+        displayName = "ItemESP"
+    }
+
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent){
         if(mc.world == null || mc.player == null){

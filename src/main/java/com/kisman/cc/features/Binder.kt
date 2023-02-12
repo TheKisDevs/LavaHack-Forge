@@ -1,7 +1,7 @@
 package com.kisman.cc.features
 
-import com.kisman.cc.features.module.BindType
-import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.util.enums.BindType
+import com.kisman.cc.util.client.interfaces.IBindable
 
 /**
  * @author _kisman_

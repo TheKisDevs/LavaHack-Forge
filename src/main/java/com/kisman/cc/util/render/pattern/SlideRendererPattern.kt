@@ -57,6 +57,23 @@ open class SlideRendererPattern {
 
     open fun handleRenderWorld(
         renderer : SlideRenderingRewritePattern,
+        aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
+        pos : BlockPos?,
+        text : String?
+    ) {
+        update(pos, renderer)
+        renderWorld(
+            renderer.movingLength.valFloat,
+            renderer.fadeLength.valFloat,
+            renderer.alphaFadeLength.valFloat,
+            renderer,
+            aabbModifier,
+            text
+        )
+    }
+
+    open fun handleRenderWorld(
+        renderer : SlideRenderingRewritePattern,
         pos : BlockPos?,
         text : String?
     ) {

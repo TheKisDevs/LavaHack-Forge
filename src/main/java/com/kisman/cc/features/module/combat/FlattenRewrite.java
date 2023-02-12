@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -87,6 +88,7 @@ public class FlattenRewrite extends Module {
 
     private final SlideRendererPattern renderer = new SlideRendererPattern();
 
+    @ModuleInstance
     public static FlattenRewrite instance;
 
     private Queue<BlockPos> blocks = new ConcurrentLinkedQueue<>();
@@ -107,7 +109,7 @@ public class FlattenRewrite extends Module {
 
     public FlattenRewrite() {
         super("FlattenRewrite", Category.COMBAT);
-        instance = this;
+        super.displayName = "Flatten";
         placeThread = new Thread(() -> {
             TimerUtils timer = new TimerUtils();
             boolean toggled = this.isToggled();

@@ -135,7 +135,7 @@ public class Button extends ShaderableImplementation implements Openable {
         };
 
         Runnable shaderRunnable2 = () -> {
-            HalqGui.drawString(mod.getName(), x, y + offset, HalqGui.width, HalqGui.height);
+            HalqGui.drawString(mod.displayName, x, y + offset, HalqGui.width, HalqGui.height);
 
             if (!HalqGui.hideAnnotations) {
                 if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);

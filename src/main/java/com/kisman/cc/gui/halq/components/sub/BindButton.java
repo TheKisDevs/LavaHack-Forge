@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.halq.components.sub;
 
-import com.kisman.cc.features.module.BindType;
-import com.kisman.cc.features.module.IBindable;
+import com.kisman.cc.util.enums.BindType;
+import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;

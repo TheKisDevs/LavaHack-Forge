@@ -16,6 +16,8 @@ object CharmsRewrite : Module(
     val pattern = CharmsRewriteRendererPattern(this)
 
     init {
+        displayName = "Charms"
+
         pattern.init()
     }
 }

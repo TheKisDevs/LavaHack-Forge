@@ -13,6 +13,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.EnumHand;
@@ -291,10 +292,33 @@ public class InventoryUtil {
 
     //rerhack
     public static boolean isArmorUnderPercent(EntityPlayer player, float percent) {
-        for (int i = 3; i >= 0; --i) {
-            final ItemStack stack = player.inventory.armorInventory.get(i);
-            if (getDamageInPercent(stack) < percent) return true;
-        }
+        for (int i = 3; i >= 0; --i) if (getDamageInPercent(player.inventory.armorInventory.get(i)) < percent) return true;
+
         return false;
+    }
+
+    /**
+     * @param slot - hotbar slot
+     */
+    public static void inventorySwap(int slot) {
+        if(slot > -1 && slot < 9) {
+            int target = hotbar2Inventory(slot);
+            int current = hotbar2Inventory(mc.player.inventory.currentItem);
+
+            mc.playerController.windowClick(0, target, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(0, current, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(0, target, 0, ClickType.PICKUP, mc.player);
+        }
+    }
+
+    /**
+     * @param slot - hotbar slot
+     * @return inventory slot
+     */
+    public static int hotbar2Inventory(int slot) {
+        if(slot == -2) return 45;
+        if(slot > -1 && slot < 9) return 39 + slot;
+
+        return slot;
     }
 }

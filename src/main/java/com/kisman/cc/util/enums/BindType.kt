@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module
+package com.kisman.cc.util.enums
 
 /**
  * @author _kisman_

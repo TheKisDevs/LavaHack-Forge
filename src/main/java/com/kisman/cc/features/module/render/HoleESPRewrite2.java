@@ -79,6 +79,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
 
     public HoleESPRewrite2(){
         super("HoleESPRewrite2", Category.RENDER);
+        super.displayName = "HoleESP";
     }
 
     @Override

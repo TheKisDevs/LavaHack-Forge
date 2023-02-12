@@ -258,6 +258,7 @@ public class ModuleManager {
 		add(new PacketEat());
 		add(new PacketFly());
 		add(new PacketMine());
+		add(new PacketMineRewrite3());
 		//add(new PreciseStrongholdFinder());
 		add(new SilentClose());
 		add(new SoundCoordLogger());

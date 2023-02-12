@@ -1,7 +1,7 @@
 package com.kisman.cc.gui.halq.components.sub.combobox
 
 import com.kisman.cc.features.Binder
-import com.kisman.cc.features.module.IBindable
+import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation
 import com.kisman.cc.gui.halq.HalqGui
