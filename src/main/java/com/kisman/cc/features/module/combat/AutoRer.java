@@ -136,10 +136,10 @@ public class AutoRer extends ShaderableModule {
     private final Setting extrapolationShrink = register(extrapolationGroup.add(new Setting("Extrapolation Shrink", this, false).setTitle("Shrink")));
     private final Setting extrapolationRender = register(extrapolationGroup.add(new Setting("Extrapolation Render", this, false).setTitle("Render")));
     private final Setting interpolationTicks = register(helpers.add(new Setting("Interpolation Ticks", this, 0, 0, 10, true).setTitle("Interpolation")));
-    private final SettingGroup antiGlitchGroup = register(helpers.add(new SettingGroup(new Setting("Anti Glitch", this))));
-    private final Setting antiGlitchState = register(antiGlitchGroup.add(new Setting("Anti Glitch State", this, false).setTitle("State")));
-    private final Setting antiGlitchAwait = register(antiGlitchGroup.add(new Setting("Anti Glitch Await", this, 120, 0, 1000, NumberType.TIME).setTitle("Await")));
-    private final Setting antiGlitchSmartAwait = register(antiGlitchGroup.add(new Setting("Anti Glitch Smart Await", this, false).setTitle("Smart Await")));
+    private final SettingGroup antDesyncGroup = register(helpers.add(new SettingGroup(new Setting("Anti Desync", this))));
+    private final Setting antiDesyncState = register(antDesyncGroup.add(new Setting("Anti Desync State", this, false).setTitle("State")));
+    private final Setting antiDesyncAwait = register(antDesyncGroup.add(new Setting("Anti Desync Await", this, 120, 0, 1000, NumberType.TIME).setTitle("Await")));
+    private final Setting antiDesyncSmartAwait = register(antDesyncGroup.add(new Setting("Anti Desync Smart Await", this, false).setTitle("Smart Await")));
 
     private final Setting place = register(place_.add(new Setting("Place", this, true)));
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false)));
@@ -214,7 +214,7 @@ public class AutoRer extends ShaderableModule {
     private final TimerUtils predictTimer = timer();
     private final TimerUtils manualTimer = timer();
     private final TimerUtils syncTimer = timer();
-    private final TimerUtils antiGlitchAwaitTimer = timer();
+    private final TimerUtils antiDesyncAwaitTimer = timer();
     private ScheduledExecutorService executor;
     private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
@@ -326,7 +326,7 @@ public class AutoRer extends ShaderableModule {
         clearTimer.reset();
         predictTimer.reset();
         manualTimer.reset();
-        antiGlitchAwaitTimer.reset();
+        antiDesyncAwaitTimer.reset();
         targets.reset();
         currentTarget = null;
         rotating = false;
@@ -667,7 +667,7 @@ public class AutoRer extends ShaderableModule {
     }
 
     private boolean needToAntiGlitch() {
-        return antiGlitchState.getValBoolean() && !lastBroken && (antiGlitchSmartAwait.getValBoolean() ? antiGlitchAwaitTimer.passedMillis(UtilityKt.getPing() * 2L) : antiGlitchAwaitTimer.passedMillis(antiGlitchAwait.getValInt()));
+        return antiDesyncState.getValBoolean() && !lastBroken && (antiDesyncSmartAwait.getValBoolean() ? antiDesyncAwaitTimer.passedMillis(UtilityKt.getPing() * 2L) : antiDesyncAwaitTimer.passedMillis(antiDesyncAwait.getValInt()));
     }
 
     public boolean needToMultiPlace() {
@@ -1011,7 +1011,7 @@ public class AutoRer extends ShaderableModule {
         }
 
         getTimer(true).reset();
-        antiGlitchAwaitTimer.reset();
+        antiDesyncAwaitTimer.reset();
         lastBroken = true;
     }
 
