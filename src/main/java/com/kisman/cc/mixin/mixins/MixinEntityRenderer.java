@@ -8,7 +8,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.*;
 import com.kisman.cc.features.module.player.CameraClip;
 import com.kisman.cc.features.module.render.NoRender;
-import com.kisman.cc.features.module.render.ViewModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -124,7 +123,7 @@ public class MixinEntityRenderer {
             return;
         if(!mc.player.getHeldItemMainhand().isEmpty)
             return;
-        if(ViewModel.instance.handHide.getValBoolean())
+        if(NoRender.instance.isToggled() &&  NoRender.instance.hands.getValBoolean())
             ci.cancel();
     }
 }

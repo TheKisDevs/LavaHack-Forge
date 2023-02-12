@@ -32,7 +32,7 @@ public class GuiModule extends Module {
     public final Setting uwu = register(new Setting("UwU Locate Mod", this, HalqGui.LocateMode.Left));
     public final Setting test2 = register(new Setting("Test 2", this, true));
     public final Setting test2Color = register(new Setting("Test 2 Color", this, new Colour(30, 30, 30, 121)));
-    public final Setting idkJustAlpha = register(new Setting("Idk Just Alpha", this, 30, 30, 255, true));
+    public final Setting minPrimaryAlpha = register(new Setting("Min Primary Alpha", this, 30, 30, 255, true));
     public final Setting textOffsetX = register(new Setting("Text X Offset", this, 5, 0, 10, true));
     private final SettingGroup outlineGroup = register(new SettingGroup(new Setting("Outline", this)));
     public final Setting outlineColor = register(outlineGroup.add(new Setting("Outline Color", this, new Colour(0, 0, 0, 255)).setTitle("Color")));

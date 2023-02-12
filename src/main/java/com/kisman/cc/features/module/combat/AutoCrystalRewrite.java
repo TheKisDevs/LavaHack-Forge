@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
@@ -51,6 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 5.11.2022
  */
 @Targetable
+@WorkInProgress
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();

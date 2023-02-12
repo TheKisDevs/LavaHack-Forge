@@ -14,15 +14,15 @@ class Binder(
     var mouse : Int,
     private var hold : Boolean
 ) : IBindable {
-    override fun getKeyboardKey(): Int = key
+    override fun getKeyboardKey() : Int = key
 
     override fun setKeyboardKey(
         key : Int
     ) {
-        this.key = key;
+        this.key = key
     }
 
-    override fun getMouseButton(): Int = mouse
+    override fun getMouseButton() : Int = mouse
 
     override fun setMouseButton(
         button : Int
@@ -38,7 +38,7 @@ class Binder(
         this.type = type;
     }
 
-    override fun isHold(): Boolean = hold
+    override fun isHold() : Boolean = hold
 
     override fun setHold(
         hold : Boolean

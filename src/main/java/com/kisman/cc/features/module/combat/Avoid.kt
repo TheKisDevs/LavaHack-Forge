@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.number.NumberType
@@ -24,6 +25,7 @@ import net.minecraft.util.math.BlockPos
  * @author _kisman_
  * @since 21:35 of 27.01.2023
  */
+@WorkInProgress
 class Avoid : Module(
     "Avoid",
     "Avoids auto trap/anchor aura by placing crystals",

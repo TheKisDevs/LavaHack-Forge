@@ -49,7 +49,7 @@ public class BindModeButton extends ShaderableImplementation implements Componen
                                         new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY},
                                         new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
                                 HalqGui.getGradientColour(count).getColor()
                         )
                 );
@@ -62,7 +62,7 @@ public class BindModeButton extends ShaderableImplementation implements Componen
                                         new double[] {x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 HalqGui.getGradientColour(count).getColor(),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
             } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());

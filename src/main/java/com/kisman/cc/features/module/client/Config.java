@@ -43,10 +43,10 @@ public class Config extends Module {
     public Setting guiGradientBackground = register(backgroundGradientGroup.add(new Setting("Gui Gradient Background", this, false).setTitle("State")));
     private final SettingGroup backgroundGradientStartColorGroup = register(backgroundGradientGroup.add(new SettingGroup(new Setting("Start", this))));
     private final SettingGroup backgroundGradientEndColourGroup = register(backgroundGradientGroup.add(new SettingGroup(new Setting("End", this))));
-    public Setting ggbStartColorMode = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color Mode", this, GGBColorMode.Custom).setTitle("Mode").setVisible(guiGradientBackground::getValBoolean)));
-    public Setting ggbStartColor = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color", this, new Colour(0, 0, 0, 30)).setTitle("Color").setVisible(() -> guiGradientBackground.getValBoolean() && ggbStartColorMode.getValEnum() == GGBColorMode.Custom)));
-    public Setting ggbEndColorMode = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color Mode", this, GGBColorMode.Custom).setTitle("Mode").setVisible(guiGradientBackground::getValBoolean)));
-    public Setting ggbEndColor = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color", this, new Colour(0, 0, 0, 30)).setTitle("Color").setVisible(() -> guiGradientBackground.getValBoolean() && ggbEndColorMode.getValEnum() == GGBColorMode.Custom)));
+    public Setting ggbStartColorMode = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color Mode", this, GGBColorMode.Custom).setTitle("Mode")));
+    public Setting ggbStartColor = register(backgroundGradientStartColorGroup.add(new Setting("GGB Start Color", this, new Colour(0, 0, 0, 30)).setTitle("Color")));
+    public Setting ggbEndColorMode = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color Mode", this, GGBColorMode.Custom).setTitle("Mode")));
+    public Setting ggbEndColor = register(backgroundGradientEndColourGroup.add(new Setting("GGB End Color", this, new Colour(0, 0, 0, 30)).setTitle("Color")));
 
     public Setting guiOutline = register(gui.add(new Setting("Gui Outline", this, true).setTitle("Outline")));
     public Setting guiAstolfo = register(gui.add(new Setting("Gui Astolfo", this, false).setTitle("Astolfo")));

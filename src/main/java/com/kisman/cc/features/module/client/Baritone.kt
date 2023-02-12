@@ -25,6 +25,9 @@ class Baritone : Module(
     private val settings = mutableListOf<BaritoneSetting<*>>()
 
     init {
+        toggled = true
+        toggleable = false
+
         for(setting in BaritoneAPI.getSettings().allSettings) {
             when (setting.value) {
                 is Boolean -> {

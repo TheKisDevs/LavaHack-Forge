@@ -71,7 +71,6 @@ public class ModuleManager {
 		add(new RectTest());
 //		add(new ScaffoldTest());
 //		add(new ScaffoldTest2());
-		add(new Scaffold());
 		add(new ScreenShaders());
 		add(new SmoothRenderer());
 		add(SwingTest.INSTANCE);

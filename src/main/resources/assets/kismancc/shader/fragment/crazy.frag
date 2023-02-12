@@ -9,6 +9,8 @@ precision mediump float;
 uniform float time;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform float radius;
+uniform float quality;
 
 uniform vec2 mouse;
 
@@ -60,8 +62,6 @@ float fbm(vec2 pos) {
 }
 
 float glowShader() {
-	float radius = 3.3;
-	float quality = 1.0;
 	float divider = 158.0;
 	float maxSample = 10.0;
 	vec2 texelSize = vec2(1.0 / resolution.x * (radius * quality), 1.0 / resolution.y * (radius * quality));

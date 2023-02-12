@@ -25,8 +25,7 @@ public class Slider extends ShaderableImplementation implements Component {
     private int layer;
 
     private String customValue = "";
-    private boolean hasDot = false;
-    private boolean bool = false;
+    private boolean typing = false;
 
     public Slider(Setting setting, int x, int y, int offset, int count, int layer) {
         this.setting = setting;
@@ -45,7 +44,7 @@ public class Slider extends ShaderableImplementation implements Component {
         double min = setting.getMin();
         double max = setting.getMax();
 
-        if(bool) dragging = false;
+        if(typing) dragging = false;
         else customValue = "";
 
         if (dragging) {
@@ -54,7 +53,7 @@ public class Slider extends ShaderableImplementation implements Component {
             else setting.setValDouble(roundToPlace(((diff / width) * (max - min) + min), 2));
         }
 
-        String toRender = bool ? customValue + "_" : setting.getTitle() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble());
+        String toRender = typing ? customValue + "_" : setting.getTitle() + ": " + setting.getNumberType().getFormatter().apply(setting.getValDouble());
 
         normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
@@ -71,7 +70,7 @@ public class Slider extends ShaderableImplementation implements Component {
                                         new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 HalqGui.getGradientColour(count).getColor(),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
             } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
@@ -85,7 +84,7 @@ public class Slider extends ShaderableImplementation implements Component {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(isMouseOnButton(mouseX, mouseY) && button == 0) dragging = true;
-        if(isMouseOnButton(mouseX, mouseY) && button == 1) bool = true;
+        if(isMouseOnButton(mouseX, mouseY) && button == 1) typing = true;
     }
 
     @Override
@@ -100,14 +99,14 @@ public class Slider extends ShaderableImplementation implements Component {
     }
 
     @Override public void keyTyped(char typedChar, int key) {
-        if(bool) {
+        if(typing) {
             if(key == Keyboard.KEY_RETURN) {
-                bool = false;
+                typing = false;
                 if(!customValue.isEmpty()) setting.setValDouble(TextUtilKt.parseNumber(customValue, setting.getValDouble()));
                 return;
             }
 
-            if(key == 14 && !customValue.isEmpty() && TextUtilKt.parseNumber(customValue, setting.getValDouble()) != setting.getValDouble()) {
+            if((key == 14 || key == Keyboard.KEY_DELETE) && !customValue.isEmpty() && TextUtilKt.parseNumber(customValue, setting.getValDouble()) != setting.getValDouble()) {
                 customValue = customValue.substring(0, customValue.length() - 1);
                 return;
             }

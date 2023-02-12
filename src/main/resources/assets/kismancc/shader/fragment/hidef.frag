@@ -7,6 +7,8 @@ uniform float time;
 uniform vec2 mouse;
 uniform vec2 resolution;
 uniform sampler2D texture;
+uniform float radius;
+uniform float quality;
 
 #define iterations 0
 #define formuparam2 0.79
@@ -56,8 +58,6 @@ float field(in vec3 p) {
 }
 
 float glowShader() {
-    float radius = 2.5;
-    float quality = 1.0;
     float divider = 158.0;
     float maxSample = 10.0;
     vec2 texelSize = vec2(1.0 / resolution.x * (radius * quality), 1.0 / resolution.y * (radius * quality));

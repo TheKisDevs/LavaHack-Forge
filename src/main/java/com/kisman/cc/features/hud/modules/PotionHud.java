@@ -2,7 +2,7 @@ package com.kisman.cc.features.hud.modules;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.hud.HudModule;
+import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.client.collections.Bind;
@@ -17,14 +17,12 @@ import net.minecraft.network.play.server.SPacketRemoveEntityEffect;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
-public class PotionHud extends HudModule {
+public class PotionHud extends ShaderableHudModule {
     private final Setting offsets = register(new Setting("Offsets", this, 2, 0, 10, true));
     private final SettingGroup sortGroup = register(new SettingGroup(new Setting("Sort", this)));
     private final Setting sort = register(sortGroup.add(new Setting("Sort", this, true)));
@@ -32,11 +30,12 @@ public class PotionHud extends HudModule {
     private final Setting sortReverse = register(sortGroup.add(new Setting("Sort Reverse", this, false).setVisible(sort).setTitle("Reverse")));
     private final Setting sliders = register(new Setting("Sliders", this, false));
     private final Setting alpha = register(new Setting("Alpha", this, 255, 0, 255, true));
+    private final Setting shaderedSliders = register(new Setting("Shadered Sliders", this, false));
 
     private final HashMap<String, Bind<PotionEffect, Integer>> potions = new HashMap<>();
 
     public PotionHud(){
-        super("PotionHud", "oh god", true);
+        super("PotionHud", "oh god", true, true, false);
     }
 
     @Override
@@ -62,11 +61,13 @@ public class PotionHud extends HudModule {
                         packet.getAmplifier()
                 );
 
-                if(potions.containsKey(effect.getEffectName())) {
-                    Bind<PotionEffect, Integer> pair = potions.get(effect.getEffectName());
-                    pair.getFirst().combine(effect);
-                    potions.put(effect.getEffectName(), pair);
-                } else potions.put(effect.getEffectName(), new Bind<>(effect, effect.getDuration()));
+                if(effect.getPotion() != null) {
+                    if (potions.containsKey(effect.getEffectName())) {
+                        Bind<PotionEffect, Integer> pair = potions.get(effect.getEffectName());
+                        pair.getFirst().combine(effect);
+                        potions.put(effect.getEffectName(), pair);
+                    } else potions.put(effect.getEffectName(), new Bind<>(effect, effect.getDuration()));
+                }
             }
         } else if(event.getPacket() instanceof SPacketRemoveEntityEffect) {
             SPacketRemoveEntityEffect packet = (SPacketRemoveEntityEffect) event.getPacket();
@@ -74,8 +75,7 @@ public class PotionHud extends HudModule {
         }
     });
 
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent.Text event){
+    public void draw() {
         int height = offsets.getValInt() + CustomFontUtil.getFontHeight() + (sliders.getValBoolean() ? offsets.getValInt() : 0);
         int w = 0;
         int count = 0;
@@ -101,11 +101,16 @@ public class PotionHud extends HudModule {
             if(sliders.getValBoolean() && potions.containsKey(effect.getEffectName())) {
                 double sliderWidth = (getW() + 10) * ((double) potions.get(effect.getEffectName()).getFirst().getDuration() / (double) potions.get(effect.getEffectName()).getSecond());
 
-                Render2DUtil.drawRectWH(getX(), y - offsets.getValInt(), sliderWidth, offsets.getValInt() * 2 + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(effect.getPotion().getLiquidColor(), alpha.getValInt()).getRGB());
+                Runnable sliderRunnable = () -> Render2DUtil.drawRectWH(getX(), y - offsets.getValInt(), sliderWidth, offsets.getValInt() * 2 + CustomFontUtil.getFontHeight(), ColorUtils.injectAlpha(effect.getPotion().getLiquidColor(), alpha.getValInt()).getRGB());
+
+                if(shaderedSliders.getValBoolean()) addShader(sliderRunnable);
+                else addPreNormal(sliderRunnable);
 
                 flag = true;
             }
-            CustomFontUtil.drawStringWithShadow(format(effect), getX() + (flag ? 5 : 0), y, flag ? -1 : effect.getPotion().getLiquidColor());
+
+            boolean finalFlag = flag;
+            addShader(() -> drawStringWithShadow(format(effect), getX() + (finalFlag ? 5 : 0), y, finalFlag ? -1 : effect.getPotion().getLiquidColor()));
             count++;
         }
 

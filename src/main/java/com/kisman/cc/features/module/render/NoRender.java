@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NoRender extends Module {
+    @ModuleInstance
     public static NoRender instance;
 
     public Setting fog = register(new Setting("Fog", this, false));
@@ -48,10 +49,10 @@ public class NoRender extends Module {
     private final Setting lava = register(new Setting("Lava", this, false));
     private final Setting water = register(new Setting("Water", this, false));
     private final Setting crosshair = register(new Setting("Crosshair", this, false));
+    public Setting hands = register(new Setting("Hands", this, false));
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
-        instance = this;
     }
 
     public void onEnable() {

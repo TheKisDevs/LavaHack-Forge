@@ -3,6 +3,8 @@ package com.kisman.cc.features.command.commands
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.command.Command
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.client.GuiModule
+import com.kisman.cc.util.client.annotations.FakeThing
 import com.kisman.cc.util.manager.file.ConfigManager
 import net.minecraft.util.text.TextFormatting
 import java.io.File
@@ -12,10 +14,16 @@ import java.io.File
  * @since 16:56 of 18.05.2022
  */
 class ConfigCommand : Command("config") {
-    override fun runCommand(s: String, args: Array<String>) {
+    override fun runCommand(
+        s : String,
+        args : Array<String>
+    ) {
         try {
             if(args[0] == "save") {
-                if(args.size != 2) {
+                if(args.size == 1) {
+                    Kisman.instance.configManager.saver.init()
+                    complete("Default config was saved!")
+                } else if(args.size > 2) {
                     val modules = ArrayList<Module>()
 
                     for(name in args[3].split(",")) {
@@ -37,8 +45,13 @@ class ConfigCommand : Command("config") {
 
                 complete("Config \"${args[1]}\" was saved!")
             } else if(args[0] == "load") {
-                ConfigManager(args[1]).loader.init()
-                complete("Config \"${args[1]}\" was loaded!")
+                if(args.size == 1) {
+                    Kisman.instance.configManager.loader.init()
+                    complete("Default config was loaded!")
+                } else {
+                    ConfigManager(args[1]).loader.init()
+                    complete("Config \"${args[1]}\" was loaded!")
+                }
             } else if(args[0] == "list") {
                 val configs = ArrayList<String>()
 
@@ -72,12 +85,24 @@ class ConfigCommand : Command("config") {
 
                 complete(output)
             } else if(args[0] == "reset") {
+                fun processModule(
+                    module : Module
+                ) {
+                    if(module !is GuiModule && !module::class.java.isAnnotationPresent(FakeThing::class.java))
+                    module.key = -1
+                    module.mouse = -1
+
+                    if(module.toggleable) {
+                        module.isToggled = false
+                    }
+                }
+
                 for(module in Kisman.instance.moduleManager.modules) {
-                    module.isToggled = false
+                    processModule(module)
                 }
 
                 for(module in Kisman.instance.hudModuleManager.modules) {
-                    module.isToggled = false
+                    processModule(module)
                 }
 
                 for(setting in Kisman.instance.settingsManager.settings) {
@@ -95,16 +120,14 @@ class ConfigCommand : Command("config") {
         }
     }
 
-    override fun getDescription() : String {
-        return "cfg maker btw"
-    }
+    override fun getDescription() : String = "cfg maker btw"
 
-    override fun getSyntax() : String {
-        return "config save/load <name>" +
+    override fun getSyntax() : String =
+                "config save/load <name>" +
                 "\nconfig list" +
                 "\nconfig save <name> module <module>" +
                 "\nconfig save <name> module <module1>,<module2>" +
                 "\nconfig save <name> hud_module <hud_module1>,<hud_module2>" +
-                "\nconfig reset"
-    }
+                "\nconfig reset" +
+                "\nconfig save/load"
 }

@@ -15,8 +15,8 @@ import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.client.collections.Pair;
-import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.client.interfaces.Drawable;
+import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
@@ -160,6 +160,123 @@ public class ShaderCharms extends Module {
 
         flag = !modulesToRender.isEmpty();
     }
+
+    /*boolean flag1 = false;
+    boolean flag2 = false;
+    boolean flag3 = false;
+
+    private ArrayList<Entity> entitiesPostRender = new ArrayList<>();
+
+    private Listener<RenderEntitiesEvent.Start> renderEntitiesStart = new Listener<>(event -> {
+        flag1 = players.getValBoolean() || friends.getValBoolean() || crystals.getValBoolean() || mobs.getValBoolean() || enderPearls.getValBoolean() || itemsEntity.getValBoolean() || animals.getValBoolean();
+        flag2 = !entities.isEmpty();
+        flag3 = items.getValBoolean() && mc.gameSettings.thirdPersonView == 0;
+        entitiesPostRender.clear();
+
+        if(flag && flag5) for(Drawable module : modulesToRender.keySet()) if(modulesToRender.get(module)) module.draw();
+
+        Function0<Unit> uniforms = () -> {
+            FramebufferShader framebufferShader = mode.getValEnum().getBuffer();
+            framebufferShader.animationSpeed = animationSpeed.getValInt();
+
+            if(framebufferShader instanceof GlowableShader) {
+                ((GlowableShader) framebufferShader).radius = radius.getValFloat();
+                ((GlowableShader) framebufferShader).quality = quality.getValFloat();
+            } else if (mode.getValEnum() == Shaders.ITEMGLOW) {
+                ((ItemShader) framebufferShader).red = getColor().getRed() / 255f;
+                ((ItemShader) framebufferShader).green = getColor().getGreen() / 255f;
+                ((ItemShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                ((ItemShader) framebufferShader).radius = radius.getValFloat();
+                ((ItemShader) framebufferShader).quality = quality.getValFloat();
+                ((ItemShader) framebufferShader).blur = blur.getValBoolean();
+                ((ItemShader) framebufferShader).mix = mix.getValFloat();
+                ((ItemShader) framebufferShader).alpha = 1f;
+                ((ItemShader) framebufferShader).useImage = false;
+            } else if (mode.getValEnum() == Shaders.GRADIENT) {
+                ((GradientOutlineShader) framebufferShader).color = getColor();
+                ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();
+                ((GradientOutlineShader) framebufferShader).quality = quality.getValFloat();
+                ((GradientOutlineShader) framebufferShader).gradientAlpha = gradientAlpha.getValBoolean();
+                ((GradientOutlineShader) framebufferShader).alphaOutline = alphaGradient.getValInt();
+                ((GradientOutlineShader) framebufferShader).duplicate = duplicateOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).moreGradient = moreGradientOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).creepy = creepyOutline.getValFloat();
+                ((GradientOutlineShader) framebufferShader).alpha = alpha.getValFloat();
+                ((GradientOutlineShader) framebufferShader).numOctaves = numOctavesOutline.getValInt();
+
+                ((GradientOutlineShader) framebufferShader).update(speedOutline.getValDouble());
+            } else if(mode.getValEnum() == Shaders.GLOW) {
+                ((GlowShader) framebufferShader).red = getColor().getRed() / 255f;
+                ((GlowShader) framebufferShader).green = getColor().getGreen() / 255f;
+                ((GlowShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                ((GlowShader) framebufferShader).radius = radius.getValFloat();
+                ((GlowShader) framebufferShader).quality = quality.getValFloat();
+            } else if(mode.getValEnum() == Shaders.OUTLINE) {
+                ((OutlineShader) framebufferShader).red = getColor().getRed() / 255f;
+                ((OutlineShader) framebufferShader).green = getColor().getGreen() / 255f;
+                ((OutlineShader) framebufferShader).blue = getColor().getBlue() / 255f;
+                ((OutlineShader) framebufferShader).radius = radius.getValFloat();
+                ((OutlineShader) framebufferShader).quality = quality.getValFloat();
+                ((OutlineShader) framebufferShader).rainbowSpeed = rainbowSpeed.getValFloat();
+                ((OutlineShader) framebufferShader).rainbowStrength = rainbowStrength.getValFloat();
+                ((OutlineShader) framebufferShader).saturation = rainbowSaturation.getValFloat();
+            } else if(mode.getValEnum() == Shaders.Kfc) {
+                ((KfcShader) framebufferShader).radius = radius.getValFloat();
+                ((KfcShader) framebufferShader).quality = quality.getValFloat();
+            }
+
+            return Unit.INSTANCE;
+        };
+
+        ShaderHelperKt.startShader(mode.getValEnum(), uniforms, mc.getRenderPartialTicks());
+    });
+
+    private Listener<RenderEntitiesEvent.End> renderEntitiesEnd = new Listener<>(event -> {
+        if(flag) for(Drawable module : modulesToRender.keySet()) {
+            if(module instanceof ShaderableModule) {
+                ShaderableModule shaderable = (ShaderableModule) module;
+
+                shaderable.handleDrawShadered();
+            } else {
+                module.draw();
+            }
+        }
+
+        if(flag3) {
+            criticalSection = true;
+            mc.entityRenderer.renderHand(mc.getRenderPartialTicks(), 2);
+            criticalSection = false;
+        }
+
+        ShaderHelperKt.endShader(mode.getValEnum());
+
+        for(Entity entity : entitiesPostRender) {
+            if(!entity.shouldRenderInPass(MinecraftForgeClient.getRenderPass())) continue;
+
+            boolean flag = mc.renderManager.shouldRender(entity, camera, d0, d1, d2) || entity.isRidingOrBeingRiddenBy(mc.player);
+
+            if (flag) {
+                boolean flag_ = mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase) mc.getRenderViewEntity()).isPlayerSleeping();
+
+                if ((entity != mc.getRenderViewEntity() || mc.gameSettings.thirdPersonView != 0 || flag_) && (entity.posY < 0.0D || entity.posY >= 256.0D || mc.world.isBlockLoaded(blockpos$pooledmutableblockpos.setPos(entity)))) mc.renderManager.renderEntityStatic(entity, mc.getRenderPartialTicks(), false);
+            }
+        }
+    });
+
+    private Listener<RenderEntityEvent.All.Pre> renderEntityPre = new Listener<>(event -> {
+        if (!((event.getEntity() instanceof EntityPlayer && players.getValBoolean())
+                || (event.getEntity() instanceof EntityPlayer && friends.getValBoolean() && FriendManager.instance.isFriend(event.getEntity().getName()))
+                || (event.getEntity() instanceof EntityEnderCrystal && crystals.getValBoolean())
+                || ((event.getEntity() instanceof EntityMob || event.getEntity() instanceof EntitySlime) && mobs.getValBoolean())
+                || ((event.getEntity() instanceof EntityEnderPearl) && enderPearls.getValBoolean())
+                || ((event.getEntity() instanceof EntityItem) && itemsEntity.getValBoolean())
+                || (event.getEntity() instanceof EntityAnimal && animals.getValBoolean()))) {
+            event.cancel();
+            return;
+        }
+
+        entitiesPostRender.add(event.getEntity());
+    });*/
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {

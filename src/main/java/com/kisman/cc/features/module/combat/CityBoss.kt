@@ -62,6 +62,7 @@ class CityBoss : Module(
 
     private val debug1 = register(Setting("Debug 1", this, false))
     private val debug2 = register(Setting("Debug 2", this, false))
+    private val debug3 = register(Setting("Debug 3", this, false))
 
     private val autorerSync = register(SettingGroup(Setting("Auto ReR Sync", this)))
     private val autorerTargetSync = register(autorerSync.add(Setting("Auto Rer Target Sync", this, false).setTitle("Target")))
@@ -140,10 +141,10 @@ class CityBoss : Module(
             displayInfo("Trapping")
         } else {
             if(isBurrowed(player!!) && debug2.valBoolean) {
-                displayInfo("Mining burrow block")
+                displayInfo("Mining burrow")
                 mineBlock(entityPosition(player!!))
             } else {
-                displayInfo("Mining surround block")
+                displayInfo("Mining surround")
                 processPlayer(player!!)
             }
         }
@@ -191,18 +192,19 @@ class CityBoss : Module(
                 //Only by burrow miner
                 println("kill yourself <3")
             }
-        } else if(!clicked && mineMode.valEnum == MineMode.PacketMine) {
-            if(!PacketMine.instance.isToggled) {
+        } else if((!clicked || debug3.valBoolean) && mineMode.valEnum == MineMode.PacketMine) {
+            /*if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
-            }
-
+            }*/
+            mc.player.swingArm(EnumHand.MAIN_HAND)
+            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
 //            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
-            if(PacketMineProvider.position != pos) {
+            /*if(PacketMineProvider.position != pos) {
                 PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
-            }
+            }*/
             /*mc.player.swingArm(EnumHand.MAIN_HAND)
             mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)*/
 //            PacketMineProvider.posToMine = pos

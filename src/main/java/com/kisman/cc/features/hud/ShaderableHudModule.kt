@@ -63,7 +63,7 @@ abstract class ShaderableHudModule(
         color : Int
     ) {
         if(shaderSetting.valBoolean) {
-            CustomFontUtil.drawString(text, x, y + 1, color)
+            CustomFontUtil.drawString(text, x, y + 2, color)
         } else {
             CustomFontUtil.drawStringWithShadow(text, x, y, color)
         }

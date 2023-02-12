@@ -132,8 +132,8 @@ public class ColorButton extends ShaderableImplementation implements Component {
                                         new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY},
                                         new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
-                                color.getColor(),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt())
+                                ColorUtils.injectAlpha(color.getColor(), GuiModule.instance.minPrimaryAlpha.getValInt()),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
                 Render2DUtil.drawAbstract(
@@ -144,8 +144,8 @@ public class ColorButton extends ShaderableImplementation implements Component {
                                         new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
                                         new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY}
                                 ),
-                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
-                                color.getColor()
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
+                                ColorUtils.injectAlpha(color.getColor(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
             } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
@@ -154,14 +154,15 @@ public class ColorButton extends ShaderableImplementation implements Component {
 
             if (open) {
                 int offsetY = HalqGui.height;
-                if (GuiModule.instance.colorPickerClearColor.getValBoolean()) {
-                    drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), clearColor.r1, clearColor.g1, clearColor.b1, clearColor.a1, mouseX, mouseY);
-                } else {
-                    drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
-                }
+
+                Colour renderColor = GuiModule.instance.colorPickerClearColor.getValBoolean() ? clearColor : color;
+
+                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), renderColor.r1, renderColor.g1, renderColor.b1, renderColor.a1, mouseX, mouseY);
                 offsetY += pickerWidth;
+
                 drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
                 offsetY += HalqGui.height - 3;
+
                 drawAlphaSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
                 height = offsetY + HalqGui.height - 3;
 
@@ -186,21 +187,20 @@ public class ColorButton extends ShaderableImplementation implements Component {
     }
 
     private void updateValue(int mouseX, int mouseY, double x, double y) {
+        float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
+        float restrictedY = (float) Math.min(Math.max(y, mouseY), y + pickerWidth);
+
         if (pickingBase) {
-            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
-            float restrictedY = (float) Math.min(Math.max(y, mouseY), y + pickerWidth);
             color.setSaturation((restrictedX - (float) x) / pickerWidth);
-            this.color.setBrightness(1 - (restrictedY - (float) y) / pickerWidth);
+            color.setBrightness(1 - (restrictedY - (float) y) / pickerWidth);
         }
+
         if (pickingHue) {
-            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
-            this.color.setHue((restrictedX - (float) x) / pickerWidth);
-            this.clearColor.setHue((restrictedX - (float) x) / pickerWidth);
+            color.setHue((restrictedX - (float) x) / pickerWidth);
+            clearColor.setHue((restrictedX - (float) x) / pickerWidth);
         }
-        if (pickingAlpha) {
-            float restrictedX = (float) Math.min(Math.max(x, mouseX), x + pickerWidth);
-            this.color.setAlpha(1 - (restrictedX - (float) x) / pickerWidth);
-        }
+
+        if (pickingAlpha) color.setAlpha(1 - (restrictedX - (float) x) / pickerWidth);
     }
 
     @Override
@@ -211,43 +211,46 @@ public class ColorButton extends ShaderableImplementation implements Component {
             pickingHue = hueHover;
             pickingAlpha = alphaHover;
         }
-        if(!GuiModule.instance.colorPickerCopyPaste.getValBoolean())
-            return;
+
+        if(!GuiModule.instance.colorPickerCopyPaste.getValBoolean()) return;
+
         if(button == 1 && baseHover && doCopy){
             copyColorToClipboard();
             doCopy = false;
         }
-        if(button == 1 && !baseHover)
-            doCopy = true;
+
+        if(button == 1 && !baseHover) doCopy = true;
+
         if(button == 2 && baseHover && doPaste){
             Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-            if(!transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
-                return;
             String content;
+
+            if(!transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) return;
+
             try {
                 content = (String) transferable.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException | IOException e) {
                 Kisman.LOGGER.error(e);
                 return;
             }
+
             Colour color = readColorHex(content);
-            if(color == null)
-                return;
+
+            if(color == null) return;
+
             this.color = color;
             setClearColor(this.color);
             doPaste = false;
         }
-        if(button == 2 && !baseHover)
-            doPaste = true;
+
+        if(button == 2 && !baseHover) doPaste = true;
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
         pickingBase = pickingAlpha = pickingHue = false;
-        if(mouseButton == 1)
-            doCopy = true;
-        if(mouseButton == 2)
-            doPaste = true;
+        if(mouseButton == 1) doCopy = true;
+        else if(mouseButton == 2) doPaste = true;
     }
 
     @Override

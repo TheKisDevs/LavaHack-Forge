@@ -11,6 +11,7 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.settings.SettingLoader;
 import me.zero.alpine.listener.Listenable;
@@ -234,6 +235,10 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 
 	public MultiThreaddableModulePattern threads() {
 		return new MultiThreaddableModulePattern(this).preInit().init();
+	}
+
+	public TimerUtils timer() {
+		return new TimerUtils();
 	}
 
 	protected void dontSendToggleMessages() {

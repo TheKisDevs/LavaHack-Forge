@@ -69,7 +69,7 @@ public class Logo extends ShaderableHudModule {
             };
 
             shaderRender = () -> {
-                drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 2 + (shaderSetting.getValBoolean() ? 1 : 0), color);
+                drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + text, x + 2, y + 1, color);
                 Gui.drawRect(x, y - 5, x + width, y - 4, color);
             };
         } else if(mode.checkValString("GishCode")) {

@@ -66,7 +66,7 @@ public class Button extends ShaderableImplementation implements Openable {
             offsetY += HalqGui.height;
             comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
         } else {
-            if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
+            if(!mod.getClass().isAnnotationPresent(FakeThing.class) && mod.toggleable) {
                 comps.add(new BindButton(mod, x, y, offsetY, count1++, 1));
                 offsetY += HalqGui.height;
                 comps.add(new VisibleBox(mod, x, y, offsetY, count1++, 1));
@@ -126,7 +126,7 @@ public class Button extends ShaderableImplementation implements Openable {
                                             new double[]{x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
                                             new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                     ),
-                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
                                     HalqGui.getGradientColour(count).getColor()
                             )
                     );

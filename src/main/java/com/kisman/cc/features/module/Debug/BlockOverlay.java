@@ -55,7 +55,7 @@ public class BlockOverlay extends Module {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
-        if(mc.player == null || mc.world == null)
+        if(mc.player == null || mc.world == null || mc.objectMouseOver == null)
             return;
 
         BlockPos pos = mc.objectMouseOver.getBlockPos();

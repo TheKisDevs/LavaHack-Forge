@@ -110,7 +110,7 @@ class GroupButton(
                                 (y_ + offset + HalqGui.height).toDouble() - HalqGui.offsetsY
                             )
                         ),
-                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt),
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.minPrimaryAlpha.valInt),
                         HalqGui.getGradientColour(count).color
                     )
                 )
@@ -135,7 +135,7 @@ class GroupButton(
                             )
                         ),
                         HalqGui.getGradientColour(count).color,
-                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.idkJustAlpha.valInt)
+                        ColorUtils.injectAlpha(HalqGui.backgroundColor.rgb, GuiModule.instance.minPrimaryAlpha.valInt)
                     )
                 )
             } else Render2DUtil.drawRectWH(

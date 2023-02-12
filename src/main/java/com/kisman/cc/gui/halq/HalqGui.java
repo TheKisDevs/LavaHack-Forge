@@ -16,7 +16,6 @@ import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
-import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
@@ -116,10 +115,10 @@ public class HalqGui extends KismanGuiScreen {
 
     public HalqGui() {
         this(true);
-        int offsetX = 0;
+        int offsetX = 5;
         for(Category cat : Category.values()) {
-            frames.add(new Frame(cat, offsetX, 17));
-            offsetX += headerOffset * 2 + width - 1 - 1 - 1 - 1 - 1 - 1 - 1;
+            frames.add(new Frame(cat, offsetX, 20));
+            offsetX += width + 5;
         }
     }
 
@@ -272,6 +271,8 @@ public class HalqGui extends KismanGuiScreen {
     public static void drawString(String text, int x, int y, int width, int height) {
         if(currentComponent != null && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) Render2DUtil.drawRectWH(x + offsetsX, y + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, height - HalqGui.offsetsY * 2, HalqGui.hoverColor.getRGB());
 
+        GL11.glPushMatrix();
+
         switch (stringLocateMode) {
             case Center:
                 CustomFontUtil.drawCenteredStringWithShadow(text, x + (double) width / 2, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
@@ -280,6 +281,8 @@ public class HalqGui extends KismanGuiScreen {
                 CustomFontUtil.drawStringWithShadow(text, x + textOffsetX, y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
                 break;
         }
+
+        GL11.glPopMatrix();
     }
 
     public static void drawSuffix(String suffix, String parentText, double x, double y, double width, double height, Colour colour, int step) {
@@ -363,33 +366,33 @@ public class HalqGui extends KismanGuiScreen {
     ) {
         if(!component.visible()) return;
 
-        if(HalqGui.line) {
+        if(line) {
             Render2DUtil.drawRectWH(
                     component.getX(),
                     component.getY(),
                     1,
                     component.getRawHeight(),
-                    HalqGui.getGradientColour(component.getCount()).getRGB()
+                    getGradientColour(component.getCount()).getRGB()
             );
             Render2DUtil.drawRectWH(
                     component.getX() + LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - 1,
                     component.getY(),
                     1,
                     component.getRawHeight(),
-                    HalqGui.getGradientColour(component.getCount()).getRGB()
+                    getGradientColour(component.getCount()).getRGB()
             );
         }
 
         if(component instanceof Openable) {
             Openable openable = (Openable) component;
 
-            if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
+            if(test && openable.isOpen() && !openable.getComponents().isEmpty()) {
                 Render2DUtil.drawRectWH(
                         component.getX(),
                         component.getY() + component.getRawHeight(),
                         LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
                         1,
-                        HalqGui.getGradientColour(openable.getComponents().get(0).getCount()).getRGB()
+                        getGradientColour(openable.getComponents().get(0).getCount()).getRGB()
                 );
 
                 int height = doIterationUpdateComponent(
@@ -402,58 +405,7 @@ public class HalqGui extends KismanGuiScreen {
                         component.getY() + component.getRawHeight() + height - 1,
                         LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
                         1,
-                        HalqGui.getGradientColour(openable.getComponents().get(openable.getComponents().size() - 1).getCount()).getRGB()
-                );
-            }
-        }
-    }
-
-    public static void renderComponent(
-            Component component,
-            int color
-    ) {
-        if(!component.visible()) return;
-
-        if(HalqGui.line) {
-            Render2DUtil.drawRectWH(
-                    component.getX(),
-                    component.getY(),
-                    1,
-                    component.getRawHeight(),
-                    color
-            );
-            Render2DUtil.drawRectWH(
-                    component.getX() + LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width) - 1,
-                    component.getY(),
-                    1,
-                    component.getRawHeight(),
-                    color
-            );
-        }
-
-        if(component instanceof Openable) {
-            Openable openable = (Openable) component;
-
-            if(HalqGui.test && openable.isOpen() && !openable.getComponents().isEmpty()) {
-                Render2DUtil.drawRectWH(
-                        component.getX(),
-                        component.getY() + component.getRawHeight(),
-                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
-                        1,
-                        color
-                );
-
-                int height = doIterationUpdateComponent(
-                        openable.getComponents(),
-                        0
-                );
-
-                Render2DUtil.drawRectWH(
-                        component.getX(),
-                        component.getY() + component.getRawHeight() + height - 1,
-                        LayerControllerKt.getModifiedWidth(component.getLayer(), HalqGui.width),
-                        1,
-                        color
+                        getGradientColour(openable.getComponents().get(openable.getComponents().size() - 1).getCount()).getRGB()
                 );
             }
         }
@@ -578,11 +530,7 @@ public class HalqGui extends KismanGuiScreen {
 
                 if(flag) {
                     addShaderRunnable(() -> renderComponent(component));
-                    addPostRenderRunnable(() -> {
-                        if(GuiModule.instance.shaders.mode.getValEnum() == Shaders.ITEMGLOW) renderComponent(component, new Color(GuiModule.instance.shaders.red.getValFloat(), GuiModule.instance.shaders.green.getValFloat(), GuiModule.instance.shaders.blue.getValFloat()).getRGB());
-
-                        drawComponentOutline(component, true, HalqGui.outlineTest, false);
-                    });
+                    addPostRenderRunnable(() -> drawComponentOutline(component, true, HalqGui.outlineTest, false));
                 }
             } else {
                 shaderable.shaderRender().getFirst().run();

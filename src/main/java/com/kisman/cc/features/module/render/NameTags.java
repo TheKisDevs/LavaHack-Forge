@@ -1,13 +1,16 @@
 package com.kisman.cc.features.module.render;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.RenderEntityEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.Rendering;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -20,16 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public class  NameTags extends Module {
-    private final Setting range = register(new Setting("Range", this, 0, 50 ,100, false));
+public class NameTags extends Module {
     private final Setting scale = register(new Setting("Scale", this, 0.1f, 0.1f, 0.3f, false));
     private final Setting bgAlpha = register(new Setting("BG Alpha", this, 128, 0, 250, true));
     private final Setting ping = register(new Setting("Ping", this, true));
@@ -38,84 +37,68 @@ public class  NameTags extends Module {
     private final Setting atheist = register(new Setting("Atheist", this, true));
     private final Setting desc = register(new Setting("Desc", this, false));
     private final Setting noBots = register(new Setting("No Bots", this, false));
+    private final Setting self = register(new Setting("Self", this, false));
 
-    private final MultiThreaddableModulePattern threads = threads();
-
+    @ModuleInstance
     public static NameTags instance;
 
-    private int counter2;
     private final HashMap<String, Integer> tagList = new HashMap<>();
     private final HashMap<String, String> damageList = new HashMap<>();
 
-    private ArrayList<EntityPlayer> list = new ArrayList<>();
-
     public NameTags() {
         super("NameTags", Category.RENDER);
-        instance = this;
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
-        threads.reset();
+        Kisman.EVENT_BUS.subscribe(renderEntity);
     }
 
-    @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
-        threads.update(() -> {
-            ArrayList<EntityPlayer> list = new ArrayList<>();
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(renderEntity);
+    }
 
-            for(EntityPlayer player : mc.world.playerEntities) {
-                if(noBots.getValBoolean()) {
-                    try {
-                        mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();//ping = -1
-                    } catch (NullPointerException ignored) {
-                        continue;
-                    }
+    private final Listener<RenderEntityEvent.All.Post> renderEntity = new Listener<>(event -> {
+        if(event.getEntity() instanceof EntityPlayer && (event.getEntity() != mc.player || (self.getValBoolean() && mc.gameSettings.thirdPersonView != 0))) {
+            EntityPlayer player = (EntityPlayer) event.getEntity();
+
+            int ping = -1;
+
+            try {
+                ping = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();
+            } catch (NullPointerException ignored) {
+                if(noBots.getValBoolean()) return;
+            }
+
+            if (damageDisplay.getValBoolean()) {
+                if (!tagList.containsKey(player.getName())) {
+                    tagList.put(player.getName(), (int) player.getHealth());
+                    damageList.put(player.getName(), "");
                 }
-
-                if(player != mc.player && mc.player.getDistance(player) <= range.getValInt() && player != mc.getRenderViewEntity() && player.isEntityAlive()) {
-                    if (damageDisplay.getValBoolean()) {
-                        if (!tagList.containsKey(player.getName())) {
-                            tagList.put(player.getName(), (int) player.getHealth());
-                            damageList.put(player.getName(), "");
-                        }
-                        if (player.isDead || player.getHealth() <= 0.0f) {
-                            tagList.remove(player.getName());
-                            damageList.remove(player.getName());
-                        }
-                    }
-
-                    list.add(player);
-                }
-
-                if (counter2 == 601 && damageDisplay.getValBoolean()) {
+                if (player.isDead || player.getHealth() <= 0.0f) {
                     tagList.remove(player.getName());
                     damageList.remove(player.getName());
                 }
             }
 
-            if (counter2 == 601) counter2 = 0;
-            ++counter2;
-
-            this.list = list;
-        });
-
-        for(EntityPlayer player : list) {
             double pX = player.lastTickPosX + (player.posX - player.lastTickPosX) * mc.timer.renderPartialTicks;
             double pY = player.lastTickPosY + (player.posY - player.lastTickPosY) * mc.timer.renderPartialTicks;
             double pZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * mc.timer.renderPartialTicks;
-            Entity renderEntity = mc.getRenderManager().renderViewEntity;
+            Entity renderEntity = mc.renderManager.renderViewEntity;
             if (renderEntity == null) renderEntity = mc.player;
             if (renderEntity == null) return;
             double rX = renderEntity.lastTickPosX + (renderEntity.posX - renderEntity.lastTickPosX) * mc.timer.renderPartialTicks;
             double rY = renderEntity.lastTickPosY + (renderEntity.posY - renderEntity.lastTickPosY) * mc.timer.renderPartialTicks;
             double rZ = renderEntity.lastTickPosZ + (renderEntity.posZ - renderEntity.lastTickPosZ) * mc.timer.renderPartialTicks;
-            renderNametag(player, pX - rX, pY - rY, pZ - rZ);
-        }
-    }
 
-    public void renderNametag(EntityPlayer player, double x, double y, double z) {
+            renderNametag(player, pX - rX, pY - rY, pZ - rZ, ping);
+        }
+    });
+
+    public void renderNametag(EntityPlayer player, double x, double y, double z, int ping0) {
         Rendering.setup();
         TextFormatting clr;
         TextFormatting clrf = TextFormatting.WHITE;
@@ -126,9 +109,7 @@ public class  NameTags extends Module {
         } else if(EnemyManager.INSTANCE.enemy(player)) {
             clrf = TextFormatting.RED;
         }
-        int pingy = -1;
-        try {pingy = mc.player.connection.getPlayerInfo(player.getUniqueID()).getResponseTime();} catch (NullPointerException ignored) {}
-        String playerPing = pingy + "ms  ";
+        String playerPing = ping0 + "ms  ";
         if (!ping.getValBoolean()) playerPing = "";
         int health = MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
         boolean damageDisplay = this.damageDisplay.getValBoolean();
@@ -139,7 +120,7 @@ public class  NameTags extends Module {
         else clr = TextFormatting.DARK_RED;
         int lasthealth = 0;
         try {
-            lasthealth = this.tagList.get(player.getName());
+            lasthealth = tagList.get(player.getName());
         } catch(Exception ignored) {}
         if (damageDisplay) {
             if (lasthealth > health) this.damageList.put(player.getName(), TextFormatting.RED + " -" + (lasthealth - health));
@@ -147,11 +128,11 @@ public class  NameTags extends Module {
         }
         String dmgtext = "";
         try {
-            if (damageDisplay && damageList.containsKey(player.getName())) dmgtext = this.damageList.get(player.getName());
+            if (damageDisplay && damageList.containsKey(player.getName())) dmgtext = damageList.get(player.getName());
         } catch(Exception ignored) {}
         String name = cross + clrf + playerPing + player.getName() + " " + clr + health + dmgtext;
         name = name.replace(".0", "");
-        float var14 = 0.016666668f * this.getNametagSize(player);
+        float var14 = 0.016666668f * getNametagSize(player);
         GL11.glTranslated(x, y + 2.5 + var14 * 10.0f, z);
         GL11.glNormal3f(0.0f, 1.0f, 0.0f);
         GL11.glRotatef(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
@@ -168,21 +149,21 @@ public class  NameTags extends Module {
         int n = 0;
         ++array[n];//9 + 14 / 2 - font.fontHeight / 2
         mc.fontRenderer.drawStringWithShadow(name, -width, 9 + 7 - (mc.fontRenderer.FONT_HEIGHT) / 2f, Color.red.getRGB());
-        boolean item = this.items.getValBoolean();
+        boolean item = items.getValBoolean();
         if (item) {
             int xOffset = -8;
-            for (final ItemStack armourStack : player.inventory.armorInventory) if (armourStack != null) xOffset -= 8;
+            for (ItemStack armourStack : player.inventory.armorInventory) if (armourStack != null) xOffset -= 8;
             if (!player.getHeldItemMainhand().isEmpty()) {
                 xOffset -= 8;
-                final ItemStack renderStack = player.getHeldItemMainhand().copy();
+                ItemStack renderStack = player.getHeldItemMainhand().copy();
                 this.renderItem(renderStack, xOffset, -10);
                 xOffset += 16;
             }
             for (int index = 3; index >= 0; --index) {
                 ItemStack armourStack2 = player.inventory.armorInventory.get(index);
                 if (!armourStack2.isEmpty()) {
-                    final ItemStack renderStack2 = armourStack2.copy();
-                    this.renderItem(renderStack2, xOffset, -10);
+                    ItemStack renderStack2 = armourStack2.copy();
+                    renderItem(renderStack2, xOffset, -10);
                     xOffset += 16;
                 }
             }

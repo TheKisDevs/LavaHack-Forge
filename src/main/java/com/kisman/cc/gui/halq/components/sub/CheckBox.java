@@ -55,7 +55,7 @@ public class CheckBox extends ShaderableImplementation implements Openable {
                                             new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
                                             new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
                                     ),
-                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.idkJustAlpha.getValInt()),
+                                    ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
                                     HalqGui.getGradientColour(count).getColor()
                             )
                     );

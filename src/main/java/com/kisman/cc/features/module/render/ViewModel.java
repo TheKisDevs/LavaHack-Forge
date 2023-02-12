@@ -15,6 +15,7 @@ import static org.lwjgl.opengl.GL11.*;
  */
 
 public class ViewModel extends Module {
+    @ModuleInstance
     public static ViewModel instance;
 
     public Setting customEating = register(new Setting("Custom Eating", this, false));
@@ -60,8 +61,6 @@ public class ViewModel extends Module {
     public Setting autoRotateLeftY = register(autoRotateG.add(new Setting("AutoRotateLeftY", this, false)));
     public Setting autoRotateLeftZ = register(autoRotateG.add(new Setting("AutoRotateLeftZ", this, false)));
 
-    public Setting handHide = register(new Setting("HandHide", this, false));
-
     //hand pos modifier
     private final SettingGroup handsG = register(new SettingGroup(new Setting("Hands", this)));
     public Setting hands = register(handsG.add(new Setting("Hands", this, false)));
@@ -91,7 +90,6 @@ public class ViewModel extends Module {
 
     public ViewModel() {
         super("ViewModel", "modeL vieM", Category.RENDER);
-        instance = this;
     }
 
     public void hand(EnumHandSide side) {
