@@ -62,6 +62,8 @@ public class EasingEnum implements AbstractTaskProvider {
     public enum Easing implements IEasing {
         @In @Out Linear(dd.task(arg -> arg.fetch(0))),
 
+        @In Curve(dd.task(arg -> MathUtil.curve(arg.fetch(0)))),
+
         @In InSine(dd.task(arg -> 1.0 - Math.cos(((Double) arg.fetch(0) * Math.PI) / 2))),
         @Out OutSine(dd.task(arg -> Math.sin(((Double) arg.fetch(0) * Math.PI) / 2))),
         @In InOutSine(dd.task(arg -> -(Math.cos(Math.PI * (Double) arg.fetch(0)) - 1) / 2)),
@@ -105,40 +107,42 @@ public class EasingEnum implements AbstractTaskProvider {
     }
 
     public enum EasingReverse implements IEasing {
-        @In @Out Linear(dd.task(arg -> 1 - (Double) arg.fetch(0))),
+        @In @Out Linear(Easing.Linear),
 
-        @In InSine(dd.task(arg -> Math.cos(((Double) arg.fetch(0) * Math.PI) / 2))),
-        @Out OutSine(dd.task(arg -> 1 - Math.sin(((Double) arg.fetch(0) * Math.PI) / 2))),
-        @In InOutSine(dd.task(arg -> 1 - -(Math.cos(Math.PI * (Double) arg.fetch(0)) - 1) / 2)),
+        @In Curve(Easing.Curve),
 
-        @In InQuad(dd.task(arg -> 1 - (Double) arg.fetch(0) * (Double) arg.fetch(0))),
-        @Out OutQuad(dd.task(arg -> (1 - (Double) arg.fetch(0)) * (1 - (Double) arg.fetch(0)))),
-        @In InOutQuad(dd.task(arg -> 1 - (Double) arg.fetch(0) < 0.5 ? 2 * (Double) arg.fetch(0) * (Double) arg.fetch(0) : 1 - Math.pow(-2 * (Double) arg.fetch(0) + 2, 2) / 2)),
+        @In InSine(Easing.InSine),
+        @Out OutSine(Easing.OutSine),
+        @In InOutSine(Easing.InOutSine),
 
-        @In InCubic(dd.task(arg -> 1 - (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0))),
-        @Out OutCubic(dd.task(arg -> Math.pow(1 - (Double) arg.fetch(0), 3))),
-        @In InOutCubic(dd.task(arg -> 1 - (Double) arg.fetch(0) < 0.5 ? 4 * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) : 1 - Math.pow(-2 * (Double) arg.fetch(0) + 2, 3) / 2)),
+        @In InQuad(Easing.InQuad),
+        @Out OutQuad(Easing.OutQuad),
+        @In InOutQuad(Easing.InOutQuad),
 
-        @In InQuart(dd.task(arg -> 1 - (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0))),
-        @Out OutQuart(dd.task(arg -> Math.pow(1 - (Double) arg.fetch(0), 4))),
-        @In InOutQuart(dd.task(arg -> 1 - (Double) arg.fetch(0) < 0.5 ? 8 * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) : 1 - Math.pow(-2 * (Double) arg.fetch(0) + 2, 4) / 2)),
+        @In InCubic(Easing.InCubic),
+        @Out OutCubic(Easing.OutCubic),
+        @In InOutCubic(Easing.InOutCubic),
 
-        @In InQuint(dd.task(arg -> 1 - (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0))),
-        @Out OutQuin(dd.task(arg -> Math.pow(1 - (Double) arg.fetch(0), 5))),
-        @In InOutQuint(dd.task(arg -> 1 - (Double) arg.fetch(0) < 0.5 ? 16 * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) * (Double) arg.fetch(0) : 1 - Math.pow(-2 * (Double) arg.fetch(0) + 2, 5) / 2)),
+        @In InQuart(Easing.InQuart),
+        @Out OutQuart(Easing.OutQuart),
+        @In InOutQuart(Easing.InOutQuart),
 
-        @In InExpo(dd.task(arg -> 1 - (Double) arg.fetch(0) == 0 ? 0 : Math.pow(2, 10 * (Double) arg.fetch(0) - 10))),
-        @Out OutExpo(dd.task(arg -> 1 - (Double) arg.fetch(0) == 1 ? 1 : 1 - Math.pow(2, -10 * (Double) arg.fetch(0)))),
-        @In InOutExpo(dd.task(arg -> 1 - (Double) arg.fetch(0) == 0 ? 0 : (Double) arg.fetch(0) == 1 ? 1 : (Double) arg.fetch(0) < 0.5 ? Math.pow(2, 20 * (Double) arg.fetch(0) - 10) / 2 : (2 - Math.pow(2, -20 * (Double) arg.fetch(0) + 10)) / 2)),
+        @In InQuint(Easing.InQuint),
+        @Out OutQuin(Easing.OutQuin),
+        @In InOutQuint(Easing.InOutQuint),
 
-        @In InCircle(dd.task(arg -> Math.sqrt(1 - Math.pow(arg.fetch(0), 2)))),
-        @Out OutCircle(dd.task(arg -> 1 - Math.sqrt(1 - Math.pow((Double) arg.fetch(0) - 1, 2)))),
-        @In InOutCircle(dd.task(arg -> 1 - (Double) arg.fetch(0) < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * (Double) arg.fetch(0), 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * (Double) arg.fetch(0) + 2, 2)) + 1) / 2));
+        @In InExpo(Easing.InExpo),
+        @Out OutExpo(Easing.OutExpo),
+        @In InOutExpo(Easing.InOutExpo),
+
+        @In InCircle(Easing.InCircle),
+        @Out OutCircle(Easing.OutCircle),
+        @In InOutCircle(Easing.InOutCircle);
 
         private final AbstractTask<Double> abstractTask;
 
-        EasingReverse(AbstractTask<Double> task) {
-            this.abstractTask = task;
+        EasingReverse(Easing easing) {
+            this.abstractTask = dd.task(arg -> 1 - easing.abstractTask.doTask(arg.fetch(0)));
         }
 
         @Override

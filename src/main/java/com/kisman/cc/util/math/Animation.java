@@ -1,7 +1,4 @@
-package com.kisman.cc.gui.halq.components;
-
-import com.kisman.cc.util.math.Interpolation;
-import com.kisman.cc.util.math.MathUtil;
+package com.kisman.cc.util.math;
 
 public class Animation {
 
@@ -13,7 +10,7 @@ public class Animation {
 
     private long startTime;
 
-    private final long time;
+    protected long time;
 
     public Animation(double begin, double end, long time) {
         this.begin = begin;

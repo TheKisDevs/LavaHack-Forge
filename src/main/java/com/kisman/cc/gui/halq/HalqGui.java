@@ -16,6 +16,7 @@ import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.enums.dynamic.EasingEnum;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
@@ -36,6 +37,7 @@ public class HalqGui extends KismanGuiScreen {
 
 
     public static LocateMode stringLocateMode = LocateMode.Left;
+    public static EasingEnum.Easing animationEasing = EasingEnum.Easing.Curve;
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static Colour outlineColor = new Colour(Color.BLACK);
@@ -53,10 +55,16 @@ public class HalqGui extends KismanGuiScreen {
             outlineTest = true,
             outlineTest2 = true,
             outlineHeaders = false,
-            shaderState = false;
+            shaderState = false,
+            animationState = true,
+            animateToggleable = true,
+            animateHover = false,
+            animateSlider = false,
+            animationReverseDirection = false;
     public static int diff = 0,
             textOffsetX = 5,
-            gradientFrameDiff = 0;
+            gradientFrameDiff = 0,
+            animationSpeed = 750;
     public static double offsetsX = 0,
             offsetsY = 0,
             lineWidth = 1.0;
@@ -179,6 +187,13 @@ public class HalqGui extends KismanGuiScreen {
         hoverColor = GuiModule.instance.hoverColor.getColour();
         shaderState = GuiModule.instance.shaderState.getValBoolean();
         gradientFrameDiff = GuiModule.instance.gradientFrameDiff.getValInt();
+        animationState = GuiModule.instance.animationState.getValBoolean();
+        animationSpeed = GuiModule.instance.animationSpeed.getValInt();
+        animationEasing = GuiModule.instance.animationEasing.getValEnum();
+        animationReverseDirection = GuiModule.instance.animationReverseDirection.getValBoolean();
+        animateToggleable = GuiModule.instance.animateToggleable.getValBoolean();
+        animateHover = GuiModule.instance.animateHover.getValBoolean();
+        animateSlider = GuiModule.instance.animateSlider.getValBoolean();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -560,6 +575,16 @@ public class HalqGui extends KismanGuiScreen {
 
     private static void addPostRenderRunnable(Runnable runnable) {
         postRenderThing = UtilityKt.compare(postRenderThing, runnable);
+    }
+
+    public static void drawRectWH(double x, double y, double w, double h, int color, double coeff) {
+        //TODO: vertical animation
+
+        if(animationReverseDirection) {
+            Render2DUtil.drawRectWH(x + w - (w * coeff), y, w * coeff, h, color);
+        } else {
+            Render2DUtil.drawRectWH(x, y, w * coeff, h, color);
+        }
     }
 
     public enum LocateMode {

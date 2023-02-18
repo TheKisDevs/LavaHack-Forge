@@ -1,5 +1,6 @@
 package com.kisman.cc.util.math;
 
+//TODO: change usages of it to usages of Animation
 public class TimeAnimation {
     public long length;
     public double start;

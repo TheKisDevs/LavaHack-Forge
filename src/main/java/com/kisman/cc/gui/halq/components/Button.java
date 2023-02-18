@@ -19,12 +19,14 @@ import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
 import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
+import com.kisman.cc.gui.halq.util.AnimationHandler;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.client.annotations.FakeThing;
 import com.kisman.cc.util.client.collections.Bind;
+import com.kisman.cc.util.math.Animation;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -42,7 +44,8 @@ public class Button extends ShaderableImplementation implements Openable, Module
     public final boolean hud;
     public boolean open = false;
 
-    private final Animation ENABLE_ANIMATION = new Animation(getX() + HalqGui.offsetsX, getX() + HalqGui.offsetsX + (HalqGui.width - HalqGui.offsetsX * 2), 750);
+    private final Animation ENABLE_ANIMATION = new AnimationHandler(false);
+    private final Animation DISABLE_ANIMATION = new AnimationHandler(true);
 
     public Button(Module mod, int x, int y, int offset, int count) {
         super(x, y, count, offset, 0);
@@ -132,9 +135,24 @@ public class Button extends ShaderableImplementation implements Openable, Module
                             )
                     );
                 }
-            } else if (HalqGui.test2 || mod.isToggled()) {
-                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, mod.isToggled() ? ENABLE_ANIMATION.getCurrent() : HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.test2Color.getRGB());
-                if(mod.isToggled()) ENABLE_ANIMATION.update();
+            } else {
+                if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.test2Color.getRGB());
+
+                //TODO: cubic pls add animation state & toggleable state checks
+
+                double coeff = (mod.isToggled() ? ENABLE_ANIMATION : DISABLE_ANIMATION).getCurrent();
+
+                HalqGui.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB(), coeff);
+
+                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, coeff * (HalqGui.width - HalqGui.offsetsX * 2), HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB());
+
+                if(mod.isToggled()) {
+                    ENABLE_ANIMATION.update();
+                    DISABLE_ANIMATION.reset();
+                } else {
+                    ENABLE_ANIMATION.reset();
+                    DISABLE_ANIMATION.update();
+                }
             }
         };
 

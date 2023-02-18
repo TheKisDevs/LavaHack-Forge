@@ -2,15 +2,17 @@ package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
-import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.ShaderPattern;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.client.interfaces.IBindable;
+import com.kisman.cc.util.enums.dynamic.EasingEnum;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
@@ -52,6 +54,15 @@ public class GuiModule extends Module {
     public final ShaderPattern shaders = new ShaderPattern(this).group(shadersGroup).prefix("Shaders").preInit().init();
 
     public final Setting gradientFrameDiff = register(new Setting("Gradient Frame Diff", this, 0.0, 0.0, 20, NumberType.TIME));
+    private final SettingGroup animationGroup = register(new SettingGroup(new Setting("Animations", this)));
+    public final Setting animationState = register(animationGroup.add(new Setting("Animation State", this, true).setTitle("State")));
+    public final Setting animationSpeed = register(animationGroup.add(new Setting("Animation Speed", this, 750, 100, 1000, NumberType.TIME).setTitle("Length")));
+    public final SettingEnum<EasingEnum.Easing> animationEasing = register(animationGroup.add(new SettingEnum<>("Animation Easing", this, EasingEnum.Easing.Curve).setTitle("Easing")));
+    public final Setting animationReverseDirection = register(animationGroup.add(new Setting("Animation Reverse Direction", this, false).setTitle("Reverse Direction")));
+    private final SettingGroup animationTypes = register(animationGroup.add(new SettingGroup(new Setting("Types", this))));
+    public final Setting animateToggleable = register(animationTypes.add(new Setting("Animate Toggleable", this, true).setTitle("Toggleable")));
+    public final Setting animateHover = register(animationTypes.add(new Setting("Animate Hover", this, false).setTitle("Hover")));
+    public final Setting animateSlider = register(animationTypes.add(new Setting("Animate Slider", this, false).setTitle("Slider")));
 
     @ModuleInstance
     public static GuiModule instance;
