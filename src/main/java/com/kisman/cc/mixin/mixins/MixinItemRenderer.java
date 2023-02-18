@@ -121,6 +121,7 @@ public class MixinItemRenderer {
                 }
                 case "Knife": {
                     rotate = new Vec3d(43, 130, 230);
+                    break;
                 }
                 case "Custom": {
                     rotate = new Vec3d(

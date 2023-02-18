@@ -42,6 +42,8 @@ public class Button extends ShaderableImplementation implements Openable, Module
     public final boolean hud;
     public boolean open = false;
 
+    private final Animation ENABLE_ANIMATION = new Animation(getX() + HalqGui.offsetsX, getX() + HalqGui.offsetsX + (HalqGui.width - HalqGui.offsetsX * 2), 750);
+
     public Button(Module mod, int x, int y, int offset, int count) {
         super(x, y, count, offset, 0);
         this.mod = mod;
@@ -130,7 +132,10 @@ public class Button extends ShaderableImplementation implements Openable, Module
                             )
                     );
                 }
-            } else if (HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.test2Color.getRGB());
+            } else if (HalqGui.test2 || mod.isToggled()) {
+                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, mod.isToggled() ? ENABLE_ANIMATION.getCurrent() : HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.test2Color.getRGB());
+                if(mod.isToggled()) ENABLE_ANIMATION.update();
+            }
         };
 
         Runnable shaderRunnable2 = () -> {

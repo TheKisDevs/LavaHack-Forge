@@ -9,7 +9,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.world.CrystalUtils;
@@ -19,9 +18,9 @@ import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
@@ -43,17 +42,31 @@ public class HoleSnap extends Module {
     private final SettingEnum<Holes> holes = new SettingEnum<>("Holes", this, Holes.Both).register();
     private final SettingEnum<HoleTypes> holeType = new SettingEnum<>("HoleType", this, HoleTypes.Single).register();
 
+    private final Setting upperHoles = register(new Setting("UpperHoles", this, false));
+    private final Setting balance = register(new Setting("Balance", this, 0.5, -4, 4, false));
+
     private final Setting holeRange = register(new Setting("HoleRange", this, 4, 1, 15, false));
     private final Setting holeYRange = register(new Setting("HoleYRange", this, 4, 1, 8, false));
 
+    private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 16, false));
+
+    private final Setting nearestHoleToEnemy = register(new Setting("NearestHoleToEnemy", this, false));
+
     private final Setting timeout = register(new Setting("Timeout", this, true));
     private final Setting timeoutTicks = register(new Setting("TimeoutTicks", this, 20, 0, 100, true));
+
+    private final SettingEnum<Stuck> onStuck = new SettingEnum<>("OnStuck", this, Stuck.Toggle).register();
     private final Setting stuckTicks = register(new Setting("StuckTicks", this, 5, 0, 40, true));
 
     private final Setting speed = register(new Setting("Speed", this, 0.2873, 0.05, 0.5, false));
+
     private final Setting snap = register(new Setting("Snap", this, true));
+    private final Setting snapBBScale = register(new Setting("SnapBBScale", this, 0.05, -0.5, 0.5, false));
+
     private final Setting useTimer = register(new Setting("Timer", this, false));
     private final Setting timerSpeed = register(new Setting("TimerSpeed", this, 1.088,  1, 5, false));
+
+    private final Setting autoStep = register(new Setting("AutoStep", this, false));
 
     private final Setting render = register(new Setting("Render", this, true));
     private final Setting lineWidth = register(new Setting("LineWidth", this, 1.5, 0.5, 4, false));
@@ -63,11 +76,15 @@ public class HoleSnap extends Module {
         super("HoleSnap", Category.MOVEMENT, true);
     }
 
+    private final Set<AxisAlignedBB> bannedHoles = new HashSet<>();
+
     private int ticks = 0;
     private int colissionTicks = 0;
     private AxisAlignedBB hole = null;
 
     private float oldTickLength;
+
+    private float oldStepHeight;
 
     @Override
     public void onEnable() {
@@ -77,6 +94,7 @@ public class HoleSnap extends Module {
             return;
         }
         oldTickLength = mc.timer.tickLength;
+        oldStepHeight = mc.player.stepHeight;
         Kisman.EVENT_BUS.subscribe(this);
     }
 
@@ -85,9 +103,11 @@ public class HoleSnap extends Module {
         super.onDisable();
         Kisman.EVENT_BUS.unsubscribe(this);
         mc.timer.tickLength = oldTickLength;
+        mc.player.stepHeight = oldStepHeight;
         ticks = 0;
         colissionTicks = 0;
         hole = null;
+        bannedHoles.clear();
     }
 
     @SubscribeEvent
@@ -156,6 +176,9 @@ public class HoleSnap extends Module {
         else
             ticks = 0;
 
+        if(hole == null)
+            mc.player.stepHeight = oldStepHeight;
+
         if(hole == null && timeout.getValBoolean() && ticks > timeoutTicks.getValInt()){
             toggle();
             return;
@@ -167,13 +190,16 @@ public class HoleSnap extends Module {
         double currentSpeed = Math.hypot(mc.player.motionX, mc.player.motionZ);
 
         if(colissionTicks > stuckTicks.getValInt()){
-            toggle();
-            return;
+            if(onStuck.getValEnum() == Stuck.Toggle){
+                toggle();
+                return;
+            }
+            bannedHoles.add(hole);
         }
 
         Vec3d center = getCenter(hole);
 
-        if(snap.getValBoolean() && contains(hole, mc.player.getEntityBoundingBox().expand(0, -0.05, 0))){
+        if(snap.getValBoolean() && contains(hole, mc.player.getEntityBoundingBox().expand(0, snapBBScale.getValDouble(), 0))){
             mc.player.connection.sendPacket(new CPacketPlayer.Position(center.x, mc.player.posY, center.z, mc.player.onGround));
             mc.player.setPosition(center.x, mc.player.posY, center.z);
             toggle();
@@ -193,6 +219,9 @@ public class HoleSnap extends Module {
             toggle();
             return;
         }
+
+        if(autoStep.getValBoolean() || hole.minY >= Math.floor(mc.player.posY))
+            mc.player.stepHeight = 2f;
 
         double baseSpeed = EntityUtil.applySpeedEffect(mc.player, this.speed.getValDouble());
         double speed = mc.player.onGround ? baseSpeed : Math.max(currentSpeed + 0.02, baseSpeed);
@@ -226,6 +255,8 @@ public class HoleSnap extends Module {
     }
 
     private AxisAlignedBB findHole(){
+        EntityPlayer enemy = EntityUtil.getTarget(enemyRange.getValFloat());
+        EntityPlayer entity = (nearestHoleToEnemy.getValBoolean() && enemy != null) ? enemy : mc.player;
         Set<BlockPos> possibleHoles = getPossibleHoles();
         List<AxisAlignedBB> holes = new ArrayList<>();
         for(BlockPos pos : possibleHoles){
@@ -241,9 +272,10 @@ public class HoleSnap extends Module {
             holes.add(holeInfo.getCentre());
         }
         return holes.stream()
-                .filter(aabb -> aabb.minY < mc.player.posY)
+                .filter(aabb -> aabb.minY < (upperHoles.getValBoolean() ? mc.player.posY + 2 : mc.player.posY))
                 .filter(aabb -> mc.player.posX - aabb.minY <= holeYRange.getValDouble())
-                .min(Comparator.comparingDouble(aabb -> mc.player.getDistance(getCenter(aabb).x, getCenter(aabb).y, getCenter(aabb).z)))
+                .filter(aabb -> !bannedHoles.contains(aabb))
+                .min(Comparator.comparingDouble(aabb -> entity.getDistance(getCenter(aabb).x, getCenter(aabb).y, getCenter(aabb).z) + (aabb.minY >= Math.floor(mc.player.posY) ? balance.getValDouble() : 0)))
                 .orElse(null);
     }
 
@@ -296,5 +328,10 @@ public class HoleSnap extends Module {
         public boolean check(HoleUtil.HoleType holeType) {
             return check.test(holeType);
         }
+    }
+
+    private enum Stuck {
+        Toggle,
+        NextHole
     }
 }
