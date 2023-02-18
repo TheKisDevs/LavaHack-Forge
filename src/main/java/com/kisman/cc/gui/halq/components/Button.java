@@ -42,6 +42,8 @@ public class Button extends ShaderableImplementation implements Openable {
     public int x, y, offset, count;
     public boolean open = false;
 
+    private final Animation ENABLE_ANIMATION = new Animation(x + HalqGui.offsetsX, x + HalqGui.offsetsX + (HalqGui.width - HalqGui.offsetsX * 2), 750);
+
     public Button(Module mod, int x, int y, int offset, int count) {
         this.mod = mod;
         this.hud = (mod instanceof HudModule);
@@ -131,7 +133,10 @@ public class Button extends ShaderableImplementation implements Openable {
                             )
                     );
                 }
-            } else if (HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
+            } else if (HalqGui.test2 || mod.isToggled()){
+                Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, mod.isToggled() ? ENABLE_ANIMATION.getCurrent() : HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
+                if(mod.isToggled()) ENABLE_ANIMATION.update();
+            }
         };
 
         Runnable shaderRunnable2 = () -> {
@@ -158,7 +163,10 @@ public class Button extends ShaderableImplementation implements Openable {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(hud && draggable != null) draggable.mouseClicked(mouseX, mouseY, button);
-        if(isMouseOnButton(mouseX, mouseY) && button == 0 && mod.toggleable) mod.toggle();
+        if(isMouseOnButton(mouseX, mouseY) && button == 0 && mod.toggleable){
+            mod.toggle();
+            ENABLE_ANIMATION.reset();
+        }
         if(isMouseOnButton(mouseX, mouseY) && button == 1) open = !open;
         if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.mouseClicked(mouseX, mouseY, button);
     }
