@@ -139,6 +139,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
                 if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.test2Color.getRGB());
 
                 //TODO: cubic pls add animation state & toggleable state checks
+                //TODO: alpha animation
 
                 double coeff = (mod.isToggled() ? ENABLE_ANIMATION : DISABLE_ANIMATION).getCurrent();
 
