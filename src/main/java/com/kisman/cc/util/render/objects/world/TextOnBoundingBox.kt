@@ -22,7 +22,7 @@ class TextOnBoundingBox (val text : String, val aabb : AxisAlignedBB, override v
             0.3f
         )
         GlStateManager.disableDepth()
-        if(CustomFontModule.turnOn) GlStateManager.disableTexture2D()
+        if(CustomFontModule.instance.isToggled()) GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
         GL11.glTranslated(
             (-(CustomFontUtil.getStringWidth(text) / 2)).toDouble(),
@@ -33,7 +33,7 @@ class TextOnBoundingBox (val text : String, val aabb : AxisAlignedBB, override v
         CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, color.rgb)
 
         GlStateManager.enableLighting()
-        if(CustomFontModule.turnOn) GlStateManager.enableTexture2D()
+        if(CustomFontModule.instance.isToggled()) GlStateManager.enableTexture2D()
         GlStateManager.enableDepth()
 
         GL11.glPopMatrix()

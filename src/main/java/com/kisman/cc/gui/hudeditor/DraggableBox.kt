@@ -18,7 +18,10 @@ class DraggableBox(
     var dragY = 0
     var drag = false
 
-    override fun drawScreen(mouseX: Int, mouseY: Int) {
+    override fun drawScreen(
+        mouseX : Int,
+        mouseY : Int
+    ) {
         if(module.isToggled) {
             if(drag) {
                 module.setX((mouseX - dragX).toDouble())
@@ -33,7 +36,11 @@ class DraggableBox(
         }
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+    override fun mouseClicked(
+        mouseX : Int,
+        mouseY : Int,
+        button : Int
+    ) {
         if(module.isToggled) {
             drag = isMouseOnButton(mouseX, mouseY)
             dragX = (mouseX - module.getX()).toInt()
@@ -41,11 +48,19 @@ class DraggableBox(
         }
     }
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, mouseButton: Int) {
+    override fun mouseReleased(
+        mouseX : Int,
+        mouseY : Int,
+        mouseButton : Int
+    ) {
         drag = false
     }
 
-    private fun isMouseOnButton(x : Int, y : Int) : Boolean {
-        return x > module.getX() && x < module.getX() + module.getW() && y > module.getY() && y < module.getY() + module.getH()
-    }
+    override var width = 0
+    override var count = 0
+
+    private fun isMouseOnButton(
+        x : Int,
+        y : Int
+    ) : Boolean = x > module.getX() && x < module.getX() + module.getW() && y > module.getY() && y < module.getY() + module.getH()
 }

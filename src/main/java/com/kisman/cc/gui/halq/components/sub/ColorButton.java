@@ -3,9 +3,9 @@ package com.kisman.cc.gui.halq.components.sub;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.pingbypass.server.input.Mouse;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
@@ -15,6 +15,7 @@ import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -28,28 +29,21 @@ import static com.kisman.cc.util.render.Render2DUtil.drawGradientRect;
 import static com.kisman.cc.util.render.Render2DUtil.drawLeftGradientRect;
 
 @SuppressWarnings("SuspiciousNameCombination")
-public class ColorButton extends ShaderableImplementation implements Component {
+public class ColorButton extends ShaderableImplementation implements Component, SettingComponent {
     private final Setting setting;
     private Colour color;
-    private int x, y, offset, pickerWidth, height, count;
+    private int pickerWidth, height;
     public boolean open = false;
     private boolean baseHover, hueHover, alphaHover, pickingBase, pickingHue, pickingAlpha;
-    private int width = HalqGui.width;
-    private int layer;
     private Colour clearColor;
     private boolean doCopy = true;
     private boolean doPaste = true;
 
     public ColorButton(Setting setting, int x, int y, int offset, int count, int layer) {
+        super(x, y, count, offset, layer);
         this.setting = setting;
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
         this.color = setting.getColour();
-        this.pickerWidth = width - HalqGui.height;
-        this.count = count;
-        this.layer = layer;
-        this.width = LayerControllerKt.getModifiedWidth(layer, width);
+        this.pickerWidth = getWidth() - HalqGui.height;
         setClearColor(setting.getColour());
     }
 
@@ -120,17 +114,17 @@ public class ColorButton extends ShaderableImplementation implements Component {
             color = setting.getColour();
             setClearColor(color);
         }
-        this.pickerWidth = width;
+        this.pickerWidth = getWidth();
         normalRender = () -> {
-            Render2DUtil.drawRectWH(x, y + offset, width, getHeight(), HalqGui.backgroundColor.getRGB());
+            Render2DUtil.drawRectWH(getX(), getY(), getWidth(), getHeight(), HalqGui.backgroundColor.getRGB());
             if (HalqGui.shadow) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width / 2f, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                        new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2f, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2f, getY() + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 ColorUtils.injectAlpha(color.getColor(), GuiModule.instance.minPrimaryAlpha.getValInt()),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
@@ -139,38 +133,38 @@ public class ColorButton extends ShaderableImplementation implements Component {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[]{x + width / 2f, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[]{x + width / 2f, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                        new double[]{getX() + getWidth() / 2f, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2f, getY() + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
                                 ColorUtils.injectAlpha(color.getColor(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
-            } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
+            } else Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, getHeight() - HalqGui.offsetsY * 2, color.getRGB());
 
-            HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+            HalqGui.drawString(setting.getTitle(), getX(), getY(), getWidth(), HalqGui.height);
 
             if (open) {
                 int offsetY = HalqGui.height;
 
                 Colour renderColor = GuiModule.instance.colorPickerClearColor.getValBoolean() ? clearColor : color;
 
-                drawPickerBase(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), renderColor.r1, renderColor.g1, renderColor.b1, renderColor.a1, mouseX, mouseY);
+                drawPickerBase(getX() + HalqGui.offsetsX, getY() + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), pickerWidth - (HalqGui.offsetsY * 2), renderColor.r1, renderColor.g1, renderColor.b1, renderColor.a1, mouseX, mouseY);
                 offsetY += pickerWidth;
 
-                drawHueSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
+                drawHueSlider(getX() + HalqGui.offsetsX, getY() + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.getHue(), mouseX, mouseY);
                 offsetY += HalqGui.height - 3;
 
-                drawAlphaSlider(x + HalqGui.offsetsX, y + offset + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
+                drawAlphaSlider(getX() + HalqGui.offsetsX, getY() + offsetY + HalqGui.offsetsY, pickerWidth - (HalqGui.offsetsX * 2), HalqGui.height - 3 - (HalqGui.offsetsY * 2), color.r1, color.g1, color.b1, color.a1, mouseX, mouseY);
                 height = offsetY + HalqGui.height - 3;
 
-                updateValue(mouseX, mouseY, x + HalqGui.offsetsX, y + offset + HalqGui.height + HalqGui.offsetsY);
+                updateValue(mouseX, mouseY, getX() + HalqGui.offsetsX, getY() + HalqGui.height + HalqGui.offsetsY);
 
                 {
-                    final int cursorX = (int) (x + color.RGBtoHSB()[1] * pickerWidth);
-                    final int cursorY = (int) ((y + offset + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2] * pickerWidth);
+                    final int cursorX = (int) (getX() + color.RGBtoHSB()[1] * pickerWidth);
+                    final int cursorY = (int) ((getY() + HalqGui.height + 5 + pickerWidth) - color.RGBtoHSB()[2] * pickerWidth);
 
                     if (GuiModule.instance.colorPickerExtra.getValBoolean() && Mouse.isButtonDown(0) && pickingBase) {
                         Gui.drawRect(cursorX - 8, cursorY - 8, cursorX + 8, cursorY + 8, new Color(0, 0, 0, 255).getRGB());
@@ -206,7 +200,7 @@ public class ColorButton extends ShaderableImplementation implements Component {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
         if(button == 0) {
-            if(isMouseOnButton(mouseX, mouseY)) open = !open;
+            if(isMouseOnButton2(mouseX, mouseY)) open = !open;
             pickingBase = baseHover;
             pickingHue = hueHover;
             pickingAlpha = alphaHover;
@@ -254,14 +248,8 @@ public class ColorButton extends ShaderableImplementation implements Component {
     }
 
     @Override
-    public void updateComponent(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    @Override
-    public void setOff(int newOff) {
-        this.offset = newOff;
+    public int getHeight() {
+        return HalqGui.height + (open ? height : 0);
     }
 
     @Override
@@ -274,16 +262,8 @@ public class ColorButton extends ShaderableImplementation implements Component {
         return setting.isVisible() && HalqGui.visible(setting.getTitle());
     }
 
-    public void setCount(int count) {this.count = count;}
-    public int getCount() {return count;}
-    public void setWidth(int width) {this.width = width;}
-    public void setX(int x) {this.x = x;}
-    public int getX() {return x;}
-    public void setLayer(int layer) {this.layer = layer;}
-    public int getLayer() {return layer;}
-
-    private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
+    public boolean isMouseOnButton2(int x, int y) {
+        return x > getX() && x < getX() + getWidth() && y > getY() && y < getY() + HalqGui.height;
     }
 
     private void drawHueSlider(double x, double y, double width, double height, float hue, int mouseX, int mouseY) {
@@ -406,13 +386,9 @@ public class ColorButton extends ShaderableImplementation implements Component {
         } else drawGradientRect(minX, minY, maxX, maxY, startColor, endColor);
     }
 
+    @NotNull
     @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getY() {
-        return y + offset;
+    public Setting setting() {
+        return setting;
     }
 }

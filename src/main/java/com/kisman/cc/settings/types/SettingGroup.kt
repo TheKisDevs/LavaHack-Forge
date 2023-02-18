@@ -35,4 +35,11 @@ open class SettingGroup(
         settings.add(array)
         return array
     }
+
+    fun remove(
+        setting : Setting
+    ) {
+        setting.parent_ = null
+        settings.remove(setting)
+    }
 }

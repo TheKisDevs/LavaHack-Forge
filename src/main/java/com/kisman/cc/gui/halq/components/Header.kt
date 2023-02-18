@@ -16,18 +16,26 @@ import com.kisman.cc.util.render.objects.screen.ShadowRectObject
  */
 class Header(
     private val frame : Frame
-) : ShaderableImplementation() {
+) : ShaderableImplementation(
+    0,
+    0,
+    0,
+    0,
+    0
+) {
     override fun drawScreen(
         mouseX : Int,
         mouseY : Int
     ) {
+        HalqGui.currentFrame = frame
+
         val shaderRunnable1 = Runnable {
             if (HalqGui.shadowRects) {
                 val obj = ShadowRectObject(
-                    x.toDouble(),
-                    y.toDouble(),
-                    (x + HalqGui.width).toDouble(),
-                    (y + HalqGui.height).toDouble(),
+                    frame.x.toDouble(),
+                    frame.y.toDouble(),
+                    (frame.x + HalqGui.width).toDouble(),
+                    (frame.y + HalqGui.height).toDouble(),
                     HalqGui.getGradientColour(count),
                     HalqGui.getGradientColour(count).withAlpha(0),
                     5.0,
@@ -35,19 +43,19 @@ class Header(
                 )
                 obj.draw()
             } else Render2DUtil.drawRectWH(
-                x.toDouble(),
-                y.toDouble(),
+                frame.x.toDouble(),
+                frame.y.toDouble(),
                 HalqGui.width.toDouble(),
                 HalqGui.height.toDouble(),
-                HalqGui.getGradientColour(count).rgb
+                HalqGui.getGradientColour(frame.count * HalqGui.gradientFrameDiff).rgb
             )
         }
 
         val shaderRunnable2 = Runnable {
             HalqGui.drawString(
                 if (frame.customName) frame.name else frame.cat.getName(),
-                x,
-                y,
+                frame.x,
+                frame.y,
                 HalqGui.width,
                 HalqGui.height
             )
@@ -56,8 +64,8 @@ class Header(
                 HalqGui.drawSuffix(
                     "[" + frame.components.size + "]",
                     if (frame.customName) frame.name else frame.cat.getName(),
-                    x.toDouble(),
-                    y.toDouble(),
+                    frame.x.toDouble(),
+                    frame.y.toDouble(),
                     HalqGui.width.toDouble(),
                     HalqGui.height.toDouble(),
                     Colour(255, 255, 255, 255),
@@ -68,8 +76,4 @@ class Header(
 
         shaderRender = Bind(shaderRunnable1, shaderRunnable2)
     }
-
-    override fun getX() : Int = frame.x
-    override fun getY() : Int = frame.y
-    override fun getLayer() : Int = 0
 }

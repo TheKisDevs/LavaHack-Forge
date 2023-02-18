@@ -1,53 +1,69 @@
 package com.kisman.cc.gui.halq.components.sub.plugins;
 
+import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.ModuleComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.util.client.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author _kisman_
  * @since 20:07 of 09.06.2022
  */
-public class PluginActionButton extends ShaderableImplementation implements Component {
+public class PluginActionButton extends ShaderableImplementation implements Component, ModuleComponent {
     private final ModulePlugin plugin;
     private final Action action;
-    private int x, y, count, offset;
-    private int width = HalqGui.width;
-    private int layer;
 
     public PluginActionButton(ModulePlugin plugin, Action action, int x, int y, int offset, int count, int layer) {
+        super(x, y, count, offset, layer);
         this.plugin = plugin;
         this.action = action;
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
-        this.count = count;
-        this.layer = layer;
-        this.width = LayerControllerKt.getModifiedWidth(layer, width);
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         super.drawScreen(mouseX, mouseY);
 
-        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), getWidth(), HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         Runnable shaderRunnable1 = () -> {
             if(HalqGui.shadow) {
-                Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x, y + offset}, new double[] {x + width / 2, y + offset}, new double[] {x + width / 2, y + offset + HalqGui.height}, new double[] {x, y + offset + HalqGui.height}), ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()), HalqGui.getGradientColour(count).getColor()));
-                Render2DUtil.drawAbstract(new AbstractGradient(new Vec4d(new double[] {x + width / 2, y + offset}, new double[] {x + width, y + offset}, new double[] {x + width, y + offset + HalqGui.height}, new double[] {x + width / 2, y + offset + HalqGui.height}), HalqGui.getGradientColour(count).getColor(), ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())));
-            } else Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.getGradientColour(count).getRGB());
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[] {getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[] {getX() + getWidth() / 2.0 + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[] {getX() + getWidth() / 2.0 + HalqGui.offsetsX, getY() + HalqGui.offsetsY + HalqGui.height},
+                                        new double[] {getX() + HalqGui.offsetsX, getY() + HalqGui.height + HalqGui.offsetsY}
+                                ),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
+                                HalqGui.getGradientColour(getCount()).getColor()
+                        )
+                );
+                Render2DUtil.drawAbstract(
+                        new AbstractGradient(
+                                new Vec4d(
+                                        new double[] {getX() + getWidth() / 2.0 + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[] {getX() + getWidth() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[] {getX() + getWidth() + HalqGui.offsetsX, getY() + HalqGui.height + HalqGui.offsetsY},
+                                        new double[] {getX() + getWidth() / 2.0 + HalqGui.offsetsX, getY() + HalqGui.height + HalqGui.offsetsY}
+                                ),
+                                HalqGui.getGradientColour(getCount()).getColor(),
+                                ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
+                        )
+                );
+            } else Render2DUtil.drawRectWH(getX(), getY(), getWidth(), HalqGui.height, HalqGui.getGradientColour(getCount()).getRGB());
         };
 
-        Runnable shaderRunnable2 = () -> HalqGui.drawString(action.name, x, y + offset, width, HalqGui.height);
+        Runnable shaderRunnable2 = () -> HalqGui.drawString(action.name, getX(), getY(), getWidth(), HalqGui.height);
 
         shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
     }
@@ -70,44 +86,8 @@ public class PluginActionButton extends ShaderableImplementation implements Comp
     }
 
     @Override
-    public void setOff(int newOff) {
-        this.offset = newOff;
-    }
-
-    @Override
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override
-    public int getHeight() {
-        return HalqGui.height;
-    }
-
-    @Override
-    public int getCount() {
-        return count;
-    }
-
-    @Override
     public boolean visible() {
         return (plugin.getLoaded() == (action != Action.LOAD)) && HalqGui.visible(action.name);
-    }
-
-    public void setWidth(int width) {this.width = width;}
-    public void setX(int x) {this.x = x;}
-    public int getX() {return x;}
-    public void setLayer(int layer) {this.layer = layer;}
-    public int getLayer() {return layer;}
-
-    @Override
-    public void updateComponent(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
     public enum Action {
@@ -119,13 +99,9 @@ public class PluginActionButton extends ShaderableImplementation implements Comp
         Action(String name) {this.name = name;}
     }
 
+    @NotNull
     @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getY() {
-        return y + offset;
+    public Module module() {
+        return plugin;
     }
 }

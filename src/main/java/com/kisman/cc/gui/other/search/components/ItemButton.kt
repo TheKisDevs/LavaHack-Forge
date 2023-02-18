@@ -11,5 +11,6 @@ class ItemButton(
     val item : Item,
     val x_ : Int,
     val y_ : Int
-) : Component {
+) /**/
+{
 }

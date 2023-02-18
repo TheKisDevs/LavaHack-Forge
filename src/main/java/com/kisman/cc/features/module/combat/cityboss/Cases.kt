@@ -9,20 +9,29 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 
 /**
- * `BlockPos(0, 0, 0) or BlockPos.ORIGIN` is the center of the player's position
+ * `BlockPos(0, 0, 0)` or `BlockPos.ORIGIN` is the center of the player's position
  *
  * @author _kisman_
  * @since 16:46 of 118.10.2022
  */
 enum class Cases {
     MiddleCase {
+        /**
+         * TODO: make something like priority system
+         *
+         * TODO: middlecase is better if you are using automine and ca from future,
+         * TODO: cuz block of surround can be broken with biggest chance
+         *
+         * TODO: (i will make our automine soon so not only from future)
+         */
         override fun posses(
             facing : EnumFacing
         ) : List<BlockPos> {
             return listOf<BlockPos>(
                 BlockPos.ORIGIN.offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing),
-                BlockPos.ORIGIN.offset(facing).offset(facing).up()
+                BlockPos.ORIGIN.offset(facing).offset(facing).up(),
+                CrystalBlockPos(BlockPos.ORIGIN.offset(facing).offset(facing).down())
             )
         }
     },
@@ -32,7 +41,8 @@ enum class Cases {
         ) : List<BlockPos> {
             return listOf<BlockPos>(
                 BlockPos.ORIGIN.offset(facing),
-                BlockPos.ORIGIN.offset(facing).up()
+                `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).up()),
+                CrystalBlockPos(BlockPos.ORIGIN.offset(facing).down())
             )
         }
     },
@@ -44,7 +54,8 @@ enum class Cases {
                 BlockPos.ORIGIN.offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing),
-                `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).up())
+                BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).up(),
+                CrystalBlockPos(BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).down())
             )
         }
     },
@@ -55,7 +66,8 @@ enum class Cases {
             BlockPos.ORIGIN.offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing),
-            `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).up())
+            BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).up(),
+            CrystalBlockPos(BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).down())
         )
     },
     RightDiagonalCase {
@@ -65,7 +77,8 @@ enum class Cases {
             BlockPos.ORIGIN.offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing),
-            `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).up())
+            BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).up(),
+            CrystalBlockPos(BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).down())
         )
     }
     ;
@@ -73,6 +86,11 @@ enum class Cases {
     abstract fun posses(
         facing : EnumFacing
     ) : List<BlockPos>
+
+    private fun valid(
+        pos : BlockPos,
+        newVersion : Boolean
+    ) : Boolean = pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
 
     fun howManyAirs(
         facing : EnumFacing,
@@ -82,7 +100,7 @@ enum class Cases {
         var airs = 0
 
         for(pos1 in posses(facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if (mc.world.getBlockState(pos2).block == Blocks.AIR) {
@@ -103,7 +121,7 @@ enum class Cases {
         var airs = 0
 
         for(pos1 in down(down, facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if(mc.world.getBlockState(pos2).block == Blocks.AIR) {
@@ -122,7 +140,7 @@ enum class Cases {
         newVersion : Boolean
     ) : Boolean {
         for(pos1 in posses(facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if (mc.player.getDistanceSq(pos2) > (range * range)) {
@@ -142,7 +160,7 @@ enum class Cases {
         down : Int
     ) : Boolean {
         for(pos1 in down(down, facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if (mc.player.getDistanceSq(pos2) > (range * range)) {
@@ -160,7 +178,7 @@ enum class Cases {
         newVersion : Boolean
     ) : Boolean {
         for(pos1 in posses(facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
@@ -179,7 +197,7 @@ enum class Cases {
         down : Int
     ) : Boolean {
         for(pos1 in down(down, facing)) {
-            if((newVersion && pos1 !is `1-13-BlockPos`) || !newVersion) {
+            if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
                 if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {

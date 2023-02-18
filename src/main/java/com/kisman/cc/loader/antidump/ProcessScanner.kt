@@ -58,7 +58,7 @@ fun runScanner() {
             if(Utility.runningOnWindows()) {
                 val process = Runtime.getRuntime().exec("tasklist")
                 val reader = BufferedReader(InputStreamReader(process.inputStream))
-                var line : String? = null
+                var line : String?
 
                 while (reader.readLine().also { line = it } != null) {
                     val processName = line!!.split(" ")[0]

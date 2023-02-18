@@ -17,20 +17,20 @@ import net.minecraft.util.math.BlockPos
  * @author _kisman_
  * @since 17:55 of 15.01.2023
  */
-class PlacementPattern(
+open class PlacementPattern(
     module : Module,
     private val canSwitch : Boolean = false,
     private val canExclude : Boolean = false
 ) : AbstractPattern<PlacementPattern>(
     module
 ) {
-    private val packet = setupSetting(Setting("Packet", module, true))
-    private val rotate = setupSetting(Setting("Rotate", module, false))
-    private val raytrace = setupSetting(Setting("RayTrace", module, false))
-    private val hand = setupEnum(SettingEnum("Hand", module, HandModes.MainHand))
-    private val switch = setupEnum(SettingEnum("Switch", module, SwapEnum2.Swap.None))
-    private val excludes = setupGroup(SettingGroup(Setting("Excludes", module)))
-    private val newVersionExcludeAnchors = setupSetting(excludes.add(Setting("Exclude New Version Anchors", module, true).setTitle("1.16 Anchors")))
+    protected val packet = setupSetting(Setting("Packet", module, true))
+    protected val rotate = setupSetting(Setting("Rotate", module, false))
+    protected val raytrace = setupSetting(Setting("RayTrace", module, false))
+    protected val hand = setupEnum(SettingEnum("Hand", module, HandModes.MainHand))
+    protected val switch = setupEnum(SettingEnum("Switch", module, SwapEnum2.Swap.None))
+    protected val excludes = setupGroup(SettingGroup(Setting("Excludes", module)))
+    protected val newVersionExcludeAnchors = setupSetting(excludes.add(Setting("Exclude New Version Anchors", module, true).setTitle("1.16 Anchors")))
 
     override fun preInit() : PlacementPattern {
         if(group != null) {

@@ -19,7 +19,7 @@ class TextOnEntityObject(
     override fun draw(ticks: Float) {
 //        GL11.glPushMatrix()
 
-        CubicRendering.setup(CustomFontModule.turnOn)
+        CubicRendering.setup(CustomFontModule.instance.isToggled())
 
         glBillboardDistanceScaled(
                 entity.entityBoundingBox.center,
@@ -37,7 +37,7 @@ class TextOnEntityObject(
 
         CustomFontUtil.drawStringWithShadow(text, 0.0, 0.0, color.rgb)
 
-        CubicRendering.release(CustomFontModule.turnOn)
+        CubicRendering.release(CustomFontModule.instance.isToggled())
 
 //        GlStateManager.enableLighting()
 //        if(CustomFontModule.turnOn) GlStateManager.enableTexture2D()

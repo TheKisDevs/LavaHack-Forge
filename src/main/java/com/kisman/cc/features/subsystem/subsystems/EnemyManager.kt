@@ -1,8 +1,13 @@
 package com.kisman.cc.features.subsystem.subsystems
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.RenderEntitiesEvent
+import com.kisman.cc.event.events.RenderEntityEvent
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.Globals.mc
+import me.zero.alpine.listener.EventHandler
+import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listener
 import net.minecraft.entity.player.EntityPlayer
 import java.util.function.Supplier
 
@@ -15,8 +20,12 @@ object EnemyManager : SubSystem("Enemy Manager") {
 
     init {
         for(module in Kisman.instance.moduleManager.targetableModules) {
-            enemies.add(module.enemySupplier)
+            if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java)) {
+                enemies.add(module.enemySupplier)
+            }
         }
+
+        enemies.add(Supplier { nearestPlayer })
     }
 
     fun enemies() : ArrayList<EntityPlayer> {
@@ -44,10 +53,39 @@ object EnemyManager : SubSystem("Enemy Manager") {
 
         return nearestEnemy
     }
+
     fun enemy(
         player : EntityPlayer
     ) : Boolean = enemies().contains(player)
+
+    private var nearestPlayer : EntityPlayer? = null
+    private var minDistance = Double.MAX_VALUE
+
+    @EventHandler
+    private val renderEntity = Listener<RenderEntityEvent.All.Post>(EventHook {
+        val entity = it.entity
+
+        if(entity is EntityPlayer) {
+            val distance = mc.player.getDistanceSq(entity)
+
+            if(distance < minDistance) {
+                minDistance = distance
+                nearestPlayer = entity
+            }
+        }
+    })
+
+    @EventHandler
+    private val renderEntitiesStart = Listener<RenderEntitiesEvent.Start>(EventHook {
+        nearestPlayer = null
+        minDistance = Double.MAX_VALUE
+    })
+
+    fun nearest() : EntityPlayer? = nearestPlayer
 }
 
-annotation class Targetable()
-annotation class Target()
+fun nearest() : EntityPlayer? = EnemyManager.nearest()//For kotlin modules
+
+annotation class Targetable
+annotation class Target
+annotation class TargetsNearest

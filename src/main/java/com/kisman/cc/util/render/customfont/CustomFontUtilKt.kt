@@ -23,7 +23,7 @@ class CustomFontUtilKt {
         }
 
         fun getStringWidth(text: String, gui: Boolean): Int {
-            if(!CustomFontModule.turnOn) return Minecraft.getMinecraft().fontRenderer.getStringWidth(text)
+            if(!CustomFontModule.instance.isToggled()) return Minecraft.getMinecraft().fontRenderer.getStringWidth(text)
             return getCustomFont(gui).getStringWidth(text)
         }
 
@@ -32,7 +32,7 @@ class CustomFontUtilKt {
         }
 
         fun getHeight(gui: Boolean): Int {
-            if(!CustomFontModule.turnOn) return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
+            if(!CustomFontModule.instance.isToggled()) return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
             return getCustomFont(gui).getHeight()
         }
 

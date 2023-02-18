@@ -5,17 +5,18 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.WorkInProgress
 import com.kisman.cc.features.module.combat.cityboss.Cases
-import com.kisman.cc.features.module.exploit.PacketMine
+import com.kisman.cc.features.module.combat.cityboss.CrystalBlockPos
 import com.kisman.cc.features.subsystem.subsystems.Targetable
 import com.kisman.cc.features.subsystem.subsystems.Target
+import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.settings.util.ObbyPlacementPattern
 import com.kisman.cc.settings.util.RenderingRewritePattern
-import com.kisman.cc.util.Colour
-import com.kisman.cc.util.entity.TargetFinder
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.client.providers.PacketMineProvider
 import com.kisman.cc.util.render.nearestFacing
+import com.kisman.cc.util.render.pattern.SlideRendererPattern
 import com.kisman.cc.util.world.entityPosition
 import com.kisman.cc.util.world.playerPosition
 import net.minecraft.entity.player.EntityPlayer
@@ -27,7 +28,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.function.Supplier
 
 /**
  * @author _kisman_
@@ -41,7 +41,6 @@ class CityBoss : Module(
     "Breaks surround of nearest player.",
     Category.COMBAT
 ) {
-    private val range = register(Setting("Range", this, 20.0, 1.0, 30.0, true))
     private val blockRangeCheck = register(Setting("Block Range Check", this, false))
     private val blockRange = register(Setting("Block Range", this, 5.0, 1.0, 6.0, false))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
@@ -67,26 +66,33 @@ class CityBoss : Module(
     private val autorerSync = register(SettingGroup(Setting("Auto ReR Sync", this)))
     private val autorerTargetSync = register(autorerSync.add(Setting("Auto Rer Target Sync", this, false).setTitle("Target")))
 
-    private val renderer = RenderingRewritePattern(this).group(register(SettingGroup(Setting("Render", this)))).preInit().init().also {
-        it.filledColor1.title = "Other Blocks First"
-        it.filledColor2.title = "Other Blocks Second"
-    }
+    private val renderersGroup = register(SettingGroup(Setting("Renderers", this)))
 
-    private val currentFacingColor1 = register(renderer.colorGroup.add(Setting("Render Color Other Blocks", this, "Current Facing First", Colour(255, 255, 255, 255))))
-    private val currentFacingColor2 = register(renderer.colorGroup.add(Setting("Render Second Color Other Blocks", this, "Current Facing Second", Colour(255, 255, 255, 255))))
+    private val currentBlockRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Current Block", this))))
+    private val currentFacingRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Current Facing", this))))
+    private val otherFacingsRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Other Facings", this))))
+    private val crystalPosRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Crystal Block", this))))
 
-    private val processingBlockColor1 = register(renderer.colorGroup.add(Setting("Render Color Processing Block", this, "Processing Block First", Colour(0, 255, 0, 255))))
-    private val processingBlockColor2 = register(renderer.colorGroup.add(Setting("Render Second Color Processing Block", this, "Processing Block Second", Colour(0, 255, 0, 255))))
+    private val currentBlockPattern = SlideRenderingRewritePattern(this).prefix("Current Block").group(currentBlockRendererGroup).preInit().init()
+    private val currentFacingPattern = RenderingRewritePattern(this).prefix("Current Facing").group(currentFacingRendererGroup).preInit().init()
+    private val otherFacingsPattern = RenderingRewritePattern(this).prefix("Other Facings").group(otherFacingsRendererGroup).preInit().init()
+    private val crystalPosPattern = SlideRenderingRewritePattern(this).prefix("Crystal Pos").group(crystalPosRendererGroup).preInit().init()
 
-    private val threads = threads()
-    private val targets = TargetFinder(Supplier { range.valDouble }, threads)
+    private val placementGroup = register(SettingGroup(Setting("Base Placement", this)))
+    private val placementState = register(placementGroup.add(Setting("Base Placement", this, false).setTitle("State")))
+    private val placementPattern = ObbyPlacementPattern(this, true).group(placementGroup).preInit().init()
 
     private var clicked = false
     private var lastPos : BlockPos? = null
 
     private val posses = ArrayList<BlockPos>()
     private val currentPosses = ArrayList<BlockPos>()
+    private val basePosses = ArrayList<BlockPos>()
     private var processingBlock : BlockPos? = null
+    private var baseBlock : BlockPos? = null
+
+    private val currentBlockRenderer = SlideRendererPattern()
+    private val crystalPosRenderer = SlideRendererPattern()
 
     @Target
     private var player : EntityPlayer? = null
@@ -104,6 +110,7 @@ class CityBoss : Module(
         player = null
         clicked = false
         lastPos = null
+        processingBlock = null
     }
 
     private fun displayInfo(
@@ -123,11 +130,15 @@ class CityBoss : Module(
 
         posses.clear()
         currentPosses.clear()
-        targets.update()
+        basePosses.clear()
 
         processingBlock = null
 
-        player = target()
+        player = if(autorerTargetSync.valBoolean) {
+            AutoRer.currentTarget
+        } else {
+            nearest()
+        }
 
         if(player == null) {
             displayInfo("no target no fun")
@@ -148,12 +159,10 @@ class CityBoss : Module(
                 processPlayer(player!!)
             }
         }
-    }
 
-    private fun target() : EntityPlayer? = if(autorerTargetSync.valBoolean) {
-        AutoRer.currentTarget
-    } else {
-        targets.target
+        if(placementState.valBoolean && baseBlock != null) {
+            placementPattern.placeBlockSwitch(baseBlock!!, Blocks.OBSIDIAN)
+        }
     }
 
     private fun mineBlock(
@@ -289,6 +298,7 @@ class CityBoss : Module(
 
         currentPosses.addAll(if(down.valInt == 0) finalCase.posses(finalFacing!!) else finalCase.down(down.valInt, finalFacing!!))
 
+        //TODO: rewrite it
         if(down.valInt > 0) {
             posses += playerPosition.down(down.valInt)
 
@@ -299,69 +309,116 @@ class CityBoss : Module(
             }
         }
 
-        for(pos in (if(down.valInt == 0) finalCase.posses(finalFacing) else finalCase.down(down.valInt, finalFacing))) {
-            val finalPos = playerPosition.add(pos)
+        run {
+            for(pos in currentPosses) {
+                val finalPos = playerPosition.add(pos)
 
-            if(mc.world.getBlockState(finalPos).block != Blocks.AIR) {
-                processingBlock = finalPos
-                mineBlock(finalPos)
-                return
+                if(pos is CrystalBlockPos) {
+                    println("crystalpos")
+                    //TODO: check if finalPos is obby/bedrock ^^^^
+                    baseBlock = finalPos
+                } else if(mc.world.getBlockState(finalPos).block != Blocks.AIR) {
+                    processingBlock = finalPos
+                    mineBlock(finalPos)
+                    return@run
+                }
             }
+
+            processingBlock = null
         }
 
-        processingBlock = null
+        for(pos in posses.toArray()) {
+            if(pos is CrystalBlockPos && pos != baseBlock) {
+                posses.remove(pos)
+            }
+        }
     }
 
     private fun processFacing(
         facing : EnumFacing,
         pos : BlockPos
-    ) : Cases? {
+    ) : Cases? = if(newVersion.valBoolean) {
+        Cases.SimpleCase1
+    } else {
         var airs = Int.MAX_VALUE
         var bestCase : Cases? = null
 
-        for(case in Cases.values()) {
-            if(caseSettings[case]!!.valBoolean && (if(down.valInt == 0) case.isIt(facing, pos, newVersion.valBoolean) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble, newVersion.valBoolean)) else case.isIt(facing, pos, newVersion.valBoolean, down.valInt) && (!blockRangeCheck.valBoolean || case.isItInRange(facing, pos, blockRange.valDouble, newVersion.valBoolean, down.valInt)))) {
-                val newAirs = if(down.valInt == 0) case.howManyAirs(facing, pos, newVersion.valBoolean) else case.howManyAirs(facing, pos, newVersion.valBoolean, down.valInt)
-                if(newAirs < airs) {
+        for (case in Cases.values()) {
+            if (caseSettings[case]!!.valBoolean && (if (down.valInt == 0) case.isIt(
+                    facing,
+                    pos,
+                    newVersion.valBoolean
+                ) && (!blockRangeCheck.valBoolean || case.isItInRange(
+                    facing,
+                    pos,
+                    blockRange.valDouble,
+                    newVersion.valBoolean
+                )) else case.isIt(
+                    facing,
+                    pos,
+                    newVersion.valBoolean,
+                    down.valInt
+                ) && (!blockRangeCheck.valBoolean || case.isItInRange(
+                    facing,
+                    pos,
+                    blockRange.valDouble,
+                    newVersion.valBoolean,
+                    down.valInt
+                )))
+            ) {
+                val newAirs = if (down.valInt == 0){
+                    case.howManyAirs(facing, pos, newVersion.valBoolean)
+                } else {
+                    case.howManyAirs(facing, pos, newVersion.valBoolean, down.valInt)
+                }
+
+                if (newAirs < airs) {
                     airs = newAirs
                     bestCase = case
                 }
             }
         }
 
-        return bestCase
+        bestCase
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event : RenderWorldLastEvent) {
-        if(renderer.isActive() && player != null) {
+    fun onRenderWorld(
+        event : RenderWorldLastEvent
+    ) {
+        if(player != null) {
             for(pos in posses) {
                 val pos1 = entityPosition(player!!).add(pos)
 
                 if(processingBlock == pos1) {
-                    renderer.draw(
+                    currentBlockRenderer.handleRenderWorld(
+                        currentBlockPattern,
                         pos1,
-                        processingBlockColor1.colour,
-                        processingBlockColor2.colour
+                        null
                     )
 
                     continue
                 }
 
                 if(currentPosses.contains(pos)) {
-                    renderer.draw(
-                        pos1,
-                        currentFacingColor1.colour,
-                        currentFacingColor2.colour
-                    )
+                    currentFacingPattern.draw(pos1)
 
                     continue
                 }
 
-                renderer.draw(pos1)
+                if(baseBlock == pos1) {
+                    crystalPosRenderer.handleRenderWorld(
+                        crystalPosPattern,
+                        pos1,
+                        null
+                    )
+                }
+
+                otherFacingsPattern.draw(pos1)
             }
         }
     }
+
     enum class MineMode {
         Client, PacketMine
     }

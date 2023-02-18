@@ -4,6 +4,7 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
@@ -18,23 +19,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class CheckBox extends ShaderableImplementation implements Openable {
+public class CheckBox extends ShaderableImplementation implements Openable, SettingComponent {
     private final Setting setting;
-    private int x, y, offset, count;
-    private int width = HalqGui.width;
-    private int layer;
 
     private final BindButton bind;
     private boolean open;
 
     public CheckBox(Setting setting, int x, int y, int offset, int count, int layer) {
+        super(x, y, count, offset, layer);
         this.setting = setting;
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
-        this.count = count;
-        this.layer = layer;
-        this.width = LayerControllerKt.getModifiedWidth(layer, width);
         this.bind = new BindButton(setting, x, y, offset + HalqGui.height, count, layer + 1);
     }
 
@@ -42,7 +35,7 @@ public class CheckBox extends ShaderableImplementation implements Openable {
     public void drawScreen(int mouseX, int mouseY) {
         super.drawScreen(mouseX, mouseY);
 
-        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), getWidth(), HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         Runnable shaderRunnable1 = () -> {
             if(HalqGui.shadow) {
@@ -50,17 +43,17 @@ public class CheckBox extends ShaderableImplementation implements Openable {
                     Render2DUtil.drawAbstract(
                             new AbstractGradient(
                                     new Vec4d(
-                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                            new double[] {x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                            new double[] {x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                            new double[] {getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                            new double[] {getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                            new double[] {getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
+                                            new double[] {getX() + HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY}
                                     ),
                                     ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
-                                    HalqGui.getGradientColour(count).getColor()
+                                    HalqGui.getGradientColour(getCount()).getColor()
                             )
                     );
                 }
-            } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.backgroundColor.getRGB());
+            } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.backgroundColor.getRGB());
         };
 
         Runnable shaderRunnable2 = () -> {
@@ -68,16 +61,16 @@ public class CheckBox extends ShaderableImplementation implements Openable {
                 HalqGui.drawSuffix(
                         setting.Companion.getName(setting),
                         setting.getTitle(),
-                        x,
-                        y + offset,
-                        width,
+                        getX(),
+                        getY(),
+                        getWidth(),
                         HalqGui.height,
-                        count,
+                        getCount(),
                         3
                 );
             }
 
-            HalqGui.drawString(setting.getTitle(), x, y + offset, width, HalqGui.height);
+            HalqGui.drawString(setting.getTitle(), getX(), getY(), getWidth(), HalqGui.height);
         };
 
         shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
@@ -96,14 +89,9 @@ public class CheckBox extends ShaderableImplementation implements Openable {
 
     @Override
     public void updateComponent(int x, int y) {
-        this.x = x;
-        this.y = y;
-        if(open) bind.updateComponent((x - LayerControllerKt.getXOffset(layer)) + LayerControllerKt.getXOffset(bind.getLayer()), y);
-    }
+        super.updateComponent(x, y);
 
-    @Override
-    public void setOff(int newOff) {
-        this.offset = newOff;
+        if(open) bind.updateComponent((x - LayerControllerKt.getXOffset(getLayer())) + LayerControllerKt.getXOffset(bind.getLayer()), y);
     }
 
     @Override
@@ -111,26 +99,11 @@ public class CheckBox extends ShaderableImplementation implements Openable {
         if(open) bind.keyTyped(typedChar, key);
     }
 
-    @Override
-    public int getHeight() {
-        return HalqGui.height;// * (open ? 2 : 1);
-    }
-
     public boolean visible() {return setting.isVisible() && HalqGui.visible(setting.getTitle());}
 
-    public void setCount(int count) {this.count = count;}
-    public int getCount() {return count;}
     public void setWidth(int width) {
-        this.width = width;
+        super.setWidth(width);
         this.bind.setWidth(width - 10);
-    }
-    public void setX(int x) {this.x = x;}
-    public int getX() {return x;}
-    public void setLayer(int layer) {this.layer = layer;}
-    public int getLayer() {return layer;}
-
-    private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
     }
 
     @Override
@@ -144,13 +117,9 @@ public class CheckBox extends ShaderableImplementation implements Openable {
         return new ArrayList<>(Collections.singletonList(bind));
     }
 
+    @NotNull
     @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getY() {
-        return y + offset;
+    public Setting setting() {
+        return setting;
     }
 }

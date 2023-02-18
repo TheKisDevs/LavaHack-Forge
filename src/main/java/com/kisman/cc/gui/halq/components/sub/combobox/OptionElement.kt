@@ -1,12 +1,12 @@
 package com.kisman.cc.gui.halq.components.sub.combobox
 
 import com.kisman.cc.features.Binder
+import com.kisman.cc.gui.api.SettingComponent
 import com.kisman.cc.util.client.interfaces.IBindable
-import com.kisman.cc.gui.api.Component
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.sub.ModeButton
-import com.kisman.cc.gui.halq.util.getModifiedWidth
+import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.render.Render2DUtil
 import java.util.function.BooleanSupplier
 
@@ -20,28 +20,28 @@ class OptionElement(
     val name : String,
     val index : Int,
     val visible : BooleanSupplier,
-    private var x : Int,
-    private var y : Int,
-    var offset : Int,
-    private var count : Int,
-    private var layer : Int
-) : ShaderableImplementation(),
-    Component {
-    private var width = getModifiedWidth(
-        layer,
-        HalqGui.width
-    )
-
+    x : Int,
+    y : Int,
+    offset : Int,
+    count : Int,
+    layer : Int
+) : ShaderableImplementation(
+    x,
+    y,
+    count,
+    offset,
+    layer
+), SettingComponent {
     override fun drawScreen(
         mouseX : Int,
         mouseY : Int
     ) {
-        super<ShaderableImplementation>.drawScreen(mouseX, mouseY)
+        super.drawScreen(mouseX, mouseY)
 
         normalRender = Runnable {
             Render2DUtil.drawRectWH(
                 x.toDouble(),
-                (y + offset).toDouble(),
+                y.toDouble(),
                 width.toDouble(),
                 height.toDouble(),
                 HalqGui.backgroundColor.rgb
@@ -50,7 +50,7 @@ class OptionElement(
             HalqGui.drawString(
                 name,
                 x,
-                y + offset,
+                y,
                 width,
                 rawHeight
             )
@@ -60,7 +60,7 @@ class OptionElement(
                     IBindable.getName(binder),
                     name,
                     x.toDouble(),
-                    y.toDouble() + offset,
+                    y.toDouble(),
                     width.toDouble(),
                     rawHeight.toDouble(),
                     count,
@@ -83,64 +83,6 @@ class OptionElement(
         }
     }
 
-    private fun isMouseOnButton(
-        x : Int,
-        y : Int
-    ) : Boolean = x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + rawHeight
-
-    override fun updateComponent(
-        x : Int,
-        y : Int
-    ) {
-        this.x = x
-        this.y = y
-    }
-
-    override fun getHeight() : Int = rawHeight
-
-    override fun setWidth(
-        width : Int
-    ) {
-        this.width = width
-    }
-
-    override fun setOff(
-        newOff : Int
-    ) {
-        this.offset = newOff
-    }
-
-    override fun setCount(
-        count : Int
-    ) {
-        this.count = count
-    }
-
-    override fun getCount() : Int = count
-
-    override fun setX(
-        x : Int
-    ) {
-        this.x = x
-    }
-
-    override fun getX() : Int = x
-
-    override fun setY(
-        y : Int
-    ) {
-        this.y = y
-    }
-
-    override fun getY() : Int = y + offset
-
-    override fun setLayer(
-        layer : Int
-    ) {
-        this.layer = layer;
-    }
-
-    override fun getLayer() : Int = layer
-
     override fun visible() : Boolean = visible.asBoolean && combobox.selected != this
+    override fun setting() : Setting = combobox.setting
 }

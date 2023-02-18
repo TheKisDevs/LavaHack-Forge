@@ -10,6 +10,7 @@ import com.kisman.cc.features.module.client.ViaForgeModule;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.features.viaforge.gui.ViaForgeGuiKt;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.ModuleComponent;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
@@ -33,24 +34,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 @SuppressWarnings("UnusedAssignment")
-public class Button extends ShaderableImplementation implements Openable {
+public class Button extends ShaderableImplementation implements Openable, ModuleComponent {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
     public final DraggableBox draggable;
     public final Description description;
     public final boolean hud;
-    public int x, y, offset, count;
     public boolean open = false;
 
     public Button(Module mod, int x, int y, int offset, int count) {
+        super(x, y, count, offset, 0);
         this.mod = mod;
         this.hud = (mod instanceof HudModule);
         this.draggable = (hud ? new DraggableBox((HudModule) mod) : null);
         this.description = new Description(mod.getDescription(), count);
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
-        this.count = count;
 
         int offsetY = offset + HalqGui.height;
         int count1 = 0;
@@ -111,9 +108,11 @@ public class Button extends ShaderableImplementation implements Openable {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+        super.drawScreen(mouseX, mouseY);
+
         if(hud && draggable != null) HalqGui.drawComponent(draggable);
 
-        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         Runnable shaderRunnable1 = () -> {
             if (HalqGui.shadow) {
@@ -121,28 +120,28 @@ public class Button extends ShaderableImplementation implements Openable {
                     Render2DUtil.drawAbstract(
                             new AbstractGradient(
                                     new Vec4d(
-                                            new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                            new double[]{x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                            new double[]{x + HalqGui.width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                            new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                            new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                            new double[]{getX() + HalqGui.width - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                            new double[]{getX() + HalqGui.width - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
+                                            new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY}
                                     ),
                                     ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
-                                    HalqGui.getGradientColour(count).getColor()
+                                    HalqGui.getGradientColour(getCount()).getColor()
                             )
                     );
                 }
-            } else if (HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(count).getRGB() : HalqGui.test2Color.getRGB());
+            } else if (HalqGui.test2 || mod.isToggled()) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, mod.isToggled() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.test2Color.getRGB());
         };
 
         Runnable shaderRunnable2 = () -> {
-            HalqGui.drawString(mod.displayName, x, y + offset, HalqGui.width, HalqGui.height);
+            HalqGui.drawString(mod.displayName, getX(), getY(), HalqGui.width, HalqGui.height);
 
             if (!HalqGui.hideAnnotations) {
-                if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 1);
-                if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 2);
+                if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 1);
+                if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 2);
             }
 
-            if (Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.getName(), x, y + offset, HalqGui.width - HalqGui.offsetsX, HalqGui.height, count, 3);
+            if (Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 3);
         };
 
         shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
@@ -171,8 +170,8 @@ public class Button extends ShaderableImplementation implements Openable {
 
     @Override
     public void updateComponent(int x, int y) {
-        this.x = x;
-        this.y = y;
+        super.updateComponent(x, y);
+
         if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x + LayerControllerKt.getXOffset(comp.getLayer()), y);
     }
 
@@ -182,21 +181,14 @@ public class Button extends ShaderableImplementation implements Openable {
     }
 
     @Override
-    public void setOff(int newOff) {
-        this.offset = newOff;
-    }
-
-    @Override
     public int getHeight() {
         return HalqGui.height + getSize() * HalqGui.height;
     }
 
     public void setCount(int count) {
-        this.count = count;
+        super.setCount(count);
         description.setCount(count);
     }
-
-    public int getCount() {return count;}
 
     public int getSize() {
         int i = 0;
@@ -205,34 +197,13 @@ public class Button extends ShaderableImplementation implements Openable {
     }
 
     public boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + HalqGui.width && y > this.y + offset && y < this.y + HalqGui.height + offset;
-    }
-
-    @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getY() {
-        return y + offset;
+        return x > getX() && x < getX() + HalqGui.width && y > getY() && y < getY() + HalqGui.height;
     }
 
     @Override
     public boolean isOpen() {
         return open;
     }
-
-    @Override
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    @Override
-    public int getX() {
-        return x;
-    }
-
 
     @NotNull
     @Override
@@ -243,5 +214,11 @@ public class Button extends ShaderableImplementation implements Openable {
     @Override
     public boolean visible() {
         return HalqGui.visible(this) && HalqGui.visible(mod.getName());
+    }
+
+    @NotNull
+    @Override
+    public Module module() {
+        return mod;
     }
 }

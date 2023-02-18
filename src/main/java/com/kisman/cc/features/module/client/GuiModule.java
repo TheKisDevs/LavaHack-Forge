@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
+import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
@@ -49,6 +50,8 @@ public class GuiModule extends Module {
     public final SettingGroup shadersGroup = register(new SettingGroup(new Setting("Shaders", this)));
     public final Setting shaderState = register(shadersGroup.add(new Setting("Shader State", this, false).setTitle("State")));
     public final ShaderPattern shaders = new ShaderPattern(this).group(shadersGroup).prefix("Shaders").preInit().init();
+
+    public final Setting gradientFrameDiff = register(new Setting("Gradient Frame Diff", this, 0.0, 0.0, 20, NumberType.TIME));
 
     @ModuleInstance
     public static GuiModule instance;

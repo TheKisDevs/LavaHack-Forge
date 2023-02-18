@@ -112,7 +112,7 @@ public class CustomFontUtil {
     }
 
     private static boolean customFont() {
-        return CustomFontModule.turnOn;
+        return CustomFontModule.instance.isToggled();
     }
 
     public static Fonts getFont() {

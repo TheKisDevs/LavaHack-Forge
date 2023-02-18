@@ -68,9 +68,10 @@ public class Frame {
         }
     }
 
-    public Frame(Category cat, int x, int y) {
+    public Frame(Category cat, int x, int y, int count) {
         this.customName = false;
         this.name = "";
+        this.count = count;
 
         int offsetY = HalqGui.height;
         int count1 = 0;
@@ -172,7 +173,7 @@ public class Frame {
 
     public void refresh() {
         int offsetY = HalqGui.height;
-        int count1 = count + 1;
+        int count1 = (count * HalqGui.gradientFrameDiff) + 1;
 
         for(Component comp : components) {
             if(!comp.visible()) continue;

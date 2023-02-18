@@ -55,7 +55,8 @@ public class HalqGui extends KismanGuiScreen {
             outlineHeaders = false,
             shaderState = false;
     public static int diff = 0,
-            textOffsetX = 5;
+            textOffsetX = 5,
+            gradientFrameDiff = 0;
     public static double offsetsX = 0,
             offsetsY = 0,
             lineWidth = 1.0;
@@ -94,6 +95,8 @@ public class HalqGui extends KismanGuiScreen {
     private static Runnable shaderableThing = () -> {};
     private static Runnable postRenderThing = () -> {};
 
+    public static Frame currentFrame = null;
+
     public HalqGui(GuiScreen lastGui) {
         this();
         this.lastGui = lastGui;
@@ -116,9 +119,11 @@ public class HalqGui extends KismanGuiScreen {
     public HalqGui() {
         this(true);
         int offsetX = 5;
+        int count = 0;
         for(Category cat : Category.values()) {
-            frames.add(new Frame(cat, offsetX, 20));
+            frames.add(new Frame(cat, offsetX, 20, count));
             offsetX += width + 5;
+            count++;
         }
     }
 
@@ -173,6 +178,7 @@ public class HalqGui extends KismanGuiScreen {
         lineWidth = GuiModule.instance.lineWidth.getValDouble();
         hoverColor = GuiModule.instance.hoverColor.getColour();
         shaderState = GuiModule.instance.shaderState.getValBoolean();
+        gradientFrameDiff = GuiModule.instance.gradientFrameDiff.getValInt();
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -217,8 +223,12 @@ public class HalqGui extends KismanGuiScreen {
         }
 
         for(Frame frame : frames) if(!frame.reloading) {
+            currentFrame = frame;
+
             frame.veryRenderPost(mouseX, mouseY);
         }
+
+        currentFrame = null;
 
         drawSelectionBar(mouseX, mouseY);
     }
@@ -359,7 +369,7 @@ public class HalqGui extends KismanGuiScreen {
             if(Config.instance.horizontalScroll.getValBoolean() && Keyboard.getEventKeyState() && Keyboard.getEventKey() == Config.instance.keyForHorizontalScroll.getKey()) frame.x = frame.x + (int) Config.instance.scrollSpeed.getValDouble();
             else frame.y = frame.y + (int) Config.instance.scrollSpeed.getValDouble();
         }
-    }
+     }
 
     public static void renderComponent(
             Component component

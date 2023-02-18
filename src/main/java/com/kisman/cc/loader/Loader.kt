@@ -19,7 +19,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.nio.file.Files
-import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -84,7 +83,8 @@ fun load(
         loaded = true
         canPressInstallButton = false
 
-        loadIntoResourceCache(bytes)
+//        loadIntoResourceCache(bytes)
+        loadIntoCustomClassLoader(bytes)
         close()
         client!!.close()
         AccountData.key = key
@@ -118,7 +118,7 @@ fun load(
     client = setupClient(messageProcessor)
     client.send("getpublicjar $key $version $properties $processors $versionToLoad")
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is trying to download classes...")
+    LavaHackLoaderCoreMod.LOGGER.info("Trying to download classes...")
 
     status = "Trying to download LavaHack"
 }
@@ -147,7 +147,7 @@ fun initLoader() {
                     break
                 }
 
-                Thread.sleep(1000 * 5)
+                Thread.sleep(1000)
             }
 
             versions(version)
@@ -157,7 +157,7 @@ fun initLoader() {
                     break
                 }
 
-                Thread.sleep(1000 * 5)
+                Thread.sleep(1000)
             }
 
             createGui()
@@ -374,7 +374,7 @@ fun loadIntoResourceCache(bytes : ByteArray) {
 
     LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting resources...")
+    LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
 
     if(resources.isNotEmpty()) {
         val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
@@ -396,14 +396,14 @@ fun loadIntoResourceCache(bytes : ByteArray) {
         classLoader.addURL(tempFile.toURI().toURL())
     }
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is setting resourceCache!")
+    LavaHackLoaderCoreMod.LOGGER.info("Setting resourceCache!")
     status = "Setting \"resourceCache\""
 
     resourceCacheField[classLoader] = resourceCache
 
     status = "Done!"
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is done!")
+    LavaHackLoaderCoreMod.LOGGER.info("Done!")
 
     AccountData.firstLoadedClassName = firstClassName!!
     AccountData.firstLoadedClassBytes = firstClassBytes!!
@@ -412,61 +412,60 @@ fun loadIntoResourceCache(bytes : ByteArray) {
 fun loadIntoCustomClassLoader(
     bytes : ByteArray
 ) {
-    val classes = ConcurrentHashMap<String, ByteArray>()
+    val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
+    resourceCacheField.isAccessible = true
+    val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
+    val classes = HashMap<String, ByteArray>()
     val resources = HashMap<String, ByteArray>()
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting LavaHack...")
+    LavaHackLoaderCoreMod.LOGGER.info("Injecting classes...")
 
-    status = "Finding files..."
+    status = "Injecting classes..."
 
     var classesCount = 0
     var resourcesCount = 0
 
-    ZipInputStream(bytes.inputStream()).use { zipStream ->
-        var zipEntry: ZipEntry?
-        while (zipStream.nextEntry.also { zipEntry = it } != null) {
-            var name = zipEntry!!.name
+    var firstClassName : String? = null
+    var firstClassBytes : ByteArray? = null
+
+    ZipInputStream(bytes.inputStream()).use { stream ->
+        var entry : ZipEntry?
+
+        while (stream.nextEntry.also { entry = it } != null) {
+            var name = entry!!.name
+
             if (name.endsWith(".class")) {
-                LavaHackLoaderCoreMod.LOGGER.info("Found class \"${name.removeSuffix(".class")}\"")
+                LavaHackLoaderCoreMod.LOGGER.info("Injecting class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
-                classes[name] = zipStream.readBytes()
+                if(name.toLowerCase().contains("mixin")) {
+                    resourceCache[name] = stream.readBytes()
+
+                    if(firstClassName == null) {
+                        firstClassName = name
+                        firstClassBytes = resourceCache[name]
+                    }
+                } else {
+                    classes[name] = stream.readBytes()
+                }
 
                 classesCount++
-                status = "Found class \"${name.removeSuffix(".class")}\""
+                status = "Injecting $name"
             } else if(Utility.validResource(name)) {
-                LavaHackLoaderCoreMod.LOGGER.info("Found resource \"$name\"")
-                resources[name] = Utility.getBytesFromInputStream(zipStream)
+                LavaHackLoaderCoreMod.LOGGER.info("Found new resource \"$name\"")
+                resources[name] = Utility.getBytesFromInputStream(stream)
                 resourcesCount++
-                status = "Found resource \"$name\""
+                status = "Found \"$name\" resource."
             }
         }
     }
 
-    LavaHackLoaderCoreMod.LOGGER.info("Found $classesCount classes and $resourcesCount resources")
-    status = "Found $classesCount classes and $resourcesCount resources"
+    CustomClassLoader(classes)
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting classes...")
-    status = "Injecting classes..."
+    LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
 
-    if(classes.isNotEmpty()) {
-        val customClassLoader = CustomClassLoader(classLoader)
-
-        customClassLoader.lavahackCache = classes
-
-        for(`class` in classes) {
-            loadClass(
-                `class`.key,
-                false
-            ) {
-                customClassLoader.findClass(it)
-            }
-        }
-    }
-
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is injecting resources...")
-    status = "Injecting resources..."
+    LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
 
     if(resources.isNotEmpty()) {
         val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
@@ -474,8 +473,7 @@ fun loadIntoCustomClassLoader(
         val jos = JarOutputStream(fos)
 
         for(entry in resources.entries) {
-            LavaHackLoaderCoreMod.LOGGER.info("Injecting \"${entry.key}\" resource")
-            status = "Injecting \"${entry.key}\" resource"
+            status = "Injecting \"${entry.key}\" resource."
             jos.putNextEntry(ZipEntry(entry.key))
             jos.write(entry.value)
             jos.closeEntry()
@@ -489,79 +487,15 @@ fun loadIntoCustomClassLoader(
         classLoader.addURL(tempFile.toURI().toURL())
     }
 
-    status = "Successfully loader!"
+    LavaHackLoaderCoreMod.LOGGER.info("Setting resourceCache!")
+    status = "Setting \"resourceCache\""
 
-    LavaHackLoaderCoreMod.LOGGER.info("LavaHack Loader is done!")
-}
+    resourceCacheField[classLoader] = resourceCache
 
-private fun loadClass(
-    name : String,
-    resolve : Boolean,
-    classFinder : (String) -> Class<*>?
-) : Class<*> {
-    synchronized (
-            /*getClassLoadingLock(name)*/
-            Utility.invokeMethod<Any>(
-                classLoader,
-                "getClassLoadingLock",
-                name
-            )!!
-    ) {
-        // First, check if the class has already been loaded
-        var c = Utility.invokeMethod<Class<*>>(
-            classLoader,
-            "findLoadedClass",
-            name
-        )//classLoader.findLoadedClass(name);
-        if (c == null) {
-            val time = System.nanoTime();
-            val parent = Utility.field<ClassLoader>(
-                classLoader,
-                "parent"
-            )
+    status = "Done!"
 
-            try {
-                c = if (parent != null) {
-                    Utility.invokeMethod<Class<*>>(
-                        classLoader,
-                        "loadClass",
-                        name,
-                        false
-                    )//parent.loadClass(name, false);
-                } else {
-                    Utility.invokeMethod(
-                        classLoader,
-                        "findBootstrapClassOrNull",
-                        name
-                    )//findBootstrapClassOrNull(name);
-                }
-            } catch (e : ClassNotFoundException) {
-                // ClassNotFoundException thrown if class not found
-                // from the non-null parent class loader
-            }
+    LavaHackLoaderCoreMod.LOGGER.info("Done!")
 
-            if (c == null) {
-                // If still not found, then invoke findClass in order
-                // to find the class.
-                val timeNew = System.nanoTime();
-                c = classFinder(
-                    name
-                )//classLoader.findClass(name);
-
-                // this is the defining class loader; record the stats
-                sun.misc.PerfCounter.getParentDelegationTime().addTime(timeNew - time);
-                sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(timeNew);
-                sun.misc.PerfCounter.getFindClasses().increment();
-            }
-        }
-        if (resolve) {
-            Utility.invokeMethod<Void>(
-                classLoader,
-                "resolveClass",
-                c
-            )
-            //classLoader.resolveClass(c);
-        }
-        return c;
-    }
+    AccountData.firstLoadedClassName = firstClassName!!
+    AccountData.firstLoadedClassBytes = firstClassBytes!!
 }

@@ -3,6 +3,7 @@ package com.kisman.cc.gui.halq.components.sub;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.combobox.OptionElement;
@@ -17,25 +18,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class ModeButton extends ShaderableImplementation implements Openable {
+@SuppressWarnings("NullableProblems")
+public class ModeButton extends ShaderableImplementation implements Openable, SettingComponent {
     public final Setting setting;
     public OptionElement selected;
-    private int x, y, offset, count;
     public boolean open;
     private int elements = 0;//0 - closed | 1 - options | 2 - binds
-    private int width = HalqGui.width;
-    private int layer;
 
     private final ArrayList<Component> components = new ArrayList<>();
 
     public ModeButton(Setting setting, int x, int y, int offset, int count, int layer) {
+        super(x, y, count, offset, layer);
         this.setting = setting;
-        this.x = x;
-        this.y = y;
-        this.offset = offset;
-        this.count = count;
-        this.layer = layer;
-        this.width = LayerControllerKt.getModifiedWidth(layer, width);
 
         int i = 0;
         int offsetY = offset + HalqGui.height;
@@ -84,38 +78,38 @@ public class ModeButton extends ShaderableImplementation implements Openable {
 
         selected = (OptionElement) components.stream().filter(component -> component instanceof OptionElement && ((OptionElement) component).getName().equals(setting.getValString())).findFirst().orElse(components.get(0));
 
-        normalRender = () -> Render2DUtil.drawRectWH(x, y + offset, width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), getWidth(), HalqGui.height, HalqGui.backgroundColor.getRGB());
 
-        Runnable shaderRunnable1 =() -> {
+        Runnable shaderRunnable1 = () -> {
             if (HalqGui.shadow) {
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width / 2, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[]{x + HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                        new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2.0, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2.0, getY() + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY}
                                 ),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
-                                HalqGui.getGradientColour(count).getColor()
+                                HalqGui.getGradientColour(getCount()).getColor()
                         )
                 );
                 Render2DUtil.drawAbstract(
                         new AbstractGradient(
                                 new Vec4d(
-                                        new double[]{x + width / 2, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.offsetsY},
-                                        new double[]{x + width - HalqGui.offsetsX, y + offset + HalqGui.height - HalqGui.offsetsY},
-                                        new double[]{x + width / 2, y + offset + HalqGui.height - HalqGui.offsetsY}
+                                        new double[]{getX() + getWidth() / 2.0, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
+                                        new double[]{getX() + getWidth() / 2.0, getY() + HalqGui.height - HalqGui.offsetsY}
                                 ),
-                                HalqGui.getGradientColour(count).getColor(),
+                                HalqGui.getGradientColour(getCount()).getColor(),
                                 ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt())
                         )
                 );
-            } else Render2DUtil.drawRectWH(x + HalqGui.offsetsX, y + offset + HalqGui.offsetsY, width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(count).getRGB());
+            } else Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB());
         };
 
-        Runnable shaderRunnable2 = () -> HalqGui.drawString(setting.getTitle() + ": " + selected.getName(), x, y + offset, width, HalqGui.height);
+        Runnable shaderRunnable2 = () -> HalqGui.drawString(setting.getTitle() + ": " + selected.getName(), getX(), getY(), getWidth(), HalqGui.height);
 
         shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
 
@@ -158,24 +152,18 @@ public class ModeButton extends ShaderableImplementation implements Openable {
 
     @Override
     public void updateComponent(int x, int y) {
-        this.x = x;
-        this.y = y;
+        super.updateComponent(x, y);
 
         if(open) {
             for(Component component : components) {
                 if(component.visible()) {
                     component.updateComponent(
-                            (x - LayerControllerKt.getXOffset(layer)) + LayerControllerKt.getXOffset(component.getLayer()),
+                            (x - LayerControllerKt.getXOffset(getLayer())) + LayerControllerKt.getXOffset(component.getLayer()),
                             y
                     );
                 }
             }
         }
-    }
-
-    @Override
-    public void setOff(int newOff) {
-        this.offset = newOff;
     }
 
     private int getHeight1() {
@@ -194,30 +182,12 @@ public class ModeButton extends ShaderableImplementation implements Openable {
 
     public boolean visible() {return setting.isVisible() && HalqGui.visible(setting.getTitle());}
 
-    public void setCount(int count) {this.count = count;}
-    public int getCount() {return count;}
-    public void setWidth(int width) {this.width = width;}
-    public void setX(int x) {this.x = x;}
-    public int getX() {return x;}
-    public void setLayer(int layer) {this.layer = layer;}
-    public int getLayer() {return layer;}
-
-    private boolean isMouseOnButton(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + HalqGui.height;
+    public boolean isMouseOnButton(int x, int y) {
+        return x > getX() && x < getX() + getWidth() && y > getY() && y < getY() + HalqGui.height;
     }
 
     private boolean isMouseOnButton2(int x, int y) {
-        return x > this.x && x < this.x + width && y > this.y + offset && y < this.y + offset + getHeight1();
-    }
-
-    @Override
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    @Override
-    public int getY() {
-        return y + offset;
+        return x > getX() && x < getX() + getWidth() && y > getY() && y < getY() + getHeight1();
     }
 
     @Override
@@ -225,9 +195,14 @@ public class ModeButton extends ShaderableImplementation implements Openable {
         return open;
     }
 
-    @NotNull
     @Override
     public ArrayList<Component> getComponents() {
         return components;
+    }
+
+    @NotNull
+    @Override
+    public Setting setting() {
+        return setting;
     }
 }

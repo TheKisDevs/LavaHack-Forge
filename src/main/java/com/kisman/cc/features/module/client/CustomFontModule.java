@@ -23,20 +23,14 @@ public class CustomFontModule extends Module {
     public final Setting customSize = register(new Setting("Custom Size", this, false));
     public final Setting size = register(new Setting("Size", this, 18.0, 5.0, 30.0, true).setVisible(customSize::getValBoolean));
 
-    public static boolean turnOn = false;
-
     public static CustomFontModule instance = new CustomFontModule();
 
     private CustomFontModule() {
         super("CustomFont", "custom font", Category.CLIENT);
         super.setDisplayInfo(() -> "[" + font.getValString() + (fallbackFont.getValBoolean() ? " | " + fallbackMode.getValString() : "") + "]");
-
-        instance = this;
     }
 
     public void update() {
-        turnOn = true;
-
         if(CustomFontUtilKt.Companion.getAntiAlias() != antiAlias.getValBoolean()) CustomFontUtilKt.Companion.setAntiAlias(antiAlias.getValBoolean());
         if(CustomFontUtilKt.Companion.getFractionMetrics() != fractionMetrics.getValBoolean()) {
             CustomFontUtilKt.Companion.setFractionalMetrics(fractionMetrics.getValBoolean());
@@ -44,8 +38,5 @@ public class CustomFontModule extends Module {
         }
 
         CustomFontUtilKt.Companion.setMultiLineOffset(multiLineOffset.getValInt());
-    }
-    public void onDisable(){
-        turnOn = false;
     }
 }
