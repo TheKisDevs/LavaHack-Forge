@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 public class Scaffold extends Module {
 
+    private final SettingEnum<Mode> mode = new SettingEnum<>("Mode", this, Mode.Any).register();
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     private final Setting tower = register(new Setting("Tower", this, false));
     private final SettingEnum<TowerMode> towerMode = new SettingEnum<>("TowerMode", this, TowerMode.Vanilla).setVisible(tower::getValBoolean).register();
@@ -91,7 +92,7 @@ public class Scaffold extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        int slot = InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN);
+        int slot = mode.getValEnum() == Mode.Obsidian ? InventoryUtil.getBlockInHotbar(Blocks.OBSIDIAN) : InventoryUtil.findValidScaffoldBlockHotbarSlot();
         if(slot == -1)
             return;
 
@@ -234,5 +235,10 @@ public class Scaffold extends Module {
     private enum TowerMode {
         Vanilla,
         Motion
+    }
+
+    private enum Mode {
+        Any,
+        Obsidian
     }
 }
