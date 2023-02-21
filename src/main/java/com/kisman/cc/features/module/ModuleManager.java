@@ -209,6 +209,7 @@ public class ModuleManager {
 		add(new Speed());
 //		add(SpeedRewrite.INSTANCE);
 		add(new Spider());
+		add(new Strafe());
 		add(new TargetStrafe());
 		//player
 		add(new AirPlace());
