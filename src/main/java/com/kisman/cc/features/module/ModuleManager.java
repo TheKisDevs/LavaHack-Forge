@@ -128,7 +128,7 @@ public class ModuleManager {
 		add(new Cape());
 		add(Changer.INSTANCE);
 		add(new ChunkAnimator());
-//		add(ClientFixer.INSTANCE);
+		add(new ClientFixer());
 		add(new Config());
 		add(CustomFontModule.instance);
 		add(new CustomMainMenuModule());
@@ -315,12 +315,12 @@ public class ModuleManager {
 	}
 	
 	public Module getModule(String name) {
-		for (Module m : this.modules) if (m.getName().equalsIgnoreCase(name)) return m;
+		for (Module m : this.modules) if (m.getName().equalsIgnoreCase(name) || m.displayName.equalsIgnoreCase(name)) return m;
 		return null;
 	}
 
 	public Module getModule(String name, boolean scripts, boolean plugins) {
-		for (Module m : this.modules) if ((plugins || !(m instanceof ModulePlugin)) && (scripts || !(m instanceof ModuleScript)) && m.getName().equalsIgnoreCase(name)) return m;
+		for (Module m : this.modules) if ((plugins || !(m instanceof ModulePlugin)) && (scripts || !(m instanceof ModuleScript)) && (m.getName().equalsIgnoreCase(name) || m.displayName.equalsIgnoreCase(name))) return m;
 		return null;
 	}
 	

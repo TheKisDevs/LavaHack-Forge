@@ -51,8 +51,13 @@ class SettingEnum<T : Enum<*>>(
     }
 
     fun group(group : SettingGroup) : SettingEnum<T> {
-        return group.add(this) as SettingEnum<T>
+        return group.add(this)
     }
+
+    fun onChange(
+        onChange0 : (SettingEnum<T>) -> Any
+    ) : SettingEnum<T> = super.onChange { onChange0(this) } as SettingEnum<T>
+
 
     /*override fun getStringValues() : Array<String> {
         val rawValues = ArrayList<T>()

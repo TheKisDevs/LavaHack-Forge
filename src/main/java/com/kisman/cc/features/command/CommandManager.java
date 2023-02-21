@@ -1,5 +1,6 @@
 package com.kisman.cc.features.command;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.commands.*;
 import com.kisman.cc.util.chat.ChatHandler;
 
@@ -29,6 +30,7 @@ public class CommandManager extends ChatHandler {
 		add(new FriendCommand());
 		add(new GetUUID());
 		add(new GhostBlockCommand());
+		add(new GuiCommand());
 		add(new Help());
 		add(new IsOnline());
 		add(new ItemNameCommand());
@@ -48,6 +50,7 @@ public class CommandManager extends ChatHandler {
 
 	private void add(Command command) {
 		commands.put(command.getCommand(), command);
+		Kisman.LOGGER.info("Registering " + command.getCommand() + " command!");
 	}
 
 	public void runCommand(String... args) {

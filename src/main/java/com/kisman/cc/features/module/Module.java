@@ -1,7 +1,7 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.hud.modules.arraylist.IArrayListElement;
+import com.kisman.cc.features.DisplayableFeature;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
@@ -13,10 +13,8 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.settings.SettingLoader;
-import me.zero.alpine.listener.Listenable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
@@ -28,7 +26,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
-public class Module implements IBindable, Listenable, IArrayListElement {
+public class Module extends DisplayableFeature {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 
@@ -52,9 +50,6 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 	public boolean sendToggleMessages = true;
 
 	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
-
-	public float xCoeff = 1;
-	public float xCoeffPrev = 1;
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
@@ -249,25 +244,5 @@ public class Module implements IBindable, Listenable, IArrayListElement {
 
 	protected void dontSendToggleMessages() {
 		sendToggleMessages = false;
-	}
-
-	@Override
-	public float getXCoeff() {
-		return xCoeff;
-	}
-
-	@Override
-	public void setXCoeff(float v) {
-		this.xCoeff = v;
-	}
-
-	@Override
-	public float getXCoeffPrev() {
-		return xCoeffPrev;
-	}
-
-	@Override
-	public void setXCoeffPrev(float v) {
-		this.xCoeffPrev = v;
 	}
 }

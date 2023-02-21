@@ -328,7 +328,7 @@ class CityBoss : Module(
         }
 
         for(pos in posses.toArray()) {
-            if(pos is CrystalBlockPos && pos != baseBlock) {
+            if(pos is CrystalBlockPos) {
                 posses.remove(pos)
             }
         }
@@ -406,17 +406,15 @@ class CityBoss : Module(
                     continue
                 }
 
-                if(baseBlock == pos1) {
-                    crystalPosRenderer.handleRenderWorld(
-                        crystalPosPattern,
-                        pos1,
-                        null
-                    )
-                }
-
                 otherFacingsPattern.draw(pos1)
             }
         }
+
+        crystalPosRenderer.handleRenderWorld(
+            crystalPosPattern,
+            baseBlock,
+            null
+        )
     }
 
     enum class MineMode {

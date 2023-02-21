@@ -25,6 +25,6 @@ void main() {
          }
          gl_FragColor = vec4(color, alpha);
      } else {
-         gl_FragColor = centerCol
+         gl_FragColor = centerCol;
      }
 }

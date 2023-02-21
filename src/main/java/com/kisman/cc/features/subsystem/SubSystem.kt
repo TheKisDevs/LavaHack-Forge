@@ -1,13 +1,8 @@
 package com.kisman.cc.features.subsystem
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.PacketEvent
-import com.kisman.cc.features.subsystem.subsystems.RotationSystem
-import me.zero.alpine.listener.EventHandler
-import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listenable
 import me.zero.alpine.listener.Listener
-import net.minecraft.network.play.client.CPacketPlayer
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -20,9 +15,22 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 abstract class SubSystem(
     val name : String
 ) : Listenable {
+    private val listeners = mutableListOf<Listener<*>>()
+
     open fun init() {
         MinecraftForge.EVENT_BUS.register(this)
-        Kisman.EVENT_BUS.subscribe(this)
+
+        for(listener in listeners) {
+            Kisman.EVENT_BUS.subscribe(listener)
+        }
+    }
+
+    fun listeners(
+        vararg listeners : Listener<*>
+    ) {
+        for(listener in listeners) {
+            this.listeners.add(listener)
+        }
     }
 
     @SubscribeEvent open fun update(

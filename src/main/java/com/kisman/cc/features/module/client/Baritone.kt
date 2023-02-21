@@ -19,7 +19,7 @@ class Baritone : Module(
         Category.CLIENT
 ) {
     private val booleans = register(SettingGroup(Setting("Booleans", this)))
-    private val numbers = register(SettingGroup(Setting("Numbers", this)))
+//    private val numbers = register(SettingGroup(Setting("Numbers", this)))
     private val colors = register(SettingGroup(Setting("Colors", this)))
 
     private val settings = mutableListOf<BaritoneSetting<*>>()
@@ -37,23 +37,18 @@ class Baritone : Module(
                     )
                 }
 
-                is Float, is Double, is Int -> {
-                    val setting1 = when (setting.value) {
-                        is Float -> setting as Settings.Setting<Float>
-                        is Int -> setting as Settings.Setting<Int>
-                        else -> setting as Settings.Setting<Double>
-                    }
+                /*is Float, is Double, is Int -> {
                     settings += BaritoneSetting(
                         register(numbers.add(Setting(setting.name, this, (
                                 when(setting.value) {
-                                    is Float -> (setting1.value as Float).toDouble()
-                                    is Double -> (setting1.value as Double)
-                                    else/*is Int*/ -> (setting1.value as Int).toDouble()
+                                    is Float -> (setting.value as Float).toDouble()
+                                    is Double -> (setting.value as Double)
+                                    else*//*is Int*//* -> (setting.value as Int).toDouble()
                                 }
-                                ), 0.0, 10.0, true))),
-                        setting1
+                                ), 0.0, 10.0, setting.value is Int))),
+                        setting
                     )
-                }
+                }*/
 
                 is Color -> {
                     settings += BaritoneSetting(

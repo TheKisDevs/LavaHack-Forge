@@ -17,6 +17,7 @@ import java.nio.file.Paths
  * @author _kisman_, Cubic (only a few tweaks)
  * @since unknown
  */
+@Suppress("UNCHECKED_CAST")
 class ConfigManager(
         val name : String
 ) {
@@ -24,6 +25,7 @@ class ConfigManager(
     val loader = Load(this)
 
     val moduleSaver = ModuleSave(this)
+    val friendSaver = FriendSave(this)
 
     val suffix = ".kis"
     val path = Kisman.fileName
@@ -34,12 +36,13 @@ class ConfigManager(
     val hudEditorPrefix = "hud_editor"
     val friendsPrefix = "friend"
 
-    class ModuleSave(
+
+    abstract class Saver(
         val config : ConfigManager
     ) {
         @Throws(IOException::class)
         fun init(
-            modules : ArrayList<Module>
+            vararg objects : Any
         ) {
             Kisman.initDirs()
 
@@ -50,13 +53,54 @@ class ConfigManager(
                     Paths.get(config.path + config.name + config.suffix).toFile()
                 )
             ).use { writer ->
-                save(writer, modules)
+                save(writer, objects)
             }
         }
 
         @Throws(IOException::class)
-        private fun save(writer : BufferedWriter, modules : ArrayList<Module>) {
-            for(module in modules) {
+        protected fun fileCheck() {
+            if(Files.exists(Paths.get(config.path + config.name + config.suffix))) {
+                File(config.path + config.name + config.suffix).delete()
+            } else {
+                Files.createFile(Paths.get(config.path + config.name + config.suffix))
+            }
+        }
+
+        abstract fun save(
+            writer : BufferedWriter,
+            vararg objects : Any
+        )
+    }
+
+    class FriendSave(
+        config : ConfigManager
+    ) : Saver(
+        config
+    ) {
+        override fun save(
+            writer : BufferedWriter,
+            vararg objects : Any
+        ) {
+            if(FriendManager.instance.friends.isNotEmpty()) {
+                for(friend in FriendManager.instance.friends) {
+                    writer.write("${config.friendsPrefix}=\"$friend\"")
+                    writer.newLine()
+                }
+            }
+        }
+    }
+
+    class ModuleSave(
+        config : ConfigManager
+    ) : Saver(
+        config
+    ) {
+        @Throws(IOException::class)
+        override fun save(
+            writer : BufferedWriter,
+            vararg objects : Any
+        ) {
+            for(module in objects[0] as ArrayList<Module>) {
                 val prefix = if(module is HudModule) config.hudModulesPrefix else config.modulesPrefix
 
                 writer.write("${prefix}.${module.name}.toggle=${module.isToggled}")
@@ -124,15 +168,6 @@ class ConfigManager(
                         }
                     }
                 }
-            }
-        }
-
-        @Throws(IOException::class)
-        private fun fileCheck() {
-            if(Files.exists(Paths.get(config.path + config.name + config.suffix))) {
-                File(config.path + config.name + config.suffix).delete()
-            } else {
-                Files.createFile(Paths.get(config.path + config.name + config.suffix))
             }
         }
     }
@@ -416,25 +451,15 @@ class ConfigManager(
     }
 
     class Save(
-            val config : ConfigManager
+        config : ConfigManager
+    ) : Saver(
+        config
     ) {
         @Throws(IOException::class)
-        fun init() {
-            Kisman.initDirs()
-
-            fileCheck()
-
-            BufferedWriter(
-                    FileWriter(
-                            Paths.get(config.path + config.name + config.suffix).toFile()
-                    )
-            ).use { writer ->
-                save(writer)
-            }
-        }
-
-        @Throws(IOException::class)
-        private fun save(writer : BufferedWriter) {
+        override fun save(
+            writer : BufferedWriter,
+            vararg objects : Any
+        ) {
             for(module in Kisman.instance.moduleManager.modules) {
                 if(module.category == Category.LUA) continue
 
@@ -570,15 +595,6 @@ class ConfigManager(
                     writer.write("${config.friendsPrefix}=\"$friend\"")
                     writer.newLine()
                 }
-            }
-        }
-
-        @Throws(IOException::class)
-        private fun fileCheck() {
-            if(Files.exists(Paths.get(config.path + config.name + config.suffix))) {
-                File(config.path + config.name + config.suffix).delete()
-            } else {
-                Files.createFile(Paths.get(config.path + config.name + config.suffix))
             }
         }
     }

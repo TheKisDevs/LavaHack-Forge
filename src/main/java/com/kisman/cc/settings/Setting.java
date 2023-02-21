@@ -3,14 +3,14 @@ package com.kisman.cc.settings;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.Binder;
+import com.kisman.cc.features.DisplayableFeature;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
-import com.kisman.cc.features.hud.modules.arraylist.IArrayListElement;
-import com.kisman.cc.util.enums.BindType;
-import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.enums.BindType;
+import kotlin.jvm.functions.Function1;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,15 +19,13 @@ import org.lwjgl.input.Keyboard;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class Setting implements IBindable, IArrayListElement {
-	public float xCoeff = 1;
-	public float xCoeffPrev = 1;
-//	public long startTime = 1L;
-
+public class Setting extends DisplayableFeature {
 	public Supplier<Boolean> visibleSupplier = () -> true;
 
 	public boolean haveDisplayInfo = false;
 	public Supplier<String> displayInfoSupplier = () -> "";
+
+	public Function1<Setting, Object> onChange = setting -> null;
 
 	private Colour colour;
 	private Colour colourDefault;
@@ -56,8 +54,6 @@ public class Setting implements IBindable, IArrayListElement {
 	private boolean bval;
 	private boolean bvalDefault;
 	private boolean rainbow;
-	private boolean onlyOneWord;
-	private boolean onlyNumbers;
 	private boolean enumCombo = false;
 
 	private double dval;
@@ -93,8 +89,6 @@ public class Setting implements IBindable, IArrayListElement {
 		this.title = name;
 		this.sval = sval;
 		this.dString = dString;
-		this.onlyOneWord = false;
-		this.onlyNumbers = false;
 		this.mode = "String";
 	}
 
@@ -221,6 +215,18 @@ public class Setting implements IBindable, IArrayListElement {
 	public Setting setDisplayInfo(Supplier<String> displayInfoSupplier) {
 		this.displayInfoSupplier = displayInfoSupplier;
 		this.haveDisplayInfo = true;
+		return this;
+	}
+
+	/*public Setting onChange(invokenable1P<Setting> onChange) {
+		this.onChange = onChange;
+
+		return this;
+	}*/
+
+	public Setting onChange(Function1<Setting, Object> onChange) {
+		this.onChange = onChange;
+
 		return this;
 	}
 
@@ -373,15 +379,6 @@ public class Setting implements IBindable, IArrayListElement {
 		this.alpha = alpha;
 	}
 
-	public boolean isOnlyNumbers() {
-		return onlyNumbers;
-	}
-
-	public Setting setOnlyNumbers(boolean onlyNumbers) {
-		this.onlyNumbers = onlyNumbers;
-		return this;
-	}
-
 	public ItemStack[] getItems() {
 		return items;
 	}
@@ -398,10 +395,6 @@ public class Setting implements IBindable, IArrayListElement {
 		return (int) this.dval;
 	}
 
-	public boolean isOnlyOneWord() {
-		return onlyOneWord;
-	}
-
 	public int getKey() {
 		return key;
 	}
@@ -415,6 +408,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public void setColour(Colour colour) {
+		this.onChange.invoke(this);
 		this.colour = colour;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
@@ -429,6 +423,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public void setValEnum(Enum<?> enum_) {
+		this.onChange.invoke(this);
 		sval = enum_.name();
 	}
 
@@ -508,6 +503,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public Setting setValString(String in){
+		this.onChange.invoke(this);
 		this.sval = in;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
@@ -540,6 +536,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public Setting setValBoolean(boolean in){
+		this.onChange.invoke(this);
 		this.bval = in;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
@@ -570,6 +567,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public Setting setValDouble(double in){
+		this.onChange.invoke(this);
 		this.dval = in;
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
@@ -675,7 +673,7 @@ public class Setting implements IBindable, IArrayListElement {
 	}
 
 	public String toDisplayString() {
-		String message = getParentMod().getName();
+		String message = getParentMod().displayName;
 
 		if(parent_ != null) {
 			ArrayList<String> elements = doIterationDisplayString(parent_);
@@ -689,34 +687,4 @@ public class Setting implements IBindable, IArrayListElement {
 
 		return message;
 	}
-
-	@Override
-	public float getXCoeff() {
-		return xCoeff;
-	}
-
-	@Override
-	public void setXCoeff(float v) {
-		this.xCoeff = v;
-	}
-
-	@Override
-	public float getXCoeffPrev() {
-		return xCoeffPrev;
-	}
-
-	@Override
-	public void setXCoeffPrev(float v) {
-		this.xCoeffPrev = v;
-	}
-
-	/*@Override
-	public long getStartTime() {
-		return startTime;
-	}
-
-	@Override
-	public void setStartTime(long l) {
-		this.startTime = l;
-	}*/
 }

@@ -142,7 +142,7 @@ public class EasingEnum implements AbstractTaskProvider {
         private final AbstractTask<Double> abstractTask;
 
         EasingReverse(Easing easing) {
-            this.abstractTask = dd.task(arg -> 1 - easing.abstractTask.doTask(arg.fetch(0)));
+            this.abstractTask = dd.task(arg -> 1 - easing.abstractTask.doTask((Object) arg.fetch(0)));
         }
 
         @Override

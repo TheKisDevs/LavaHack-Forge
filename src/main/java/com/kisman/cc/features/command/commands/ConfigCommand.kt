@@ -24,21 +24,25 @@ class ConfigCommand : Command("config") {
                     Kisman.instance.configManager.saver.init()
                     complete("Default config was saved!")
                 } else if(args.size > 2) {
-                    val modules = ArrayList<Module>()
+                    if(args[2] == "friends") {
+                        ConfigManager(args[1]).friendSaver.init()
+                    } else {
+                        val modules = ArrayList<Module>()
 
-                    for(name in args[3].split(",")) {
-                        if(args[2] == "module") {
-                            if(Kisman.instance.moduleManager.getModule(name) != null) {
-                                modules += Kisman.instance.moduleManager.getModule(name)
-                            }
-                        } else if(args[2] == "hud_module") {
-                            if(Kisman.instance.hudModuleManager.getModule(name) != null) {
-                                modules += Kisman.instance.hudModuleManager.getModule(name)
+                        for (name in args[3].split(",")) {
+                            if (args[2] == "module") {
+                                if (Kisman.instance.moduleManager.getModule(name) != null) {
+                                    modules += Kisman.instance.moduleManager.getModule(name)
+                                }
+                            } else if (args[2] == "hud_module") {
+                                if (Kisman.instance.hudModuleManager.getModule(name) != null) {
+                                    modules += Kisman.instance.hudModuleManager.getModule(name)
+                                }
                             }
                         }
-                    }
 
-                    ConfigManager(args[1]).moduleSaver.init(modules)
+                        ConfigManager(args[1]).moduleSaver.init(modules)
+                    }
                 } else {
                     ConfigManager(args[1]).saver.init()
                 }
@@ -88,12 +92,13 @@ class ConfigCommand : Command("config") {
                 fun processModule(
                     module : Module
                 ) {
-                    if(module !is GuiModule && !module::class.java.isAnnotationPresent(FakeThing::class.java))
-                    module.key = -1
-                    module.mouse = -1
+                    if(module !is GuiModule && !module::class.java.isAnnotationPresent(FakeThing::class.java)) {
+                        module.key = -1
+                        module.mouse = -1
 
-                    if(module.toggleable) {
-                        module.isToggled = false
+                        if (module.toggleable) {
+                            module.isToggled = false
+                        }
                     }
                 }
 
@@ -123,11 +128,12 @@ class ConfigCommand : Command("config") {
     override fun getDescription() : String = "cfg maker btw"
 
     override fun getSyntax() : String =
-                "config save/load <name>" +
-                "\nconfig list" +
+                  "config list" +
                 "\nconfig save <name> module <module>" +
                 "\nconfig save <name> module <module1>,<module2>" +
                 "\nconfig save <name> hud_module <hud_module1>,<hud_module2>" +
+                "\nconfig save <name> friends" +
                 "\nconfig reset" +
-                "\nconfig save/load"
+                "\nconfig save/load" +
+                "\nconfig save/load <name>"
 }

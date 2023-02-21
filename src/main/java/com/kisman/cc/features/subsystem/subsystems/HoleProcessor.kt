@@ -41,6 +41,10 @@ object HoleProcessor : SubSystem("Hole Processor") {
         }
     })
 
+    init {
+        listeners(renderBlock)
+    }
+
     override fun renderWorld(
         event : RenderWorldLastEvent
     ) {

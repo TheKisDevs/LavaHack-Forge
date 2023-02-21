@@ -1,7 +1,7 @@
 package com.kisman.cc.util.render;
 
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.util.client.interfaces.runnables.AdvancedRunnable;
+import com.kisman.cc.util.client.interfaces.Runnable3P;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.AbstractObject;
@@ -43,7 +43,7 @@ public class Render2DUtil extends GuiScreen {
         GlStateManager.enableBlend();
     }
 
-    public static void renderItemOverlayIntoGUI(int xPosition, int yPosition, AdvancedRunnable renderer, String string) {
+    public static void renderItemOverlayIntoGUI(int xPosition, int yPosition, Runnable3P<Integer, Integer, String> renderer, String string) {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
         GlStateManager.disableBlend();

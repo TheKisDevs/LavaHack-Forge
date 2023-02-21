@@ -1,14 +1,10 @@
 package com.kisman.cc.features.module.client
 
-import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.client.settings.EventSettingChange
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.viaforge.ViaForge
 import com.kisman.cc.features.viaforge.protocol.ProtocolCollection
 import com.kisman.cc.settings.types.SettingEnum
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
 
 /**
  * @author _kisman_
@@ -19,25 +15,22 @@ class ViaForgeModule : Module(
     "Implementation of viaforge version selector",
     Category.CLIENT
 ) {
-    private val version = SettingEnum("Version", this, ProtocolCollection.R1_12_2).register()
+    private val version = register(SettingEnum("Version", this, ProtocolCollection.R1_12_2)
+        .onChange { it : SettingEnum<ProtocolCollection> ->
+            if (mc.world != null) {
+                changed = true
+            } else {
+                ViaForge.getInstance().version = it.valEnum.version.version
+            }
+        }
+    )
 
     private var changed = false
 
-    private val settingChange = Listener<EventSettingChange.ModeSetting>(EventHook {
-        if(it.setting == version) {
-            if(mc.world != null) {
-                changed = true
-            } else {
-                ViaForge.getInstance().version = version.valEnum.version.version
-            }
-        }
-    })
-
     init {
         super.setToggled(true)
+        super.setDisplayInfo { "[${version.valEnum.version.name}]" }
         super.toggleable = false
-
-        Kisman.EVENT_BUS.subscribe(settingChange)
     }
 
     override fun update() {

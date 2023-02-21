@@ -28,7 +28,7 @@ public class HudModuleManager {
 
 		add(new TwoBeeTwoTeeQueue());
 		add(new ArmorHUD());
-		add(ArrayListModule.instance);
+		add(new ArrayListModule());
 		add(new BindList());
 		add(new Coords());
 		add(new CrystalPerSecond());

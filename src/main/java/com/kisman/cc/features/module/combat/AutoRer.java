@@ -176,8 +176,10 @@ public class AutoRer extends ShaderableModule {
     private final Setting pingSmartMultiplier = register(delay.add(new Setting("Ping Smart Multi", this, 0, 0, 3, false)));
     private final SettingGroup defaultDelayGroup = register(delay.add(new SettingGroup(new Setting("Default", this))));
     private final Setting placeDelay = register(defaultDelayGroup.add(new Setting("Place Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Place")));
+    private final Setting silentPlaceDelay = register(defaultDelayGroup.add(new Setting("Silent Place Delay", this, 0, 0, 1000, NumberType.TIME).setTitle("Silent Place")));
     private final Setting breakDelay = register(defaultDelayGroup.add(new Setting("Break Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Break")));
-    private final SettingGroup fromToDelayGroup = register(delay.add(new SettingGroup(new Setting("From To", this))));
+    //TODO: finish from-to delays
+    private final SettingGroup fromToDelayGroup = /*register*/(delay.add(new SettingGroup(new Setting("From To", this))));
     private final Setting fromPlaceToBreakDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From P To B")));
     private final Setting fromBreakToPlaceDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From B To P")));
     private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
@@ -205,6 +207,7 @@ public class AutoRer extends ShaderableModule {
     public static AutoRer instance;
 
     public final List<PlaceInfo> placedList = new ArrayList<>();
+    public final Set<PlaceInfo> antiDesyncCache = new HashSet<>();
     private final TimerUtils placeTimer = timer();
     private final TimerUtils breakTimer = timer();
     private final TimerUtils fromPlaceToBreakTimer = timer();
@@ -318,7 +321,6 @@ public class AutoRer extends ShaderableModule {
         renderer.reset();
         extrapolationHelper.reset();
         damageSyncHandler.reset();
-        placedList.clear();
         placeTimer.reset();
         breakTimer.reset();
         fromPlaceToBreakTimer.reset();
@@ -328,6 +330,8 @@ public class AutoRer extends ShaderableModule {
         manualTimer.reset();
         antiDesyncAwaitTimer.reset();
         targets.reset();
+        antiDesyncCache.clear();
+        placedList.clear();
         currentTarget = null;
         rotating = false;
         renderPos = null;
@@ -440,7 +444,11 @@ public class AutoRer extends ShaderableModule {
      * @return current non smart delay
      */
     private int getNonSmartDelay(boolean break_) {
-        return delayMode.getValEnum() == DelayMode.Default ? (break_ ? breakDelay.getValInt() : placeDelay.getValInt()) : (break_ ? fromPlaceToBreakDelay.getValInt() : fromBreakToPlaceDelay.getValInt());
+        return delayMode.getValEnum() == DelayMode.Default ? (break_ ? breakDelay.getValInt() : (shouldSilent() ? silentPlaceDelay.getValInt() : placeDelay.getValInt())) : (break_ ? fromPlaceToBreakDelay.getValInt() : fromBreakToPlaceDelay.getValInt());
+    }
+
+    private boolean shouldSilent() {
+        return (switch_.getValEnum() == SwitchMode.Silent || switch_.getValEnum() == SwitchMode.SilentBypass) && mc.player.getHeldItemOffhand().item != Items.END_CRYSTAL && mc.player.getHeldItemMainhand().item != Items.END_CRYSTAL && InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9) == -1;
     }
 
     public synchronized void doAutoRerForThread() {
@@ -666,7 +674,7 @@ public class AutoRer extends ShaderableModule {
         } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
     }
 
-    private boolean needToAntiGlitch() {
+    private boolean needToAntiDesync() {
         return antiDesyncState.getValBoolean() && !lastBroken && (antiDesyncSmartAwait.getValBoolean() ? antiDesyncAwaitTimer.passedMillis(UtilityKt.getPing() * 2L) : antiDesyncAwaitTimer.passedMillis(antiDesyncAwait.getValInt()));
     }
 
@@ -711,38 +719,41 @@ public class AutoRer extends ShaderableModule {
             Collections.reverse(sphere);
         }
 
-        BlockPos prevPlacePos = this.placePos.getBlockPos();
-        boolean antiglitch = needToAntiGlitch();
+        antiDesyncCache.add(this.placePos);
+
+        boolean antidesync = needToAntiDesync();
         boolean multiplace = needToMultiPlace();
         boolean faceplace = needToFacePlace();
         boolean facePlaceArmorBreaker = facePlaceArmorBreakerCheck();
 
-        List<BlockPos> exclusion = new ArrayList<>();
+        Set<BlockPos> exclusion = new HashSet<>();
 
-        if(prevPlacePos != null) {
-            exclusion = Arrays.asList(
-                    prevPlacePos,
-                    prevPlacePos.add(1, 0, 0),
-                    prevPlacePos.add(0, 0, 1),
-                    prevPlacePos.add(-1, 0, 0),
-                    prevPlacePos.add(0, 0, -1),
-                    prevPlacePos.add(1, 0, -1),
-                    prevPlacePos.add(-1, 0, 1),
-                    prevPlacePos.add(1, 0, 1),
-                    prevPlacePos.add(-1, 0, -1),
-                    prevPlacePos.add(1, 1, 0),
-                    prevPlacePos.add(0, 1, 1),
-                    prevPlacePos.add(-1, 1, 0),
-                    prevPlacePos.add(0, 1, -1),
-                    prevPlacePos.add(1, 1, -1),
-                    prevPlacePos.add(-1, 1, 1),
-                    prevPlacePos.add(1, 1, 1),
-                    prevPlacePos.add(-1, 1, -1)
-            );
+        if(antidesync) {
+            for(PlaceInfo info : antiDesyncCache) {
+                BlockPos pos = info.getBlockPos();
+
+                exclusion.add(pos);
+                exclusion.add(pos.add(1, 0, 0));
+                exclusion.add(pos.add(0, 0, 1));
+                exclusion.add(pos.add(-1, 0, 0));
+                exclusion.add(pos.add(0, 0, -1));
+                exclusion.add(pos.add(1, 0, -1));
+                exclusion.add(pos.add(-1, 0, 1));
+                exclusion.add(pos.add(1, 0, 1));
+                exclusion.add(pos.add(-1, 0, -1));
+                exclusion.add(pos.add(1, 1, 0));
+                exclusion.add(pos.add(0, 1, 1));
+                exclusion.add(pos.add(-1, 1, 0));
+                exclusion.add(pos.add(0, 1, -1));
+                exclusion.add(pos.add(1, 1, -1));
+                exclusion.add(pos.add(-1, 1, 1));
+                exclusion.add(pos.add(1, 1, 1));
+                exclusion.add(pos.add(-1, 1, -1));
+            }
         }
 
         for(BlockPos pos : sphere) {
-            if((thirdCheck.getValBoolean() && !isPosValid(pos)) || (antiglitch && exclusion.contains(pos))) continue;
+            if((thirdCheck.getValBoolean() && !isPosValid(pos)) || (antidesync && exclusion.contains(pos))) continue;
             if(canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiplace, firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) {
                 float targetDamage = calculateDamage(pos, currentTarget);
 
@@ -811,6 +822,9 @@ public class AutoRer extends ShaderableModule {
                 case "Silent":
                     InventoryUtil.switchToSlot(crystalSlot, true);
                     break;
+                case "SilentBypass":
+                    InventoryUtil.inventorySwap(crystalSlot);
+                    break;
                 case "Smart":
                     if(shouldSmartSwitch.get() && !OffHand.instance.isToggled() || !OffHand.instance.smartSwitchAutoRerSync.getValBoolean()) InventoryUtil.switchToSlot(crystalSlot, false);
                     break;
@@ -821,7 +835,10 @@ public class AutoRer extends ShaderableModule {
     }
 
     private void handlePlacePostSwitch(int oldSlot) {
-        if(oldSlot != -1 && switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+        if(oldSlot != -1) {
+            if(switch_.checkValString(SwitchMode.Silent.name())) InventoryUtil.switchToSlot(oldSlot, true);
+            else if(switch_.checkValString(SwitchMode.SilentBypass.name())) InventoryUtil.inventorySwap(oldSlot);
+        }
     }
 
     private void handlePlaceFull() {
@@ -832,7 +849,7 @@ public class AutoRer extends ShaderableModule {
 
         int[] slots = handlePlacePreSwitch(offhand);
 
-        if(slots[1] == 1 || mc.player == null || (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL)) return;
+        if(slots[1] == -1 || mc.player == null || (mc.player.getHeldItemMainhand().getItem() != Items.END_CRYSTAL && mc.player.getHeldItemOffhand().getItem() != Items.END_CRYSTAL)) return;
 
         if(mc.player.isHandActive()) hand = mc.player.getActiveHand();
 
@@ -1012,6 +1029,7 @@ public class AutoRer extends ShaderableModule {
 
         getTimer(true).reset();
         antiDesyncAwaitTimer.reset();
+        antiDesyncCache.clear();
         lastBroken = true;
     }
 
@@ -1072,7 +1090,7 @@ public class AutoRer extends ShaderableModule {
     public enum ThreadMode { None, Pool, Sound, While }
     public enum Render { None, Default, Advanced }
     public enum RotateLogic { Off, Place, Break, Both }
-    public enum SwitchMode { None, Normal, Silent, Smart}
+    public enum SwitchMode { None, Normal, Silent, SilentBypass, Smart}
     public enum SwingMode { MainHand, OffHand, CurrentHand, PacketSwing, None }
     public enum SwingLogic { Pre, Post }
     public enum FriendMode { None, AntiTotemFail, AntiTotemPop }

@@ -1,7 +1,6 @@
 package com.kisman.cc.features.subsystem.subsystems
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.RenderEntitiesEvent
 import com.kisman.cc.event.events.RenderEntityEvent
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.Globals.mc
@@ -9,6 +8,8 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.function.Supplier
 
 /**
@@ -17,16 +18,6 @@ import java.util.function.Supplier
  */
 object EnemyManager : SubSystem("Enemy Manager") {
     private val enemies = ArrayList<Supplier<EntityPlayer?>>()
-
-    init {
-        for(module in Kisman.instance.moduleManager.targetableModules) {
-            if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java)) {
-                enemies.add(module.enemySupplier)
-            }
-        }
-
-        enemies.add(Supplier { nearestPlayer })
-    }
 
     fun enemies() : ArrayList<EntityPlayer> {
         val enemies1 = ArrayList<EntityPlayer>()
@@ -65,7 +56,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
     private val renderEntity = Listener<RenderEntityEvent.All.Post>(EventHook {
         val entity = it.entity
 
-        if(entity is EntityPlayer) {
+        if(entity is EntityPlayer && entity != mc.player) {
             val distance = mc.player.getDistanceSq(entity)
 
             if(distance < minDistance) {
@@ -75,11 +66,27 @@ object EnemyManager : SubSystem("Enemy Manager") {
         }
     })
 
-    @EventHandler
-    private val renderEntitiesStart = Listener<RenderEntitiesEvent.Start>(EventHook {
-        nearestPlayer = null
-        minDistance = Double.MAX_VALUE
-    })
+    @SubscribeEvent
+    fun onRenderTick(
+        event : TickEvent.RenderTickEvent
+    ) {
+        if(event.phase == TickEvent.Phase.START) {
+            nearestPlayer = null
+            minDistance = Double.MAX_VALUE
+        }
+    }
+
+    init {
+        listeners(renderEntity)
+
+        for(module in Kisman.instance.moduleManager.targetableModules) {
+            if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java)) {
+                enemies.add(module.enemySupplier)
+            }
+        }
+
+        enemies.add(Supplier { nearestPlayer })
+    }
 
     fun nearest() : EntityPlayer? = nearestPlayer
 }

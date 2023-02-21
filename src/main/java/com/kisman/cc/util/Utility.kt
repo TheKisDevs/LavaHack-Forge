@@ -4,7 +4,7 @@ package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.client.interfaces.runnables.ReturnableRunnable
+import com.kisman.cc.util.client.interfaces.Runnable0
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
@@ -16,6 +16,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import scala.Function0
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -140,12 +141,14 @@ fun stackTrace(
 fun nullCheck() : Boolean = mc.player != null && mc.world != null && mc.player.connection != null
 
 fun <T : Any> tryCatch(
-    `try` : ReturnableRunnable<T>,
-    `catch` : ReturnableRunnable<T>
+    `try` : () -> (T),
+    `catch` : () -> (T)
 ) : T = try {
-    `try`.run()
-} catch(_ : Error) {
-    `catch`.run()
+    `try`()
+} catch(e : Error) {
+    e.printStackTrace()
+
+    `catch`()
 }
 
 fun <T> clone(

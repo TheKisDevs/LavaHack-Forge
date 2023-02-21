@@ -14,6 +14,6 @@ class FakeHudModule(
 ) {
     init {
         isToggled = true
-        toggleable = true
+        toggleable = false
     }
 }
