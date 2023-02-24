@@ -1,6 +1,7 @@
 package com.kisman.cc.util.chat.cubic;
 
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.client.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -42,7 +43,11 @@ public abstract class AbstractChatMessage {
     public final void printMessage(ITextComponent textComponent){
         if(mc.player == null)
             return;
-        mc.ingameGUI.getChatGUI().printChatMessage(textComponent);
+        if(Config.instance.notificationMode.getValEnum() == Config.NotificationMode.MultiLine){
+            mc.ingameGUI.getChatGUI().printChatMessage(textComponent);
+            return;
+        }
+        mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(textComponent, 69);
     }
 
     public final void printMessage(String textComponentMessage){
