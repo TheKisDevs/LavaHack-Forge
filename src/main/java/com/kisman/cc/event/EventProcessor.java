@@ -11,7 +11,7 @@ import com.kisman.cc.event.events.lua.EventRender3D;
 import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
-import com.kisman.cc.features.module.client.CustomMainMenuModule;
+import com.kisman.cc.features.module.client.MainMenuModule;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.features.module.combat.AutoRer;
 import com.kisman.cc.util.TickRateUtil;
@@ -80,7 +80,7 @@ public class EventProcessor {
             oldHeight = mc.displayHeight;
             new EventResolutionUpdate(oldWidth, oldHeight).post();
         }
-        if(CustomMainMenuModule.instance != null) CustomMainMenu.update();
+        if(MainMenuModule.instance != null) CustomMainMenu.update();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

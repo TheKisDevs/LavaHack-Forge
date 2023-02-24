@@ -4,7 +4,6 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.ShaderableModule;
-import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.GlowableShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
@@ -13,7 +12,6 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.client.collections.Pair;
 import com.kisman.cc.util.client.interfaces.Drawable;
 import com.kisman.cc.util.enums.Shaders;
@@ -52,14 +50,14 @@ public class ShaderCharms extends Module {
 
     private final SettingGroup types = register(new SettingGroup(new Setting("Types", this)));
 
-    private final Setting crystals = register(types.add(new Setting("Crystals", this, true)));
+    private final Setting crystals = register(types.add(new Setting("Crystals", this, false)));
     private final Setting players = register(types.add(new Setting("Players", this, false)));
-    private final Setting friends = register(types.add(new Setting("Friends", this, true)));
+    private final Setting friends = register(types.add(new Setting("Friends", this, false)));
     private final Setting mobs = register(types.add(new Setting("Mobs", this, false)));
     private final Setting animals = register(types.add(new Setting("Animals", this, false)));
     private final Setting enderPearls = register(types.add(new Setting("Ender Pearls", this, false)));
-    private final Setting itemsEntity = register(types.add(new Setting("Items(Entity)", this, false)));
-    public final Setting items = register(types.add(new Setting("Items", this, true)));
+    private final Setting itemsEntity = register(types.add(new Setting("Entity Items", this, false)));
+    public final Setting items = register(types.add(new Setting("Items", this, false)));
 
     private final SettingGroup config = register(new SettingGroup(new Setting("Config", this)));
 
@@ -431,11 +429,7 @@ public class ShaderCharms extends Module {
                 ShaderHelperKt.endShader(mode.getValEnum());
 
             }
-        } catch (Exception ignored) {
-            if(Config.instance.antiOpenGLCrash.getValBoolean()) {
-                ChatUtility.error().printClientModuleMessage("Error, Config -> AntiOpenGLCrash disabled ShaderCharms");
-            }
-        }
+        } catch (Exception ignored) { }
     }
 
     public Color getColor() {

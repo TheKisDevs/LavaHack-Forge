@@ -9,15 +9,15 @@ import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.chat.cubic.ChatUtility
-import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.getBlockStateSafe
+import com.kisman.cc.util.state
 import com.kisman.cc.util.movement.MovementUtil
 import com.kisman.cc.util.movement.active
 import com.kisman.cc.util.movement.gotoPos
 import com.kisman.cc.util.world.CrystalUtils
 import com.kisman.cc.util.world.HoleUtil
+import com.kisman.cc.util.world.sphere
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -220,10 +220,10 @@ object AutoCrystalPvP : Module(
     private fun findSpot(target : Entity) : PlaceInfo? {
         val list = ArrayList<PlaceInfo>()
 
-        for(pos in CrystalUtils.getSphere(target, 6F, true, false)) {
+        for(pos in sphere(target, 6)) {
             if(
-                getBlockStateSafe(pos).block == Blocks.AIR
-                && getBlockStateSafe(pos.up()).block == Blocks.AIR
+                state(pos).block == Blocks.AIR
+                && state(pos.up()).block == Blocks.AIR
                 && pos.y >= 1
                 && !isBadPos(pos)
             ) {
@@ -326,14 +326,7 @@ object AutoCrystalPvP : Module(
     ) : Float {
         var maxDamage = 0.5
 
-        for(pos in EntityUtil.getSphere(
-            hole,
-            range,
-            range.toInt() + 1,
-            false,
-            true,
-            0
-        )) {
+        for(pos in sphere(hole, range.toInt())) {
             val damage = CrystalUtils.calculateDamage(
                 mc.world,
                 pos.x + 0.5,
@@ -371,14 +364,7 @@ object AutoCrystalPvP : Module(
 
     private fun getPossibleHoles(entity : Entity, range : Float) : ArrayList<BlockPos> {
         val possibleHoles = ArrayList<BlockPos>(64)
-        var blockPosList = EntityUtil.getSphere(
-            entity.position,
-            range,
-            range.toInt() + 1,
-            false,
-            true,
-            0
-        )
+        var blockPosList = sphere(entity, range.toInt())
         blockPosList = blockPosList.stream().sorted { o1: BlockPos, o2: BlockPos ->
             val a = o1.distanceSq(
                 mc.player.posX,

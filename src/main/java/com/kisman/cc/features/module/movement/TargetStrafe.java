@@ -3,31 +3,33 @@ package com.kisman.cc.features.module.movement;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.world.RotationUtils;
-import net.minecraft.entity.Entity;
+import com.kisman.cc.util.world.WorldUtilKt;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class TargetStrafe extends Module {
-    private Setting radius = register(new Setting("Radius", this, 3.6f, 0.1f, 7, false));
-    private Setting speed = register(new Setting("Speed", this, 3.19, 0.15f, 50, false));
-    private Setting autoJump = register(new Setting("Auto Jump", this, false));
+    private final Setting radius = register(new Setting("Radius", this, 3.6f, 0.1f, 7, false));
+    private final Setting speed = register(new Setting("Speed", this, 3.19, 0.15f, 50, false));
+    private final Setting autoJump = register(new Setting("Auto Jump", this, false));
 
     private int direction;
 
+    @Target
+    public EntityPlayer target;
+
     public TargetStrafe() {
         super("TargetStrafe", "TargetStrafe", Category.MOVEMENT);
+        super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 
     public void update() {
         if(mc.player == null || mc.world == null || !Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled()) return;
 
-        Entity target = EntityUtil.getTarget(6);
+        target = EnemyManagerKt.nearest();
 
-        if(target == null) {
-            super.setDisplayInfo("[Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
-            return;
-        } else super.setDisplayInfo("[" + target.getName() + " | Radius: " + radius.getValInt() + " | Speed: " + speed.getValInt() + "]");
+        if(target == null) return;
 
         if(mc.player.collidedHorizontally) direction = -direction;
 
@@ -37,11 +39,13 @@ public class TargetStrafe extends Module {
 
         mc.player.movementInput.moveForward = 0;
 
-        if (mc.player.getDistance(target) <= radius.getValDouble()) setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 0.0);
-        else setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), RotationUtils.getNeededRotations(target)[0], this.direction, 1.0);
+        float yaw = WorldUtilKt.rotation(target)[0];
+
+        if (mc.player.getDistance(target) <= radius.getValDouble()) setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), yaw, this.direction, 0.0);
+        else setSpeed(speed.getValInt() - (0.2 - this.speed.getValDouble() / 100.0), yaw, this.direction, 1.0);
     }
 
-    private void setSpeed(final double d, final float f, final double d2, final double d3) {
+    private void setSpeed(double d, float f, double d2, double d3) {
         double d4 = d3;
         double d5 = d2;
         float f2 = f;

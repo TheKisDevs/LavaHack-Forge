@@ -9,7 +9,7 @@ import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.minecraft.positionRotation
 import com.kisman.cc.util.minecraft.rotation
 import com.kisman.cc.util.minecraft.sendPacketNoEvent
-import com.kisman.cc.util.world.RotationUtils
+import com.kisman.cc.util.world.rotation
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -48,21 +48,21 @@ object RotationSystem : SubSystem(
     private val send = Listener<PacketEvent.Send>(EventHook {
         val packet = it.packet
 
-        if(packet is CPacketPlayer/* || packet is CPacketPlayer.Position || packet is CPacketPlayer.PositionRotation || packet is CPacketPlayer.Rotation*//* && !it.cancelled*/) {
+        if(packet is CPacketPlayer) {
             reset()
             it.cancel()
             timer.reset()
-            lastPacket = packet/* as CPacketPlayer*/
+            lastPacket = packet
         }
     })
 
     @JvmStatic fun handleRotate(
         pos : BlockPos
-    ) : Boolean = handleRotate(RotationUtils.getRotation(pos))
+    ) : Boolean = handleRotate(rotation(pos))
 
     @JvmStatic fun handleRotate(
         entity : Entity
-    ) : Boolean = handleRotate(RotationUtils.getRotation(entity))
+    ) : Boolean = handleRotate(rotation(entity))
 
     @JvmStatic fun handleRotate(
         rotations : FloatArray

@@ -5,14 +5,14 @@ import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
-import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.render.Rendering;
-import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.HoleUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -37,6 +37,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.*;
 import java.util.function.Predicate;
 
+//TODO: make it works without target
 public class HoleSnap extends Module {
 
     private final SettingEnum<Holes> holes = new SettingEnum<>("Holes", this, Holes.Both).register();
@@ -212,7 +213,7 @@ public class HoleSnap extends Module {
             mc.timer.tickLength = 50.0f / timerSpeed.getValFloat();
 
         Vec3d playerPos = mc.player.getPositionVector();
-        double yaw = Math.toRadians(AngleUtil.calculateAngle(playerPos, center)[0]);
+        double yaw = Math.toRadians(WorldUtilKt.rotation(center)[0]);
         double d = Math.hypot(center.x - playerPos.x, center.z - playerPos.z);
 
         if(!snap.getValBoolean() && d == 0){
@@ -255,7 +256,7 @@ public class HoleSnap extends Module {
     }
 
     private AxisAlignedBB findHole(){
-        EntityPlayer enemy = EntityUtil.getTarget(enemyRange.getValFloat());
+        EntityPlayer enemy = EnemyManagerKt.nearest();
         EntityPlayer entity = (nearestHoleToEnemy.getValBoolean() && enemy != null) ? enemy : mc.player;
         Set<BlockPos> possibleHoles = getPossibleHoles();
         List<AxisAlignedBB> holes = new ArrayList<>();
@@ -281,7 +282,7 @@ public class HoleSnap extends Module {
 
     private Set<BlockPos> getPossibleHoles(){
         Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList = CrystalUtils.getSphere(holeRange.getValFloat(), true, false);
+        List<BlockPos> blockPosList =WorldUtilKt.sphere(holeRange.getValInt());
         for (BlockPos pos : blockPosList) {
             AxisAlignedBB aabb = new AxisAlignedBB(pos);
             if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())

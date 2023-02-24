@@ -5,33 +5,41 @@ import net.minecraft.client.renderer.entity.Render
 import net.minecraft.entity.Entity
 
 sealed class RenderEntityEvent(
-    val entity: Entity
+    val entity : Entity
 ) : Event() {
+    class Check(
+        entity : Entity
+    ) : RenderEntityEvent(
+        entity
+    )
+
     sealed class All(
-        entity: Entity,
-        private val x: Double,
-        private val y: Double,
-        private val z: Double,
-        private val yaw: Float,
-        private val partialTicks: Float
-    ) : RenderEntityEvent(entity) {
+        entity : Entity,
+        private val x : Double,
+        private val y : Double,
+        private val z : Double,
+        private val yaw : Float,
+        private val partialTicks : Float
+    ) : RenderEntityEvent(
+        entity
+    ) {
 
         class Pre(
-            entity: Entity,
-            x: Double,
-            y: Double,
-            z: Double,
-            yaw: Float,
-            partialTicks: Float
+            entity : Entity,
+            x : Double,
+            y : Double,
+            z : Double,
+            yaw : Float,
+            partialTicks : Float
         ) : All(entity, x, y, z, yaw, partialTicks)
 
         class Post(
-            entity: Entity,
-            x: Double,
-            y: Double,
-            z: Double,
-            yaw: Float,
-            partialTicks: Float
+            entity : Entity,
+            x : Double,
+            y : Double,
+            z : Double,
+            yaw : Float,
+            partialTicks : Float
         ) : All(entity, x, y, z, yaw, partialTicks)
     }
 

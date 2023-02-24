@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
-import com.kisman.cc.util.entity.player.PlayerUtil;
+import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.OffhandItems;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.world.CrystalUtils;
@@ -90,12 +90,12 @@ public class OffHand extends Module {
 
     private void doOffHand(Item item) {
         if (mc.player.getHeldItemOffhand().getItem() != item) {
-            int slot = hotbarFirst.getValBoolean() ? PlayerUtil.getRecursiveItemSlot(item) : PlayerUtil.getItemSlot(item);
+            int slot = InventoryUtil.findInventorySlot(item, hotbarFirst.getValBoolean());//hotbarFirst.getValBoolean() ? PlayerUtil.getRecursiveItemSlot(item) : PlayerUtil.getItemSlot(item);
 
             if (slot == -1 && item != fallingMode.getValEnum().getItem() && mc.player.getHeldItemOffhand().getItem() != fallingMode.getValEnum().getItem()) {
-                slot = PlayerUtil.getRecursiveItemSlot(fallingMode.getValEnum().getItem());
+                slot = InventoryUtil.findInventorySlot(fallingMode.getValEnum().getItem(), true);
 
-                if ((slot == -1 && fallingMode.getValEnum().getItem() != Items.TOTEM_OF_UNDYING) || item != Items.TOTEM_OF_UNDYING && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) slot = PlayerUtil.getRecursiveItemSlot(Items.TOTEM_OF_UNDYING);
+                if ((slot == -1 && fallingMode.getValEnum().getItem() != Items.TOTEM_OF_UNDYING) || item != Items.TOTEM_OF_UNDYING && mc.player.getHeldItemOffhand().getItem() != Items.TOTEM_OF_UNDYING) slot = InventoryUtil.findInventorySlot(Items.TOTEM_OF_UNDYING, true);
             }
 
             if (slot != -1) {

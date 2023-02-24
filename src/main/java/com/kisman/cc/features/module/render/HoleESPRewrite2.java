@@ -8,14 +8,14 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.FadeRenderingRewritePattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.client.collections.Bind;
-import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.enums.FadeLogic;
 import com.kisman.cc.util.client.interfaces.Drawable;
+import com.kisman.cc.util.enums.FadeLogic;
 import com.kisman.cc.util.math.Interpolation;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.objects.world.Box;
 import com.kisman.cc.util.world.HoleUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -276,7 +276,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
 
     private List<BlockPos> getPossibleHoles(float range){
         List<BlockPos> possibleHoles = new ArrayList<>(64);
-        List<BlockPos> blockPosList = EntityUtil.getSphere(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ), range, (int) (range + 1), false, true, 0);
+        List<BlockPos> blockPosList = WorldUtilKt.sphere((int) range);
         blockPosList = blockPosList.stream().sorted((o1, o2) -> {
             double a = o1.distanceSq(mc.player.posX, mc.player.posY, mc.player.posZ);
             double b = o2.distanceSq(mc.player.posX, mc.player.posY, mc.player.posZ);

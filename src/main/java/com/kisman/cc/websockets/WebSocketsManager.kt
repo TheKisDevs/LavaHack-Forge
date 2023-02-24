@@ -21,7 +21,7 @@ import java.nio.ByteBuffer
 val client = setupClient(DefaultMessageProcessor())
 
 fun initClient() {
-    Kisman.LOGGER.info("Connecting to remove server")
+    Kisman.LOGGER.info("Connecting to remote server")
 
     client.send("addmanager ${Kisman.HASH}")
 
@@ -119,9 +119,9 @@ class WebClient(
         ex : Exception
     ) {
         if(ex.message == "Connection refused: connect") {
-            Kisman.LOGGER.error("Remove server is offline, shutting down!")
+            Kisman.LOGGER.error("Remote server is offline, shutting down!")
 
-            popupErrorDialog("Remove server is offline, shutting down!", true)
+            popupErrorDialog("Remote server is offline, shutting down!", true)
         } else {
             Kisman.LOGGER.error("Received error from web client", ex)
         }

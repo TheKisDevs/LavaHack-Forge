@@ -2,15 +2,13 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.subsystem.subsystems.RotationSystem
-import com.kisman.cc.features.subsystem.subsystems.Targetable
+import com.kisman.cc.features.subsystem.subsystems.*
 import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.RotationSaver
 import com.kisman.cc.util.enums.KillAuraWeapons
-import com.kisman.cc.util.enums.RotationLogic
 import com.kisman.cc.util.enums.SwingHands
 import com.kisman.cc.util.enums.dynamic.SwapEnum2
 import net.minecraft.entity.Entity
@@ -27,6 +25,7 @@ import net.minecraft.util.EnumHand
  * @since 11:23 of 06.06.2022
  */
 @Targetable
+@TargetsNearest
 class KillAuraRewrite : Module(
     "KillAuraRewrite",
     "Rewrite version of KillAura",
@@ -39,15 +38,6 @@ class KillAuraRewrite : Module(
     private val shieldBreaker = register(logic.add(Setting("Shield Breaker", this, false)))
     private val swing = register(logic.add(Setting("Swing", this, SwingHands.PacketSwing)))
 
-    private val ranges = register(SettingGroup(Setting("Ranges", this)))
-    private val range = register(ranges.add(Setting("Range", this, 4.25, 1.0, 6.0, false)))
-    private val wallRange = register(ranges.add(Setting("Wall Range", this, 3.0, 1.0, 6.0, false)))
-
-    private val targets = register(SettingGroup(Setting("Targets", this)))
-    private val players = register(targets.add(Setting("Players", this, true)))
-    private val monsters = register(targets.add(Setting("Monsters", this, false)))
-    private val passive = register(targets.add(Setting("Passive", this, false)))
-
     private val hit = register(SettingGroup(Setting("Hit", this)))
     private val resetCooldown = register(hit.add(Setting("Reset Cooldown", this, true)))
     private val packetAttack = register(hit.add(Setting("Packet Attack", this, false)))
@@ -55,11 +45,6 @@ class KillAuraRewrite : Module(
     private val checks = register(SettingGroup(Setting("Checks", this)))
     private val cooldownCheck = register(checks.add(Setting("Cooldown Check", this, true)))
     private val ccOnlyCrits = register(checks.add(Setting("CC Only Crits", this, true).setVisible { cooldownCheck.valBoolean }))
-//    private val fallCheck = register(checks.add(Setting("FallDistance Check", this, false)))
-
-    //I have problems with reading static fields in kotlin classes
-    @Target
-    private val targetNoStatic : Entity? = null
 
     companion object {
         @JvmStatic var instance : KillAuraRewrite? = null
@@ -77,21 +62,18 @@ class KillAuraRewrite : Module(
         if(mc.player == null || mc.world == null || mc.player.isDead) return
 
         val oldSlot = mc.player.inventory.currentItem
-        val saver = RotationSaver().save()
         val swapper = swap.valEnum as SwapEnum2.Swap
         val weaponSlot = getWeaponSlot()
 
         if(cooldownCheck.valBoolean && oldSlot != weaponSlot && swapper == SwapEnum2.Swap.None) {
-            if(mc.player.getCooledAttackStrength(0f) <= (if(ccOnlyCrits.valBoolean) 0.95f else 1f)) return
+            if(mc.player.getCooledAttackStrength(0f) <= (if(ccOnlyCrits.valBoolean) 0.95f else 1f)) {
+                return
+            }
         }
 
-        target = EntityUtil.getTarget(range.valFloat, wallRange.valFloat, players.valBoolean, passive.valBoolean, monsters.valBoolean)
+        target = nearest()
 
-        if(target == null) {
-            return
-        }
-
-        if(oldSlot == -1 || (weaponSlot != oldSlot && swapper == SwapEnum2.Swap.None)) {
+        if(target == null || oldSlot == -1 || (weaponSlot != oldSlot && swapper == SwapEnum2.Swap.None)) {
             return
         }
 

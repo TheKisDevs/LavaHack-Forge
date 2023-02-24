@@ -1,6 +1,10 @@
 package com.kisman.cc.util;
 
 public class TimerUtils {
+	public TimerUtils() {
+		reset();
+	}
+
 	private long lastMS = 0L;
 	private long prevMS = 0L;
 	private long nanoTime = -1L;

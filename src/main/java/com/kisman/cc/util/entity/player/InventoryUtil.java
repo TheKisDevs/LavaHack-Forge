@@ -321,4 +321,26 @@ public class InventoryUtil {
 
         return slot;
     }
+
+    public static int findInventorySlot(Item item, boolean reverse) {
+        if(!reverse) {
+            for(int i = 0; i < mc.player.inventoryContainer.getInventory().size(); i++) {
+                if (i == 0 || i == 5 || i == 6 || i == 7 || i == 8) continue;
+
+                ItemStack stack = mc.player.inventoryContainer.getInventory().get(i);
+
+                if (!stack.isEmpty && stack.getItem() == item) return i;
+            }
+        } else {
+            for(int i = mc.player.inventoryContainer.getInventory().size() - 1; i > 0; --i) {
+                if (i == 5 || i == 6 || i == 7 || i == 8) continue;
+
+                ItemStack stack = mc.player.inventoryContainer.getInventory().get(i);
+
+                if (!stack.isEmpty && stack.getItem() == item) return i;
+            }
+        }
+
+        return -1;
+    }
 }

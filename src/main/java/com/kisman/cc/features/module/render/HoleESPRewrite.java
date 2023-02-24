@@ -3,12 +3,12 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.cubic.ModuleSuffixRenderPattern;
 import com.kisman.cc.util.render.cubic.RenderBuilder;
 import com.kisman.cc.util.render.cubic.RenderPattern;
 import com.kisman.cc.util.world.HoleUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -141,7 +141,7 @@ public class HoleESPRewrite extends Module {
 
     private Set<BlockPos> getPossibleHoles(float range){
         Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList = EntityUtil.getSphere(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ), range, (int) range, false, true, 0);
+        List<BlockPos> blockPosList = WorldUtilKt.sphere((int) range);
         for (BlockPos pos : blockPosList) {
             AxisAlignedBB aabb = new AxisAlignedBB(pos);
             if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())

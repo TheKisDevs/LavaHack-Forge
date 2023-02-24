@@ -1,7 +1,7 @@
 package com.kisman.cc.util.thread.kisman.suppliers
 
-import com.kisman.cc.util.thread.kisman.GlobalThreads
 import com.kisman.cc.util.thread.kisman.ThreadSafeValue
+import com.kisman.cc.util.thread.kisman.executor
 
 /**
  * @author _kisman_
@@ -9,7 +9,7 @@ import com.kisman.cc.util.thread.kisman.ThreadSafeValue
  */
 open class ThreaddedSupplier<T>(
     private val get0 : () -> T
-) : GlobalThreads {
+) {
     private val get1 = ThreadSafeValue<T>(null)
 
     open fun get() : T? {

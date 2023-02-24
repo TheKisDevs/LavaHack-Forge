@@ -2,12 +2,12 @@ package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.ShaderableModule
+import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.objects.world.TextOnBlockObject
@@ -39,8 +39,7 @@ class BlockHighlight : ShaderableModule(
     private val crystalInfo = register(ciGroup.add(Setting("Crystal Info", this, false)))
     private val crystalInfoColor = register(ciGroup.add(Setting("Crystal Info Color", this, "Crystal Info Color", Colour(255, 255, 255, 255)).setVisible { crystalInfo.valBoolean }))
     private val crystalInfoTerrain = register(ciGroup.add(Setting("Crystal Info Terrain", this, false).setVisible { crystalInfo.valBoolean }))
-    private val crystalInfoTargetRange = register(ciGroup.add(Setting("Crystal Info Target Range", this, 15.0, 0.0, 20.0, true).setVisible { crystalInfo.valBoolean }))
-    
+
     private val renderer : IRenderer = object : SlideRendererPattern(), IRenderer {
         private var vec : Vec3d? = null
         private var lastVec : Vec3d? = null
@@ -242,7 +241,7 @@ class BlockHighlight : ShaderableModule(
         handleDraw(pattern)
 
         if(bb != null && crystalInfo.valBoolean && hitObject.typeOfHit == RayTraceResult.Type.BLOCK) {
-            val target = EntityUtil.getTarget(crystalInfoTargetRange.valFloat)
+            val target = nearest()
             val text = "${
                 String.format("%.1f", damageByCrystal(crystalInfoTerrain.valBoolean, hitObject.blockPos))
             }/${

@@ -8,10 +8,13 @@ import com.kisman.cc.features.hud.modules.arraylist.ElementTypes;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.types.SettingArray;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.client.collections.Sorter;
+import com.kisman.cc.util.client.collections.SorterEntry;
 import com.kisman.cc.util.enums.Gradients;
 import com.kisman.cc.util.enums.Orientations;
 import com.kisman.cc.util.enums.dynamic.EasingEnum;
@@ -24,17 +27,18 @@ import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class ArrayListModule extends ShaderableHudModule {
     @ModuleInstance
     public static ArrayListModule instance;
 
+    private final Sorter<ArrayListElement> sorter = new Sorter<>(ArrayListElement::getRaw);
+
     private final SettingGroup types = register(new SettingGroup(new Setting("Types", this)));
 
     private final Setting modules = register(types.add(new Setting("Modules", this, true)));
     private final Setting hudModules = register(types.add(new Setting("Hud Modules", this, false)));
-    private final Setting checkBoxes = register(types.add(new Setting("Check Boxes", this, false)));
+    private final Setting checkBoxes = register(types.add(new Setting("Check Boxes", this, true)));
 
     private final SettingGroup animationGroup = register(new SettingGroup(new Setting("Animation", this)));
     private final Setting animation = register(animationGroup.add(new Setting("Animation", this, true)));
@@ -53,6 +57,7 @@ public class ArrayListModule extends ShaderableHudModule {
     private final Setting background = register(new Setting("Background", this, true));
     private final Setting backgroundAlpha = register(new Setting("Background Alpha", this, 255, 0, 255, true));
     private final Setting shaderedBackground = register(new Setting("Shadered Background", this, false));
+    private final SettingArray<SorterEntry<ArrayListElement>> sort = register(new SettingArray<>("Sort", this, sorter.length(), sorter.array()));
 
     public ArrayListModule() {
         super("ArrayList", "Displays your enables modules!", false, true, false);
@@ -62,16 +67,11 @@ public class ArrayListModule extends ShaderableHudModule {
         ArrayList<ArrayListElement> elements = new ArrayList<>();
         ScaledResolution sr = new ScaledResolution(mc);
 
-        if(modules.getValBoolean()) for(Module mod : Kisman.instance.moduleManager.modules) if(mod != null && mod.visible) elements.add(new ArrayListElement(mod, (mod.getName() + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.displayName + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.Module));
-        if(hudModules.getValBoolean()) for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod != null && mod.visible) elements.add(new ArrayListElement(mod, (mod.getName() + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.displayName + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.HudModule));
+        if(modules.getValBoolean()) for(Module mod : Kisman.instance.moduleManager.modules) if(mod != null && mod.visible) elements.add(new ArrayListElement(mod, (mod.displayName + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.displayName + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.Module));
+        if(hudModules.getValBoolean()) for(HudModule mod : Kisman.instance.hudModuleManager.modules) if(mod != null && mod.visible) elements.add(new ArrayListElement(mod, (mod.displayName + (mod.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + mod.getDisplayInfo())), (mod.displayName + (mod.getDisplayInfo().equalsIgnoreCase("") ? "" : " " + mod.getDisplayInfo())), ElementTypes.HudModule));
         if(checkBoxes.getValBoolean()) for(Setting set : Kisman.instance.settingsManager.getSettings()) if(set.isCheck() && set.getKey() != Keyboard.KEY_NONE) elements.add(new ArrayListElement(set, set.toDisplayString() + (set.getDisplayInfo().isEmpty() || !showDisplayInfo.getValBoolean() ? "" : " " + TextFormatting.GRAY + set.getDisplayInfo()), ElementTypes.CheckBox));
 
-        Comparator<ArrayListElement> comparator = (first, second) -> {
-            float dif = CustomFontUtil.getStringWidth(second.getName()) - CustomFontUtil.getStringWidth(first.getName());
-            return (dif != 0) ? ((int) dif) : second.getRaw().compareTo(first.getRaw());
-        };
-
-        elements.sort(comparator);
+        elements.sort(sort.getValElement().getComparator());
 
         int count = 0;
         int staticColor = astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();

@@ -39,10 +39,10 @@ class MoveModifier : Module(
 
     private val blocks = register(SettingGroup(Setting("Blocks", this)))
     private val stepGroup = register(blocks.add(SettingGroup(Setting("Step", this))))
-    private val step = register(stepGroup.add(Setting("Step", this, false)))
+    private val step = register(stepGroup.add(Setting("Step", this, false).setTitle("State").setDisplayName("Step")))
     val stepVal = register(stepGroup.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible(step).setTitle("Height")))
     private val reverseStepGroup = register(blocks.add(SettingGroup(Setting("Reverse Step", this))))
-    val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("RStep")))
+    val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("State").setDisplayName("ReverseStep")))
     private val reverseStepVal = register(reverseStepGroup.add(Setting("Reverse Step Value", this, 2.0, 1.0, 4.0, true).setVisible(reverseStep).setTitle("Height")))
     private val reverseAntiGlitch = register(reverseStepGroup.add(Setting("Reverse Anti Glitch", this, true).setVisible(reverseStep).setTitle("AntiGlitch")))
     private val reverseStepLiquids = register(reverseStepGroup.add(Setting("Reverse Step Liquids", this, true).setTitle("Liquids")))

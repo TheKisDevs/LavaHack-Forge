@@ -44,6 +44,8 @@ public class Setting extends DisplayableFeature {
 	public String mode = "";
 
 	private String title;
+	public String displayName;
+	private boolean hasDisplayName = false;
 
 	private String sval;
 	private String svalDefault;
@@ -77,6 +79,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.key = key;
@@ -85,6 +88,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.sval = sval;
@@ -94,6 +98,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.sval = sval;
@@ -106,6 +111,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, List<String> options){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.sval = sval;
@@ -118,6 +124,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, Enum<?> options){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.sval = options.name();
@@ -133,6 +140,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, boolean bval){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.bval = bval;
@@ -142,6 +150,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, double dval, double min, double max, NumberType numberType){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.dval = dval;
@@ -155,6 +164,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
 		this.dval = dval;
@@ -168,6 +178,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, Colour colour) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
 		this.colour = colour;
@@ -181,6 +192,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, Entity entity) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
 		this.entity = entity;
@@ -189,6 +201,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, ItemStack[] items) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
 		this.items = items;
@@ -201,6 +214,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title) {
 		this.name = name;
+		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
 	}
@@ -218,14 +232,15 @@ public class Setting extends DisplayableFeature {
 		return this;
 	}
 
-	/*public Setting onChange(invokenable1P<Setting> onChange) {
+	public Setting onChange(Function1<Setting, Object> onChange) {
 		this.onChange = onChange;
 
 		return this;
-	}*/
+	}
 
-	public Setting onChange(Function1<Setting, Object> onChange) {
-		this.onChange = onChange;
+	public Setting setDisplayName(String displayName) {
+		this.displayName = displayName;
+		this.hasDisplayName = true;
 
 		return this;
 	}
@@ -673,6 +688,8 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public String toDisplayString() {
+		if(hasDisplayName) return displayName;
+
 		String message = getParentMod().displayName;
 
 		if(parent_ != null) {

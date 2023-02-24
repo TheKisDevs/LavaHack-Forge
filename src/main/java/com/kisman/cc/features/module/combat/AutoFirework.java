@@ -6,10 +6,8 @@ import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
-import com.kisman.cc.util.world.BlockUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -88,7 +86,7 @@ public class AutoFirework extends Module {
     }
 
     public void onDisable() {
-        isSneaking = EntityUtil.stopSneaking(isSneaking);
+//        isSneaking = EntityUtil.stopSneaking(isSneaking);
     }
 
     public void update() {
@@ -132,7 +130,7 @@ public class AutoFirework extends Module {
                     trapTimer.reset();
                 }
             }
-        } else target = EntityUtil.getTarget(targetRange.getValFloat());
+        } //else target = EntityUtil.getTarget(targetRange.getValFloat());
     }
 
     private boolean needPause() {
@@ -150,8 +148,8 @@ public class AutoFirework extends Module {
     }
 
     private void doStaticTrap() {
-        final List<Vec3d> placeTargets = BlockUtil.targets(target.getPositionVector(), antiScaffold.getValBoolean(), antiStep.getValBoolean(), surroundPlacing.getValBoolean(), false, false, this.raytrace.getValBoolean());
-        placeList(placeTargets);
+//        final List<Vec3d> placeTargets = BlockUtil.targets(target.getPositionVector(), antiScaffold.getValBoolean(), antiStep.getValBoolean(), surroundPlacing.getValBoolean(), false, false, this.raytrace.getValBoolean());
+//        placeList(placeTargets);
     }
 
     private void placeList(final List<Vec3d> list) {
@@ -159,15 +157,15 @@ public class AutoFirework extends Module {
         list.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
         for (final Vec3d vec3d3 : list) {
             final BlockPos position = new BlockPos(vec3d3);
-            final int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValBoolean());
-            if (placeability == 1 && (this.retries.get(position) == null || this.retries.get(position) < 4)) {
+//            final int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValBoolean());
+//            if (placeability == 1 && (this.retries.get(position) == null || this.retries.get(position) < 4)) {
                 this.placeBlock(position);
                 this.retries.put(position, (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
                 this.retryTimer.reset();
-            } else {
-                if (placeability != 3) continue;
-                this.placeBlock(position);
-            }
+//            } else {
+//                if (placeability != 3) continue;
+//                this.placeBlock(position);
+//            }
         }
     }
 
@@ -199,8 +197,8 @@ public class AutoFirework extends Module {
         if (mc.player.inventory.currentItem != this.lastHotbarSlot && mc.player.inventory.currentItem != obbySlot3) {
             this.lastHotbarSlot = mc.player.inventory.currentItem;
         }
-        isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+//        isSneaking = EntityUtil.stopSneaking(this.isSneaking);
+//        target = EntityUtil.getTarget(targetRange.getValFloat());
         return target == null || !trapTimer.passedMillis(trapDelay.getValInt());
     }
 
@@ -215,13 +213,13 @@ public class AutoFirework extends Module {
             if (this.smartRotate) {
                 mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
                 mc.playerController.updateController();
-                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, true, true, this.isSneaking);
+//                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, true, true, this.isSneaking);
                 mc.player.inventory.currentItem = originalSlot;
                 mc.playerController.updateController();
             } else {
                 mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
                 mc.playerController.updateController();
-                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, this.rotate.getValBoolean(), true, this.isSneaking);
+//                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, this.rotate.getValBoolean(), true, this.isSneaking);
                 mc.player.inventory.currentItem = originalSlot;
                 mc.playerController.updateController();
             }

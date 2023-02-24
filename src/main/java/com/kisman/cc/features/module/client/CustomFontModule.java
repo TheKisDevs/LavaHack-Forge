@@ -11,17 +11,17 @@ import com.kisman.cc.util.render.customfont.CustomFontUtilKt;
 import java.util.Arrays;
 
 public class CustomFontModule extends Module {
-    public final SettingEnum<Fonts> font = new SettingEnum<>("Mode", this, Fonts.Verdana).register();
-    private final Setting antiAlias = register(new Setting("Anti Alias", this, true));
-    private final Setting fractionMetrics = register(new Setting("Fraction Metrics", this, true));
-    public final Setting style = register(new Setting("Style", this, FontStyles.Plain));
-    public final Setting test = register(new Setting("Test", this, false));
-    public final Setting test2 = register(new Setting("Test 2", this, false));
-    public final Setting multiLineOffset = register(new Setting("Multi Line Offset", this, 2, 0, 15, true));
-    public final Setting fallbackFont = /*register*/(new Setting("Fallback Font", this, false));
-    public final Setting fallbackMode = /*register*/(new Setting("Fallback Mode", this, "Futura", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century")));
-    public final Setting customSize = register(new Setting("Custom Size", this, false));
-    public final Setting size = register(new Setting("Size", this, 18.0, 5.0, 30.0, true).setVisible(customSize::getValBoolean));
+    public SettingEnum<Fonts> font;/*Fonts> font = register(new SettingEnum<>("Mode", this, Fonts.Verdana));*/
+    private Setting antiAlias;/* = register(new Setting("Anti Alias", this, true));*/
+    private Setting fractionMetrics;/* = register(new Setting("Fraction Metrics", this, true));*/
+    public Setting style;/* = register(new Setting("Style", this, FontStyles.Plain));*/
+    public Setting test;/* = register(new Setting("Test", this, false));*/
+    public Setting test2;/* = register(new Setting("Test 2", this, false));*/
+    public Setting multiLineOffset;/* = register(new Setting("Multi Line Offset", this, 2, 0, 15, true));*/
+    public Setting fallbackFont;/* = *//*register*//*(new Setting("Fallback Font", this, false));*/
+    public Setting fallbackMode;/* = *//*register*//*(new Setting("Fallback Mode", this, "Futura", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century")));*/
+    public Setting customSize;/* = register(new Setting("Custom Size", this, false));*/
+    public Setting size;/* = register(new Setting("Size", this, 18.0, 5.0, 30.0, true).setVisible(customSize::getValBoolean));*/
 
     public static CustomFontModule instance = new CustomFontModule();
 
@@ -38,5 +38,19 @@ public class CustomFontModule extends Module {
         }
 
         CustomFontUtilKt.Companion.setMultiLineOffset(multiLineOffset.getValInt());
+    }
+
+    public void registerSettings() {
+        font = register(new SettingEnum<>("Mode", this, Fonts.Verdana));
+        antiAlias = register(new Setting("Anti Alias", this, true));
+        fractionMetrics = register(new Setting("Fraction Metrics", this, true));
+        style = register(new Setting("Style", this, FontStyles.Plain));
+        test = register(new Setting("Test", this, false));
+        test2 = register(new Setting("Test 2", this, false));
+        multiLineOffset = register(new Setting("Multi Line Offset", this, 2, 0, 15, true));
+        fallbackFont = /*register*/(new Setting("Fallback Font", this, false));
+        fallbackMode = /*register*/(new Setting("Fallback Mode", this, "Futura", Arrays.asList("Verdana", "Comfortaa", "Comfortaa Light", "Comfortaa Bold", "Consolas", "LexendDeca", "Futura", "SfUi", "Century")));
+        customSize = register(new Setting("Custom Size", this, false));
+        size = register(new Setting("Size", this, 18.0, 5.0, 30.0, true).setVisible(customSize::getValBoolean));
     }
 }

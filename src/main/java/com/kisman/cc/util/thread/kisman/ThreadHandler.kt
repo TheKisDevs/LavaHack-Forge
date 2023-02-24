@@ -11,7 +11,7 @@ import java.util.function.Supplier
 class ThreadHandler(
     val delay : Supplier<Long>,
     val threadded : Supplier<Boolean>
-) : GlobalThreads {
+) {
     constructor(
         threads : MultiThreaddableModulePattern
     ) : this(

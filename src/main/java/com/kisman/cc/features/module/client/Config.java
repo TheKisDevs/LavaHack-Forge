@@ -82,9 +82,6 @@ public class Config extends Module {
 
     public Setting particlesStartPointsCount = register(particlesPointsGroup.add(new Setting("Particles Start Points Count", this, 300, 100, 500, true).setTitle("Start Count")));
 
-    public Setting antiOpenGLCrash = register(other.add(new Setting("Anti OpenGL Crash", this, false)));
-
-
     public Config() {
         super("Config", Category.CLIENT);
         super.setToggled(true);

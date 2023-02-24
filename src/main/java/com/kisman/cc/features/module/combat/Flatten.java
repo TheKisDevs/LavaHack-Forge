@@ -6,7 +6,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -16,7 +15,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -181,7 +179,7 @@ public class Flatten extends Module {
             return;
         int oldSlot = mc.player.inventory.currentItem;
         //doSwitch(slot, false);
-        BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND,rotate.getValBoolean(), packet.getValBoolean(), false);
+//        BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND,rotate.getValBoolean(), packet.getValBoolean(), false);
         if(antiGlitch.getValBoolean())
             mc.player.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN));
         //doSwitch(oldSlot, true);

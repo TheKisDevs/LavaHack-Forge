@@ -90,20 +90,6 @@ public class BlockUtil2 {
         return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
     }
 
-    public static AxisAlignedBB getProgressBB(BlockPos pos, ItemStack stack, long start) {
-        return getProgressBB(
-                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
-                getBreakingProgress(pos, stack, start)
-        );
-    }
-
-    public static AxisAlignedBB getMutableProgressBB(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier) {
-        return getProgressBB(
-                mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
-                scalier.mutateProgress(getBreakingProgress(pos, stack, start))
-        );
-    }
-
     public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier) {
         return getProgressBB(
                 mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos),
@@ -124,11 +110,6 @@ public class BlockUtil2 {
 
     public static float getHardness(BlockPos pos) {
         return mc.world.getBlockState(pos).getPlayerRelativeBlockHardness(mc.player, mc.world, pos);
-    }
-
-    //i think this method is useless xd
-    public static float getHardness2(BlockPos pos) {
-        return mc.world.getBlockState(pos).getBlockHardness(mc.world, pos);
     }
 
     public static boolean isPositionPlaceable(BlockPos position, boolean sideCheck, boolean entityCheck) {

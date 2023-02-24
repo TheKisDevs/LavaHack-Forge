@@ -4,8 +4,6 @@ import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.createDoubleArray
-import com.kisman.cc.util.render.objects.screen.AbstractObject
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.ItemStack

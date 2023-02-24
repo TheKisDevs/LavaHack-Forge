@@ -1,7 +1,7 @@
 package com.kisman.cc.features.catlua.lua.utils;
 
-import com.kisman.cc.util.*;
-import com.kisman.cc.util.world.RotationUtils;
+import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;
 
@@ -25,6 +25,6 @@ public class LuaRotation implements Globals {
     }
 
     public float[] getRotationToEntity(Entity entity) {
-        return RotationUtils.getRotation(entity);
+        return WorldUtilKt.rotation(entity);
     }
 }

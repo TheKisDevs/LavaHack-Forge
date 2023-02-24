@@ -2,8 +2,10 @@ package com.kisman.cc.features.subsystem.subsystems
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.RenderEntityEvent
+import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.entity.EntityUtil
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -50,19 +52,33 @@ object EnemyManager : SubSystem("Enemy Manager") {
     ) : Boolean = enemies().contains(player)
 
     private var nearestPlayer : EntityPlayer? = null
-    private var minDistance = Double.MAX_VALUE
+//    private var nearestEntity : Entity? = null
+    private var minDistancePlayer = Double.MAX_VALUE
+//    private var minDistanceEntity = Double.MAX_VALUE
 
     @EventHandler
-    private val renderEntity = Listener<RenderEntityEvent.All.Post>(EventHook {
+    private val renderEntity = Listener<RenderEntityEvent.Check>(EventHook {
         val entity = it.entity
 
-        if(entity is EntityPlayer && entity != mc.player) {
+        if(entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity))) {
             val distance = mc.player.getDistanceSq(entity)
 
-            if(distance < minDistance) {
-                minDistance = distance
+            if(distance < minDistancePlayer) {
                 nearestPlayer = entity
+                minDistancePlayer = distance
             }
+
+            /*if(entity is EntityPlayer) {
+                if(distance < minDistancePlayer) {
+                    nearestPlayer = entity
+                    minDistancePlayer = distance
+                }
+            } else {
+                if(distance < minDistanceEntity) {
+                    nearestEntity = entity
+                    minDistanceEntity = distance
+                }
+            }*/
         }
     })
 
@@ -72,7 +88,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
     ) {
         if(event.phase == TickEvent.Phase.START) {
             nearestPlayer = null
-            minDistance = Double.MAX_VALUE
+            minDistancePlayer = Double.MAX_VALUE
         }
     }
 
@@ -89,9 +105,11 @@ object EnemyManager : SubSystem("Enemy Manager") {
     }
 
     fun nearest() : EntityPlayer? = nearestPlayer
+//    fun nearestEntity() : Entity? = nearestEntity
 }
 
 fun nearest() : EntityPlayer? = EnemyManager.nearest()//For kotlin modules
+//fun nearestEntity() : Entity? = EnemyManager.nearestEntity()//For kotlin modules
 
 annotation class Targetable
 annotation class Target

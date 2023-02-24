@@ -7,6 +7,7 @@ import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic
 import com.kisman.cc.util.math.max
 import com.kisman.cc.util.world.CrystalUtils
+import com.kisman.cc.util.world.sphere
 import net.minecraft.entity.player.EntityPlayer
 import java.util.function.Supplier
 
@@ -74,7 +75,7 @@ class AutoRerTargetFinder(
         var maxDamage = 0.5f
 
 
-        for(pos in EntityUtil.getSphere(player.position, placeRange.get(), 1 + placeRange.get().toInt(), false, true, 0)) {
+        for(pos in sphere(player, placeRange.get().toInt())) {
             if(
                 !(autoRer.thirdCheck.valBoolean && !autoRer.isPosValid(pos))
                 && CrystalUtils.canPlaceCrystal(

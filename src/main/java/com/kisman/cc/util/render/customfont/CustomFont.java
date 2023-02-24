@@ -9,14 +9,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class CustomFont extends AbstractFontRenderer {
-    private final float imgSize = 512.0f;
-    protected CharData[] charData = new CharData[2000];
+    protected CharData[] charData = new CharData[1200];
     protected Font font;
     protected boolean antiAlias;
     protected boolean fractionalMetrics;
     public int fontHeight = -1;
     protected int charOffset = 0;
     protected DynamicTexture tex;
+    private BufferedImage image;
 
     public int offset = 2;
 
@@ -24,13 +24,17 @@ public class CustomFont extends AbstractFontRenderer {
         this.font = font;
         this.antiAlias = antiAlias;
         this.fractionalMetrics = fractionalMetrics;
-        this.tex = setupTexture(font, antiAlias, fractionalMetrics, this.charData);
+        this.image = generateFontImage(font, antiAlias, fractionalMetrics, charData);
     }
 
-    protected DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars){
-        BufferedImage img = generateFontImage(font, antiAlias, fractionalMetrics, chars);
+    @Override
+    public void setupTexture() {
+        this.tex = setupTexture0();
+    }
+
+    protected DynamicTexture setupTexture0(){
         try {
-            return new DynamicTexture(img);
+            return new DynamicTexture(image);
         } catch (Exception e){
             e.printStackTrace();
             return null;
@@ -111,10 +115,13 @@ public class CustomFont extends AbstractFontRenderer {
         return width / 2;
     }
 
+    //TODO: optimize it
+
     public void setAntiAlias(boolean antiAlias) {
         if (this.antiAlias != antiAlias) {
             this.antiAlias = antiAlias;
-            this.tex = setupTexture(this.font, antiAlias, this.fractionalMetrics, this.charData);
+            this.image = generateFontImage(font, antiAlias, fractionalMetrics, charData);
+            setupTexture();
         }
     }
 
@@ -125,7 +132,8 @@ public class CustomFont extends AbstractFontRenderer {
     public void setFractionalMetrics(boolean fractionalMetrics) {
         if (this.fractionalMetrics != fractionalMetrics) {
             this.fractionalMetrics = fractionalMetrics;
-            this.tex = setupTexture(this.font, this.antiAlias, fractionalMetrics, this.charData);
+            this.image = generateFontImage(font, antiAlias, fractionalMetrics, charData);
+            setupTexture();
         }
     }
 
@@ -135,7 +143,8 @@ public class CustomFont extends AbstractFontRenderer {
 
     public void setFont(Font font) {
         this.font = font;
-        this.tex = setupTexture(font, this.antiAlias, this.fractionalMetrics, this.charData);
+        this.image = generateFontImage(font, antiAlias, fractionalMetrics, charData);
+        setupTexture();
     }
 
     @Override public void drawStringWithShadow(@NotNull String text, int x, int y, int color) {}

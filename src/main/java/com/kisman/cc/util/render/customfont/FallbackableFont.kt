@@ -148,4 +148,8 @@ class FallbackableFont(
     override fun drawCenteredStringWithShadow(text: String, x: Float, y: Float, color: Int) {
         TODO("Not yet implemented")
     }
+
+    override fun setupTexture() {
+        TODO("Not yet implemented")
+    }
 }

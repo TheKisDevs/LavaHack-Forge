@@ -170,7 +170,7 @@ object PacketMineProvider : Listenable {
     }
 
     @SubscribeEvent fun onClientTick(event : TickEvent.ClientTickEvent) {
-        if(!active() || mc.player == null || mc.world == null) {
+        if(!active() || mc.player == null || mc.world == null || mc.player.connection == null) {
             lastPosToMine = null
             return
         }

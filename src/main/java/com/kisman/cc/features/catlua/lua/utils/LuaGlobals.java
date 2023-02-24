@@ -3,9 +3,9 @@ package com.kisman.cc.features.catlua.lua.utils;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.ModuleManager;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -134,8 +134,8 @@ public class LuaGlobals implements Globals {
         return ( T[] ) ints;
     }
 
-    public static List<BlockPos> getSphere(float range, boolean sphere, boolean hollow) {
-        return CrystalUtils.getSphere(range, sphere, hollow);
+    public static List<BlockPos> getSphere(int range) {
+        return WorldUtilKt.sphere(range);
     }
 
     public static ScaledResolution getScaledResolution() {

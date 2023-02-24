@@ -2,9 +2,12 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
@@ -23,9 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Targetable
+@TargetsNearest
 public class Prison extends Module {
 
-    private final Setting targetRange = register(new Setting("TargetRange", this, 8, 1, 15, false));
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5.5, 1, 6, false));
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     //private final Setting exponent = register(new Setting("Exponent", this, 1, 2, 5, true));
@@ -34,8 +38,12 @@ public class Prison extends Module {
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
 
+    @Target
+    public EntityPlayer target;
+
     public Prison(){
         super("Prison", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 
     @Override
@@ -43,7 +51,8 @@ public class Prison extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        EntityPlayer target = EntityUtil.getTarget(targetRange.getValFloat());
+        target = EnemyManagerKt.nearest();
+
         if(target == null)
             return;
 

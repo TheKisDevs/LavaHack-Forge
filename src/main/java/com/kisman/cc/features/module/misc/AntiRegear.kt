@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import com.kisman.cc.util.world.CrystalUtils
+import com.kisman.cc.util.world.sphere
 import net.minecraft.block.BlockShulkerBox
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.network.play.client.CPacketPlayerDigging
@@ -36,7 +37,7 @@ class AntiRegear : Module(
                 oldSlot = -1
             }
         }
-        for(pos in CrystalUtils.getSphere(mc.player, range.valFloat, false, true)) {
+        for(pos in sphere(range.valInt)) {
             if(mc.world.getBlockState(pos).block is BlockShulkerBox) {
                 if (!breakQueue.contains(pos)) breakQueue.add(pos)
             }

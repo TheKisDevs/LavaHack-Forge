@@ -24,7 +24,6 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,24 +31,6 @@ public class CrystalUtils {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static List<Block> valid = Arrays.asList(Blocks.OBSIDIAN, Blocks.BEDROCK, Blocks.ENDER_CHEST, Blocks.ANVIL);
-
-    public static boolean canSeePos(BlockPos pos) {
-        return mc.world.rayTraceBlocks(new Vec3d(mc.player.posX, mc.player.posY + (double)mc.player.getEyeHeight(), mc.player.posZ), new Vec3d((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), false, true, false) == null;
-    }
-
-    public static boolean canPlaceCrystal(final BlockPos pos) {
-        final Minecraft mc = Minecraft.getMinecraft();
-        final Block block = mc.world.getBlockState(pos).getBlock();
-
-        if (block == Blocks.OBSIDIAN || block == Blocks.BEDROCK) {
-            final Block floor = mc.world.getBlockState(pos.add(0, 1, 0)).getBlock();
-            final Block ceil = mc.world.getBlockState(pos.add(0, 2, 0)).getBlock();
-
-            if (floor == Blocks.AIR && ceil == Blocks.AIR) return mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(pos.add(0, 1, 0))).isEmpty();
-        }
-
-        return false;
-    }
 
     public static boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace) {
         if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
@@ -59,81 +40,6 @@ public class CrystalUtils {
             return !entity || mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (check ? 2 : 1), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
         }
         return false;
-    }
-
-    public static List<BlockPos> getSphere(Entity target, float range, boolean sphere, boolean hollow) {
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-        int x = target.getPosition().getX() - (int)range;
-        while ((float)x <= (float) target.getPosition().getX() + range) {
-            int z = target.getPosition().getZ() - (int)range;
-            while ((float)z <= (float) target.getPosition().getZ() + range) {
-                int y;
-                int n = y = !sphere ? target.getPosition().getY() - (int)range : target.getPosition().getY();
-                while ((float)y < (float) target.getPosition().getY() + range) {
-                    double distance = (target.getPosition().getX() - x) * (target.getPosition().getX() - x) + (target.getPosition().getZ() - z) * (target.getPosition().getZ() - z) + (!sphere ? (target.getPosition().getY() - y) * (target.getPosition().getY() - y) : 0);
-                    if (distance < (double)(range * range) && (!hollow || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
-                        blocks.add(new BlockPos(x, y, z));
-                    }
-                    ++y;
-                }
-                ++z;
-            }
-            ++x;
-        }
-
-        return blocks;
-    }
-
-    public static List<BlockPos> getSphere(float radius, boolean ignoreAir) {
-        ArrayList<BlockPos> sphere = new ArrayList<>();
-        BlockPos pos = new BlockPos(mc.player.getPositionVector());
-        int posX = pos.getX();
-        int posY = pos.getY();
-        int posZ = pos.getZ();
-        int radiuss = ( int ) radius;
-        int x = posX - radiuss;
-        while (( float ) x <= ( float ) posX + radius) {
-            int z = posZ - radiuss;
-            while (( float ) z <= ( float ) posZ + radius) {
-                int y = posY - radiuss;
-                while (( float ) y < ( float ) posY + radius) {
-                    if (( float ) ((posX - x) * (posX - x) + (posZ - z) * (posZ - z) + (posY - y) * (posY - y)) < radius * radius) {
-                        BlockPos position = new BlockPos(x, y, z);
-                        if (!ignoreAir || mc.world.getBlockState(position).getBlock() != Blocks.AIR) {
-                            sphere.add(position);
-                        }
-                    }
-                    ++y;
-                }
-                ++z;
-            }
-            ++x;
-        }
-
-        return sphere;
-    }
-
-    public static List<BlockPos> getSphere(float range, boolean sphere, boolean hollow) {
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-        int x = mc.player.getPosition().getX() - (int)range;
-        while ((float)x <= (float) mc.player.getPosition().getX() + range) {
-            int z = mc.player.getPosition().getZ() - (int)range;
-            while ((float)z <= (float) mc.player.getPosition().getZ() + range) {
-                int y;
-                int n = y = sphere ? mc.player.getPosition().getY() - (int)range : mc.player.getPosition().getY();
-                while ((float)y < (float) mc.player.getPosition().getY() + range) {
-                    double distance = ( mc.player.getPosition().getX() - x) * (mc.player.getPosition().getX() - x) + (mc.player.getPosition().getZ() - z) * (mc.player.getPosition().getZ() - z) + (sphere != false ? (mc.player.getPosition().getY() - y) * (mc.player.getPosition().getY() - y) : 0);
-                    if (distance < (double)(range * range) && (!hollow || distance >= ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(638.4060856917202) ^ 0x7F73F33FA9DAEA7FL)) * ((double)range - Double.longBitsToDouble(Double.doubleToLongBits(13.015128470890444) ^ 0x7FDA07BEEB3F6D07L)))) {
-                        blocks.add(new BlockPos(x, y, z));
-                    }
-                    ++y;
-                }
-                ++z;
-            }
-            ++x;
-        }
-
-        return blocks;
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, boolean terrain) {
@@ -344,10 +250,6 @@ public class CrystalUtils {
 
     public static float calculateDamage(World world, EntityEnderCrystal crystal, Entity entity) {
         return calculateDamage(world, crystal.posX, crystal.posY, crystal.posZ, entity, 0);
-    }
-
-    public static boolean canPlaceCrystal(BlockPos blockPos, boolean check) {
-        return canPlaceCrystal(blockPos, check, true);
     }
 
     public static boolean canPlaceCrystal(final BlockPos blockPos, boolean check, boolean entity) {

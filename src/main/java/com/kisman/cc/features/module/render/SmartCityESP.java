@@ -3,12 +3,16 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.CustomBlockState;
 import com.kisman.cc.util.world.CustomWorld;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,17 +48,20 @@ import java.util.Map;
  * TODO: Massively improve performance
  */
 @WorkInProgress
+@Targetable
+@TargetsNearest
 public class SmartCityESP extends Module {
 
-    private final Setting range = register(new Setting("Range", this, 8, 1, 15, false));
     private final Setting ignoreIfNotSurrounded = register(new Setting("IgnoreIfNotSurrounded", this, false));
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
     public SmartCityESP(){
         super("SmartCityESP(FpsKiller)", Category.RENDER);
+        super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 
-    private EntityPlayer target = null;
+    @Target
+    public EntityPlayer target = null;
 
     private BlockPos renderPos = null;
 
@@ -91,7 +98,7 @@ public class SmartCityESP extends Module {
             return;
         }
 
-        this.target = EntityUtil.getTarget(range.getValFloat());
+        this.target = EnemyManagerKt.nearest();
         if(this.target == null){
             this.renderPos = null;
             return;
@@ -128,7 +135,7 @@ public class SmartCityESP extends Module {
 
     private BlockPos getBestPlacePos(World world, Entity entity){
         Map<Float, BlockPos> map = new HashMap<>();
-        for(BlockPos pos : CrystalUtils.getSphere(5, true, false))
+        for(BlockPos pos : WorldUtilKt.sphere(5))
             map.put(calculateDamage(world, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, entity), pos);
         Float max = map.keySet().stream().max(Float::compare).orElse(0.0f);
         BlockPos pos = map.get(max);

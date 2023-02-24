@@ -30,8 +30,6 @@ fun check() {
         override fun processMessage(
             message : String
         ) {
-            println(message)
-
             if(message == "2") {
                 runnables.clear()
             } else {

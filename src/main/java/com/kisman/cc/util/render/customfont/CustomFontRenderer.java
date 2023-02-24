@@ -6,13 +6,18 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class CustomFontRenderer extends CustomFont {
-    protected CustomFont.CharData[] boldChars = new CustomFont.CharData[2000];
-    protected CustomFont.CharData[] italicChars = new CustomFont.CharData[2000];
-    protected CustomFont.CharData[] boldItalicChars = new CustomFont.CharData[2000];
+    protected CustomFont.CharData[] boldChars = new CustomFont.CharData[1200];
+    protected CustomFont.CharData[] italicChars = new CustomFont.CharData[1200];
+    protected CustomFont.CharData[] boldItalicChars = new CustomFont.CharData[1200];
 
     private final int[] colorCode = new int[32];
+
+    private BufferedImage boldImage;
+    private BufferedImage italicImage;
+    private BufferedImage italicBoldImage;
 
     protected DynamicTexture texBold;
     protected DynamicTexture texItalic;
@@ -21,7 +26,10 @@ public class CustomFontRenderer extends CustomFont {
     public CustomFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
         super(font, antiAlias, fractionalMetrics);
         setupMinecraftColorcodes();
-        setupBoldItalicIDs();
+
+        boldImage = generateFontImage(font.deriveFont(Font.BOLD), antiAlias, fractionalMetrics, boldChars);
+        italicImage = generateFontImage(font.deriveFont(Font.ITALIC), antiAlias, fractionalMetrics, boldChars);
+        italicBoldImage = generateFontImage(font.deriveFont(Font.BOLD | Font.ITALIC), antiAlias, fractionalMetrics, boldChars);
     }
 
     public float drawStringWithShadow(String text, double x, double y, int color) {
@@ -182,9 +190,24 @@ public class CustomFontRenderer extends CustomFont {
     }
 
     private void setupBoldItalicIDs() {
-        this.texBold = setupTexture(this.font.deriveFont(Font.BOLD), this.antiAlias, this.fractionalMetrics, this.boldChars);
-        this.texItalic = setupTexture(this.font.deriveFont(Font.ITALIC), this.antiAlias, this.fractionalMetrics, this.italicChars);
-        this.texItalicBold = setupTexture(this.font.deriveFont(Font.BOLD | Font.ITALIC), this.antiAlias, this.fractionalMetrics, this.boldItalicChars);
+        texBold = setupTexture(boldImage);
+        texItalic = setupTexture(italicImage);
+        texItalicBold = setupTexture(italicBoldImage);
+    }
+
+    private DynamicTexture setupTexture(BufferedImage image) {
+        try {
+            return new DynamicTexture(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void setupTexture() {
+        super.setupTexture();
+        setupBoldItalicIDs();
     }
 
     public void drawLine(double x, double y, double x1, double y1) {

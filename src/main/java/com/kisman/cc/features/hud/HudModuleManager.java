@@ -56,6 +56,8 @@ public class HudModuleManager {
 	private void add(HudModule module) {
 		modules.add(module);
 
+		Kisman.LOGGER.info("Initializing " + module.getName() + " hud module!");
+
 		if(module instanceof ShaderableHudModule) shaderableModules.add((ShaderableHudModule) module);
 	}
 	

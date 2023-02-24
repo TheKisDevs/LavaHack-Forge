@@ -1,9 +1,14 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.ShaderableModule;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -11,13 +16,12 @@ import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.HandModes;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.HoleUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
@@ -34,11 +38,12 @@ import java.util.*;
  */
 @PingBypassModule
 @Targetable
+@TargetsNearest
 public class HoleFillerRewrite extends ShaderableModule {
     @ModuleInstance
     public static HoleFillerRewrite instance;
     
-    private final SettingGroup logic = register(new SettingGroup(new Setting("Lo     gic", this)));
+    private final SettingGroup logic = register(new SettingGroup(new Setting("Logic", this)));
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
 
     private final SettingGroup holesGroup = register(logic.add(new SettingGroup(new Setting("Holes", this))));
@@ -57,7 +62,6 @@ public class HoleFillerRewrite extends ShaderableModule {
     private final Setting entityCheck = register(logic.add(new Setting("Entity Check", this, false)));
     private final Setting delay = register(logic.add(new Setting("Delay", this, 50, 0, 500, NumberType.TIME).setVisible(() -> place.getValString().equals("Delay"))));
     private final Setting placeMode = register(logic.add(new Setting("PlaceMode", this, "All", Arrays.asList("All", "Target"))));
-    private final Setting enemyRange = register(logic.add(new Setting("TargetRange", this, 10, 1, 15, false).setVisible(() -> placeMode.getValString().equals("Target"))));
     private final Setting aroundEnemyRange = register(logic.add(new Setting("TargetHoleRange", this, 4, 1, 10, false).setVisible(() -> placeMode.getValString().equals("Target"))));
     private final Setting holeRange = register(logic.add(new Setting("HoleRange", this, 5, 1, 10, false)));
     private final Setting limit = register(logic.add(new Setting("Limit", this, 0, 0, 50, true)));
@@ -65,7 +69,6 @@ public class HoleFillerRewrite extends ShaderableModule {
     private final SlideRenderingRewritePattern pattern = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = threads();
-    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, () -> threads.getDelay().getValLong(), threads.getMultiThread()::getValBoolean);
 
     private final SlideRendererPattern renderer = new SlideRendererPattern();
 
@@ -74,7 +77,7 @@ public class HoleFillerRewrite extends ShaderableModule {
 
     public HoleFillerRewrite(){
         super("HoleFillerRewrite", "", Category.COMBAT, false);
-        super.setDisplayInfo(() -> entity == null ? " no target no fun" : ("[" + (entity != mc.player ? entity.getName() : "Self") + "]"));
+        super.setDisplayInfo(() -> "[" + (entity == null ? "no target no fun" : ((entity != mc.player ? entity.getName() : "Self"))) + "]");
         super.displayName = "HoleFiller";
     }
 
@@ -91,7 +94,6 @@ public class HoleFillerRewrite extends ShaderableModule {
     @Override
     public void onEnable() {
         super.onEnable();
-        targets.reset();
         threads.reset();
         renderer.reset();
         placePos = null;
@@ -102,9 +104,7 @@ public class HoleFillerRewrite extends ShaderableModule {
         if(mc.world == null || mc.player == null) return;
 
         try {
-            targets.update();
-
-            entity = placeMode.getValString().equals("All") ? mc.player : targets.getTarget();
+            entity = placeMode.getValString().equals("All") ? mc.player : EnemyManagerKt.nearest();
 
             if (entity == null) return;
 
@@ -229,7 +229,7 @@ public class HoleFillerRewrite extends ShaderableModule {
 
     private Set<BlockPos> getPossibleHoles(Entity entity, float range){
         Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList = EntityUtil.getSphere(getEntityPos(entity), range, (int) range, false, true, 0);
+        List<BlockPos> blockPosList = WorldUtilKt.sphere(entity, (int) range);
         for (BlockPos pos : blockPosList) {
             AxisAlignedBB aabb = new AxisAlignedBB(pos);
             if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())

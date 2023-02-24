@@ -5,17 +5,26 @@ import com.kisman.cc.event.events.EventEntityFreeCam;
 import com.kisman.cc.event.events.EventItemRenderer;
 import com.kisman.cc.features.module.Debug.SwingTest;
 import com.kisman.cc.features.module.combat.KillAuraRewrite;
-import com.kisman.cc.features.module.render.*;
-import com.kisman.cc.util.entity.player.PlayerUtil;
+import com.kisman.cc.features.module.render.NoRender;
+import com.kisman.cc.features.module.render.SmallShield;
+import com.kisman.cc.features.module.render.SwingAnimation;
+import com.kisman.cc.features.module.render.ViewModel;
+import com.kisman.cc.util.entity.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ItemRenderer.class, priority = 10000)
@@ -77,7 +86,7 @@ public class MixinItemRenderer {
         Vec3d rotate = new Vec3d(0.0, 0.0, 0.0);
         Vec3d scale = new Vec3d(1, 1, 1);
 
-        boolean isEating = PlayerUtil.isEating();
+        boolean isEating = EntityUtil.eating(EnumHand.MAIN_HAND);
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
         boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
@@ -97,7 +106,7 @@ public class MixinItemRenderer {
             }
 
             if (hand == EnumHandSide.LEFT) {
-                if(!(PlayerUtil.isEatingOffhand() && !ViewModel.instance.customEating.getValBoolean())) {
+                if(!(EntityUtil.eating(EnumHand.OFF_HAND) && !ViewModel.instance.customEating.getValBoolean())) {
                     if(ViewModel.instance.translate.getValBoolean()) translate = new Vec3d(ViewModel.instance.translateLeftX.getValDouble(), ViewModel.instance.translateLeftY.getValDouble(), ViewModel.instance.translateLeftZ.getValDouble());
                     rotate = new Vec3d(
                             (!ViewModel.instance.autoRotateLeftX.getValBoolean() ? ((float) (ViewModel.instance.rotateLeftX.getValDouble())) : (float) (System.currentTimeMillis() % 22600L) / 5.0f),

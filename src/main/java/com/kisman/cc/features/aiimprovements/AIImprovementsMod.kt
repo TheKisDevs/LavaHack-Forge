@@ -26,6 +26,7 @@ object AIImprovementsMod {
     }
 
     @JvmStatic fun init() {
+        Kisman.LOGGER.info("Initializing AI Improvements implementation!")
         Kisman.EVENT_BUS.post(EventProgressBar("AI Improvements"))
         MinecraftForge.EVENT_BUS.register(this)
     }

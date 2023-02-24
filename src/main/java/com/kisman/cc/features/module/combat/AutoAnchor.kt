@@ -1,20 +1,16 @@
 package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.features.module.combat.autoanchor.PlaceInfo
-import com.kisman.cc.features.subsystem.subsystems.RotationSystem
+import com.kisman.cc.features.subsystem.subsystems.*
 import com.kisman.cc.features.subsystem.subsystems.Target
-import com.kisman.cc.features.subsystem.subsystems.Targetable
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.settings.util.PlacementPattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
-import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.enums.AutoAnchorGlowStonePlacement
 import com.kisman.cc.util.enums.AutoAnchorPlacement
@@ -25,7 +21,6 @@ import com.kisman.cc.util.world.block.RESPAWN_ANCHOR
 import net.minecraft.block.BlockDynamicLiquid
 import net.minecraft.block.BlockLiquid
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -52,16 +47,15 @@ import java.util.function.Supplier
  */
 @Suppress("UNUSED_PARAMETER")
 @Targetable
+@TargetsNearest
 class AutoAnchor : ShaderableModule(
     "AutoAnchor",
     "Killing enemies with anchors. Only for 1.16+ servers",
     Category.COMBAT,
     true
 ) {
-    private val targetRange = register(Setting("Target Range", this, 10.0, 1.0, 50.0, true))
     private val delay = register(Setting("Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME))
     private val placer = PlacementPattern(this, true).preInit().init()
-    private val threads = threads()
     private val renderers = register(SettingGroup(Setting("Renderers", this)))
     private val anchorRendererGroup = register(renderers.add(SettingGroup(Setting("Anchor", this))))
     private val anchorPattern = SlideRenderingRewritePattern(this).group(anchorRendererGroup).prefix("Anchor").preInit().init()
@@ -85,8 +79,6 @@ class AutoAnchor : ShaderableModule(
     private val anchorRenderer = SlideRendererPattern()
     private val glowstoneRenderer = SlideRendererPattern()
 
-    private val targets = TargetFinder(targetRange.supplierDouble, threads)
-
     @Target var target : EntityPlayer? = null
 
     private var renderAnchorPos : BlockPos? = null
@@ -96,7 +88,7 @@ class AutoAnchor : ShaderableModule(
     private var lastTargetPos : BlockPos? = null
     private var lastPlaceInfo : PlaceInfo? = null
 
-    private var timer = TimerUtils()
+    private var timer = timer()
 
     private val helpingPosses = mapOf(
         0 to SlideRendererPattern(),
@@ -141,9 +133,7 @@ class AutoAnchor : ShaderableModule(
             return
         }
 
-        targets.update()
-
-        target = targets.target
+        target = nearest()
 
         if(target == null) {
             reset()
@@ -361,7 +351,7 @@ class AutoAnchor : ShaderableModule(
         var anchorPos : BlockPos? = null
         var glowstonePos : BlockPos? = null
 
-        for(center in sphere(placeRange.valFloat)) {
+        for(center in sphere(placeRange.valInt)) {
             val offset = offset(center)
 
             if(placeCheck(center) && placeable(center) && offset != null) {

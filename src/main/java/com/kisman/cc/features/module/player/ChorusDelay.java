@@ -6,8 +6,6 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.objects.world.Box;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -30,7 +28,6 @@ import java.util.Queue;
  * Work in progress
  * @author Cubic
  */
-@SuppressWarnings("rawtypes")
 public class ChorusDelay extends Module {
     private final Setting teleportKey = register(new Setting("Teleport", this, Keyboard.KEY_LSHIFT));
     private final RenderingRewritePattern pattern = new RenderingRewritePattern(this).preInit().init();

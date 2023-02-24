@@ -4,17 +4,17 @@ import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 
-public class CustomMainMenuModule extends Module {
+public class MainMenuModule extends Module {
     public final Setting watermark = register(new Setting("WaterMark", this, true));
     public final Setting customSplashText = register(new Setting("Custom Splash Text", this, true));
     public final Setting customSplashFont = register(new Setting("Custom Splash Font", this, false).setVisible(() -> customSplashText.getValBoolean()));
     public final Setting particles = register(new Setting("Particles", this, false));
 
     @ModuleInstance
-    public static CustomMainMenuModule instance;
+    public static MainMenuModule instance;
 
-    public CustomMainMenuModule() {
-        super("CustomMainMenu", Category.CLIENT);
+    public MainMenuModule() {
+        super("MainMenu", Category.CLIENT);
         super.setToggled(true);
     }
 

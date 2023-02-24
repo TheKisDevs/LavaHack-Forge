@@ -2,13 +2,19 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.*;
+import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -30,9 +36,9 @@ import java.util.stream.Collectors;
  * Don't add to module manager
  * @author Cubic
  */
+@Targetable
+@TargetsNearest
 public class AutoObsidian extends Module {
-
-    private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 15, false));
     private final Setting circleRange = register(new Setting("CircleRange", this, 2, 1, 5, false));
     private final Setting singlePlace = register(new Setting("SinglePlace", this, true));
     private final Setting rotate = register(new Setting("Rotate", this, false));
@@ -40,11 +46,14 @@ public class AutoObsidian extends Module {
     private final Setting swap = register(new Setting("Switch", this, "Silent", Arrays.asList("Normal", "Silent", "Packet")));
     private final Setting updateController = register(new Setting("UpdateController", this, false));
 
-    private static AutoObsidian instance;
+    @ModuleInstance
+    public static AutoObsidian instance;
+
+    @Target
+    public EntityPlayer target;
 
     public AutoObsidian(){
         super("AutoObsidian", Category.COMBAT);
-        instance = this;
     }
 
     private List<BlockPos> positions = new ArrayList<>();
@@ -67,7 +76,8 @@ public class AutoObsidian extends Module {
 
         int oldSlot = mc.player.inventory.currentItem;
 
-        EntityPlayer target = EntityUtil.getTarget(enemyRange.getValFloat());
+        target = EnemyManagerKt.nearest();
+
         if(target == null)
             return;
 
@@ -84,12 +94,12 @@ public class AutoObsidian extends Module {
         swap(slot, false);
 
         if(singlePlace.getValBoolean()){
-            BlockUtil.placeBlockSmartRotate(blockPos.get(0), EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);
+            BlockUtil2.placeBlock(blockPos.get(0), EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
             last = blockPos.get(0);
             ChatUtility.message().printClientModuleMessage(last.getX() + " " + last.getY() + " " + last.getZ());
         } else {
             for(BlockPos pos : blockPos){
-                BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean(), false);
+                BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
             }
             last = null;
         }
@@ -150,7 +160,7 @@ public class AutoObsidian extends Module {
     }
 
     public static List<BlockPos> getBlocks(Entity entity){
-        List<BlockPos> blocks = EntityUtil.getSphere(new BlockPos(entity.posX, entity.posY, entity.posZ), instance.circleRange.getValFloat(), 1, false, false, -1);
+        List<BlockPos> blocks = WorldUtilKt.sphere(entity, instance.circleRange.getValInt());
         return blocks.stream().filter(pos -> check(pos, entity)).sorted((o1, o2) -> {
             double d1 = entity.getDistanceSq(o1.getX() + 0.5, o1.getY() + 0.5, o1.getZ() + 0.5);
             double d2 = entity.getDistanceSq(o2.getX() + 0.5, o2.getY() + 0.5, o2.getZ() + 0.5);

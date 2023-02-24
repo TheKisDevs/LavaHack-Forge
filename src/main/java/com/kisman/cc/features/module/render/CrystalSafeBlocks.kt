@@ -7,9 +7,10 @@ import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.getBlockStateSafe
+import com.kisman.cc.util.state
 import com.kisman.cc.util.math.distance
 import com.kisman.cc.util.world.CrystalUtils
+import com.kisman.cc.util.world.sphere
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
@@ -59,7 +60,7 @@ class CrystalSafeBlocks : Module(
 
         for(entity in mc.world.loadedEntityList) {
             if(entity is EntityEnderCrystal) {
-                for(pos in CrystalUtils.getSphere(entity, 12f, true, false)) {
+                for(pos in sphere(entity, 12)) {
                     if(valid(pos)) {
                         val damage = calculate(
                             entity.posX,
@@ -90,8 +91,8 @@ class CrystalSafeBlocks : Module(
     }
 
     private fun valid(pos : BlockPos) : Boolean {
-        return getBlockStateSafe(pos).block == Blocks.AIR
-                && getBlockStateSafe(pos.down()).block != Blocks.AIR
+        return state(pos).block == Blocks.AIR
+                && state(pos.down()).block != Blocks.AIR
                 && mc.player.getDistance(pos.x + 0.5, pos.y.toDouble(), pos.z + 0.5) <= range.valInt
     }
 

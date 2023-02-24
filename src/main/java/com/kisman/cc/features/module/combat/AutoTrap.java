@@ -1,31 +1,36 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.SurroundSupportModes;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
-import com.kisman.cc.util.world.RotationUtils;
 import com.kisman.cc.util.world.WorldUtilKt;
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.kisman.cc.util.TimerUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.*;
 
 @Targetable
+@TargetsNearest
 public class AutoTrap extends Module {
+    @ModuleInstance
     public static AutoTrap instance;
-    protected final Setting targetRange = register(new Setting("Target Range", this, 10, 1, 20, true));
     protected final Setting disableOnComplete = register(new Setting("Disable On Complete", this, false));
     protected final Setting placeDelay = register(new Setting("Delay", this, 50, 0, 100, true));
     protected final Setting rotate = register(new Setting("Rotate", this, true));
@@ -43,7 +48,7 @@ public class AutoTrap extends Module {
     protected final Setting switch_ = register(new Setting("Rewrite Switch Mode", this, RewriteSwitchModes.Silent));
     protected final Setting rotateMode = register(new Setting("Rewrite Rotate Mode", this, RewriteRotateModes.Silent));
 
-    protected TimerUtils timer = new TimerUtils();
+    protected TimerUtils timer = timer();
     protected Map<BlockPos, Integer> retries = new HashMap<>();
     protected int tries;
     protected TimerUtils retryTimer = new TimerUtils();
@@ -54,21 +59,11 @@ public class AutoTrap extends Module {
     protected int oldSlot;
     protected int placements = 0;
     protected int rewrPlacements = 0;
-    private boolean smartRotate = false;
     protected BlockPos startPos = null;
 
     public AutoTrap() {
         super("AutoTrap", "trapping all players", Category.COMBAT);
         super.setToggled(false);
-
-        instance = this;
-    }
-
-    /**
-     * see <code>com.kisman.cc.features.module.combat.SelfTrap
-     */
-    public AutoTrap(String name) {
-        super(name, Category.COMBAT);
     }
 
     public void onEnable() {
@@ -83,13 +78,12 @@ public class AutoTrap extends Module {
         if(mc.player == null ||  mc.world == null) return;
 
         if(!rewrite.getValBoolean()) {
-            smartRotate = false;
             doTrap();
         } else doRewriteTrap();
     }
 
     protected void doRewriteTrap() {
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+        target = EnemyManagerKt.nearest();
 
         if(target == null) return;
 
@@ -138,9 +132,10 @@ public class AutoTrap extends Module {
         if(rewrPlacements < blocksPerTick.getValInt()) {
             float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
             if(!rotateMode.getValString().equalsIgnoreCase(RewriteRotateModes.None.name())) {
-                float[] rots = RotationUtils.getRotationToPos(posToPlace);
-                mc.player.rotationYaw = rots[0];
-                mc.player.rotationPitch = rots[1];
+                //TODO: new rots
+//                float[] rots = RotationUtils.getRotationToPos(posToPlace);
+//                mc.player.rotationYaw = rots[0];
+//                mc.player.rotationPitch = rots[1];
             }
             BlockUtil2.placeBlock(posToPlace, EnumHand.MAIN_HAND, packet.getValBoolean());
             rewrPlacements++;
@@ -158,8 +153,8 @@ public class AutoTrap extends Module {
     }
 
     private void doStaticTrap() {
-        final List<Vec3d> placeTargets = BlockUtil.targets(target.getPositionVector(), antiScaffold.getValBoolean(), antiStep.getValBoolean(), surroundPlacing.getValBoolean(), false, false, this.raytrace.getValBoolean());
-        placeList(placeTargets);
+//        final List<Vec3d> placeTargets = BlockUtil.targets(target.getPositionVector(), antiScaffold.getValBoolean(), antiStep.getValBoolean(), surroundPlacing.getValBoolean(), false, false, this.raytrace.getValBoolean());
+//        placeList(placeTargets);
     }
 
     private void placeList(final List<Vec3d> list) {
@@ -167,15 +162,15 @@ public class AutoTrap extends Module {
         list.sort(Comparator.comparingDouble(vec3d -> vec3d.y));
         for (final Vec3d vec3d3 : list) {
             final BlockPos position = new BlockPos(vec3d3);
-            final int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValBoolean());
-            if (placeability == 1 && (this.retries.get(position) == null || this.retries.get(position) < 4)) {
+//            final int placeability = BlockUtil.isPositionPlaceable(position, this.raytrace.getValBoolean());
+//            if (placeability == 1 && (this.retries.get(position) == null || this.retries.get(position) < 4)) {
                 this.placeBlock(position);
                 this.retries.put(position, (this.retries.get(position) == null) ? 1 : (this.retries.get(position) + 1));
                 this.retryTimer.reset();
-            } else {
-                if (placeability != 3) continue;
+//            } else {
+//                if (placeability != 3) continue;
                 this.placeBlock(position);
-            }
+//            }
         }
     }
 
@@ -202,8 +197,8 @@ public class AutoTrap extends Module {
             return true;
         }
         if (mc.player.inventory.currentItem != this.oldSlot && mc.player.inventory.currentItem != obbySlot3) this.oldSlot = mc.player.inventory.currentItem;
-        isSneaking = EntityUtil.stopSneaking(this.isSneaking);
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+//        isSneaking = EntityUtil.stopSneaking(this.isSneaking);
+        target = EnemyManagerKt.nearest();
         return target == null || !timer.passedMillis(placeDelay.getValInt());
     }
 
@@ -331,19 +326,12 @@ public class AutoTrap extends Module {
             final int eChestSot = InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9);
 
             if (obbySlot == -1 && eChestSot == -1) this.toggle();
-            if (this.smartRotate) {
-                mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
-                mc.playerController.updateController();
-                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), true, isSneaking);
-                mc.player.inventory.currentItem = originalSlot;
-                mc.playerController.updateController();
-            } else {
-                mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
-                mc.playerController.updateController();
-                isSneaking = BlockUtil.placeBlockSmartRotate(pos, EnumHand.MAIN_HAND, this.rotate.getValBoolean(), rotate.getValBoolean(), isSneaking);
-                mc.player.inventory.currentItem = originalSlot;
-                mc.playerController.updateController();
-            }
+
+            mc.player.inventory.currentItem = ((obbySlot == -1) ? eChestSot : obbySlot);
+            mc.playerController.updateController();
+            BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
+            mc.player.inventory.currentItem = originalSlot;
+            mc.playerController.updateController();
 
             this.didPlace = true;
             ++this.placements;

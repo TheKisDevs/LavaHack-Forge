@@ -110,4 +110,11 @@ open class ExtendedFontRenderer(
         this.offset = offset
         getCurrentFont().offset = getHeight() + offset
     }
+
+    override fun setupTexture() {
+        plain.setupTexture()
+        bold.setupTexture()
+        italic.setupTexture()
+        both.setupTexture()
+    }
 }

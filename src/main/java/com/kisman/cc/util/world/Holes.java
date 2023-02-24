@@ -21,7 +21,7 @@ public class Holes {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static List<Hole> getHoles(double range){
-        List<BlockPos> blocks = CrystalUtils.getSphere((float) range, true, false);
+        List<BlockPos> blocks = WorldUtilKt.sphere((int) range);
         List<Hole> holes = new ArrayList<>();
         Set<BlockPos> alreadyChecked = new HashSet<>();
         for(BlockPos pos : blocks){

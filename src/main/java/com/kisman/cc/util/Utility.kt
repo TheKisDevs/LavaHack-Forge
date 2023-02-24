@@ -4,7 +4,7 @@ package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.client.interfaces.Runnable0
+import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
@@ -16,7 +16,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import scala.Function0
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -32,8 +31,6 @@ import javax.swing.JOptionPane
  * @since 15:24 of 30.07.2022
  */
 
-@JvmField val emptyRunnable = Runnable { }
-
 fun getPing(player : EntityPlayer) : Int {
     return getPing(player.uniqueID)
 }
@@ -47,20 +44,13 @@ fun getPing(id : UUID) : Int {
     return if(mc.isSingleplayer) 0 else try { mc.player.connection.getPlayerInfo(id).responseTime } catch(ignored : Exception) { -1 }
 }
 
-//It's useless in java, but useful in kotlin - _kisman_
-fun createDoubleArray(vararg elements : Double) : DoubleArray {
-    val array = DoubleArray(elements.size)
-
-    for(i in 0..elements.size) {
-        array[i] = elements[i]
-    }
-
-    return array
-}
-
-fun getBlockStateSafe(pos : BlockPos) : IBlockState {
+fun state(pos : BlockPos) : IBlockState {
     return try { mc.world.getBlockState(pos) } catch (_ : Exception) { Blocks.AIR.defaultBlockState }
 }
+
+fun block(
+    pos : BlockPos
+) : Block = state(pos).block
 
 fun contains(
     ch : Char,

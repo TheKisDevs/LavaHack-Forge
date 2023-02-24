@@ -2,10 +2,13 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.client.collections.Pair;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
@@ -26,12 +29,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Targetable
+@TargetsNearest
 public class HoleKicker extends Module {
 
     private final SettingEnum<RedstoneMode> redstoneMode = new SettingEnum<>("RedstoneMode", this, RedstoneMode.Torch).register();
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
-    private final Setting range = register(new Setting("Range", this, 5, 1, 10, false));
     private final Setting packetPlace = register(new Setting("PacketPlace", this, false));
+
+    @Target
+    public EntityPlayer target = null;
 
     public HoleKicker(){
         super("HoleKicker", Category.COMBAT);
@@ -42,7 +49,7 @@ public class HoleKicker extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        EntityPlayer target = EntityUtil.getTarget(range.getValFloat());
+        target = EnemyManagerKt.nearest();
 
         if(target == null){
             this.toggle();

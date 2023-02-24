@@ -4,9 +4,9 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
@@ -79,7 +79,7 @@ public class CevBreaker extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        target = EntityUtil.getTarget(8);
+        target = EnemyManagerKt.nearest();
         if(target == null)
             return;
 

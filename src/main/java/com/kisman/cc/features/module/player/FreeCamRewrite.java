@@ -9,16 +9,20 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.entity.PacketUtil;
-import com.kisman.cc.util.entity.player.PlayerUtil;
 import com.kisman.cc.util.movement.MovementUtil;
+import com.mojang.authlib.GameProfile;
 import me.zero.alpine.event.type.Cancellable;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.function.BiFunction;
 
 public class FreeCamRewrite extends Module {
     @ModuleInstance
@@ -44,8 +48,31 @@ public class FreeCamRewrite extends Module {
             return;
         }
         mc.player.dismountRidingEntity();
-        fakePlayer = PlayerUtil.createFakePlayerAndAddToWorld(mc.player.getGameProfile());
+        fakePlayer = createFakePlayerAndAddToWorld(mc.player.getGameProfile(), EntityOtherPlayerMP::new);
         fakePlayer.onGround = mc.player.onGround;
+    }
+
+    public static EntityOtherPlayerMP createFakePlayerAndAddToWorld(GameProfile profile, BiFunction<World, GameProfile, EntityOtherPlayerMP> create) {
+        EntityOtherPlayerMP fakePlayer = createFakePlayer(profile, create);
+        mc.world.addEntityToWorld(-65687, fakePlayer);
+        return fakePlayer;
+    }
+
+    public static EntityOtherPlayerMP createFakePlayer(GameProfile profile, BiFunction<World, GameProfile, EntityOtherPlayerMP> create) {
+        EntityOtherPlayerMP fakePlayer = create.apply(mc.world, profile);
+
+        fakePlayer.inventory = mc.player.inventory;
+        fakePlayer.inventoryContainer = mc.player.inventoryContainer;
+        fakePlayer.setPositionAndRotation(mc.player.posX, mc.player.getEntityBoundingBox().minY, mc.player.posZ, mc.player.rotationYaw, mc.player.rotationPitch);
+        fakePlayer.rotationYawHead = mc.player.rotationYawHead;
+        fakePlayer.onGround = mc.player.onGround;
+        fakePlayer.setSneaking(mc.player.isSneaking());
+        fakePlayer.setHealth(mc.player.getHealth());
+        fakePlayer.setAbsorptionAmount(mc.player.getAbsorptionAmount());
+
+        for (PotionEffect effect : mc.player.getActivePotionEffects()) fakePlayer.addPotionEffect(effect);
+
+        return fakePlayer;
     }
 
     @Override
@@ -57,9 +84,9 @@ public class FreeCamRewrite extends Module {
         Kisman.EVENT_BUS.unsubscribe(listener3);
 
         if (mc.player == null || mc.world == null) return;
-        mc.player.setPosition(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ);
+//        mc.player.setPosition(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ);
         mc.player.noClip = false;
-        PlayerUtil.removeFakePlayer(fakePlayer);
+        mc.world.removeEntity(fakePlayer);
         fakePlayer = null;
     }
 

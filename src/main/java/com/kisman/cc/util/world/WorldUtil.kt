@@ -1,13 +1,18 @@
 package com.kisman.cc.util.world
 
 import com.kisman.cc.util.Globals.mc
-import com.kisman.cc.util.getBlockStateSafe
+import com.kisman.cc.util.block
+import com.kisman.cc.util.math.atan2
+import com.kisman.cc.util.math.sqrt
+import com.kisman.cc.util.math.toDegrees
+import com.kisman.cc.util.render.objects.world.Box
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
+import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketEntityAction
@@ -15,6 +20,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
 import kotlin.math.max
@@ -100,7 +106,7 @@ fun placeable(
 
 fun placeable(
     pos : BlockPos
-) : Boolean = placeable(getBlockStateSafe(pos).block) && pos.y >= 0 && pos.y <= 255
+) : Boolean = placeable(block(pos)) && pos.y >= 0 && pos.y <= 255
 
 fun raytrace(
     pos : BlockPos,
@@ -143,5 +149,106 @@ fun damageByAnchor(
 ) : Float = damageByAnchor(mc.player, terrain, anchor, interpolation)
 
 fun sphere(
-    radius : Float
-) : List<BlockPos> = CrystalUtils.getSphere(radius, true, false)
+    radius : Int
+) : List<BlockPos> = sphere(mc.player, radius)
+
+fun sphere(
+    entity : Entity,
+    radius : Int
+) : List<BlockPos> = sphere(BlockPos(entity.posX, entity.posY, entity.posZ), radius)
+
+fun sphere(
+    pos : BlockPos,
+    radius : Int
+) : List<BlockPos> {
+    val blocks = mutableListOf<BlockPos>()
+
+    var x = pos.x - radius
+
+    while(x < pos.x + radius) {
+        var y = pos.y - radius
+
+        while(y < pos.y + radius) {
+            var z = pos.z - radius
+
+            while(z < pos.z + radius) {
+                blocks.add(BlockPos(x, y, z))
+
+                z++
+            }
+
+            y++
+        }
+
+        x++
+    }
+
+    return blocks
+}
+
+fun rotation(
+    pos : BlockPos
+) : FloatArray = rotation(mc.player.getPositionEyes(1f), Vec3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5))
+
+fun rotation(
+    entity : Entity
+) : FloatArray = rotation(mc.player.getPositionEyes(1f), Box.byAABB(entity.entityBoundingBox).center())
+
+fun rotation(
+    to : Vec3d
+) : FloatArray = rotation(mc.player.getPositionEyes(1f), to)
+
+fun rotation(
+    from : Vec3d,
+    to : Vec3d
+) : FloatArray {
+    val deltaX = to.x - from.x
+    val deltaY = (to.y - from.y) * -1
+    val deltaZ = to.z - from.z
+    val distance = sqrt((deltaX * deltaX + deltaZ * deltaZ).toFloat())
+
+    return floatArrayOf(
+        MathHelper.wrapDegrees(toDegrees(atan2(deltaZ.toFloat(), deltaX.toFloat()) - 90)),
+        MathHelper.wrapDegrees(toDegrees(atan2(deltaY.toFloat(), distance)))
+    )
+}
+
+fun rotate(
+    angles : FloatArray
+) {
+    mc.player.rotationYaw = angles[0]
+    mc.player.rotationPitch = angles[1]
+}
+
+fun canPlaceCrystal(
+    pos : BlockPos,
+    check : Boolean,
+    entity : Boolean,
+    multi : Boolean,
+    fire : Boolean,
+    newVersion : Boolean,
+    newVersionEntities : Boolean
+) : Boolean {
+    return if(block(pos) == Blocks.BEDROCK || block(pos) == Blocks.OBSIDIAN) {
+        if((block(pos.up()) != Blocks.AIR && !(fire && block(pos.up()) == Blocks.FIRE)) || (!newVersion && block(pos.up(2)) != Blocks.AIR)) {
+            false
+        }
+
+        val upped = pos.up()
+
+        !entity || mc.world.getEntitiesWithinAABB(Entity::class.java, AxisAlignedBB(upped.x.toDouble(), upped.y.toDouble(), upped.z.toDouble(), upped.x + 1.0, upped.y + (if(newVersionEntities) 0.0 else (if(check) 2.0 else 1.0)), upped.z + 1.0), { it !is EntityEnderCrystal || multi }).size == 0
+    } else {
+        false
+    }
+}
+
+/*
+* private boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace, boolean newVerPlace, boolean newVerEntities) {
+        if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
+            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR) && !(firePlace && mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.FIRE))) return false;
+            if (!newVerPlace && !mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) return false;
+            BlockPos boost = pos.add(0, 1, 0);
+            return !entity || mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (newVerEntities ? 0 : (check ? 2 : 1)), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
+        }
+        return false;
+    }*/

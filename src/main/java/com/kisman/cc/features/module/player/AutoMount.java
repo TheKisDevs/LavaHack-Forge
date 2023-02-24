@@ -2,14 +2,13 @@ package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.AngleUtil;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.passive.*;
-import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 
@@ -32,7 +31,7 @@ public class AutoMount extends Module {
         super("AutoMount", Category.PLAYER);
     }
 
-    private final TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = timer();
 
     @Override
     public void onEnable() {
@@ -69,14 +68,9 @@ public class AutoMount extends Module {
 
         Vec3d entityVec = new Vec3d(entity.posX, entity.posY + ((entity.getEntityBoundingBox().maxY - entity.getEntityBoundingBox().minY) / 2.0), entity.posZ);
 
-        float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
-        if(rotate.getValBoolean()){
-            float[] rots = AngleUtil.calculateAngle(BlockUtil.getEyesPos(), entityVec);
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
-        }
+        if(rotate.getValBoolean()) RotationSystem.handleRotate(WorldUtilKt.rotation(entityVec));
+
         mc.playerController.interactWithEntity(mc.player, entity, EnumHand.MAIN_HAND);
-        if(rotate.getValBoolean())
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(oldRots[0], oldRots[1], mc.player.onGround));
     }
 
     private boolean isValidEntity(Entity entity){

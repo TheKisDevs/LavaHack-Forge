@@ -7,6 +7,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -105,7 +106,6 @@ public class SurroundRewrite extends Module {
     private final Setting cbRange = register(crystalBreaker.add(new Setting("CBRange", this, 3.0, 1.0, 6.0, false).setVisible(() -> cbMode.getValString().equals("Area")).setTitle("Range")));
     private final Setting cbDelay = register(crystalBreaker.add(new Setting("CBDelay", this, 60, 0, 500, true).setTitle("Delay")));
     private final Setting cbRotate = register(crystalBreaker.add(new Setting("CBRotate", this, false).setTitle("Rotate")));
-    private final Setting cbRotateMode = register(crystalBreaker.add(new Setting("CBRotateMode", this, CBRotateMode.Packet)).setVisible(cbRotate).setTitle("Rotate Mode"));
     private final Setting cbPacket = register(crystalBreaker.add(new Setting("CBPacket", this, false).setTitle("Packet")));
     private final Setting clientSide = register(crystalBreaker.add(new Setting("ClientSide", this, false).setTitle("Client Side")));
     private final Setting cbNoSuicide = register(crystalBreaker.add(new Setting("CbNoSuicide", this, true).setTitle("No Suicide")));
@@ -251,7 +251,6 @@ public class SurroundRewrite extends Module {
     private void breakCrystals(List<BlockPos> blocks){
         if(!timer.passedMillis(cbDelay.getValInt()))
             return;
-        float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
         Set<EntityEnderCrystal> alreadyHit = new HashSet<>(64);
         if(cbMode.getValString().equals("Area")) {
             double range = cbRange.getValDouble();
@@ -264,14 +263,14 @@ public class SurroundRewrite extends Module {
             AxisAlignedBB aabb = new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb)){
                 if(!validCrystal(crystal)) return;
-                breakCrystal(crystal, oldRots);
+                breakCrystal(crystal);
             }
             return;
         }
         for(BlockPos pos : blocks){
             for(EntityEnderCrystal crystal : mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, new AxisAlignedBB(pos))){
                 if(alreadyHit.contains(crystal) || !validCrystal(crystal)) continue;
-                breakCrystal(crystal, oldRots);
+                breakCrystal(crystal);
                 alreadyHit.add(crystal);
             }
         }
@@ -293,11 +292,9 @@ public class SurroundRewrite extends Module {
         return damage < mc.player.getHealth() + mc.player.getAbsorptionAmount();
     }
 
-    private void breakCrystal(EntityEnderCrystal crystal, float[] oldRots){
-        if(cbRotate.getValBoolean()){
-            float[] rots = RotationUtils.getRotation(crystal);
-            cbRotate(rots);
-        }
+    private void breakCrystal(EntityEnderCrystal crystal){
+        if(cbRotate.getValBoolean()) RotationSystem.handleRotate(crystal);
+
         if(cbPacket.getValBoolean())
             mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         else
@@ -305,18 +302,6 @@ public class SurroundRewrite extends Module {
         mc.player.swingArm(EnumHand.MAIN_HAND);
         if(clientSide.getValBoolean())
             mc.world.removeEntityFromWorld(crystal.entityId);
-        if(cbRotate.getValBoolean()){
-            cbRotate(oldRots);
-        }
-    }
-
-    private void cbRotate(float[] rots){
-        if(cbRotateMode.getValEnum() == CBRotateMode.Packet || cbRotateMode.getValEnum() == CBRotateMode.Both)
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
-        if(cbRotateMode.getValEnum() == CBRotateMode.Client || cbRotateMode.getValEnum() == CBRotateMode.Both) {
-            mc.player.rotationYaw = rots[0];
-            mc.player.rotationPitch = rots[1];
-        }
     }
 
     private BlockPos findClosestSolid(BlockPos pos){

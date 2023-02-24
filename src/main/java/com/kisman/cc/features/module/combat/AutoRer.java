@@ -712,7 +712,7 @@ public class AutoRer extends ShaderableModule {
         double maxDamage = 0.5;
         double selfDamage_ = 0;
         BlockPos placePos = null;
-        List<BlockPos> sphere = WorldUtilKt.sphere(placeRange.getValFloat());
+        List<BlockPos> sphere = WorldUtilKt.sphere(placeRange.getValInt());
 
         if(calcDistSort.getValBoolean()) {
             Collections.sort(sphere);

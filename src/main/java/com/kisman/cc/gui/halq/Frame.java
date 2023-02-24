@@ -180,7 +180,7 @@ public class Frame {
 
             comp.setOff(offsetY);
             comp.setCount(count1);
-            offsetY += HalqGui.height;
+            offsetY += comp.getRawHeight();
             count1++;
             if(comp instanceof Openable) {
                 Openable button = (Openable) comp;

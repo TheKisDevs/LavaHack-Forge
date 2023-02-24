@@ -8,7 +8,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.gui.ScaledResolution;
@@ -54,8 +53,8 @@ public class BreakAlert extends Module {
             for(int i = 0; i < blocksBeginBroken.size(); i++) {
                if(messageType.getValString().equalsIgnoreCase(MessageType.Display.name())) {
                     ScaledResolution sr = new ScaledResolution(mc);
-                    CustomFontUtil.comfortaab72.drawCenteredStringWithShadow(TextFormatting.DARK_PURPLE + "Break Alert!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 - CustomFontUtil.getFontHeight(), -1);
-                    CustomFontUtil.comfortaab55.drawCenteredStringWithShadow(TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 5, -1);
+//                    CustomFontUtil.comfortaab72.drawCenteredStringWithShadow(TextFormatting.DARK_PURPLE + "Break Alert!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 - CustomFontUtil.getFontHeight(), -1);
+//                    CustomFontUtil.comfortaab55.drawCenteredStringWithShadow(TextFormatting.LIGHT_PURPLE + "Your surround blocks is mining!", sr.getScaledWidth() / 2, sr.getScaledHeight() / 2 + 5, -1);
                 }
             }
         } else renderTimer.reset();

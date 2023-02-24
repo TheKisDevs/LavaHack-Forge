@@ -7,7 +7,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.client.interfaces.IBlockImplementation;
 import com.kisman.cc.util.enums.XRayBlocks;
-import com.kisman.cc.util.world.CrystalUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -49,7 +49,7 @@ public class XRay extends ShaderableModule {
         threads.update(() -> {
             ArrayList<BlockPos> list = new ArrayList<>();
 
-            for(BlockPos pos : CrystalUtils.getSphere(mc.player, range.getValFloat(), true, false)) for(IBlockImplementation impl : implementations) if(impl.valid(pos)) list.add(pos);
+            for(BlockPos pos : WorldUtilKt.sphere(range.getValInt())) for(IBlockImplementation impl : implementations) if(impl.valid(pos)) list.add(pos);
 
             mc.addScheduledTask(() -> blocks = list);
         });

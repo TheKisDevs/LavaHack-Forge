@@ -21,53 +21,19 @@ class SettingEnum<T : Enum<*>>(
     module,
     t
 ) {
-    override fun getValEnum() : T {
-        /*return try {
-            if(t::class.java.getDeclaredField(valString).isAnnotationPresent(Exclude::class.java)) {
-                t
-            } else {
-                (t::class.java as AccessorClass<T>).enumConstantDirectory()[valString]!!
-            }
-        } catch (_ : Exception) {
-            t
-        }*/
-        return super.getValEnum() as T
-    }
+    override fun getValEnum() : T = super.getValEnum() as T
 
-    override fun setTitle(title : String) : SettingEnum<T> {
-        return super.setTitle(title) as SettingEnum<T>
-    }
+    override fun setTitle(title : String) : SettingEnum<T> = super.setTitle(title) as SettingEnum<T>
 
-    override fun setVisible(visible : Supplier<Boolean>) : SettingEnum<T> {
-        return super.setVisible(visible) as SettingEnum<T>
-    }
+    override fun setVisible(visible : Supplier<Boolean>) : SettingEnum<T> = super.setVisible(visible) as SettingEnum<T>
 
-    fun getSupplierEnum0() : Supplier<T> {
-        return Supplier { valEnum }
-    }
+    fun getSupplierEnum0() : Supplier<T> = Supplier { valEnum }
 
-    fun register() : SettingEnum<T> {
-        return super.parent.register(this) as SettingEnum<T>
-    }
+    fun register() : SettingEnum<T> = super.parent.register(this) as SettingEnum<T>
 
-    fun group(group : SettingGroup) : SettingEnum<T> {
-        return group.add(this)
-    }
+    fun group(group : SettingGroup) : SettingEnum<T> = group.add(this)
 
     fun onChange(
         onChange0 : (SettingEnum<T>) -> Any
     ) : SettingEnum<T> = super.onChange { onChange0(this) } as SettingEnum<T>
-
-
-    /*override fun getStringValues() : Array<String> {
-        val rawValues = ArrayList<T>()
-
-        for(enum in valEnum::class.java.enumConstants) {
-            if(!valEnum::class.java.getDeclaredField(enum.name).isAnnotationPresent(Exclude::class.java)) {
-                rawValues += enum
-            }
-        }
-
-        return rawValues.map{ it.name }.toTypedArray()
-    }*/
 }

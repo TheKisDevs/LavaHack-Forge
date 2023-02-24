@@ -4,15 +4,16 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.entity.TargetFinder;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
@@ -45,6 +46,7 @@ import java.util.stream.Stream;
  */
 @PingBypassModule
 @Targetable
+@TargetsNearest
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
@@ -84,7 +86,6 @@ public class FlattenRewrite extends Module {
     private final SlideRenderingRewritePattern renderer_ = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final MultiThreaddableModulePattern threads = threads();
-    private final TargetFinder targets = new TargetFinder(enemyRange::getValDouble, threads.getDelay()::getValLong, threads.getMultiThread()::getValBoolean);
 
     private final SlideRendererPattern renderer = new SlideRendererPattern();
 
@@ -109,6 +110,7 @@ public class FlattenRewrite extends Module {
 
     public FlattenRewrite() {
         super("FlattenRewrite", Category.COMBAT);
+        super.setDisplayInfo(() -> "[" + (enemy == null ? "no target no fun" : enemy.getName()) + "]");
         super.displayName = "Flatten";
         placeThread = new Thread(() -> {
             TimerUtils timer = new TimerUtils();
@@ -150,7 +152,7 @@ public class FlattenRewrite extends Module {
         boolean alreadyCheckedDown = false;
 
         if(enemy == null || swapEnemy.getValBoolean()){
-            enemy = targets.getTarget(enemyRange.getValFloat());
+            enemy = EnemyManagerKt.nearest();
 
             if(enemy == null) return;
 
@@ -223,7 +225,6 @@ public class FlattenRewrite extends Module {
         placeInfo = null;
         enemy = null;
         enemyY = 0.0;
-        targets.reset();
         threads.reset();
         renderer.reset();
     }

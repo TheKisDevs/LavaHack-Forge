@@ -14,7 +14,6 @@
  import com.kisman.cc.event.events.MouseEvent;
  import com.kisman.cc.features.module.player.AntiDesync;
  import com.kisman.cc.features.module.player.Interaction;
- import com.kisman.cc.features.viaforge.ViaForge;
  import com.kisman.cc.mixin.accessors.IMinecraft;
  import com.kisman.cc.pingbypass.server.PingBypassServer;
  import com.kisman.cc.pingbypass.server.input.Keyboard;
@@ -22,7 +21,6 @@
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.entity.EntityPlayerSP;
  import net.minecraft.client.gui.GuiScreen;
- import net.minecraft.client.main.GameConfiguration;
  import net.minecraft.client.multiplayer.PlayerControllerMP;
  import net.minecraft.client.multiplayer.WorldClient;
  import net.minecraft.client.settings.GameSettings;
@@ -56,7 +54,7 @@
   ) private void initHook(CallbackInfo ci) {
    try {
     Kisman.instance.init();
-   } catch (Exception e) {
+   } catch (Throwable e) {
     throw new RuntimeException(e);
    }
   }

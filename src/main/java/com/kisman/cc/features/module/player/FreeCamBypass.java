@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@WorkInProgress
 public class FreeCamBypass extends Module {
     private final Setting speed = new Setting("Speed", this, 1, 0, 10, false);
     private final Setting cancelPackets = new Setting("Cancel Packets", this, true);

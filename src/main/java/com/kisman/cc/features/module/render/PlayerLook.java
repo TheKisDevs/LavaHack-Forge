@@ -3,9 +3,9 @@ package com.kisman.cc.features.module.render;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.math.Trigonometric;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.entity.Entity;
@@ -42,7 +42,7 @@ public class PlayerLook extends Module {
         List<Entity> entities;
 
         if(single.getValBoolean()){
-            Entity target = EntityUtil.getTarget((float) range);
+            Entity target = EnemyManagerKt.nearest();
             if(target == null)
                 return;
             entities = Collections.singletonList(target);

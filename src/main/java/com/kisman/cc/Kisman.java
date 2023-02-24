@@ -13,11 +13,10 @@ import com.kisman.cc.features.command.commands.ClientNameCommand;
 import com.kisman.cc.features.command.commands.ClientVersionCommand;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.hud.HudModuleManager;
-import com.kisman.cc.util.enums.BindType;
-import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.features.module.client.CustomFontModule;
 import com.kisman.cc.features.nocom.NoComModuleManager;
 import com.kisman.cc.features.nocom.gui.NoComGui;
 import com.kisman.cc.features.plugins.PluginHandler;
@@ -46,13 +45,17 @@ import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.AccountDataCheckerKt;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.client.interfaces.IBindable;
+import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.manager.ServerManager;
 import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.vectors.VectorUtils;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.thread.kisman.ThreadManager;
+import com.kisman.cc.util.thread.kisman.ThreadsKt;
 import com.kisman.cc.websockets.WebSocketsManagerKt;
 import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.Minecraft;
@@ -81,7 +84,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+@SuppressWarnings("BusyWait")
 public class Kisman {
     public static final String HASH = RandomStringUtils.random(10, true, true);
 
@@ -111,7 +116,6 @@ public class Kisman {
     public static final boolean ASSUME_REMAPPED = false;
 
     public static boolean remapped = !runningFromIntelliJ() || checkRemapped();
-    public static boolean canUseImprAstolfo = false;
     public static boolean canInitializateCatLua = false;
 
     public static String currentConfig = null;
@@ -157,7 +161,7 @@ public class Kisman {
     //Config
     public ConfigManager configManager;
 
-    //Phobos Plugins
+    //Plugins
     public final PluginHandler pluginHandler = new PluginHandler();
 
     public ProgressBarController progressBar;
@@ -174,6 +178,20 @@ public class Kisman {
         if(init) return;
 
         LOGGER.info("Initializing LavaHack " + VERSION);
+
+        AtomicBoolean initializedFonts = new AtomicBoolean(false);
+
+        ThreadsKt.getExecutor().submit(() -> {
+            long timeStamp = System.currentTimeMillis();
+
+            LOGGER.info("Initializing fonts: Part 1");
+
+            CustomFontUtil.initFonts();
+
+            initializedFonts.set(true);
+
+            LOGGER.info("Initialized fonts! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
+        });
 
         long timeStamp = System.currentTimeMillis();
 
@@ -226,8 +244,6 @@ public class Kisman {
         vectorUtils = new VectorUtils();
         pluginManager = new PluginManager();
 
-        clickGuiNew = new ClickGuiNew();
-        consoleGui = new ConsoleGui();
         commandManager = new CommandManager();
         discord = new RPC();
         serverManager = new ServerManager();
@@ -242,13 +258,13 @@ public class Kisman {
         luaRotation = new LuaRotation();
         scriptManager = new ScriptManager();
 
+        LOGGER.info("Initializing guis: Part 1");
+
         //gui's
-        clickGuiNew = new ClickGuiNew();
-        halqGui = new HalqGui();
+        consoleGui = new ConsoleGui();
         halqHudGui = new HalqHudGui();
         pingBypassGui = new PingBypassGui();
 //        noComGui = new NoComGui();
-        viaForgeGui = new ViaForgeGui();
 
         mainMenuController = new MainMenuController();
         mainMenuController.init();
@@ -256,22 +272,47 @@ public class Kisman {
         selectionBar = new SelectionBar(SelectionBar.Guis.ClickGui);
         guiGradient = new MainGui.GuiGradient();
 
-        halqGui.init();
-
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);
         musicGui = new MusicGui();
 
+        LOGGER.info("Initializing default config manager!");
+
         configManager = new ConfigManager("config");
         configManager.getLoader().init();
+
+        LOGGER.info("Initializing subsystem manager!");
 
         subSystemManager = new SubSystemManager();
         subSystemManager.init();
 
-        try {ViaForge.getInstance().start();}
-        catch (Exception e) {LOGGER.error("[ViaForge] ViaForge did not loaded! If you need it, restart the client");}
+        LOGGER.info("Initializing ViaForge implementation!");
+
+        ViaForge.getInstance().start();
+
+        LOGGER.info("Initializing Schematica implementation!");
 
         Schematica.instance.init();
+
+        while (!initializedFonts.get()) {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        LOGGER.info("Initializing fonts: Part 2");
+
+        CustomFontUtil.setupTextures();
+        CustomFontModule.instance.registerSettings();
+
+        LOGGER.info("Initializing guis: Part 2");
+
+        clickGuiNew = new ClickGuiNew();
+        halqGui = new HalqGui();
+        halqGui.init();
+        viaForgeGui = new ViaForgeGui();
 
         LOGGER.info("Initialized LavaHack " + VERSION + "! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
 

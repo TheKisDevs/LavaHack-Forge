@@ -17,6 +17,7 @@ import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.thread.ThreadUtils;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.CrystalUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import com.mojang.authlib.GameProfile;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -557,7 +558,7 @@ public class AutoCrystalRewrite extends Module {
 
         PositionInfo positionInfo = new PositionInfo(BlockPos.ORIGIN, -1, -1);
 
-        for(BlockPos pos : CrystalUtils.getSphere(placeRange.getValFloat(), true, false)){
+        for(BlockPos pos : WorldUtilKt.sphere(placeRange.getValInt())){
 
             if(
                     !isPosInRange(pos, placeRange.getValDouble(), placeWallRange.getValDouble())
@@ -706,7 +707,7 @@ public class AutoCrystalRewrite extends Module {
 
     private float getDamageForPlayer(EntityPlayer player){
         float maxDamage = 0.5f;
-        for(BlockPos pos : CrystalUtils.getSphere(placeRange.getValFloat(), true, false)){
+        for(BlockPos pos : WorldUtilKt.sphere(placeRange.getValInt())){
             if(
                     isPosInRange(pos, placeRange.getValDouble(), placeWallRange.getValDouble())
                     && CrystalUtils.canPlaceCrystal(

@@ -2,9 +2,12 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
@@ -12,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -25,11 +29,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Targetable
+@TargetsNearest
 public class DamageIncreaser extends Module {
 
     private final SettingEnum<EventMode> eventMode = new SettingEnum<>("EventMode", this, EventMode.Tick).register();
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 1, 6, false));
-    private final Setting targetRange = register(new Setting("TargetRange", this, 8, 1, 15, false));
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent);
     private final Setting cancel = register(new Setting("Cancel", this, true));
     private final Setting predictFacing = register(new Setting("PredictFacing", this, false));
@@ -38,10 +43,11 @@ public class DamageIncreaser extends Module {
 
     public DamageIncreaser(){
         super("DamageIncreaser", Category.COMBAT);
-        setDisplayInfo(() -> target == null ? "No Target" : target.getName());
+        super.setDisplayInfo(() -> target == null ? "no target no fun" : target.getName());
     }
 
-    private Entity target = null;
+    @Target
+    public EntityPlayer target = null;
 
     @Override
     public void onDisable() {
@@ -67,7 +73,7 @@ public class DamageIncreaser extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        target = EntityUtil.getTarget(targetRange.getValFloat());
+        target = EnemyManagerKt.nearest();
 
         if(target == null)
             return;

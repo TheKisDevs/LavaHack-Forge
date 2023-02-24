@@ -4,14 +4,16 @@ import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
-import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.CrystalUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -30,6 +32,7 @@ import java.util.Comparator;
 
 @Beta
 @Targetable
+@TargetsNearest
 public class CrystalFiller extends Module {
     private final Setting range = register(new Setting("Range", this, 4.8, 1, 6, false));
     private final Setting rayTrace = register(new Setting("Ray Trace", this, true));
@@ -75,7 +78,7 @@ public class CrystalFiller extends Module {
     public void update() {
         if(mc.player == null || mc.world == null) return;
 
-        target = EntityUtil.getTarget(range.getValFloat());
+        target = EnemyManagerKt.nearest();
 
         if(target == null) return;
 
@@ -89,7 +92,7 @@ public class CrystalFiller extends Module {
     }
 
     private void doCrystalFiller() {
-        if (target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) target = EntityUtil.getTarget(range.getValFloat());
+        if (target == null && placeMode.getValString().equals(PlaceMode.Smart.name())) target = EnemyManagerKt.nearest();
         else if(delayTicks++ > delay.getValInt()){
             findHoles(mc.player, (float) range.getValDouble());
             findTargetHole();
@@ -146,7 +149,7 @@ public class CrystalFiller extends Module {
 
     private void findHoles(EntityPlayer player, float range) {
         holes.clear();
-        for(BlockPos pos : CrystalUtils.getSphere(player, range, true, false)) if(mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) if(isBlockHole(pos)) holes.add(new Hole(pos, (float) mc.player.getDistanceSq(pos), (float) player.getDistanceSq(pos)));
+        for(BlockPos pos : WorldUtilKt.sphere(player, (int) range)) if(mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR)) if(isBlockHole(pos)) holes.add(new Hole(pos, (float) mc.player.getDistanceSq(pos), (float) player.getDistanceSq(pos)));
     }
 
     private boolean isValidHole(Hole hole) {

@@ -65,4 +65,6 @@ abstract class AbstractFontRenderer {
         y : Float,
         color : Int
     )
+
+    abstract fun setupTexture()
 }

@@ -63,7 +63,7 @@ public class CityESP extends Module {
         List<EntityPlayer> players = mc.world.playerEntities.stream()
                 .filter(entityPlayer -> entityPlayer != mc.player)
                 .filter(entityPlayer -> entityPlayer.getDistanceSq(mc.player) <= range.getValDouble() * range.getValDouble())
-                .filter(entityPlayer -> !EntityUtil.basicChecksEntity(entityPlayer)).collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         for(EntityPlayer player : players) {
             List<BlockPos> blocks = EntityUtil.getBlocksIn(player);
@@ -142,7 +142,7 @@ public class CityESP extends Module {
                 if (blockOffset == HoleUtil.BlockOffset.DOWN) return;
                 BlockPos pos1 = blockOffset.left(blockPos.down(down.getValInt()), sides.getValInt());
                 BlockPos pos2 = blockOffset.forward(blockOffset.right(blockPos, sides.getValInt()), depth.getValInt());
-                List<BlockPos> square = EntityUtil.getSquare(pos1, pos2);
+                List<BlockPos> square = getSquare(pos1, pos2);
                 IBlockState holder = mc.world.getBlockState(blockPos);
                 mc.world.setBlockToAir(blockPos);
 
@@ -174,6 +174,24 @@ public class CityESP extends Module {
                 break;
             }
         }
+    }
+
+    public List<BlockPos> getSquare(BlockPos pos1, BlockPos pos2) {
+        List<BlockPos> squareBlocks = new ArrayList<>();
+        int x1 = pos1.getX();
+        int y1 = pos1.getY();
+        int z1 = pos1.getZ();
+        int x2 = pos2.getX();
+        int y2 = pos2.getY();
+        int z2 = pos2.getZ();
+        for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x += 1) {
+            for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z += 1) {
+                for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y += 1) {
+                    squareBlocks.add(new BlockPos(x, y, z));
+                }
+            }
+        }
+        return squareBlocks;
     }
 
     public enum MineMode {Packet, Vanilla}

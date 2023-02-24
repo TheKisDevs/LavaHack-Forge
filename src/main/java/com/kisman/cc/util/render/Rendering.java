@@ -999,7 +999,11 @@ public class Rendering {
 
         public static void glBillboard(float x, float y, float z) {
             float scale = 0.02666667f;
-            GlStateManager.translate(x - mc.getRenderManager().renderViewEntity.posX, y - mc.getRenderManager().renderViewEntity.posY, z - mc.getRenderManager().renderViewEntity.posZ);
+            GlStateManager.translate(x - mc.
+                    renderManager.
+                    renderViewEntity.
+                    posX,
+                    y - mc.renderManager.renderViewEntity.posY, z - mc.renderManager.renderViewEntity.posZ);
             GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f);
             GlStateManager.rotate(-mc.player.rotationYaw, 0.0f, 1.0f, 0.0f);
             GlStateManager.rotate(mc.player.rotationPitch, (mc.gameSettings.thirdPersonView == 2) ? -1.0f : 1.0f, 0.0f, 0.0f);

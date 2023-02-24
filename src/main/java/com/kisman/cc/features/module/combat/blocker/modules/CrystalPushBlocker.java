@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.combat.blocker.modules;
 import com.kisman.cc.features.module.combat.blocker.BlockerModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.world.RotationUtils;
+import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -50,7 +50,8 @@ public class CrystalPushBlocker extends BlockerModule {
 
     private void attack(EntityEnderCrystal crystal){
         float[] oldRots = new float[] {mc.player.rotationYaw, mc.player.rotationPitch};
-        float[] rots = RotationUtils.getRotation(crystal);
+        //TODO: cubic you need to use rotation handler
+        float[] rots = WorldUtilKt.rotation(crystal);
         if(rotate.getValBoolean())
             mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
         if(packet.getValBoolean())

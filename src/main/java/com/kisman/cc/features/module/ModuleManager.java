@@ -131,11 +131,11 @@ public class ModuleManager {
 		add(new ClientFixer());
 		add(new Config());
 		add(CustomFontModule.instance);
-		add(new CustomMainMenuModule());
 		add(new DevelopmentHelper());
 		add(new DiscordRPCModule());
 		add(FriendHighlight.INSTANCE);
 		add(new GuiModule());
+		add(new MainMenuModule());
 		add(NoSpoof.INSTANCE);
 		add(new PauseBaritone());
 		add(PingBypass.INSTANCE);
@@ -223,6 +223,7 @@ public class ModuleManager {
 		add(new AutoRespawn());
 		add(new CameraClip());
 		add(new ChorusDelay());
+		add(new ChorusPredict());
 		add(new ForgeBypass());
 		add(new FreeCamBypass());
 		add(new FreeCamRewrite());

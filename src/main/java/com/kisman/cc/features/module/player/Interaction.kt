@@ -41,7 +41,7 @@ object Interaction : Module(
 
     private val blocks = register(SettingGroup(Setting("Blocks", this))) as SettingGroup
 
-    private val noMiningTrace : Setting = register(blocks.add(Setting("No Mining Trace", this, false)))
+    private val noMiningTrace : Setting = register(blocks.add(Setting("No Mining Trace", this, false).setDisplayName("NoMiningTrace")))
     private val nmtPickaxeOnly : Setting = register(blocks.add(Setting("NMT Pickaxe Only", this, false).setVisible { noMiningTrace.valBoolean }.setTitle("Pickaxe Only")))
     @JvmField val multiTask : Setting = register(blocks.add(Setting("Multi Task", this, false)))
     private val roofInteract = register(blocks.add(Setting("Roof Interact", this, false)))

@@ -10,6 +10,7 @@ import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.WorldUtilKt;
+import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -95,12 +96,12 @@ public class Anchor extends Module {
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
                     if (!mc.player.onGround) this.jumped = mc.gameSettings.keyBindJump.isKeyDown();
         
-                    if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 1.125 && mc.player.posY - BlockUtil.getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid(false)) {
+                    if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - getNearestBlockBelow() <= 1.125 && mc.player.posY - getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid(false)) {
                         if (!mc.player.onGround) ++this.packets;
                         if (!mc.player.onGround && !mc.player.isInsideOfMaterial(Material.WATER) && !mc.player.isInsideOfMaterial(Material.LAVA) && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.player.isOnLadder() && this.packets > 0) {
                             final BlockPos blockPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
                             for (double position : oneblockPositions) mc.player.connection.sendPacket(new CPacketPlayer.Position((blockPos.getX() + 0.5f), mc.player.posY - position, (blockPos.getZ() + 0.5f), true));
-                            mc.player.setPosition((blockPos.getX() + 0.5f), BlockUtil.getNearestBlockBelow() + 0.1, (blockPos.getZ() + 0.5f));
+                            mc.player.setPosition((blockPos.getX() + 0.5f), getNearestBlockBelow() + 0.1, (blockPos.getZ() + 0.5f));
                             this.packets = 0;
                         }
                     }
@@ -155,6 +156,11 @@ public class Anchor extends Module {
 
     private boolean lagTimeCheck() {
         return useLagTime.getValBoolean() && Managers.instance.passed(lagTime.getValInt());
+    }
+
+    public double getNearestBlockBelow() {
+        for (double y = mc.player.posY; y > 0.0; y -= 0.001) if (!(mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock() instanceof BlockSlab) && mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock().getDefaultState().getCollisionBoundingBox(mc.world, new BlockPos(0, 0, 0)) != null) return y;
+        return -1.0;
     }
 
     public enum Mode {MovementStop, Motion, Teleport}
