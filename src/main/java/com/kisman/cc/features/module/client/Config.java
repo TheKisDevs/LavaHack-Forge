@@ -29,6 +29,7 @@ public class Config extends Module {
     public Setting horizontalScroll = register(main.add(new Setting("Horizontal Scroll", this, true)));
     public Setting keyForHorizontalScroll = register(main.add(new Setting("Key for Horizontal Scroll", this, Keyboard.KEY_LSHIFT).setVisible(() -> horizontalScroll.getValBoolean())));
     public Setting notification = register(main.add(new Setting("Notification", this, true)));
+    public Setting notificationMode = register(main.add(new Setting("Notification Mode", this, NotificationMode.MultiLine)));
     public Setting guiGlow = register(gui.add(new Setting("Gui Glow", this, false).setTitle("Glow")));
     public Setting glowRadius = register(glow.add(new Setting("Glow Radius", this, 15, 0, 20, true).setTitle("Radius")));
     public Setting glowBoxSize = register(glow.add(new Setting("Glow Box Size", this, 0, 0, 20, true).setTitle("Size")));
@@ -97,4 +98,5 @@ public class Config extends Module {
     public enum ParticlesGradientMode {None, TwoGradient, ThreeGradient, Syns}
     public enum AstolfoColorMode {Old, Impr}
     public enum GGBColorMode {Custom, SynsWithGui}
+    public enum NotificationMode {MultiLine, SingleLine};
 }
