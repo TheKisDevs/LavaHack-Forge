@@ -3,6 +3,7 @@ package com.kisman.cc.features.subsystem
 import com.kisman.cc.Kisman
 import me.zero.alpine.listener.Listenable
 import me.zero.alpine.listener.Listener
+import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -15,6 +16,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 abstract class SubSystem(
     val name : String
 ) : Listenable {
+    protected val mc = Minecraft.getMinecraft()!!
+
     private val listeners = mutableListOf<Listener<*>>()
 
     open fun init() {

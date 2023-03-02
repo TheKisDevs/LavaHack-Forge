@@ -1,15 +1,13 @@
 package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventIngameOverlay;
-import com.kisman.cc.event.events.EventRenderAttackIndicator;
-import com.kisman.cc.event.events.EventSetupFog;
-import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.event.events.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.potion.Potion;
@@ -64,6 +62,7 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.subscribe(overlay_);
         Kisman.EVENT_BUS.subscribe(send);
         Kisman.EVENT_BUS.subscribe(crosshair_);
+        Kisman.EVENT_BUS.subscribe(renderEntity);
     }
 
     public void onDisable() {
@@ -75,6 +74,7 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.unsubscribe(pumpkin);
         Kisman.EVENT_BUS.unsubscribe(bossBar_);
         Kisman.EVENT_BUS.unsubscribe(setupFog);
+        Kisman.EVENT_BUS.unsubscribe(renderEntity);
     }
 
     @EventHandler private final Listener<EventRenderAttackIndicator> crosshair_ = new Listener<>(event -> {
@@ -105,6 +105,10 @@ public class NoRender extends Module {
         if(swing.checkValString("Server") && event.getPacket() instanceof CPacketAnimation) event.cancel();
     });
 
+    @EventHandler private final Listener<RenderEntityEvent.Check> renderEntity = new Listener<>(event -> {
+        if(glow.getValBoolean() && event.getEntity().glowing) event.getEntity().glowing = false;
+    });
+
     public void update() {
         if(mc.player == null || mc.world == null) return;
 
@@ -123,12 +127,6 @@ public class NoRender extends Module {
             mc.player.swingProgressInt = 0;
             mc.player.swingProgress = 0;
             mc.player.prevSwingProgress = 0;
-        }
-
-        if(glow.getValBoolean()) {
-            for(Entity entity : mc.world.loadedEntityList) {
-                entity.glowing = false;
-            }
         }
     }
 

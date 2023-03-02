@@ -237,7 +237,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
 
     @Override
     public boolean visible() {
-        return HalqGui.visible(this) && HalqGui.visible(mod.getName());
+        return HalqGui.visible(this) || HalqGui.visible(mod.getName());
     }
 
     @NotNull

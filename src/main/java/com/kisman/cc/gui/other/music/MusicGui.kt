@@ -2,7 +2,6 @@ package com.kisman.cc.gui.other.music
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.gui.KismanGuiScreen
-import com.kisman.cc.gui.MainGui
 import com.kisman.cc.gui.selectionbar.SelectionBar
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import com.kisman.cc.util.net.music.Player
@@ -47,13 +46,13 @@ class MusicGui : KismanGuiScreen() {
 
     override fun drawScreen(mouseX : Int, mouseY : Int, ticks : Float) {
         if(Kisman.instance.selectionBar.selection != SelectionBar.Guis.Music) {
-            MainGui.openGui(Kisman.instance.selectionBar)
+            Kisman.instance.selectionBar.open()
             return
         }
 
         drawDefaultBackground()
-        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY)
-        super.drawScreen(mouseX, mouseY, ticks)
+        drawScreenPre()
+        drawScreen(mouseX, mouseY, ticks)
         field.drawTextBox()
         GL11.glPushMatrix()
         GL11.glScaled(2.0, 2.0, 2.0)

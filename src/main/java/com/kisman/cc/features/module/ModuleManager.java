@@ -135,6 +135,7 @@ public class ModuleManager {
 		add(new DiscordRPCModule());
 		add(FriendHighlight.INSTANCE);
 		add(new GuiModule());
+		add(new GuiShader());
 		add(new MainMenuModule());
 		add(NoSpoof.INSTANCE);
 		add(new PauseBaritone());
@@ -205,6 +206,7 @@ public class ModuleManager {
 		add(new Phase());
 		add(new SafeWalk());
 		add(new Scaffold());
+		add(new SkyBlockFarmer());
 		add(new SoftScaffold());
 		add(new Speed());
 //		add(SpeedRewrite.INSTANCE);
@@ -245,7 +247,6 @@ public class ModuleManager {
 		add(new BowExploit());
 		add(new ChorusBypass());
 		add(new CowDupe());
-		add(new DamageLeave());
 		add(new FakePearl());
 		add(new FastMove());
 		add(new Ghost());
@@ -268,8 +269,6 @@ public class ModuleManager {
 		add(new TickShift());
 		add(new TickShiftTeleport());
 		add(new TraceTeleport());
-		add(new WaterLeave());
-		add(new WebLeave());
 		//misc
 		add(new AntiRegear());
 		add(new AntiSpammer());

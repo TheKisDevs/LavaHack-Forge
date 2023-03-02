@@ -1,6 +1,5 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -24,7 +23,7 @@ public class MixinBlockRendererDispatcher {
             cancellable = true
     ) private void doRenderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> cir) {
         EventRenderBlock event = new EventRenderBlock(state, pos);
-        Kisman.EVENT_BUS.post(event);
+//        Kisman.EVENT_BUS.post(event);
         if(event.isCancelled()) {
             cir.setReturnValue(false);
             cir.cancel();

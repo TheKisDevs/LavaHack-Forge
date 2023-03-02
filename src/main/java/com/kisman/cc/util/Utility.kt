@@ -7,12 +7,14 @@ import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.EntityRenderer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -221,4 +223,24 @@ fun fromColorConfig(
     ignored : NumberFormatException
 ) {
     color
+}
+
+fun guiShaders() : List<GuiShaderEntry> {
+    val list = mutableListOf<GuiShaderEntry>()
+
+    for(location in EntityRenderer.SHADERS_TEXTURES) {
+        val split = location.resourcePath.split("/")
+        val name = split[split.size - 1].removeSuffix(".json")
+
+        list.add(GuiShaderEntry(name, location))
+    }
+
+    return list
+}
+
+class GuiShaderEntry(
+    private val name : String,
+    val location : ResourceLocation
+) {
+    override fun toString() : String = name
 }

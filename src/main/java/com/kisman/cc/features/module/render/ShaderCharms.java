@@ -22,6 +22,11 @@ import com.kisman.cc.util.render.shader.ShaderHelperKt;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.client.gui.GuiDownloadTerrain;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityEnderPearl;
@@ -31,8 +36,9 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.Display;
 
@@ -43,6 +49,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+//TODO: remove renderSky method, add head and return hooks to default renderSky to apply shader at sandbox
 public class ShaderCharms extends Module {
     public final SettingEnum<Shaders> mode = register(new SettingEnum<>("Mode", this, Shaders.AQUA));
 
@@ -58,6 +65,7 @@ public class ShaderCharms extends Module {
     private final Setting enderPearls = register(types.add(new Setting("Ender Pearls", this, false)));
     private final Setting itemsEntity = register(types.add(new Setting("Entity Items", this, false)));
     public final Setting items = register(types.add(new Setting("Items", this, false)));
+    private final Setting sky = /*register*/(/*types.add*/(new Setting("Sky", this, false)));
 
     private final SettingGroup config = register(new SettingGroup(new Setting("Config", this)));
 
@@ -277,7 +285,7 @@ public class ShaderCharms extends Module {
     });*/
 
     @SubscribeEvent
-    public void onRenderWorld(RenderWorldLastEvent event) {
+    public void onRenderWorld(RenderGameOverlayEvent.Text event) {
         if(!Display.isActive() || !Display.isVisible() || mc.currentScreen instanceof GuiDownloadTerrain) return;
 
         try {
@@ -305,8 +313,9 @@ public class ShaderCharms extends Module {
 
             boolean flag2 = !entities.isEmpty();
             boolean flag3 = items.getValBoolean() && mc.gameSettings.thirdPersonView == 0;
+            boolean flag6 = sky.getValBoolean();
 
-            if(flag || flag2 || flag3) {
+            if(flag || flag2 || flag3 || flag6) {
                 if(flag && flag5) for(Drawable module : modulesToRender.keySet()) if(modulesToRender.get(module)) module.draw();
 
                 Function0<Unit> uniforms = () -> {
@@ -403,6 +412,10 @@ public class ShaderCharms extends Module {
 
                 ShaderHelperKt.startShader(mode.getValEnum(), uniforms, event.getPartialTicks());
 
+                if(flag6) {
+                    renderSky();
+                }
+
                 if(flag2) {
                     for (Entity entity : entities) {
                         Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
@@ -434,5 +447,44 @@ public class ShaderCharms extends Module {
 
     public Color getColor() {
         return rainbow.getValBoolean() ? ColorUtils.rainbowRGB(delay.getValInt(), saturation.getValFloat(), brightness.getValFloat()) : new Color(red.getValFloat(), green.getValFloat(), blue.getValFloat());
+    }
+
+    private void renderSky() {
+        IRenderHandler renderer = mc.world.provider.getSkyRenderer();
+
+        if(renderer != null) {
+            renderer.render(mc.getRenderPartialTicks(), mc.world, mc);
+        }
+
+        GlStateManager.disableFog();
+        GlStateManager.disableAlpha();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.depthMask(false);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+
+        for (int k1 = 0; k1 < 6; ++k1) {
+            GlStateManager.pushMatrix();
+
+            if (k1 == 1) GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+            if (k1 == 2) GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+            if (k1 == 3) GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+            if (k1 == 4) GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+            if (k1 == 5) GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
+
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+            bufferbuilder.pos(-100.0D, -100.0D, -100.0D).tex(0.0D, 0.0D).color(40, 40, 40, 255).endVertex();
+            bufferbuilder.pos(-100.0D, -100.0D, 100.0D).tex(0.0D, 16.0D).color(40, 40, 40, 255).endVertex();
+            bufferbuilder.pos(100.0D, -100.0D, 100.0D).tex(16.0D, 16.0D).color(40, 40, 40, 255).endVertex();
+            bufferbuilder.pos(100.0D, -100.0D, -100.0D).tex(16.0D, 0.0D).color(40, 40, 40, 255).endVertex();
+            tessellator.draw();
+            GlStateManager.popMatrix();
+        }
+
+        GlStateManager.depthMask(true);
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
     }
 }

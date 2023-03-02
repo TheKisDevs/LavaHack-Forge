@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
@@ -42,7 +43,7 @@ public class Logo extends ShaderableHudModule {
 
             shaderRender = () -> drawStringWithShadow((bold.getValBoolean() ? TextFormatting.BOLD : "") + name + " " + TextFormatting.GRAY + version, 1, 1, color);
         } else if(mode.checkValString("CSGO")) {
-            String text = name + (csgoVersion.getValBoolean() ? TextFormatting.GRAY + " | " + TextFormatting.RESET + Kisman.getVersion() : "") + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
+            String text = name + (csgoVersion.getValBoolean() ? TextFormatting.GRAY + " | " + TextFormatting.RESET + Kisman.getVersion() : "") + TextFormatting.GRAY + " | " + TextFormatting.RESET + mc.player.getName() + TextFormatting.GRAY + " | " + TextFormatting.RESET + UtilityKt.getPing() + " ms" + TextFormatting.GRAY + " | " + TextFormatting.RESET + "FPS " + Minecraft.getDebugFPS();
             int color = astolfo.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
             int x = 3;
             int y = 8;

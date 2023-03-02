@@ -2,7 +2,6 @@ package com.kisman.cc.gui.console
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
-import com.kisman.cc.gui.MainGui
 import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.gui.KismanGuiScreen
 import com.kisman.cc.gui.api.Draggable
@@ -13,7 +12,6 @@ import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
@@ -48,13 +46,12 @@ class ConsoleGui : KismanGuiScreen(), Draggable {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if(Kisman.instance.selectionBar.selection != SelectionBar.Guis.Console) {
-            MainGui.openGui(Kisman.instance.selectionBar)
+            Kisman.instance.selectionBar.open()
             return
         }
 
-        super.drawDefaultBackground()
-
-        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY)
+        drawDefaultBackground()
+        drawScreenPre()
 
         if(drag) {
             x = mouseX - dragX

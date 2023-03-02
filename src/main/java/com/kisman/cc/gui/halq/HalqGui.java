@@ -5,7 +5,6 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.KismanGuiScreen;
-import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
@@ -155,7 +154,7 @@ public class HalqGui extends KismanGuiScreen {
         ticks = partialTicks;
 
         if(Kisman.instance.selectionBar.getSelection() != gui()) {
-            MainGui.Companion.openGui(Kisman.instance.selectionBar);
+            Kisman.instance.selectionBar.open();
             return;
         }
 
@@ -199,14 +198,13 @@ public class HalqGui extends KismanGuiScreen {
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
 
         drawDefaultBackground();
+        drawScreenPre();
 
         if(Config.instance.guiParticles.getValBoolean()) {
             particleSystem.tick(10);
             particleSystem.render();
             particleSystem.onUpdate();
         }
-
-        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         scrollWheelCheck();
 

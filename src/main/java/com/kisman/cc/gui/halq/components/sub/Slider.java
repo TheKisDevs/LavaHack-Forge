@@ -93,7 +93,7 @@ public class Slider extends ShaderableImplementation implements Component, Setti
                 return;
             }
 
-            if((key == 14 || key == Keyboard.KEY_DELETE) && !customValue.isEmpty() && TextUtilKt.parseNumber(customValue, setting.getValDouble()) != setting.getValDouble()) {
+            if((key == 14 || key == Keyboard.KEY_DELETE) && !customValue.isEmpty()) {
                 customValue = customValue.substring(0, customValue.length() - 1);
                 return;
             }

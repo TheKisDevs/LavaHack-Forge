@@ -6,6 +6,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;
 
 public class LuaRotation implements Globals {
+    private static LuaRotation instance;
+
+    public static LuaRotation getDefault() {
+        if (instance == null) instance = new LuaRotation();
+        return instance;
+    }
+
     boolean nullCheck(){
         return mc.player == null || mc.world == null;
     }

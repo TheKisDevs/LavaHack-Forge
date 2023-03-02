@@ -11,7 +11,8 @@ class SubSystemManager {
     var subsystems = listOf(
         EnemyManager,
         HoleProcessor,
-        RotationSystem
+        RotationSystem,
+        TPSManager
     )
 
     fun init() {

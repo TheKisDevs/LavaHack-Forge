@@ -16,4 +16,6 @@ public class EventRenderBlock extends Event {
         this.state = state;
         this.pos = pos;
     }
+
+    public static class Start { }
 }

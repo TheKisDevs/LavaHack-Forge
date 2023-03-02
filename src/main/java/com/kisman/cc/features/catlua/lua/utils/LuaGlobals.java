@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.Block;
@@ -59,7 +60,7 @@ public class LuaGlobals implements Globals {
     }
 
     public int getPing() {
-        return nullCheck() ? 0 : (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing());
+        return UtilityKt.getPing();
     }
 
     boolean nullCheck(){

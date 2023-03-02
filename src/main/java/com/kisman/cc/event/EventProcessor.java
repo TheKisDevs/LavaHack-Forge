@@ -14,7 +14,6 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.MainMenuModule;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.features.module.combat.AutoRer;
-import com.kisman.cc.util.TickRateUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.client.Minecraft;
@@ -42,7 +41,6 @@ public class EventProcessor {
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
         Kisman.EVENT_BUS.subscribe(totempop);
-        Kisman.EVENT_BUS.subscribe(TickRateUtil.INSTANCE.listener);
         Kisman.EVENT_BUS.subscribe(packet);
         Kisman.instance.progressBar.steps++;
 

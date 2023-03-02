@@ -3,6 +3,7 @@ package com.kisman.cc.gui.selectionbar
 import com.kisman.cc.Kisman
 import com.kisman.cc.gui.selectionbar.element.IElement
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.customfont.CustomFontUtil
@@ -25,6 +26,10 @@ class SelectionBar(
     }
 
     var reinit = false
+
+    fun open() {
+        selection.open()
+    }
 
     fun initGui() {
         reinit = true
@@ -151,5 +156,6 @@ class SelectionBar(
         ;
 
         fun gui() : GuiScreen = if(check0()) gui0() else Kisman.instance.halqGui // TODO: gui that will says "this feature is not available for normal users"
+        fun open() : Unit = mc.displayGuiScreen(gui())
     }
 }

@@ -1,28 +1,29 @@
 package com.kisman.cc.features.module.render
 
-import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.EventRenderBlock
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.features.module.render.blockesp.BlockImplementation
-//import com.kisman.cc.settings.Setting
-//import com.kisman.cc.util.block
+import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.enums.BlockESPBlocks
-//import com.kisman.cc.util.world.CrystalUtils
-import me.zero.alpine.listener.EventHook
-import me.zero.alpine.listener.Listener
+import com.kisman.cc.util.thread.kisman.defaultScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
+//TODO: range check
 class BlockESP : ShaderableModule(
     "BlockESP",
     "",
     Category.RENDER,
     true
 ) {
-//    private val range : Setting = register(Setting("Range", this, 30.0, 0.0, 50.0, true))
+    private val rangeXZ = /*register*/(Setting("Range XZ", this, 50.0, 0.0, 200.0, true))
+    private val topLimitY = register(Setting("Top Limit Y", this, 0.0, 0.0, 255.0, true))
+    private val bottomLimitY = register(Setting("Bottom Limit Y", this, 256.0, 0.0, 255.0, true))
 
     private val implementations = listOf(
         BlockImplementation(BlockESPBlocks.Web, this, 0),
@@ -33,58 +34,70 @@ class BlockESP : ShaderableModule(
         BlockImplementation(BlockESPBlocks.CrackedStoneBlocks, this, 5)
     )
 
-    private val threads = threads()
-
-    private var list = ArrayList<BlockPos>()
-    private val map = mutableMapOf<BlockPos, BlockImplementation>()
+    private var map = mutableMapOf<BlockPos, BlockImplementation>()
 
     override fun onEnable() {
         super.onEnable()
-        Kisman.EVENT_BUS.subscribe(renderBlock)
-        list.clear()
         map.clear()
-        threads.reset()
     }
 
-    override fun onDisable() {
-        super.onDisable()
-        Kisman.EVENT_BUS.unsubscribe(renderBlock)
-    }
+    @SubscribeEvent
+    fun onRenderWorld(
+        event : RenderWorldLastEvent
+    ) {
+        defaultScope.launch {
+            val map0 = mutableMapOf<BlockPos, BlockImplementation>()
 
-    @SubscribeEvent fun onRenderWorld(event : RenderWorldLastEvent) {
-        /*threads.update(Runnable {
-            val list = ArrayList<BlockPos>(list.size)
+            coroutineScope {
+                launch {
+                    val distance = mc.gameSettings.renderDistanceChunks
 
-            for(pos in CrystalUtils.getSphere(range.valFloat, true, false)) {
-                for(implementation in implementations) {
-                    if(implementation.valid(pos)) {
-                        list.add(pos)
+                    val chunk0 = ChunkPos(mc.player.position)
+                    val chunk1 = ChunkPos(chunk0.x - distance, chunk0.z - distance)
+                    val chunk2 = ChunkPos(chunk0.x + distance, chunk0.z + distance)
+
+                    coroutineScope {
+                        for(chunkX in chunk1.x..chunk2.x) {
+                            for(chunkZ in chunk1.z..chunk2.z) {
+                                val chunk = mc.world.getChunkFromChunkCoords(chunkX, chunkZ)
+
+                                //TODO: range check should be here
+                                if(chunk.isLoaded) {
+                                    launch {
+                                        for(x in (chunk.x shl 4)..(chunk.x shl 4) + 16) {
+                                            for(y in bottomLimitY.valInt..topLimitY.valInt) {
+                                                for(z in (chunk.z shl 4)..(chunk.z shl 4) + 16) {
+                                                    val pos = BlockPos(x, y, z)
+
+                                                    for(implementation in implementations) {
+                                                        if(implementation.valid(pos)) {
+                                                            synchronized(map0) {
+                                                                map0[pos] = implementation
+                                                            }
+
+                                                            continue
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    delay(1L)
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            mc.addScheduledTask { this.list = list }
-        })*/
+            synchronized(map) {
+                map = map0
+            }
+        }
 
         handleDraw()
     }
-
-    @SubscribeEvent
-    fun onRenderTick(
-        event : TickEvent.RenderTickEvent
-    ) {
-        if(event.phase == TickEvent.Phase.START) {
-            map.clear()
-        }
-    }
-
-    private val renderBlock = Listener<EventRenderBlock>(EventHook {
-        for(implementation in implementations) {
-            if(implementation.valid(it.pos)) {
-                map[it.pos] = implementation
-            }
-        }
-    })
 
     override fun draw0(
         flags : Array<Boolean>
@@ -93,11 +106,6 @@ class BlockESP : ShaderableModule(
             if(flags[pos.value.flag]) {
                 pos.value.process(pos.key)
             }
-            /*for(implementation in implementations) {
-                if(flags[implementation.flag]) {
-                    implementation.process(pos)
-                }
-            }*/
         }
     }
 }

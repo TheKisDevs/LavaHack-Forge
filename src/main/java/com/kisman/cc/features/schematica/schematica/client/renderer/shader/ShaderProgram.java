@@ -16,70 +16,70 @@ public class ShaderProgram {
 
     private int program;
 
-    public ShaderProgram(final String domain, final String vertShaderFilename, final String fragShaderFilename) {
+    public ShaderProgram(String domain, String vertShaderFilename, String fragShaderFilename) {
         try {
             init(domain, vertShaderFilename, fragShaderFilename);
-            if (this.program > 0) {
+            if (program > 0) {
                 GL20.glUseProgram(this.program);
                 GL20.glUniform1i(GL20.glGetUniformLocation(this.program, "texture"), 0);
                 GL20.glUseProgram(0);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             Reference.logger.error("Could not initialize shader program!", e);
-            this.program = 0;
+            program = 0;
         }
     }
 
-    private void init(final String domain, final String vertShaderFilename, final String fragShaderFilename) {
+    private void init(String domain, String vertShaderFilename, String fragShaderFilename) {
         if (!OpenGlHelper.shadersSupported) {
-            this.program = 0;
+            program = 0;
             return;
         }
 
-        this.program = GL20.glCreateProgram();
+        program = GL20.glCreateProgram();
 
-        final int vertShader = loadAndCompileShader(domain, vertShaderFilename, GL20.GL_VERTEX_SHADER);
-        final int fragShader = loadAndCompileShader(domain, fragShaderFilename, GL20.GL_FRAGMENT_SHADER);
+        int vertShader = loadAndCompileShader(domain, vertShaderFilename, GL20.GL_VERTEX_SHADER);
+        int fragShader = loadAndCompileShader(domain, fragShaderFilename, GL20.GL_FRAGMENT_SHADER);
 
         if (vertShader != 0) {
-            GL20.glAttachShader(this.program, vertShader);
+            GL20.glAttachShader(program, vertShader);
         }
 
         if (fragShader != 0) {
-            GL20.glAttachShader(this.program, fragShader);
+            GL20.glAttachShader(program, fragShader);
         }
 
-        GL20.glLinkProgram(this.program);
+        GL20.glLinkProgram(program);
 
-        if (GL20.glGetProgrami(this.program, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
-            Reference.logger.error("Could not link shader: {}", GL20.glGetProgramInfoLog(this.program, 1024));
-            GL20.glDeleteProgram(this.program);
-            this.program = 0;
+        if (GL20.glGetProgrami(program, GL20.GL_LINK_STATUS) == GL11.GL_FALSE) {
+            Reference.logger.error("Could not link shader: {}", GL20.glGetProgramInfoLog(program, 1024));
+            GL20.glDeleteProgram(program);
+            program = 0;
             return;
         }
 
-        GL20.glValidateProgram(this.program);
+        GL20.glValidateProgram(program);
 
-        if (GL20.glGetProgrami(this.program, GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE) {
-            Reference.logger.error("Could not validate shader: {}", GL20.glGetProgramInfoLog(this.program, 1024));
-            GL20.glDeleteProgram(this.program);
-            this.program = 0;
+        if (GL20.glGetProgrami(program, GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE) {
+            Reference.logger.error("Could not validate shader: {}", GL20.glGetProgramInfoLog(program, 1024));
+            GL20.glDeleteProgram(program);
+            program = 0;
         }
     }
 
-    private int loadAndCompileShader(final String domain, final String filename, final int shaderType) {
+    private int loadAndCompileShader(String domain, String filename, int shaderType) {
         if (filename == null) {
             return 0;
         }
 
-        final int handle = GL20.glCreateShader(shaderType);
+        int handle = GL20.glCreateShader(shaderType);
 
         if (handle == 0) {
-            Reference.logger.error("Could not create shader of type {} for {}: {}", shaderType, filename, GL20.glGetProgramInfoLog(this.program, 1024));
+            Reference.logger.error("Could not create shader of type {} for {}: {}", shaderType, filename, GL20.glGetProgramInfoLog(program, 1024));
             return 0;
         }
 
-        final String code = loadFile(new ResourceLocation(domain, filename));
+        String code = loadFile(new ResourceLocation(domain, filename));
         if (code == null) {
             GL20.glDeleteShader(handle);
             return 0;
@@ -89,7 +89,7 @@ public class ShaderProgram {
         GL20.glCompileShader(handle);
 
         if (GL20.glGetShaderi(handle, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            Reference.logger.error("Could not compile shader {}: {}", filename, GL20.glGetShaderInfoLog(this.program, 1024));
+            Reference.logger.error("Could not compile shader {}: {}", filename, GL20.glGetShaderInfoLog(program, 1024));
             GL20.glDeleteShader(handle);
             return 0;
         }
@@ -97,11 +97,11 @@ public class ShaderProgram {
         return handle;
     }
 
-    private String loadFile(final ResourceLocation resourceLocation) {
+    private String loadFile(ResourceLocation resourceLocation) {
         try {
-            final StringBuilder code = new StringBuilder();
-            final InputStream inputStream = MINECRAFT.getResourceManager().getResource(resourceLocation).getInputStream();
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder code = new StringBuilder();
+            InputStream inputStream = MINECRAFT.getResourceManager().getResource(resourceLocation).getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -111,7 +111,7 @@ public class ShaderProgram {
             reader.close();
 
             return code.toString();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             Reference.logger.error("Could not load shader file!", e);
         }
 
@@ -119,6 +119,6 @@ public class ShaderProgram {
     }
 
     public int getProgram() {
-        return this.program;
+        return program;
     }
 }

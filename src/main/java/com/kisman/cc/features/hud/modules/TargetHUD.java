@@ -1,6 +1,5 @@
 package com.kisman.cc.features.hud.modules;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
@@ -8,6 +7,7 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.AnimationUtils;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -244,7 +244,7 @@ public class TargetHUD extends HudModule {
         Render2DUtil.drawRoundedRect2(x + 45, y + 4, w - 49, 30, 6, 0x40575656);
         CustomFontUtil.drawStringWithShadow("Name: " + ChatFormatting.GRAY + target.getName(), x + 47, y + 4, -1);
         CustomFontUtil.drawStringWithShadow("Distance: " + ChatFormatting.GRAY + MathUtil.round(mc.player.getDistance(target), 2), x + 47, y + 13, -1);
-        CustomFontUtil.drawStringWithShadow("Ping: " + ChatFormatting.GRAY + (mc.isSingleplayer() ? 0 : Kisman.instance.serverManager.getPing()) + " ms", x + 47, y + 22.5, -1);
+        CustomFontUtil.drawStringWithShadow("Ping: " + ChatFormatting.GRAY + UtilityKt.getPing() + " ms", x + 47, y + 22.5, -1);
         Render2DUtil.drawRoundedRect2(x + 45, y + h - 16, w - 49, 10, 6, 0x40575656);
         Render2DUtil.drawRoundedRect2(x + 47, y + h - 12, 95 * hpBarWidth, 3, 4, ColorUtils.healthColor(target.getHealth() + target.getAbsorptionAmount(), target.getMaxHealth()).getRGB());
         GL11.glEnable(GL11.GL_DEPTH_TEST);

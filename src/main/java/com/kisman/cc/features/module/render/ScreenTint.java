@@ -2,20 +2,22 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.RainbowUtil;
 import com.kisman.cc.util.render.Rendering;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+@WorkInProgress
 public class ScreenTint  extends Module {
 
     private final Setting renderMode = register(new Setting("RenderMode", this, RenderModes.Static));
@@ -38,13 +40,12 @@ public class ScreenTint  extends Module {
         if(mc.player == null || mc.world == null)
             return;
 
-        if(!isToggled())
-            return;
+        ScaledResolution sr = new ScaledResolution(mc);
 
-        int left = 0;
-        int top = Display.getHeight();
-        int right = Display.getWidth();
-        int bottom = 0;
+        int x = 0;
+        int y = 0;
+        int w = sr.getScaledWidth();
+        int h = sr.getScaledHeight();
 
         Color[] colors = getColor();
         Color c1 = colors[0];
@@ -55,25 +56,21 @@ public class ScreenTint  extends Module {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         Rendering.start();
-//        Rendering.prepare();
-        /*boolean original = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GLUtil.scissors(100, 100, 800, 800);*/
-        //GlStateManager.enableBlend();
-        //GlStateManager.disableTexture2D();
-        //GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        //GlStateManager.shadeModel(7425);
+//        GlStateManager.pushMatrix();
+//        GlStateManager.enableBlend();
+//        GlStateManager.disableTexture2D();
+//        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+//        GlStateManager.shadeModel(7425);
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos(left, bottom, 0.0D).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        bufferbuilder.pos(right, bottom, 0.0D).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        bufferbuilder.pos(right, top, 0.0D).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        bufferbuilder.pos(left, top, 0.0D).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha()).endVertex();
+        bufferbuilder.pos(x, y, 0.0D).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
+        bufferbuilder.pos(w, y, 0.0D).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
+        bufferbuilder.pos(w, h, 0.0D).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
+        bufferbuilder.pos(x, h, 0.0D).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha()).endVertex();
         tessellator.draw();
-        //GlStateManager.shadeModel(7424);
-        //GlStateManager.enableTexture2D();
-        //GlStateManager.disableBlend();
-        /*if(!original)
-            GL11.glDisable(GL11.GL_SCISSOR_TEST);*/
+//        GlStateManager.shadeModel(7424);
+//        GlStateManager.enableTexture2D();
+//        GlStateManager.disableBlend();
+//        GlStateManager.popMatrix();
         Rendering.end();
     }
 

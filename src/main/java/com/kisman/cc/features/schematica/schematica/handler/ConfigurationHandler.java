@@ -38,8 +38,8 @@ public class ConfigurationHandler {
     public static final boolean[] SWAP_SLOTS_DEFAULT = new boolean[] {
             false, false, false, false, false, true, true, true, true
     };
-    public static final String SCHEMATIC_DIRECTORY_STR = "./schematics";
-    public static final File SCHEMATIC_DIRECTORY_DEFAULT = new File(Schematica.proxy.getDataDirectory(), SCHEMATIC_DIRECTORY_STR);
+    public static final String SCHEMATIC_DIRECTORY_STR = Schematica.CONFIG_FOLDER + "schematics/";
+    public static final File SCHEMATIC_DIRECTORY_DEFAULT = new File(SCHEMATIC_DIRECTORY_STR);
     public static final String[] EXTRA_AIR_BLOCKS_DEFAULT = {};
     public static final String SORT_TYPE_DEFAULT = "";
     public static final boolean PRINTER_ENABLED_DEFAULT = true;
@@ -63,7 +63,7 @@ public class ConfigurationHandler {
     public static boolean destroyInstantly = DESTROY_INSTANTLY_DEFAULT;
     public static boolean placeAdjacent = PLACE_ADJACENT_DEFAULT;
     public static boolean[] swapSlots = Arrays.copyOf(SWAP_SLOTS_DEFAULT, SWAP_SLOTS_DEFAULT.length);
-    public static final Queue<Integer> swapSlotsQueue = new ArrayDeque<Integer>();
+    public static final Queue<Integer> swapSlotsQueue = new ArrayDeque<>();
     public static File schematicDirectory = SCHEMATIC_DIRECTORY_DEFAULT;
     public static String[] extraAirBlocks = Arrays.copyOf(EXTRA_AIR_BLOCKS_DEFAULT, EXTRA_AIR_BLOCKS_DEFAULT.length);
     public static String sortType = SORT_TYPE_DEFAULT;
@@ -96,9 +96,9 @@ public class ConfigurationHandler {
     public static Property propLoadEnabled = null;
     public static Property propPlayerQuotaKilobytes = null;
 
-    private static final Set<Block> extraAirBlockList = new HashSet<Block>();
+    private static final Set<Block> extraAirBlockList = new HashSet<>();
 
-    public static void init(final File configFile) {
+    public static void init(File configFile) {
         if (configuration == null) {
             configuration = new Configuration(configFile, VERSION);
             loadConfiguration();
@@ -228,20 +228,20 @@ public class ConfigurationHandler {
     private static void normalizeSchematicPath() {
         try {
             schematicDirectory = schematicDirectory.getCanonicalFile();
-            final String schematicPath = schematicDirectory.getAbsolutePath();
-            final String dataPath = Schematica.proxy.getDataDirectory().getAbsolutePath();
-            final String newSchematicPath = mergePaths(schematicPath, dataPath);
+            String schematicPath = schematicDirectory.getAbsolutePath();
+            String dataPath = Schematica.proxy.getDataDirectory().getAbsolutePath();
+            String newSchematicPath = mergePaths(schematicPath, dataPath);
             propSchematicDirectory.set(newSchematicPath);
             Reference.logger.debug("Schematic path: {}", schematicPath);
             Reference.logger.debug("Data path: {}", dataPath);
             Reference.logger.debug("New schematic path: {}", newSchematicPath);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             Reference.logger.warn("Could not canonize path!", e);
         }
     }
 
-    private static String mergePaths(final String schematicPath, final String dataPath) {
-        final String newPath;
+    private static String mergePaths(String schematicPath, String dataPath) {
+        String newPath;
         if (schematicPath.startsWith(dataPath)) {
             newPath = "." + schematicPath.substring(dataPath.length());
         } else {
@@ -253,8 +253,8 @@ public class ConfigurationHandler {
 
     private static void populateExtraAirBlocks() {
         extraAirBlockList.clear();
-        for (final String name : extraAirBlocks) {
-            final Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
+        for (String name : extraAirBlocks) {
+            Block block = Block.REGISTRY.getObject(new ResourceLocation(name));
             if (block != Blocks.AIR) {
                 extraAirBlockList.add(block);
             }
@@ -281,7 +281,7 @@ public class ConfigurationHandler {
 
     private ConfigurationHandler() {}
 
-    public static boolean isExtraAirBlock(final Block block) {
+    public static boolean isExtraAirBlock(Block block) {
         return extraAirBlockList.contains(block);
     }
 }

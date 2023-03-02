@@ -95,7 +95,7 @@ object PacketMineProvider : Listenable {
                 oldSlot = mc.player.inventory.currentItem
             }
 
-            if(position != null && mc.player.getDistanceSq(position!!) >= MathUtil.square(range.toDouble())) {
+            if(position != null && mc.player.getDistanceSq(position!!) >= range.toDouble() * range.toDouble()) {
                 position = null
             }
         }

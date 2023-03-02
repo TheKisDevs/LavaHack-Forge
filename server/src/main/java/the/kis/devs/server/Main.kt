@@ -110,6 +110,16 @@ fun main(
         } else if(line == "emulate") {
             emulating = true
             println("> Turned on emulating mode")
+        } else if(line == "getmanagers") {
+            if(!wsManagerMap.isEmpty()) {
+                println("> Current managers:")
+
+                for (manager in wsManagerMap.keys) {
+                    println("> > Manager: $manager")
+                }
+            } else {
+                println("> No managers :<")
+            }
         } else if(line == "help") {
             println(
                 """> Commands:

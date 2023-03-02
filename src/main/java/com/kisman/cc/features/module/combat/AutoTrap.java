@@ -12,7 +12,6 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.SurroundSupportModes;
-import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.WorldUtilKt;
@@ -320,7 +319,7 @@ public class AutoTrap extends Module {
     }
 
     private void placeBlock(final BlockPos pos) {
-        if (this.placements < this.blocksPerTick.getValInt() && mc.player.getDistanceSq(pos) <= MathUtil.square(5.0)) {
+        if (this.placements < this.blocksPerTick.getValInt() && mc.player.getDistanceSq(pos) <= 25) {
             final int originalSlot = mc.player.inventory.currentItem;
             final int obbySlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
             final int eChestSot = InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9);

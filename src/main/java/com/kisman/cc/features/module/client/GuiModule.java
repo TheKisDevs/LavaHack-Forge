@@ -57,7 +57,7 @@ public class GuiModule extends Module {
     private final SettingGroup animationGroup = register(new SettingGroup(new Setting("Animations", this)));
     public final Setting animationState = register(animationGroup.add(new Setting("Animation State", this, true).setTitle("State")));
     public final Setting animationSpeed = register(animationGroup.add(new Setting("Animation Speed", this, 750, 100, 1000, NumberType.TIME).setTitle("Length")));
-    public final SettingEnum<EasingEnum.Easing> animationEasing = register(animationGroup.add(new SettingEnum<>("Animation Easing", this, EasingEnum.Easing.Curve).setTitle("Easing")));
+    public final SettingEnum<EasingEnum.Easing> animationEasing = register(animationGroup.add(new SettingEnum<>("Animation Easing", this, EasingEnum.Easing.Linear).setTitle("Easing")));
     public final Setting animationReverseDirection = register(animationGroup.add(new Setting("Animation Reverse Direction", this, false).setTitle("Reverse Direction")));
     private final SettingGroup animationTypes = register(animationGroup.add(new SettingGroup(new Setting("Types", this))));
     public final Setting animateToggleable = register(animationTypes.add(new Setting("Animate Toggleable", this, true).setTitle("Toggleable")));
@@ -76,6 +76,5 @@ public class GuiModule extends Module {
     public void onEnable() {
         mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(null));
         super.setToggled(false);
-        if(Config.instance.guiBlur.getValBoolean()) mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
     }
 }

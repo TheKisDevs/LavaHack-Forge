@@ -3,6 +3,7 @@ package com.kisman.cc.mixin.mixins;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.RenderEntitiesEvent;
 import com.kisman.cc.event.events.RenderEntityEvent;
+import com.kisman.cc.event.events.RenderSkyEvent;
 import com.kisman.cc.features.module.render.NoRender;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -52,5 +53,14 @@ public class MixinRenderGlobal {
         Kisman.EVENT_BUS.post(event);
 
         return instance.shouldRender(entity, camera, camX, camY, camZ);
+    }
+
+    @Inject(method = "renderSky(FI)V", at = @At("HEAD"), cancellable = true)
+    public void renderSky(float partialTicks, int pass, CallbackInfo ci) {
+        RenderSkyEvent event = new RenderSkyEvent();
+
+        Kisman.EVENT_BUS.post(event);
+
+        if(event.isCancelled()) ci.cancel();
     }
 }

@@ -11,6 +11,7 @@ import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import net.minecraft.client.renderer.entity.RenderPig
 import net.minecraft.entity.passive.EntityPig
+import java.util.*
 
 /**
  * @author _kisman_
@@ -54,7 +55,7 @@ class Funny : Module(
             if(mc.player.heldItemMainhand.isEmpty) {
                 ChatUtility.error().printClientModuleMessage("You need to hold an item in hand to dupe!!!!!")
             } else {
-                val count = Globals.random.nextInt(31) + 1
+                val count = Random().nextInt(31) + 1
 
                 for(i in 0..count) {
                     val itemE = mc.player.dropItem(mc.player.heldItemMainhand.copy(), false, true)

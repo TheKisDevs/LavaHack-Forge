@@ -41,7 +41,7 @@ public class OverlayHandler {
                     IBlockState blockState = schematic.getBlockState(pos);
 
                     right.add("");
-                    right.add(String.valueOf(Block.REGISTRY.getNameForObject(blockState.getBlock())) + SCHEMATICA_SUFFIX);
+                    right.add(Block.REGISTRY.getNameForObject(blockState.getBlock()) + SCHEMATICA_SUFFIX);
 
                     for (String formattedProperty : BlockStateHelper.getFormattedProperties(blockState)) {
                         right.add(formattedProperty + SCHEMATICA_SUFFIX);

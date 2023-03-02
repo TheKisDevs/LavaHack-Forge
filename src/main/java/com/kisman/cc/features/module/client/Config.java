@@ -53,7 +53,6 @@ public class Config extends Module {
     public Setting guiAstolfo = register(gui.add(new Setting("Gui Astolfo", this, false).setTitle("Astolfo")));
     public Setting guiRenderSize = register(gui.add(new Setting("Gui Render Size", this, false).setTitle("Render Size")));
     public Setting guiBetterCheckBox = register(gui.add(new Setting("Gui Better CheckBox", this, false).setTitle("Better CheckBox")));
-    public Setting guiBlur = register(gui.add(new Setting("Gui Blur", this, true).setTitle("Blur")));
     public Setting guiVisualPreview = register(gui.add(new Setting("Gui Visual Preview", this, false).setTitle("Visual Preview")));
     public Setting guiShowBinds = register(gui.add(new Setting("Gui Show Binds", this, false).setTitle("Show Binds")));
     public Setting configurate = register(other.add(new Setting("Configurate", this, true)));

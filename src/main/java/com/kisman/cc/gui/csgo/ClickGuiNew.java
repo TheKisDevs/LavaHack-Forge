@@ -5,7 +5,6 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.gui.KismanGuiScreen;
-import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.csgo.components.Button;
 import com.kisman.cc.gui.csgo.components.Label;
 import com.kisman.cc.gui.csgo.components.ScrollPane;
@@ -309,19 +308,18 @@ public class ClickGuiNew extends KismanGuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if(Kisman.instance.selectionBar.getSelection() != SelectionBar.Guis.CSGOGui) {
-           MainGui.Companion.openGui(Kisman.instance.selectionBar);
+            Kisman.instance.selectionBar.open();
            return;
         }
 
         drawDefaultBackground();
+        drawScreenPre();
 
         if(Config.instance.guiParticles.getValBoolean()) {
             particleSystem.tick(10);
             particleSystem.render();
             particleSystem.onUpdate();
         }
-
-        Kisman.instance.guiGradient.drawScreen(mouseX, mouseY);
 
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 

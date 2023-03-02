@@ -1,5 +1,7 @@
 package com.kisman.cc.util.thread.kisman
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -14,3 +16,5 @@ val factory : ThreadFactory
 
 val executor : ExecutorService
     get() = Executors.newCachedThreadPool(factory)
+
+val defaultScope = CoroutineScope(Dispatchers.Default)

@@ -28,6 +28,7 @@ import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.thread.kisman.ThreadHandler;
+import com.kisman.cc.util.thread.kisman.ThreadsKt;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
@@ -221,6 +222,8 @@ public class AutoRer extends ShaderableModule {
     private ScheduledExecutorService executor;
     private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
     private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
+    private final AtomicReference<BreakInfo> crystal = new AtomicReference<>();
+    private final AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
     @Target
     public static EntityPlayer currentTarget;
     private Thread thread;
@@ -332,6 +335,8 @@ public class AutoRer extends ShaderableModule {
         targets.reset();
         antiDesyncCache.clear();
         placedList.clear();
+        crystal.set(null);
+        crystalWithMaxDamage.set(null);
         currentTarget = null;
         rotating = false;
         renderPos = null;
@@ -594,7 +599,7 @@ public class AutoRer extends ShaderableModule {
         if (event.getPacket() instanceof SPacketSoundEffect && ((inhibit.getValBoolean() && lastHitEntity != null) || (sound.getValBoolean()))) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
             if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) lastHitEntity.setDead();
-            if(threadMode.checkValString(ThreadMode.Sound.name()) && isRightThread() && mc.player != null && mc.player.getDistanceSq(new BlockPos(packet.getX(), packet.getY(), packet.getZ())) < MathUtil.square(threadSoundPlayer.getValInt())) handlePool(true);
+            if(threadMode.checkValString(ThreadMode.Sound.name()) && isRightThread() && mc.player != null && mc.player.getDistanceSq(new BlockPos(packet.getX(), packet.getY(), packet.getZ())) < threadSoundPlayer.getValInt() * threadSoundPlayer.getValInt()) handlePool(true);
         }
     });
 
@@ -973,19 +978,21 @@ public class AutoRer extends ShaderableModule {
         BreakInfo finallyCrystal;
 
         if(crystalTHandler.getThreadded().get()) {
-            AtomicReference<BreakInfo> crystal = new AtomicReference<>();
-            AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
+            crystalTHandler.update(() -> crystalWithMaxDamage.set(getCrystalWithMaxDamage()));
 
-            crystalTHandler.update(() -> mc.addScheduledTask(() -> crystalWithMaxDamage.set(getCrystalWithMaxDamage())));
+            if (breakPriority.checkValString("Damage")) {
+                ThreadsKt.getExecutor().submit(() -> crystalWithMaxDamage.set(getCrystalWithMaxDamage()));
 
-            if (breakPriority.checkValString("Damage")) crystal.set(crystalWithMaxDamage.get());
-            else {
-                crystalTHandler.update(() -> mc.addScheduledTask(() -> crystal.set(getCrystalForAntiCevBreaker())));
-                crystal.set(getCrystalForAntiCevBreaker());
-                if (crystal.get() == null) crystal.set(crystalWithMaxDamage.get());
+                finallyCrystal = crystalWithMaxDamage.get();
+            } else {
+                finallyCrystal = getCrystalForAntiCevBreaker();
+
+                if (finallyCrystal == null) {
+                    ThreadsKt.getExecutor().submit(() -> crystalWithMaxDamage.set(getCrystalWithMaxDamage()));
+
+                    finallyCrystal = crystalWithMaxDamage.get();
+                }
             }
-
-            finallyCrystal = crystal.get();
         } else {
             BreakInfo crystal;
             BreakInfo crystalWithMaxDamage = getCrystalWithMaxDamage();

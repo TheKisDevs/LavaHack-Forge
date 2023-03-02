@@ -392,8 +392,8 @@ public class Speed extends Module {
                     }
                 }
                 y = 1;
-                EntityUtil.resetTimer();
-                if(useTimer.getValBoolean()) Managers.instance.timerManager.updateTimer(this, 2, 1.3f);
+                if(useTimer.getValBoolean()) EntityUtil.setTimer(1.3f);//Managers.instance.timerManager.updateTimer(this, 2, 1.3f);
+                else EntityUtil.resetTimer();
                 mc.player.jump();
             } else {
                 if(jumpMovementFactor.getValBoolean()) mc.player.jumpMovementFactor = jumpMovementFactorSpeed.getValFloat();
@@ -403,8 +403,8 @@ public class Speed extends Module {
                         y = mc.player.getPositionVector().y;
                         mc.player.motionX = 0;
                         mc.player.motionZ = 0;
-                        if(useTimer.getValBoolean()) EntityUtil.resetTimer();
-                        Managers.instance.timerManager.updateTimer(this, 2, 16);
+                        if(useTimer.getValBoolean()) EntityUtil.setTimer(16);
+                        else EntityUtil.resetTimer();
                     } else {
                         y = mc.player.getPositionVector().y;
                         if(useMotionInAir.getValBoolean() && currentMotion != null) {

@@ -7,7 +7,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.math.MathUtil;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -203,7 +202,7 @@ public class AutoFirework extends Module {
     }
 
     private void placeBlock(final BlockPos pos) {
-        if (this.placements < this.blocksPerTick.getValInt() && AutoTrap.mc.player.getDistanceSq(pos) <= MathUtil.square(5.0)) {
+        if (this.placements < this.blocksPerTick.getValInt() && AutoTrap.mc.player.getDistanceSq(pos) <= 25) {
             final int originalSlot = AutoTrap.mc.player.inventory.currentItem;
             final int obbySlot = InventoryUtil.findBlock(Blocks.OBSIDIAN, 0, 9);
             final int eChestSot = InventoryUtil.findBlock(Blocks.ENDER_CHEST, 0, 9);

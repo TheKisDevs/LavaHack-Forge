@@ -5,7 +5,6 @@ import com.kisman.cc.event.KismanEventBus;
 import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
 import com.kisman.cc.features.catlua.ScriptManager;
-import com.kisman.cc.features.catlua.lua.utils.LuaRotation;
 import com.kisman.cc.features.catlua.mapping.ForgeMappings;
 import com.kisman.cc.features.catlua.mapping.Remapper3000;
 import com.kisman.cc.features.command.CommandManager;
@@ -26,7 +25,6 @@ import com.kisman.cc.features.schematica.schematica.Schematica;
 import com.kisman.cc.features.subsystem.SubSystemManager;
 import com.kisman.cc.features.viaforge.ViaForge;
 import com.kisman.cc.features.viaforge.gui.ViaForgeGui;
-import com.kisman.cc.gui.MainGui;
 import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.Frame;
@@ -48,10 +46,8 @@ import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.manager.Managers;
-import com.kisman.cc.util.manager.ServerManager;
 import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.math.vectors.VectorUtils;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.render.shader.ShaderShell;
 import com.kisman.cc.util.thread.kisman.ThreadManager;
@@ -124,8 +120,6 @@ public class Kisman {
 
     private static Minecraft mc;
 
-    public VectorUtils vectorUtils;
-
     public ModuleManager moduleManager;
     public NoComModuleManager noComModuleManager;
     public FriendManager friendManager;
@@ -140,14 +134,12 @@ public class Kisman {
     public NoComGui noComGui;
     public ViaForgeGui viaForgeGui;
     public SelectionBar selectionBar;
-    public MainGui.GuiGradient guiGradient;
     public SearchGui searchGui;
     public MusicGui musicGui;
     public MainMenuController mainMenuController;
     public CommandManager commandManager;
     public RPC discord;
     public EventProcessor eventProcessor;
-    public ServerManager serverManager;
     public Managers managers;
     public PluginManager pluginManager;
     public SubSystemManager subSystemManager;
@@ -155,7 +147,6 @@ public class Kisman {
     //catlua
     public Remapper3000 remapper3000;
     public ForgeMappings forgeMappings;
-    public LuaRotation luaRotation;
     public ScriptManager scriptManager;
 
     //Config
@@ -241,12 +232,10 @@ public class Kisman {
         MinecraftForge.EVENT_BUS.register(this);
         mc = Minecraft.getMinecraft();
 
-        vectorUtils = new VectorUtils();
         pluginManager = new PluginManager();
 
         commandManager = new CommandManager();
         discord = new RPC();
-        serverManager = new ServerManager();
         pluginHandler.init();
 
         //load 2d shaders
@@ -255,7 +244,6 @@ public class Kisman {
         //catlua
         remapper3000 = new Remapper3000();
         remapper3000.init();
-        luaRotation = new LuaRotation();
         scriptManager = new ScriptManager();
 
         LOGGER.info("Initializing guis: Part 1");
@@ -270,7 +258,6 @@ public class Kisman {
         mainMenuController.init();
 
         selectionBar = new SelectionBar(SelectionBar.Guis.ClickGui);
-        guiGradient = new MainGui.GuiGradient();
 
         //For test
         searchGui = new SearchGui(new Setting("Test"), null);
@@ -279,7 +266,6 @@ public class Kisman {
         LOGGER.info("Initializing default config manager!");
 
         configManager = new ConfigManager("config");
-        configManager.getLoader().init();
 
         LOGGER.info("Initializing subsystem manager!");
 
@@ -306,6 +292,10 @@ public class Kisman {
 
         CustomFontUtil.setupTextures();
         CustomFontModule.instance.registerSettings();
+
+        LOGGER.info("Loading default config!");
+
+        configManager.getLoader().init();
 
         LOGGER.info("Initializing guis: Part 2");
 

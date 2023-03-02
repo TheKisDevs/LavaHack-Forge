@@ -38,10 +38,6 @@ class CrystalModelHandler(
         scale : Float
     ) {
         if(CrystalModifier.instance.isToggled && entity is EntityEnderCrystal) {
-            if(CrystalModifier.scaleTimes.containsKey(entity.entityId)) {
-
-            }
-
             val ticks = mc.renderPartialTicks
 
             val defaultSpinSpeed = entity.innerRotation + ticks
@@ -68,10 +64,10 @@ class CrystalModelHandler(
             popMatrix()
 
             if(CrystalModifier.scaleTimes.containsKey(entity.entityId)) {
-                CrystalModifier.scaleTimes[entity.entityId]!![0]!!.add(CrystalModifier.instance.baseFadeOutDelay.valLong)
-                CrystalModifier.scaleTimes[entity.entityId]!![1]!!.add(CrystalModifier.instance.insideFadeOutDelay.valLong)
-                CrystalModifier.scaleTimes[entity.entityId]!![2]!!.add(CrystalModifier.instance.outsideFadeOutDelay.valLong)
-                CrystalModifier.scaleTimes[entity.entityId]!![3]!!.add(CrystalModifier.instance.outsideFadeOutDelay2.valLong)
+                CrystalModifier.scaleTimes[entity.entityId]!![0]!!.update()
+                CrystalModifier.scaleTimes[entity.entityId]!![1]!!.update()
+                CrystalModifier.scaleTimes[entity.entityId]!![2]!!.update()
+                CrystalModifier.scaleTimes[entity.entityId]!![3]!!.update()
             }
         } else {
             super.render(
@@ -222,10 +218,10 @@ class CrystalModelHandler(
             cubeID : Int
     ) : Double = if(CrystalModifier.scaleTimes.containsKey(entityID)) {
         when(cubeID) {
-            0 -> if(CrystalModifier.instance.baseFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![0]!!.current()
-            1 -> if(CrystalModifier.instance.insideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![1]!!.current()
-            2 -> if(CrystalModifier.instance.outsideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![2]!!.current()
-            3 -> if(CrystalModifier.instance.outsideFadeOutDelay2.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![3]!!.current()
+            0 -> if(CrystalModifier.instance.baseFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![0]!!.current
+            1 -> if(CrystalModifier.instance.insideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![1]!!.current
+            2 -> if(CrystalModifier.instance.outsideFadeOutDelay.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![2]!!.current
+            3 -> if(CrystalModifier.instance.outsideFadeOutDelay2.valInt == 0) 1.0 else CrystalModifier.scaleTimes[entityID]!![3]!!.current
             else -> 1.0
         }
     } else {

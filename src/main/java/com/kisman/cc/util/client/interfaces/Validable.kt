@@ -2,6 +2,7 @@ package com.kisman.cc.util.client.interfaces
 
 import com.kisman.cc.util.block
 import net.minecraft.block.Block
+import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 
 /**
@@ -13,9 +14,19 @@ interface Validable<T : Any> {
 }
 
 class BlockValidator(
-    private val block : Block
+    private vararg val blocks : Block
 ) : Validable<BlockPos> {
     override fun valid(
         t : BlockPos
-    ) : Boolean = block(t) == block
+    ) : Boolean {
+        for(block in blocks) {
+            if(block(t) == block) {
+                return true
+            }
+        }
+
+        return false
+    }
 }
+
+val validatorAir = BlockValidator(Blocks.AIR, Blocks.WATER, Blocks.FLOWING_WATER, Blocks.LAVA, Blocks.FLOWING_LAVA)
