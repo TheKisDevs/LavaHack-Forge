@@ -18,13 +18,14 @@ Contributors
   _kisman_ <br>
   Cubic
   GentlemanMC <br>
+  Ai_2473
   noatmc
-  Skarlord991
-  toster96 <br>
+  Skarlord991 <br>
+  toster96
   dionfire
   PunCakeCat
-  Halqq
   lava_frai <br>
+  Halqq
 </div>
 
 <div align="center">

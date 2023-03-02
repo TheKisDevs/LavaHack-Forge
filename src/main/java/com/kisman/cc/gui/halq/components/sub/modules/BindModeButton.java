@@ -63,7 +63,7 @@ public class BindModeButton extends ShaderableImplementation implements Componen
         };
 
         Runnable shaderRunnable2 = () -> {
-            HalqGui.drawString("Bind Mode: " + values[index], getX(), getY(), getWidth(), HalqGui.height);
+            HalqGui.drawString("Bind: " + values[index], getX(), getY(), getWidth(), HalqGui.height);
 
             if (open) {
                 int offsetY = HalqGui.height;
