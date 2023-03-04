@@ -58,7 +58,7 @@ public class QueueTickHandler {
 
         if (container.hasNext()) {
             if (container.isFirst()) {
-                TextComponentTranslation component = new TextComponentTranslation(Names.Command.Save.Message.SAVE_STARTED, container.chunkCount, container.file.getName());
+                TextComponentTranslation component = new TextComponentTranslation(String.format(Names.Command.Save.Message.SAVE_STARTED, container.chunkCount, container.file.getName()));
                 container.player.sendMessage(component);
             }
 

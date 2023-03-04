@@ -7,7 +7,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 class ChatInfo extends AbstractChatMessage {
-    private static String getClientPrefix() {
+    public String getClientPrefix() {
         return ChatFormatting.GRAY + "[" + ChatFormatting.GREEN + Kisman.getName() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET;
     }
 

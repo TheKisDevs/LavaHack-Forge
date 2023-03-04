@@ -577,18 +577,20 @@ public class RenderSchematic extends RenderGlobal {
             this.displayListEntitiesDirty = false;
             this.renderInfos = Lists.newArrayListWithCapacity(CHUNKS);
 
-            final LinkedList<ContainerLocalRenderInformation> renderInfoList = Lists.newLinkedList();
-            boolean renderChunksMany = this.mc.renderChunksMany;
+            LinkedList<ContainerLocalRenderInformation> renderInfoList = Lists.newLinkedList();
+            boolean renderChunksMany = false;//this.mc.renderChunksMany;
 
             if (renderChunkCurrent == null) {
                 final int chunkY = posEye.getY() > 0 ? 248 : 8;
 
                 for (int chunkX = -this.renderDistanceChunks; chunkX <= this.renderDistanceChunks; chunkX++) {
                     for (int chunkZ = -this.renderDistanceChunks; chunkZ <= this.renderDistanceChunks; chunkZ++) {
-                        final BlockPos pos = new BlockPos((chunkX << 4) + 8, chunkY, (chunkZ << 4) + 8);
-                        final RenderChunk renderChunk = viewFrustum.getRenderChunk(posEye);
+                        BlockPos pos = new BlockPos((chunkX << 4) + 8, chunkY, (chunkZ << 4) + 8);
+                        RenderChunk renderChunk = viewFrustum.getRenderChunk(posEye);
 
-                        final RenderOverlay renderOverlay = this.viewFrustum.getRenderOverlay(pos);
+                        RenderOverlay renderOverlay = this.viewFrustum.getRenderOverlay(pos);
+
+//                        Rendering.RenderObject.OUTLINE.draw(world.getBlockState(pos).getSelectedBoundingBox(world, pos), Color.WHITE);
 
                         if (renderChunk != null && camera.isBoundingBoxInFrustum(renderChunk.boundingBox)) {
                             renderChunk.setFrameIndex(frameCount);
@@ -599,12 +601,12 @@ public class RenderSchematic extends RenderGlobal {
                 }
             } else {
                 boolean add = false;
-                final ContainerLocalRenderInformation renderInfo = new ContainerLocalRenderInformation(renderChunkCurrent, renderOverlayCurrent, null, 0);
-                final Set<EnumFacing> visibleSides = getVisibleSides(posEye);
+                ContainerLocalRenderInformation renderInfo = new ContainerLocalRenderInformation(renderChunkCurrent, renderOverlayCurrent, null, 0);
+                Set<EnumFacing> visibleSides = getVisibleSides(posEye);
 
                 if (visibleSides.size() == 1) {
-                    final Vector3f viewVector = getViewVector(viewEntity, partialTicks);
-                    final EnumFacing facing = EnumFacing.getFacingFromVector(viewVector.x, viewVector.y, viewVector.z).getOpposite();
+                    Vector3f viewVector = getViewVector(viewEntity, partialTicks);
+                    EnumFacing facing = EnumFacing.getFacingFromVector(viewVector.x, viewVector.y, viewVector.z).getOpposite();
                     visibleSides.remove(facing);
                 }
 
@@ -615,9 +617,9 @@ public class RenderSchematic extends RenderGlobal {
                 if (add && !playerSpectator) {
                     this.renderInfos.add(renderInfo);
                 } else {
-                    if (playerSpectator && this.world.getBlockState(posEye).isOpaqueCube()) {
+                    /*if (playerSpectator && this.world.getBlockState(posEye).isOpaqueCube()) {
                         renderChunksMany = false;
-                    }
+                    }*/
 
                     renderChunkCurrent.setFrameIndex(frameCount);
                     renderOverlayCurrent.setFrameIndex(frameCount);
@@ -627,21 +629,24 @@ public class RenderSchematic extends RenderGlobal {
 
             this.profiler.startSection("iteration");
             while (!renderInfoList.isEmpty()) {
-                final ContainerLocalRenderInformation renderInfo = renderInfoList.poll();
-                final RenderChunk renderChunk = renderInfo.renderChunk;
-                final EnumFacing facing = renderInfo.facing;
+                ContainerLocalRenderInformation renderInfo = renderInfoList.poll();
+                RenderChunk renderChunk = renderInfo.renderChunk;
+                EnumFacing facing = renderInfo.facing;
                 this.renderInfos.add(renderInfo);
 
-                for (final EnumFacing side : EnumFacing.VALUES) {
-                    final RenderChunk neighborRenderChunk = getNeighborRenderChunk(posEye, renderChunk, side);
-                    final RenderOverlay neighborRenderOverlay = getNeighborRenderOverlay(posEye, renderChunk, side);
+                for (EnumFacing side : EnumFacing.VALUES) {
+                    RenderChunk neighborRenderChunk = getNeighborRenderChunk(posEye, renderChunk, side);
+                    RenderOverlay neighborRenderOverlay = getNeighborRenderOverlay(posEye, renderChunk, side);
 
-                    if ((!renderChunksMany || !renderInfo.setFacing.contains(side.getOpposite())) && (!renderChunksMany || facing == null || renderChunk.getCompiledChunk().isVisible(facing.getOpposite(), side)) && neighborRenderChunk != null && neighborRenderChunk.setFrameIndex(frameCount) && camera.isBoundingBoxInFrustum(neighborRenderChunk.boundingBox)) {
-                        final ContainerLocalRenderInformation renderInfoNext = new ContainerLocalRenderInformation(neighborRenderChunk, neighborRenderOverlay, side, renderInfo.counter + 1);
+//                    Rendering.RenderObject.OUTLINE.draw(world.getBlockState(pos).getSelectedBoundingBox(world, pos), Color.WHITE);
+
+
+//                    if ((!renderChunksMany || !renderInfo.setFacing.contains(side.getOpposite())) && (!renderChunksMany || facing == null || renderChunk.getCompiledChunk().isVisible(facing.getOpposite(), side)) && neighborRenderChunk != null && neighborRenderChunk.setFrameIndex(frameCount) && camera.isBoundingBoxInFrustum(neighborRenderChunk.boundingBox)) {
+                        ContainerLocalRenderInformation renderInfoNext = new ContainerLocalRenderInformation(neighborRenderChunk, neighborRenderOverlay, side, renderInfo.counter + 1);
                         renderInfoNext.setFacing.addAll(renderInfo.setFacing);
                         renderInfoNext.setFacing.add(side);
                         renderInfoList.add(renderInfoNext);
-                    }
+//                    }
                 }
             }
             this.profiler.endSection();
@@ -653,9 +658,9 @@ public class RenderSchematic extends RenderGlobal {
         this.chunksToUpdate = Sets.newLinkedHashSet();
         this.overlaysToUpdate = Sets.newLinkedHashSet();
 
-        for (final ContainerLocalRenderInformation renderInfo : this.renderInfos) {
-            final RenderChunk renderChunk = renderInfo.renderChunk;
-            final RenderOverlay renderOverlay = renderInfo.renderOverlay;
+        for (ContainerLocalRenderInformation renderInfo : this.renderInfos) {
+            RenderChunk renderChunk = renderInfo.renderChunk;
+            RenderOverlay renderOverlay = renderInfo.renderOverlay;
 
             if (renderChunk.needsUpdate() || set.contains(renderChunk)) {
                 this.displayListEntitiesDirty = true;
@@ -723,23 +728,23 @@ public class RenderSchematic extends RenderGlobal {
     }
 
     @Override
-    protected Vector3f getViewVector(final Entity entity, final double partialTicks) {
+    protected Vector3f getViewVector(Entity entity, double partialTicks) {
         return super.getViewVector(entity, partialTicks);
     }
 
     @Override
-    public int renderBlockLayer(final BlockRenderLayer layer, final double partialTicks, final int pass, final Entity entity) {
+    public int renderBlockLayer(BlockRenderLayer layer, double partialTicks, int pass, Entity entity) {
         RenderHelper.disableStandardItemLighting();
 
         if (layer == BlockRenderLayer.TRANSLUCENT) {
             this.profiler.startSection("translucent_sort");
-            final double posX = PLAYER_POSITION_OFFSET.x;
-            final double posY = PLAYER_POSITION_OFFSET.y;
-            final double posZ = PLAYER_POSITION_OFFSET.z;
+            double posX = PLAYER_POSITION_OFFSET.x;
+            double posY = PLAYER_POSITION_OFFSET.y;
+            double posZ = PLAYER_POSITION_OFFSET.z;
 
-            final double deltaX = posX - this.prevRenderSortX;
-            final double deltaY = posY - this.prevRenderSortY;
-            final double deltaZ = posZ - this.prevRenderSortZ;
+            double deltaX = posX - this.prevRenderSortX;
+            double deltaY = posY - this.prevRenderSortY;
+            double deltaZ = posZ - this.prevRenderSortZ;
 
             if (deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ > 1.0) {
                 this.prevRenderSortX = posX;
@@ -747,7 +752,7 @@ public class RenderSchematic extends RenderGlobal {
                 this.prevRenderSortZ = posZ;
                 int count = 0;
 
-                for (final ContainerLocalRenderInformation renderInfo : this.renderInfos) {
+                for (ContainerLocalRenderInformation renderInfo : this.renderInfos) {
                     if (renderInfo.renderChunk.compiledChunk.isLayerStarted(layer) && count++ < 15) {
                         this.renderDispatcher.updateTransparencyLater(renderInfo.renderChunk);
                         this.renderDispatcherOverlay.updateTransparencyLater(renderInfo.renderOverlay);
@@ -788,7 +793,7 @@ public class RenderSchematic extends RenderGlobal {
         return count;
     }
 
-    private void renderBlockLayer(final BlockRenderLayer layer) {
+    private void renderBlockLayer(BlockRenderLayer layer) {
         this.mc.entityRenderer.enableLightmap();
 
         this.renderContainer.renderChunkLayer(layer);

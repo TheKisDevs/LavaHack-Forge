@@ -105,11 +105,11 @@ public class Rendering {
         abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values);
         
         public void draw(AxisAlignedBB aabb, Color color, Object... values) {
-            draw(aabb, color, color, false, false, new DirectionVertexes[] { }, values);
+            draw(aabb, color, color, false, false, new ArrayList<>(), values);
         }
         
         public void draw(AxisAlignedBB aabb, Color color1, Color color2, Object... values) {
-            draw(aabb, color1, color2, true, false, new DirectionVertexes[] { }, values);
+            draw(aabb, color1, color2, true, false, new ArrayList<>(), values);
         }
     }
 

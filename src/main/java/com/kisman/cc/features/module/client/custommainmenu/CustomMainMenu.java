@@ -23,7 +23,7 @@ public class CustomMainMenu {
             "kidmad.sex",
             "ddev moment",
             "made by _kisman_#5039",
-            "Where XuluPlus shaders??",
+            "Where are XuluPlus shaders??",
             "Future? No.",
             "meow",
             "Lavahake",
@@ -47,7 +47,20 @@ public class CustomMainMenu {
             "zenov is still crying",
             "hitmanqq lost his mum",
             "NOpig is mad",
-            "_fastol_ pls leave crystal pvp"
+            "_fastol_ pls leave crystal pvp",
+            "future gold $$$",
+            "erta haxe 1 8.7",
+            "The Return",
+            "Fade Out: 0ms",
+            "Ai2473",
+            "v/line",
+            "doc:hidden",
+            "Flora.net v2.0.0-DEV",
+            "Hole ESP [zocker]",
+            "Latty Craft Community",
+            "mKisGen",
+            "LameLands",
+            "Your place to talk"
     };
 
     public static void update() {

@@ -140,6 +140,7 @@ public class ModuleManager {
 		add(NoSpoof.INSTANCE);
 		add(new PauseBaritone());
 		add(PingBypass.INSTANCE);
+		add(new SchematicaModule());
 		add(new ViaForgeModule());
 		//render
 		add(new BlockESP());

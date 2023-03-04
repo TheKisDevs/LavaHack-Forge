@@ -12,7 +12,6 @@ import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler
 import com.kisman.cc.features.schematica.schematica.handler.client.*;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.features.schematica.schematica.world.schematic.SchematicFormat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -20,8 +19,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.io.File;
@@ -46,9 +43,7 @@ public class ClientProxy extends CommonProxy {
 
     public static RayTraceResult objectMouseOver = null;
 
-    private static final Minecraft MINECRAFT = Minecraft.getMinecraft();
-
-    public static void setPlayerData(final EntityPlayer player, final float partialTicks) {
+    public static void setPlayerData(EntityPlayer player, float partialTicks) {
         playerPosition.x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
         playerPosition.y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
         playerPosition.z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
@@ -58,7 +53,7 @@ public class ClientProxy extends CommonProxy {
         rotationRender = MathHelper.floor(player.rotationYaw / 90) & 3;
     }
 
-    private static EnumFacing getOrientation(final EntityPlayer player) {
+    private static EnumFacing getOrientation(EntityPlayer player) {
         if (player.rotationPitch > 45) {
             return EnumFacing.DOWN;
         } else if (player.rotationPitch < -45) {
@@ -89,7 +84,7 @@ public class ClientProxy extends CommonProxy {
         pointMax.z = Math.max(pointA.z, pointB.z);
     }
 
-    public static void movePointToPlayer(final MBlockPos point) {
+    public static void movePointToPlayer(MBlockPos point) {
         point.x = (int) Math.floor(playerPosition.x);
         point.y = (int) Math.floor(playerPosition.y);
         point.z = (int) Math.floor(playerPosition.z);
@@ -114,9 +109,9 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    public static void moveSchematicToPlayer(final SchematicWorld schematic) {
+    public static void moveSchematicToPlayer(SchematicWorld schematic) {
         if (schematic != null) {
-            final MBlockPos position = schematic.position;
+            MBlockPos position = schematic.position;
             position.x = (int) Math.floor(playerPosition.x);
             position.y = (int) Math.floor(playerPosition.y);
             position.z = (int) Math.floor(playerPosition.z);
@@ -143,19 +138,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public void preInit() {
-        final Property[] sliders = {
-                ConfigurationHandler.propAlpha,
-                ConfigurationHandler.propBlockDelta,
-                ConfigurationHandler.propRenderDistance,
-                ConfigurationHandler.propPlaceDelay,
-                ConfigurationHandler.propTimeout,
-                ConfigurationHandler.propPlaceDistance
-        };
-        for (final Property prop : sliders) {
-            prop.setConfigEntryClass(GuiConfigEntries.NumberSliderEntry.class);
-        }
-
-        for (final KeyBinding keyBinding : InputHandler.KEY_BINDINGS) {
+        for (KeyBinding keyBinding : InputHandler.KEY_BINDINGS) {
             ClientRegistry.registerKeyBinding(keyBinding);
         }
     }
@@ -164,7 +147,6 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(InputHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(TickHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RenderTickHandler.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(ConfigurationHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(RenderSchematic.INSTANCE);
         MinecraftForge.EVENT_BUS.register(GuiHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(new OverlayHandler());
@@ -179,15 +161,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public File getDataDirectory() {
-        //TODO
         return Schematica.CONFIG_FOLDER;
-        /*final File file = MINECRAFT.mcDataDir;
-        try {
-            return file.getCanonicalFile();
-        } catch (final IOException e) {
-            Reference.logger.debug("Could not canonize path!", e);
-        }
-        return file;*/
     }
 
     @Override
@@ -216,8 +190,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public boolean loadSchematic(final EntityPlayer player, final File directory, final String filename) {
-        final ISchematic schematic = SchematicFormat.readFromFile(directory, filename);
+    public boolean loadSchematic(EntityPlayer player, File directory, String filename) {
+        ISchematic schematic = SchematicFormat.readFromFile(directory, filename);
         if (schematic == null) {
             return false;
         }
@@ -235,12 +209,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public boolean isPlayerQuotaExceeded(final EntityPlayer player) {
+    public boolean isPlayerQuotaExceeded(EntityPlayer player) {
         return false;
     }
 
     @Override
-    public File getPlayerSchematicDirectory(final EntityPlayer player, final boolean privateDirectory) {
+    public File getPlayerSchematicDirectory(EntityPlayer player, final boolean privateDirectory) {
         return ConfigurationHandler.schematicDirectory;
     }
 }

@@ -43,15 +43,30 @@ public abstract class AbstractChatMessage {
     public final void printMessage(ITextComponent textComponent){
         if(mc.player == null)
             return;
-        if(Config.instance.notificationMode.getValEnum() == Config.NotificationMode.MultiLine){
-            mc.ingameGUI.getChatGUI().printChatMessage(textComponent);
-            return;
-        }
-        mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(textComponent, 69);
+
+        mc.ingameGUI.getChatGUI().printChatMessage(textComponent);
     }
 
-    public final void printMessage(String textComponentMessage){
+    public final void printMessage(ITextComponent textComponent, int id) {
+        if(mc.player == null) return;
+        if(Config.instance.notificationMode.getValEnum() == Config.NotificationMode.MultiLine) printMessage(textComponent);
+        else mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(textComponent, id);
+    }
+
+    public final void printMessage(String textComponentMessage) {
         printMessage(new TextComponentTranslation(textComponentMessage));
+    }
+
+    public final void printMessage(String textComponentMessage, int id) {
+        printMessage(new TextComponentTranslation(textComponentMessage), id);
+    }
+
+    public final void printClientMessage(ITextComponent component, int id) {
+        printMessage(new TextComponentTranslation(getClientPrefix()).appendSibling(component), id);
+    }
+
+    public final void printClientMessage(String text, int id) {
+        printClientMessage(new TextComponentTranslation(text), id);
     }
 
 
@@ -103,4 +118,6 @@ public abstract class AbstractChatMessage {
     public abstract void printClientClassMessage(ITextComponent textComponent);
 
     public abstract void printClientClassMessage(String message);
+
+    public abstract String getClientPrefix();
 }

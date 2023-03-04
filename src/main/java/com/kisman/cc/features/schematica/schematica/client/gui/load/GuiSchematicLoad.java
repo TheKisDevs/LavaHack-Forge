@@ -162,7 +162,7 @@ public class GuiSchematicLoad extends GuiScreenBase {
             for (final File file : filesSchematics) {
                 name = file.getName();
 
-                this.schematicFiles.add(new GuiSchematicEntry(name, SchematicUtil.getIconFromFile(file), file.isDirectory()));
+                this.schematicFiles.add(new GuiSchematicEntry(name, SchematicUtil.getIconFromFile(), file.isDirectory()));
             }
         }
     }

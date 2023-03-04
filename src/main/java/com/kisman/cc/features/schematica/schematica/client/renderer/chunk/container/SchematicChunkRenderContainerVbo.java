@@ -14,12 +14,12 @@ import java.util.List;
 
 public class SchematicChunkRenderContainerVbo extends SchematicChunkRenderContainer {
     @Override
-    public void renderChunkLayer(final BlockRenderLayer layer) {
+    public void renderChunkLayer(BlockRenderLayer layer) {
         preRenderChunk();
 
         if (this.initialized) {
-            for (final RenderChunk renderChunk : this.renderChunks) {
-                final VertexBuffer vertexbuffer = renderChunk.getVertexBufferByLayer(layer.ordinal());
+            for (RenderChunk renderChunk : this.renderChunks) {
+                VertexBuffer vertexbuffer = renderChunk.getVertexBufferByLayer(layer.ordinal());
                 GlStateManager.pushMatrix();
                 preRenderChunk(renderChunk);
                 renderChunk.multModelviewMatrix();
@@ -48,11 +48,11 @@ public class SchematicChunkRenderContainerVbo extends SchematicChunkRenderContai
     }
 
     private void postRenderChunk() {
-        final List<VertexFormatElement> elements = DefaultVertexFormats.BLOCK.getElements();
+        List<VertexFormatElement> elements = DefaultVertexFormats.BLOCK.getElements();
 
-        for (final VertexFormatElement element : elements) {
-            final VertexFormatElement.EnumUsage usage = element.getUsage();
-            final int index = element.getIndex();
+        for (VertexFormatElement element : elements) {
+            VertexFormatElement.EnumUsage usage = element.getUsage();
+            int index = element.getIndex();
 
             switch (usage) {
             case POSITION:
@@ -87,8 +87,8 @@ public class SchematicChunkRenderContainerVbo extends SchematicChunkRenderContai
         if (this.initialized) {
             preRenderOverlay();
 
-            for (final RenderOverlay renderOverlay : this.renderOverlays) {
-                final VertexBuffer vertexBuffer = renderOverlay.getVertexBufferByLayer(BlockRenderLayer.TRANSLUCENT.ordinal());
+            for (RenderOverlay renderOverlay : this.renderOverlays) {
+                VertexBuffer vertexBuffer = renderOverlay.getVertexBufferByLayer(BlockRenderLayer.TRANSLUCENT.ordinal());
                 GlStateManager.pushMatrix();
                 preRenderChunk(renderOverlay);
                 renderOverlay.multModelviewMatrix();

@@ -23,4 +23,6 @@ public class ChatAPI extends AbstractChatMessageAPI {
     @Override public void printClassMessage(String message) {sender.printClassMessage(message);}
     @Override public void printClientClassMessage(ITextComponent textComponent) {sender.printClientClassMessage(textComponent);}
     @Override public void printClientClassMessage(String message) {sender.printClientClassMessage(message);}
+    @Override
+    public String getClientPrefix() {return sender.getClientPrefix();}
 }

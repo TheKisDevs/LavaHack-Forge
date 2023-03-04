@@ -11,14 +11,13 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.settings.SettingLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +49,7 @@ public class Module extends DisplayableFeature {
 	public Supplier<EntityPlayer> enemySupplier = null;
 
 	public boolean sendToggleMessages = true;
+	public int moduleId;
 
 	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
 
@@ -66,6 +66,7 @@ public class Module extends DisplayableFeature {
 		this.category = getClass().isAnnotationPresent(WorkInProgress.class) ? Category.WIP : category;
 		this.toggled = false;
 		this.subscribes = subscribes;
+		this.moduleId = StringUtils.stringToInt(name);
 
 		setmgr = Kisman.instance.settingsManager;
 
@@ -89,7 +90,7 @@ public class Module extends DisplayableFeature {
 		try {
 			field.get(this);
 		} catch(IllegalAccessException ignored) {
-			Kisman.LOGGER.error("Cant create enemy supplier of " + name + " module! The module will be ignored in emeny manager!");
+			Kisman.LOGGER.error("Cant create enemy supplier of " + name + " module! The module will be ignored in enemy manager!");
 			return true;
 		}
 
@@ -108,33 +109,15 @@ public class Module extends DisplayableFeature {
 
 	private void printToggleMessage() {
 		if (sendToggleMessages && Kisman.instance.init && Config.instance.notification.getValBoolean())
-			printMessage(new TextComponentTranslation(TextFormatting.GRAY
+			ChatUtility.message().printClientMessage(TextFormatting.GRAY
 					+ "Module "
 					+ (isToggled() ? TextFormatting.GREEN : TextFormatting.RED)
 					+ displayName
 					+ TextFormatting.GRAY
 					+ " has been "
 					+ (isToggled() ? "enabled" : "disabled")
-					+ "!"));
+					+ "!", moduleId);
 	}
-
-	public final void printMessage(ITextComponent textComponent) {
-		if(mc.player == null)
-			return;
-		if(Config.instance.notificationMode.getValEnum() == Config.NotificationMode.MultiLine){
-			mc.ingameGUI.getChatGUI().printChatMessage(textComponent);
-			return;
-		}
-		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(textComponent, stringToInt(displayName));
-	}
-
-	public int stringToInt(String text) {
-		int result = -1;
-		for (char c : text.toCharArray())
-			result -= c;
-		return result;
-	}
-
 
 	public void setToggled(boolean toggled) {
 		if(block) return;

@@ -10,7 +10,7 @@ public abstract class SchematicChunkRenderContainer extends ChunkRenderContainer
     protected List<RenderOverlay> renderOverlays = Lists.newArrayListWithCapacity(16 * 33 * 33);
 
     @Override
-    public void initialize(final double viewEntityX, final double viewEntityY, final double viewEntityZ) {
+    public void initialize(double viewEntityX, double viewEntityY, double viewEntityZ) {
         super.initialize(viewEntityX, viewEntityY, viewEntityZ);
         this.renderOverlays.clear();
     }

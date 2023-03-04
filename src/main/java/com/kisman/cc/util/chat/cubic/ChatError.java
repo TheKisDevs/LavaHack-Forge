@@ -7,7 +7,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 class ChatError extends AbstractChatMessage {
-    private static String getClientPrefix() {
+    public String getClientPrefix() {
         return ChatFormatting.GRAY + "[" + ChatFormatting.RED + Kisman.getName() + ChatFormatting.GRAY + "] " + ChatFormatting.RESET;
     }
 

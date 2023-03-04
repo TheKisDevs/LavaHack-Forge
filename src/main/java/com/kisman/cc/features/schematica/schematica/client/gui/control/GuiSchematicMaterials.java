@@ -76,9 +76,6 @@ public class GuiSchematicMaterials extends GuiScreenBase {
                 this.sortType.sort(this.blockList);
                 this.btnSort.displayString = " " + I18n.format(Names.Gui.Control.SORT_PREFIX + this.sortType.label);
                 this.btnSort.glyph = this.sortType.glyph;
-
-                ConfigurationHandler.propSortType.set(String.valueOf(this.sortType));
-                ConfigurationHandler.loadConfiguration();
             } else if (guiButton.id == this.btnDump.id) {
                 dumpMaterialList(this.blockList);
             } else if (guiButton.id == this.btnDone.id) {

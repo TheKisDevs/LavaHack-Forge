@@ -97,6 +97,8 @@ class WebClient(
 
         if(code == 1000) {
             Kisman.LOGGER.info("Disconnected from remote server")
+        } else if(code == -1) {
+            Kisman.LOGGER.info("Remove server is offline!")
         } else {
             if (reconnectionTriesCount > 5) {
                 Kisman.LOGGER.error("Stopping reconnection to remote server, shutting down!")

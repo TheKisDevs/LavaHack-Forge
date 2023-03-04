@@ -127,33 +127,33 @@ public abstract class CommonProxy {
         }
     }
 
-    public boolean saveSchematic(final EntityPlayer player, final File directory, String filename, final World world, @Nullable final String format, final BlockPos from, final BlockPos to) {
+    public boolean saveSchematic(EntityPlayer player, File directory, String filename, World world, @Nullable String format, BlockPos from, BlockPos to) {
         try {
             String iconName = "";
 
             try {
-                final String[] parts = filename.split(";");
+                String[] parts = filename.split(";");
                 if (parts.length == 2) {
                     iconName = parts[0];
                     filename = parts[1];
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 Reference.logger.error("Failed to parse icon data!", e);
             }
 
-            final int minX = Math.min(from.getX(), to.getX());
-            final int maxX = Math.max(from.getX(), to.getX());
-            final int minY = Math.min(from.getY(), to.getY());
-            final int maxY = Math.max(from.getY(), to.getY());
-            final int minZ = Math.min(from.getZ(), to.getZ());
-            final int maxZ = Math.max(from.getZ(), to.getZ());
+            int minX = Math.min(from.getX(), to.getX());
+            int maxX = Math.max(from.getX(), to.getX());
+            int minY = Math.min(from.getY(), to.getY());
+            int maxY = Math.max(from.getY(), to.getY());
+            int minZ = Math.min(from.getZ(), to.getZ());
+            int maxZ = Math.max(from.getZ(), to.getZ());
 
-            final short width = (short) (Math.abs(maxX - minX) + 1);
-            final short height = (short) (Math.abs(maxY - minY) + 1);
-            final short length = (short) (Math.abs(maxZ - minZ) + 1);
+            short width = (short) (Math.abs(maxX - minX) + 1);
+            short height = (short) (Math.abs(maxY - minY) + 1);
+            short length = (short) (Math.abs(maxZ - minZ) + 1);
 
-            final ISchematic schematic = new Schematic(SchematicUtil.getIconFromName(iconName), width, height, length, player.getName());
-            final SchematicContainer container = new SchematicContainer(schematic, player, world, new File(directory, filename), format, minX, maxX, minY, maxY, minZ, maxZ);
+            ISchematic schematic = new Schematic(SchematicUtil.getIconFromName(iconName), width, height, length, player.getName());
+            SchematicContainer container = new SchematicContainer(schematic, player, world, new File(directory, filename), format, minX, maxX, minY, maxY, minZ, maxZ);
             QueueTickHandler.INSTANCE.queueSchematic(container);
 
             return true;

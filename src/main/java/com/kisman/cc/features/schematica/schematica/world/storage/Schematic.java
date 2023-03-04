@@ -10,11 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.annotation.Nonnull;
 
 public class Schematic implements ISchematic {
     private static final ItemStack DEFAULT_ICON = new ItemStack(Blocks.GRASS);
@@ -29,11 +28,11 @@ public class Schematic implements ISchematic {
     private final int length;
     private String author;
 
-    public Schematic(final ItemStack icon, final int width, final int height, final int length) {
+    public Schematic(ItemStack icon, int width, int height, int length) {
         this(icon, width, height, length, "");
     }
 
-    public Schematic(final ItemStack icon, final int width, final int height, final int length, @Nonnull final String author) {
+    public Schematic(ItemStack icon, int width, int height, int length, @Nonnull String author) {
         if (author == null) {
             throw new IllegalArgumentException("Author cannot be null");
         }
@@ -50,44 +49,44 @@ public class Schematic implements ISchematic {
     }
 
     @Override
-    public IBlockState getBlockState(final BlockPos pos) {
+    public IBlockState getBlockState(BlockPos pos) {
         if (!isValid(pos)) {
             return Blocks.AIR.getDefaultState();
         }
 
-        final int x = pos.getX();
-        final int y = pos.getY();
-        final int z = pos.getZ();
-        final Block block = Block.REGISTRY.getObjectById(this.blocks[x][y][z]);
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        Block block = Block.REGISTRY.getObjectById(this.blocks[x][y][z]);
 
         return block.getStateFromMeta(this.metadata[x][y][z]);
     }
 
     @Override
-    public boolean setBlockState(final BlockPos pos, final IBlockState blockState) {
+    public boolean setBlockState(BlockPos pos, IBlockState blockState) {
         if (!isValid(pos)) {
             return false;
         }
 
-        final Block block = blockState.getBlock();
-        final int id = Block.REGISTRY.getIDForObject(block);
+        Block block = blockState.getBlock();
+        int id = Block.REGISTRY.getIDForObject(block);
         if (id == -1) {
             return false;
         }
 
-        final int meta = block.getMetaFromState(blockState);
-        final int x = pos.getX();
-        final int y = pos.getY();
-        final int z = pos.getZ();
+        int meta = block.getMetaFromState(blockState);
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
 
-        this.blocks[x][y][z] = (short) id;
-        this.metadata[x][y][z] = (byte) meta;
+        blocks[x][y][z] = (short) id;
+        metadata[x][y][z] = (byte) meta;
         return true;
     }
 
     @Override
-    public TileEntity getTileEntity(final BlockPos pos) {
-        for (final TileEntity tileEntity : this.tileEntities) {
+    public TileEntity getTileEntity(BlockPos pos) {
+        for (TileEntity tileEntity : tileEntities) {
             if (tileEntity.getPos().equals(pos)) {
                 return tileEntity;
             }
@@ -98,11 +97,11 @@ public class Schematic implements ISchematic {
 
     @Override
     public List<TileEntity> getTileEntities() {
-        return this.tileEntities;
+        return tileEntities;
     }
 
     @Override
-    public void setTileEntity(final BlockPos pos, final TileEntity tileEntity) {
+    public void setTileEntity(BlockPos pos, TileEntity tileEntity) {
         if (!isValid(pos)) {
             return;
         }
@@ -115,11 +114,11 @@ public class Schematic implements ISchematic {
     }
 
     @Override
-    public void removeTileEntity(final BlockPos pos) {
-        final Iterator<TileEntity> iterator = this.tileEntities.iterator();
+    public void removeTileEntity(BlockPos pos) {
+        Iterator<TileEntity> iterator = tileEntities.iterator();
 
         while (iterator.hasNext()) {
-            final TileEntity tileEntity = iterator.next();
+            TileEntity tileEntity = iterator.next();
             if (tileEntity.getPos().equals(pos)) {
                 iterator.remove();
             }
@@ -128,33 +127,33 @@ public class Schematic implements ISchematic {
 
     @Override
     public List<Entity> getEntities() {
-        return this.entities;
+        return entities;
     }
 
     @Override
-    public void addEntity(final Entity entity) {
+    public void addEntity(Entity entity) {
         if (entity == null || entity.getUniqueID() == null || entity instanceof EntityPlayer) {
             return;
         }
 
-        for (final Entity e : this.entities) {
+        for (Entity e : entities) {
             if (entity.getUniqueID().equals(e.getUniqueID())) {
                 return;
             }
         }
 
-        this.entities.add(entity);
+        entities.add(entity);
     }
 
     @Override
-    public void removeEntity(final Entity entity) {
+    public void removeEntity(Entity entity) {
         if (entity == null || entity.getUniqueID() == null) {
             return;
         }
 
-        final Iterator<Entity> iterator = this.entities.iterator();
+        Iterator<Entity> iterator = entities.iterator();
         while (iterator.hasNext()) {
-            final Entity e = iterator.next();
+            Entity e = iterator.next();
             if (entity.getUniqueID().equals(e.getUniqueID())) {
                 iterator.remove();
             }
@@ -163,11 +162,11 @@ public class Schematic implements ISchematic {
 
     @Override
     public ItemStack getIcon() {
-        return this.icon;
+        return icon;
     }
 
     @Override
-    public void setIcon(final ItemStack icon) {
+    public void setIcon(ItemStack icon) {
         if (icon != null) {
             this.icon = icon;
         } else {
@@ -177,23 +176,23 @@ public class Schematic implements ISchematic {
 
     @Override
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     @Override
     public int getLength() {
-        return this.length;
+        return length;
     }
 
     @Override
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
-    private boolean isValid(final BlockPos pos) {
-        final int x = pos.getX();
-        final int y = pos.getY();
-        final int z = pos.getZ();
+    private boolean isValid(BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
 
         return !(x < 0 || y < 0 || z < 0 || x >= this.width || y >= this.height || z >= this.length);
     }
@@ -201,11 +200,11 @@ public class Schematic implements ISchematic {
     @Override
     @Nonnull
     public String getAuthor() {
-        return this.author;
+        return author;
     }
 
     @Override
-    public void setAuthor(@Nonnull final String author) {
+    public void setAuthor(@Nonnull String author) {
         if (author == null) {
             throw new IllegalArgumentException("Author cannot be null");
         }

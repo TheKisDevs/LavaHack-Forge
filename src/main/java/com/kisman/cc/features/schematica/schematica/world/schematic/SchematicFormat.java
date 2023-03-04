@@ -4,28 +4,25 @@ import com.kisman.cc.features.schematica.schematica.api.ISchematic;
 import com.kisman.cc.features.schematica.schematica.api.event.PostSchematicCaptureEvent;
 import com.kisman.cc.features.schematica.schematica.reference.Names;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
+import com.kisman.cc.mixin.accessors.INBTTagCompound;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.io.DataOutput;
+import javax.annotation.Nullable;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import javax.annotation.Nullable;
-
-@SuppressWarnings("TryFinallyCanBeTryWithResources")
+@SuppressWarnings({"ConstantConditions"})
 public abstract class SchematicFormat {
     // LinkedHashMap to ensure defined iteration order
-    public static final Map<String, SchematicFormat> FORMATS = new LinkedHashMap<String, SchematicFormat>();
-    public static String FORMAT_DEFAULT;
+    public static final Map<String, SchematicFormat> FORMATS = new LinkedHashMap<>();
+    public static String FORMAT_DEFAULT = Names.NBT.FORMAT_ALPHA;
 
     public abstract ISchematic readFromNBT(NBTTagCompound tagCompound);
 
@@ -41,12 +38,12 @@ public abstract class SchematicFormat {
      */
     public abstract String getExtension();
 
-    public static ISchematic readFromFile(final File file) {
+    public static ISchematic readFromFile(File file) {
         try {
-            final NBTTagCompound tagCompound = SchematicUtil.readTagCompoundFromFile(file);
-            final SchematicFormat schematicFormat;
+            NBTTagCompound tagCompound = SchematicUtil.readTagCompoundFromFile(file);
+            SchematicFormat schematicFormat;
             if (tagCompound.hasKey(Names.NBT.MATERIALS)) {
-                final String format = tagCompound.getString(Names.NBT.MATERIALS);
+                String format = tagCompound.getString(Names.NBT.MATERIALS);
                 schematicFormat = FORMATS.get(format);
 
                 if (schematicFormat == null) {
@@ -57,14 +54,14 @@ public abstract class SchematicFormat {
             }
 
             return schematicFormat.readFromNBT(tagCompound);
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             Reference.logger.error("Failed to read schematic!", ex);
         }
 
         return null;
     }
 
-    public static ISchematic readFromFile(final File directory, final String filename) {
+    public static ISchematic readFromFile(File directory, String filename) {
         return readFromFile(new File(directory, filename));
     }
 
@@ -76,31 +73,24 @@ public abstract class SchematicFormat {
      * @param schematic The schematic to write
      * @return True if successful
      */
-    public static boolean writeToFile(final File file, @Nullable String format, final ISchematic schematic) {
+    public static boolean writeToFile(File file, @Nullable String format, ISchematic schematic) {
         try {
-            if (format == null) {
-                format = FORMAT_DEFAULT;
-            }
-
-            if (!FORMATS.containsKey(format)) {
-                throw new UnsupportedFormatException(format);
-            }
-
-            final PostSchematicCaptureEvent event = new PostSchematicCaptureEvent(schematic);
+            PostSchematicCaptureEvent event = new PostSchematicCaptureEvent(schematic);
             MinecraftForge.EVENT_BUS.post(event);
 
-            final NBTTagCompound tagCompound = new NBTTagCompound();
+            NBTTagCompound tagCompound = new NBTTagCompound();
 
-            FORMATS.get(format).writeToNBT(tagCompound, schematic);
+            FORMATS.get(FORMAT_DEFAULT).writeToNBT(tagCompound, schematic);
 
-            final DataOutputStream dataOutputStream = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
+            DataOutputStream dataOutputStream = new DataOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
 
             try {
-                Method method = Class.forName("NBTTagCompound").getDeclaredMethod("writeEntry", String.class, NBTBase.class, DataOutput.class);
-                method.setAccessible(true);
-                method.invoke(null, Names.NBT.ROOT, tagCompound, dataOutputStream);
+                dataOutputStream.writeByte(tagCompound.getId());
 
-//                NBTTagCompound.writeEntry(Names.NBT.ROOT, tagCompound, dataOutputStream);
+                if (tagCompound.getId() != 0) {
+                    dataOutputStream.writeUTF(Names.NBT.ROOT);
+                    ((INBTTagCompound) tagCompound).handleWrite(dataOutputStream);
+                }
             } finally {
                 dataOutputStream.close();
             }
@@ -134,9 +124,9 @@ public abstract class SchematicFormat {
      * @param schematic The schematic to write
      * @param player The player to notify
      */
-    public static void writeToFileAndNotify(final File file, @Nullable final String format, final ISchematic schematic, final EntityPlayer player) {
-        final boolean success = writeToFile(file, format, schematic);
-        final String message = success ? Names.Command.Save.Message.SAVE_SUCCESSFUL : Names.Command.Save.Message.SAVE_FAILED;
+    public static void writeToFileAndNotify(File file, @Nullable String format, ISchematic schematic, EntityPlayer player) {
+        boolean success = writeToFile(file, format, schematic);
+        String message = success ? Names.Command.Save.Message.SAVE_SUCCESSFUL : Names.Command.Save.Message.SAVE_FAILED;
         player.sendMessage(new TextComponentTranslation(message, file.getName()));
     }
 
@@ -178,8 +168,5 @@ public abstract class SchematicFormat {
         // TODO?
         // FORMATS.put(Names.NBT.FORMAT_CLASSIC, new SchematicClassic());
         FORMATS.put(Names.NBT.FORMAT_ALPHA, new SchematicAlpha());
-        FORMATS.put(Names.NBT.FORMAT_STRUCTURE, new SchematicStructure());
-
-        FORMAT_DEFAULT = Names.NBT.FORMAT_ALPHA;
     }
 }

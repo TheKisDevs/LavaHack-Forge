@@ -35,7 +35,7 @@ public class GuiSchematicSave extends GuiScreenBase {
     private GuiNumericField numericBZ = null;
 
     private GuiButton btnEnable = null;
-    private GuiButton btnFormat = null;
+//    private GuiButton btnFormat = null;
     private GuiButton btnSave = null;
     private GuiTextField tfFilename = null;
 
@@ -57,9 +57,9 @@ public class GuiSchematicSave extends GuiScreenBase {
     private final String strOn = I18n.format(Names.Gui.ON);
     private final String strOff = I18n.format(Names.Gui.OFF);
 
-    public GuiSchematicSave(final GuiScreen guiScreen) {
+    public GuiSchematicSave(GuiScreen guiScreen) {
         super(guiScreen);
-        this.format = nextFormat();
+        this.format = SchematicFormat.FORMAT_DEFAULT;
     }
 
     @Override
@@ -105,9 +105,9 @@ public class GuiSchematicSave extends GuiScreenBase {
         this.btnSave.enabled = ClientProxy.isRenderingGuide && Schematica.proxy.isSaveEnabled || ClientProxy.schematic != null;
         this.buttonList.add(this.btnSave);
 
-        this.btnFormat = new GuiButton(id++, this.width - 155, this.height - 55, 145, 20, I18n.format(Names.Gui.Save.FORMAT, I18n.format(SchematicFormat.getFormatName(this.format))));
-        this.btnFormat.enabled = ClientProxy.isRenderingGuide && Schematica.proxy.isSaveEnabled || ClientProxy.schematic != null;
-        this.buttonList.add(this.btnFormat);
+//        this.btnFormat = new GuiButton(id++, this.width - 155, this.height - 55, 145, 20, I18n.format(Names.Gui.Save.FORMAT, I18n.format(SchematicFormat.getFormatName(this.format))));
+//        this.btnFormat.enabled = ClientProxy.isRenderingGuide && Schematica.proxy.isSaveEnabled || ClientProxy.schematic != null;
+//        this.buttonList.add(this.btnFormat);
 
         this.tfFilename.setMaxStringLength(1024);
         this.tfFilename.setText(this.filename);
@@ -123,19 +123,19 @@ public class GuiSchematicSave extends GuiScreenBase {
         setPoint(this.numericBX, this.numericBY, this.numericBZ, ClientProxy.pointB);
     }
 
-    private void setMinMax(final GuiNumericField numericField) {
+    private void setMinMax(GuiNumericField numericField) {
         numericField.setMinimum(Constants.World.MINIMUM_COORD);
         numericField.setMaximum(Constants.World.MAXIMUM_COORD);
     }
 
-    private void setPoint(final GuiNumericField numX, final GuiNumericField numY, final GuiNumericField numZ, final BlockPos point) {
+    private void setPoint(GuiNumericField numX, GuiNumericField numY, GuiNumericField numZ, BlockPos point) {
         numX.setValue(point.getX());
         numY.setValue(point.getY());
         numZ.setValue(point.getZ());
     }
 
     @Override
-    protected void actionPerformed(final GuiButton guiButton) {
+    protected void actionPerformed(GuiButton guiButton) {
         if (guiButton.enabled) {
             if (guiButton.id == this.btnPointA.id) {
                 ClientProxy.movePointToPlayer(ClientProxy.pointA);
@@ -167,12 +167,12 @@ public class GuiSchematicSave extends GuiScreenBase {
                 ClientProxy.isRenderingGuide = !ClientProxy.isRenderingGuide && Schematica.proxy.isSaveEnabled;
                 this.btnEnable.displayString = ClientProxy.isRenderingGuide ? this.strOn : this.strOff;
                 this.btnSave.enabled = ClientProxy.isRenderingGuide || ClientProxy.schematic != null;
-                this.btnFormat.enabled = ClientProxy.isRenderingGuide || ClientProxy.schematic != null;
-            } else if (guiButton.id == this.btnFormat.id) {
-                this.format = nextFormat();
-                this.btnFormat.displayString = I18n.format(Names.Gui.Save.FORMAT, I18n.format(SchematicFormat.getFormatName(this.format)));
+//                this.btnFormat.enabled = ClientProxy.isRenderingGuide || ClientProxy.schematic != null;
+//            } else if (guiButton.id == this.btnFormat.id) {
+//                this.format = nextFormat();
+//                this.btnFormat.displayString = I18n.format(Names.Gui.Save.FORMAT, I18n.format(SchematicFormat.getFormatName(this.format)));
             } else if (guiButton.id == this.btnSave.id) {
-                final String path = this.tfFilename.getText() + SchematicFormat.getExtension(this.format);
+                String path = this.tfFilename.getText() + SchematicFormat.getExtension(this.format);
                 if (ClientProxy.isRenderingGuide) {
                     if (Schematica.proxy.saveSchematic(this.mc.player, ConfigurationHandler.schematicDirectory, path, this.mc.world, this.format, ClientProxy.pointMin, ClientProxy.pointMax)) {
                         this.filename = "";
@@ -186,13 +186,13 @@ public class GuiSchematicSave extends GuiScreenBase {
     }
 
     @Override
-    protected void keyTyped(final char character, final int code) throws IOException {
+    protected void keyTyped(char character, int code) throws IOException {
         super.keyTyped(character, code);
         this.filename = this.tfFilename.getText();
     }
 
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // drawDefaultBackground();
 
         drawString(this.fontRenderer, this.strSaveSelection, this.width - 205, this.height - 70, 0xFFFFFF);

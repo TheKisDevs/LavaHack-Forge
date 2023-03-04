@@ -8,6 +8,7 @@ import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.enums.BindType;
 import kotlin.jvm.functions.Function1;
@@ -20,6 +21,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class Setting extends DisplayableFeature {
+	public int settingId;
 	public Supplier<Boolean> visibleSupplier = () -> true;
 
 	public boolean haveDisplayInfo = false;
@@ -79,6 +81,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, int key) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -88,6 +91,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, String dString, boolean opening) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -98,6 +102,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, ArrayList<String> options){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -111,6 +116,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String sval, List<String> options){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -124,6 +130,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, Enum<?> options){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -140,6 +147,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, boolean bval){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -150,6 +158,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, double dval, double min, double max, NumberType numberType){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -164,6 +173,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, double dval, double min, double max, boolean onlyint){
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = name;
@@ -178,6 +188,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, Colour colour) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
@@ -192,6 +203,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, Entity entity) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
@@ -201,6 +213,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title, ItemStack[] items) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
@@ -214,6 +227,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting(String name, Module parent, String title) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		this.displayName = name;
 		this.parent = parent;
 		this.title = title;
@@ -506,6 +520,7 @@ public class Setting extends DisplayableFeature {
 
 	public Setting setName(String name) {
 		this.name = name;
+		this.settingId = StringUtils.stringToInt(name);
 		return this;
 	}
 

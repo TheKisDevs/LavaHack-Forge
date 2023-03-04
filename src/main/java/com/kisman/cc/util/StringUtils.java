@@ -12,4 +12,13 @@ public class StringUtils {
         }
         return sb;
     }
+
+    public static int stringToInt(String text) {
+        int result = -1;
+
+        for (char c : text.toCharArray()) result -= c;
+
+        return result;
+    }
+
 }

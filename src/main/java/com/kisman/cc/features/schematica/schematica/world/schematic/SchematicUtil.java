@@ -2,13 +2,10 @@ package com.kisman.cc.features.schematica.schematica.world.schematic;
 
 import com.kisman.cc.features.schematica.schematica.reference.Names;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,17 +14,18 @@ import java.io.IOException;
 public final class SchematicUtil {
     public static final ItemStack DEFAULT_ICON = new ItemStack(Blocks.GRASS);
 
-    public static NBTTagCompound readTagCompoundFromFile(final File file) throws IOException {
+    public static NBTTagCompound readTagCompoundFromFile(File file) throws IOException {
         try {
             return CompressedStreamTools.readCompressed(new FileInputStream(file));
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             Reference.logger.warn("Failed compressed read, trying normal read...", ex);
             return CompressedStreamTools.read(file);
         }
     }
 
-    public static ItemStack getIconFromName(final String iconName) {
-        ResourceLocation rl = null;
+    public static ItemStack getIconFromName(String iconName) {
+        //TODO: fix it lol
+        /*ResourceLocation rl = null;
         int damage = 0;
 
         final String[] parts = iconName.split(",");
@@ -53,7 +51,7 @@ public final class SchematicUtil {
         final ItemStack item = new ItemStack(Item.REGISTRY.getObject(rl), 1, damage);
         if (!item.isEmpty()) {
             return item;
-        }
+        }*/
 
         return DEFAULT_ICON.copy();
     }
@@ -72,13 +70,7 @@ public final class SchematicUtil {
         return icon;
     }
 
-    public static ItemStack getIconFromFile(final File file) {
-        try {
-            return getIconFromNBT(readTagCompoundFromFile(file));
-        } catch (final Exception e) {
-            Reference.logger.error("Failed to read schematic icon!", e);
-        }
-
+    public static ItemStack getIconFromFile() {
         return DEFAULT_ICON.copy();
     }
 }

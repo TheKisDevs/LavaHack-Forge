@@ -1,7 +1,6 @@
 package com.kisman.cc.features.schematica.schematica;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
 import com.kisman.cc.features.schematica.schematica.handler.DownloadHandler;
 import com.kisman.cc.features.schematica.schematica.handler.QueueTickHandler;
 import com.kisman.cc.features.schematica.schematica.network.PacketHandler;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 
 public class Schematica {
     public static File CONFIG_FOLDER = new File(Kisman.fileName + "schematica/");
+    public static File SCHEMATICS_FOLDER = new File(Kisman.fileName + "schematica/schematics/");
     public static File CONFIG_FILE = new File(Kisman.fileName + "schematica/schematica.kis");
 
     public static Schematica instance = new Schematica();
@@ -25,30 +25,6 @@ public class Schematica {
 
     public void init() {
         Kisman.processAccountData();
-
-        if(!CONFIG_FILE.exists()) {
-            try {
-                CONFIG_FILE.createNewFile();
-            } catch (IOException e) {
-                Reference.logger.error("Cannot create the config file!");
-            }
-        }
-
-        ConfigurationHandler.init(CONFIG_FILE);
-
-        proxy.preInit();
-
-
-        PacketHandler.init();
-
-        MinecraftForge.EVENT_BUS.register(QueueTickHandler.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(DownloadHandler.INSTANCE);
-
-
-        proxy.init();
-
-
-        proxy.postInit();
 
         properties.put("schematica.gui.x", "X:");
         properties.put("schematica.gui.y", "Y:");
@@ -204,5 +180,28 @@ public class Schematica {
         properties.put("schematica.format.alpha", "Alpha (standard)");
         properties.put("schematica.format.structure", "Structure block");
         properties.put("schematica.format.invalid", "Invalid");
+
+        if(!CONFIG_FILE.exists()) {
+            try {
+                CONFIG_FILE.createNewFile();
+            } catch (IOException e) {
+                Reference.logger.error("Cannot create the config file!");
+            }
+        }
+
+        proxy.createFolders();
+        proxy.preInit();
+
+
+        PacketHandler.init();
+
+        MinecraftForge.EVENT_BUS.register(QueueTickHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(DownloadHandler.INSTANCE);
+
+
+        proxy.init();
+
+
+        proxy.postInit();
     }
 }

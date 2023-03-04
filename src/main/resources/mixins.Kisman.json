@@ -34,6 +34,7 @@
     "MixinMinecraft",
     "MixinModelBook",
     "MixinMovementInputFromOptions",
+    "MixinNBTTagCompound",
     "MixinNetworkManager",
     "MixinParticleManager",
     "MixinPlayerControllerMP",
@@ -80,6 +81,7 @@
   ],
   "client": [
     "MixinChunkRenderContainer",
+    "MixinChunkRenderDispatcher",
     "MixinRender",
     "MixinRenderChunk",
     "MixinRenderXPOrb",
