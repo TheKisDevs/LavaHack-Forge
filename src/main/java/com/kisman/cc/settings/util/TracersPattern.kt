@@ -44,7 +44,7 @@ class TracersPattern(
             settings.add(TracersSetting(group.add(Setting("${type.name} Mode", module, TracersModes.None).setTitle("Mode")), type, TracersSettingTypes.Mode))
             settings.add(TracersSetting(group.add(Setting("${type.name} Color 1", module, Colour(-1)).setTitle("First")), type, TracersSettingTypes.Color1))
             settings.add(TracersSetting(group.add(Setting("${type.name} Color 2", module, Colour(-1)).setTitle("Second")), type, TracersSettingTypes.Color2))
-            settings.add(TracersSetting(group.add(Setting("${type.name} Width", module, 1.0, 0.1, 5.0, false).setTitle("Width")), type, TracersSettingTypes.Width))
+//            settings.add(TracersSetting(group.add(Setting("${type.name} Width", module, 1.0, 0.1, 5.0, false).setTitle("Width")), type, TracersSettingTypes.Width))
         }
     }
 
