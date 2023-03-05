@@ -155,7 +155,6 @@ public class AutoRer extends ShaderableModule {
     private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop).setVisible(break_::getValBoolean)));
     private final Setting clientSide = register(break__.add(new Setting("Client Side", this, ClientSideMode.None).setVisible(break_::getValBoolean)));
     private final Setting clientSideWhen = register(break__.add(new Setting("Client Side On", this, ClientSideWhen.Break).setVisible(break_::getValBoolean)));
-    private final Setting manualBreaker = register(break__.add(new Setting("Manual Breaker", this, false).setTitle("Manual").setVisible(break_::getValBoolean)));
     private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false).setVisible(break_::getValBoolean)));
     private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break").setVisible(break_::getValBoolean)));
     private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setTitle("Packet").setVisible(break_::getValBoolean)));
@@ -170,7 +169,6 @@ public class AutoRer extends ShaderableModule {
     private final SettingGroup fromToDelayGroup = /*register*/(delay.add(new SettingGroup(new Setting("From To", this))));
     private final Setting fromPlaceToBreakDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From P To B")));
     private final Setting fromBreakToPlaceDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From B To P")));
-    private final Setting calcDelay = register(delay.add(new Setting("Calc Delay", this, 0, 0, 20000, NumberType.TIME).setTitle("Calc")));
     private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
     private final SettingGroup sequentialGroup = register(delay.add(new SettingGroup(new Setting("Sequential", this))));
     private final Setting sequentialBreakDelay = register(sequentialGroup.add(new Setting("Sequential Break Delay", this, 0, 0, 20, true).setTitle("Break")));
@@ -194,7 +192,6 @@ public class AutoRer extends ShaderableModule {
     private final TimerUtils breakTimer = timer();
     private final TimerUtils fromPlaceToBreakTimer = timer();
     private final TimerUtils fromBreakToPlaceTimer = timer();
-    private final TimerUtils calcTimer = timer();
     private final TimerUtils clearTimer = timer();
     private final TimerUtils predictTimer = timer();
     private final TimerUtils manualTimer = timer();
@@ -366,31 +363,6 @@ public class AutoRer extends ShaderableModule {
 
     private boolean shouldSilent() {
         return (switch_.getValEnum() == SwitchMode.Silent || switch_.getValEnum() == SwitchMode.SilentBypass) && mc.player.getHeldItemOffhand().item != Items.END_CRYSTAL && mc.player.getHeldItemMainhand().item != Items.END_CRYSTAL && InventoryUtil.findItem(Items.END_CRYSTAL, 0, 9) == -1;
-    }
-
-    public synchronized void doAutoRerForThread() {
-        if(mc.player == null || mc.world == null) return;
-        if(manualBreaker.getValBoolean()) manualBreaker();
-        if(fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-            doCalculatePlace();
-            calcTimer.reset();
-        }
-    }
-
-    private void manualBreaker() {
-        RayTraceResult result = mc.objectMouseOver;
-        if(manualTimer.passedMillis(200) && mc.gameSettings.keyBindUseItem.isKeyDown() && mc.player.getHeldItemOffhand().getItem() != Items.GOLDEN_APPLE && mc.player.inventory.getCurrentItem().getItem() != Items.GOLDEN_APPLE && mc.player.inventory.getCurrentItem().getItem() != Items.BOW && mc.player.inventory.getCurrentItem().getItem() != Items.EXPERIENCE_BOTTLE && result != null) {
-            if(result.typeOfHit.equals(RayTraceResult.Type.ENTITY) && result.entityHit instanceof EntityEnderCrystal) {
-                mc.player.connection.sendPacket(new CPacketUseEntity(result.entityHit));
-                manualTimer.reset();
-            } else if(result.typeOfHit.equals(RayTraceResult.Type.BLOCK)) {
-                for (Entity target : mc.world.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(new BlockPos(mc.objectMouseOver.getBlockPos().getX(), mc.objectMouseOver.getBlockPos().getY() + 1.0, mc.objectMouseOver.getBlockPos().getZ())))) {
-                    if(!(target instanceof EntityEnderCrystal)) continue;
-                    mc.player.connection.sendPacket(new CPacketUseEntity(target));
-                    manualTimer.reset();
-                }
-            }
-        }
     }
 
     @EventHandler
