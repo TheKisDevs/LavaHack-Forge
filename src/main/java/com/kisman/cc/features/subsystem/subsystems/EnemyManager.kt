@@ -4,8 +4,8 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.RenderEntityEvent
 import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.subsystem.SubSystem
-import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.entity.EntityUtil
+import com.kisman.cc.util.manager.friend.FriendManager
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
@@ -60,7 +60,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
     private val renderEntity = Listener<RenderEntityEvent.Check>(EventHook {
         val entity = it.entity
 
-        if(entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity))) {
+        if(entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity)) && !FriendManager.instance.isFriend(entity)) {
             val distance = mc.player.getDistanceSq(entity)
 
             if(distance < minDistancePlayer) {

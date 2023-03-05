@@ -100,22 +100,6 @@ public class Vector3d extends Vector2d {
         return this;
     }
 
-    public Vector3i toVector3i() {
-        return new Vector3i((int) Math.floor(this.x), (int) Math.floor(this.y), (int) Math.floor(this.z));
-    }
-
-    public Vector3i toVector3i(final Vector3i vec) {
-        return vec.set((int) Math.floor(this.x), (int) Math.floor(this.y), (int) Math.floor(this.z));
-    }
-
-    public Vector3f toVector3f() {
-        return new Vector3f((float) Math.floor(this.x), (float) Math.floor(this.y), (float) Math.floor(this.z));
-    }
-
-    public Vector3f toVector3f(final Vector3f vec) {
-        return vec.set((float) Math.floor(this.x), (float) Math.floor(this.y), (float) Math.floor(this.z));
-    }
-
     @Override
     public Vector3d clone() {
         return new Vector3d(this);

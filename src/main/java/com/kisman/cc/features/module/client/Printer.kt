@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.misc
+package com.kisman.cc.features.module.client
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
@@ -11,7 +11,7 @@ import com.kisman.cc.features.schematica.schematica.client.printer.SchematicPrin
 class Printer : Module(
     "Printer",
     "Integration of Schematica's printer",
-    Category.MISC
+    Category.CLIENT
 ) {
     init {
         super.setDisplayInfo { if(SchematicPrinter.INSTANCE.IsStationary()) "Stationary" else "Printing" }

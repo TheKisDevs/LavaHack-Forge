@@ -48,6 +48,7 @@ public class NoRender extends Module {
     private final Setting water = register(new Setting("Water", this, false));
     private final Setting crosshair = register(new Setting("Crosshair", this, false));
     public Setting hands = register(new Setting("Hands", this, false));
+    private final Setting skylight = register(new Setting("Skylight", this, false));
 
     public NoRender() {
         super("NoRender", "no render", Category.RENDER);
@@ -63,6 +64,7 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.subscribe(send);
         Kisman.EVENT_BUS.subscribe(crosshair_);
         Kisman.EVENT_BUS.subscribe(renderEntity);
+        Kisman.EVENT_BUS.subscribe(updateLightmap);
     }
 
     public void onDisable() {
@@ -75,6 +77,7 @@ public class NoRender extends Module {
         Kisman.EVENT_BUS.unsubscribe(bossBar_);
         Kisman.EVENT_BUS.unsubscribe(setupFog);
         Kisman.EVENT_BUS.unsubscribe(renderEntity);
+        Kisman.EVENT_BUS.unsubscribe(updateLightmap);
     }
 
     @EventHandler private final Listener<EventRenderAttackIndicator> crosshair_ = new Listener<>(event -> {
@@ -108,6 +111,11 @@ public class NoRender extends Module {
     @EventHandler private final Listener<RenderEntityEvent.Check> renderEntity = new Listener<>(event -> {
         if(glow.getValBoolean() && event.getEntity().glowing) event.getEntity().glowing = false;
     });
+
+    @EventHandler private final Listener<EventUpdateLightmap.Pre> updateLightmap = new Listener<>(event -> {
+        if(skylight.getValBoolean()) event.cancel();
+    });
+
 
     public void update() {
         if(mc.player == null || mc.world == null) return;

@@ -31,24 +31,24 @@ public class HudModuleManager {
 		add(new ArrayListModule());
 		add(new BindList());
 		add(new Coords());
-		add(new CrystalPerSecond());
+		add(new CrystalPerSecond2());
 		add(new CurrentConfig());
-		add(new Fps());
+		add(new Fps2());
 		add(new Indicators());
 		add(new InventoryHud());
 		add(new Logo());
 		add(new PearlCooldown());
-		add(new Ping());
+		add(new Ping2());
 		add(new PotionHud());
 		add(new PvpInfo());
 		add(new PvpResources());
 		add(new Radar());
-		add(new ServerIp());
+		add(new ServerIp2());
 		add(new Speed());
 		add(new TargetHUD());
 		add(new TextRadar());
-		add(new Tps());
-		add(new Welcomer());
+		add(new Tps2());
+		add(new Welcomer2());
 
 		add(fakeModule);
 	}

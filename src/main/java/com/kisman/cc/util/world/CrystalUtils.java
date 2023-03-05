@@ -1,6 +1,5 @@
 package com.kisman.cc.util.world;
 
-import com.kisman.cc.features.module.combat.autorer.MotionPredictor;
 import com.kisman.cc.util.entity.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -52,10 +51,6 @@ public class CrystalUtils {
 
     public static float calculateDamage(BlockPos pos, Entity entity, boolean terrain) {
         return calculateDamage(mc.world, pos.getX(), pos.getY(), pos.getZ(), entity, terrain);
-    }
-
-    public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, MotionPredictor predictor, int interlopedAmount, boolean terrain) {
-        return calculateDamage(world, posX, posY, posZ, entity, predictor.getEntityBoundingBox(), interlopedAmount, terrain);
     }
 
     public static float calculateDamage(World world, double posX, double posY, double posZ, Entity entity, AxisAlignedBB bb, int interlopedAmount, boolean terrain) {

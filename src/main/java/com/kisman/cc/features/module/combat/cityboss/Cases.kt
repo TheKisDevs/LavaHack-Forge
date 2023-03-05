@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module.combat.cityboss
 
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.block
 import com.kisman.cc.util.render.left
 import com.kisman.cc.util.render.right
 import com.kisman.cc.util.world.BlockUtil
@@ -90,7 +91,7 @@ enum class Cases {
     private fun valid(
         pos : BlockPos,
         newVersion : Boolean
-    ) : Boolean = pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
+    ) : Boolean = block(pos) != Blocks.BEDROCK && pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
 
     fun howManyAirs(
         facing : EnumFacing,
@@ -103,7 +104,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (mc.world.getBlockState(pos2).block == Blocks.AIR) {
+                if (block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -124,7 +125,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if(mc.world.getBlockState(pos2).block == Blocks.AIR) {
+                if(block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -181,7 +182,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
                     return false
                 }
             }
@@ -200,7 +201,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (mc.world.getBlockState(pos2).block != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
                     return false
                 }
             }

@@ -35,22 +35,22 @@ class ChatModifier : Module(
             val suffix = StringBuilder()
 
             if(greenText.valBoolean) {
-                prefix.append(">")
+                prefix.append("> ")
             }
 
             if(autoGlobal.valBoolean) {
-                prefix.append("!")
+                prefix.append("! ")
             }
 
             if(suffix_.valBoolean) {
-                suffix.append("${Kisman.getName()} own you and all")
+                suffix.append(" ${Kisman.getName()} own you and all")
             }
 
             if(antiSpamBypass.valBoolean) {
-                suffix.append("${Random.nextInt()}")
+                suffix.append(" ${Random.nextInt()}")
             }
 
-            event.message = "$prefix ${event.message} $suffix"
+            event.message = "$prefix${event.message}$suffix"
         }
     }
 }

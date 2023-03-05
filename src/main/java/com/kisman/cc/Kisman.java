@@ -199,7 +199,7 @@ public class Kisman {
 //        processContainerCheck();
         processResourceCacheCheck();
 
-        WebSocketsManagerKt.initClient();
+        ThreadsKt.getExecutor().submit(WebSocketsManagerKt::initClient);
 
         progressBar = new ProgressBarController("LavaHack");
 

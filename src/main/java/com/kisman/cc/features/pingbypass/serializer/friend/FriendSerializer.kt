@@ -52,7 +52,7 @@ class FriendSerializer : Serializer<FriendEvent> {
         synchronized(changed) {
             changed.clear()
 
-            for(friend in  FriendManager.instance.friends) {
+            for(friend in FriendManager.instance.friends) {
                 changed.add(FriendEvent(friend, FriendEvent.Type.Add))
             }
         }

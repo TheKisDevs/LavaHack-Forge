@@ -75,3 +75,25 @@ fun annotationCheck(
     reportIssue("Got an exception in \"annotationCheck\" method: ${e.message}, key is ${AccountData.key}")
     false
 }
+
+val securityManager = SecurityManagerImplementation()
+
+fun callerClass() : Class<*>? = callerClass(4)
+
+fun callerClass(
+    depth : Int
+) : Class<*>? = securityManager.callerClass(depth)
+
+class SecurityManagerImplementation : SecurityManager() {
+    fun callerClass(
+        depth : Int
+    ) : Class<*>? {
+        val stack = classContext
+
+        return if(stack.size < depth + 1) {
+            null
+        } else {
+            stack[depth]
+        }
+    }
+}

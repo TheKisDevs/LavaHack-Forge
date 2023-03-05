@@ -1,6 +1,5 @@
 package com.kisman.cc.pingbypass.server.protocol
 
-import com.kisman.cc.features.hud.modules.Ping
 import com.kisman.cc.pingbypass.server.protocol.packet.PingBypassPacket
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.PacketBuffer

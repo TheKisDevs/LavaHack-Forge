@@ -14,15 +14,10 @@ import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.kisman.cc.features.module.Module.mc;
 
 public class ModuleManager {
 	public List<Module> modules = new ArrayList<>();
@@ -69,6 +64,7 @@ public class ModuleManager {
 		add(new PacketIDGetterTest());
 		add(new PacketMineProviderTest());
 		add(new RectTest());
+		add(new RotationTest());
 //		add(new ScaffoldTest());
 //		add(new ScaffoldTest2());
 		add(new ScreenShaders());
@@ -88,9 +84,7 @@ public class ModuleManager {
 		add(new AutoAnvil());
 		add(new AutoArmor());
 		add(AutoCrystalPvP.INSTANCE);
-		add(new AutoFirework());
 		add(new AutoObsidian());
-		add(new AutoPot());
 		add(new AutoQuiver());
 		add(new AutoRer());
 		add(new AutoTrap());
@@ -140,6 +134,7 @@ public class ModuleManager {
 		add(NoSpoof.INSTANCE);
 		add(new PauseBaritone());
 		add(PingBypass.INSTANCE);
+		add(new Printer());
 		add(new SchematicaModule());
 		add(new ViaForgeModule());
 		//render
@@ -257,7 +252,7 @@ public class ModuleManager {
 		add(new LogoutSpots());
 		add(new MiddleClick());
 		add(new NewChunks());
-		add(new NoFallExploit());
+//		add(new NoFallExploit());
 		add(new NoGlitchBlocks());
 		add(new PacketEat());
 		add(new PacketFly());
@@ -288,10 +283,7 @@ public class ModuleManager {
 		add(new Optimizer());
 		//add(new PacketDelay());
 		add(new PortalsModifier());
-		add(new Printer());
-		add(new SelfDamage());
 		add(new SkyBlockFeatures());
-		add(new SkylightFix());
 		add(new SlotMapper());
 		add(new Spammer());
 		add(new TotemPopCounter());
@@ -338,7 +330,7 @@ public class ModuleManager {
 		return enabled;
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
 		for(Module m : modules) if(m.isToggled()) {
 			try {
@@ -350,7 +342,7 @@ public class ModuleManager {
 				m.setToggled(false);
 			}
 		}
-	}
+	}*/
 
 	public void key(char typedChar, int key, Module mod) {
 		if(mod.isToggled()) {

@@ -5,8 +5,6 @@ import com.kisman.cc.event.events.EventPlayerApplyCollision;
 import com.kisman.cc.event.events.EventPlayerJump;
 import com.kisman.cc.event.events.EventPlayerPushedByWater;
 import com.kisman.cc.event.events.EventPlayerTravel;
-import com.kisman.cc.features.module.combat.autorer.MotionPredictor;
-import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,14 +24,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
-public abstract class MixinEntityPlayer extends EntityLivingBase implements IEntityPlayer {
+public abstract class MixinEntityPlayer extends EntityLivingBase {
     public MixinEntityPlayer(World worldIn) {super(worldIn);}
     @Shadow protected void doWaterSplashEffect() {}
     @Shadow public @NotNull String getName() {return "";}
 
     @Shadow @Final protected static DataParameter<Byte> MAIN_HAND;
-
-    public MotionPredictor predictor;
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     private void onJump(CallbackInfo ci) {
@@ -84,15 +80,5 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements IEnt
         } catch(Exception ignored) {
             return EnumHandSide.RIGHT;
         }
-    }
-
-    @Override
-    public void setPredictor(MotionPredictor predictor) {
-        this.predictor = predictor;
-    }
-
-    @Override
-    public MotionPredictor getPredictor() {
-        return predictor;
     }
 }

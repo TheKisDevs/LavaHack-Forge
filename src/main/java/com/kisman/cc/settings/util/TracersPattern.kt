@@ -127,7 +127,6 @@ class TracersPattern(
         setup()
 
         glLineWidth(width.valFloat)
-        glShadeModel(GL_SMOOTH)
 
         tessellator.draw()
 

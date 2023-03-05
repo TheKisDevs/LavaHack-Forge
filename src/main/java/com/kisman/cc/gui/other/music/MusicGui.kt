@@ -50,9 +50,9 @@ class MusicGui : KismanGuiScreen() {
             return
         }
 
-        drawDefaultBackground()
-        drawScreenPre()
-        drawScreen(mouseX, mouseY, ticks)
+        super.drawDefaultBackground()
+        super.drawScreenPre()
+        super.drawScreen(mouseX, mouseY, ticks)
         field.drawTextBox()
         GL11.glPushMatrix()
         GL11.glScaled(2.0, 2.0, 2.0)

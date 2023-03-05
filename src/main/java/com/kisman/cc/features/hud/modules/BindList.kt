@@ -4,8 +4,10 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.types.SettingArray
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.client.collections.Sorter
 import com.kisman.cc.util.render.customfont.CustomFontUtil
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -15,6 +17,8 @@ class BindList : HudModule(
         "Bind list like Abyss",
         true
 ) {
+    private val sorter = Sorter<Element> { it.text }
+
     private val offsets = register(Setting("Offsets", this, 2.0, 0.0, 10.0, true))
 
     private val types = register(SettingGroup(Setting("Types", this)))
@@ -25,6 +29,8 @@ class BindList : HudModule(
     private val colorG = register(SettingGroup(Setting("Colors", this)))
     private val colorActive = register(colorG.add(Setting("Active Color", this, "Active Color", Colour(0, 255, 0, 255))))
     private val colorInactive = register(colorG.add(Setting("Inactive Color", this, "Inactive Color", Colour(255, 0, 0, 255))))
+
+    private val sort = register(SettingArray("Sort", this, sorter.length(), sorter.array()))
 
     @SubscribeEvent fun onRender(event : RenderGameOverlayEvent.Text) {
         val x = getX()
@@ -52,19 +58,14 @@ class BindList : HudModule(
             for (setting in Kisman.instance.settingsManager.settings) {
                 if (IBindable.valid(setting) && setting.isCheck) {
                     list += Element(
-                        "${setting.parentMod.name}->${setting.name} [${IBindable.getName(setting)}]",
+                        "${setting.toDisplayString()} [${IBindable.getName(setting)}]",
                         setting.valBoolean
                     )
                 }
             }
         }
 
-        val comparator = Comparator { first: Element, second: Element ->
-            val dif = (CustomFontUtil.getStringWidth(second.text) - CustomFontUtil.getStringWidth(first.text)).toFloat()
-            if (dif != 0f) dif.toInt() else second.text.compareTo(first.text)
-        }
-
-        list.sortWith(comparator)
+        list.sortWith(sort.getValElement().comparator)
 
         for((count, element) in list.withIndex()) {
             CustomFontUtil.drawStringWithShadow(

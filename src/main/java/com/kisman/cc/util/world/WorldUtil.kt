@@ -188,15 +188,15 @@ fun sphere(
 
 fun rotation(
     pos : BlockPos
-) : FloatArray = rotation(mc.player.getPositionEyes(1f), Vec3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5))
+) : FloatArray = rotation(mc.player.getPositionEyes(mc.renderPartialTicks), Vec3d(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5))
 
 fun rotation(
     entity : Entity
-) : FloatArray = rotation(mc.player.getPositionEyes(1f), Box.byAABB(entity.entityBoundingBox).center())
+) : FloatArray = rotation(mc.player.getPositionEyes(mc.renderPartialTicks), Vec3d(entity.posX, entity.posY + (entity.boundingBox.maxY - entity.boundingBox.minY) / 2, entity.posZ))
 
 fun rotation(
     to : Vec3d
-) : FloatArray = rotation(mc.player.getPositionEyes(1f), to)
+) : FloatArray = rotation(mc.player.getPositionEyes(mc.renderPartialTicks), to)
 
 fun rotation(
     from : Vec3d,
@@ -208,7 +208,7 @@ fun rotation(
     val distance = sqrt((deltaX * deltaX + deltaZ * deltaZ).toFloat())
 
     return floatArrayOf(
-        MathHelper.wrapDegrees(toDegrees(atan2(deltaZ.toFloat(), deltaX.toFloat()) - 90)),
+        MathHelper.wrapDegrees(toDegrees(atan2(deltaZ.toFloat(), deltaX.toFloat())) - 90),
         MathHelper.wrapDegrees(toDegrees(atan2(deltaY.toFloat(), distance)))
     )
 }

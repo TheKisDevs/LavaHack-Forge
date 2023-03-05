@@ -8,11 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 
 public abstract class Command extends ChatHandler implements ICommand {
-	protected static Minecraft mc = Minecraft.getMinecraft();
+	public static final Minecraft mc = Minecraft.getMinecraft();
 	
 	private final String command;
-	private String execute;
-	private int key;
 
 	private final HashMap<String, SubCommand> instances = new HashMap<>();
 
@@ -22,7 +20,6 @@ public abstract class Command extends ChatHandler implements ICommand {
 	
 	public Command(String command) {
 		this.command = command;
-		this.key = -1;
 	}
 
 	protected void addInstances(SubCommand... instances) {
@@ -41,17 +38,5 @@ public abstract class Command extends ChatHandler implements ICommand {
 
 	@Override public @NotNull String getCommand() {
 		return command;
-	}
-	public int getKey() {
-		return key;
-	}
-	public void setKey(int key) {
-		this.key = key;
-	}
-	public String getExecute() {
-		return execute;
-	}
-	public void setExecute(String execute) {
-		this.execute = execute;
 	}
 }

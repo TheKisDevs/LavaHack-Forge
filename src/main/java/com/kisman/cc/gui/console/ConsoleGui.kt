@@ -50,8 +50,9 @@ class ConsoleGui : KismanGuiScreen(), Draggable {
             return
         }
 
-        drawDefaultBackground()
-        drawScreenPre()
+        super.drawDefaultBackground()
+        super.drawScreenPre()
+        super.drawScreen(mouseX, mouseY, partialTicks)
 
         if(drag) {
             x = mouseX - dragX

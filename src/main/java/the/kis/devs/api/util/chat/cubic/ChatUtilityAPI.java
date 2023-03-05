@@ -2,7 +2,7 @@ package the.kis.devs.api.util.chat.cubic;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.ReflectUtil;
+import com.kisman.cc.util.ReflectionUtilsKt;
 import com.kisman.cc.util.chat.cubic.AbstractChatMessage;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import the.kis.devs.api.features.module.ModuleManagerAPI;
@@ -37,27 +37,27 @@ public class ChatUtilityAPI {
     }
 
     public static AbstractChatMessage complete(){
-        COMPLETE.updateCaller(ReflectUtil.getCallerClass());
+        COMPLETE.updateCaller(ReflectionUtilsKt.callerClass());
         return COMPLETE;
     }
 
     public static AbstractChatMessage error(){
-        ERROR.updateCaller(ReflectUtil.getCallerClass());
+        ERROR.updateCaller(ReflectionUtilsKt.callerClass());
         return ERROR;
     }
 
     public static AbstractChatMessage info(){
-        INFO.updateCaller(ReflectUtil.getCallerClass());
+        INFO.updateCaller(ReflectionUtilsKt.callerClass());
         return INFO;
     }
 
     public static AbstractChatMessage message(){
-        MESSAGE.updateCaller(ReflectUtil.getCallerClass());
+        MESSAGE.updateCaller(ReflectionUtilsKt.callerClass());
         return MESSAGE;
     }
 
     public static AbstractChatMessage warning(){
-        WARNING.updateCaller(ReflectUtil.getCallerClass());
+        WARNING.updateCaller(ReflectionUtilsKt.callerClass());
         return WARNING;
     }
 }

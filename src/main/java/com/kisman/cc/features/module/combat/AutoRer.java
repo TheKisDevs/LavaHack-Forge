@@ -7,11 +7,13 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.features.module.ShaderableModule;
-import com.kisman.cc.features.module.combat.autorer.*;
+import com.kisman.cc.features.module.combat.autorer.AutoRerDamageSyncHandler;
+import com.kisman.cc.features.module.combat.autorer.AutoRerTargetFinder;
+import com.kisman.cc.features.module.combat.autorer.BreakInfo;
+import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
-import com.kisman.cc.mixin.accessors.IEntityPlayer;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -25,7 +27,6 @@ import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic;
 import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.thread.kisman.ThreadHandler;
 import com.kisman.cc.util.thread.kisman.ThreadsKt;
@@ -53,13 +54,9 @@ import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -78,7 +75,6 @@ public class AutoRer extends ShaderableModule {
     private final SettingGroup break__ = register(new SettingGroup(new Setting("Break", this)));
     private final SettingGroup delay = register(new SettingGroup(new Setting("Delay", this)));
     private final SettingGroup damage = register(new SettingGroup(new Setting("Damage", this)));
-    private final SettingGroup thread_ = register(new SettingGroup(new Setting("Thread", this)));
     private final SettingGroup render_ = register(new SettingGroup(new Setting("Render", this)));
     private final SettingGroup optimization = register(new SettingGroup(new Setting("Optimization", this)));
 
@@ -87,7 +83,6 @@ public class AutoRer extends ShaderableModule {
     public final Setting multiThreaddedSphereGetter = register(multiThreadGettersGroup.add(new Setting("MT Sphere Getter", this, false).setTitle("Sphere")));
     public final Setting multiThreaddedTargetGetter = register(multiThreadGettersGroup.add(new Setting("MT Target Getter", this, false).setTitle("Target")));
     private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
-    private final Setting multiThreaddedExtrapolation = register(multiThreadGroup.add(new Setting("MT Extrapolation", this, true).setTitle("Extrapolation")));
     private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
     //TODO: usage where??
     private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
@@ -109,9 +104,7 @@ public class AutoRer extends ShaderableModule {
     private final SettingEnum<Heuristics> heuristics = register(calc.add(new SettingEnum<>("Heuristic", this, Heuristics.Damage)));
     private final Setting safetyBalance = register(calc.add(new Setting("Safety Balance", this, 0, 0, 20, false)));
     private final Setting safetyScale = register(calc.add(new Setting("Safety Scale", this, 1, 0, 1, false)));
-    private final SettingGroup motionGroup = register(new SettingGroup(new Setting("Motion", this)));
-    private final Setting motionCrystal = register(motionGroup.add(new Setting("Motion Crystal", this, false).setTitle("State")));
-    private final Setting motionCalc = register(motionGroup.add(new Setting("Motion Calc", this, false).setVisible(motionCrystal::getValBoolean)).setTitle("Calc"));
+
     private final Setting timingMode = register(helpers.add(new Setting("Timings", this, TimingMode.Adaptive)));
     private final Setting advancedSequential = register(helpers.add(new Setting("Advanced Sequential", this, false).setTitle("Advanced Seq")));
     private final Setting swing = register(main.add(new Setting("Swing", this, SwingMode.PacketSwing)));
@@ -129,13 +122,6 @@ public class AutoRer extends ShaderableModule {
     private final Setting damageSyncPlace = register(damageSync.getGroup_().add(new Setting("Damage Sync Place", this, DamageSyncMode.None).setTitle("Place")));
     private final Setting damageSyncBreak = register(damageSync.getGroup_().add(new Setting("Damage Sync Break", this, DamageSyncMode.None).setTitle("Break")));
     private final Setting damageSyncSelf = register(damageSync.getGroup_().add(new Setting("Damage Sync Self", this, false).setTitle("Self")));
-    private final SettingGroup extrapolationGroup = register(helpers.add(new SettingGroup(new Setting("Extrapolation", this))));
-    private final Setting extrapolationState = register(extrapolationGroup.add(new Setting("Extrapolation State", this, false).setTitle("State")));
-    private final Setting extrapolationSelf = register(extrapolationGroup.add(new Setting("Extrapolation Self", this, false).setTitle("Self")));
-    private final Setting extrapolationTicks = register(extrapolationGroup.add(new Setting("Extrapolation Ticks", this, 1.0, 1.0, 50.0, true).setTitle("Ticks")));
-    private final Setting extrapolationOutOfBlocks = register(extrapolationGroup.add(new Setting("Extrapolation Out Of Blocks", this, false).setTitle("Out Of Blocks")));
-    private final Setting extrapolationShrink = register(extrapolationGroup.add(new Setting("Extrapolation Shrink", this, false).setTitle("Shrink")));
-    private final Setting extrapolationRender = register(extrapolationGroup.add(new Setting("Extrapolation Render", this, false).setTitle("Render")));
     private final Setting interpolationTicks = register(helpers.add(new Setting("Interpolation Ticks", this, 0, 0, 10, true).setTitle("Interpolation")));
     private final SettingGroup antDesyncGroup = register(helpers.add(new SettingGroup(new Setting("Anti Desync", this))));
     private final Setting antiDesyncState = register(antDesyncGroup.add(new Setting("Anti Desync State", this, false).setTitle("State")));
@@ -146,6 +132,7 @@ public class AutoRer extends ShaderableModule {
     public final Setting secondCheck = register(place_.add(new Setting("Second Check", this, false)));
     public final Setting thirdCheck = register(place_.add(new Setting("Third Check", this, false)));
     private final Setting fourthCheck = register(place_.add(new Setting("Fourth Check", this, false)));
+    private final Setting ncpCheck = register(place_.add(new Setting("NCP Check", this, false)));
     private final Setting multiPlace = register(place_.add(new Setting("Multi Place", this, MultiPlaceMode.None).setTitle("Multi")));
     public final Setting firePlace = register(place_.add(new Setting("Fire Place", this, false).setTitle("Fire")));
     private final Setting packetPlace = register(place_.add(new Setting("Packet Place", this, true).setTitle("Packet")));
@@ -194,12 +181,6 @@ public class AutoRer extends ShaderableModule {
     public final Setting lethalMult = register(damage.add(new Setting("Lethal Mult", this, 0, 0, 6, false)));
     private final Setting noSuicide = register(damage.add(new Setting("No Suicide", this, true)));
 
-    public final Setting threadMode = register(thread_.add(new Setting("Thread Mode", this, ThreadMode.None).setTitle("Mode")));
-    public final Setting threadDelay = register(thread_.add(new Setting("Thread Delay", this, 50, 1, 1000, NumberType.TIME).setTitle("Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    public final Setting threadSyns = register(thread_.add(new Setting("Thread Syns", this, true).setTitle("Sync").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    public final Setting threadSynsValue = register(thread_.add(new Setting("Thread Syns Value", this, 1000, 1, 10000, NumberType.TIME).setTitle("Sync Delay").setVisible(() -> !threadMode.checkValString(ThreadMode.None.name()))));
-    private final Setting threadSoundPlayer = register(thread_.add(new Setting("Thread Sound Player", this, 6, 0, 12, true).setTitle("Sound Player").setVisible(() -> threadMode.checkValString("Sound"))));
-
     private final SlideRenderingRewritePattern pattern = new SlideRenderingRewritePattern(this).group(render_).preInit().init();
 
     private final Setting text = register(render_.add(new Setting("Text", this, true)));
@@ -217,21 +198,14 @@ public class AutoRer extends ShaderableModule {
     private final TimerUtils clearTimer = timer();
     private final TimerUtils predictTimer = timer();
     private final TimerUtils manualTimer = timer();
-    private final TimerUtils syncTimer = timer();
     private final TimerUtils antiDesyncAwaitTimer = timer();
-    private ScheduledExecutorService executor;
-    private final AtomicBoolean shouldInterrupt = new AtomicBoolean(false);
-    private final AtomicBoolean threadOngoing = new AtomicBoolean(false);
-    private final AtomicReference<BreakInfo> crystal = new AtomicReference<>();
     private final AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
     @Target
     public static EntityPlayer currentTarget;
-    private Thread thread;
     public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0), renderPos;
     private BreakInfo breakPos = new BreakInfo(null, 0, 0, false);
     private Entity lastHitEntity = null;
     public boolean rotating;
-    private String lastThreadMode = threadMode.getValString();
     private boolean lastBroken = false;
 
     public final Supplier<Boolean> shouldSmartSwitch = () -> {
@@ -244,7 +218,6 @@ public class AutoRer extends ShaderableModule {
     };
 
 
-    private final ExtrapolationHelper extrapolationHelper = new ExtrapolationHelper(mtcgDelay.getSupplierLong(), multiThreaddedExtrapolation.getSupplierBoolean(), extrapolationTicks.getSupplierInt(), extrapolationOutOfBlocks.getSupplierBoolean(), extrapolationShrink.getSupplierBoolean());
     private final AutoRerDamageSyncHandler damageSyncHandler = new AutoRerDamageSyncHandler(damageSync.getHandler(), () -> damageSyncPlace.getValEnum() != DamageSyncMode.None, () -> damageSyncBreak.getValEnum() != DamageSyncMode.None);
 
     private final ThreadHandler crystalTHandler = new ThreadHandler(mtcgDelay.getSupplierLong(), multiThreaddedCrystalGetter.getSupplierBoolean());
@@ -270,12 +243,6 @@ public class AutoRer extends ShaderableModule {
             lastBroken = true;
         }
 
-        if (!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
-            if (this.executor != null) this.executor.shutdown();
-            if (this.thread != null) this.shouldInterrupt.set(true);
-            lastThreadMode = threadMode.getValString();
-        }
-
         if (currentTarget == null) {
             placePos.setBlockPos(null);
             breakPos = null;
@@ -288,6 +255,7 @@ public class AutoRer extends ShaderableModule {
 
     private void handlePlacement() {
         if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
+
         handlePlaceFull();
     }
 
@@ -298,8 +266,6 @@ public class AutoRer extends ShaderableModule {
     }
 
     private void handleLogic() {
-        if (extrapolationState.getValBoolean()) extrapolationHelper.update();
-
         if(logic.checkValString("PlaceBreak")) {
             handlePlacement();
             handleBreakment();
@@ -313,8 +279,6 @@ public class AutoRer extends ShaderableModule {
         super.onEnable();
         reset();
 
-        if(!threadMode.checkValString("None")) processMultiThreading();
-
         Kisman.EVENT_BUS.subscribe(listener);
         Kisman.EVENT_BUS.subscribe(listener1);
         Kisman.EVENT_BUS.subscribe(motion);
@@ -322,7 +286,6 @@ public class AutoRer extends ShaderableModule {
 
     private void reset() {
         renderer.reset();
-        extrapolationHelper.reset();
         damageSyncHandler.reset();
         placeTimer.reset();
         breakTimer.reset();
@@ -335,7 +298,6 @@ public class AutoRer extends ShaderableModule {
         targets.reset();
         antiDesyncCache.clear();
         placedList.clear();
-        crystal.set(null);
         crystalWithMaxDamage.set(null);
         currentTarget = null;
         rotating = false;
@@ -349,51 +311,7 @@ public class AutoRer extends ShaderableModule {
         Kisman.EVENT_BUS.unsubscribe(listener1);
         Kisman.EVENT_BUS.unsubscribe(motion);
 
-        if(thread != null) shouldInterrupt.set(false);
-        if(executor != null) executor.shutdown();
-
         reset();
-    }
-
-    private void processMultiThreading() {
-        if(threadMode.checkValString("While")) handleWhile();
-        else if(!threadMode.checkValString("None")) handlePool(false);
-    }
-
-    private ScheduledExecutorService getExecutor() {
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(RAutoRer.getInstance(this), 0L, this.threadDelay.getValLong(), TimeUnit.MILLISECONDS);
-        return service;
-    }
-
-    private void handleWhile() {
-        if(thread == null || thread.isInterrupted() || thread.isAlive() || (syncTimer.passedMillis(threadSynsValue.getValLong()) &&threadSyns.getValBoolean())) {
-            if(thread == null) thread = newThread();
-            else if(syncTimer.passedMillis(threadSynsValue.getValLong()) && !shouldInterrupt.get() && threadSyns.getValBoolean()) {
-                shouldInterrupt.set(true);
-                syncTimer.reset();
-                return;
-            }
-            if(thread != null && (thread.isInterrupted() || !thread.isAlive())) thread = newThread();
-            if(thread != null && thread.getState().equals(Thread.State.NEW)) {
-                try {thread.start();} catch (Exception ignored) {}
-                syncTimer.reset();
-            }
-        }
-    }
-
-    private Thread newThread() {
-        Thread thread = new Thread(RAutoRer.getInstance(this));
-        thread.setName("AutoReR-Thread-" + new AtomicLong(0).getAndIncrement());
-        return thread;
-    }
-
-    private void handlePool(boolean justDoIt) {
-        if(justDoIt || executor == null || executor.isTerminated() || executor.isShutdown() || (syncTimer.passedMillis(threadSynsValue.getValLong()) && threadSyns.getValBoolean())) {
-            if(executor != null) executor.shutdown();
-            executor = getExecutor();
-            syncTimer.reset();
-        }
     }
 
     public void update() {
@@ -403,12 +321,6 @@ public class AutoRer extends ShaderableModule {
 
         if(calcStage.getValEnum() == EventMode.Tick) handleCalc();
         if(logicStage.getValEnum() == EventMode.Tick) handleLogic();
-
-        if(!lastThreadMode.equalsIgnoreCase(threadMode.getValString())) {
-            if (this.executor != null) this.executor.shutdown();
-            if (this.thread != null) this.shouldInterrupt.set(true);
-            lastThreadMode = threadMode.getValString();
-        }
     }
 
     private IBlockState getBlockState(BlockPos pos) {
@@ -483,11 +395,8 @@ public class AutoRer extends ShaderableModule {
 
     @EventHandler
     private final Listener<EventPlayerMotionUpdate> motion = new Listener<>(event -> {
-        if(!motionCrystal.getValBoolean() || currentTarget == null) return;
-        if(motionCalc.getValBoolean() && fastCalc.getValBoolean() && calcTimer.passedMillis(calcDelay.getValLong())) {
-            doCalculatePlace();
-            calcTimer.reset();
-        }
+        if(calcStage.getValEnum() == EventMode.Motion) handleCalc();
+        if(logicStage.getValEnum() == EventMode.Motion) handleLogic();
     });
 
     @SubscribeEvent
@@ -497,11 +406,17 @@ public class AutoRer extends ShaderableModule {
     }
 
     @SubscribeEvent
+    public void onRenderTick(TickEvent.RenderTickEvent event) {
+        if(event.phase == TickEvent.Phase.START) {
+            if(calcStage.getValEnum() == EventMode.RenderTick) handleCalc();
+            if(logicStage.getValEnum() == EventMode.RenderTick) handleLogic();
+        }
+    }
+
+    @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
         if(calcStage.getValEnum() == EventMode.Render3D) handleCalc();
         if(logicStage.getValEnum() == EventMode.Render3D) handleLogic();
-
-        if(currentTarget != null && extrapolationState.getValBoolean() && extrapolationRender.getValBoolean() && ((IEntityPlayer) currentTarget).getPredictor() != null) pattern.draw(((IEntityPlayer) currentTarget).getPredictor().getEntityBoundingBox());
 
         handleDraw(pattern);
     }
@@ -537,15 +452,13 @@ public class AutoRer extends ShaderableModule {
             double z,
             EntityPlayer entity
     ) {
-        AxisAlignedBB bb = extrapolationState.getValBoolean() && (entity != mc.player || extrapolationSelf.getValBoolean()) ? extrapolationHelper.predictor(entity).getEntityBoundingBox() : entity.getEntityBoundingBox();
-
         return CrystalUtils.calculateDamage(
                 mc.world,
                 x,
                 y,
                 z,
                 entity,
-                bb,
+                entity.boundingBox,
                 entity == mc.player ? 0 : interpolationTicks.getValInt(),
                 terrain.getValBoolean()
         );
@@ -599,7 +512,6 @@ public class AutoRer extends ShaderableModule {
         if (event.getPacket() instanceof SPacketSoundEffect && ((inhibit.getValBoolean() && lastHitEntity != null) || (sound.getValBoolean()))) {
             SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
             if (packet.getCategory() == SoundCategory.BLOCKS && packet.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) if (lastHitEntity.getDistance(packet.getX(), packet.getY(), packet.getZ()) <= 6.0f) lastHitEntity.setDead();
-            if(threadMode.checkValString(ThreadMode.Sound.name()) && isRightThread() && mc.player != null && mc.player.getDistanceSq(new BlockPos(packet.getX(), packet.getY(), packet.getZ())) < threadSoundPlayer.getValInt() * threadSoundPlayer.getValInt()) handlePool(true);
         }
     });
 
@@ -665,10 +577,6 @@ public class AutoRer extends ShaderableModule {
         for (EnumFacing face : EnumFacing.HORIZONTALS) if (mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(up.offset(face))).contains(player) || mc.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(up.offset(face).offset(face))).contains(player)) return true;
 
         return false;
-    }
-
-    private boolean isRightThread() {
-        return mc.isCallingFromMinecraftThread() || (!this.threadOngoing.get());
     }
 
     private void doCalculatePlace() {
@@ -757,8 +665,10 @@ public class AutoRer extends ShaderableModule {
             }
         }
 
+        BlockPos playerPosition = WorldUtilKt.playerPosition();
+
         for(BlockPos pos : sphere) {
-            if((thirdCheck.getValBoolean() && !isPosValid(pos)) || (antidesync && exclusion.contains(pos))) continue;
+            if((thirdCheck.getValBoolean() && !isPosValid(pos)) || (antidesync && exclusion.contains(pos)) || (ncpCheck.getValBoolean() && playerPosition.getY() == pos.getY())) continue;
             if(canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiplace, firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) {
                 float targetDamage = calculateDamage(pos, currentTarget);
 
@@ -1113,7 +1023,7 @@ public class AutoRer extends ShaderableModule {
     public enum ClientSideMode { None, RemoveEntity, SetDead, Both }
     public enum ClientSideWhen { Break, Place, Sound }
     public enum Heuristics { Damage, MinMax, Safety }
-    public enum EventMode { /*Motion, */Update, Tick, Render3D/*, Thread*/ }
+    public enum EventMode { /*Motion, */Update, Tick, RenderTick, Render3D, Motion/*, Thread*/ }
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),
@@ -1143,41 +1053,6 @@ public class AutoRer extends ShaderableModule {
             this.damage = damage;
             if(isTotemPopped) isTotemFailed = !(mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING) || mc.player.getHeldItemMainhand().getItem().equals(Items.TOTEM_OF_UNDYING));
             this.isTotemPopped = isTotemPopped;
-        }
-    }
-
-    @SuppressWarnings("BusyWait")
-    public static class RAutoRer implements Runnable {
-        private static RAutoRer instance;
-        private AutoRer autoRer;
-
-        public static RAutoRer getInstance(AutoRer autoRer) {
-            if(instance == null) {
-                instance = new RAutoRer();
-                instance.autoRer = autoRer;
-            }
-            return instance;
-        }
-
-        @Override
-        public void run() {
-            if(autoRer.threadMode.checkValString("While")) {
-                while (autoRer.isToggled() && autoRer.threadMode.checkValString("While")) {
-                    if(autoRer.shouldInterrupt.get()) {
-                        autoRer.shouldInterrupt.set(false);
-                        autoRer.syncTimer.reset();
-                        autoRer.thread.interrupt();
-                    }
-                    autoRer.threadOngoing.set(true);
-                    try {autoRer.doAutoRerForThread();} catch(Exception ignored) {}
-                    autoRer.threadOngoing.set(false);
-                    try {Thread.sleep(autoRer.threadDelay.getValLong());} catch (InterruptedException e) {autoRer.thread.interrupt();}
-                }
-            } else if(!autoRer.threadMode.checkValString("None")) {
-                autoRer.threadOngoing.set(true);
-                autoRer.doAutoRerForThread();
-                autoRer.threadOngoing.set(false);
-            }
         }
     }
 }

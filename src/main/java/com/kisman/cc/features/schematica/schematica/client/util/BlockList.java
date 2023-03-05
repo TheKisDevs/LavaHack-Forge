@@ -1,6 +1,5 @@
 package com.kisman.cc.features.schematica.schematica.client.util;
 
-import com.kisman.cc.features.schematica.core.entity.EntityHelper;
 import com.kisman.cc.features.schematica.core.util.math.BlockPosHelper;
 import com.kisman.cc.features.schematica.core.util.math.MBlockPos;
 import com.kisman.cc.features.schematica.schematica.block.state.BlockStateHelper;
@@ -13,6 +12,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -102,11 +103,23 @@ public class BlockList {
             if (player.capabilities.isCreativeMode) {
                 wrappedItemStack.inventory = -1;
             } else {
-                wrappedItemStack.inventory = EntityHelper.getItemCountInInventory(player.inventory, wrappedItemStack.itemStack.getItem(), wrappedItemStack.itemStack.getItemDamage());
+                wrappedItemStack.inventory = getItemCountInInventory(player.inventory, wrappedItemStack.itemStack.getItem(), wrappedItemStack.itemStack.getItemDamage());
             }
         }
 
         return blockList;
+    }
+
+    private int getItemCountInInventory(IInventory inventory, Item item, int itemDamage) {
+        int count = 0;
+
+        for (int slot = 0; slot < inventory.getSizeInventory(); slot++) {
+            ItemStack itemStack = inventory.getStackInSlot(slot);
+
+            if (itemStack.getItem() == item && (itemDamage == -1 || itemDamage == itemStack.getItemDamage())) count += itemStack.getCount();
+        }
+
+        return count;
     }
 
     private WrappedItemStack findOrCreateWrappedItemStackFor(final List<WrappedItemStack> blockList, final ItemStack itemStack) {

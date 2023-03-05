@@ -4,6 +4,8 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.Command;
 import com.kisman.cc.util.manager.friend.FriendManager;
 
+import java.util.ArrayList;
+
 public class FriendCommand extends Command {
     public FriendCommand() {
         super("friend");
@@ -20,9 +22,11 @@ public class FriendCommand extends Command {
             } else if(args[0].equalsIgnoreCase("list")) {
                 String output = "Friends: ";
 
-                for(int i = 0; i < FriendManager.instance.getFriends().size(); i++) {
-                    output += FriendManager.instance.getFriends().get(i);
-                    if(i != FriendManager.instance.getFriends().size() - 1) output += ", ";
+                ArrayList<String> friends = new ArrayList<>(FriendManager.instance.getFriends());
+
+                for(int i = 0; i < friends.size(); i++) {
+                    output += friends.get(i);
+                    if(i != friends.size() - 1) output += ", ";
                 }
 
                 complete(output);

@@ -117,22 +117,6 @@ public class Vector2d {
         return this;
     }
 
-    public Vector2i toVector2i() {
-        return new Vector2i((int) Math.floor(this.x), (int) Math.floor(this.y));
-    }
-
-    public Vector2i toVector2i(final Vector2i vec) {
-        return vec.set((int) Math.floor(this.x), (int) Math.floor(this.y));
-    }
-
-    public Vector2f toVector2f() {
-        return new Vector2f((float) Math.floor(this.x), (float) Math.floor(this.y));
-    }
-
-    public Vector2f toVector2f(final Vector2f vec) {
-        return vec.set((float) Math.floor(this.x), (float) Math.floor(this.y));
-    }
-
     @Override
     public Vector2d clone() {
         return new Vector2d(this);

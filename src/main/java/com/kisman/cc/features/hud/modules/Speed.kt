@@ -1,35 +1,31 @@
+@file:Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+
 package com.kisman.cc.features.hud.modules
 
-import com.kisman.cc.features.hud.ShaderableHudModule
-import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.Colour
-import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.render.customfont.CustomFontUtil
+import com.kisman.cc.features.hud.AverageHudModule
+import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.util.enums.SpeedUnits
-import com.kisman.cc.util.render.ColorUtils
-import net.minecraft.util.math.MathHelper
+import com.kisman.cc.util.math.sqrt2
 import net.minecraft.util.text.TextFormatting
-import kotlin.math.floor
 
 /**
  * @author _kisman_
  * @since 14.05.2022
  */
-class Speed : ShaderableHudModule(
-        "Speed",
-        "Displays your current speed.",
-        true,
-    false,
-    false
+
+var speed = ""
+
+class Speed : AverageHudModule(
+    "Speed",
+    "Displays your current speed.",
+    { "Speed: ${TextFormatting.GRAY}$speed" }
 ) {
-    private val astolfo = register(Setting("Astolfo", this, true))
-    private val color = register(Setting("Color", this, Colour(255, 255, 255, 255)))
-    private val speedUnit = register(Setting("Speed Unit", this, SpeedUnits.KMH))
+    private val speedUnit = register(SettingEnum<SpeedUnits>("Speed Unit", this, SpeedUnits.KMH))
 
-    val timer = TimerUtils()
+    private val timer = timer()
 
-    private var prevPosX : Double = 0.0
-    private var prevPosZ : Double = 0.0
+    private var prevPosX = 0.0
+    private var prevPosZ = 0.0
 
     init {
         super.setDisplayInfo { "[${(speedUnit.valEnum as SpeedUnits).displayInfo}]" }
@@ -40,7 +36,11 @@ class Speed : ShaderableHudModule(
         timer.reset()
     }
 
-    override fun draw() {
+    override fun update() {
+        if(mc.player == null || mc.world == null) {
+            return
+        }
+
         if(timer.passedMillis(1000L)) {
             prevPosX = mc.player.prevPosX
             prevPosZ = mc.player.prevPosZ
@@ -49,22 +49,13 @@ class Speed : ShaderableHudModule(
         val deltaX = mc.player.posX - prevPosX
         val deltaZ = mc.player.posZ - prevPosZ
 
-        val distance = MathHelper.sqrt(deltaX * deltaX + deltaZ * deltaZ)
+        val distance = sqrt2(deltaX * deltaX + deltaZ * deltaZ)
 
-        val speed : String = when(speedUnit.valEnum as SpeedUnits) {
-            SpeedUnits.BPS -> {
-                (speedUnit.valEnum as SpeedUnits).formatter.format((distance * 20))
+        speed = "${speedUnit.valEnum.formatter.format(
+            when(speedUnit.valEnum) {
+                SpeedUnits.BPS -> distance * 20
+                SpeedUnits.KMH -> (distance / 1000) / (0.05 / 3600)
             }
-            SpeedUnits.KMH -> {
-                (speedUnit.valEnum as SpeedUnits).formatter.format(floor((distance / 1000) / (0.05 / 3600)))
-            }
-        }
-
-        val text = "Speed: ${TextFormatting.GRAY}$speed ${(speedUnit.valEnum as SpeedUnits).displayInfo}"
-
-        shaderRender = Runnable { drawStringWithShadow(text, getX(), getY(), (if (astolfo.valBoolean) ColorUtils.astolfoColors(100, 100) else color.colour.rgb)) }
-
-        setW(CustomFontUtil.getStringWidth(text).toDouble())
-        setH(CustomFontUtil.getFontHeight().toDouble())
+        )} ${speedUnit.valEnum.displayInfo}"
     }
 }

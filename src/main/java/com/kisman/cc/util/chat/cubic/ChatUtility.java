@@ -2,10 +2,11 @@ package com.kisman.cc.util.chat.cubic;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.ReflectUtil;
+import com.kisman.cc.util.ReflectionUtilsKt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,27 +44,27 @@ public class ChatUtility {
 
 
     public static AbstractChatMessage complete(){
-        COMPLETE.updateCaller(ReflectUtil.getCallerClass());
+        COMPLETE.updateCaller(ReflectionUtilsKt.callerClass());
         return COMPLETE;
     }
 
     public static AbstractChatMessage error(){
-        ERROR.updateCaller(ReflectUtil.getCallerClass());
+        ERROR.updateCaller(ReflectionUtilsKt.callerClass());
         return ERROR;
     }
 
     public static AbstractChatMessage info(){
-        INFO.updateCaller(ReflectUtil.getCallerClass());
+        INFO.updateCaller(ReflectionUtilsKt.callerClass());
         return INFO;
     }
 
     public static AbstractChatMessage message(){
-        MESSAGE.updateCaller(ReflectUtil.getCallerClass());
+        MESSAGE.updateCaller(ReflectionUtilsKt.callerClass());
         return MESSAGE;
     }
 
     public static AbstractChatMessage warning(){
-        WARNING.updateCaller(ReflectUtil.getCallerClass());
+        WARNING.updateCaller(ReflectionUtilsKt.callerClass());
         return WARNING;
     }
 

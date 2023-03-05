@@ -20,6 +20,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -214,6 +216,18 @@ public class Module extends DisplayableFeature {
 		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
 		if(subscribes == null) return;
 		SubscribeMode.unregister(subscribes, this);
+	}
+
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event) {
+		try {
+			update();
+		} catch(Exception e) {
+			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " from update method. Disabling!");
+			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from update method from " + getName() + ". Disabling!", e);
+			e.printStackTrace();
+			setToggled(false);
+		}
 	}
 
 	public void onEnable() {}

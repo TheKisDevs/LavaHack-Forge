@@ -12,14 +12,16 @@ import com.kisman.cc.util.render.ColorUtils
  */
 class HudModuleColorPattern(
     module : Module
-) : AbstractPattern<HudModuleColorPattern>(module) {
+) : AbstractPattern<HudModuleColorPattern>(
+    module
+) {
     private val group_ = SettingGroup(Setting("Color", module))
     private val astolfo = group_.add(Setting("Astolfo", module, false))
-    private val color = group_.add(Setting("Color", module, Colour(255, 0, 0, 255)))
+    private val color = group_.add(Setting("Color", module, Colour(-1)))
 
     override fun preInit() : HudModuleColorPattern {
         if(group != null) {
-            group!!.add(group_);
+            group!!.add(group_)
         }
 
         return this
