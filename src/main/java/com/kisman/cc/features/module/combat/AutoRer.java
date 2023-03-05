@@ -975,9 +975,6 @@ public class AutoRer extends ShaderableModule {
         return infos.stream().filter(info -> info.getBlockPos() == pos).findFirst().orElse(null);
     }
 
-    public enum Mode { ManualTick, ManualRender, FastTick, FastRender }
-    public enum ThreadMode { None, Pool, Sound, While }
-    public enum Render { None, Default, Advanced }
     public enum RotateLogic { Off, Place, Break, Both }
     public enum SwitchMode { None, Normal, Silent, SilentBypass, Smart}
     public enum SwingMode { MainHand, OffHand, CurrentHand, PacketSwing, None }
