@@ -33,7 +33,7 @@ class SettingEnum<T : Enum<*>>(
 
     fun group(group : SettingGroup) : SettingEnum<T> = group.add(this)
 
-    fun onChange(
-        onChange0 : (SettingEnum<T>) -> Any
+    fun onChange0(
+        onChange0 : (SettingEnum<T>) -> Unit
     ) : SettingEnum<T> = super.onChange { onChange0(this) } as SettingEnum<T>
 }

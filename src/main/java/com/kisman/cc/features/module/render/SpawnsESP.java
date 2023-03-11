@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
+//TODO: rewrite it
+@WorkInProgress
 public class SpawnsESP extends Module {
     private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
     private final Setting crystals = register(new Setting("Crystals", this, true));

@@ -32,6 +32,9 @@ public class ArrayListModule extends ShaderableHudModule {
     @ModuleInstance
     public static ArrayListModule instance;
 
+    public static EasingEnum.Easing ANIMATION_EASING = EasingEnum.Easing.Linear;
+    public static long ANIMATION_LENGTH = 750l;
+
     private final Sorter<ArrayListElement> sorter = new Sorter<>(ArrayListElement::getRaw);
 
     private final SettingGroup types = register(new SettingGroup(new Setting("Types", this)));
@@ -42,8 +45,16 @@ public class ArrayListModule extends ShaderableHudModule {
 
     private final SettingGroup animationGroup = register(new SettingGroup(new Setting("Animation", this)));
     private final Setting animation = register(animationGroup.add(new Setting("Animation", this, true)));
-    public final SettingEnum<EasingEnum.Easing> easing = register(animationGroup.add(new SettingEnum<>("Easing", this, EasingEnum.Easing.Linear)));
-    public final Setting length = register(animationGroup.add(new Setting("Speed", this, 750, 100, 1000, false)));
+    public final SettingEnum<EasingEnum.Easing> easing = register(animationGroup.add(new SettingEnum<>("Easing", this, EasingEnum.Easing.Linear).onChange0(setting -> {
+        ANIMATION_EASING = setting.getValEnum();
+
+        return null;
+    })));
+    public final Setting length = register(animationGroup.add(new Setting("Speed", this, 750, 100, 1000, false).onChange(setting -> {
+        ANIMATION_LENGTH = setting.getValLong();
+
+        return null;
+    })));
 
     private final Setting showDisplayInfo = register(new Setting("Show Display Info", this, true));
 
@@ -82,13 +93,13 @@ public class ArrayListModule extends ShaderableHudModule {
             double coeff = element.active() ? 1 : 0;
 
             if(element.active()) {
-                if(animation.getValBoolean()) coeff = element.getElement().ENABLE_ANIMATION.getCurrent();
-                element.getElement().ENABLE_ANIMATION.update();
-                element.getElement().DISABLE_ANIMATION.reset();
+                if(animation.getValBoolean()) coeff = element.getElement().ENABLE_ANIMATION().getCurrent();
+                element.getElement().ENABLE_ANIMATION().update();
+                element.getElement().DISABLE_ANIMATION().reset();
             } else {
-                if(animation.getValBoolean()) coeff = element.getElement().DISABLE_ANIMATION.getCurrent();
-                element.getElement().DISABLE_ANIMATION.update();
-                element.getElement().ENABLE_ANIMATION.reset();
+                if(animation.getValBoolean()) coeff = element.getElement().DISABLE_ANIMATION().getCurrent();
+                element.getElement().DISABLE_ANIMATION().update();
+                element.getElement().ENABLE_ANIMATION().reset();
             }
 
             if(coeff != 0) {

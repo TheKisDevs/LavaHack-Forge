@@ -468,9 +468,11 @@ fun loadIntoCustomClassLoader(
     LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
 
     if(resources.isNotEmpty()) {
-        val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
+        val tempFile = File.createTempFile("", ".lavahack${System.currentTimeMillis()}")
         val fos = FileOutputStream(tempFile)
         val jos = JarOutputStream(fos)
+
+        Files.setAttribute(tempFile.toPath(), "dos:hidden", true)
 
         for(entry in resources.entries) {
             status = "Injecting \"${entry.key}\" resource."

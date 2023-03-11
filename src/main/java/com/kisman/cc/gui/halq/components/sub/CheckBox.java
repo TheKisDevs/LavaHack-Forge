@@ -101,11 +101,6 @@ public class CheckBox extends ShaderableImplementation implements Openable, Sett
 
     public boolean visible() {return setting.isVisible() && HalqGui.visible(setting.getTitle());}
 
-    public void setWidth(int width) {
-        super.setWidth(width);
-        this.bind.setWidth(width - 10);
-    }
-
     @Override
     public boolean isOpen() {
         return open;

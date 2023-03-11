@@ -5,7 +5,7 @@ import com.kisman.cc.features.plugins.PluginConfig;
 import com.kisman.cc.features.plugins.exceptions.BadPluginException;
 import com.kisman.cc.features.plugins.utils.Environment;
 import com.kisman.cc.features.plugins.utils.Jsonable;
-import com.kisman.cc.features.plugins.utils.ReflectionUtil;
+import com.kisman.cc.util.ReflectionUtilsKt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -129,7 +129,7 @@ public class PluginManager {
         }
 
         // ._.
-        ReflectionUtil.addToClassPath((URLClassLoader) pluginClassLoader, file);
+        ReflectionUtilsKt.addToClassPath((URLClassLoader) pluginClassLoader, file.toURI().toURL());
 
         PluginConfig config = Jsonable.GSON.fromJson(new InputStreamReader(Objects.requireNonNull(pluginClassLoader.getResourceAsStream(configName))), PluginConfig.class);
 

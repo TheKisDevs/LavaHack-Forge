@@ -4,6 +4,7 @@ import baritone.api.BaritoneAPI
 import baritone.api.Settings
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.PingBypassModule
 import com.kisman.cc.features.module.client.baritone.BaritoneSetting
 import com.kisman.cc.settings.Setting
@@ -13,11 +14,14 @@ import java.awt.Color
 
 @Suppress("UNCHECKED_CAST")
 @PingBypassModule
-class Baritone : Module(
-        "Baritone",
-        "Config of baritone integration",
-        Category.CLIENT
-) {
+@ModuleInfo(
+    name = "Baritone",
+    desc = "Config of implementation of baritone",
+    category = Category.CLIENT,
+    toggled = true,
+    toggleable = false
+)
+class Baritone : Module() {
     private val booleans = register(SettingGroup(Setting("Booleans", this)))
 //    private val numbers = register(SettingGroup(Setting("Numbers", this)))
     private val colors = register(SettingGroup(Setting("Colors", this)))
@@ -25,9 +29,6 @@ class Baritone : Module(
     private val settings = mutableListOf<BaritoneSetting<*>>()
 
     init {
-        toggled = true
-        toggleable = false
-
         for(setting in BaritoneAPI.getSettings().allSettings) {
             when (setting.value) {
                 is Boolean -> {

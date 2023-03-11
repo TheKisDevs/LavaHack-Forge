@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.player
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import net.minecraft.inventory.ClickType
@@ -9,12 +10,13 @@ import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumHand
 
-class AutoEat : Module(
-    "AutoEat",
-    "Will automatically eat",
-    Category.PLAYER
-) {
-
+@ModuleInfo(
+    name = "AutoEat",
+    desc = "Will automatically eat",
+    category = Category.PLAYER,
+    wip = true
+)
+class AutoEat : Module() {
     private val mode = SettingEnum("Mode", this, Mode.Hunger).register()
     private val swap = SettingEnum("Switch", this, Swap.Normal).register()
     private val hunger = register(Setting("Hunger", this, 12.0, 0.0, 19.0, true))

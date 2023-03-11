@@ -2,7 +2,6 @@ package com.kisman.cc;
 
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.event.KismanEventBus;
-import com.kisman.cc.features.Binder;
 import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
 import com.kisman.cc.features.catlua.ScriptManager;
 import com.kisman.cc.features.catlua.mapping.ForgeMappings;
@@ -10,9 +9,7 @@ import com.kisman.cc.features.catlua.mapping.Remapper3000;
 import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.features.command.commands.ClientNameCommand;
 import com.kisman.cc.features.command.commands.ClientVersionCommand;
-import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.hud.HudModuleManager;
-import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.CustomFontModule;
@@ -32,19 +29,14 @@ import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.hudeditor.HalqHudGui;
 import com.kisman.cc.gui.loadingscreen.progressbar.ProgressBarController;
 import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
-import com.kisman.cc.gui.other.music.MusicGui;
-import com.kisman.cc.gui.other.search.SearchGui;
+import com.kisman.cc.gui.music.MusicGui;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.loader.LavaHackInterface;
 import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
 import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
-import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.AccountDataCheckerKt;
 import com.kisman.cc.util.UtilityKt;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
-import com.kisman.cc.util.client.interfaces.IBindable;
-import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.manager.Managers;
 import com.kisman.cc.util.manager.file.ConfigManager;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -57,17 +49,11 @@ import me.zero.alpine.bus.EventManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import sun.misc.Unsafe;
 
@@ -113,6 +99,7 @@ public class Kisman {
 
     public static boolean remapped = !runningFromIntelliJ() || checkRemapped();
     public static boolean canInitializateCatLua = false;
+    public static boolean callingFromGameLoop = false;
 
     public static String currentConfig = null;
 
@@ -134,7 +121,6 @@ public class Kisman {
     public NoComGui noComGui;
     public ViaForgeGui viaForgeGui;
     public SelectionBar selectionBar;
-    public SearchGui searchGui;
     public MusicGui musicGui;
     public MainMenuController mainMenuController;
     public CommandManager commandManager;
@@ -259,8 +245,6 @@ public class Kisman {
 
         selectionBar = new SelectionBar(SelectionBar.Guis.ClickGui);
 
-        //For test
-        searchGui = new SearchGui(new Setting("Test"), null);
         musicGui = new MusicGui();
 
         LOGGER.info("Initializing default config manager!");
@@ -307,73 +291,6 @@ public class Kisman {
         LOGGER.info("Initialized LavaHack " + VERSION + "! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
 
         init = true;
-    }
-
-    @SubscribeEvent
-    public void key(KeyInputEvent e) {
-        if (mc.world == null || mc.player == null) return;
-        try {
-            if (Keyboard.isCreated()) {
-                if (Keyboard.getEventKeyState()) {
-                    int keyCode = Keyboard.getEventKey();
-                    if (keyCode <= 1) return;
-                    for (Module m : moduleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
-                    for (HudModule m : hudModuleManager.modules) if (m.getKeyboardKey() == keyCode && m.bindType == BindType.Keyboard) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) {
-                        if(s.isCombo()) {
-                            for(String option : s.binders.keySet()) {
-                                Binder binder = s.binders.get(option);
-                                if(binder.getKeyboardKey() == keyCode && binder.getType() == BindType.Keyboard) {
-                                    s.setValString(option);
-                                    if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + s.toDisplayString() + " has been changed to " + option + "!");
-                                }
-                            }
-                        } else if(s.getKeyboardKey() == keyCode && s.bindType == BindType.Keyboard && s.isCheck()) {
-                            s.setValBoolean(!s.getValBoolean());
-                            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.toDisplayString()/*s.getParentMod().getName() + "->" + s.getName()*/ + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!", s.settingId);
-                        }
-                    }
-                } else if(Keyboard.getEventKey() > 1) onRelease(Keyboard.getEventKey(), false);
-            }
-        } catch (Exception ignored) {}
-    }
-
-    @SubscribeEvent
-    public void mouse(InputEvent e) {
-        if (mc.world == null || mc.player == null) return;
-        try {
-            if (Mouse.isCreated()) {
-                if (Mouse.getEventButtonState()) {
-                    int button = Mouse.getEventButton();
-                    if (button <= 1) return;
-                    for (Module m : moduleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
-                    for (HudModule m : hudModuleManager.modules) if (IBindable.Companion.getKey(m) == button && m.getType() == BindType.Mouse) m.toggle();
-                    for (Setting s : settingsManager.getSettings()) {
-                        if(s.isCombo()) {
-                            for(String option : s.binders.keySet()) {
-                                Binder binder = s.binders.get(option);
-                                if(IBindable.Companion.getKey(s) == button && binder.getType() == BindType.Mouse) {
-                                    s.setValString(option);
-                                    if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + s.toDisplayString() + " has been changed to " + option + "!", s.settingId);
-                                }
-                            }
-                        } else if(IBindable.Companion.getKey(s) == button && s.getType() == BindType.Mouse && s.isCheck()) {
-                            s.setValBoolean(!s.getValBoolean());
-                            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!", s.settingId);
-                        }
-                    }
-                } else if(Mouse.getEventButton() > 1) onRelease(Mouse.getEventButton(), true);
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private void onRelease(int key, boolean mouse) {
-        for(Module m : moduleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
-        for(HudModule m : hudModuleManager.modules) if(IBindable.Companion.getKey(m) == key && (!mouse || (m.getType() == BindType.Mouse))) if(m.hold) m.toggle();
-        for (Setting s : settingsManager.getSettings()) if(IBindable.Companion.getKey(s) == key && s.getType() == BindType.Mouse && s.isCheck()) {
-            s.setValBoolean(!s.getValBoolean());
-            if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (s.getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + s.getParentMod().getName() + "->" + s.getName() + TextFormatting.GRAY + " has been " + (s.getValBoolean() ? "enabled" : "disabled") + "!", s.settingId);
-        }
     }
 
     public static String getName() {

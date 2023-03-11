@@ -27,7 +27,8 @@ class NoComModulesFrame(
                 x,
                 y,
                 (i + 1) * HalqGui.height,
-                i + 1
+                i + 1,
+                0
             ))
         }
     }

@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
-import com.kisman.cc.features.module.ShaderableModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
@@ -39,6 +36,12 @@ import java.util.*;
 @PingBypassModule
 @Targetable
 @TargetsNearest
+@ModuleInfo(
+        name = "HoleFillerRewrite",
+        display = "HoleFiller",
+        desc = "Fills holes around you",
+        category = Category.COMBAT
+)
 public class HoleFillerRewrite extends ShaderableModule {
     @ModuleInstance
     public static HoleFillerRewrite instance;
@@ -76,9 +79,8 @@ public class HoleFillerRewrite extends ShaderableModule {
     public Entity entity = null;
 
     public HoleFillerRewrite(){
-        super("HoleFillerRewrite", "", Category.COMBAT, false);
+        super();
         super.setDisplayInfo(() -> "[" + (entity == null ? "no target no fun" : ((entity != mc.player ? entity.getName() : "Self"))) + "]");
-        super.displayName = "HoleFiller";
     }
 
     private List<BlockPos> holes = new ArrayList<>();
@@ -310,39 +312,4 @@ public class HoleFillerRewrite extends ShaderableModule {
                 break;
         }
     }
-
-    @Override
-    public boolean isBeta(){
-        return true;
-    }
-
-    /*
-    private static class BlockPosBundle {
-
-        private BlockPos first;
-
-        private BlockPos second;
-
-        public BlockPosBundle(BlockPos first, BlockPos second){
-            this.first = first;
-            this.second = second;
-        }
-
-        public BlockPos getFirst() {
-            return first;
-        }
-
-        public void setFirst(BlockPos first) {
-            this.first = first;
-        }
-
-        public BlockPos getSecond() {
-            return second;
-        }
-
-        public void setSecond(BlockPos second) {
-            this.second = second;
-        }
-    }
-     */
 }

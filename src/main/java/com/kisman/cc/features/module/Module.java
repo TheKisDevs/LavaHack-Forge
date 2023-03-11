@@ -1,7 +1,6 @@
 package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.DisplayableFeature;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
@@ -14,6 +13,7 @@ import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.client.DisplayableFeature;
 import com.kisman.cc.util.enums.BindType;
 import com.kisman.cc.util.settings.SettingLoader;
 import net.minecraft.client.Minecraft;
@@ -23,9 +23,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Keyboard;
+import the.kis.devs.api.features.module.ModuleAPI;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unchecked")
@@ -33,14 +37,17 @@ public class Module extends DisplayableFeature {
 	protected static Minecraft mc = Minecraft.getMinecraft();
 	protected static SettingsManager setmgr;
 
-	private final String name;
+	public Setting visibleSetting = new Setting("Visible", this, true).onChange(setting -> { visible = setting.getValBoolean(); });
+	public Setting bindModeSetting = new Setting("Bind Mode", this, "Release", Arrays.asList("Release", "Hold")).onChange(setting -> { hold = setting.checkValString("Hold"); });
+
+	private String name;
 	private String description;
 	public String displayName;
 	private String displayInfo;
-	private int key;
+	public int key;
 	public int mouse = -1;
 	public BindType bindType = BindType.Keyboard;
-	private final Category category;
+	public Category category;
 	public boolean toggled;
 	public boolean toggleable = true;
 	public boolean subscribes = true;
@@ -54,12 +61,69 @@ public class Module extends DisplayableFeature {
 	public int moduleId;
 
 	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
+	public ArrayList<Module> submodules = new ArrayList<>();
+
+	public boolean beta0;
+	public boolean wip0;
+	public boolean pb0;
+	public boolean debug0;
+	public boolean submodule;
+
+	public Module() {
+		if(!getClass().isAnnotationPresent(ModuleInfo.class)) {
+			Kisman.LOGGER.error("Missing ModuleInfo annotation!");
+
+			constructor("MISSING MODULEINFO ANNOTATION", "MISSING MODULEINFO ANNOTATION", Category.CLIENT, Keyboard.KEY_NONE, true);
+		} else {
+			ModuleInfo info = getClass().getAnnotation(ModuleInfo.class);
+
+			constructor(info.name(), info.desc(), info.category(), info.key(), true);
+
+			String displayName0 = info.display();
+
+			if(!displayName0.isEmpty()) displayName = displayName0;
+
+			toggled = info.toggled();
+			toggleable = info.toggleable();
+
+			hold = info.hold();
+
+			beta0 = info.beta();
+			wip0 = info.wip();
+			pb0 = info.pingbypass();
+			debug0 = info.debug();
+
+			submodule = info.submodule();
+
+			visible = toggleable;
+
+			if(debug0) category = Category.DEBUG;
+			if(wip0) category = Category.WIP;
+
+			if(info.modules().length > 0) {
+				for(Class<? extends Module> clazz : info.modules()) {
+					try {
+						Module submodule = clazz.getConstructor().newInstance();
+
+						submodule.category = category;
+						submodules.add(submodule);
+					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						Kisman.LOGGER.error("Cant create new instance of submodule of " + name + " module!", e, e.getCause());
+					}
+				}
+			}
+		}
+	}
 
 	public Module(String name, Category category) {this(name, "", category, 0, true);}
 	public Module(String name, Category category, boolean subscribes) {this(name, "", category, 0, subscribes);}
 	public Module(String name, String description, Category category) {this(name, description, category, 0, true);}
 
 	public Module(String name, String description, Category category, int key, boolean subscribes) {
+		constructor(name, description, category, key, subscribes);
+	}
+
+	private void constructor(String name, String description, Category category, int key, boolean subscribes) {
 		this.name = name;
 		this.description = description;
 		this.displayName = name;
@@ -141,8 +205,7 @@ public class Module extends DisplayableFeature {
 	}
 
 	public SettingGroup register(SettingGroup group) {
-		setmgr.rSetting(group);
-		return group;
+		return (SettingGroup) register((Setting) group);
 	}
 
 	public <T extends Enum<?>> SettingEnum<T> register(SettingEnum<T> setting) {
@@ -155,10 +218,6 @@ public class Module extends DisplayableFeature {
 
 	private boolean isBeta0(){
 		return getClass().getAnnotation(Beta.class) != null;
-	}
-
-	private boolean isAddon0() {
-		return getClass().getAnnotation(Addon.class) != null;
 	}
 
 	private boolean isPingBypassModule0() {
@@ -235,6 +294,7 @@ public class Module extends DisplayableFeature {
 	public void onDisable() {}
 
 	public String getName() {return this.name;}
+	public void setName(String name) {this.name = name;}
 	public Category getCategory() {return this.category;}
 	public String getDisplayInfo() {return displayInfoSupplier == null ? displayInfo : displayInfoSupplier.get();}
 	public void setDisplayInfo(String displayInfo) {this.displayInfo = displayInfo;}
@@ -247,8 +307,8 @@ public class Module extends DisplayableFeature {
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
 	public boolean isVisible() {return visible;}
-	public boolean isBeta() {return isBeta0();}
-	public boolean isAddon() {return isAddon0();}
+	public boolean isBeta() {return isBeta0() || beta0;}
+	public boolean isAddon() {return this instanceof ModuleAPI;}
 	@Override public @NotNull BindType getType() {return bindType;}
 	@Override public void setType(@NotNull BindType type) {this.bindType = type;}
 	@Override public boolean isHold() {return hold;}
@@ -269,5 +329,10 @@ public class Module extends DisplayableFeature {
 
 	protected void dontSendToggleMessages() {
 		sendToggleMessages = false;
+	}
+
+	@Override
+	public void onInputEvent() {
+		toggle();
 	}
 }

@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.ShaderableModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.render.shader.FramebufferShader;
 import com.kisman.cc.features.module.render.shader.GlowableShader;
 import com.kisman.cc.features.module.render.shader.shaders.*;
@@ -50,6 +47,13 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 //TODO: remove renderSky method, add head and return hooks to default renderSky to apply shader at sandbox
+@ModuleInfo(
+        name = "ShaderCharms",
+        desc = "Config of shader system",
+        category = Category.RENDER,
+        toggled = true,
+        toggleable = false
+)
 public class ShaderCharms extends Module {
     public final SettingEnum<Shaders> mode = register(new SettingEnum<>("Mode", this, Shaders.AQUA));
 
@@ -133,13 +137,6 @@ public class ShaderCharms extends Module {
 
     public static HashMap<Drawable, Pair<Supplier<Boolean>>> modules = new HashMap<>();
     private final HashMap<Drawable, Boolean> modulesToRender = new HashMap<>();
-
-    public ShaderCharms() {
-        super("ShaderCharms", Category.RENDER);
-        super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
-        super.setToggled(true);
-        super.toggleable = false;
-    }
 
     public void onEnable() {
         super.onEnable();

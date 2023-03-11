@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat.autorer
 
 import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.module.combat.AutoRer
+import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic
@@ -30,7 +31,9 @@ class AutoRerTargetFinder(
     override fun getTarget(
         range : Float,
         wallRange : Float
-    ) : EntityPlayer? {
+    ) : EntityPlayer? = if(logic.get() == AutoRerTargetFinderLogic.Distance) {
+        nearest()
+    } else {
         var currentTarget : EntityPlayer? = null
         var minHealth = 50f
         var maxDamage = 0.5f
@@ -66,7 +69,8 @@ class AutoRerTargetFinder(
                 }
             }
         }
-        return currentTarget
+
+        currentTarget
     }
 
     private fun getDamageForPlayer(

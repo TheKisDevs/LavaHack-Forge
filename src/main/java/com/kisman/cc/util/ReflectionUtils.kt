@@ -4,6 +4,8 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.websockets.reportIssue
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import java.net.URL
+import java.net.URLClassLoader
 
 /**
  * @author _kisman_
@@ -96,4 +98,14 @@ class SecurityManagerImplementation : SecurityManager() {
             stack[depth]
         }
     }
+}
+
+@Throws(Exception::class)
+fun addToClassPath(
+    classLoader : URLClassLoader,
+    url : URL
+) {
+    val method = URLClassLoader::class.java.getMethod("addURL", URL::class.java).also { it.isAccessible = true }
+
+    method.invoke(classLoader, url)
 }

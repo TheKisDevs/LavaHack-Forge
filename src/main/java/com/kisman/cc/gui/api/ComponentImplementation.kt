@@ -14,7 +14,9 @@ abstract class ComponentImplementation(
     open var offset : Int,
     override var layer : Int
 ) : Component {
-    override var width = getModifiedWidth(layer, HalqGui.width)
+    override val width
+        get() = getModifiedWidth(layer, HalqGui.width)
+
     override var y = y0
         set(value) { field = value + offset }
 

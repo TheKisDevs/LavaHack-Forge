@@ -1,7 +1,5 @@
 package com.kisman.cc.loader.security;
 
-import com.kisman.cc.features.plugins.utils.StreamUtil;
-import com.kisman.cc.util.net.music.WebUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;

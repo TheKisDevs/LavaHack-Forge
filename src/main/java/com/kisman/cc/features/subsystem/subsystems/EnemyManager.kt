@@ -1,7 +1,7 @@
 package com.kisman.cc.features.subsystem.subsystems
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.RenderEntityEvent
+import com.kisman.cc.event.events.EventUpdateEntity
 import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.entity.EntityUtil
@@ -57,28 +57,30 @@ object EnemyManager : SubSystem("Enemy Manager") {
 //    private var minDistanceEntity = Double.MAX_VALUE
 
     @EventHandler
-    private val renderEntity = Listener<RenderEntityEvent.Check>(EventHook {
-        val entity = it.entity
+    private val updateEntity = Listener<EventUpdateEntity>(EventHook {
+        if(mc.player != null) {
+            val entity = it.entity
 
-        if(entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity)) && !FriendManager.instance.isFriend(entity)) {
-            val distance = mc.player.getDistanceSq(entity)
+            if (entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity)) && !FriendManager.instance.isFriend(entity)) {
+                val distance = mc.player.getDistanceSq(entity)
 
-            if(distance < minDistancePlayer) {
-                nearestPlayer = entity
-                minDistancePlayer = distance
-            }
-
-            /*if(entity is EntityPlayer) {
-                if(distance < minDistancePlayer) {
+                if (distance < minDistancePlayer) {
                     nearestPlayer = entity
                     minDistancePlayer = distance
                 }
-            } else {
-                if(distance < minDistanceEntity) {
-                    nearestEntity = entity
-                    minDistanceEntity = distance
-                }
-            }*/
+
+                /*if(entity is EntityPlayer) {
+                    if(distance < minDistancePlayer) {
+                        nearestPlayer = entity
+                        minDistancePlayer = distance
+                    }
+                } else {
+                    if(distance < minDistanceEntity) {
+                        nearestEntity = entity
+                        minDistanceEntity = distance
+                    }
+                }*/
+            }
         }
     })
 
@@ -93,7 +95,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
     }
 
     init {
-        listeners(renderEntity)
+        listeners(updateEntity)
 
         for(module in Kisman.instance.moduleManager.targetableModules) {
             if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java)) {

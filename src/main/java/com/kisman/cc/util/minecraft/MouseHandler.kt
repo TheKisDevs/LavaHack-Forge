@@ -3,7 +3,6 @@ package com.kisman.cc.util.minecraft
 import baritone.api.BaritoneAPI
 import baritone.api.event.events.BlockInteractEvent
 import com.kisman.cc.Kisman
-import com.kisman.cc.features.module.Debug.ClickCooldownReset
 import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.material.Material
 import net.minecraft.util.EnumActionResult
@@ -17,7 +16,7 @@ import net.minecraftforge.common.ForgeHooks
  */
 
 fun leftClick() {
-    if(mc.leftClickCounter <= 0 || ClickCooldownReset.isToggled) {
+    if(mc.leftClickCounter <= 0) {
         if(mc.objectMouseOver == null) {
             error("Null returned as 'hitResult', this shouldn't happen!")
 

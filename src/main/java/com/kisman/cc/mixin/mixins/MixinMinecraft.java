@@ -8,7 +8,6 @@
  import baritone.api.event.events.type.EventState;
  import com.kisman.cc.Kisman;
  import com.kisman.cc.event.Event;
- import com.kisman.cc.event.events.EventClientTick;
  import com.kisman.cc.event.events.EventSendClickBlockToController;
  import com.kisman.cc.event.events.KeyboardEvent;
  import com.kisman.cc.event.events.MouseEvent;
@@ -62,19 +61,8 @@
   /**
    * @author Cubic
    */
-  @Inject(method = "runTick", at = @At("HEAD"))
-  public void runTickPre(CallbackInfo ci){
-   EventClientTick.Pre eventClientTick = new EventClientTick.Pre();
-   Kisman.EVENT_BUS.post(eventClientTick);
-  }
-
-  /**
-   * @author Cubic
-   */
   @Inject(method = "runTick", at = @At("RETURN"))
   public void runTickPost(CallbackInfo ci) {
-   EventClientTick.Post eventClientTick = new EventClientTick.Post();
-   Kisman.EVENT_BUS.post(eventClientTick);
    try {
     if(AntiDesync.INSTANCE.isToggled()) AntiDesync.INSTANCE.onClientTickPost();
    } catch(Exception e) {
@@ -289,5 +277,15 @@
   @Override
   public void invokeSendClickBlockToController(boolean leftClick) {
    sendClickBlockToController(leftClick);
+  }
+
+  @Inject(method = "runGameLoop", at = @At("HEAD"))
+  private void runGameLoopHeadHook(CallbackInfo ci) {
+   Kisman.callingFromGameLoop = true;
+  }
+
+  @Inject(method = "runGameLoop", at = @At("RETURN"))
+  private void runGameLoopReturnHook(CallbackInfo ci) {
+   Kisman.callingFromGameLoop = false;
   }
  }

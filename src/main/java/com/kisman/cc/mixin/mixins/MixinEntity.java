@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.TurnEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("unused")
 @Mixin(value = Entity.class, priority = 10000)
-public class MixinEntity {
+public abstract class MixinEntity {
+    @Shadow public boolean isAirBorne;
     @Shadow public double posX;
     @Shadow public double posY;
     @Shadow public double posZ;
@@ -37,6 +39,20 @@ public class MixinEntity {
     @Shadow public AxisAlignedBB getEntityBoundingBox() {return null;}
     @Shadow protected boolean getFlag(final int p0) {return true;}
     @Shadow public Entity getLowestRidingEntity() {return null;}
+
+    @Shadow public abstract void moveRelative(float strafe, float up, float forward, float friction);
+
+    @Shadow public abstract String getName();
+
+    @Shadow public float fallDistance;
+
+    @Shadow public abstract boolean isSprinting();
+
+    @Shadow public abstract boolean isRiding();
+
+    @Shadow public abstract boolean isInWater();
+
+    @Shadow public EntityDataManager dataManager;
 
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     public void onTurn(float yaw, float pitch, CallbackInfo ci) {

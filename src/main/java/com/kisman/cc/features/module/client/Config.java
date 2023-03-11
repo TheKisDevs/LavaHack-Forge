@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
@@ -11,6 +12,13 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.enums.GradientModes;
 import org.lwjgl.input.Keyboard;
 
+@ModuleInfo(
+        name = "Config",
+        desc = "bro think yourself more",
+        category = Category.CLIENT,
+        toggled = true,
+        toggleable = false
+)
 public class Config extends Module {
     @ModuleInstance
     public static Config instance;
@@ -83,9 +91,7 @@ public class Config extends Module {
     public Setting particlesStartPointsCount = register(particlesPointsGroup.add(new Setting("Particles Start Points Count", this, 300, 100, 500, true).setTitle("Start Count")));
 
     public Config() {
-        super("Config", Category.CLIENT);
-        super.setToggled(true);
-        super.toggleable = false;
+        super();
 
         RotationSystem.takeOffDelaySetting = rotationTakeOff;
     }

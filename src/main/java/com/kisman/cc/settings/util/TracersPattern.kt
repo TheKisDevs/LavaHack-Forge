@@ -1,6 +1,8 @@
 package com.kisman.cc.settings.util
 
+import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.mixin.mixins.accessor.AccessorBufferBuilder
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.TracersSetting
 import com.kisman.cc.settings.types.SettingGroup
@@ -34,6 +36,8 @@ class TracersPattern(
     private val settings = mutableListOf<TracersSetting>()
 
     private val tessellator = Tessellator(2097152)
+
+    private var flag = false
 
     init {
         for(type in TracersEntityTypes.values()) {
@@ -86,14 +90,19 @@ class TracersPattern(
         return null
     }
 
-    fun preRenderEntities() {
-        tessellator.buffer.begin(GL_LINES, POSITION_COLOR)
+    fun preUpdateEntities() {
+        try {
+            if(Kisman.callingFromGameLoop) {
+                tessellator.buffer.begin(GL_LINES, POSITION_COLOR)
+                flag = false
+            }
+        } catch(_ : Exception) { }
     }
 
-    fun renderEntity(
+    fun updateEntity(
         entity : Entity
     ) {
-        if(entity != mc.player) {
+        if(entity != mc.player && mc.player != null && !flag && (tessellator.buffer as AccessorBufferBuilder).drawing() && Kisman.callingFromGameLoop) {
             val type = TracersEntityTypes.get(entity)
 
             if (type != null) {
@@ -111,28 +120,49 @@ class TracersPattern(
                     val color1 = getSetting(type, TracersSettingTypes.Color1)!!.colour
                     val color2 = if(mode.valEnum == TracersModes.Normal) color1 else getSetting(type, TracersSettingTypes.Color2)!!.colour
 
+//                    fun vertexes() {
+
+//                    }
+
+                    /*try {
+                        vertexes()
+                    } catch(_ : IndexOutOfBoundsException) {
+                        tessellator.buffer.endVertex()
+                        (tessellator.buffer as AccessorBufferBuilder).vertexCount(tessellator.buffer.vertexCount - 1)
+
+                        vertexes()
+                    }*/
                     tessellator.buffer.pos(eyes.x, eyes.y + mc.player.eyeHeight, eyes.z).color(color1.r, color1.g, color1.b, color1.a).endVertex()
                     tessellator.buffer.pos(x, y, z).color(color2.r, color2.g, color2.b, color2.a).endVertex()
+//                    vertexes()
                 }
             }
         }
     }
 
+    fun postUpdateEntities() {
+        /*if(mc.player == null) {
+            tessellator.buffer.reset()
+        }*/
+    }
+
     fun postRenderEntities() {
-        val bobbing = mc.gameSettings.viewBobbing
+        if((tessellator.buffer as AccessorBufferBuilder).drawing()) {
+            val bobbing = mc.gameSettings.viewBobbing
 
-        mc.gameSettings.viewBobbing = false
-        mc.entityRenderer.setupCameraTransform(mc.renderPartialTicks, 0)
+            mc.gameSettings.viewBobbing = false
+            mc.entityRenderer.setupCameraTransform(mc.renderPartialTicks, 0)
 
-        setup()
+            setup()
 
-        glLineWidth(width.valFloat)
+            glLineWidth(width.valFloat)
 
-        tessellator.draw()
+            tessellator.draw()
 
-        release()
+            release()
 
-        mc.gameSettings.viewBobbing = bobbing
-        mc.entityRenderer.setupCameraTransform(mc.renderPartialTicks, 0)
+            mc.gameSettings.viewBobbing = bobbing
+            mc.entityRenderer.setupCameraTransform(mc.renderPartialTicks, 0)
+        }
     }
 }

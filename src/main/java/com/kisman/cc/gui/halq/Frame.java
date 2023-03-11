@@ -62,7 +62,7 @@ public class Frame {
 
         for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
             if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
-                components.add(new Button(mod, x, y, offsetY, count1++));
+                components.add(new Button(mod, x, y, offsetY, count1++, 0));
                 offsetY += HalqGui.height;
             }
         }
@@ -78,22 +78,22 @@ public class Frame {
 
         if(!cat.equals(Category.LUA)) {
             for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                if(!mod.getClass().isAnnotationPresent(FakeThing.class)) {
-                    components.add(new Button(mod, x, y, offsetY, count1++));
+                if(!mod.getClass().isAnnotationPresent(FakeThing.class) && !mod.submodule) {
+                    components.add(new Button(mod, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             }
         } else {
             if(!Kisman.instance.scriptManager.scripts.isEmpty()) {
                 for (Module script : Kisman.instance.scriptManager.scripts) {
-                    components.add(new Button(script, x, y, offsetY, count1++));
+                    components.add(new Button(script, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             }
 
             for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
                 if(mod instanceof ModulePlugin) {
-                    components.add(new Button(mod, x, y, offsetY, count1++));
+                    components.add(new Button(mod, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             }
@@ -113,18 +113,18 @@ public class Frame {
 
         if(customName) {
             for(HudModule mod : Kisman.instance.hudModuleManager.modules) {
-                components.add(new Button(mod, x, y, offsetY, count1++));
+                components.add(new Button(mod, x, y, offsetY, count1++, 0));
                 offsetY += HalqGui.height;
             }
         } else {
             if (!cat.equals(Category.LUA)) {
                 for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
-                    components.add(new Button(mod, x, y, offsetY, count1++));
+                    components.add(new Button(mod, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             } else {
                 for (Module script : Kisman.instance.scriptManager.scripts) {
-                    components.add(new Button(script, x, y, offsetY, count1++));
+                    components.add(new Button(script, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             }
@@ -155,7 +155,7 @@ public class Frame {
             component.setOff(offsetY);
             component.setCount(count);
 
-            offsetY += component.getHeight();
+            offsetY += component.getRawHeight();
             count++;
 
             if(component instanceof Openable) {

@@ -24,7 +24,7 @@ class PingBypassFrame(
         var offsetY = HalqGui.height
 
         for ((count1, mod) in PingBypassModuleManager.getModulesByCategory(cat).withIndex()) {
-            components.add(Button(mod, x, y, offsetY, count1))
+            components.add(Button(mod, x, y, offsetY, count1, 0))
             offsetY += HalqGui.height
         }
     }

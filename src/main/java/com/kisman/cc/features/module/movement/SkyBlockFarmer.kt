@@ -20,13 +20,13 @@ class SkyBlockFarmer : Module(
     private val shift = register(Setting("Shift", this, false))
     private val mine = register(Setting("Mine", this, false))
 
-    private var key = mc.gameSettings.keyBindLeft
+    private var key0 = mc.gameSettings.keyBindLeft
     private var prevForward = false
 
     override fun onEnable() {
         super.onEnable()
 
-        key = key(direction.valString == "Left")
+        key0 = key(direction.valString == "Left")
         prevForward = false
     }
 
@@ -55,11 +55,11 @@ class SkyBlockFarmer : Module(
 
         if(!forward) {
             if(prevForward) {
-                key = key(left)
+                key0 = key(left)
             }
 
-            key.pressed = left || right
-            key(key != mc.gameSettings.keyBindLeft).pressed = !(left || right)
+            key0.pressed = left || right
+            key(key0 != mc.gameSettings.keyBindLeft).pressed = !(left || right)
         } else {
             unpress()
         }

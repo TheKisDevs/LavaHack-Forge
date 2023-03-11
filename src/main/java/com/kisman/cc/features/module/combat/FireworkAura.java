@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -25,7 +25,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@WorkInProgress
+@ModuleInfo(
+        name = "FireworkAura",
+        category = Category.COMBAT,
+        wip = true
+)
 public class FireworkAura extends Module {
 
     private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));
@@ -36,10 +40,6 @@ public class FireworkAura extends Module {
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting placeDelay = register(new Setting("PlaceDelay", this, 200, 0, 2000, NumberType.TIME));
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
-
-    public FireworkAura(){
-        super("FireworkAura", Category.COMBAT, true);
-    }
 
     private Thread thread = null;
 

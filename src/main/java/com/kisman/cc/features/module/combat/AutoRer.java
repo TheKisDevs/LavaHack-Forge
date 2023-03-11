@@ -3,14 +3,12 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerMotionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
-import com.kisman.cc.features.module.ShaderableModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.module.combat.autorer.AutoRerDamageSyncHandler;
 import com.kisman.cc.features.module.combat.autorer.AutoRerTargetFinder;
 import com.kisman.cc.features.module.combat.autorer.BreakInfo;
 import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
+import com.kisman.cc.features.module.combat.autorer.modules.Crystals;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -66,6 +64,13 @@ import java.util.function.Supplier;
 @PingBypassModule
 @Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
+@ModuleInfo(
+        name = "AutoRer",
+        category = Category.COMBAT,
+        modules = {
+                Crystals.class
+        }
+)
 public class AutoRer extends ShaderableModule {
     private final SettingGroup main = register(new SettingGroup(new Setting("Main", this)));
     private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
@@ -224,7 +229,7 @@ public class AutoRer extends ShaderableModule {
     private final AutoRerTargetFinder targets = new AutoRerTargetFinder(targetLogic.getSupplierEnum0(), placeRange.getSupplierFloat(), this, targetRange.getSupplierDouble(), () -> 50L, () -> multiThreaddedTargetGetter.getValBoolean() || multiThreaddedSphereGetter.getValBoolean());
 
     public AutoRer() {
-        super("AutoRer", "", Category.COMBAT, false);
+        super();
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
     }
 
@@ -554,8 +559,8 @@ public class AutoRer extends ShaderableModule {
     private void doCalculatePlace() {
         try {
             calculatePlace();
-            if(placePos.getBlockPos() == null && Crystals.INSTANCE.getState()) placePos.setBlockPos(Crystals.INSTANCE.getPos());
-            else Crystals.INSTANCE.setState(false);
+            if(placePos.getBlockPos() == null && Crystals.instance.getState()) placePos.setBlockPos(Crystals.instance.getPos());
+            else Crystals.instance.setState(false);
         } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
     }
 

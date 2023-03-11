@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module.render;
 
+import com.kisman.cc.features.module.WorkInProgress;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
@@ -24,7 +25,12 @@ import java.util.List;
  *
  * Work in progress, please don't yell at me if it doesn't work
  * Do not add to module manager when pushing a release
+ *
+ * @author _kisman_
+ *
+ * Rendering parrent when?
  */
+@WorkInProgress
 public class SelfCityESP extends Module {
 
     private final Setting smart = register(new Setting("Smart", this, false));

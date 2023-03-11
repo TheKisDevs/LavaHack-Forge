@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
  * @since 7/31/2018
  */
 public class Baritone implements IBaritone {
-    public static final Logger LOGGER = LogManager.getLogger("LavaHack Batitone");
+    public static final Logger LOGGER = LogManager.getLogger("LavaHack Baritone");
 
     private static final ThreadPoolExecutor threadPool;
     private static final File dir;

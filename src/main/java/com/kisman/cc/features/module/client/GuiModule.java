@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.client;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.settings.Setting;
@@ -11,11 +12,14 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.settings.util.ShaderPattern;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.client.interfaces.IBindable;
 import com.kisman.cc.util.enums.dynamic.EasingEnum;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
+@ModuleInfo(
+        name = "Gui",
+        category = Category.CLIENT,
+        key = Keyboard.KEY_RSHIFT
+)
 public class GuiModule extends Module {
     private final SettingGroup colorGroup = register(new SettingGroup(new Setting("Colors", this)));
     public final Setting primaryColor = register(colorGroup.add(new Setting("Primary Color", this, "Primary", new Colour(255, 0, 0))));
@@ -63,13 +67,14 @@ public class GuiModule extends Module {
     public final Setting animateToggleable = register(animationTypes.add(new Setting("Animate Toggleable", this, true).setTitle("Toggleable")));
     public final Setting animateHover = register(animationTypes.add(new Setting("Animate Hover", this, false).setTitle("Hover")));
     public final Setting animateSlider = register(animationTypes.add(new Setting("Animate Slider", this, false).setTitle("Slider")));
+    public final Setting openIndicator = register(new Setting("Open Indicator", this, true));
+    public final Setting layerStepOffset = register(new Setting("Layer Step Offset", this, 5, 0, 10, true));
+    public final Setting scale = register(new Setting("Scale", this, 1, 0.5, 2, false));
 
     @ModuleInstance
     public static GuiModule instance;
 
     public GuiModule() {
-        super("Gui", Category.CLIENT);
-        IBindable.bindKey(this, Keyboard.KEY_RSHIFT);
         super.dontSendToggleMessages();
     }
 

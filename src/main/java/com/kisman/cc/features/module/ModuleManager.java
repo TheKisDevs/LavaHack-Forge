@@ -42,7 +42,6 @@ public class ModuleManager {
 		add(new BurrowHelper());
 		add(new ChatPrint());
 		//add(new ChorusTP());
-		add(ClickCooldownReset.INSTANCE);
 //		add(new EventSystemTest());
 //		add(new FallbackableFontTest());
 		add(new FastFallTest());
@@ -56,7 +55,7 @@ public class ModuleManager {
 		add(new LavaHackOwns());
 //		add(new M2LTest());
 		add(new Meow());
-		add(new ModuleInstancingJava());
+		add(new ModuleInfoTest());
 		add(new ModuleInstancingKt());
 		add(new MoveInspector());
 //		add(new NoMove());
@@ -69,6 +68,7 @@ public class ModuleManager {
 //		add(new ScaffoldTest2());
 		add(new ScreenShaders());
 		add(new SmoothRenderer());
+		add(new SubModuleTest());
 		add(SwingTest.INSTANCE);
 //		add(new TextFieldTest());
 //		add(new TowerTest());
@@ -91,7 +91,6 @@ public class ModuleManager {
 		add(new Avoid());
 		add(new Blocker());
 		add(new BowAimBot());
-		add(new BowSpam());
 //		add(new BreakAlert());
 		add(new Burrow2());
 		add(new CevBreaker());
@@ -99,7 +98,6 @@ public class ModuleManager {
 		add(new Criticals());
 		add(new CrystalFiller());
 		add(new CrystalPvPHelper());
-		add(Crystals.INSTANCE);
 		add(new DamageIncreaser());
 		add(new FireworkAura());
 //		add(new Flatten());
@@ -117,6 +115,7 @@ public class ModuleManager {
 		add(new SurroundRewrite());
 //		add(new TrapDoorBurrow());
 		//client
+		add(new AntiLogger());
 		add(new Baritone());
 		add(new BetterScreenshot());
 		add(new Cape());
@@ -127,6 +126,7 @@ public class ModuleManager {
 		add(CustomFontModule.instance);
 		add(new DevelopmentHelper());
 		add(new DiscordRPCModule());
+		add(new ForgeBypass());
 		add(FriendHighlight.INSTANCE);
 		add(new GuiModule());
 		add(new GuiShader());
@@ -138,7 +138,7 @@ public class ModuleManager {
 		add(new SchematicaModule());
 		add(new ViaForgeModule());
 		//render
-		add(new BlockESP());
+//		add(new BlockESP());
 		add(new BlockHighlight());
 		//add(new BlockLiner());
 		add(new Breadcrumbs());
@@ -149,14 +149,15 @@ public class ModuleManager {
 		add(new CrystalSafeBlocks());
 		add(new DamageESP());
 		add(new EnchantGlint());
-		add(new EntityESPRewrite());
+		add(new ESP());
+//		add(new EntityESPRewrite());
 //		add(new FovModifier());
 //		add(new HoleESP());
 //		add(new HoleESPRewrite());
-		add(new HoleESPRewrite2());
+//		add(new HoleESPRewrite2());
 		add(new HotbarModifier());
 		add(new InfiniteRender());
-		add(new ItemESPRewrite());
+//		add(new ItemESPRewrite());
 		add(new JumpCircle());
 //		add(new LogoutSpots());
 		add(new MotionBlur());
@@ -174,7 +175,7 @@ public class ModuleManager {
 		add(new SmallShield());
 		add(new SmartCityESP());
 		add(new SpawnsESP());
-		add(new StorageESP());
+//		add(new StorageESP());
 		add(new SwingAnimation());
 		add(new SwingProgress());
 		add(new Tracers2());
@@ -182,7 +183,6 @@ public class ModuleManager {
 //		add(new Trajectories());
 //		add(new TrajectoriesRewrite());
 		add(new ViewModel());
-		add(new XRay());
 		//movement
 		add(new AirJump());
 		add(new Anchor());
@@ -208,22 +208,19 @@ public class ModuleManager {
 //		add(SpeedRewrite.INSTANCE);
 		add(new Spider());
 		add(new Strafe());
-		add(new TargetStrafe());
 		//player
 		add(new AirPlace());
 		add(AntiDesync.INSTANCE);
 		add(new AntiHunger());
-		add(new AntiWeakness());
 		add(new ArrowBlocker());
 		add(new AutoEat());
+		add(new AutoEatRewrite());
 		add(new AutoMine());
 		add(new AutoMount());
 		add(new AutoRespawn());
 		add(new CameraClip());
 		add(new ChorusDelay());
 		add(new ChorusPredict());
-		add(new ForgeBypass());
-		add(new FreeCamBypass());
 		add(new FreeCamRewrite());
 		add(Interaction.INSTANCE);
 		add(new Octopus());
@@ -237,7 +234,6 @@ public class ModuleManager {
 		add(new YawLock());
 		add(new YawStep());
 		//exploit
-		add(new AntiLogger());
 		add(new AntiVanish());
 		add(new BookFormatModule());
 		add(new BowExploit());
@@ -306,6 +302,12 @@ public class ModuleManager {
 		if(module.getClass().isAnnotationPresent(Targetable.class)) {
 			targetableModules.add(module);
 		}
+
+		if(!module.submodules.isEmpty()) {
+			for(Module submodule : module.submodules) {
+				add(submodule);
+			}
+		}
 	}
 	
 	public Module getModule(String name) {
@@ -329,20 +331,6 @@ public class ModuleManager {
 		modules.stream().filter(Module::isToggled).forEach(enabled::add);
 		return enabled;
 	}
-
-	/*@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
-		for(Module m : modules) if(m.isToggled()) {
-			try {
-				m.update();
-			} catch(Exception e) {
-				if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " from update method. Disabling!", m);
-				Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from update method from " + m.getName() + ". Disabling!", e);
-				e.printStackTrace();
-				m.setToggled(false);
-			}
-		}
-	}*/
 
 	public void key(char typedChar, int key, Module mod) {
 		if(mod.isToggled()) {

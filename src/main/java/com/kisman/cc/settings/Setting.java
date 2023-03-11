@@ -3,17 +3,22 @@ package com.kisman.cc.settings;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.Binder;
-import com.kisman.cc.features.DisplayableFeature;
+import com.kisman.cc.features.module.client.Config;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.util.client.DisplayableFeature;
 import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.client.interfaces.Runnable1P;
 import com.kisman.cc.util.enums.BindType;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 
@@ -27,7 +32,7 @@ public class Setting extends DisplayableFeature {
 	public boolean haveDisplayInfo = false;
 	public Supplier<String> displayInfoSupplier = () -> "";
 
-	public Function1<Setting, Object> onChange = setting -> null;
+	public Function1<Setting, Unit> onChange = setting -> null;
 
 	private Colour colour;
 	private Colour colourDefault;
@@ -246,10 +251,18 @@ public class Setting extends DisplayableFeature {
 		return this;
 	}
 
-	public Setting onChange(Function1<Setting, Object> onChange) {
+	public Setting onChange(Function1<Setting, Unit> onChange) {
 		this.onChange = onChange;
 
 		return this;
+	}
+	
+	public Setting onChange(Runnable1P<Setting> onChange) {
+		return onChange(setting -> {
+			onChange.run(setting);
+
+			return null;
+		});
 	}
 
 	public Setting setDisplayName(String displayName) {
@@ -718,5 +731,22 @@ public class Setting extends DisplayableFeature {
 		message += "->" + getName();
 
 		return message;
+	}
+
+	//TODO: combos????
+	@Override
+	public void onInputEvent() {
+		if(isCheck()) {
+			setValBoolean(!getValBoolean());
+			if (Kisman.instance.init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + (getValBoolean() ? TextFormatting.GREEN : TextFormatting.RED) + toDisplayString()/*s.getParentMod().getName() + "->" + s.getName()*/ + TextFormatting.GRAY + " has been " + (getValBoolean() ? "enabled" : "disabled") + "!", settingId);
+		} /*else if(isCombo()) {
+			for(String option : binders.keySet()) {
+				Binder binder = binders.get(option);
+				if(binder.getKeyboardKey() == keyCode && binder.getType() == BindType.Keyboard) {
+					s.setValString(option);
+					if(init && Config.instance.notification.getValBoolean()) ChatUtility.message().printClientMessage(TextFormatting.GRAY + "Setting " + s.toDisplayString() + " has been changed to " + option + "!");
+				}
+			}
+		}*/
 	}
 }

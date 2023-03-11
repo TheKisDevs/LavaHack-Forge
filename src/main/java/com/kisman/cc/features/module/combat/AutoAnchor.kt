@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.features.module.combat.autoanchor.PlaceInfo
 import com.kisman.cc.features.subsystem.subsystems.*
@@ -48,10 +49,12 @@ import java.util.function.Supplier
 @Suppress("UNUSED_PARAMETER")
 @Targetable
 @TargetsNearest
+@ModuleInfo(
+    name = "AutoAnchor",
+    desc = "KIlling enemies with anchors. Only for 1.16+ servers",
+    category = Category.COMBAT
+)
 class AutoAnchor : ShaderableModule(
-    "AutoAnchor",
-    "Killing enemies with anchors. Only for 1.16+ servers",
-    Category.COMBAT,
     true
 ) {
     private val delay = register(Setting("Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME))

@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.player.ForgeBypass;
+import com.kisman.cc.features.module.client.ForgeBypass;
 import net.minecraft.network.*;
 import net.minecraft.network.handshake.client.C00Handshake;
 import org.spongepowered.asm.mixin.*;

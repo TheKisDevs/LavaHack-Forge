@@ -7,12 +7,10 @@ import com.kisman.cc.event.events.EventPlayerPushedByWater;
 import com.kisman.cc.event.events.EventPlayerTravel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.EnumHandSide;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,17 +22,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = EntityPlayer.class, priority = Integer.MAX_VALUE)
-public abstract class MixinEntityPlayer extends EntityLivingBase {
-    public MixinEntityPlayer(World worldIn) {super(worldIn);}
+public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
     @Shadow protected void doWaterSplashEffect() {}
     @Shadow public @NotNull String getName() {return "";}
 
     @Shadow @Final protected static DataParameter<Byte> MAIN_HAND;
 
+    @Shadow public void attackTargetEntityWithCurrentItem(@NotNull Entity targetEntity) {}
+
+    @Shadow public abstract float getCooledAttackStrength(float adjustTicks);
+
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     private void onJump(CallbackInfo ci) {
         if(Minecraft.getMinecraft().player.getName().equals(getName())) {
-            EventPlayerJump event = new EventPlayerJump(this);
+            EventPlayerJump event = new EventPlayerJump((EntityPlayer) (Object) this);
             Kisman.EVENT_BUS.post(event);
 
             if(event.isCancelled()) ci.cancel();
@@ -76,7 +77,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase {
     @NotNull
     public EnumHandSide getPrimaryHand() {
         try {
-            return this.dataManager.get(MAIN_HAND) == 0 ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
+            return dataManager.get(MAIN_HAND) == 0 ? EnumHandSide.LEFT : EnumHandSide.RIGHT;
         } catch(Exception ignored) {
             return EnumHandSide.RIGHT;
         }

@@ -1,5 +1,7 @@
 package com.kisman.cc.features.plugins.utils;
 
+import kotlin.io.ByteStreamsKt;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,12 +43,12 @@ public class Srg2NotchService
             jos.putNextEntry(new JarEntry(entry.getName()));
             if (entry.getName().endsWith(".class"))
             {
-                byte[] bytes = StreamUtil.toByteArray(is);
+                byte[] bytes = ByteStreamsKt.readBytes(is);
                 jos.write(remapper.transform(bytes, mapping));
             }
             else
             {
-                StreamUtil.copy(is, jos);
+                ByteStreamsKt.copyTo(is, jos, 1024);
             }
 
             jos.flush();

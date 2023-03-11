@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
@@ -38,6 +39,11 @@ import java.util.stream.Collectors;
  */
 @Targetable
 @TargetsNearest
+@ModuleInfo(
+        name = "AutoObsidian",
+        category = Category.COMBAT,
+        wip = true
+)
 public class AutoObsidian extends Module {
     private final Setting circleRange = register(new Setting("CircleRange", this, 2, 1, 5, false));
     private final Setting singlePlace = register(new Setting("SinglePlace", this, true));
@@ -51,10 +57,6 @@ public class AutoObsidian extends Module {
 
     @Target
     public EntityPlayer target;
-
-    public AutoObsidian(){
-        super("AutoObsidian", Category.COMBAT);
-    }
 
     private List<BlockPos> positions = new ArrayList<>();
 

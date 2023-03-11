@@ -38,6 +38,9 @@ object Interaction : Module(
     private val items = register(SettingGroup(Setting("Items", this)))
 
     private val iPacketCrystal = register(items.add(Setting("Packet Crystal", this, false)))
+    private val bowSpamGroup = register(items.add(SettingGroup(Setting("Bow Spam", this))))
+    private val bowSpamState = register(bowSpamGroup.add(Setting("Bow Spam State", this, false).setTitle("State")))
+    private val bowSpamLength = register(bowSpamGroup.add(Setting("Bow Spam Length", this, 3.0, 3.0, 21.0, true).setTitle("Length")))
 
     private val blocks = register(SettingGroup(Setting("Blocks", this))) as SettingGroup
 
@@ -102,11 +105,20 @@ object Interaction : Module(
 
         doFastUse()
         doPacketCrystal()
+        doBowSpam()
     }
 
     @SubscribeEvent fun onLeftClickBlock(event : PlayerInteractEvent.LeftClickBlock) {
         if(fastBreak.valBoolean && mc.playerController.curBlockDamageMP + BlockUtil2.getHardness(event.pos) >= 1) {
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, event.pos, mc.objectMouseOver.sideHit))
+        }
+    }
+
+    private fun doBowSpam() {
+        if(bowSpamState.valBoolean && mc.player.heldItemMainhand.item == Items.BOW && mc.player.isHandActive && mc.player.itemInUseMaxCount >= bowSpamLength.valInt) {
+            mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, mc.player.horizontalFacing))
+            mc.player.connection.sendPacket(CPacketPlayerTryUseItem(mc.player.activeHand))
+            mc.player.stopActiveHand()
         }
     }
 

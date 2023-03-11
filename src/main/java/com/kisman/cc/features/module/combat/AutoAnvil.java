@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -15,16 +16,16 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
+@ModuleInfo(
+        name = "AutoAnvil",
+        category = Category.COMBAT,
+        wip = true
+)
 public class AutoAnvil extends Module {
-
     private final Setting center = register(new Setting("Setting", this, true));
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
     private final Setting toggleOnComplete = register(new Setting("ToggleOnComplete", this, true));
-
-    public AutoAnvil(){
-        super("AutoAnvil", Category.COMBAT);
-    }
 
     @Override
     public void update(){

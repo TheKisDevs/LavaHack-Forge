@@ -11,8 +11,9 @@ import com.kisman.cc.features.module.render.SwingProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +21,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,9 +32,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static org.spongepowered.asm.lib.Opcodes.GETFIELD;
 
-@SuppressWarnings({"unused", "NullableProblems"})
+@SuppressWarnings("ConstantConditions")
 @Mixin(value = EntityLivingBase.class, priority = 10000)
-public abstract class MixinEntityLivingBase extends Entity {
+public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow public EnumHand swingingHand;
     @Shadow public ItemStack activeItemStack;
     @Shadow public float moveStrafing;
@@ -44,17 +44,21 @@ public abstract class MixinEntityLivingBase extends Entity {
     @Shadow public boolean isElytraFlying() {return true;}
     @Shadow public boolean isPotionActive(Potion potionIn) {return false;}
     @Shadow public PotionEffect getActivePotionEffect(Potion potionIn) {return null;}
-    @Shadow @Override protected void entityInit() {}
-    @Shadow @Override public void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
-    @Shadow @Override public void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
+    @Shadow protected void entityInit() {}
+    @Shadow public void readEntityFromNBT(NBTTagCompound nbtTagCompound) {}
+    @Shadow public void writeEntityToNBT(NBTTagCompound nbtTagCompound) {}
 
     @Shadow public float swingProgress;
 
     @Shadow public int swingProgressInt;
 
-    @Shadow protected float getJumpUpwardsMotion() { return 0f; };
+    @Shadow protected float getJumpUpwardsMotion() { return 0f; }
 
-    public MixinEntityLivingBase(World worldIn) {super(worldIn);}
+    @Shadow public abstract ItemStack getHeldItemMainhand();
+
+    @Shadow public abstract IAttributeInstance getEntityAttribute(IAttribute attribute);
+
+    @Shadow public abstract boolean isOnLadder();
 
     @Inject(method = "getArmSwingAnimationEnd", at = @At("HEAD"), cancellable = true)
     private void yesido(CallbackInfoReturnable<Integer> cir) {
@@ -68,11 +72,6 @@ public abstract class MixinEntityLivingBase extends Entity {
     }
 
     private RotationMoveEvent jumpRotationEvent;
-
-    public MixinEntityLivingBase(World worldIn, RotationMoveEvent jumpRotationEvent) {
-        super(worldIn);
-        this.jumpRotationEvent = jumpRotationEvent;
-    }
 
     @Inject(
             method = "jump",

@@ -23,6 +23,10 @@ class BlockImplementation(
 
     init {
         module.addFlag(Supplier { renderer.canRender() })
+
+        if(block.color != null) {
+            renderer.filledColor1.colour = block.color
+        }
     }
 
     override fun valid(

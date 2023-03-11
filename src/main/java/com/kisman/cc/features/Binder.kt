@@ -35,7 +35,7 @@ class Binder(
     override fun setType(
         type : BindType
     ) {
-        this.type = type;
+        this.type = type
     }
 
     override fun isHold() : Boolean = hold
@@ -43,7 +43,7 @@ class Binder(
     override fun setHold(
         hold : Boolean
     ) {
-        this.hold = hold;
+        this.hold = hold
     }
 
     override fun getButtonName() : String = name

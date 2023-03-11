@@ -1,6 +1,7 @@
 package com.kisman.cc.event;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventInput;
 import com.kisman.cc.event.events.EventResolutionUpdate;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
@@ -26,15 +27,12 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class EventProcessor {
     private final Minecraft mc = Minecraft.getMinecraft();
-
-    public AtomicBoolean ongoing;
 
     public int oldWidth = -1, oldHeight = -1;
 
@@ -43,12 +41,24 @@ public class EventProcessor {
         Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.EVENT_BUS.subscribe(packet);
         Kisman.instance.progressBar.steps++;
-
-        ongoing = new AtomicBoolean(false);
     }
 
     public void init() {
         Kisman.EVENT_BUS.post(new EventProgressBar("Event Processor"));
+    }
+
+    @SubscribeEvent
+    public void onKey(InputEvent.KeyInputEvent event) {
+        EventInput event0 = new EventInput.Keyboard();
+
+        Kisman.EVENT_BUS.post(event0);
+    }
+
+    @SubscribeEvent
+    public void onMouse(InputEvent.MouseInputEvent event) {
+        EventInput event0 = new EventInput.Mouse();
+
+        Kisman.EVENT_BUS.post(event0);
     }
 
     @SubscribeEvent

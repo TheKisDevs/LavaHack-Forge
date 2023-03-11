@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.client
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.client.schematica.SchematicaSetting
 import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler
 import com.kisman.cc.settings.Setting
@@ -10,15 +11,15 @@ import com.kisman.cc.settings.Setting
  * @author _kisman_
  * @since 10:56 of 04.03.2023
  */
-class SchematicaModule : Module(
-    "Schematica",
-    "Implementation of Schematica mod",
-    Category.CLIENT
-) {
+@ModuleInfo(
+    name = "Schematica",
+    desc = "Config of implementation of schematica",
+    category = Category.CLIENT,
+    toggled = true,
+    toggleable = false
+)
+class SchematicaModule : Module() {
     init {
-        toggled = true
-        toggleable = false
-
         SchematicaSetting<Boolean>(register(Setting("Dump Block List", this, false))) { ConfigurationHandler.dumpBlockList = it }
         SchematicaSetting<Boolean>(register(Setting("Show Debug Info", this, true))) { ConfigurationHandler.showDebugInfo = it }
         SchematicaSetting<Boolean>(register(Setting("Enable Alpha", this, false))) { ConfigurationHandler.enableAlpha = it }

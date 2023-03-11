@@ -151,7 +151,7 @@ public class BlockUtil2 {
     }
 
     public static void clickBlock(BlockPos position, EnumFacing side, EnumHand hand, boolean packet, boolean rotate) {
-        if(rotate) RotationSystem.handleRotate(position);
+        if(rotate) RotationSystem.handleRotate(position.offset(side));
         if (packet) mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(position.offset(side), side.getOpposite(), hand, Float.intBitsToFloat(Float.floatToIntBits(17.735476f) ^ 0x7E8DE241), Float.intBitsToFloat(Float.floatToIntBits(26.882437f) ^ 0x7ED70F3B), Float.intBitsToFloat(Float.floatToIntBits(3.0780227f) ^ 0x7F44FE53)));
         else mc.playerController.processRightClickBlock(mc.player, mc.world, position.offset(side), side.getOpposite(), new Vec3d(position), hand);
     }

@@ -2,7 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.features.module.client.DevelopmentHelper;
 import com.kisman.cc.features.module.render.ContainerModifier;
-import com.kisman.cc.gui.other.container.ItemESP;
+import com.kisman.cc.gui.containermodifier.ItemESP;
 import com.kisman.cc.util.enums.DevelopmentHelperSlotTypes;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;

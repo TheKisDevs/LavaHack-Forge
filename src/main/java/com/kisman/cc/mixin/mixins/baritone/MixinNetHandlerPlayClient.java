@@ -6,12 +6,8 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.ChunkEvent;
 import baritone.api.event.events.type.EventState;
 import baritone.cache.CachedChunk;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketCombatEvent;
@@ -27,9 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @since 8/3/2018
  */
 @Mixin(NetHandlerPlayClient.class)
-public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
-    public MixinNetHandlerPlayClient(Minecraft mcIn, GuiScreen p_i46300_2_, NetworkManager networkManagerIn, GameProfile profileIn) {super(mcIn, p_i46300_2_, networkManagerIn, profileIn);}
-
+public class MixinNetHandlerPlayClient {
     @Inject(
             method = "handleChunkData",
             at = @At(
@@ -40,7 +34,7 @@ public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
     private void preRead(SPacketChunkData packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             EntityPlayerSP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == this) {
+            if (player != null && player.connection == this0()) {
                 ibaritone.getGameEventHandler().onChunkEvent(
                         new ChunkEvent(
                                 EventState.PRE,
@@ -60,7 +54,7 @@ public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
     private void postHandleChunkData(SPacketChunkData packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             EntityPlayerSP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == this) {
+            if (player != null && player.connection == this0()) {
                 ibaritone.getGameEventHandler().onChunkEvent(
                         new ChunkEvent(
                                 EventState.POST,
@@ -86,7 +80,7 @@ public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
         }
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             EntityPlayerSP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == this) {
+            if (player != null && player.connection == this0()) {
                 ibaritone.getGameEventHandler().onChunkEvent(
                         new ChunkEvent(
                                 EventState.POST,
@@ -122,7 +116,7 @@ public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
         ChunkPos pos = new ChunkPos(packetIn.getChangedBlocks()[0].getPos());
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             EntityPlayerSP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == this) {
+            if (player != null && player.connection == this0()) {
                 ibaritone.getGameEventHandler().onChunkEvent(
                         new ChunkEvent(
                                 EventState.POST,
@@ -145,9 +139,13 @@ public class MixinNetHandlerPlayClient extends NetHandlerPlayClient {
     private void onPlayerDeath(SPacketCombatEvent packetIn, CallbackInfo ci) {
         for (IBaritone ibaritone : BaritoneAPI.getProvider().getAllBaritones()) {
             EntityPlayerSP player = ibaritone.getPlayerContext().player();
-            if (player != null && player.connection == this) {
+            if (player != null && player.connection == this0()) {
                 ibaritone.getGameEventHandler().onPlayerDeath();
             }
         }
+    }
+
+    private NetHandlerPlayClient this0() {
+        return (NetHandlerPlayClient) (Object) this;
     }
 }

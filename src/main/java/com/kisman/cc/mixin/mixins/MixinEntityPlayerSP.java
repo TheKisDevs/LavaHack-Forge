@@ -15,7 +15,7 @@ import com.kisman.cc.event.events.EventPlayerPushOutOfBlocks;
 import com.kisman.cc.event.events.EventPlayerUpdate;
 import com.kisman.cc.features.module.movement.MoveModifier;
 import com.kisman.cc.mixin.accessors.IEntityPlayerSP;
-import com.mojang.authlib.GameProfile;
+import com.kisman.cc.util.movement.BaritoneHandlerKt;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,7 +24,6 @@ import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.init.MobEffects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovementInput;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import org.jetbrains.annotations.NotNull;
@@ -40,14 +39,12 @@ import static com.kisman.cc.util.Globals.mc;
 
 @SuppressWarnings("unused")
 @Mixin(value = EntityPlayerSP.class, priority = 10000)
-public class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IEntityPlayerSP {
+public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IEntityPlayerSP {
     @Shadow public MovementInput movementInput;
-
-    public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
 
     @Shadow protected boolean isCurrentViewEntity() {return true;}
 
-    @Shadow private void onUpdateWalkingPlayer() {};
+    @Shadow private void onUpdateWalkingPlayer() {}
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MoverType type, double x, double y, double z, CallbackInfo ci) {
@@ -93,19 +90,19 @@ public class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IE
     public void attackTargetEntityWithCurrentItem(@NotNull Entity targetEntity) {
         super.attackTargetEntityWithCurrentItem(targetEntity);
 
-        if (((MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier")).getKeepSprint().getValBoolean() && targetEntity.canBeAttackedWithItem() && !targetEntity.hitByEntity(this)) {
+        if (((MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier")).getKeepSprint().getValBoolean() && targetEntity.canBeAttackedWithItem() && !targetEntity.hitByEntity((EntityPlayerSP) (Object) this)) {
             float f1;
             if (targetEntity instanceof EntityLivingBase) f1 = EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((EntityLivingBase) targetEntity).getCreatureAttribute());
-            else f1 = EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), EnumCreatureAttribute.UNDEFINED);
+            else f1 = EnchantmentHelper.getModifierForCreature(getHeldItemMainhand(), EnumCreatureAttribute.UNDEFINED);
 
             float f2 = this.getCooledAttackStrength(0.5F);
-            float f = (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() * (0.2F + f2 * f2 * 0.8F);
+            float f = (float) getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() * (0.2F + f2 * f2 * 0.8F);
             f1 = f1 * f2;
 
             if (f > 0.0F || f1 > 0.0F) {
-                boolean flag2 = !isSprinting() && f2 > 0.9f && this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(MobEffects.BLINDNESS) && !this.isRiding() && targetEntity instanceof EntityLivingBase;
-                CriticalHitEvent hitResult = ForgeHooks.getCriticalHit(this, targetEntity, flag2, flag2 ? 1.5F : 1.0F);
-                if (targetEntity.attackEntityFrom(DamageSource.causePlayerDamage(this), (hitResult != null ? f * hitResult.getDamageModifier() : f) + f1) && EnchantmentHelper.getKnockbackModifier(this) + (isSprinting() && EnchantmentHelper.getKnockbackModifier(this) > 0.9 ? 1 : 0) > 0) {
+                boolean flag2 = !isSprinting() && f2 > 0.9f && fallDistance > 0.0F && !this.onGround && !isOnLadder() && !isInWater() && !this.isPotionActive(MobEffects.BLINDNESS) && !isRiding() && targetEntity instanceof EntityLivingBase;
+                CriticalHitEvent hitResult = ForgeHooks.getCriticalHit((EntityPlayerSP) (Object) this, targetEntity, flag2, flag2 ? 1.5F : 1.0F);
+                if (targetEntity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayerSP) (Object) this), (hitResult != null ? f * hitResult.getDamageModifier() : f) + f1) && EnchantmentHelper.getKnockbackModifier((EntityPlayerSP) (Object) this) + (isSprinting() && EnchantmentHelper.getKnockbackModifier((EntityPlayerSP) (Object) this) > 0.9 ? 1 : 0) > 0) {
                     mc.player.setSprinting(true);
                     motionX = (10 * motionX) / 6;
                     motionY = (10 * motionY) / 6;
@@ -121,11 +118,12 @@ public class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IE
     )
     private void sendChatMessage(String msg, CallbackInfo ci) {
         ChatEvent event = new ChatEvent(msg);
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
-        if (baritone == null) {
-            return;
-        }
-        baritone.getGameEventHandler().onSendChatMessage(event);
+//        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer((EntityPlayerSP) (Object) this);
+//        if (baritone == null) {
+//            return;
+//        }
+        BaritoneHandlerKt.baritone().getGameEventHandler().onSendChatMessage(event);
+//        Baritone..primary.getGameEventHandler().onSendChatMessage(event);
         if (event.isCancelled()) {
             ci.cancel();
         }

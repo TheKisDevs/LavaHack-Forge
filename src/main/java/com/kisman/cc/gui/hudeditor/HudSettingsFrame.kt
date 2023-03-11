@@ -45,7 +45,8 @@ class HudSettingsFrame(
             x,
             y,
             offsetY,
-            count1
+            count1,
+            0
         ))
 
         offsetY += HalqGui.height

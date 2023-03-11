@@ -1,6 +1,7 @@
 package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.settings.Setting
@@ -24,11 +25,12 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Suppress("LocalVariableName")
-class BlockHighlight : ShaderableModule(
-    "BlockHighlight",
-    "Highlights object you are looking at",
-    Category.RENDER
-) {
+@ModuleInfo(
+    name = "BlockHighlight",
+    desc = "Highlights object you are looking at",
+    category = Category.RENDER
+)
+class BlockHighlight : ShaderableModule() {
     private val entities = register(Setting("Entities", this, false))
     private val hitSideOnly = register(Setting("Hit Side Only", this, false))
 

@@ -1,17 +1,19 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.event.events.EventRenderEntityName;
-import com.kisman.cc.features.module.render.CharmsRewrite;
 import com.kisman.cc.features.module.misc.Optimizer;
+import com.kisman.cc.features.module.render.CharmsRewrite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.*;
-import net.minecraft.entity.*;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
@@ -25,13 +27,6 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
         super(null);
     }
 
-    @Inject(method = "renderName(Lnet/minecraft/entity/Entity;DDD)V", at = @At("HEAD"), cancellable = true)
-    private void doRenderName(Entity par1, double par2, double par3, double par4, CallbackInfo ci) {
-        EventRenderEntityName event = new EventRenderEntityName(par1, par2, par2, par4, "", 0);
-        Kisman.EVENT_BUS.post(event);
-        if(event.isCancelled()) ci.cancel();
-    }
-
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private void doDoRender(T f3, double flag1, double flag, double f, float f1, float f2, CallbackInfo ci) {
         Minecraft mc = Minecraft.getMinecraft();
@@ -40,6 +35,7 @@ public class MixinRendererLivingEntity<T extends EntityLivingBase> extends Rende
 
     /**
      * @author _kisman_
+     * @reason pon
      */
     @Overwrite
     protected void renderModel(T p_renderModel_1_, float p_renderModel_2_, float p_renderModel_3_, float p_renderModel_4_, float p_renderModel_5_, float p_renderModel_6_, float p_renderModel_7_) {

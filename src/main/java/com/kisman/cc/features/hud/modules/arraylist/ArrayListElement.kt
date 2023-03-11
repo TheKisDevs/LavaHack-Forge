@@ -1,6 +1,6 @@
 package com.kisman.cc.features.hud.modules.arraylist
 
-import com.kisman.cc.features.DisplayableFeature
+import com.kisman.cc.util.client.DisplayableFeature
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
 
@@ -8,7 +8,6 @@ import com.kisman.cc.settings.Setting
  * @author _kisman_
  * @since 21:56 of 17.05.2022
  */
-@Suppress("CAST_NEVER_SUCCEEDS")
 class ArrayListElement(
     val element : DisplayableFeature,
     val name : String,

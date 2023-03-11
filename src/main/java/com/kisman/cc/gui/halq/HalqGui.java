@@ -59,14 +59,17 @@ public class HalqGui extends KismanGuiScreen {
             animateToggleable = true,
             animateHover = false,
             animateSlider = false,
-            animationReverseDirection = false;
+            animationReverseDirection = false,
+            openIndicator = true;
     public static int diff = 0,
             textOffsetX = 5,
             gradientFrameDiff = 0,
-            animationSpeed = 750;
+            animationSpeed = 750,
+            layerStepOffset = 5;
     public static double offsetsX = 0,
             offsetsY = 0,
-            lineWidth = 1.0;
+            lineWidth = 1.0,
+            scale = 1;
     public static float ticks = 0;
 
     /**
@@ -158,9 +161,6 @@ public class HalqGui extends KismanGuiScreen {
             return;
         }
 
-        HalqGui.mouseX = mouseX;
-        HalqGui.mouseY = mouseY;
-
         primaryColor = GuiModule.instance.primaryColor.getColour();
         background = GuiModule.instance.background.getValBoolean();
         height = GuiModule.instance.componentHeight.getValInt();
@@ -193,6 +193,15 @@ public class HalqGui extends KismanGuiScreen {
         animateToggleable = GuiModule.instance.animateToggleable.getValBoolean();
         animateHover = GuiModule.instance.animateHover.getValBoolean();
         animateSlider = GuiModule.instance.animateSlider.getValBoolean();
+        openIndicator = GuiModule.instance.openIndicator.getValBoolean();
+        layerStepOffset = GuiModule.instance.layerStepOffset.getValInt();
+        scale = GuiModule.instance.scale.getValDouble();
+
+        mouseX /= scale;
+        mouseY /= scale;
+
+        HalqGui.mouseX = mouseX;
+        HalqGui.mouseY = mouseY;
 
         if(!background) backgroundColor = new Colour(0, 0, 0, 0);
         else backgroundColor = GuiModule.instance.backgroundColor.getColour();
@@ -210,6 +219,9 @@ public class HalqGui extends KismanGuiScreen {
 
         shaderableThing = () -> {};
         postRenderThing = () -> {};
+
+        GL11.glPushMatrix();
+        GL11.glScaled(scale, scale, 1);
 
         for(Frame frame : frames) {
             if(frame.reloading) continue;
@@ -241,6 +253,8 @@ public class HalqGui extends KismanGuiScreen {
             frame.veryRenderPost(mouseX, mouseY);
         }
 
+        GL11.glPopMatrix();
+
         currentFrame = null;
 
         drawSelectionBar(mouseX, mouseY);
@@ -256,6 +270,9 @@ public class HalqGui extends KismanGuiScreen {
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 //        if(!Kisman.instance.selectionBar.mouseClicked(mouseX, mouseY)) return;
+        mouseX /= scale;
+        mouseY /= scale;
+
         super.mouseClicked(mouseX, mouseY, mouseButton);
         for(Frame frame : frames) {
             if(frame.reloading) continue;
@@ -273,6 +290,9 @@ public class HalqGui extends KismanGuiScreen {
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int state) {
+        mouseX /= scale;
+        mouseY /= scale;
+
         for(Frame frame : frames) {
             if(frame.reloading) continue;
             frame.dragging = false;
@@ -289,6 +309,14 @@ public class HalqGui extends KismanGuiScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return true;
+    }
+
+    public static void drawStringRightSide(String text, int x, int y, int width, int height) {
+        GL11.glPushMatrix();
+
+        CustomFontUtil.drawStringWithShadow(text, x + width - textOffsetX - CustomFontUtil.getStringWidth(text), y + (double) height / 2 - (double) CustomFontUtil.getFontHeight() / 2, -1);
+
+        GL11.glPopMatrix();
     }
 
     public static void drawString(String text, int x, int y, int width, int height) {
@@ -440,7 +468,7 @@ public class HalqGui extends KismanGuiScreen {
     ) {
         for(Component component : components) {
             if(!component.visible()) continue;
-            height += component.getHeight();
+            height += component.getRawHeight();
             if(component instanceof Openable) {
                 Openable openable = (Openable) component;
                 if(openable.isOpen()) height = doIterationUpdateComponent(openable.getComponents(), height);

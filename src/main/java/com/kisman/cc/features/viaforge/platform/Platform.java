@@ -1,5 +1,6 @@
 package com.kisman.cc.features.viaforge.platform;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.features.viaforge.ViaForge;
 import com.kisman.cc.features.viaforge.util.FutureTaskId;
 import com.kisman.cc.features.viaforge.util.JLoggerToLog4j;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
 
 public class Platform implements ViaPlatform<UUID> {
 
-    private final Logger logger = new JLoggerToLog4j(LogManager.getLogger("ViaVersion"));
+    private final Logger logger = new JLoggerToLog4j(LogManager.getLogger(Kisman.LOGGER));
 
     private final ViaConfig config;
     private final File dataFolder;

@@ -13,15 +13,21 @@ import java.util.function.Supplier
  * @since 19:05 of 27.01.2023
  */
 abstract class ShaderableModule(
-    name : String,
-    desc : String = "",
-    category : Category,
     private val hasFlags : Boolean = false
-) : Module(
-    name,
-    desc,
-    category
-), Drawable {
+) : Module(), Drawable {
+    constructor(
+        name : String,
+        desc : String = "",
+        category : Category,
+        hasFlags : Boolean = false
+    ) : this(
+        hasFlags
+    ) {
+        super.setName(name)
+        super.setDescription(desc)
+        super.category = category
+    }
+
     private val defaultFlags = mutableListOf<Supplier<Boolean>>()
 
     fun addFlag(

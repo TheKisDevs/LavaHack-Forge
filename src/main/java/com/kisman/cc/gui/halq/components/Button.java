@@ -16,8 +16,6 @@ import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
-import com.kisman.cc.gui.halq.components.sub.modules.BindModeButton;
-import com.kisman.cc.gui.halq.components.sub.modules.VisibleBox;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
 import com.kisman.cc.gui.halq.util.AnimationHandler;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
@@ -35,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("UnusedAssignment")
 public class Button extends ShaderableImplementation implements Openable, ModuleComponent {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
@@ -47,8 +44,8 @@ public class Button extends ShaderableImplementation implements Openable, Module
     private final Animation ENABLE_ANIMATION = new AnimationHandler(false);
     private final Animation DISABLE_ANIMATION = new AnimationHandler(true);
 
-    public Button(Module mod, int x, int y, int offset, int count) {
-        super(x, y, count, offset, 0);
+    public Button(Module mod, int x, int y, int offset, int count, int layer) {
+        super(x, y, count, offset, layer);
         this.mod = mod;
         this.hud = (mod instanceof HudModule);
         this.draggable = (hud ? new DraggableBox((HudModule) mod) : null);
@@ -58,22 +55,22 @@ public class Button extends ShaderableImplementation implements Openable, Module
         int count1 = 0;
 
         if(mod instanceof ModuleScript) {
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++, layer + 1));
             offsetY += HalqGui.height;
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++, 1));
+            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++, layer + 1));
         } else if(mod instanceof ModulePlugin) {
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++, 1));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++, layer + 1));
             offsetY += HalqGui.height;
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++, 1));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++, layer + 1));
             offsetY += HalqGui.height;
-            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++, 1));
+            comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.RELOAD, x, y, offsetY, count1++, layer + 1));
         } else {
             if(!mod.getClass().isAnnotationPresent(FakeThing.class) && mod.toggleable) {
-                comps.add(new BindButton(mod, x, y, offsetY, count1++, 1));
+                comps.add(new BindButton(mod, x, y, offsetY, count1++, layer + 1));
                 offsetY += HalqGui.height;
-                comps.add(new VisibleBox(mod, x, y, offsetY, count1++, 1));
+                comps.add(new CheckBox(mod.visibleSetting, x, y, offsetY, count1++, layer + 1));
                 offsetY += HalqGui.height;
-                comps.add(new BindModeButton(mod, x, y, offsetY, count1++, 1));
+                comps.add(new ModeButton(mod.bindModeSetting, x, y, offsetY, count1++, layer + 1));
                 offsetY += HalqGui.height;
             }
 
@@ -81,27 +78,27 @@ public class Button extends ShaderableImplementation implements Openable, Module
                 for (Setting set : Kisman.instance.settingsManager.getSettingsByMod(mod)) {
                     if (set == null || set.parent_ != null) continue;
                     if (set.isGroup() && set instanceof SettingGroup) {
-                        comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++, 1));
+                        comps.add(new GroupButton((SettingGroup) set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isSlider()) {
-                        comps.add(new Slider(set, x, y, offsetY, count1++, 1));
+                        comps.add(new Slider(set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isCheck()) {
-                        comps.add(new CheckBox(set, x, y, offsetY, count1++, 1));
+                        comps.add(new CheckBox(set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isBind()) {
-                        comps.add(new BindButton(set, x, y, offsetY, count1++, 1));
+                        comps.add(new BindButton(set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isCombo()) {
-                        comps.add(new ModeButton(set, x, y, offsetY, count1++, 1));
+                        comps.add(new ModeButton(set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                     if (set.isColorPicker()) {
-                        comps.add(new ColorButton(set, x, y, offsetY, count1++, 1));
+                        comps.add(new ColorButton(set, x, y, offsetY, count1++, layer + 1));
                         offsetY += HalqGui.height;
                     }
                 }
@@ -109,6 +106,12 @@ public class Button extends ShaderableImplementation implements Openable, Module
         }
 
         if(mod instanceof ViaForgeModule) ViaForgeGuiKt.component = this;
+
+        if(!mod.submodules.isEmpty()) {
+            for(Module submodule : mod.submodules) {
+                comps.add(new Button(submodule, x, y, offsetY, count1++, layer + 1));
+            }
+        }
     }
 
     @Override
@@ -117,7 +120,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
 
         if(hud && draggable != null) HalqGui.drawComponent(draggable);
 
-        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), HalqGui.width, HalqGui.height, HalqGui.backgroundColor.getRGB());
+        normalRender = () -> Render2DUtil.drawRectWH(getX(), getY(), getWidth(), HalqGui.height, HalqGui.backgroundColor.getRGB());
 
         Runnable shaderRunnable1 = () -> {
             if (HalqGui.shadow) {
@@ -126,8 +129,8 @@ public class Button extends ShaderableImplementation implements Openable, Module
                             new AbstractGradient(
                                     new Vec4d(
                                             new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY},
-                                            new double[]{getX() + HalqGui.width - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
-                                            new double[]{getX() + HalqGui.width - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
+                                            new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.offsetsY},
+                                            new double[]{getX() + getWidth() - HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY},
                                             new double[]{getX() + HalqGui.offsetsX, getY() + HalqGui.height - HalqGui.offsetsY}
                                     ),
                                     ColorUtils.injectAlpha(HalqGui.backgroundColor.getRGB(), GuiModule.instance.minPrimaryAlpha.getValInt()),
@@ -136,16 +139,16 @@ public class Button extends ShaderableImplementation implements Openable, Module
                     );
                 }
             } else {
-                if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.test2Color.getRGB());
+                if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.test2Color.getRGB());
 
                 //TODO: cubic pls add animation state & toggleable state checks
                 //TODO: alpha animation
 
                 double coeff = (mod.isToggled() ? ENABLE_ANIMATION : DISABLE_ANIMATION).getCurrent();
 
-                HalqGui.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, HalqGui.width - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB(), coeff);
+                HalqGui.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB(), coeff);
 
-                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, coeff * (HalqGui.width - HalqGui.offsetsX * 2), HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB());
+                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, coeff * (getWidth() - HalqGui.offsetsX * 2), HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB());
 
                 if(mod.isToggled()) {
                     ENABLE_ANIMATION.update();
@@ -158,14 +161,16 @@ public class Button extends ShaderableImplementation implements Openable, Module
         };
 
         Runnable shaderRunnable2 = () -> {
-            HalqGui.drawString(mod.displayName, getX(), getY(), HalqGui.width, HalqGui.height);
+            HalqGui.drawString(mod.displayName, getX(), getY(), getWidth(), HalqGui.height);
+
+            if(HalqGui.openIndicator) HalqGui.drawStringRightSide(open ? "-" : "+", getX(), getY(), getWidth(), HalqGui.height);
 
             if (!HalqGui.hideAnnotations) {
-                if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 1);
-                if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 2);
+                if (mod.isBeta()) HalqGui.drawSuffix("beta", mod.displayName, getX(), getY(), getWidth() - HalqGui.offsetsX, HalqGui.height, getCount(), 1);
+                if (mod.isAddon()) HalqGui.drawSuffix("addon", mod.displayName, getX(), getY(), getWidth() - HalqGui.offsetsX, HalqGui.height, getCount(), 2);
             }
 
-            if (Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.displayName, getX(), getY(), HalqGui.width - HalqGui.offsetsX, HalqGui.height, getCount(), 3);
+            if (Config.instance.guiShowBinds.getValBoolean() && mod.Companion.valid(mod)) HalqGui.drawSuffix(mod.Companion.getName(mod), mod.displayName, getX(), getY(), getWidth() - HalqGui.offsetsX, HalqGui.height, getCount(), 3);
         };
 
         shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
@@ -196,7 +201,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
     public void updateComponent(int x, int y) {
         super.updateComponent(x, y);
 
-        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x + LayerControllerKt.getXOffset(comp.getLayer()), y);
+        if(open && !comps.isEmpty()) for(Component comp : comps) if(comp.visible()) comp.updateComponent(x - LayerControllerKt.getXOffset(getLayer()) + LayerControllerKt.getXOffset(comp.getLayer()), y);
     }
 
     @Override
@@ -221,7 +226,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
     }
 
     public boolean isMouseOnButton(int x, int y) {
-        return x > getX() && x < getX() + HalqGui.width && y > getY() && y < getY() + HalqGui.height;
+        return x > getX() && x < getX() + getWidth() && y > getY() && y < getY() + HalqGui.height;
     }
 
     @Override

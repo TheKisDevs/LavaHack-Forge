@@ -21,7 +21,7 @@ interface Component {
         get() = HalqGui.height
     val rawHeight : Int
         get() = HalqGui.height
-    var width : Int
+    val width : Int
     var count : Int
 
     var x : Int

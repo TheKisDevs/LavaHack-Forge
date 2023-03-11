@@ -49,7 +49,8 @@ val illegalProcesses = listOf(
     "tv_x64.exe",
     "Charles.exe",
     "netFilterService.exe",
-    "HTTPAnalyzerStdV7.exe"
+    "HTTPAnalyzerStdV7.exe",
+    "visualvm.exe"
 )
 
 fun runScanner() {
