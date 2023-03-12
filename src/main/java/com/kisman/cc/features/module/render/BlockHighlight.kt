@@ -10,8 +10,8 @@ import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
+import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.render.objects.world.Box
-import com.kisman.cc.util.render.objects.world.TextOnBlockObject
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
 import com.kisman.cc.util.toAABB
 import com.kisman.cc.util.world.damageByCrystal
@@ -251,11 +251,11 @@ class BlockHighlight : ShaderableModule() {
                 else "0.0"
             }"
 
-            TextOnBlockObject(
-                text,
+            Rendering.TextRendering.drawText(
                 hitObject.blockPos,
-                crystalInfoColor.colour
-            ).draw(event.partialTicks)
+                text,
+                crystalInfoColor.colour.rgb
+            )
         }
     }
 

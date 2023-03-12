@@ -33,7 +33,7 @@ public class ArrayListModule extends ShaderableHudModule {
     public static ArrayListModule instance;
 
     public static EasingEnum.Easing ANIMATION_EASING = EasingEnum.Easing.Linear;
-    public static long ANIMATION_LENGTH = 750l;
+    public static long ANIMATION_LENGTH = 750L;
 
     private final Sorter<ArrayListElement> sorter = new Sorter<>(ArrayListElement::getRaw);
 
@@ -86,7 +86,7 @@ public class ArrayListModule extends ShaderableHudModule {
 
         int count = 0;
         int staticColor = astolfoColor.getValBoolean() ? ColorUtils.astolfoColors(100, 100) : this.color.getColour().getRGB();
-        double heigth = CustomFontUtil.getFontHeight() + offsets.getValDouble() + 1;
+        double heigth = CustomFontUtil.getFontHeight() + 1 + offsets.getValDouble() + 1;
         float[] hsb = Color.RGBtoHSB(ColorUtils.getRed(staticColor), ColorUtils.getGreen(staticColor), ColorUtils.getBlue(staticColor), null);
 
         for(ArrayListElement element : elements) {
@@ -108,7 +108,7 @@ public class ArrayListModule extends ShaderableHudModule {
 
                 if (background.getValBoolean()) {
                     double offset = offsets.getValDouble() / 2 + 1;
-                    Runnable backgroundRunnable = () -> drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(element.getName()) - 1) - offset, yCoord.getValDouble() + (heigth * finalCount) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(element.getName()) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * finalCount) + CustomFontUtil.getFontHeight() + offset - 1);
+                    Runnable backgroundRunnable = () -> drawBackground((orientation.getValString().equalsIgnoreCase("LEFT") ? 1 : sr.getScaledWidth() - CustomFontUtil.getStringWidth(element.getName()) - 1) - offset, yCoord.getValDouble() + (heigth * finalCount) - offset, (orientation.getValString().equalsIgnoreCase("LEFT") ? 1 + CustomFontUtil.getStringWidth(element.getName()) : sr.getScaledWidth()) + offset, yCoord.getValDouble() + (heigth * finalCount) + CustomFontUtil.getFontHeight() + 1 + offset - 1);
 
                     if (shaderedBackground.getValBoolean()) addShader(backgroundRunnable);
                     else addPreNormal(backgroundRunnable);

@@ -27,8 +27,6 @@ class Header(
         mouseX : Int,
         mouseY : Int
     ) {
-        HalqGui.currentFrame = frame
-
         val shaderRunnable1 = Runnable {
             if (HalqGui.shadowRects) {
                 val obj = ShadowRectObject(

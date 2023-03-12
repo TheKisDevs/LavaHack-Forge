@@ -15,14 +15,21 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 @ModuleInfo(
     name = "Crystals",
-    desc = "Changes place position of AutoRr if he has no valid pos. Can be used as cev breaker",
+    desc = "Changes place position of AutoRer. Can be used as cev breaker",
     submodule = true
 )
 class Crystals : Module() {
-    private val debug = register(Setting("Debug", this, true))
+    @JvmField val priority = register(Setting("Priority", this, true))!!
+    private val leftClick = register(Setting("Left Click", this, false))
 
     var pos : BlockPos? = null
-    var state = false
+    var state
+        get() = isToggled && pos != null
+        set(value0) {
+            if(!value0) {
+                pos = null
+            }
+        }
 
     companion object {
         @JvmField var instance : Crystals? = null
@@ -44,20 +51,18 @@ class Crystals : Module() {
 
     fun reset() {
         pos = null
-        state = false
     }
 
     @SubscribeEvent
     fun onLeftClickBlock(
         event : PlayerInteractEvent.LeftClickBlock
     ) {
-        val block = block(event.pos)
-        if (block == Blocks.OBSIDIAN || block == Blocks.BEDROCK) {
-            if(debug.valBoolean) {
-                println("meow2 its obby or bebrock")
+        if(leftClick.valBoolean) {
+            val block = block(event.pos)
+
+            if (block == Blocks.OBSIDIAN || block == Blocks.BEDROCK) {
+                pos = event.pos
             }
-            pos = event.pos
-            state = true
         }
     }
 }

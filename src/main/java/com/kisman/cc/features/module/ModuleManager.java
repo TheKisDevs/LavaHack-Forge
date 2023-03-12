@@ -142,6 +142,7 @@ public class ModuleManager {
 		add(new BlockHighlight());
 		//add(new BlockLiner());
 		add(new Breadcrumbs());
+		add(new BreakHighlight());
 		add(CharmsRewrite.INSTANCE);
 		add(new CityESP());
 		add(new ContainerModifier());
@@ -252,7 +253,6 @@ public class ModuleManager {
 		add(new NoGlitchBlocks());
 		add(new PacketEat());
 		add(new PacketFly());
-		add(new PacketMine());
 		add(new PacketMineRewrite3());
 		//add(new PreciseStrongholdFinder());
 		add(new SilentClose());

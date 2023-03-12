@@ -130,17 +130,19 @@ public class FreeCamRewrite extends Module {
 
     @EventHandler
     private final Listener<PacketEvent.Receive> listener2 = new Listener<>(event -> {
-        mc.addScheduledTask(() -> {
-            if (mc.player == null) return;
+        if(event.getPacket() instanceof SPacketPlayerPosLook) {
+            mc.addScheduledTask(() -> {
+                if (mc.player == null) return;
 
-            PacketUtil.handlePosLook((SPacketPlayerPosLook) event.getPacket(),
-                    getPlayer() == null
-                            ? mc.player
-                            : getPlayer(),
-                    false);
+                PacketUtil.handlePosLook((SPacketPlayerPosLook) event.getPacket(),
+                        getPlayer() == null
+                                ? mc.player
+                                : getPlayer(),
+                        false);
 
-            getPlayer().onGround = true;
-        });
+                getPlayer().onGround = true;
+            });
+        }
 
         event.cancel();
     });

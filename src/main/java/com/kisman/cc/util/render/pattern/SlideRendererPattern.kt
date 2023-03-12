@@ -7,7 +7,7 @@ import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.math.vectors.i2d
 import com.kisman.cc.util.math.vectors.xyz.ColorableSlidePos
-import com.kisman.cc.util.render.objects.world.TextOnBlockObject
+import com.kisman.cc.util.render.Rendering
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -108,10 +108,10 @@ open class SlideRendererPattern {
                 lastRenderPos = renderPos
 
                 if(text != null) {
-                    TextOnBlockObject(
-                        text,
+                    Rendering.TextRendering.drawText(
                         BlockPos(currentPos),
-                        Colour(255, 255, 255, (255.0f * scale).toInt())
+                        text,
+                        Colour(255, 255, 255, (255.0f * scale).toInt()).rgb
                     )
                 }
             }

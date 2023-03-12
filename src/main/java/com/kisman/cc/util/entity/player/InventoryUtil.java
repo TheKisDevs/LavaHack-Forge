@@ -301,14 +301,7 @@ public class InventoryUtil {
      * @param slot - hotbar slot
      */
     public static void inventorySwap(int slot) {
-        if(slot > -1 && slot < 9) {
-            int target = hotbar2Inventory(slot);
-            int current = hotbar2Inventory(mc.player.inventory.currentItem);
-
-            mc.playerController.windowClick(0, target, 0, ClickType.PICKUP, mc.player);
-            mc.playerController.windowClick(0, current, 0, ClickType.PICKUP, mc.player);
-            mc.playerController.windowClick(0, target, 0, ClickType.PICKUP, mc.player);
-        }
+        if(slot > -1 && slot < 9) mc.playerController.windowClick(0, hotbar2Inventory(slot), mc.player.inventory.currentItem, ClickType.SWAP, mc.player);
     }
 
     /**
@@ -317,7 +310,7 @@ public class InventoryUtil {
      */
     public static int hotbar2Inventory(int slot) {
         if(slot == -2) return 45;
-        if(slot > -1 && slot < 9) return 39 + slot;
+        if(slot > -1 && slot < 9) return 36 + slot;
 
         return slot;
     }

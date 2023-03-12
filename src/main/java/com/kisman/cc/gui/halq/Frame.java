@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.plugins.ModulePlugin;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
@@ -139,10 +138,6 @@ public class Frame {
         }
 
         HalqGui.drawComponent(headerComponent);
-    }
-
-    public void veryRenderPost(int mouseX, int mouseY) {
-        if(open && Config.instance.guiDesc.getValBoolean()) for(Component comp : components) if(comp.visible() && comp instanceof Button && ((Button) comp).isMouseOnButton(mouseX, mouseY) && !((Button) comp).description.title.isEmpty()) HalqGui.drawComponent(((Button) comp).description);
     }
 
     private int[] doRefreshIteration(ArrayList<Component> components, int[] data) {

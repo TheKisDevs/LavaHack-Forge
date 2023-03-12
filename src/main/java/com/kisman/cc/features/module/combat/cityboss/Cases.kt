@@ -5,6 +5,7 @@ import com.kisman.cc.util.block
 import com.kisman.cc.util.render.left
 import com.kisman.cc.util.render.right
 import com.kisman.cc.util.world.BlockUtil
+import com.kisman.cc.util.world.BlockUtil2
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -91,7 +92,11 @@ enum class Cases {
     private fun valid(
         pos : BlockPos,
         newVersion : Boolean
-    ) : Boolean = block(pos) != Blocks.BEDROCK && pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
+    ) : Boolean = pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
+
+    private fun valid2(
+        pos : BlockPos
+    ) : Boolean = BlockUtil2.canBlockBeBroken(pos)
 
     fun howManyAirs(
         facing : EnumFacing,
@@ -104,7 +109,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos2) == Blocks.AIR) {
+                if (valid2(pos2) && block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -125,7 +130,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if(block(pos2) == Blocks.AIR) {
+                if(valid2(pos2) && block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -144,7 +149,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (mc.player.getDistanceSq(pos2) > (range * range)) {
+                if (valid2(pos2) && mc.player.getDistanceSq(pos2) > (range * range)) {
                     return false
                 }
             }
@@ -164,7 +169,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (mc.player.getDistanceSq(pos2) > (range * range)) {
+                if (valid2(pos2) && mc.player.getDistanceSq(pos2) > (range * range)) {
                     return false
                 }
             }
@@ -182,7 +187,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (valid2(pos2) && block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
                     return false
                 }
             }
@@ -201,7 +206,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (valid2(pos2) && block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
                     return false
                 }
             }

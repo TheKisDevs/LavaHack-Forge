@@ -245,14 +245,20 @@ public class AutoRer extends ShaderableModule {
             lastBroken = true;
         }
 
-        if (currentTarget == null) {
-            placePos.setBlockPos(null);
+        BlockPos nullPos = canCrystals() ? Crystals.instance.getPos() : null;
+
+        if (currentTarget == null || nullPos != null) {
+            placePos.setBlockPos(nullPos);
             breakPos = null;
             return;
         }
 
         doCalculatePlace();
         handleBreakCalculate();
+    }
+
+    private boolean canCrystals() {
+        return (currentTarget == null || Crystals.instance.priority.getValBoolean()) && Crystals.instance.getState();
     }
 
     private void handlePlacement() {
@@ -557,11 +563,7 @@ public class AutoRer extends ShaderableModule {
     }
 
     private void doCalculatePlace() {
-        try {
-            calculatePlace();
-            if(placePos.getBlockPos() == null && Crystals.instance.getState()) placePos.setBlockPos(Crystals.instance.getPos());
-            else Crystals.instance.setState(false);
-        } catch (Exception e) {if(lagProtect.getValBoolean())  super.setToggled(false);}
+        try { calculatePlace(); } catch (Exception e) { if(lagProtect.getValBoolean()) super.setToggled(false); }
     }
 
     private boolean needToAntiDesync() {

@@ -8,6 +8,7 @@ import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingArray;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.types.SettingPair;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.StringUtils;
@@ -38,7 +39,7 @@ public class Module extends DisplayableFeature {
 	protected static SettingsManager setmgr;
 
 	public Setting visibleSetting = new Setting("Visible", this, true).onChange(setting -> { visible = setting.getValBoolean(); });
-	public Setting bindModeSetting = new Setting("Bind Mode", this, "Release", Arrays.asList("Release", "Hold")).onChange(setting -> { hold = setting.checkValString("Hold"); });
+	public Setting bindModeSetting = new Setting("Bind Mode", this, "Release", Arrays.asList("Release", "Hold")).setTitle("Bind").onChange(setting -> { hold = setting.checkValString("Hold"); });
 
 	private String name;
 	private String description;
@@ -214,6 +215,13 @@ public class Module extends DisplayableFeature {
 
 	public <T> SettingArray<T> register(SettingArray<T> setting) {
 		return (SettingArray<T>) register((Setting) setting);
+	}
+
+	public <S1 extends Setting, S2 extends Setting> SettingPair<S1, S2> register(SettingPair<S1, S2> setting) {
+		register(setting.first);
+		register(setting.second);
+
+		return setting;
 	}
 
 	private boolean isBeta0(){

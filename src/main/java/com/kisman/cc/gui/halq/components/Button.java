@@ -30,6 +30,7 @@ import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -47,8 +48,8 @@ public class Button extends ShaderableImplementation implements Openable, Module
     public Button(Module mod, int x, int y, int offset, int count, int layer) {
         super(x, y, count, offset, layer);
         this.mod = mod;
-        this.hud = (mod instanceof HudModule);
-        this.draggable = (hud ? new DraggableBox((HudModule) mod) : null);
+        this.hud = mod instanceof HudModule;
+        this.draggable = hud ? new DraggableBox((HudModule) mod) : null;
         this.description = new Description(mod.getDescription(), count);
 
         int offsetY = offset + HalqGui.height;
@@ -249,5 +250,11 @@ public class Button extends ShaderableImplementation implements Openable, Module
     @Override
     public Module module() {
         return mod;
+    }
+
+    @Nullable
+    @Override
+    public Description getDescription() {
+        return description;
     }
 }

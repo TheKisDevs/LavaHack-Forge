@@ -3,7 +3,6 @@ package com.kisman.cc.util.client.providers
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventDamageBlock
 import com.kisman.cc.event.events.EventPlayerMove
-import com.kisman.cc.features.module.exploit.PacketMine
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.entity.player.InventoryUtil
 import com.kisman.cc.util.math.MathUtil
@@ -213,7 +212,7 @@ object PacketMineProvider : Listenable {
         ).toFloat()
     }
 
-    private fun active() : Boolean = PacketMine.instance.isToggled
+    private fun active() : Boolean = false
 }
 
 interface ISwapper {

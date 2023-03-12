@@ -59,7 +59,7 @@ class DraggableBox(
     override var width = 0
     override var count = 0
 
-    private fun isMouseOnButton(
+    override fun isMouseOnButton(
         x : Int,
         y : Int
     ) : Boolean = x > module.getX() && x < module.getX() + module.getW() && y > module.getY() && y < module.getY() + module.getH()

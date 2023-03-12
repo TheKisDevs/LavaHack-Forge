@@ -36,6 +36,13 @@ open class SettingGroup(
         return array
     }
 
+    open fun <S1 : Setting, S2 : Setting> add(
+        pair : SettingPair<S1, S2>
+    ) : SettingPair<S1, S2> = pair.also {
+        add(it.first)
+        add(it.second)
+    }
+
     fun remove(
         setting : Setting
     ) {

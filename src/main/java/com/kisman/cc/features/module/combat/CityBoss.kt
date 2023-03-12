@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat
 
-import com.kisman.cc.features.module.Beta
-import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.*
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.combat.cityboss.CrystalBlockPos
 import com.kisman.cc.features.subsystem.subsystems.Targetable
@@ -33,14 +30,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author _kisman_
  * @since 18:41 of 10.08.2022
  */
-@Beta
-@WorkInProgress
 @Targetable
-class CityBoss : Module(
-    "CityBoss",
-    "Breaks surround of nearest player.",
-    Category.COMBAT
-) {
+@ModuleInfo(
+    name = "CityBoss",
+    desc = "Breaks surround of nearest player.",
+    category = Category.COMBAT,
+    wip = true
+)
+class CityBoss : Module() {
     private val blockRangeCheck = register(Setting("Block Range Check", this, false))
     private val blockRange = register(Setting("Block Range", this, 5.0, 1.0, 6.0, false))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
@@ -120,7 +117,7 @@ class CityBoss : Module(
             if (player == null) {
                 info
             } else {
-                "${player!!.name}|$info"
+                "${player!!.name} | $info"
             }
         }]"
     }
@@ -201,16 +198,16 @@ class CityBoss : Module(
                 //Only by burrow miner
                 println("kill yourself <3")
             }
-        } else if((!clicked || debug3.valBoolean) && mineMode.valEnum == MineMode.PacketMine) {
+        } else if(!clicked && mineMode.valEnum == MineMode.PacketMine) {
             /*if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
             }*/
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+//            mc.player.swingArm(EnumHand.MAIN_HAND)
+//            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
-//            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
+            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
             /*if(PacketMineProvider.position != pos) {
                 PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
             }*/
@@ -314,7 +311,6 @@ class CityBoss : Module(
                 val finalPos = playerPosition.add(pos)
 
                 if(pos is CrystalBlockPos) {
-                    println("crystalpos")
                     //TODO: check if finalPos is obby/bedrock ^^^^
                     baseBlock = finalPos
                 } else if(mc.world.getBlockState(finalPos).block != Blocks.AIR) {

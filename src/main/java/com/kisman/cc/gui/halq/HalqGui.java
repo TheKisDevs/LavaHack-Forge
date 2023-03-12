@@ -99,13 +99,12 @@ public class HalqGui extends KismanGuiScreen {
     private GuiScreen lastGui = null;
 
     public static Component currentComponent = null;
+    public static Description currentDescription = null;
     public static int mouseX = -1;
     public static int mouseY = -1;
 
     private static Runnable shaderableThing = () -> {};
     private static Runnable postRenderThing = () -> {};
-
-    public static Frame currentFrame = null;
 
     public HalqGui(GuiScreen lastGui) {
         this();
@@ -219,6 +218,7 @@ public class HalqGui extends KismanGuiScreen {
 
         shaderableThing = () -> {};
         postRenderThing = () -> {};
+        currentDescription = null;
 
         GL11.glPushMatrix();
         GL11.glScaled(scale, scale, 1);
@@ -241,21 +241,15 @@ public class HalqGui extends KismanGuiScreen {
 
             shaderableThing.run();
 
+            if(currentDescription != null) currentDescription.drawScreen(mouseX, mouseY);
+
             GuiModule.instance.shaders.end();
 
 
             postRenderThing.run();
         }
 
-        for(Frame frame : frames) if(!frame.reloading) {
-            currentFrame = frame;
-
-            frame.veryRenderPost(mouseX, mouseY);
-        }
-
         GL11.glPopMatrix();
-
-        currentFrame = null;
 
         drawSelectionBar(mouseX, mouseY);
     }

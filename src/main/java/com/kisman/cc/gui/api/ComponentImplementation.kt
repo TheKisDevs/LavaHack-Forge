@@ -1,6 +1,7 @@
 package com.kisman.cc.gui.api
 
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.halq.components.Description
 import com.kisman.cc.gui.halq.util.getModifiedWidth
 
 /**
@@ -14,6 +15,19 @@ abstract class ComponentImplementation(
     open var offset : Int,
     override var layer : Int
 ) : Component {
+    override var description : Description? = null
+
+    override fun drawScreen(
+        mouseX : Int,
+        mouseY : Int
+    ) {
+        super.drawScreen(mouseX, mouseY)
+
+        if(isMouseOnButton(mouseX, mouseY) && description != null && description!!.title.isNotEmpty()) {
+            HalqGui.currentDescription = description
+        }
+    }
+
     override val width
         get() = getModifiedWidth(layer, HalqGui.width)
 
@@ -34,7 +48,7 @@ abstract class ComponentImplementation(
         this.y = y
     }
 
-    open fun isMouseOnButton(
+    override fun isMouseOnButton(
         x : Int,
         y : Int
     ) : Boolean = x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height

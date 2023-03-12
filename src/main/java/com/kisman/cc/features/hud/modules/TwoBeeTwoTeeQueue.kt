@@ -3,7 +3,6 @@ package com.kisman.cc.features.hud.modules
 import com.google.gson.JsonParser
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.settings.util.MultiThreaddableModulePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.math.max
 import com.kisman.cc.util.render.ColorUtils
@@ -35,7 +34,7 @@ class TwoBeeTwoTeeQueue : HudModule(
     private val regular = register(Setting("Regular", this, true))
     private val prio = register(Setting("Prio", this, true))
 
-    private val threads = MultiThreaddableModulePattern(this).init().also { it.multiThread.valBoolean = true }
+    private val threads = threads().also { it.multiThread.valBoolean = true }
 
     private var regularValue = "Updating regular queue info"
     private var prioValue = "Updating prio queue info"

@@ -1,6 +1,7 @@
 package com.kisman.cc.gui.api
 
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.halq.components.Description
 
 @Suppress("UNUSED_PARAMETER")
 interface Component {
@@ -26,15 +27,24 @@ interface Component {
 
     var x : Int
         get() = 0
-        set(value) {}
+        set(value) { }
 
     var y : Int
         get() = 0
-        set(value) {}
+        set(value) { }
 
     var layer : Int
         get() = 0
-        set(value) {}
+        set(value) { }
 
     fun visible() : Boolean = true
+
+    fun isMouseOnButton(
+        x : Int,
+        y : Int
+    ) : Boolean = false
+
+    var description : Description?
+        get() = null
+        set(value) { }
 }

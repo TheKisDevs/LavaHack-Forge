@@ -4,6 +4,8 @@ import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.util.EasingsPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.math.MathUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
@@ -165,5 +167,11 @@ public class BlockUtil2 {
             }
         }
         return !sideCheck || getPlaceableSide(position) != null;
+    }
+
+    public static boolean canBlockBeBroken(BlockPos pos) {
+        IBlockState blockState = mc.world.getBlockState(pos);
+        Block block = blockState.getBlock();
+        return block.getBlockHardness(blockState, mc.world, pos) != -1;
     }
 }
