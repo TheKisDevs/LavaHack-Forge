@@ -86,6 +86,7 @@
     "MixinRenderXPOrb",
     "MixinTileEntityRendererDispatcher",
     "accessor.AccessorBufferBuilder",
+    "accessor.AccessorDestroyBlockProgress",
     "accessor.AccessorFontRenderer",
     "baritone.MixinChatTabCompleter",
     "baritone.MixinChunkProviderClient",

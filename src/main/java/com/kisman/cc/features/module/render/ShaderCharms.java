@@ -49,6 +49,7 @@ import java.util.function.Supplier;
 //TODO: remove renderSky method, add head and return hooks to default renderSky to apply shader at sandbox
 @ModuleInfo(
         name = "ShaderCharms",
+        display = "Shaders",
         desc = "Config of shader system",
         category = Category.RENDER,
         toggled = true,

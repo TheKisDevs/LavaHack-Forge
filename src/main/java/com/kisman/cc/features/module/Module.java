@@ -8,7 +8,7 @@ import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingArray;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.settings.types.SettingPair;
+import com.kisman.cc.settings.SettingsList;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.StringUtils;
@@ -217,11 +217,10 @@ public class Module extends DisplayableFeature {
 		return (SettingArray<T>) register((Setting) setting);
 	}
 
-	public <S1 extends Setting, S2 extends Setting> SettingPair<S1, S2> register(SettingPair<S1, S2> setting) {
-		register(setting.first);
-		register(setting.second);
+	public SettingsList register(SettingsList list) {
+		for(Setting setting : list.settings.values()) register(setting);
 
-		return setting;
+		return list;
 	}
 
 	private boolean isBeta0(){

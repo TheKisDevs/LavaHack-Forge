@@ -1,6 +1,7 @@
 package com.kisman.cc.settings.types
 
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingsList
 
 open class SettingGroup(
         setting : Setting
@@ -36,11 +37,12 @@ open class SettingGroup(
         return array
     }
 
-    open fun <S1 : Setting, S2 : Setting> add(
-        pair : SettingPair<S1, S2>
-    ) : SettingPair<S1, S2> = pair.also {
-        add(it.first)
-        add(it.second)
+    open fun add(
+        list : SettingsList
+    ) : SettingsList = list.also {
+        for(setting in it.settings.values) {
+            add(setting)
+        }
     }
 
     fun remove(

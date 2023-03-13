@@ -3,10 +3,11 @@ package com.kisman.cc.features.module.render
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
+import com.kisman.cc.mixin.mixins.accessor.AccessorDestroyBlockProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.settings.types.SettingPair
+import com.kisman.cc.settings.SettingsList
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.block
@@ -34,8 +35,8 @@ class BreakHighlight : Module() {
     private val logic = register(SettingEnum<Logic>("Logic", this, Logic.CentredBox))
     private val reverse = register(Setting("Reverse", this, false))
     private val easing = register(SettingEnum<EasingEnum.Easing>("Easing", this, EasingEnum.Easing.Linear))
-    private val range = register(register(SettingGroup(Setting("Range", this))).add(SettingPair<Setting, Setting>(Setting("Range Check", this, false).setTitle("State"), Setting("Range", this, 50.0, 0.0, 100.0, true))))
-    private val text = register(register(SettingGroup(Setting("Text", this))).add(SettingPair<Setting, Setting>(Setting("Text State", this, false).setTitle("State"), Setting("Text Color", this, Colour(255, 255, 255, 255)).setTitle("Color"))))
+    private val range = register(register(SettingGroup(Setting("Range", this))).add(SettingsList("state", Setting("Range Check", this, false).setTitle("State"), "value", Setting("Range", this, 50.0, 0.0, 100.0, true))))
+    private val text = register(register(SettingGroup(Setting("Text", this))).add(SettingsList("percent", Setting("Text Percent", this, false).setTitle("Percent"), "name", Setting("Text Name", this, false).setTitle("Name"), "color", Setting("Text Color", this, Colour(255, 255, 255, 255)).setTitle("Color"))))
 
     @SubscribeEvent
     fun onRenderWorld(
@@ -63,17 +64,35 @@ class BreakHighlight : Module() {
             val progress = entry.value
             val pos = progress.position
 
-            if(block(pos) != Blocks.AIR && (!range.first.valBoolean || mc.player.getDistance(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range.second.valInt)) {
+            if(block(pos) != Blocks.AIR && (!range["state"].valBoolean || mc.player.getDistance(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range["value"].valInt)) {
                 val damage = progress.partialBlockDamage.coerceIn(0..8)
                 val aabb = modify(pos, percent(damage, reverse.valBoolean))
 
                 renderer.draw(aabb)
 
-                if(text.first.valBoolean) {
+                val flag1 = text["percent"].valBoolean
+                val flag2 = text["name"].valBoolean
+
+                val string = "${if(flag1) { 
+                    "${percent(damage, false) * 100}%" 
+                } else { 
+                    ""
+                }}${if(flag2) {
+                    "${if(flag1) {
+                        "\n"
+                    } else {
+                        ""
+                    }}${mc.world.getEntityByID((progress as AccessorDestroyBlockProgress).entityID())?.name ?: "NULL"}"
+                } else {
+                    ""
+                }}"
+
+
+                if(flag1 || flag2) {
                     Rendering.TextRendering.drawText(
                         pos,
-                        "${percent(damage, false) * 100}%",
-                        text.second.colour.rgb
+                        string,
+                        text["color"].colour.rgb
                     )
                 }
             }
