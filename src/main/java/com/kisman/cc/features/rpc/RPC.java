@@ -2,15 +2,21 @@ package com.kisman.cc.features.rpc;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.DiscordRPCModule;
-import com.kisman.cc.features.rpc.library.*;
+import com.kisman.cc.features.rpc.library.DiscordEventHandlers;
+import com.kisman.cc.features.rpc.library.DiscordRPC;
+import com.kisman.cc.features.rpc.library.DiscordRichPresence;
 import com.kisman.cc.util.Globals;
 import com.kisman.cc.util.enums.RPCImages;
 
 public class RPC implements Globals {
     private static final DiscordRichPresence discordRichPresence = new DiscordRichPresence();
+    private static Thread thread;
     private static final DiscordRPC discordRPC = DiscordRPC.INSTANCE;
 
-    public static void startRPC() {
+    public static synchronized void startRPC() {
+        if (thread != null) {
+            thread.interrupt();
+        }
         DiscordEventHandlers eventHandlers = new DiscordEventHandlers();
         eventHandlers.disconnected = ((var1, var2) -> System.out.println("Discord RPC disconnected, var1: " + var1 + ", var2: " + var2));
 
@@ -58,7 +64,11 @@ public class RPC implements Globals {
     }
 
     public static void stopRPC() {
+        if (thread != null && !thread.isInterrupted())
+        {
+            thread.interrupt();
+            thread = null;
+        }
         discordRPC.Discord_Shutdown();
-        discordRPC.Discord_ClearPresence();
     }
 }
