@@ -281,7 +281,7 @@ public class ModuleManager {
 		add(new SkyBlockFeatures());
 		add(new SlotMapper());
 		add(new Spammer());
-		add(new TotemPopCounter());
+		add(new TotemPopCounterRewrite());
 		add(new Translate());
 		add(new VisualRange());
 		add(new Weather());
