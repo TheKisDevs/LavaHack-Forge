@@ -1,7 +1,6 @@
 package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
@@ -22,7 +21,6 @@ import org.lwjgl.input.Keyboard;
  * @since 19.08.2022
  */
 
-@Beta
 public class Octopus extends Module {
 
     private static final Mode DEFAULT = Mode.LeftClick;

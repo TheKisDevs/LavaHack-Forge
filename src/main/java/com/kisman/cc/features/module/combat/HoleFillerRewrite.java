@@ -33,14 +33,14 @@ import java.util.*;
  * Work in progress
  * @author Cubic
  */
-@PingBypassModule
 @Targetable
 @TargetsNearest
 @ModuleInfo(
         name = "HoleFillerRewrite",
         display = "HoleFiller",
         desc = "Fills holes around you",
-        category = Category.COMBAT
+        category = Category.COMBAT,
+        pingbypass = true
 )
 public class HoleFillerRewrite extends ShaderableModule {
     @ModuleInstance
@@ -79,7 +79,6 @@ public class HoleFillerRewrite extends ShaderableModule {
     public Entity entity = null;
 
     public HoleFillerRewrite(){
-        super();
         super.setDisplayInfo(() -> "[" + (entity == null ? "no target no fun" : ((entity != mc.player ? entity.getName() : "Self"))) + "]");
     }
 

@@ -87,3 +87,8 @@ fun sqrt2(
 fun sqrt(
     squared : Float
 ) : Float = sqrt(squared.toDouble()).toFloat()
+
+fun hypot(
+    x : Double,
+    y : Double
+) : Double = sqrt2(x * x + y * y)

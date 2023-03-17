@@ -64,11 +64,11 @@ public class Module extends DisplayableFeature {
 	public ArrayList<RenderingRewritePattern> renderPatterns = new ArrayList<>();
 	public ArrayList<Module> submodules = new ArrayList<>();
 
-	public boolean beta0;
-	public boolean wip0;
-	public boolean pb0;
-	public boolean debug0;
-	public boolean submodule;
+	public boolean beta0 = false;
+	public boolean wip0 = false;
+	public boolean pb0 = false;
+	public boolean debug0 = false;
+	public boolean submodule = false;
 
 	public Module() {
 		if(!getClass().isAnnotationPresent(ModuleInfo.class)) {
@@ -83,6 +83,7 @@ public class Module extends DisplayableFeature {
 			String displayName0 = info.display();
 
 			if(!displayName0.isEmpty()) displayName = displayName0;
+			if(info.toggled()) enable();
 
 			toggled = info.toggled();
 			toggleable = info.toggleable();
@@ -223,16 +224,8 @@ public class Module extends DisplayableFeature {
 		return list;
 	}
 
-	private boolean isBeta0(){
-		return getClass().getAnnotation(Beta.class) != null;
-	}
-
-	private boolean isPingBypassModule0() {
-		return getClass().getAnnotation(PingBypassModule.class) != null;
-	}
-
 	public boolean isPingBypassModule() {
-		return isPingBypassModule0();
+		return pb0;
 	}
 
 	public String getDescription() {return description;}
@@ -314,7 +307,7 @@ public class Module extends DisplayableFeature {
 	public void key(char typedChar, int key) {}
 	@Override public String toString() {return getName();}
 	public boolean isVisible() {return visible;}
-	public boolean isBeta() {return isBeta0() || beta0;}
+	public boolean isBeta() {return beta0;}
 	public boolean isAddon() {return this instanceof ModuleAPI;}
 	@Override public @NotNull BindType getType() {return bindType;}
 	@Override public void setType(@NotNull BindType type) {this.bindType = type;}

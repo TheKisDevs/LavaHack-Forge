@@ -2,9 +2,7 @@ package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.PingBypassModule;
 
-@PingBypassModule
 public class AutoRespawn extends Module {
     public AutoRespawn() {
         super("AutoRespawn", "Automatically respawn after death", Category.PLAYER);

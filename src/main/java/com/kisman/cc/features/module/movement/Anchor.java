@@ -3,7 +3,7 @@ package com.kisman.cc.features.module.movement;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -17,7 +17,11 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-@PingBypassModule
+@ModuleInfo(
+        name = "Anchor",
+        desc = "Helps with holes",
+        category = Category.MOVEMENT
+)
 public class Anchor extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.Motion));
     private final Setting pitch = register(new Setting("Pitch", this, 60, 0, 90, false));
@@ -37,7 +41,6 @@ public class Anchor extends Module {
     private boolean hasReverseStepDisabled = false;
 
     public Anchor() {
-        super("Anchor", "Helps with holes", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 

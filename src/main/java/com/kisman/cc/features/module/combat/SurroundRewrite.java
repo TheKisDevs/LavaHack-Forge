@@ -3,10 +3,7 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -15,7 +12,9 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.HandModes;
-import com.kisman.cc.util.world.*;
+import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
+import com.kisman.cc.util.world.CrystalUtils;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -53,7 +52,12 @@ import java.util.stream.Collectors;
 /**
  * @author Cubic
  */
-@PingBypassModule
+@ModuleInfo(
+        name = "SurroundRewrite",
+        display = "Surround",
+        category = Category.COMBAT,
+        pingbypass = true
+)
 public class SurroundRewrite extends Module {
     private final MultiThreaddableModulePattern threads = threads();
     private final Setting eventMode = register(threads.getGroup_().add(new Setting("Event Mode", this, RunMode.Update)));
@@ -124,11 +128,6 @@ public class SurroundRewrite extends Module {
     private final Queue<BlockPos> blockQueue = new ConcurrentLinkedQueue<>();
 
 //    private int ticksPassed = 0;
-
-    public SurroundRewrite(){
-        super("SurroundRewrite", Category.COMBAT, true);
-        super.displayName = "Surround";
-    }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onTick(TickEvent event){

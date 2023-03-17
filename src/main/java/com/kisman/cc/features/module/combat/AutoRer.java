@@ -61,12 +61,12 @@ import java.util.function.Supplier;
 /**
  * @author _kisman_(Logic, Renderer logic, Some part of renderer), Cubic(Some part of renderer)
  */
-@PingBypassModule
 @Targetable
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ConstantConditions", "JavaDoc"})
 @ModuleInfo(
         name = "AutoRer",
         category = Category.COMBAT,
+        pingbypass = true,
         modules = {
                 Crystals.class
         }

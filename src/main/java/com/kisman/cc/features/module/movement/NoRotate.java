@@ -12,7 +12,6 @@ import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
-@PingBypassModule
 public class NoRotate extends Module {
     private final Setting waitDelay = register(new Setting("Delay", this, 2500, 0, 10000, NumberType.TIME));
 

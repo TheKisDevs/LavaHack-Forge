@@ -3,7 +3,6 @@ package com.kisman.cc.features.module.player;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketEntityAction;
@@ -14,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author Cubic
  * @since 02.07.2022
  */
-@PingBypassModule
 public class AntiDesync extends Module {
 
     private final Setting syncPlayItem = register(new Setting("SyncItem", this, false));

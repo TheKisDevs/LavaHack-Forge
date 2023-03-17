@@ -94,10 +94,6 @@ enum class Cases {
         newVersion : Boolean
     ) : Boolean = pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
 
-    private fun valid2(
-        pos : BlockPos
-    ) : Boolean = BlockUtil2.canBlockBeBroken(pos)
-
     fun howManyAirs(
         facing : EnumFacing,
         pos : BlockPos,
@@ -109,7 +105,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (valid2(pos2) && block(pos2) == Blocks.AIR) {
+                if (block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -130,7 +126,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if(valid2(pos2) && block(pos2) == Blocks.AIR) {
+                if(block(pos2) == Blocks.AIR) {
                     airs++
                 }
             }
@@ -149,7 +145,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (valid2(pos2) && mc.player.getDistanceSq(pos2) > (range * range)) {
+                if (mc.player.getDistanceSq(pos2) > (range * range)) {
                     return false
                 }
             }
@@ -169,7 +165,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (valid2(pos2) && mc.player.getDistanceSq(pos2) > (range * range)) {
+                if (mc.player.getDistanceSq(pos2) > (range * range)) {
                     return false
                 }
             }
@@ -187,7 +183,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (valid2(pos2) && block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2))) {
                     return false
                 }
             }
@@ -206,7 +202,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (valid2(pos2) && block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2)) {
+                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2))) {
                     return false
                 }
             }

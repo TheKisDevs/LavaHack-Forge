@@ -6,12 +6,16 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventInput
 import com.kisman.cc.features.hud.modules.ArrayListModule
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.util.enums.BindType
 import com.kisman.cc.util.math.Animation
 import me.zero.alpine.listener.EventHook
+import me.zero.alpine.listener.Listenable
 import me.zero.alpine.listener.Listener
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+
+interface IFeature : Listenable, IBindable
 
 abstract class DisplayableFeature : IFeature {
     private val ENABLE_ANIMATION = ArrayListAnimation(false)//AnimationExtended({ ArrayListModule.ANIMATION_EASING }, { ArrayListModule.ANIMATION_LENGTH }, false)

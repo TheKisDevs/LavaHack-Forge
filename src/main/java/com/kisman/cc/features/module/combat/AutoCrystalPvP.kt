@@ -31,14 +31,14 @@ import java.util.stream.Collectors
  * @author _kisman_
  * @since 22:19 of 12.08.2022
  */
-@Beta
-@PingBypassModule
-@WorkInProgress
-object AutoCrystalPvP : Module(
-    "AutoCrystalPvP",
-    "crystal pvp go brr",
-    Category.COMBAT
-) {
+@ModuleInfo(
+    name = "AutoCrystalPvP",
+    desc = "crystal pvp goes brr",
+    category = Category.COMBAT,
+    wip = true,
+    pingbypass = true
+)
+object AutoCrystalPvP : Module() {
     private val terrain  = register(Setting("Terrain", this, true))
     private val targetIsUsingMultiPlace = /*register*/(Setting("Target Is Using Multi Place", this, false))
     private val debug1 = register(Setting("Debug 1", this, false))

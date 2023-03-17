@@ -5,19 +5,24 @@ import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
+import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
-import com.kisman.cc.util.Colour;
+import com.kisman.cc.settings.types.SettingGroup;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.entity.EntityUtil;
-import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.math.MathKt;
+import com.kisman.cc.util.math.TrigonometryKt;
+import com.kisman.cc.util.movement.BaritoneHandlerKt;
+import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.HoleUtil;
 import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,16 +37,19 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.function.Predicate;
 
-//TODO: make it works without target
+@Targetable
+@TargetsNearest
+@ModuleInfo(
+        name = "HoleSnap",
+        category = Category.MOVEMENT
+)
 public class HoleSnap extends Module {
-
-    private final SettingEnum<Holes> holes = new SettingEnum<>("Holes", this, Holes.Both).register();
-    private final SettingEnum<HoleTypes> holeType = new SettingEnum<>("HoleType", this, HoleTypes.Single).register();
+    private final SettingEnum<Holes> holes = register(new SettingEnum<>("Holes", this, Holes.Both));
+    private final SettingEnum<HoleTypes> holeType = register(new SettingEnum<>("HoleType", this, HoleTypes.Single));
 
     private final Setting upperHoles = register(new Setting("UpperHoles", this, false));
     private final Setting balance = register(new Setting("Balance", this, 0.5, -4, 4, false));
@@ -49,14 +57,12 @@ public class HoleSnap extends Module {
     private final Setting holeRange = register(new Setting("HoleRange", this, 4, 1, 15, false));
     private final Setting holeYRange = register(new Setting("HoleYRange", this, 4, 1, 8, false));
 
-    private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 16, false));
-
     private final Setting nearestHoleToEnemy = register(new Setting("NearestHoleToEnemy", this, false));
 
     private final Setting timeout = register(new Setting("Timeout", this, true));
     private final Setting timeoutTicks = register(new Setting("TimeoutTicks", this, 20, 0, 100, true));
 
-    private final SettingEnum<Stuck> onStuck = new SettingEnum<>("OnStuck", this, Stuck.Toggle).register();
+    private final SettingEnum<Stuck> onStuck = register(new SettingEnum<>("OnStuck", this, Stuck.None));
     private final Setting stuckTicks = register(new Setting("StuckTicks", this, 5, 0, 40, true));
 
     private final Setting speed = register(new Setting("Speed", this, 0.2873, 0.05, 0.5, false));
@@ -69,19 +75,23 @@ public class HoleSnap extends Module {
 
     private final Setting autoStep = register(new Setting("AutoStep", this, false));
 
-    private final Setting render = register(new Setting("Render", this, true));
-    private final Setting lineWidth = register(new Setting("LineWidth", this, 1.5, 0.5, 4, false));
-    private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
+    private final SlideRenderingRewritePattern pattern = new SlideRenderingRewritePattern(this).group(register(new SettingGroup(new Setting("Renderer", this)))).preInit().init();
 
-    public HoleSnap(){
-        super("HoleSnap", Category.MOVEMENT, true);
+    private final SlideRendererPattern renderer = new SlideRendererPattern();
+
+    public HoleSnap() {
+        super.setDisplayInfo(() -> target != null ? "[" + (target == mc.player ? "Self" : target.getName()) + "]" : "");
     }
+
+    @Target
+    public EntityPlayer target = null;
 
     private final Set<AxisAlignedBB> bannedHoles = new HashSet<>();
 
     private int ticks = 0;
     private int colissionTicks = 0;
     private AxisAlignedBB hole = null;
+    private BlockPos hole0 = null;
 
     private float oldTickLength;
 
@@ -90,19 +100,21 @@ public class HoleSnap extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
+        Kisman.EVENT_BUS.subscribe(packetListener);
+        Kisman.EVENT_BUS.subscribe(moveListener);
         if(mc.player == null || mc.world == null){
             toggle();
             return;
         }
         oldTickLength = mc.timer.tickLength;
         oldStepHeight = mc.player.stepHeight;
-        Kisman.EVENT_BUS.subscribe(this);
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
-        Kisman.EVENT_BUS.unsubscribe(this);
+        Kisman.EVENT_BUS.unsubscribe(packetListener);
+        Kisman.EVENT_BUS.unsubscribe(moveListener);
         mc.timer.tickLength = oldTickLength;
         mc.player.stepHeight = oldStepHeight;
         ticks = 0;
@@ -111,36 +123,16 @@ public class HoleSnap extends Module {
         bannedHoles.clear();
     }
 
+    @Override
+    public void update() {
+        if(mc.player == null || mc.world == null || colissionTicks != 0 || !BaritoneHandlerKt.active() || onStuck.getValEnum() != Stuck.Baritone) return;
+
+        BaritoneHandlerKt.stop();
+    }
+
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
-        if(mc.player == null || mc.world == null)
-            return;
-
-        if(!isToggled())
-            return;
-
-        if(hole == null)
-            return;
-
-        if(!render.getValBoolean())
-            return;
-
-        Vec3d center = getCenter(hole);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-
-        Rendering.start();
-
-        GL11.glLineWidth(lineWidth.getValFloat());
-        bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-        bufferBuilder.pos(mc.player.posX - mc.renderManager.viewerPosX, mc.player.posY - mc.renderManager.viewerPosY, mc.player.posZ - mc.renderManager.viewerPosZ)
-                .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-        bufferBuilder.pos(center.x - mc.renderManager.viewerPosX, center.y - mc.renderManager.viewerPosY, center.z - mc.renderManager.viewerPosZ)
-                .color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-        tessellator.draw();
-
-        Rendering.end();
+        renderer.handleRenderWorld(pattern, hole0, null);
     }
 
     @EventHandler
@@ -166,36 +158,27 @@ public class HoleSnap extends Module {
 
     @EventHandler
     private final Listener<EventPlayerMove> moveListener = new Listener<>(event -> {
-        if(event.type != MoverType.SELF)
-            return;
+        if(event.type != MoverType.SELF) return;
 
-        if(hole == null)
-            hole = findHole();
+        target = EnemyManager.INSTANCE.nearest();
 
-        if(hole == null)
+        if(hole == null) hole = findHole();
+
+        if(hole == null) {
             ticks++;
-        else
-            ticks = 0;
-
-        if(hole == null)
             mc.player.stepHeight = oldStepHeight;
 
-        if(hole == null && timeout.getValBoolean() && ticks > timeoutTicks.getValInt()){
-            toggle();
+            if(timeout.getValBoolean() && ticks > timeoutTicks.getValInt()) toggle();
+
             return;
-        }
+        } else ticks = 0;
 
-        if(hole == null)
-            return;
+        double currentSpeed = MathKt.hypot(mc.player.motionX, mc.player.motionZ);
 
-        double currentSpeed = Math.hypot(mc.player.motionX, mc.player.motionZ);
-
-        if(colissionTicks > stuckTicks.getValInt()){
-            if(onStuck.getValEnum() == Stuck.Toggle){
-                toggle();
-                return;
-            }
-            bannedHoles.add(hole);
+        if(onStuck.getValEnum() != Stuck.None && colissionTicks > stuckTicks.getValInt()){
+            if(onStuck.getValEnum() == Stuck.Toggle) toggle();
+            else if(onStuck.getValEnum() == Stuck.NextHole) bannedHoles.add(hole);
+            else if(onStuck.getValEnum() == Stuck.Baritone) BaritoneHandlerKt.gotoPos(hole0);
         }
 
         Vec3d center = getCenter(hole);
@@ -207,14 +190,11 @@ public class HoleSnap extends Module {
             return;
         }
 
-        event.cancel();
-
-        if(useTimer.getValBoolean())
-            mc.timer.tickLength = 50.0f / timerSpeed.getValFloat();
+        if(useTimer.getValBoolean()) mc.timer.tickLength = 50.0f / timerSpeed.getValFloat();
 
         Vec3d playerPos = mc.player.getPositionVector();
-        double yaw = Math.toRadians(WorldUtilKt.rotation(center)[0]);
-        double d = Math.hypot(center.x - playerPos.x, center.z - playerPos.z);
+        double yaw = TrigonometryKt.toRadians(WorldUtilKt.rotation(center)[0]);
+        double d = MathKt.hypot(center.x - playerPos.x, center.z - playerPos.z);
 
         if(!snap.getValBoolean() && d == 0){
             toggle();
@@ -232,11 +212,10 @@ public class HoleSnap extends Module {
         mc.player.motionZ = 0;
         event.x = -Math.sin(yaw) * cappedSpeed;
         event.z = Math.cos(yaw) * cappedSpeed;
+        event.cancel();
 
-        if(mc.player.collidedHorizontally)
-            colissionTicks++;
-        else
-            colissionTicks = 0;
+        if(mc.player.collidedHorizontally) colissionTicks++;
+        else colissionTicks = 0;
     });
 
     @SuppressWarnings("ALL")
@@ -255,11 +234,12 @@ public class HoleSnap extends Module {
         return new Vec3d(aabb.minX + (x / 2.0), aabb.minY, aabb.minZ + (z / 2.0));
     }
 
+    //Pretty bad implementation of my idea - _kisman_
     private AxisAlignedBB findHole(){
-        EntityPlayer enemy = EnemyManagerKt.nearest();
-        EntityPlayer entity = (nearestHoleToEnemy.getValBoolean() && enemy != null) ? enemy : mc.player;
-        Set<BlockPos> possibleHoles = getPossibleHoles();
+        EntityPlayer entity = (nearestHoleToEnemy.getValBoolean() && target != null) ? target : mc.player;
+        Set<BlockPos> possibleHoles = getPossibleHoles(entity);
         List<AxisAlignedBB> holes = new ArrayList<>();
+        HashMap<AxisAlignedBB, BlockPos> holes0 = new HashMap<>();
         for(BlockPos pos : possibleHoles){
             HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
             HoleUtil.HoleType holeType = holeInfo.getType();
@@ -271,18 +251,24 @@ public class HoleSnap extends Module {
             if(!this.holeType.getValEnum().check(holeType))
                 continue;
             holes.add(holeInfo.getCentre());
+            holes0.put(holeInfo.getCentre(), holeInfo.posses.get(0));
         }
-        return holes.stream()
+
+        AxisAlignedBB aabb0 = holes.stream()
                 .filter(aabb -> aabb.minY < (upperHoles.getValBoolean() ? mc.player.posY + 2 : mc.player.posY))
                 .filter(aabb -> mc.player.posX - aabb.minY <= holeYRange.getValDouble())
                 .filter(aabb -> !bannedHoles.contains(aabb))
                 .min(Comparator.comparingDouble(aabb -> entity.getDistance(getCenter(aabb).x, getCenter(aabb).y, getCenter(aabb).z) + (aabb.minY >= Math.floor(mc.player.posY) ? balance.getValDouble() : 0)))
                 .orElse(null);
+
+        hole0 = holes0.get(aabb0);
+
+        return aabb0;
     }
 
-    private Set<BlockPos> getPossibleHoles(){
+    private Set<BlockPos> getPossibleHoles(EntityPlayer entity){
         Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList =WorldUtilKt.sphere(holeRange.getValInt());
+        List<BlockPos> blockPosList = WorldUtilKt.sphere(entity, holeRange.getValInt());
         for (BlockPos pos : blockPosList) {
             AxisAlignedBB aabb = new AxisAlignedBB(pos);
             if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())
@@ -333,6 +319,8 @@ public class HoleSnap extends Module {
 
     private enum Stuck {
         Toggle,
-        NextHole
+        NextHole,
+        Baritone,
+        None
     }
 }

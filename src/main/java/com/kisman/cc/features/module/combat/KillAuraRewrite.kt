@@ -3,11 +3,8 @@ package com.kisman.cc.features.module.combat
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.subsystem.subsystems.*
-import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.util.entity.EntityUtil
-import com.kisman.cc.util.entity.RotationSaver
 import com.kisman.cc.util.enums.KillAuraWeapons
 import com.kisman.cc.util.enums.SwingHands
 import com.kisman.cc.util.enums.dynamic.SwapEnum2

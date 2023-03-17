@@ -53,7 +53,7 @@ public class ChorusDelay extends Module {
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
         if(posLook != null && chorusCheck) {
-            Box box = Box.Companion.byAABB(mc.player.getEntityBoundingBox());
+            Box box = Box.byAABB(mc.player.getEntityBoundingBox());
             box.setPos(new Vec3d(posLook.x, posLook.y, posLook.z));
 
             pattern.draw(box.toAABB());

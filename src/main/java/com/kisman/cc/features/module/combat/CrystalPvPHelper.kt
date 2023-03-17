@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module.combat
 
-import com.kisman.cc.features.module.Beta
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.WorkInProgress
@@ -12,7 +11,6 @@ import net.minecraft.init.Blocks
  * @author _kisman_
  * @since 5:54 of 15.09.2022
  */
-@Beta
 @WorkInProgress
 class CrystalPvPHelper : Module(
     "CrystalPvPHelper",

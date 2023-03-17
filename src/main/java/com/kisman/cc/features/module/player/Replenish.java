@@ -2,7 +2,6 @@ package com.kisman.cc.features.module.player;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.PingBypassModule;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
@@ -14,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-@PingBypassModule
 public class Replenish extends Module {
 
     private final Setting mode = register(new Setting("Mode", this, "Amount", Arrays.asList("Amount", "Percent")));

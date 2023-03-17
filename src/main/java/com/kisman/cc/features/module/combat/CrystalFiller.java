@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Beta;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInstance;
@@ -30,7 +29,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@Beta
 @Targetable
 @TargetsNearest
 public class CrystalFiller extends Module {

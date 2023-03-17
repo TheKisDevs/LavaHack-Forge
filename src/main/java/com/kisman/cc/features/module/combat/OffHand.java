@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
@@ -24,8 +21,13 @@ import org.lwjgl.input.Mouse;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@PingBypassModule
 @SuppressWarnings("SimplifyStreamApiCallChains")
+@ModuleInfo(
+        name = "OffHand",
+        desc = "gg",
+        category = Category.COMBAT,
+        pingbypass = true
+)
 public class OffHand extends Module {
     private final Setting health = register(new Setting("Health", this, 11, 0, 36, true));
 
@@ -52,7 +54,6 @@ public class OffHand extends Module {
     public static OffHand instance;
 
     public OffHand() {
-        super("OffHand", "gg", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 

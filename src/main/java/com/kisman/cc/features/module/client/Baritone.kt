@@ -5,7 +5,6 @@ import baritone.api.Settings
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
-import com.kisman.cc.features.module.PingBypassModule
 import com.kisman.cc.features.module.client.baritone.BaritoneSetting
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -13,13 +12,13 @@ import com.kisman.cc.util.Colour
 import java.awt.Color
 
 @Suppress("UNCHECKED_CAST")
-@PingBypassModule
 @ModuleInfo(
     name = "Baritone",
     desc = "Config of implementation of baritone",
     category = Category.CLIENT,
     toggled = true,
-    toggleable = false
+    toggleable = false,
+    pingbypass = true
 )
 class Baritone : Module() {
     private val booleans = register(SettingGroup(Setting("Booleans", this)))

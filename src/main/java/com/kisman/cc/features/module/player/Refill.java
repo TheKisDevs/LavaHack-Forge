@@ -7,7 +7,6 @@ import net.minecraft.init.*;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
 
-@PingBypassModule
 public class Refill extends Module {
     private final Setting[] settings = new Setting[]{
             new Setting("One", this, ItemMode.None),

@@ -1,9 +1,6 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.PingBypassModule;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -44,9 +41,14 @@ import java.util.stream.Stream;
 /**
  * @author Cubic
  */
-@PingBypassModule
 @Targetable
 @TargetsNearest
+@ModuleInfo(
+        name = "FlattenRewrite",
+        display = "Flatten",
+        category = Category.COMBAT,
+        pingbypass = true
+)
 public class FlattenRewrite extends Module {
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
@@ -109,9 +111,7 @@ public class FlattenRewrite extends Module {
     }
 
     public FlattenRewrite() {
-        super("FlattenRewrite", Category.COMBAT);
         super.setDisplayInfo(() -> "[" + (enemy == null ? "no target no fun" : enemy.getName()) + "]");
-        super.displayName = "Flatten";
         placeThread = new Thread(() -> {
             TimerUtils timer = new TimerUtils();
             boolean toggled = this.isToggled();

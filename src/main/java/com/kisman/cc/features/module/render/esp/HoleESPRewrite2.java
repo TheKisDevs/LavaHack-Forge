@@ -216,7 +216,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
                 continue;
             BoundingBox bb = entry.getKey();
             Type type = entry.getValue();
-            Vec3d center = Box.Companion.byAABB(bb.toAABB()).center();
+            Vec3d center = Box.byAABB(bb.toAABB()).center();
             try {
                 if((callingFromDraw && !rendererFor(type).canRender()) || (!callingFromDraw && rendererFor(type).canRender())) rendererFor(type).draw(bb.toAABB(), timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
             } catch(Exception ignored) {}

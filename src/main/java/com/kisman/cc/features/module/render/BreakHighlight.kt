@@ -1,8 +1,8 @@
 package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
-import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
+import com.kisman.cc.features.module.ShaderableModule
 import com.kisman.cc.mixin.mixins.accessor.AccessorDestroyBlockProgress
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
     desc = "Highlights breaking blocks",
     category = Category.RENDER
 )
-class BreakHighlight : Module() {
+class BreakHighlight : ShaderableModule() {
     private val renderer = RenderingRewritePattern(this).preInit().init()
     private val logic = register(SettingEnum<Logic>("Logic", this, Logic.CentredBox))
     private val reverse = register(Setting("Reverse", this, false))
@@ -42,6 +42,10 @@ class BreakHighlight : Module() {
     fun onRenderWorld(
         event : RenderWorldLastEvent
     ) {
+        handleDraw(renderer)
+    }
+
+    override fun draw() {
         fun modify(
             pos : BlockPos,
             percent : Double
@@ -73,9 +77,9 @@ class BreakHighlight : Module() {
                 val flag1 = text["percent"].valBoolean
                 val flag2 = text["name"].valBoolean
 
-                val string = "${if(flag1) { 
-                    "${percent(damage, false) * 100}%" 
-                } else { 
+                val string = "${if(flag1) {
+                    "${percent(damage, false) * 100}%"
+                } else {
                     ""
                 }}${if(flag2) {
                     "${if(flag1) {

@@ -61,7 +61,6 @@ public class ModuleManager {
 //		add(new NoMove());
 		add(new ObjectMouseOver());
 		add(new PacketIDGetterTest());
-		add(new PacketMineProviderTest());
 		add(new RectTest());
 		add(new RotationTest());
 //		add(new ScaffoldTest());

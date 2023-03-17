@@ -1,5 +1,7 @@
 package com.kisman.cc.features.module.combat
 
+import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.EventDamageBlock
 import com.kisman.cc.features.module.*
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.combat.cityboss.CrystalBlockPos
@@ -34,8 +36,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @ModuleInfo(
     name = "CityBoss",
     desc = "Breaks surround of nearest player.",
-    category = Category.COMBAT,
-    wip = true
+    category = Category.COMBAT
 )
 class CityBoss : Module() {
     private val blockRangeCheck = register(Setting("Block Range Check", this, false))
@@ -204,10 +205,11 @@ class CityBoss : Module() {
             }*/
 //            mc.player.swingArm(EnumHand.MAIN_HAND)
 //            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+            Kisman.EVENT_BUS.post(EventDamageBlock(pos, result?.sideHit ?: EnumFacing.UP))
             /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
-            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
+//            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
             /*if(PacketMineProvider.position != pos) {
                 PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
             }*/
@@ -334,7 +336,11 @@ class CityBoss : Module() {
         facing : EnumFacing,
         pos : BlockPos
     ) : Cases? = if(newVersion.valBoolean) {
-        Cases.SimpleCase1
+        if(Cases.SimpleCase1.isIt(facing, pos, newVersion.valBoolean)) {
+            Cases.SimpleCase1
+        } else {
+            null
+        }
     } else {
         var airs = Int.MAX_VALUE
         var bestCase : Cases? = null
