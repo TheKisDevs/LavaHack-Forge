@@ -62,6 +62,7 @@ public class GuiModule extends Module {
     public final Setting animationState = register(animationGroup.add(new Setting("Animation State", this, true).setTitle("State")));
     public final Setting animationSpeed = register(animationGroup.add(new Setting("Animation Speed", this, 750, 100, 1000, NumberType.TIME).setTitle("Length")));
     public final SettingEnum<EasingEnum.Easing> animationEasing = register(animationGroup.add(new SettingEnum<>("Animation Easing", this, EasingEnum.Easing.Linear).setTitle("Easing")));
+    public final Setting animationCoolAnimation = register(animationGroup.add(new Setting("Cool Animation", this, false)));
     public final Setting animationDirection = register(animationGroup.add(new Setting("Animation Direction", this, true).setTitle("Direction")));
     public final Setting animationReverseDirection = register(animationGroup.add(new Setting("Animation Reverse Direction", this, false).setTitle("Reverse Direction")));
     public final Setting animationAlpha = register(animationGroup.add(new Setting("Animation Alpha", this, false).setTitle("Alpha")));

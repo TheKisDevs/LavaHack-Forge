@@ -10,6 +10,7 @@ import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
+import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
@@ -47,12 +48,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * @author Cubic
  * @since 5.11.2022
  */
-@Targetable
+//@Targetable
 @WorkInProgress
 public class AutoCrystalRewrite extends Module {
 
@@ -78,21 +80,27 @@ public class AutoCrystalRewrite extends Module {
     private final SettingEnum<SwingHand> swingingHand = new SettingEnum<>("SwingingHand", this, SwingHand.MainHand).register();
 
     private final SettingEnum<Timings> timings = new SettingEnum<>("Timings", this, Timings.Adaptive).register();
+    private final Setting fastSequential = register(new Setting("FastSequential", this, false));
     private final SettingEnum<Logic> logic = new SettingEnum<>("Logic", this, Logic.BreakPlace).register();
 
-    private final Setting placeSpeed = register(new Setting("PlaceSpeed", this, 20, 0, 20, false));
-    private final Setting packetPlace = register(new Setting("PacketPlace", this, true));
-    private final Setting placeRaytrace = register(new Setting("Raytrace", this, false));
-    private final Setting strictFacing = register(new Setting("StrictFacing", this, false));
-    private final Setting antiStuck = register(new Setting("AntiStuck", this, false));
-    private final Setting noPlaceSuicide = register(new Setting("NoPlaceSuicide", this, true));
+    private final SettingGroup placeGroup = register(new SettingGroup(new Setting("Place", this)));
+    private final Setting placeSpeed = placeGroup.add(new Setting("PlaceSpeed", this, 20, 0, 20, false));
+    private final Setting packetPlace = placeGroup.add(new Setting("PacketPlace", this, true));
+    private final Setting placeRaytrace = placeGroup.add(new Setting("Raytrace", this, false));
+    private final Setting strictFacing = placeGroup.add(new Setting("StrictFacing", this, false));
+    private final Setting antiStuck = placeGroup.add(new Setting("AntiStuck", this, false));
+    private final Setting noPlaceSuicide = placeGroup.add(new Setting("NoPlaceSuicide", this, true));
+    private final Setting placeListCheck = placeGroup.add(new Setting("PlaceListCheck", this, false));
+    private final Setting firePlace = placeGroup.add(new Setting("FirePlace", this, false));
+    private final Setting terrain = placeGroup.add(new Setting("Terrain", this, false));
 
-    private final Setting breakSpeed = register(new Setting("BreakSpeed", this, 18.4, 0, 20, false));
-    private final Setting inhibit = register(new Setting("Inhibit", this, false));
-    private final Setting inhibitTimeOut = register(new Setting("InhibitTimeOut", this, 30, 1, 60, true));
-    private final Setting packetBreak = register(new Setting("PacketBreak", this, true));
-    private final Setting breakRaytrace = register(new Setting("BreakRaytrace", this, true));
-    private final Setting noBreakSuicide = register(new Setting("NoBreakSuicide", this, true));
+    private final SettingGroup breakGroup = register(new SettingGroup(new Setting("Break", this)));
+    private final Setting breakSpeed = breakGroup.add(new Setting("BreakSpeed", this, 18.4, 0, 20, false));
+    private final Setting inhibit = breakGroup.add(new Setting("Inhibit", this, false));
+    private final Setting inhibitTimeOut = breakGroup.add(new Setting("InhibitTimeOut", this, 30, 1, 60, true));
+    private final Setting packetBreak = breakGroup.add(new Setting("PacketBreak", this, true));
+    private final Setting breakRaytrace = breakGroup.add(new Setting("BreakRaytrace", this, true));
+    private final Setting noBreakSuicide = breakGroup.add(new Setting("NoBreakSuicide", this, true));
 
     private final Setting instant = register(new Setting("Instant", this, false));
     private final Setting instantPacket = register(new Setting("InstantPacket", this, true));
@@ -100,17 +108,17 @@ public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Sync> sync = new SettingEnum<>("Sync", this, Sync.Confirm).register();
 
-    private final Setting placeRange = register(new Setting("PlaceRange", this, 5, 0, 6, false));
-    private final Setting placeWallRange = register(new Setting("PlaceWallRange", this, 3, 0, 6, false));
-    private final Setting breakRange = register(new Setting("BreakRange", this, 5, 0, 6, false));
-    private final Setting breakWallRange = register(new Setting("BreakWallRange", this, 3, 0, 6, false));
-    private final Setting firePlace = register(new Setting("FirePlace", this, false));
-    private final Setting terrain = register(new Setting("Terrain", this, false));
+    private final SettingGroup ranges = register(new SettingGroup(new Setting("Ranges", this)));
+    private final Setting placeRange = ranges.add(new Setting("PlaceRange", this, 5, 0, 6, false));
+    private final Setting placeWallRange = ranges.add(new Setting("PlaceWallRange", this, 3, 0, 6, false));
+    private final Setting breakRange = ranges.add(new Setting("BreakRange", this, 5, 0, 6, false));
+    private final Setting breakWallRange = ranges.add(new Setting("BreakWallRange", this, 3, 0, 6, false));
 
-    private final Setting minPlaceDamage = register(new Setting("MinPlaceDamage", this, 5, 0, 36, false));
-    private final Setting maxSelfPlace = register(new Setting("MaxSelfPlace", this, 8, 0, 36, false));
-    private final Setting minBreakDamage = register(new Setting("MinBreakDamage", this, 5, 0, 36, false));
-    private final Setting maxSelfBreak = register(new Setting("MaxSelfBreak", this, 8, 0, 36, false));
+    private final SettingGroup damageGroup = register(new SettingGroup(new Setting("Damage", this)));
+    private final Setting minPlaceDamage = damageGroup.add(new Setting("MinPlaceDamage", this, 5, 0, 36, false));
+    private final Setting maxSelfPlace = damageGroup.add(new Setting("MaxSelfPlace", this, 8, 0, 36, false));
+    private final Setting minBreakDamage = damageGroup.add(new Setting("MinBreakDamage", this, 5, 0, 36, false));
+    private final Setting maxSelfBreak = damageGroup.add(new Setting("MaxSelfBreak", this, 8, 0, 36, false));
 
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
@@ -118,7 +126,7 @@ public class AutoCrystalRewrite extends Module {
     public static AutoCrystalRewrite INSTANCE;
 
     public AutoCrystalRewrite(){
-        super("Kys+", Category.COMBAT, true);
+        super("AutoCrystalRewrite", Category.COMBAT, true);
     }
 
     private Thread thread = null;
@@ -129,10 +137,10 @@ public class AutoCrystalRewrite extends Module {
 
     private final TimerUtils popFocusTimer = new TimerUtils();
 
-    @Target
+    //@Target
     public EntityPlayer target = null;
 
-    private final List<PositionInfo> placedList = new Vector<>();
+    private List<PositionInfo> placedList = new Vector<>();
 
     private final Map<EntityEnderCrystal, Long> inhibitCrystals = new ConcurrentHashMap<>();
 
@@ -213,57 +221,102 @@ public class AutoCrystalRewrite extends Module {
 
     private void handleLogic(Logic logic, boolean justDoIt) throws InterruptedException {
         if(logic == Logic.PlaceBreak){
-            if(timings.getValEnum() == Timings.Sequential){
-                if (!justDoIt)
-                    ThreadUtils.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
-                handlePlace(false);
-                ThreadUtils.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
-                handleBreak(false);
-                return;
-            }
-            handlePlace(true);
-            handleBreak(true);
+            handlePlaceBreak(justDoIt);
             return;
         }
-        if(timings.getValEnum() == Timings.Sequential){
-            if(!justDoIt)
-                ThreadUtils.sleep(Math.round(1000L - (50L * breakSpeed.getValDouble())));
-            handleBreak(false);
-            ThreadUtils.sleep(Math.round(1000L - (50L * placeSpeed.getValDouble())));
-            handlePlace(false);
-            return;
-        }
-        handleBreak(true);
-        handlePlace(true);
+        handleBreakPlace(justDoIt);
     }
 
-    private void handleBreak(boolean handleDelay){
-        if(handleDelay && !breakTimer.passedMillis(Math.round(1000L - (50L * breakSpeed.getValDouble()))))
+    private void handlePlaceBreak(boolean justDoIt){
+        boolean done = false;
+        if(timings.getValEnum() == Timings.Adaptive){
+            if(placeTimer.passedMillis(getPlaceMS()) || justDoIt){
+                boolean result = handlePlace();
+                placeTimer.reset();
+                done = result;
+            }
+            if(breakTimer.passedMillis(getBreakMS()) || (justDoIt && !done)){
+                handleBreak();
+                breakTimer.reset();
+            }
             return;
+        }
+        if(placeTimer.passedMillis(getPlaceMS()) || justDoIt){
+            boolean result = handlePlace();
+            placeTimer.setNano(Long.MAX_VALUE);
+            breakTimer.reset();
+            done = result;
+        }
+        if(breakTimer.passedMillis(getBreakMS()) || (justDoIt && !done) || (fastSequential.getValBoolean() && !done)){
+            handleBreak();
+            breakTimer.setNano(Long.MAX_VALUE);
+            placeTimer.reset();
+        }
+    }
+
+    private void handleBreakPlace(boolean justDoIt){
+        boolean done = false;
+        if(timings.getValEnum() == Timings.Adaptive){
+            if(breakTimer.passedMillis(getBreakMS()) || justDoIt){
+                boolean result = handleBreak();
+                breakTimer.reset();
+                done = result;
+            }
+            if(placeTimer.passedMillis(getPlaceMS()) || (justDoIt && !done)){
+                boolean result = handlePlace();
+                placeTimer.reset();
+            }
+            return;
+        }
+        if(breakTimer.passedMillis(getBreakMS())){
+            boolean result = handleBreak();
+            breakTimer.setNano(Long.MAX_VALUE);
+            placeTimer.reset();
+            done = result;
+        }
+        if(placeTimer.passedMillis(getPlaceMS()) || (justDoIt && !done)){
+            boolean result = handlePlace();
+            placeTimer.setNano(Long.MAX_VALUE);
+            breakTimer.reset();
+            if(fastSequential.getValBoolean() && !result)
+                breakTimer.setNano(-5000000000L);
+        }
+    }
+
+    private long getPlaceMS(){
+        return Math.round(1000L - (50 * placeSpeed.getValDouble()));
+    }
+
+    private long getBreakMS(){
+        return Math.round(1000L - (50 * breakSpeed.getValDouble()));
+    }
+
+    private boolean handleBreak(){
         CrystalInfo info = getOptimalBreak();
         if(info == null)
-            return;
+            return false;
         attackCrystal(info.getCrystal());
         inhibitCrystals.put(info.getCrystal(), System.currentTimeMillis());
         if(sync.getValEnum() == Sync.Attack)
             removeCrystal(info.getCrystal());
-        if(handleDelay)
-            breakTimer.reset();
+        if(placeListCheck.getValBoolean()){
+            placedList = placedList.stream()
+                    .filter(placeInfo -> !placeInfo.blockPos.equals(new BlockPos(info.crystal.posX, info.crystal.posY - 1, info.crystal.posZ)))
+                    .collect(Collectors.toCollection(Vector::new));
+        }
+        return true;
     }
 
-    private void handlePlace(boolean handleDelay){
-        if(handleDelay && !placeTimer.passedMillis(Math.round(1000L - (50L * placeSpeed.getValDouble()))))
-            return;
+    private boolean handlePlace(){
         PositionInfo info = calculatePlace();
         if(info == null){
             lastPlacePos = null;
-            return;
+            return false;
         }
         lastPlacePos = info.getBlockPos();
         placeCrystal(info.getBlockPos());
         placedList.add(info);
-        if(handleDelay)
-            placeTimer.reset();
+        return true;
     }
 
     private void placeCrystal(BlockPos pos){
@@ -271,15 +324,15 @@ public class AutoCrystalRewrite extends Module {
         EnumFacing facing = result == null ? (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN) : (placeRaytrace.getValBoolean() ? result.sideHit : (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN));
         float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
         //TODO: rotation enum
-//        float[] rots = AngleUtil.calculateAngles(pos);
-//        if(rotate.getValBoolean())
-//            handleRotate(rots, oldRots);
+        float[] rots = calculateAngles(pos);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
         if(packetPlace.getValBoolean())
             mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, facing, getCrystalHand(), 0, 0, 0));
         else
             mc.playerController.processRightClickBlock(mc.player, mc.world, pos, facing, new Vec3d(0, 0, 0), getCrystalHand());
-//        if(rotate.getValBoolean())
-//            handleRotate(oldRots, rots);
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
     }
 
     public EnumHand getCrystalHand(){
@@ -297,16 +350,30 @@ public class AutoCrystalRewrite extends Module {
     private void attackCrystal(EntityEnderCrystal crystal){
         float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
         //TODO: cubic can you rewrite it with rotation enum
-//        float[] rots = AngleUtil.calculateAngles(crystal);
-//        if(rotate.getValBoolean())
-//            handleRotate(rots, oldRots);
+        float[] rots = calculateAngles(crystal);
+        if(rotate.getValBoolean())
+            handleRotate(rots, oldRots);
         if(packetBreak.getValBoolean())
             mc.player.connection.sendPacket(new CPacketUseEntity(crystal));
         else
             mc.playerController.attackEntity(mc.player, crystal);
         swing();
-//        if(rotate.getValBoolean())
-//            handleRotate(oldRots, rots);
+        if(rotate.getValBoolean())
+            handleRotate(oldRots, rots);
+    }
+
+    private float[] calculateAngles(Entity entity) {
+        return calculateAngle(EntityUtil.getInterpolatedPos(mc.player, mc.getRenderPartialTicks()), EntityUtil.getInterpolatedPos(entity, mc.getRenderPartialTicks()));
+    }
+
+    private float[] calculateAngles(BlockPos blockPos) {
+        return calculateAngle(EntityUtil.getInterpolatedPos(mc.player, mc.getRenderPartialTicks()), new Vec3d(blockPos.getX() + 0.5, blockPos.getY() + 0.5, blockPos.getZ() + 0.5));
+    }
+
+    private float[] calculateAngle(Vec3d from, Vec3d to) {
+        return new float[] {
+                (float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(to.z - from.z, to.x - from.x)) - 90.0), (float) MathHelper.wrapDegrees(Math.toDegrees(Math.atan2((to.y - from.y) * -1.0, MathHelper.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.z - from.z, 2)))))
+        };
     }
 
     private void swing(){
@@ -466,9 +533,7 @@ public class AutoCrystalRewrite extends Module {
 
     private void doInstant(int entityID){
         Entity entity = mc.world.getEntityByID(entityID);
-        if(entity instanceof EntityEnderCrystal)
-            inhibitCrystals.put((EntityEnderCrystal) entity, System.currentTimeMillis());
-        if(instantPacket.getValBoolean() || !(entity instanceof EntityEnderCrystal)){
+        if(instantPacket.getValBoolean() && entity == null){
             CPacketUseEntity packet = new CPacketUseEntity();
             packet.entityId = entityID;
             packet.action = CPacketUseEntity.Action.ATTACK;
@@ -476,6 +541,9 @@ public class AutoCrystalRewrite extends Module {
             swing();
             return;
         }
+        if(!(entity instanceof EntityEnderCrystal))
+            return;
+        inhibitCrystals.put((EntityEnderCrystal) entity, System.currentTimeMillis());
         attackCrystal((EntityEnderCrystal) entity);
         if(instantSync.getValBoolean())
             removeCrystal((EntityEnderCrystal) entity);
@@ -496,6 +564,7 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private CrystalInfo getOptimalBreak(){
+
         if(target == null)
             return null;
 
@@ -555,6 +624,9 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private PositionInfo calculatePlace(){
+
+        if(target == null)
+            return null;
 
         PositionInfo positionInfo = new PositionInfo(BlockPos.ORIGIN, -1, -1);
 
@@ -624,6 +696,13 @@ public class AutoCrystalRewrite extends Module {
             PositionInfo place = new PositionInfo(pos, damage, selfDamage);
 
             positionInfo = positionInfo.max(place);
+        }
+
+        if(placeListCheck.getValBoolean()){
+            for(PositionInfo info : placedList){
+                if(info.blockPos == positionInfo.blockPos)
+                    return null;
+            }
         }
 
         return positionInfo.targetDamage < 0 ? null : positionInfo;
