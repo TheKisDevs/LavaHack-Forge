@@ -25,7 +25,9 @@ public class Animation {
             current = end;
             return;
         }
-        current = begin + (MathUtil.curve((System.currentTimeMillis() - startTime) / (double) time) * (end - begin));
+        current = begin + ((System.currentTimeMillis() - startTime) / (double) time) * (end - begin);
+        // keep the comment below - Cubic
+        //begin + (MathUtil.curve((System.currentTimeMillis() - startTime) / (double) time) * (end - begin));
     }
 
     public void reset(){

@@ -631,6 +631,11 @@ public class HalqGui extends KismanGuiScreen {
         Render2DUtil.drawRectWH(x, y, w, h, flag ? color : new Colour(color).withAlpha(state ? 255 : 0).getRGB());
     }
 
+    public static void drawRectWH2(double x, double y, double w, double h, int color, double coeff1, double coeff2) {
+        //Render2DUtil.drawRectWH(x + w - (w * coeff2), y, w * coeff2, h, color);
+        Render2DUtil.drawRectWH(x + (w * coeff2), y, (w * coeff1) - (w * coeff2), h, color);
+    }
+
     public enum LocateMode {
         Center, Left
     }
