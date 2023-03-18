@@ -16,8 +16,6 @@ class EntityESPRewrite : Module() {
     private val pattern : EntityESPRendererPattern = EntityESPRendererPattern(this)
 
     init {
-        displayName = "EntityESP"
-
         pattern.init()
     }
 

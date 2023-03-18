@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.api.SettingComponent;
-import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
+import com.kisman.cc.gui.api.ToggleableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.settings.Setting;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class CheckBox extends ShaderableImplementation implements Openable, SettingComponent {
+public class CheckBox extends ToggleableImplementation implements Openable, SettingComponent {
     private final Setting setting;
 
     private final BindButton bind;
@@ -53,7 +53,11 @@ public class CheckBox extends ShaderableImplementation implements Openable, Sett
                             )
                     );
                 }
-            } else if(HalqGui.test2 || setting.getValBoolean()) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, setting.getValBoolean() ? HalqGui.getGradientColour(getCount()).getRGB() : HalqGui.backgroundColor.getRGB());
+            } else {
+                if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.backgroundColor.getRGB());
+
+                drawRect(setting.getValBoolean());
+            }
         };
 
         Runnable shaderRunnable2 = () -> {

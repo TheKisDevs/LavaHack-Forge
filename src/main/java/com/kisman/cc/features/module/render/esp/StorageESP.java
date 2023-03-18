@@ -39,10 +39,6 @@ public class StorageESP extends Module implements Drawable {
 
     private ArrayList<TileEntity> entities = new ArrayList<>();
 
-    public StorageESP() {
-        super();
-    }
-
     @Override
     public void onEnable() {
         super.onEnable();

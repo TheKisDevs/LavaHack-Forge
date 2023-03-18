@@ -12,19 +12,17 @@ import com.kisman.cc.features.viaforge.gui.ViaForgeGuiKt;
 import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.ModuleComponent;
 import com.kisman.cc.gui.api.Openable;
-import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
+import com.kisman.cc.gui.api.ToggleableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.*;
 import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
-import com.kisman.cc.gui.halq.util.AnimationHandler;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.hudeditor.DraggableBox;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.client.annotations.FakeThing;
 import com.kisman.cc.util.client.collections.Bind;
-import com.kisman.cc.util.math.Animation;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.objects.screen.AbstractGradient;
@@ -34,16 +32,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class Button extends ShaderableImplementation implements Openable, ModuleComponent {
+public class Button extends ToggleableImplementation implements Openable, ModuleComponent {
     public final ArrayList<Component> comps = new ArrayList<>();
     public final Module mod;
     public final DraggableBox draggable;
     public final Description description;
     public final boolean hud;
     public boolean open = false;
-
-    private final Animation ENABLE_ANIMATION = new AnimationHandler(false);
-    private final Animation DISABLE_ANIMATION = new AnimationHandler(true);
 
     public Button(Module mod, int x, int y, int offset, int count, int layer) {
         super(x, y, count, offset, layer);
@@ -142,22 +137,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
             } else {
                 if(HalqGui.test2) Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.test2Color.getRGB());
 
-                //TODO: cubic pls add animation state & toggleable state checks
-                //TODO: alpha animation
-
-                double coeff = (mod.isToggled() ? ENABLE_ANIMATION : DISABLE_ANIMATION).getCurrent();
-
-                HalqGui.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, getWidth() - HalqGui.offsetsX * 2, HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB(), coeff);
-
-                Render2DUtil.drawRectWH(getX() + HalqGui.offsetsX, getY() + HalqGui.offsetsY, coeff * (getWidth() - HalqGui.offsetsX * 2), HalqGui.height - HalqGui.offsetsY * 2, HalqGui.getGradientColour(getCount()).getRGB());
-
-                if(mod.isToggled()) {
-                    ENABLE_ANIMATION.update();
-                    DISABLE_ANIMATION.reset();
-                } else {
-                    ENABLE_ANIMATION.reset();
-                    DISABLE_ANIMATION.update();
-                }
+                drawRect(mod.isToggled());
             }
         };
 
@@ -243,7 +223,7 @@ public class Button extends ShaderableImplementation implements Openable, Module
 
     @Override
     public boolean visible() {
-        return HalqGui.visible(this) || HalqGui.visible(mod.getName());
+        return HalqGui.visible(this) || HalqGui.visible(mod.displayName);
     }
 
     @NotNull

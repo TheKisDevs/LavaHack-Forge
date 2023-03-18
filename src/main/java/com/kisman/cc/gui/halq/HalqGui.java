@@ -6,7 +6,9 @@ import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.GuiModule;
 import com.kisman.cc.gui.KismanGuiScreen;
 import com.kisman.cc.gui.api.Component;
+import com.kisman.cc.gui.api.ModuleComponent;
 import com.kisman.cc.gui.api.Openable;
+import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.components.Description;
 import com.kisman.cc.gui.halq.components.Header;
@@ -59,8 +61,12 @@ public class HalqGui extends KismanGuiScreen {
             animateToggleable = true,
             animateHover = false,
             animateSlider = false,
+            animationDirection = true,
             animationReverseDirection = false,
-            openIndicator = true;
+            animationAlpha = false,
+            animationBothSide = false,
+            openIndicator = true,
+            searchSettings = false;
     public static int diff = 0,
             textOffsetX = 5,
             gradientFrameDiff = 0,
@@ -195,6 +201,10 @@ public class HalqGui extends KismanGuiScreen {
         openIndicator = GuiModule.instance.openIndicator.getValBoolean();
         layerStepOffset = GuiModule.instance.layerStepOffset.getValInt();
         scale = GuiModule.instance.scale.getValDouble();
+        animationDirection = GuiModule.instance.animationDirection.getValBoolean();
+        animationAlpha = GuiModule.instance.animationAlpha.getValBoolean();
+        animationBothSide = GuiModule.instance.animationBothSide.getValBoolean();
+        searchSettings = GuiModule.instance.searchSettings.getValBoolean();
 
         mouseX /= scale;
         mouseY /= scale;
@@ -549,11 +559,13 @@ public class HalqGui extends KismanGuiScreen {
         return Kisman.instance.halqGui.searchBar.text().isEmpty() || name.toLowerCase().contains(Kisman.instance.halqGui.searchBar.text().toLowerCase());
     }
 
-    public static boolean visible(Openable openable) {
+    public static boolean visible(Component component) {
         if(Kisman.instance.halqGui.searchBar.text().isEmpty()) return true;
 
-        for(Component component : openable.getComponents()) {
-            if(component.visible()) return true;
+        if(component instanceof Openable) {
+            if(component instanceof ModuleComponent && ((Openable) component).isOpen()) for(Component component0 : ((Openable) component).getComponents()) if(component0 instanceof Button && component0.visible()) return true;
+        } else if(component instanceof SettingComponent && searchSettings) {
+            return visible(((SettingComponent) component).setting().displayName);
         }
 
         return false;
@@ -597,14 +609,26 @@ public class HalqGui extends KismanGuiScreen {
         postRenderThing = UtilityKt.compare(postRenderThing, runnable);
     }
 
-    public static void drawRectWH(double x, double y, double w, double h, int color, double coeff) {
+    public static void drawRectWH(double x, double y, double w, double h, int color, double coeff, boolean state) {
         //TODO: vertical animation
+        boolean flag = false;
 
-        if(animationReverseDirection) {
-            Render2DUtil.drawRectWH(x + w - (w * coeff), y, w * coeff, h, color);
-        } else {
-            Render2DUtil.drawRectWH(x, y, w * coeff, h, color);
+        if(animationState) {
+            if (animationAlpha) {
+                Colour color0 = new Colour(color);
+                color = color0.withAlpha((int) (coeff * color0.a)).getRGB();
+                flag = true;
+            }
+
+            if (animationDirection) {
+                if (animationReverseDirection || animationBothSide) Render2DUtil.drawRectWH(x + w - (w * coeff), y, w * coeff, h, color);
+                if (!animationReverseDirection || animationBothSide) Render2DUtil.drawRectWH(x, y, w * coeff, h, color);
+
+                return;
+            }
         }
+
+        Render2DUtil.drawRectWH(x, y, w, h, flag ? color : new Colour(color).withAlpha(state ? 255 : 0).getRGB());
     }
 
     public enum LocateMode {

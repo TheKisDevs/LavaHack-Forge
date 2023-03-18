@@ -62,7 +62,10 @@ public class GuiModule extends Module {
     public final Setting animationState = register(animationGroup.add(new Setting("Animation State", this, true).setTitle("State")));
     public final Setting animationSpeed = register(animationGroup.add(new Setting("Animation Speed", this, 750, 100, 1000, NumberType.TIME).setTitle("Length")));
     public final SettingEnum<EasingEnum.Easing> animationEasing = register(animationGroup.add(new SettingEnum<>("Animation Easing", this, EasingEnum.Easing.Linear).setTitle("Easing")));
+    public final Setting animationDirection = register(animationGroup.add(new Setting("Animation Direction", this, true).setTitle("Direction")));
     public final Setting animationReverseDirection = register(animationGroup.add(new Setting("Animation Reverse Direction", this, false).setTitle("Reverse Direction")));
+    public final Setting animationAlpha = register(animationGroup.add(new Setting("Animation Alpha", this, false).setTitle("Alpha")));
+    public final Setting animationBothSide = register(animationGroup.add(new Setting("Animation Both Side", this, false).setTitle("Both Side")));
     private final SettingGroup animationTypes = register(animationGroup.add(new SettingGroup(new Setting("Types", this))));
     public final Setting animateToggleable = register(animationTypes.add(new Setting("Animate Toggleable", this, true).setTitle("Toggleable")));
     public final Setting animateHover = register(animationTypes.add(new Setting("Animate Hover", this, false).setTitle("Hover")));
@@ -70,6 +73,7 @@ public class GuiModule extends Module {
     public final Setting openIndicator = register(new Setting("Open Indicator", this, true));
     public final Setting layerStepOffset = register(new Setting("Layer Step Offset", this, 5, 0, 10, true));
     public final Setting scale = register(new Setting("Scale", this, 1, 0.5, 2, false));
+    public final Setting searchSettings = register(new Setting("Search Settings", this, false).setTitle("Settings"));
 
     @ModuleInstance
     public static GuiModule instance;

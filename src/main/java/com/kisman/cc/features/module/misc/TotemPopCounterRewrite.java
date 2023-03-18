@@ -38,7 +38,7 @@ public class TotemPopCounterRewrite extends Module {
         if(event.getPacket() instanceof SPacketEntityStatus && ((SPacketEntityStatus) event.getPacket()).getOpCode() == 35) {
             EntityPlayer player = (EntityPlayer) ((SPacketEntityStatus) event.getPacket()).getEntity(mc.world);
             pops.put(player.getName(), pops.getOrDefault(player.getName(), 0) + 1);
-            ChatUtility.info().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", StringUtils.stringToInt(player.getName()) + moduleId);
+            ChatUtility.message().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", StringUtils.stringToInt(player.getName()) + moduleId);
         }
     });
 }
