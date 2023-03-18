@@ -19,8 +19,8 @@ package baritone.api;
 
 import baritone.api.utils.NotificationHelper;
 import baritone.api.utils.SettingsUtil;
-import baritone.api.utils.TypeUtils;
 import baritone.api.utils.gui.BaritoneToast;
+import com.kisman.cc.util.ReflectionUtilsKt;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
@@ -34,8 +34,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Baritone's settings. Settings apply to all Baritone instances.
@@ -1308,7 +1308,7 @@ public final class Settings {
 
         public Class<T> getValueClass() {
             // noinspection unchecked
-            return (Class<T>) TypeUtils.resolveBaseClass(getType());
+            return (Class<T>) ReflectionUtilsKt.baseClass(getType());
         }
 
         @Override

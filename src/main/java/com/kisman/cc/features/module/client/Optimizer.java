@@ -1,14 +1,19 @@
-package com.kisman.cc.features.module.misc;
+package com.kisman.cc.features.module.client;
 
 import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.Display;
 
+@ModuleInfo(
+        name = "Optimizer",
+        category = Category.CLIENT
+)
 public class Optimizer extends Module {
     private final Setting removeLookAi = register(new Setting("Remove Entity AI Watch Closest", this, false));
     private final Setting removeLookIdle = register(new Setting("Remove Entity AI LookIdle", this, false));
@@ -22,10 +27,6 @@ public class Optimizer extends Module {
     public static Optimizer instance;
 
     private int maxFpsActive;
-
-    public Optimizer() {
-        super("Optimizer", Category.MISC);
-    }
 
     public void onEnable() {
         super.onEnable();

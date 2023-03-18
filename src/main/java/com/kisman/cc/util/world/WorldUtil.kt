@@ -4,10 +4,13 @@ import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.block
 import com.kisman.cc.util.math.atan2
 import com.kisman.cc.util.math.sqrt
+import com.kisman.cc.util.math.sqrt2
 import com.kisman.cc.util.math.toDegrees
 import com.kisman.cc.util.render.objects.world.Box
+import com.kisman.cc.util.state
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
+import net.minecraft.block.BlockFire
 import net.minecraft.block.BlockLiquid
 import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.culling.ICamera
@@ -22,6 +25,7 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -240,6 +244,57 @@ fun canPlaceCrystal(
     } else {
         false
     }
+}
+
+fun center(
+    pos : BlockPos
+) = Vec3d(pos).addVector(0.5, 0.5, 0.5)
+
+fun distance(
+    vec1 : Vec3d,
+    vec2 : Vec3d
+) : Double {
+    val x = vec1.x - vec2.x
+    val y = vec1.y - vec2.y
+    val z = vec1.z - vec2.z
+
+    return sqrt2(x * x + y * y + z * z)
+}
+
+fun distanceToCenter(
+    pos : BlockPos,
+    vec : Vec3d
+) = distance(center(pos), vec)
+
+fun distanceToCenter(
+    entity : Entity,
+    pos : BlockPos
+) = distance(center(pos), entity.positionVector)
+
+fun flatDistanceToCenter(
+    entity : Entity,
+    pos : BlockPos
+) = distance(center(pos), Vec3d(entity.posX, pos.y + 0.5, entity.posZ))
+
+fun center(
+    aabb : AxisAlignedBB
+) = Vec3d(
+    aabb.minX + (aabb.minX + aabb.maxX) / 2,
+    aabb.minY + (aabb.minY + aabb.maxY) / 2,
+    aabb.minZ + (aabb.minZ + aabb.maxZ) / 2
+)
+
+fun center(
+    world : World,
+    pos : BlockPos
+) : Vec3d {
+    val aabb = state(pos).getBoundingBox(world, pos)
+
+    return Vec3d(
+        pos.x + (aabb.minX + aabb.maxX) / 2,
+        pos.y + (if(block(pos) is BlockFire) 0.0 else (aabb.minY + aabb.maxY)) / 2,
+        pos.z + (aabb.minZ + aabb.maxZ) / 2
+    )
 }
 
 /*

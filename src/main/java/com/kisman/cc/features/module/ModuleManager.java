@@ -131,6 +131,7 @@ public class ModuleManager {
 		add(new GuiShader());
 		add(new MainMenuModule());
 		add(NoSpoof.INSTANCE);
+		add(new Optimizer());
 		add(new PauseBaritone());
 		add(PingBypass.INSTANCE);
 		add(new Printer());
@@ -275,7 +276,6 @@ public class ModuleManager {
 		add(new ItemRenamer());
 		add(new MurderFinder());
 		add(new NameProtect());
-		add(new Optimizer());
 		//add(new PacketDelay());
 		add(new PortalsModifier());
 		add(new SkyBlockFeatures());

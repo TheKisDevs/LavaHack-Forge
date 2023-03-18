@@ -1,5 +1,8 @@
 package com.kisman.cc.util.movement;
 
+import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.math.MathKt;
+import com.kisman.cc.util.math.TrigonometryKt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
@@ -174,6 +177,27 @@ public class MovementUtil {
         double posZ = moveForward * speed * Math.cos(Math.toRadians(rotationYaw)) - moveStrafe * speed * -Math.sin(Math.toRadians(rotationYaw));
 
         return new double[] {posX, posZ};
+    }
+
+    public static double[] strafe2(double speed) {
+        float forward = mc.player.movementInput.moveForward;
+        float strafe = mc.player.movementInput.moveStrafe;
+        float yaw = mc.player.rotationYaw;
+
+        if (forward != 0.0f) {
+            if (strafe > 0.0f) yaw += ((forward > 0.0f) ? -45 : 45);
+            else if (strafe < 0.0f) yaw += ((forward > 0.0f) ? 45 : -45);
+        }
+
+        double hypot = MathKt.hypot(mc.player.motionX, mc.player.motionZ);
+
+        speed = EntityUtil.applySpeedEffect(mc.player, speed);
+        speed = Math.min(hypot, mc.player.onGround ? speed : Math.max(hypot + 0.02, speed));
+
+        double motionX = -TrigonometryKt.sin(yaw) * speed;
+        double motionZ = TrigonometryKt.cos(yaw) * speed;
+
+        return new double[] { motionX, motionZ };
     }
 
 }

@@ -20,6 +20,7 @@ package baritone.api.utils;
 import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import com.kisman.cc.util.ReflectionUtilsKt;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
@@ -225,6 +226,7 @@ public class SettingsUtil {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private enum Parser implements ISettingParser {
 
         DOUBLE(Double.class, Double::parseDouble),
@@ -277,7 +279,7 @@ public class SettingsUtil {
 
             @Override
             public boolean accepts(Type type) {
-                return List.class.isAssignableFrom(TypeUtils.resolveBaseClass(type));
+                return List.class.isAssignableFrom(ReflectionUtilsKt.baseClass(type));
             }
         },
         MAPPING() {
@@ -307,7 +309,7 @@ public class SettingsUtil {
 
             @Override
             public boolean accepts(Type type) {
-                return Map.class.isAssignableFrom(TypeUtils.resolveBaseClass(type));
+                return Map.class.isAssignableFrom(ReflectionUtilsKt.baseClass(type));
             }
         };
 

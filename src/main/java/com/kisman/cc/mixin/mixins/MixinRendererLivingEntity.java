@@ -1,6 +1,6 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.misc.Optimizer;
+import com.kisman.cc.features.module.client.Optimizer;
 import com.kisman.cc.features.module.render.CharmsRewrite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;

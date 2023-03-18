@@ -4,6 +4,8 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.websockets.reportIssue
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import java.net.URL
 import java.net.URLClassLoader
 
@@ -108,4 +110,16 @@ fun addToClassPath(
     val method = URLClassLoader::class.java.getMethod("addURL", URL::class.java).also { it.isAccessible = true }
 
     method.invoke(classLoader, url)
+}
+
+fun baseClass(
+    type : Type
+) = if(type is Class<*>) {
+    type
+} else {
+    if(type is ParameterizedType) {
+        type.rawType as Class<*>
+    } else {
+        null
+    }
 }

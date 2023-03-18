@@ -211,9 +211,7 @@ class MoveModifier : Module(
 
     private fun doInstant() {
         if(instant.valBoolean && ((!mc.player.isInWater && !mc.player.isInLava) || instantLiquids.valBoolean) && !mc.player.isElytraFlying) {
-            val motions =MovementUtil.strafe(MovementUtil.getSpeed(
-                instantSlow.valBoolean, MovementUtil.DEFAULT_SPEED
-            ))
+            val motions = MovementUtil.strafe2(MovementUtil.DEFAULT_SPEED)
 
             mc.player.motionX = motions[0]
             mc.player.motionZ = motions[1]
