@@ -42,6 +42,7 @@ public class ModuleManager {
 		add(new BurrowHelper());
 		add(new ChatPrint());
 		//add(new ChorusTP());
+		add(new DynamicBlocksTest());
 //		add(new EventSystemTest());
 //		add(new FallbackableFontTest());
 		add(new FastFallTest());
@@ -96,12 +97,11 @@ public class ModuleManager {
 		add(new CityBoss());
 		add(new Criticals());
 		add(new CrystalFiller());
-		add(new CrystalPvPHelper());
+		add(new CrystalPvPHelper2());
 		add(new DamageIncreaser());
 		add(new FireworkAura());
 //		add(new Flatten());
 		add(new FlattenRewrite());
-		add(new HandRewrite());
 		add(new HoleFillerRewrite());
 		add(new HoleKicker());
 		add(new KillAuraRewrite());
@@ -187,11 +187,8 @@ public class ModuleManager {
 		//movement
 		add(new AirJump());
 		add(new Anchor());
-		add(new AutoPacketFly());
-		add(new BoatFly());
 		add(new CornerClip());
-		add(new ElytraFly());
-		add(new Fly());
+		add(new Flight());
 		add(new HoleSnap());
 		add(new Jesus());
 		add(new MoveModifier());
@@ -252,7 +249,6 @@ public class ModuleManager {
 //		add(new NoFallExploit());
 		add(new NoGlitchBlocks());
 		add(new PacketEat());
-		add(new PacketFly());
 		add(new PacketMineRewrite3());
 		//add(new PreciseStrongholdFinder());
 		add(new SilentClose());

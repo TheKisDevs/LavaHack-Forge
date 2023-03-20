@@ -5,6 +5,7 @@ import com.kisman.cc.event.events.EventEntityControl
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
@@ -24,11 +25,12 @@ import net.minecraft.network.play.client.CPacketPlayer
  * @author _kisman_
  * @since 12.05.2022
  */
-class MoveModifier : Module(
-        "MoveModifier",
-        "Extra movement features.",
-        Category.MOVEMENT
-) {
+@ModuleInfo(
+    name = "MoveModifier",
+    desc = "Extra movement features",
+    category = Category.MOVEMENT
+)
+class MoveModifier : Module() {
     private val entities = register(SettingGroup(Setting("Entities", this)))
     private val entityStepGroup = register(entities.add(SettingGroup(Setting("Step", this))))
     private val entityStep = register(entityStepGroup.add(Setting("Entity Step", this, false).setTitle("Step")))
@@ -39,7 +41,7 @@ class MoveModifier : Module(
 
     private val blocks = register(SettingGroup(Setting("Blocks", this)))
     private val stepGroup = register(blocks.add(SettingGroup(Setting("Step", this))))
-    private val step = register(stepGroup.add(Setting("Step", this, false).setTitle("State").setDisplayName("Step")))
+    val step = register(stepGroup.add(Setting("Step", this, false).setTitle("State").setDisplayName("Step")))
     val stepVal = register(stepGroup.add(Setting("Step Value", this, 2.0, 1.0, 4.0, true).setVisible(step).setTitle("Height")))
     private val reverseStepGroup = register(blocks.add(SettingGroup(Setting("Reverse Step", this))))
     val reverseStep : Setting = register(reverseStepGroup.add(Setting("Reverse Step", this, false).setTitle("State").setDisplayName("ReverseStep")))
@@ -100,7 +102,7 @@ class MoveModifier : Module(
     private val lagTimer = TimerUtils()
 
     companion object {
-        @JvmStatic var instance : MoveModifier? = null
+        @JvmField var instance : MoveModifier? = null
     }
 
     init {

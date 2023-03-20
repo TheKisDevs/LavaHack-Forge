@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.movement;
+package com.kisman.cc.features.module.movement.fly;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerTravel;
@@ -13,6 +13,11 @@ import net.minecraft.inventory.*;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.play.client.CPacketEntityAction;
 
+@ModuleInfo(
+        name = "ElytraFly",
+        display = "Elytra",
+        submodule = true
+)
 public class ElytraFly extends Module {
     private final Setting mode = register(new Setting("Mode", this, Mode.Control));
 
@@ -27,7 +32,6 @@ public class ElytraFly extends Module {
     private int elytraSlot = -1;
 
     public ElytraFly() {
-        super("ElytraFly", "ElytraFly", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + " | " + speed.getValInt() + "]");
     }
 

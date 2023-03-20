@@ -7,9 +7,10 @@ import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.init.MobEffects;
@@ -24,7 +25,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
+@ModuleInfo(
+        name = "Strafe",
+        category = Category.MOVEMENT
+)
 public class Strafe extends Module {
+    @ModuleInstance
+    public static Strafe instance;
 
     private final Setting speed = register(new Setting("Speed", this, 0.2873, 0.05, 1, false));
     private final Setting potionMultiplier = register(new Setting("PotionMultiplier", this, 1, 0.1, 5, false));
@@ -33,17 +40,13 @@ public class Strafe extends Module {
     private final Setting boost = register(new Setting("Boost", this, false));
     private final Setting inLiquids = register(new Setting("InLiquids", this, false));
 
-    public Strafe(){
-        super("Strafe", Category.MOVEMENT, true);
-    }
-
     private double curSpeed = 0;
     private double prevMotion = 0;
     private double maxVelocity = 0;
     private boolean oddStage = false;
     private int state = 4;
 
-    private final TimerUtils velocityTimer = new TimerUtils();
+    private final TimerUtils velocityTimer = timer();
 
     private boolean sneaking = false;
 

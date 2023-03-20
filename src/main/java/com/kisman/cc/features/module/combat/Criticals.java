@@ -8,12 +8,16 @@ import me.zero.alpine.listener.*;
 import net.minecraft.entity.*;
 import net.minecraft.network.play.client.*;
 
+@SuppressWarnings("ConstantConditions")
+@ModuleInfo(
+        name = "Criticals",
+        category = Category.COMBAT
+)
 public class Criticals extends Module {
     private final Setting strict = register(new Setting("Strict", this, false));
     private final Setting onlyKillAura = register(new Setting("OnlyKillAura", this, false));
 
     public Criticals() {
-        super("Criticals", "", Category.COMBAT);
         super.setDisplayInfo(() -> strict.getValBoolean() ? ("[Strict]") : "");
     }
 
@@ -30,7 +34,7 @@ public class Criticals extends Module {
         if(event.getPacket() instanceof CPacketUseEntity) {
             CPacketUseEntity packet = (CPacketUseEntity) event.getPacket();
             if(packet.action.equals(CPacketUseEntity.Action.ATTACK) && mc.player.onGround && !mc.player.isInLava() && !mc.player.isInWater() && !mc.player.isInWeb) {
-                if(onlyKillAura.getValBoolean() && !Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled()) return;
+                if(onlyKillAura.getValBoolean() && !KillAuraRewrite.instance.isToggled()) return;
 
                 Entity entity = packet.getEntityFromWorld(mc.world);
 

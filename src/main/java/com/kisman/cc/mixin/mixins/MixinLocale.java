@@ -1,6 +1,7 @@
 package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.Kisman;
+import com.kisman.cc.features.module.client.ClientFixer;
 import com.kisman.cc.features.schematica.schematica.Schematica;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Locale;
@@ -23,7 +24,7 @@ public class MixinLocale {
     private void isUnicodeHook(
             CallbackInfoReturnable<Boolean> cir
     ) {
-        if(Kisman.instance.moduleManager != null && Kisman.instance.moduleManager.getModule("ClientFixer").isToggled() && !Minecraft.getMinecraft().gameSettings.forceUnicodeFont && Minecraft.getMinecraft().gameSettings.language.equalsIgnoreCase("ru_ru")) {
+        if(Kisman.instance.moduleManager != null && ClientFixer.instance.isToggled() && !Minecraft.getMinecraft().gameSettings.forceUnicodeFont && Minecraft.getMinecraft().gameSettings.language.equalsIgnoreCase("ru_ru")) {
             cir.setReturnValue(false);
             cir.cancel();
         }

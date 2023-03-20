@@ -1,12 +1,13 @@
-package com.kisman.cc.features.module.exploit;
+package com.kisman.cc.features.module.movement.fly;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.event.events.EventPlayerUpdate;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.movement.fly.packetfly.AutoPacketFly;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.TimerUtils;
@@ -39,6 +40,14 @@ import java.util.stream.Stream;
  * @since 22.09.2022
  * Inspired by PacketFly of Konas
  */
+@ModuleInfo(
+        name = "PacketFly",
+        display = "Packet",
+        submodule = true,
+        modules = {
+                AutoPacketFly.class
+        }
+)
 public class PacketFly extends Module {
     @ModuleInstance public static PacketFly instance;
 
@@ -69,10 +78,6 @@ public class PacketFly extends Module {
     private final Setting facrotize = register(new Setting("Facrotize", this, 0).setVisible(() -> type.getValEnum() == Type.Factor));
     private final Setting motion = register(new Setting("Distance", this, 5, 1, 20, false).setVisible(() -> type.getValEnum() == Type.Factor));
 
-    public PacketFly() {
-        super("PacketFly", Category.EXPLOIT, true);
-    }
-
     private static final Random random = new Random();
 
     private static final double CONCEAL = Double.longBitsToDouble(0x3fE3fffffffffffDL);
@@ -81,8 +86,8 @@ public class PacketFly extends Module {
 
     private CPacketPlayer.Position startingOutOfBoundsPos;
 
-    private List<CPacketPlayer> packets = new ArrayList<>();
-    private Map<Integer, Bind<Vec3d, Long>> posLooks = new ConcurrentHashMap<>();
+    private final List<CPacketPlayer> packets = new ArrayList<>();
+    private final Map<Integer, Bind<Vec3d, Long>> posLooks = new ConcurrentHashMap<>();
 
     private int antiKickTicks;
     private int vDelay = 0;

@@ -1,6 +1,5 @@
 package com.kisman.cc.features.module.movement;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
@@ -17,6 +16,7 @@ import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+@SuppressWarnings("ConstantConditions")
 @ModuleInfo(
         name = "Anchor",
         desc = "Helps with holes",
@@ -65,10 +65,8 @@ public class Anchor extends Module {
     }
 
     public void onEnable() {
-        if(using && hasReverseStepDisabled) {
-            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
-            module.getReverseStep().setValBoolean(true);
-        }
+        if(using && hasReverseStepDisabled) MoveModifier.instance.getReverseStep().setValBoolean(true);
+
         using = false;
     }
 
@@ -146,15 +144,11 @@ public class Anchor extends Module {
         }
 
         if(using && syncWithReverseStep.getValBoolean()) {
-            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
-            module.getReverseStep().setValBoolean(false);
+            MoveModifier.instance.getReverseStep().setValBoolean(false);
             hasReverseStepDisabled = true;
         }
 
-        if(hasReverseStepDisabled && !using) {
-            MoveModifier module = (MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier");
-            module.getReverseStep().setValBoolean(true);
-        }
+        if(hasReverseStepDisabled && !using) MoveModifier.instance.getReverseStep().setValBoolean(true);
     }
 
     private boolean lagTimeCheck() {

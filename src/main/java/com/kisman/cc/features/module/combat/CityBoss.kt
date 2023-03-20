@@ -1,10 +1,10 @@
 package com.kisman.cc.features.module.combat
 
-import com.kisman.cc.Kisman
-import com.kisman.cc.event.events.EventDamageBlock
 import com.kisman.cc.features.module.*
+import com.kisman.cc.features.module.combat.cityboss.Case
 import com.kisman.cc.features.module.combat.cityboss.Cases
 import com.kisman.cc.features.module.combat.cityboss.CrystalBlockPos
+import com.kisman.cc.features.module.exploit.PacketMineRewrite3
 import com.kisman.cc.features.subsystem.subsystems.Targetable
 import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.features.subsystem.subsystems.nearest
@@ -13,11 +13,11 @@ import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.ObbyPlacementPattern
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
+import com.kisman.cc.util.block
 import com.kisman.cc.util.entity.player.InventoryUtil
-import com.kisman.cc.util.render.nearestFacing
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
+import com.kisman.cc.util.world.dynamicBlocksSorted
 import com.kisman.cc.util.world.entityPosition
-import com.kisman.cc.util.world.playerPosition
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemPickaxe
@@ -39,19 +39,19 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
     category = Category.COMBAT
 )
 class CityBoss : Module() {
-    private val blockRangeCheck = register(Setting("Block Range Check", this, false))
-    private val blockRange = register(Setting("Block Range", this, 5.0, 1.0, 6.0, false))
+    private val blockReachDistanceCheck = register(Setting("Block Reach Check", this, false))
+    private val blockReachDistance = register(Setting("Block Reach", this, 5.0, 1.0, 6.0, false))
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
     private val newVersion = register(Setting("New Version", this, false).setTitle("1.13"))
 //    private val smartDown = register(Setting("Smart Down", this, false))
     private val mineMode = register(Setting("Mine Mode", this, MineMode.Client))
 
-    private val cases = register(SettingGroup(Setting("Cases", this)))
-    private val simpleCase1 = register(cases.add(Setting("Simple Case 1", this, true)))
-    private val simpleCase2 = register(cases.add(Setting("Simple Case 2", this, true)))
-    private val middleCase = register(cases.add(Setting("Middle Case", this, true)))
-    private val leftDiagonalCase = register(cases.add(Setting("Left Diagonal", this, true)))
-    private val rightDiagonalCase = register(cases.add(Setting("Right Diagonal", this, true)))
+    private val cases0 = register(SettingGroup(Setting("Cases", this)))
+    private val simpleCase1 = register(cases0.add(Setting("Simple Case 1", this, true)))
+    private val simpleCase2 = register(cases0.add(Setting("Simple Case 2", this, true)))
+    private val middleCase = register(cases0.add(Setting("Middle Case", this, true)))
+    private val leftDiagonalCase = register(cases0.add(Setting("Left Diagonal", this, true)))
+    private val rightDiagonalCase = register(cases0.add(Setting("Right Diagonal", this, true)))
 
 //    private val damages = register(SettingGroup(Setting("Damages", this)))
 //    private val minDMG = register(damages.add(Setting("Min DMG", this, 10.0, 0.0, 20.0, true)))
@@ -59,7 +59,7 @@ class CityBoss : Module() {
 
     private val debug1 = register(Setting("Debug 1", this, false))
     private val debug2 = register(Setting("Debug 2", this, false))
-    private val debug3 = register(Setting("Debug 3", this, false))
+//    private val debug3 = register(Setting("Debug 3", this, false))
 
     private val autorerSync = register(SettingGroup(Setting("Auto ReR Sync", this)))
     private val autorerTargetSync = register(autorerSync.add(Setting("Auto Rer Target Sync", this, false).setTitle("Target")))
@@ -69,12 +69,12 @@ class CityBoss : Module() {
     private val currentBlockRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Current Block", this))))
     private val currentFacingRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Current Facing", this))))
     private val otherFacingsRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Other Facings", this))))
-    private val crystalPosRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Crystal Block", this))))
+//    private val crystalPosRendererGroup = register(renderersGroup.add(SettingGroup(Setting("Crystal Block", this))))
 
     private val currentBlockPattern = SlideRenderingRewritePattern(this).prefix("Current Block").group(currentBlockRendererGroup).preInit().init()
     private val currentFacingPattern = RenderingRewritePattern(this).prefix("Current Facing").group(currentFacingRendererGroup).preInit().init()
     private val otherFacingsPattern = RenderingRewritePattern(this).prefix("Other Facings").group(otherFacingsRendererGroup).preInit().init()
-    private val crystalPosPattern = SlideRenderingRewritePattern(this).prefix("Crystal Pos").group(crystalPosRendererGroup).preInit().init()
+//    private val crystalPosPattern = SlideRenderingRewritePattern(this).prefix("Crystal Pos").group(crystalPosRendererGroup).preInit().init()
 
     private val placementGroup = register(SettingGroup(Setting("Base Placement", this)))
     private val placementState = register(placementGroup.add(Setting("Base Placement", this, false).setTitle("State")))
@@ -83,6 +83,9 @@ class CityBoss : Module() {
     private var clicked = false
     private var lastPos : BlockPos? = null
 
+    private val cases = mutableListOf<Case>()
+    private var bestCase : Case? = null
+
     private val posses = ArrayList<BlockPos>()
     private val currentPosses = ArrayList<BlockPos>()
     private val basePosses = ArrayList<BlockPos>()
@@ -90,7 +93,7 @@ class CityBoss : Module() {
     private var baseBlock : BlockPos? = null
 
     private val currentBlockRenderer = SlideRendererPattern()
-    private val crystalPosRenderer = SlideRendererPattern()
+//    private val crystalPosRenderer = SlideRendererPattern()
 
     @Target
     private var player : EntityPlayer? = null
@@ -166,9 +169,9 @@ class CityBoss : Module() {
     private fun mineBlock(
         pos : BlockPos?
     ) {
-        if(lastPos != pos) {
-            clicked = false
-        }
+//        if(lastPos != pos) {
+//            clicked = false
+//        }
 
         if (pos == null) {//TODO: can block be broken?
             lastPos = null
@@ -199,13 +202,13 @@ class CityBoss : Module() {
                 //Only by burrow miner
                 println("kill yourself <3")
             }
-        } else if(!clicked && mineMode.valEnum == MineMode.PacketMine) {
+        } else if(mineMode.valEnum == MineMode.PacketMine && (PacketMineRewrite3.instance!!.current() == null || PacketMineRewrite3.instance!!.current() != lastPos)) {
             /*if(!PacketMine.instance.isToggled) {
                 PacketMine.instance.isToggled = true
             }*/
 //            mc.player.swingArm(EnumHand.MAIN_HAND)
-//            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
-            Kisman.EVENT_BUS.post(EventDamageBlock(pos, result?.sideHit ?: EnumFacing.UP))
+            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+//            Kisman.EVENT_BUS.post(EventDamageBlock(pos, result?.sideHit ?: EnumFacing.UP))
             /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
             mc.player.swingArm(EnumHand.MAIN_HAND)
             (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
@@ -216,7 +219,7 @@ class CityBoss : Module() {
             /*mc.player.swingArm(EnumHand.MAIN_HAND)
             mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)*/
 //            PacketMineProvider.posToMine = pos
-            clicked = true
+//            clicked = true
         }
 
         lastPos = pos
@@ -233,102 +236,51 @@ class CityBoss : Module() {
     private fun processPlayer(
         player : EntityPlayer
     ) {
-        val playerPosition = entityPosition(player)
+        val posses0 = dynamicBlocksSorted(player)
+        var minObbis = Int.MAX_VALUE
 
-        val eastCase = processFacing(EnumFacing.EAST, playerPosition)
-        val westCase = processFacing(EnumFacing.WEST, playerPosition)
-        val southCase = processFacing(EnumFacing.SOUTH, playerPosition)
-        val northCase = processFacing(EnumFacing.NORTH, playerPosition)
+        cases.clear()
+        bestCase = null
 
-        if(eastCase != null) {
-            posses.addAll(if(down.valInt == 0) eastCase.posses(EnumFacing.EAST) else eastCase.down(down.valInt, EnumFacing.EAST))
-        }
-        if(westCase != null) {
-            posses.addAll(if(down.valInt == 0) westCase.posses(EnumFacing.WEST) else westCase.down(down.valInt, EnumFacing.WEST))
-        }
-        if(southCase != null) {
-            posses.addAll(if(down.valInt == 0) southCase.posses(EnumFacing.SOUTH) else southCase.down(down.valInt, EnumFacing.SOUTH))
-        }
-        if(northCase != null) {
-            posses.addAll(if(down.valInt == 0) northCase.posses(EnumFacing.NORTH) else northCase.down(down.valInt, EnumFacing.NORTH))
-        }
+        for(entry in posses0) {
+            val facing = entry.key!!
 
-        if(posses.isEmpty()) {
-            return
-        }
+            for(pos in entry.value) {
+                if(pos != null) {
+                    val pos1 = pos.offset(facing.opposite)
+                    val case = processFacing(facing, pos1)
 
-        val maxAirs = 0
+                    if(case != null) {
+                        cases.add(Case(case, pos1, facing).also {
+                            val obbis = case.howManyObbis(facing, pos1, newVersion.valBoolean)
 
-        val eastMax = eastCase?.howManyAirs(EnumFacing.EAST, playerPosition, newVersion.valBoolean) ?: -1
-        val westMax = westCase?.howManyAirs(EnumFacing.WEST, playerPosition, newVersion.valBoolean) ?: -1
-        val southMax = southCase?.howManyAirs(EnumFacing.SOUTH, playerPosition, newVersion.valBoolean) ?: -1
-        val northMax = northCase?.howManyAirs(EnumFacing.NORTH, playerPosition, newVersion.valBoolean) ?: -1
-
-        var finalCase : Cases? = null
-        var finalFacing : EnumFacing? = null
-
-        if(eastMax > maxAirs) {
-            finalCase = eastCase
-            finalFacing = EnumFacing.EAST
-        }
-        if(westMax > maxAirs) {
-            finalCase = westCase
-            finalFacing = EnumFacing.WEST
-        }
-        if(southMax > maxAirs) {
-            finalCase = southCase
-            finalFacing = EnumFacing.SOUTH
-        }
-        if(northMax > maxAirs) {
-            finalCase = northCase
-            finalFacing = EnumFacing.NORTH
-        }
-
-        /*fun smartDownIteration() : Int? {
-            if()
-        }*/
-
-//        val currentDownValue = -1
-
-        if(finalCase == null) {
-            finalCase = Cases.SimpleCase1
-            finalFacing = nearestFacing(playerPosition, playerPosition())
-        }
-
-        currentPosses.addAll(if(down.valInt == 0) finalCase.posses(finalFacing!!) else finalCase.down(down.valInt, finalFacing!!))
-
-        //TODO: rewrite it
-        if(down.valInt > 0) {
-            posses += playerPosition.down(down.valInt)
-
-            if(mc.world.getBlockState(playerPosition.down()).block != Blocks.AIR) {
-                processingBlock = playerPosition.down(down.valInt)
-                mineBlock(playerPosition.down(down.valInt))
-                return
+                            if(obbis < minObbis) {
+                                bestCase = it
+                                minObbis = obbis
+                            }
+                        })
+                    }
+                }
             }
         }
 
         run {
-            for(pos in currentPosses) {
-                val finalPos = playerPosition.add(pos)
+            for(case in cases) {
+                for(pos in case.case.posses(case.facing)) {
+                    val pos1 = pos.add(case.pos)
 
-                if(pos is CrystalBlockPos) {
-                    //TODO: check if finalPos is obby/bedrock ^^^^
-                    baseBlock = finalPos
-                } else if(mc.world.getBlockState(finalPos).block != Blocks.AIR) {
-                    processingBlock = finalPos
-                    mineBlock(finalPos)
-                    return@run
+                    if(pos is CrystalBlockPos) {
+                        //TODO: check if finalPos is obby/bedrock ^^^^
+                        baseBlock = pos1
+                    } else if(block(pos1) != Blocks.AIR) {
+                        processingBlock = pos1
+                        mineBlock(pos1)
+                        return@run
+                    }
                 }
             }
 
             processingBlock = null
-        }
-
-        for(pos in posses.toArray()) {
-            if(pos is CrystalBlockPos) {
-                posses.remove(pos)
-            }
         }
     }
 
@@ -342,7 +294,7 @@ class CityBoss : Module() {
             null
         }
     } else {
-        var airs = Int.MAX_VALUE
+        var obbis = Int.MAX_VALUE
         var bestCase : Cases? = null
 
         for (case in Cases.values()) {
@@ -350,32 +302,32 @@ class CityBoss : Module() {
                     facing,
                     pos,
                     newVersion.valBoolean
-                ) && (!blockRangeCheck.valBoolean || case.isItInRange(
+                ) && (!blockReachDistanceCheck.valBoolean || case.isItInRange(
                     facing,
                     pos,
-                    blockRange.valDouble,
+                    blockReachDistance.valDouble,
                     newVersion.valBoolean
                 )) else case.isIt(
                     facing,
                     pos,
                     newVersion.valBoolean,
                     down.valInt
-                ) && (!blockRangeCheck.valBoolean || case.isItInRange(
+                ) && (!blockReachDistanceCheck.valBoolean || case.isItInRange(
                     facing,
                     pos,
-                    blockRange.valDouble,
+                    blockReachDistance.valDouble,
                     newVersion.valBoolean,
                     down.valInt
                 )))
             ) {
-                val newAirs = if (down.valInt == 0){
-                    case.howManyAirs(facing, pos, newVersion.valBoolean)
+                val newObbis = if (down.valInt == 0){
+                    case.howManyObbis(facing, pos, newVersion.valBoolean)
                 } else {
-                    case.howManyAirs(facing, pos, newVersion.valBoolean, down.valInt)
+                    case.howManyObbis(facing, pos, newVersion.valBoolean, down.valInt)
                 }
 
-                if (newAirs < airs) {
-                    airs = newAirs
+                if (newObbis < obbis) {
+                    obbis = newObbis
                     bestCase = case
                 }
             }
@@ -389,34 +341,32 @@ class CityBoss : Module() {
         event : RenderWorldLastEvent
     ) {
         if(player != null) {
-            for(pos in posses) {
-                val pos1 = entityPosition(player!!).add(pos)
+            for (case in cases) {
+                for (pos in case.case.posses(case.facing)) {
+                    if (pos !is CrystalBlockPos) {
+                        val pos1 = pos.add(case.pos)
 
-                if(processingBlock == pos1) {
-                    currentBlockRenderer.handleRenderWorld(
-                        currentBlockPattern,
-                        pos1,
-                        null
-                    )
+                        if (pos1 == processingBlock) {
+                            currentBlockRenderer.handleRenderWorld(
+                                currentBlockPattern,
+                                pos1,
+                                null
+                            )
 
-                    continue
+                            continue
+                        }
+
+                        if (case == bestCase) {
+                            currentFacingPattern.draw(pos1)
+
+                            continue
+                        }
+
+                        otherFacingsPattern.draw(pos1)
+                    }
                 }
-
-                if(currentPosses.contains(pos)) {
-                    currentFacingPattern.draw(pos1)
-
-                    continue
-                }
-
-                otherFacingsPattern.draw(pos1)
             }
         }
-
-        crystalPosRenderer.handleRenderWorld(
-            crystalPosPattern,
-            baseBlock,
-            null
-        )
     }
 
     enum class MineMode {

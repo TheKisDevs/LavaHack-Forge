@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static com.kisman.cc.util.Globals.mc;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ConstantConditions"})
 @Mixin(value = EntityPlayerSP.class, priority = 10000)
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer implements IEntityPlayerSP {
     @Shadow public MovementInput movementInput;
@@ -90,7 +90,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer impl
     public void attackTargetEntityWithCurrentItem(@NotNull Entity targetEntity) {
         super.attackTargetEntityWithCurrentItem(targetEntity);
 
-        if (((MoveModifier) Kisman.instance.moduleManager.getModule("MoveModifier")).getKeepSprint().getValBoolean() && targetEntity.canBeAttackedWithItem() && !targetEntity.hitByEntity((EntityPlayerSP) (Object) this)) {
+        if (MoveModifier.instance.getKeepSprint().getValBoolean() && targetEntity.canBeAttackedWithItem() && !targetEntity.hitByEntity((EntityPlayerSP) (Object) this)) {
             float f1;
             if (targetEntity instanceof EntityLivingBase) f1 = EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((EntityLivingBase) targetEntity).getCreatureAttribute());
             else f1 = EnchantmentHelper.getModifierForCreature(getHeldItemMainhand(), EnumCreatureAttribute.UNDEFINED);

@@ -6,6 +6,7 @@ import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -48,6 +49,9 @@ import java.util.function.Predicate;
         category = Category.MOVEMENT
 )
 public class HoleSnap extends Module {
+    @ModuleInstance
+    public static HoleSnap instance;
+
     private final SettingEnum<Holes> holes = register(new SettingEnum<>("Holes", this, Holes.Both));
     private final SettingEnum<HoleTypes> holeType = register(new SettingEnum<>("HoleType", this, HoleTypes.Single));
 

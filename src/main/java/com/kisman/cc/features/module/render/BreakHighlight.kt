@@ -11,6 +11,7 @@ import com.kisman.cc.settings.SettingsList
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.block
+import com.kisman.cc.util.enums.AABBProgressModifiers
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.state
@@ -32,7 +33,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 )
 class BreakHighlight : ShaderableModule() {
     private val renderer = RenderingRewritePattern(this).preInit().init()
-    private val logic = register(SettingEnum<Logic>("Logic", this, Logic.CentredBox))
+    private val logic = register(SettingEnum<AABBProgressModifiers>("Logic", this, AABBProgressModifiers.CentredBox))
     private val reverse = register(Setting("Reverse", this, false))
     private val easing = register(SettingEnum<EasingEnum.Easing>("Easing", this, EasingEnum.Easing.Linear))
     private val range = register(register(SettingGroup(Setting("Range", this))).add(SettingsList("state", Setting("Range Check", this, false).setTitle("State"), "value", Setting("Range", this, 50.0, 0.0, 100.0, true))))
@@ -101,64 +102,5 @@ class BreakHighlight : ShaderableModule() {
                 }
             }
         }
-    }
-
-    enum class Logic(
-        val modifier : IModifier
-    ) {
-        CentredBox(object : IModifier {
-            override fun modify(
-                aabb : AxisAlignedBB,
-                percent : Double
-            ) : AxisAlignedBB {
-                fun offset(
-                    aabb : AxisAlignedBB
-                ) : AxisAlignedBB = AxisAlignedBB(
-                    aabb.minX + 0.5,
-                    aabb.minY + 0.5,
-                    aabb.minZ + 0.5,
-                    aabb.maxX - 0.5,
-                    aabb.maxY - 0.5,
-                    aabb.maxZ - 0.5
-                )
-
-                return offset(Rendering.scale(aabb, percent))
-            }
-        }),
-
-        BottomColumn(object : IModifier {
-            override fun modify(
-                aabb : AxisAlignedBB,
-                percent : Double
-            ) : AxisAlignedBB = AxisAlignedBB(
-                aabb.minX,
-                aabb.minY,
-                aabb.minZ,
-                aabb.maxX,
-                aabb.maxY - (aabb.maxY - aabb.minY) * percent,
-                aabb.maxZ
-            )
-        }),
-
-        TopColumn(object : IModifier {
-            override fun modify(
-                aabb : AxisAlignedBB,
-                percent : Double
-            ) : AxisAlignedBB = AxisAlignedBB(
-                aabb.minX,
-                aabb.minY + (aabb.maxY - aabb.minY) * (1 - percent),
-                aabb.minZ,
-                aabb.maxX,
-                aabb.maxY,
-                aabb.maxZ
-            )
-        })
-    }
-
-    interface IModifier {
-        fun modify(
-            aabb : AxisAlignedBB,
-            percent : Double
-        ) : AxisAlignedBB
     }
 }

@@ -3,15 +3,12 @@ package com.kisman.cc.util.render.objects.world
 import com.kisman.cc.features.module.client.CustomFontModule
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.customfont.CustomFontUtil
-import com.kisman.cc.util.enums.Object3dTypes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.math.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 
 class TextOnBoundingBox (val text : String, val aabb : AxisAlignedBB, override val color : Colour) : Abstract3dObject() {
-
-    override val type: Object3dTypes = Object3dTypes.Text
 
     override fun draw(ticks: Float) {
         GL11.glPushMatrix()

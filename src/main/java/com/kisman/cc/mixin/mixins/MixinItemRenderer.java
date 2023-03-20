@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("ConstantConditions")
 @Mixin(value = ItemRenderer.class, priority = 10000)
 public class MixinItemRenderer {
     @Shadow @Final public Minecraft mc;
@@ -88,7 +89,7 @@ public class MixinItemRenderer {
 
         boolean isEating = EntityUtil.eating(EnumHand.MAIN_HAND);
         boolean isSwing = mc.player.swingProgress > 0 && SwingAnimation.instance.isToggled() && SwingAnimation.instance.mode.getValString().equalsIgnoreCase("Strong");
-        boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && Kisman.instance.moduleManager.getModule("KillAuraRewrite").isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
+        boolean isSwingMain = (SwingAnimation.instance.ifKillAura.getValBoolean() && KillAuraRewrite.instance.isToggled() && KillAuraRewrite.Companion.getTarget() != null || isSwing) && hand == EnumHandSide.RIGHT && (!SwingAnimation.instance.ignoreEating.getValBoolean() || !isEating);
 
         if(ViewModel.instance.isToggled()) {
             if (hand == EnumHandSide.RIGHT) {

@@ -1,7 +1,6 @@
 package com.kisman.cc.util.render.objects.world
 
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.enums.Object3dTypes
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
@@ -10,7 +9,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL32
 
 abstract class Abstract3dObject {
-    abstract val type: Object3dTypes
     abstract val color: Colour
     abstract fun draw(ticks: Float)
 

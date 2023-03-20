@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.movement;
+package com.kisman.cc.features.module.movement.fly;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
@@ -9,6 +9,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Keyboard;
 
+@ModuleInfo(
+        name = "BoatFly",
+        display = "Boat",
+        submodule = true
+)
 public class BoatFly extends Module {
     private final Setting speed = register(new Setting("Speed", this, 2, 0, 10, true));
     private final Setting verticalSpeed = register(new Setting("Vertical Speed", this, 1, 0, 10, true));
@@ -20,12 +25,11 @@ public class BoatFly extends Module {
     private final Setting extraCalc = register(new Setting("Extra Calc", this, false));
 
     public BoatFly() {
-        super("BoatFly", Category.MOVEMENT);
+        super.setDisplayInfo(() -> "[" + speed.getValInt() + "]");
     }
 
     public void update() {
         if(mc.player == null || mc.world == null || mc.player.ridingEntity == null) return;
-        super.setDisplayInfo("[" + speed.getValInt() + "]");
         Entity e = mc.player.ridingEntity;
         if (mc.gameSettings.keyBindJump.isKeyDown()) e.motionY = verticalSpeed.getValDouble();
         else if (!downKey.isNoneKey() && Keyboard.isKeyDown(downKey.getKey())) e.motionY = -verticalSpeed.getValDouble();

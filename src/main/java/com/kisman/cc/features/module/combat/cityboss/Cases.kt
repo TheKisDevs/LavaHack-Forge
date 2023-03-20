@@ -5,7 +5,6 @@ import com.kisman.cc.util.block
 import com.kisman.cc.util.render.left
 import com.kisman.cc.util.render.right
 import com.kisman.cc.util.world.BlockUtil
-import com.kisman.cc.util.world.BlockUtil2
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -94,45 +93,45 @@ enum class Cases {
         newVersion : Boolean
     ) : Boolean = pos !is CrystalBlockPos && ((newVersion && pos !is `1-13-BlockPos`) || !newVersion)
 
-    fun howManyAirs(
+    fun howManyObbis(
         facing : EnumFacing,
         pos : BlockPos,
         newVersion : Boolean
     ) : Int {
-        var airs = 0
+        var obbis = 0
 
         for(pos1 in posses(facing)) {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos2) == Blocks.AIR) {
-                    airs++
+                if (block(pos2) != Blocks.AIR) {
+                    obbis++
                 }
             }
         }
 
-        return airs
+        return obbis
     }
 
-    fun howManyAirs(
+    fun howManyObbis(
         facing : EnumFacing,
         pos : BlockPos,
         newVersion : Boolean,
         down : Int
     ) : Int {
-        var airs = 0
+        var obbis = 0
 
         for(pos1 in down(down, facing)) {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if(block(pos2) == Blocks.AIR) {
-                    airs++
+                if(block(pos2) != Blocks.AIR) {
+                    obbis++
                 }
             }
         }
 
-        return airs
+        return obbis
     }
 
     fun isItInRange(

@@ -1,8 +1,9 @@
-package com.kisman.cc.features.module.movement
+package com.kisman.cc.features.module.movement.fly.packetfly
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.exploit.PacketFly
+import com.kisman.cc.features.module.ModuleInfo
+import com.kisman.cc.features.module.movement.fly.PacketFly
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.TimerUtils
@@ -12,11 +13,12 @@ import net.minecraft.network.play.client.CPacketPlayer
  * @author _kisman_ and Cubic
  * @since 15:24 of 29.10.2022
  */
-class AutoPacketFly : Module(
-    "AutoPacketFly",
-    "fly for crystalpvp.cc",
-    Category.MOVEMENT
-) {
+@ModuleInfo(
+    name = "AutoPacketFly",
+    display = "Automatic",
+    submodule = true
+)
+class AutoPacketFly : Module() {
     private val flyTime = register(Setting("Fly Time", this, 2000.0, 500.0, 10000.0, NumberType.TIME))
     private val takeoffDelay = register(Setting("Takeoff Delay", this, 1000.0, 500.0, 10000.0, NumberType.TIME))
     private val ground = register(Setting("Ground", this, true))

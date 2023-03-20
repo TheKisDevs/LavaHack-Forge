@@ -6,8 +6,6 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.Display;
 
 @ModuleInfo(
@@ -43,22 +41,13 @@ public class Optimizer extends Module {
         AIImprovementsMod.REMOVE_LOOK_AI = removeLookAi.getValBoolean();
         AIImprovementsMod.REMOVE_LOOK_IDLE = removeLookIdle.getValBoolean();
         AIImprovementsMod.REPLACE_LOOK_HELPER = replaceLookHelper.getValBoolean();
-    }
 
-    @SubscribeEvent
-    public void onClientTick(TickEvent.ClientTickEvent event) {
         if(mc.player == null || mc.world == null) return;
 
         if(lostFocus.getValBoolean()) {
-            if(event.phase != TickEvent.Phase.START) {
-                if(!Display.isActive()) {
-                    if(mc.gameSettings.limitFramerate != 1) {
-                        mc.gameSettings.limitFramerate = 1;
-                    }
-                } else if(mc.gameSettings.limitFramerate == 1) {
-                    mc.gameSettings.limitFramerate = maxFpsActive;
-                }
-            }
+            if(!Display.isActive()) {
+                if(mc.gameSettings.limitFramerate != 1) mc.gameSettings.limitFramerate = 1;
+            } else if(mc.gameSettings.limitFramerate == 1) mc.gameSettings.limitFramerate = maxFpsActive;
         }
     }
 }

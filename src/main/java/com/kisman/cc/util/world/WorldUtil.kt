@@ -6,7 +6,6 @@ import com.kisman.cc.util.math.atan2
 import com.kisman.cc.util.math.sqrt
 import com.kisman.cc.util.math.sqrt2
 import com.kisman.cc.util.math.toDegrees
-import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.state
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
@@ -21,10 +20,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.CPacketEntityAction
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
-import net.minecraft.util.math.AxisAlignedBB
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 import net.minecraft.world.World
 import kotlin.math.abs
 import kotlin.math.max
@@ -295,6 +291,68 @@ fun center(
         pos.y + (if(block(pos) is BlockFire) 0.0 else (aabb.minY + aabb.maxY)) / 2,
         pos.z + (aabb.minZ + aabb.maxZ) / 2
     )
+}
+
+fun dynamicBlocks(
+    entity : Entity
+) : List<BlockPos> {
+    val list0 = mutableListOf<BlockPos>()
+    val list1 = mutableListOf<BlockPos>()
+
+    val aabb = entity.boundingBox
+
+    val diffX = (aabb.maxX - aabb.minX) / 2
+    val diffZ = (aabb.maxZ - aabb.minZ) / 2
+
+    BlockPos(entity.posX + diffX, entity.posY, entity.posZ + diffZ).also { if(!list0.contains(it)) list0.add(it) }
+    BlockPos(entity.posX + diffX, entity.posY, entity.posZ - diffZ).also { if(!list0.contains(it)) list0.add(it) }
+    BlockPos(entity.posX - diffX, entity.posY, entity.posZ + diffZ).also { if(!list0.contains(it)) list0.add(it) }
+    BlockPos(entity.posX - diffX, entity.posY, entity.posZ - diffZ).also { if(!list0.contains(it)) list0.add(it) }
+
+    for(pos in list0) {
+        pos.north().also { if(!list0.contains(it)) list1.add(it) }
+        pos.south().also { if(!list0.contains(it)) list1.add(it) }
+        pos.west().also { if(!list0.contains(it)) list1.add(it) }
+        pos.east().also { if(!list0.contains(it)) list1.add(it) }
+    }
+
+    return list1
+}
+
+fun dynamicBlocksSorted(
+    entity : Entity
+) : Map<EnumFacing?, List<BlockPos?>> {
+    val posses = dynamicBlocks(entity)
+    val map = mutableMapOf<EnumFacing?, List<BlockPos?>>()
+    val entityPosition = entityPosition(entity)
+
+    for(pos in posses) {
+        if(pos.x == entityPosition.x || pos.z == entityPosition.z) {
+            var pair : BlockPos? = null
+
+            pos.north().also { if(posses.contains(it)) pair = it }
+            pos.south().also { if(posses.contains(it)) pair = it }
+            pos.west().also { if(posses.contains(it)) pair = it }
+            pos.east().also { if(posses.contains(it)) pair = it }
+
+            val diffX = (pos.x - entityPosition.x).coerceIn(-1..1)
+            val diffZ = (pos.z - entityPosition.z).coerceIn(-1..1)
+            val vec = Vec3i(diffX, 0, diffZ)
+            var facing : EnumFacing? = null
+
+            for(facing0 in EnumFacing.values()) {
+                if(facing0.directionVec == vec) {
+                    facing = facing0
+
+                    break
+                }
+            }
+
+            map[facing] = listOf(pos, pair)
+        }
+    }
+
+    return map
 }
 
 /*

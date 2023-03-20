@@ -44,12 +44,12 @@ class KillAuraRewrite : Module(
     private val ccOnlyCrits = register(checks.add(Setting("CC Only Crits", this, true).setVisible { cooldownCheck.valBoolean }))
 
     companion object {
-        @JvmStatic var instance : KillAuraRewrite? = null
+        @JvmField var instance : KillAuraRewrite? = null
         var target : Entity? = null
     }
 
     init {
-        setDisplayInfo { "[${if(target == null) "no target no fun" else target?.name }]" }
+        setDisplayInfo { "[${if(target == null) "no target no fun" else target?.name}]" }
 
         displayName = "KillAura"
         instance = this

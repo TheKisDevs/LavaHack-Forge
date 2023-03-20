@@ -1,6 +1,5 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.misc.ChatModifier;
 import com.kisman.cc.features.module.render.NoRender;
 import com.kisman.cc.util.math.MathUtil;
@@ -18,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
+@SuppressWarnings("ConstantConditions")
 @Mixin(value = GuiNewChat.class, priority = 10000)
 public class MixinGuiNewChat {
     @Shadow public boolean isScrolled;
@@ -41,8 +41,7 @@ public class MixinGuiNewChat {
 
     @Inject(method = "drawChat", at = @At("HEAD"))
     private void modifyChatRendering(CallbackInfo ci) {
-        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
-        if(chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
+        if(ChatModifier.instance.isToggled() && ChatModifier.instance.getAnimation().getValBoolean()) {
             final long current = System.currentTimeMillis();
             final long diff = current - this.prevMillis;
             this.prevMillis = current;
@@ -54,12 +53,11 @@ public class MixinGuiNewChat {
 
     @Inject(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;pushMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
     private void translate(CallbackInfo ci) {
-        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
-        if (chatModifier.isToggled() && chatModifier.getAnimation().getValBoolean()) {
+        if (ChatModifier.instance.isToggled() && ChatModifier.instance.getAnimation().getValBoolean()) {
             float y = 1.0f;
             if (!this.isScrolled) y += (9.0f - 9.0f * this.animationPercent) * this.getChatScale();
             int customY = 0;
-            if(chatModifier.getCustomY().getValBoolean()) customY = chatModifier.getCustomYVal().getValInt();
+            if(ChatModifier.instance.getCustomY().getValBoolean()) customY = ChatModifier.instance.getCustomYVal().getValInt();
             GlStateManager.translate(0.0f, y - customY, 0.0f);
         }
     }
@@ -78,19 +76,18 @@ public class MixinGuiNewChat {
 
     @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
     private int drawStringWithShadow(FontRenderer fontRenderer, String text, float x, float y, int color) {
-        ChatModifier chatModifier = (ChatModifier) Kisman.instance.moduleManager.getModule("ChatModifier");
         int modifiedColor = color;
         int newY = (int) y;
 
-        if(chatModifier.isToggled()) {
-            if (lineBeingDrawn <= newLines && chatModifier.getAnimation().getValBoolean()) {
+        if(ChatModifier.instance.isToggled()) {
+            if (lineBeingDrawn <= newLines && ChatModifier.instance.getAnimation().getValBoolean()) {
                 int opacity = (int) (((int) y >> 24 & 0xFF) * animationPercent);
                 newY = ((int) y & 0xFFFFFF) | opacity << 24;
                 modifiedColor = ColorUtils.injectAlpha(color, opacity).getRGB();
-            } else if(chatModifier.getCustomAlpha().getValBoolean()) modifiedColor = ColorUtils.injectAlpha(color, chatModifier.getCustomAlphaVal().getValInt()).getRGB();
+            } else if(ChatModifier.instance.getCustomAlpha().getValBoolean()) modifiedColor = ColorUtils.injectAlpha(color, ChatModifier.instance.getCustomAlphaVal().getValInt()).getRGB();
         }
 
-        if(chatModifier.isToggled() && chatModifier.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, modifiedColor);
+        if(ChatModifier.instance.isToggled() && ChatModifier.instance.getTtf().getValBoolean()) return CustomFontUtil.drawStringWithShadow(text, x, newY, modifiedColor);
         return fontRenderer.drawStringWithShadow(text, x, newY, modifiedColor);
     }
 

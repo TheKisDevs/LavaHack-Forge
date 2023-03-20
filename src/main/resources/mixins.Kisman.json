@@ -47,7 +47,6 @@
     "MixinRenderManager",
     "MixinRenderPlayer",
     "MixinScreenShotHelper",
-    "MixinServerPing",
     "MixinSimpleReloadableResourceManager",
     "MixinTileEntity",
     "MixinVec3i",

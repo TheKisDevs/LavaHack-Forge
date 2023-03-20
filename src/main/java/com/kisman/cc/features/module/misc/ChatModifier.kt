@@ -3,17 +3,19 @@ package com.kisman.cc.features.module.misc
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import net.minecraftforge.client.event.ClientChatEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.random.Random
 
 @Suppress("HasPlatformType")
-class ChatModifier : Module(
-        "ChatModifier",
-        "Extra chat features",
-        Category.MISC
-) {
+@ModuleInfo(
+    name = "ChatModifier",
+    desc = "Extra chat features",
+    category = Category.MISC
+)
+class ChatModifier : Module() {
     val animation = register(Setting("Animation", this, false))
     private val suffix_ = register(Setting("Suffix", this, false))
     private val antiSpamBypass = register(Setting("Anti Spam Bypass", this, false))
@@ -26,6 +28,14 @@ class ChatModifier : Module(
     val ttf = register(Setting("TTF", this, false))
 
     private val chars = arrayOf('/', '.', ',', ';', ':', '-', '+')
+
+    init {
+        instance = this
+    }
+
+    companion object {
+        @JvmField var instance : ChatModifier? = null
+    }
 
     @SubscribeEvent fun onChat(
         event : ClientChatEvent
