@@ -4,3 +4,5 @@ Remove shadow rects(gui thing)
 Shaders for CityBoss
 Improve how submodules are looking in ArrayList
 Animations for PotionHud
+Rewrite Spammer
+Rewrite AutoLog

@@ -144,7 +144,6 @@ public class ModuleManager {
 		add(new Breadcrumbs());
 		add(new BreakHighlight());
 		add(CharmsRewrite.INSTANCE);
-		add(new CityESP());
 		add(new ContainerModifier());
 		add(new CrystalModifier());
 		add(new CrystalSafeBlocks());
