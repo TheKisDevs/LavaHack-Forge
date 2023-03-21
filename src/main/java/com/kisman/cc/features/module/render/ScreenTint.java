@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.RainbowUtil;
@@ -17,8 +17,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-@WorkInProgress
-public class ScreenTint  extends Module {
+@ModuleInfo(
+        name = "ScreenTint",
+        category = Category.RENDER,
+        wip = true
+)
+public class ScreenTint extends Module {
 
     private final Setting renderMode = register(new Setting("RenderMode", this, RenderModes.Static));
 
@@ -30,10 +34,6 @@ public class ScreenTint  extends Module {
     private final Setting color2 = register(new Setting("Color 2", this, new Colour(255, 255, 255, 0)).setVisible(() -> renderMode.getValEnum() == RenderModes.Gradient || renderMode.getValEnum() == RenderModes.Chroma));
     private final Setting color3 = register(new Setting("Color 3", this, new Colour(255, 255, 255, 0)).setVisible(() -> renderMode.getValEnum() == RenderModes.Chroma));
     private final Setting color4 = register(new Setting("Color 4", this, new Colour(255, 255, 255, 0)).setVisible(() -> renderMode.getValEnum() == RenderModes.Chroma));
-
-    public ScreenTint(){
-        super("ScreenTint", Category.RENDER);
-    }
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text.Pre event){

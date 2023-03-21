@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.movement
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
 import com.kisman.cc.util.world.BlockUtil2
@@ -17,12 +17,13 @@ import net.minecraft.util.EnumHand
  * @author _kisman_
  * @since 10:35 of 04.06.2022
  */
-@WorkInProgress
-class SoftScaffold : Module(
-    "SoftScaffold",
-    "Like default Scaffold but for soft(no solid) blocks.",
-    Category.MOVEMENT
-) {
+@ModuleInfo(
+    name = "SoftScaffold",
+    desc = "Like default Scaffold but for soft(no solid) blocks.",
+    category = Category.MOVEMENT,
+    wip = true
+)
+class SoftScaffold : Module() {
     private val switchMode = register(Setting("Switch Mode", this, SwapEnum2.Swap.Silent))
     private val noJump = register(Setting("No Jump", this, false))
     private val delay = register(Setting("Delay", this, 20.0, 0.0, 1000.0, NumberType.TIME))

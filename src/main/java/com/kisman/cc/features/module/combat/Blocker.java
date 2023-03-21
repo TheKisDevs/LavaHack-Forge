@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.combat.blocker.BlockerModule;
 import com.kisman.cc.features.module.combat.blocker.modules.CrystalPushBlocker;
 import com.kisman.cc.settings.Setting;
@@ -15,7 +15,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@WorkInProgress
+@ModuleInfo(
+        name = "Blocker",
+        category = Category.COMBAT,
+        wip = true
+)
 public class Blocker extends Module {
 
     private final SettingGroup crystalPushBlocker = register(new SettingGroup(new Setting("CrystalPushBlocker", this)));
@@ -30,7 +34,6 @@ public class Blocker extends Module {
     }
 
     public Blocker(){
-        super("Blocker", Category.COMBAT);
         this.blockers = new Vector<>();
         BlockerModule.blockerSupplier = () -> this;
         this.loadAllBlockers();

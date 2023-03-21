@@ -1,11 +1,11 @@
 package com.kisman.cc.features.module.render;
 
-import com.kisman.cc.features.module.WorkInProgress;
-import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +30,11 @@ import java.util.List;
  *
  * Rendering parrent when?
  */
-@WorkInProgress
+@ModuleInfo(
+        name = "SelfCityESP",
+        category = Category.RENDER,
+        wip = true
+)
 public class SelfCityESP extends Module {
 
     private final Setting smart = register(new Setting("Smart", this, false));
@@ -43,10 +47,6 @@ public class SelfCityESP extends Module {
     private final Setting color1 = register(new Setting("Color1", this, "Color1", new Colour(255, 255, 255)));
     private final Setting renderMode = register(new Setting("RenderMode", this, "Both", Arrays.asList("Box", "Outline", "Both", "Gradient", "Glow")));
     private final Setting lineWidth = register(new Setting("LineWidth", this, 2.0, 1.0, 5.0, false));
-
-    public SelfCityESP(){
-        super("SelfCityESP", Category.RENDER);
-    }
 
     private final List<BlockPos> positions = new ArrayList<>();
 

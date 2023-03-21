@@ -6,3 +6,5 @@ Improve how submodules are looking in ArrayList
 Animations for PotionHud
 Rewrite Spammer
 Rewrite AutoLog
+Fix description components
+Remove WIP and DEBUG categories if we have loader environment

@@ -17,7 +17,11 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 
 //TODO: rewrite it
-@WorkInProgress
+@ModuleInfo(
+        name = "SpawnsESP",
+        category = Category.RENDER,
+        wip = true
+)
 public class SpawnsESP extends Module {
     private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
     private final Setting crystals = register(new Setting("Crystals", this, true));
@@ -29,10 +33,6 @@ public class SpawnsESP extends Module {
     private final MultiThreaddableModulePattern threads = threads();
 
     private final ArrayList<VecCircle> circles = new ArrayList<>();
-
-    public SpawnsESP() {
-        super("SpawnsESP", "        super(\"SpawnsESP\", )", Category.RENDER);
-    }
 
     public void onEnable() {
         super.onEnable();

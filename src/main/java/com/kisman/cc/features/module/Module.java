@@ -131,7 +131,7 @@ public class Module extends DisplayableFeature {
 		this.displayName = name;
 		this.displayInfo = "";
 		this.key = key;
-		this.category = getClass().isAnnotationPresent(WorkInProgress.class) ? Category.WIP : category;
+		this.category = category;
 		this.toggled = false;
 		this.subscribes = subscribes;
 		this.moduleId = StringUtils.stringToInt(name);

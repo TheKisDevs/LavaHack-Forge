@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.movement.MoveModifier
 import com.kisman.cc.features.module.movement.Speed
 import com.kisman.cc.features.subsystem.subsystems.HoleProcessor
@@ -46,12 +46,13 @@ import kotlin.math.pow
  * @author _kisman_
  * @since 11:10 of 04.12.2022
  */
-@WorkInProgress
-class Robot : Module(
-    "Robot",
-    "crystalpvp.cc goes dead",
-    Category.COMBAT
-) {
+@ModuleInfo(
+    name = "Robot",
+    desc = "crystalpvp.cc goes dead",
+    category = Category.COMBAT,
+    wip = true
+)
+class Robot : Module() {
     private val crystalpvpccMode = register(Setting("CrystalPvPcc Mode", this, true).setTitle("crystalpvp.cc"))
     private val range = register(Setting("Range", this, 200.0, 1.0, 200.0, true))
     private val healthMovingTrigger = register(Setting("Health Moving Trigger", this, 17.5, 1.0, 37.0, false))

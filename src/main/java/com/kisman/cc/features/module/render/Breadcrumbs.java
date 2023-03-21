@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
@@ -19,19 +19,18 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@WorkInProgress
+@ModuleInfo(
+        name = "Breadcrumbs",
+        category = Category.RENDER,
+        wip = true
+)
 public class Breadcrumbs extends Module {
-
     private final Setting smooth = register(new Setting("Smooth", this, false));
     private final Setting lineWidth = register(new Setting("LineWidth", this, 1.0, 0.5, 5.0, false));
     private final Setting fadeOut = register(new Setting("FadeOut", this, false));
     private final Setting fadeAfterTicks = register(new Setting("FadeAfterTicks", this, 100, 1, 400, true).setVisible(fadeOut::isVisible));
     private final Setting fadeOutTicks = register(new Setting("FadeOutTicks", this, 10, 1, 20, true));
     private final Setting color = register(new Setting("Color", this, new Colour(255, 255, 255, 255)));
-
-    public Breadcrumbs(){
-        super("Breadcrumbs", Category.RENDER);
-    }
 
     private final ArrayList<AxisAlignedBB> lines = new ArrayList<>();
 

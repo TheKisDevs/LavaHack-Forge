@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.render
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
@@ -24,12 +24,12 @@ import kotlin.collections.HashMap
  * @author _kisman_
  * @since 14:07 of 15.05.2022
  */
-@WorkInProgress
-class PearlTracer : Module(
-        "PearlTracer",
-        "Sure?",
-        Category.RENDER
-) {
+@ModuleInfo(
+    name = "PearlTracer",
+    category = Category.RENDER,
+    wip = true
+)
+class PearlTracer : Module() {
     private val test1 = register(Setting("Test 1", this, false))
     private val test2 = register(Setting("Test 2", this, false))
     private val depth = register(Setting("Depth", this, false))

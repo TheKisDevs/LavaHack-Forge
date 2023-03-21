@@ -2,10 +2,7 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import com.kisman.cc.settings.Setting;
@@ -55,7 +52,11 @@ import java.util.stream.Collectors;
  * @since 5.11.2022
  */
 //@Targetable
-@WorkInProgress
+@ModuleInfo(
+        name = "Kys+",
+        category = Category.COMBAT,
+        wip = true
+)
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
@@ -124,10 +125,6 @@ public class AutoCrystalRewrite extends Module {
 
     @ModuleInstance
     public static AutoCrystalRewrite INSTANCE;
-
-    public AutoCrystalRewrite(){
-        super("AutoCrystalRewrite", Category.COMBAT, true);
-    }
 
     private Thread thread = null;
 

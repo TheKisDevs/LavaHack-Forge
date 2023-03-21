@@ -4,7 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.pingbypass.serializer.friend.FriendSerializer
 import com.kisman.cc.features.pingbypass.serializer.setting.SettingSerializer
 import com.kisman.cc.features.pingbypass.utility.disconnect
@@ -28,12 +28,13 @@ import net.minecraft.network.play.server.SPacketKeepAlive
  * @author _kisman_
  * @since 20:30 of 19.08.2022
  */
-@WorkInProgress
-object PingBypass : Module(
-    "PingBypass",
-    "Connects you to server via custom proxy",
-    Category.CLIENT
-) {
+@ModuleInfo(
+    name = "PingBypass",
+    desc = "Connects you to server via custom proxy",
+    category = Category.CLIENT,
+    wip = true
+)
+object PingBypass : Module() {
     var ip = ""
     var port = ""
         set(value) {

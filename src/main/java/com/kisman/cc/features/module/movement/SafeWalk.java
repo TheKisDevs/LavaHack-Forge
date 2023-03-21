@@ -4,20 +4,18 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerMove;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.features.module.ModuleInfo;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-@WorkInProgress
+@ModuleInfo(
+        name = "SafeWalk",
+        category = Category.MOVEMENT,
+        wip = true
+)
 public class SafeWalk extends Module {
-
     private static final double OFFSET = 0.001;
-
-    public SafeWalk(){
-        super("SafeWalk", Category.MOVEMENT);
-    }
 
     @Override
     public void onEnable() {

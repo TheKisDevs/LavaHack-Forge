@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -47,7 +47,11 @@ import java.util.Map;
  * TODO: Make this work
  * TODO: Massively improve performance
  */
-@WorkInProgress
+@ModuleInfo(
+        name = "SmartCityESP(FpsKiller)",
+        category = Category.RENDER,
+        wip = true
+)
 @Targetable
 @TargetsNearest
 public class SmartCityESP extends Module {
@@ -56,7 +60,6 @@ public class SmartCityESP extends Module {
     private final RenderingRewritePattern renderer = new RenderingRewritePattern(this).preInit().init();
 
     public SmartCityESP(){
-        super("SmartCityESP(FpsKiller)", Category.RENDER);
         super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 

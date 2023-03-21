@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.combat
 
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.WorkInProgress
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.number.NumberType
@@ -25,12 +25,13 @@ import net.minecraft.util.math.BlockPos
  * @author _kisman_
  * @since 21:35 of 27.01.2023
  */
-@WorkInProgress
-class Avoid : Module(
-    "Avoid",
-    "Avoids auto trap/anchor aura by placing crystals",
-    Category.COMBAT
-) {
+@ModuleInfo(
+    name = "Avoid",
+    desc = "Avoids auto trap/anchor aura by placing crystals",
+    category = Category.COMBAT,
+    wip = true
+)
+class Avoid : Module() {
     private val mode = register(Setting("Mode", this, AvoidModes.AutoTrap))
     private val swap = register(SettingEnum("Swap", this, SwapEnum2.Swap.None))
     private val delay = register(Setting("Delay", this, 100.0, 0.0, 10000.0, NumberType.TIME))

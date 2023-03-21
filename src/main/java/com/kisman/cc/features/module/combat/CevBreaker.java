@@ -1,9 +1,7 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.*;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -35,7 +33,11 @@ import java.util.stream.Collectors;
  * @author Cubic
  * @since 05.10.2022
  */
-@WorkInProgress
+@ModuleInfo(
+        name = "CevBreaker",
+        category = Category.COMBAT,
+        wip = true
+)
 public class CevBreaker extends Module {
 
     private final SettingGroup trapGroup = register(new SettingGroup(new Setting("Trap", this)));
@@ -48,12 +50,8 @@ public class CevBreaker extends Module {
     private final Setting rotate = register(trapGroup.add(new Setting("Rotate", this, false)));
     private final Setting packet = register(trapGroup.add(new Setting("Packet", this, false)));
 
+    @ModuleInstance
     public static CevBreaker INSTANCE;
-
-    public CevBreaker(){
-        super("CevBreaker", "Are ya satisfied, banckie?", Category.COMBAT, 0, true);
-        INSTANCE = this;
-    }
 
     private final Supplier<BlockListProvider> blockProvider = () -> trapDynamic.getValBoolean() ? new DynamicProvider() : new StaticProvider();
 

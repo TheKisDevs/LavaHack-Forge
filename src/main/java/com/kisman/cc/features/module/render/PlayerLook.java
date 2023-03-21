@@ -2,7 +2,7 @@ package com.kisman.cc.features.module.render;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.WorkInProgress;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
@@ -21,7 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@WorkInProgress
+@ModuleInfo(
+        name = "PlayerLook",
+        category = Category.EXPLOIT,
+        wip = true
+)
 public class PlayerLook extends Module {
     private final Setting single = register(new Setting("Single", this, true));
     private final Setting self = register(new Setting("Self", this, true));
@@ -30,10 +34,6 @@ public class PlayerLook extends Module {
     private final Setting raytrace = register(new Setting("Raytrace", this, true));
     private final Setting displayName = register(new Setting("Display Name", this, false));
     private final RenderingRewritePattern pattern = new RenderingRewritePattern(this).preInit().init();
-
-    public PlayerLook(){
-        super("PlayerLook", Category.EXPLOIT);
-    }
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
