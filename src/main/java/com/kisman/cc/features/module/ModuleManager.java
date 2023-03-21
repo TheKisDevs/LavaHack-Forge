@@ -273,7 +273,6 @@ public class ModuleManager {
 		add(new NameProtect());
 		//add(new PacketDelay());
 		add(new PortalsModifier());
-		add(new SkyBlockFeatures());
 		add(new SlotMapper());
 		add(new Spammer());
 		add(new TotemPopCounterRewrite());
