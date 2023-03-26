@@ -1,5 +1,6 @@
 package com.kisman.cc.util.enums
 
+import com.kisman.cc.features.module.render.charms.popcharms.EntityPopped
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -18,15 +19,21 @@ enum class CharmsRewriteEntityTypes(
     Player(EntityPlayer::class.java),
     Monster(EntityMob::class.java),
     Animal(EntityAnimal::class.java),
-    ArmorStand(EntityArmorStand::class.java)
+    ArmorStand(EntityArmorStand::class.java),
+    Pops(EntityPopped::class.java)
 
     ;
 
     companion object {
-        fun get(entity : Entity) : CharmsRewriteEntityTypes? {
-            for(type in values()) {
-                if(type.entityClass.isInstance(entity)) return type
+        fun get(
+            entity : Entity
+        ) : CharmsRewriteEntityTypes? {
+            for(type in values().reversed()) {
+                if(type.entityClass.isInstance(entity)) {
+                    return type
+                }
             }
+
             return null
         }
     }

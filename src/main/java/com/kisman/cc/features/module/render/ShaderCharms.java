@@ -333,6 +333,15 @@ public class ShaderCharms extends Module {
                         ((ItemShader) framebufferShader).mix = mix.getValFloat();
                         ((ItemShader) framebufferShader).alpha = 1f;
                         ((ItemShader) framebufferShader).useImage = false;
+
+                        framebufferShader.swapUniforms();
+                        framebufferShader.changeUniform("red", red);
+                        framebufferShader.changeUniform("green", red);
+                        framebufferShader.changeUniform("blue", red);
+                        framebufferShader.changeUniform("radius", red);
+                        framebufferShader.changeUniform("quality", red);
+                        framebufferShader.changeUniform("blur", red);
+                        framebufferShader.changeUniform("mix", red);
                     } else if (mode.getValEnum() == Shaders.GRADIENT) {
                         ((GradientOutlineShader) framebufferShader).color = getColor();
                         ((GradientOutlineShader) framebufferShader).radius = radius.getValFloat();

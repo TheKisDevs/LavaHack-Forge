@@ -5,11 +5,11 @@ import com.kisman.cc.features.module.render.ShaderCharms
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
-import com.kisman.cc.util.RainbowUtil
 import com.kisman.cc.util.client.collections.Pair
 import com.kisman.cc.util.enums.RenderingRewriteModes
 import com.kisman.cc.util.client.interfaces.Drawable
 import com.kisman.cc.util.enums.DirectionVertexes
+import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
 import net.minecraft.util.math.AxisAlignedBB
@@ -432,25 +432,25 @@ open class RenderingRewritePattern(
     }
 
     fun getFilledColor1() : Colour = if(filledColor1RainbowState.valBoolean) {
-        RainbowUtil.rainbow2(filledColor1RainbowOffset.valInt, filledColor1RainbowSat.valInt, filledColor1RainbowBright.valInt, filledColor1.colour.a, filledColor1RainbowSpeed.valDouble)
+        ColorUtils.rainbow2(filledColor1RainbowOffset.valInt, filledColor1RainbowSat.valInt, filledColor1RainbowBright.valInt, filledColor1.colour.a, filledColor1RainbowSpeed.valDouble)
     } else {
         filledColor1.colour
     }
 
     fun getFilledColor2() : Colour = if(filledColor2RainbowState.valBoolean) {
-        RainbowUtil.rainbow2(filledColor2RainbowOffset.valInt, filledColor2RainbowSat.valInt, filledColor2RainbowBright.valInt, filledColor2.colour.a, filledColor2RainbowSpeed.valDouble)
+        ColorUtils.rainbow2(filledColor2RainbowOffset.valInt, filledColor2RainbowSat.valInt, filledColor2RainbowBright.valInt, filledColor2.colour.a, filledColor2RainbowSpeed.valDouble)
     } else {
         filledColor2.colour
     }
 
     fun getOutlineColor1() : Colour = if(outlineColor1RainbowState.valBoolean) {
-        RainbowUtil.rainbow2(outlineColor1RainbowOffset.valInt, outlineColor1RainbowSat.valInt, outlineColor1RainbowBright.valInt, outlineColor1.colour.a, outlineColor1RainbowSpeed.valDouble)
+        ColorUtils.rainbow2(outlineColor1RainbowOffset.valInt, outlineColor1RainbowSat.valInt, outlineColor1RainbowBright.valInt, outlineColor1.colour.a, outlineColor1RainbowSpeed.valDouble)
     } else {
         outlineColor1.colour
     }
 
     fun getOutlineColor2() : Colour = if(outlineColor2RainbowState.valBoolean) {
-        RainbowUtil.rainbow2(outlineColor2RainbowOffset.valInt, outlineColor2RainbowSat.valInt, outlineColor2RainbowBright.valInt, outlineColor2.colour.a, outlineColor2RainbowSpeed.valDouble)
+        ColorUtils.rainbow2(outlineColor2RainbowOffset.valInt, outlineColor2RainbowSat.valInt, outlineColor2RainbowBright.valInt, outlineColor2.colour.a, outlineColor2RainbowSpeed.valDouble)
     } else {
         outlineColor2.colour
     }

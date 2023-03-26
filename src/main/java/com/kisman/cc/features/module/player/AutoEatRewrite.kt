@@ -33,6 +33,8 @@ class AutoEatRewrite : Module() {
 
         if(mc.player.heldItemMainhand.item is ItemFood) {
             mc.gameSettings.keyBindUseItem.pressed = true
+        } else if(mc.gameSettings.keyBindUseItem.pressed) {
+            mc.gameSettings.keyBindUseItem.pressed = false
         }
     }
 }

@@ -4,7 +4,6 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.TimerUtils
 import com.kisman.cc.util.minecraft.positionRotation
 import com.kisman.cc.util.minecraft.rotation
@@ -78,6 +77,9 @@ object RotationSystem : SubSystem(
     } else {
         val currentYaw = lastPacket!!.yaw
         val currentPitch = lastPacket!!.yaw
+
+        mc.player.renderYawOffset = yaw
+        mc.player.rotationYawHead = yaw
 
         if(currentYaw - yaw == 0f || currentPitch - pitch == 0f) {
             if(!lastPacket!!.rotating && !lastPacket!!.moving /*TODO: ground check will be cool*/) {

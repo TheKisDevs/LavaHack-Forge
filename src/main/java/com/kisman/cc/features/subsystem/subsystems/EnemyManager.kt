@@ -3,6 +3,7 @@ package com.kisman.cc.features.subsystem.subsystems
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventUpdateEntity
 import com.kisman.cc.features.module.combat.AntiBot
+import com.kisman.cc.features.module.render.charms.popcharms.EntityPopped
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.manager.friend.FriendManager
@@ -61,7 +62,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
         if(mc.player != null) {
             val entity = it.entity
 
-            if (entity is EntityPlayer && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity)) && !FriendManager.instance.isFriend(entity)) {
+            if (entity is EntityPlayer && entity !is EntityPopped && entity != mc.player && (!AntiBot.instance.isToggled || !AntiBot.instance.mode.checkValString("Zamorozka") || !EntityUtil.antibotCheck(entity)) && !FriendManager.instance.isFriend(entity)) {
                 val distance = mc.player.getDistanceSq(entity)
 
                 if (distance < minDistancePlayer) {

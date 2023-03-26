@@ -1,9 +1,7 @@
 package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
-import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 

@@ -11,7 +11,6 @@ import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.BurrowModes;
 import com.kisman.cc.util.enums.BurrowStages;
 import com.kisman.cc.util.enums.DiagonalDirections;
-import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.WorldUtilKt;
@@ -38,7 +37,7 @@ public class Burrow2 extends Module {
     private final Setting placeDelay = register(new Setting("Place Delay", this, 100, 0, 1000, NumberType.TIME));
     private final Setting offset = register(new Setting("Offset", this, 7, -20, 20, false));
     private final Setting smartOffset = register(new Setting("SmartOffset", this, false));
-    private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
+    private final Setting enderChest = register(new Setting("Ender Chest", this, false));
     private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.Silent).register();
     private final Setting rotate = register(new Setting("Rotate", this, false));
     private final Setting packet = register(new Setting("Packet", this, false));
@@ -79,7 +78,7 @@ public class Burrow2 extends Module {
     }
 
     private int swapSlot(){
-        return InventoryUtil.getBlockInHotbar(((BlockEnum.Blocks) block.getValEnum()).getTask().doTask());
+        return InventoryUtil.getBlockInHotbar(enderChest.getValBoolean() ? Blocks.ENDER_CHEST : Blocks.OBSIDIAN);
     }
 
     private void swap(int slot, boolean swapBack){

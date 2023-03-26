@@ -1,5 +1,6 @@
 package com.kisman.cc.mixin.accessors
 
+import io.netty.channel.ChannelHandlerContext
 import net.minecraft.network.Packet
 
 /**
@@ -14,5 +15,10 @@ interface INetworkManager {
 
     fun sendPacketNoEvent(
         packet : Packet<*>?
+    )
+
+    fun channelRead00(
+        channel : ChannelHandlerContext?,
+        packet : Packet<*>
     )
 }

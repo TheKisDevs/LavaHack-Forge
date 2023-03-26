@@ -9,6 +9,7 @@ import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 
@@ -36,9 +37,13 @@ public class TotemPopCounterRewrite extends Module {
     @EventHandler
     private final Listener<PacketEvent.Receive> receive = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketEntityStatus && ((SPacketEntityStatus) event.getPacket()).getOpCode() == 35) {
-            EntityPlayer player = (EntityPlayer) ((SPacketEntityStatus) event.getPacket()).getEntity(mc.world);
-            pops.put(player.getName(), pops.getOrDefault(player.getName(), 0) + 1);
-            ChatUtility.message().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", StringUtils.stringToInt(player.getName()) + moduleId);
+            Entity entity = ((SPacketEntityStatus) event.getPacket()).getEntity(mc.world);
+
+            if(entity instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) entity;
+                pops.put(player.getName(), pops.getOrDefault(player.getName(), 0) + 1);
+                ChatUtility.message().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", StringUtils.stringToInt(player.getName()) + moduleId);
+            }
         }
     });
 }

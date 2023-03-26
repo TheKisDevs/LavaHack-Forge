@@ -4,7 +4,9 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.RenderEntityEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.render.charms.popcharms.EntityPopped;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.manager.friend.FriendManager;
@@ -28,6 +30,10 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.HashMap;
 
+@ModuleInfo(
+        name = "NameTags",
+        category = Category.RENDER
+)
 public class NameTags extends Module {
     private final Setting scale = register(new Setting("Scale", this, 0.1f, 0.1f, 0.3f, false));
     private final Setting bgAlpha = register(new Setting("BG Alpha", this, 128, 0, 250, true));
@@ -45,10 +51,6 @@ public class NameTags extends Module {
     private final HashMap<String, Integer> tagList = new HashMap<>();
     private final HashMap<String, String> damageList = new HashMap<>();
 
-    public NameTags() {
-        super("NameTags", Category.RENDER);
-    }
-
     @Override
     public void onEnable() {
         super.onEnable();
@@ -62,7 +64,7 @@ public class NameTags extends Module {
     }
 
     private final Listener<RenderEntityEvent.All.Post> renderEntity = new Listener<>(event -> {
-        if(event.getEntity() instanceof EntityPlayer && (event.getEntity() != mc.player || (self.getValBoolean() && mc.gameSettings.thirdPersonView != 0))) {
+        if(event.getEntity() instanceof EntityPlayer && !(event.getEntity() instanceof EntityPopped) && (event.getEntity() != mc.player || (self.getValBoolean() && mc.gameSettings.thirdPersonView != 0))) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
 
             int ping = -1;
@@ -100,79 +102,90 @@ public class NameTags extends Module {
 
     public void renderNametag(EntityPlayer player, double x, double y, double z, int ping0) {
         Rendering.setup();
-        TextFormatting clr;
-        TextFormatting clrf = TextFormatting.WHITE;
+        TextFormatting colorHealth;
+        TextFormatting colorStatus = TextFormatting.WHITE;
         String cross = "";
+        String playerPing = ping.getValBoolean() ? ping0 + "ms  " : "";
+        String damageText = "";
+        int lastHealth = 0;
+        int health = MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
+        int width = 0;
+        double widthBackGround = bgAlpha.getValDouble();
+        float scale0 = 0.016666668f * getNametagSize(player);
+        boolean damageDisplay = this.damageDisplay.getValBoolean();
+
         if (FriendManager.instance.isFriend(player.getName())) {
-            clrf = TextFormatting.AQUA;
+            colorStatus = TextFormatting.AQUA;
             if (!atheist.getValBoolean()) cross = "\u271d ";
         } else if(EnemyManager.INSTANCE.enemy(player)) {
-            clrf = TextFormatting.RED;
+            colorStatus = TextFormatting.RED;
         }
-        String playerPing = ping0 + "ms  ";
-        if (!ping.getValBoolean()) playerPing = "";
-        int health = MathHelper.ceil(player.getHealth() + player.getAbsorptionAmount());
-        boolean damageDisplay = this.damageDisplay.getValBoolean();
-        if (health > 16) clr = TextFormatting.GREEN;
-        else if (health > 12) clr = TextFormatting.YELLOW;
-        else if (health > 8) clr = TextFormatting.GOLD;
-        else if (health > 5) clr = TextFormatting.RED;
-        else clr = TextFormatting.DARK_RED;
-        int lasthealth = 0;
+
+        if (health > 16) colorHealth = TextFormatting.GREEN;
+        else if (health > 12) colorHealth = TextFormatting.YELLOW;
+        else if (health > 8) colorHealth = TextFormatting.GOLD;
+        else if (health > 5) colorHealth = TextFormatting.RED;
+        else colorHealth = TextFormatting.DARK_RED;
+
         try {
-            lasthealth = tagList.get(player.getName());
-        } catch(Exception ignored) {}
+            lastHealth = tagList.get(player.getName());
+        } catch(Exception ignored) { }
+
         if (damageDisplay) {
-            if (lasthealth > health) this.damageList.put(player.getName(), TextFormatting.RED + " -" + (lasthealth - health));
-            this.tagList.put(player.getName(), health);
+            if (lastHealth > health) this.damageList.put(player.getName(), TextFormatting.RED + " -" + (lastHealth - health));
+            tagList.put(player.getName(), health);
         }
-        String dmgtext = "";
+
         try {
-            if (damageDisplay && damageList.containsKey(player.getName())) dmgtext = damageList.get(player.getName());
+            if (damageDisplay && damageList.containsKey(player.getName())) damageText = damageList.get(player.getName());
         } catch(Exception ignored) {}
-        String name = cross + clrf + playerPing + player.getName() + " " + clr + health + dmgtext;
+
+        String name = cross + colorStatus + playerPing + player.getName() + " " + colorHealth + health + damageText;
         name = name.replace(".0", "");
-        float var14 = 0.016666668f * getNametagSize(player);
-        GL11.glTranslated(x, y + 2.5 + var14 * 10.0f, z);
+
+        width = mc.fontRenderer.getStringWidth(name) / 2;
+
+        GL11.glTranslated(x, y + 2.5 + scale0 * 10.0f, z);
         GL11.glNormal3f(0.0f, 1.0f, 0.0f);
         GL11.glRotatef(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
         GL11.glRotatef(mc.getRenderManager().playerViewX, 1.0f, 0.0f, 0.0f);
-        GL11.glScalef(-var14, -var14, var14);
+        GL11.glScalef(-scale0, -scale0, scale0);
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
         GL11.glDisable(2929);
-        int width = mc.fontRenderer.getStringWidth(name) / 2;
-        double widthBackGround = bgAlpha.getValDouble();
-        int[] counter = { 1 };
+
         Render2DUtil.drawSmoothRect((float)(-width - 3), 9.0f, (float)(width + 4), 23.0f, new Color(0, 0, 0, (int)widthBackGround).getRGB());
-        int[] array = counter;
-        int n = 0;
-        ++array[n];//9 + 14 / 2 - font.fontHeight / 2
         mc.fontRenderer.drawStringWithShadow(name, -width, 9 + 7 - (mc.fontRenderer.FONT_HEIGHT) / 2f, Color.red.getRGB());
-        boolean item = items.getValBoolean();
-        if (item) {
+
+        if (items.getValBoolean()) {
             int xOffset = -8;
+
             for (ItemStack armourStack : player.inventory.armorInventory) if (armourStack != null) xOffset -= 8;
+
             if (!player.getHeldItemMainhand().isEmpty()) {
                 xOffset -= 8;
                 ItemStack renderStack = player.getHeldItemMainhand().copy();
-                this.renderItem(renderStack, xOffset, -10);
+                renderItem(renderStack, xOffset, -10);
                 xOffset += 16;
             }
+
             for (int index = 3; index >= 0; --index) {
                 ItemStack armourStack2 = player.inventory.armorInventory.get(index);
+
                 if (!armourStack2.isEmpty()) {
                     ItemStack renderStack2 = armourStack2.copy();
                     renderItem(renderStack2, xOffset, -10);
                     xOffset += 16;
                 }
             }
+
             if (!player.getHeldItemOffhand().isEmpty()) {
                 ItemStack renderOffhand = player.getHeldItemOffhand().copy();
                 renderItem(renderOffhand, xOffset, -10);
                 xOffset += 8;
             }
         }
+
         Rendering.release();
     }
 
@@ -219,18 +232,23 @@ public class NameTags extends Module {
                 short id = enchants.getCompoundTagAt(index).getShort("id");
                 short level = enchants.getCompoundTagAt(index).getShort("lvl");
                 Enchantment enc = Enchantment.getEnchantmentByID(id);
+
                 if (enc != null) {
                     String encName = enc.getTranslatedName(level).substring(0, 1).toLowerCase();
                     encName = encName + level;
+
                     GL11.glPushMatrix();
                     GL11.glScalef(1.0f, 1.0f, 0.0f);
+
                     if (level == 1) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(202, 202, 202, 255).getRGB());
                     else if (level == 2) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(246, 218, 45, 255).getRGB());
                     else if (level == 3) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(229, 128, 0, 255).getRGB());
                     else if (level == 4) mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(156, 59, 253, 255).getRGB());
                     else mc.fontRenderer.drawStringWithShadow(encName, x * 2 + 10, yCount, new Color(239, 0, 0, 255).getRGB());
+
                     GL11.glScalef(1.0f, 1.0f, 1.0f);
                     GL11.glPopMatrix();
+
                     encY += 8;
                     yCount -= 10;
                 }

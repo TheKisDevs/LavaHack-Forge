@@ -123,4 +123,89 @@ public class ColorUtils {
     public static Color injectAlpha(final Color color, final int alpha) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);}
     public static Color injectAlpha(int color, int alpha) {return new Color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), alpha);}
     public static void glColor(Color color) {GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);}
+
+    /**
+     * Color space conversion from HSB to RGB
+     * @author Cubic
+     */
+    private static int fromHSB(int hue, int sat, int bright){
+        final float step = 4.25f;
+        float r = 0;
+        float g = 0;
+        float b = 0;
+        int k = hue / 60;
+        switch (k) {
+            case 0:
+                r = 255;
+                g = hue * step;
+                b = 0;
+                break;
+            case 1:
+                r = 255f - ((hue - 60) * step);
+                g = 255;
+                b = 0;
+                break;
+            case 2:
+                r = 0;
+                g = 255;
+                b = (hue - 120) * step;
+                break;
+            case 3:
+                r = 0;
+                g = 255f - ((hue - 180) * step);
+                b = 255;
+                break;
+            case 4:
+                r = (hue - 240) * step;
+                g = 0;
+                b = 255;
+                break;
+            case 5:
+            case 6:
+                r = 255;
+                g = 0;
+                b = 255f - ((hue - 300) * step);
+                break;
+        }
+        if(bright > 50){
+            float m = 0.02f * (bright - 50);
+            r += (255f - r) * m;
+            g += (255f - g) * m;
+            b += (255f - b) * m;
+        } else {
+            float m = 0.02f * bright;
+            r *= m;
+            g *= m;
+            b *= m;
+        }
+        float s = bright * 2.55f;
+        float u = 0.01f * (100 - sat);
+        r += (s - r) * u;
+        g += (s - g) * u;
+        b += (s - b) * u;
+        int rVal = Math.round(r);
+        int gVal = Math.round(g);
+        int bVal = Math.round(b);
+        return 0xff000000 | ((rVal & 0xff) << 16) | ((gVal & 0xff) << 8) | (bVal & 0xff);
+    }
+
+    public static Colour rainbow2(int hOffset, final int sat, final int bright, final int alpha, double speed){
+        double mod = 11520L / speed;
+        double div = mod / 360;
+        int hue = (int) ((System.currentTimeMillis() % mod) / div) + hOffset;
+        if(hue > 360)
+            hue = hue - 360;
+        int rgb = fromHSB(hue, sat, bright);
+        return new Colour(rgb).withAlpha(alpha);
+    }
+
+    public static Colour rainbow3(long millis, int hOffset, final int sat, final int bright, final int alpha, double speed){
+        double mod = 11529L / speed;
+        double div = mod / 360;
+        int hue = (int) ((millis % mod) / div) + hOffset;
+        if(hue > 360)
+            hue = hue - 360;
+        int rgb = fromHSB(hue, sat, bright);
+        return new Colour(rgb).withAlpha(alpha);
+    }
 }

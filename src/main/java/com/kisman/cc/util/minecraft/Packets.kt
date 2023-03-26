@@ -2,8 +2,14 @@ package com.kisman.cc.util.minecraft
 
 import com.kisman.cc.mixin.accessors.INetworkManager
 import com.kisman.cc.util.Globals.mc
+import io.netty.buffer.ByteBufAllocator
+import io.netty.channel.*
+import io.netty.util.Attribute
+import io.netty.util.AttributeKey
+import io.netty.util.concurrent.EventExecutor
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.CPacketPlayer
+import java.net.SocketAddress
 
 /**
  * @author _kisman_
@@ -62,3 +68,9 @@ fun positionRotation(
     pitch,
     ground
 )
+
+fun receive(
+    packet : Packet<*>
+) {
+    (mc.player.connection.networkManager as INetworkManager).channelRead00(null, packet)
+}

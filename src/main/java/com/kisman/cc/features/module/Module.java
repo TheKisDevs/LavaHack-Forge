@@ -70,6 +70,8 @@ public class Module extends DisplayableFeature {
 	public boolean debug0 = false;
 	public boolean submodule = false;
 
+	public Module parent = null;
+
 	public Module() {
 		if(!getClass().isAnnotationPresent(ModuleInfo.class)) {
 			Kisman.LOGGER.error("Missing ModuleInfo annotation!");
@@ -108,6 +110,7 @@ public class Module extends DisplayableFeature {
 						Module submodule = clazz.getConstructor().newInstance();
 
 						submodule.category = category;
+						submodule.parent = this;
 						submodules.add(submodule);
 					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 						Kisman.LOGGER.error("Cant create new instance of submodule of " + name + " module!", e, e.getCause());
@@ -180,7 +183,7 @@ public class Module extends DisplayableFeature {
 			ChatUtility.message().printClientMessage(TextFormatting.GRAY
 					+ "Module "
 					+ (isToggled() ? TextFormatting.GREEN : TextFormatting.RED)
-					+ displayName
+					+ toDisplayString()
 					+ TextFormatting.GRAY
 					+ " has been "
 					+ (isToggled() ? "enabled" : "disabled")
@@ -251,9 +254,6 @@ public class Module extends DisplayableFeature {
 		}
 
 		if(subscribes) MinecraftForge.EVENT_BUS.register(this);
-		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
-		if(subscribes == null) return;
-		SubscribeMode.register(subscribes, this);
 
 		if(flag) setToggled(false);
 	}
@@ -272,9 +272,6 @@ public class Module extends DisplayableFeature {
 		}
 
 		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
-		Subscribes subscribes = this.getClass().getAnnotation(Subscribes.class);
-		if(subscribes == null) return;
-		SubscribeMode.unregister(subscribes, this);
 	}
 
 	@SubscribeEvent
@@ -334,5 +331,13 @@ public class Module extends DisplayableFeature {
 	@Override
 	public void onInputEvent() {
 		toggle();
+	}
+
+	public String toDisplayString() {
+		if(submodule) {
+			return parent.toDisplayString() + "->" + displayName;
+		} else {
+			return displayName;
+		}
 	}
 }

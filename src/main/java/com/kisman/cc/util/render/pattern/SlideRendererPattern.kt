@@ -37,6 +37,36 @@ open class SlideRendererPattern {
         processedPossesList.clear()
     }
 
+    open fun handleRenderWorldStatic(
+        renderer : RenderingRewritePattern,
+        pos : BlockPos?,
+        text : String?
+    ) {
+        handleRenderWorldStatic(
+            renderer,
+            { it },
+            pos,
+            text
+        )
+    }
+
+    open fun handleRenderWorldStatic(
+        renderer : RenderingRewritePattern,
+        aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
+        pos : BlockPos?,
+        text : String?
+    ) {
+        handleRenderWorld(
+            0f,
+            0f,
+            0f,
+            renderer,
+            aabbModifier,
+            pos,
+            text
+        )
+    }
+
     open fun handleRenderWorld(
         movingLength : Float,
         fadeLength : Float,
@@ -51,6 +81,26 @@ open class SlideRendererPattern {
             fadeLength,
             alphaFadeLength,
             renderer,
+            text
+        )
+    }
+
+    open fun handleRenderWorld(
+        movingLength : Float,
+        fadeLength : Float,
+        alphaFadeLength : Float,
+        renderer : RenderingRewritePattern,
+        aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
+        pos : BlockPos?,
+        text : String?
+    ) {
+        update(pos, renderer)
+        renderWorld(
+            movingLength,
+            fadeLength,
+            alphaFadeLength,
+            renderer,
+            aabbModifier,
             text
         )
     }

@@ -2,8 +2,6 @@ package com.kisman.cc.features.nocom.modules
 
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.SubscribeMode
-import com.kisman.cc.features.module.Subscribes
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.chat.cubic.ChatUtility
 import me.zero.alpine.listener.EventHook
@@ -22,9 +20,9 @@ import java.text.DecimalFormat
  * @author _kisman_
  * @since 0:48 of 28.08.2022
  */
-@Subscribes(
+/*@Subscribes(
     mode = SubscribeMode.ALPINE
-)
+)*/
 class NoComMainModule : Module(
     "NoCom",
     "Main module of nocom",

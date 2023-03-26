@@ -4,7 +4,6 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.client.collections.Triple;
 import com.kisman.cc.util.enums.DirectionVertexes;
-import com.kisman.cc.util.render.cubic.BoundingBox;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -400,17 +399,6 @@ public class Rendering {
                 bb.maxY + s,
                 bb.maxZ + s
         );
-    }
-
-    public static BoundingBox animateMove(BoundingBox origin, BoundingBox destination, float partialTicks, float lengthPartialTicks){
-        float m = partialTicks / lengthPartialTicks;
-        double maxX = origin.maxX + ((destination.maxX - origin.maxX) * m) + (((destination.maxX - destination.minX) - (origin.maxX - origin.minX)) * 0.5 * m);
-        double maxY = origin.maxY + ((destination.maxY - origin.maxY) * m) + (((destination.maxY - destination.minY) - (origin.maxY - origin.minY)) * 0.5 * m);
-        double maxZ = origin.maxZ + ((destination.maxZ - origin.maxZ) * m) + (((destination.maxZ - destination.minZ) - (origin.maxZ - origin.minZ)) * 0.5 * m);
-        double minX = origin.minX + ((destination.maxX - origin.maxX) * m) + (((destination.maxX - destination.minX) - (origin.maxX - origin.minX)) * 0.5 * m);
-        double minY = origin.minY + ((destination.maxY - origin.maxY) * m) + (((destination.maxY - destination.minY) - (origin.maxY - origin.minY)) * 0.5 * m);
-        double minZ = origin.minZ + ((destination.maxZ - origin.maxZ) * m) + (((destination.maxZ - destination.minZ) - (origin.maxZ - origin.minZ)) * 0.5 * m);
-        return new BoundingBox(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
     }
 
     public static void drawTripleGradient(AxisAlignedBB aabb, Colour colour1, Colour colour2, Colour colour3){

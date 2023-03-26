@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.RainbowUtil;
+import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -82,7 +82,7 @@ public class ScreenTint extends Module {
             return new Color[]{color1.getColour().getColor(), color1.getColour().getColor(), color2.getColour().getColor(), color2.getColour().getColor()};
         }
         if(renderMode.getValEnum() == RenderModes.Rainbow){
-            Color color = RainbowUtil.rainbow2(0, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
+            Color color = ColorUtils.rainbow2(0, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
             return new Color[]{color, color, color, color};
         }
         if(renderMode.getValEnum() == RenderModes.Chroma){
@@ -90,10 +90,10 @@ public class ScreenTint extends Module {
         }
         if(renderMode.getValEnum() == RenderModes.ChromaRainbow){
             long millis = System.currentTimeMillis();
-            Color c1 = RainbowUtil.rainbow3(millis, 0, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
-            Color c2 = RainbowUtil.rainbow3(millis, 90, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
-            Color c3 = RainbowUtil.rainbow3(millis, 180, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
-            Color c4 = RainbowUtil.rainbow3(millis, 270, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
+            Color c1 = ColorUtils.rainbow3(millis, 0, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
+            Color c2 = ColorUtils.rainbow3(millis, 90, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
+            Color c3 = ColorUtils.rainbow3(millis, 180, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
+            Color c4 = ColorUtils.rainbow3(millis, 270, saturation.getValInt(), brightness.getValInt(), color1.getColour().getAlpha(), speed.getValDouble()).getColor();
             return new Color[]{c1, c2, c3, c4};
         }
         return new Color[]{Rendering.DUMMY_COLOR.getColor(), Rendering.DUMMY_COLOR.getColor(), Rendering.DUMMY_COLOR.getColor(), Rendering.DUMMY_COLOR.getColor()};

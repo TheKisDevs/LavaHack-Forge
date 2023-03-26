@@ -7,8 +7,7 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.RainbowUtil;
-import me.zero.alpine.listener.EventHandler;
+import com.kisman.cc.util.render.ColorUtils;
 import me.zero.alpine.listener.Listener;
 
 import java.awt.*;
@@ -59,7 +58,7 @@ public class EnchantGlint extends Module {
         }
         Color color = this.color.getColour().getColor();
         if(rainbow.getValBoolean())
-            color = RainbowUtil.rainbow2(0, rainbowSat.getValInt(), rainbowBright.getValInt(), color.getAlpha(), rainbowSpeed.getValDouble()).getColor();
+            color = ColorUtils.rainbow2(0, rainbowSat.getValInt(), rainbowBright.getValInt(), color.getAlpha(), rainbowSpeed.getValDouble()).getColor();
         event.setColor(color);
     });
 }

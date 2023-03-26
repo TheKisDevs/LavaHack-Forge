@@ -31,14 +31,14 @@ class GuiShader : Module(
         val gui = event.gui
 
         fun processGui() {
-            if(gui != null) {
-                mc.entityRenderer.loadShader(shader.getValElement().location)
-            } else {
-                try {
-                    if(mc.player != null && mc.world != null) {
+            if(mc.player != null && mc.world != null) {
+                if (gui != null) {
+                    mc.entityRenderer.loadShader(shader.getValElement().location)
+                } else {
+                    try {
                         mc.entityRenderer.stopUseShader()
-                    }
-                } catch(_ : Exception) { }
+                    } catch (_ : Exception) { }
+                }
             }
         }
 

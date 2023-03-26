@@ -17,7 +17,7 @@ public class ItemShader extends FramebufferShader {
     public float quality;
 
     public ItemShader() {
-        super("itemglow.frag");
+        super("itemglow.frag", false);
     }
 
     @Override

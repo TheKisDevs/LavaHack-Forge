@@ -2,9 +2,15 @@ package com.kisman.cc.features.module.render.shader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.shader.Framebuffer;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class FramebufferShader extends Shader {
     protected static int lastScale;
@@ -16,17 +22,57 @@ public abstract class FramebufferShader extends Shader {
     public boolean entityShadows;
     public int animationSpeed;
 
+    private HashMap<String, Object> prevUniforms = new HashMap<>();
+    private final HashMap<String, Object> currentUniforms = new HashMap<>();
+
+    private boolean changeable;
+
     public FramebufferShader(String fragmentShader) {
+        this(fragmentShader, true);
+    }
+
+    public FramebufferShader(String fragmentShader, boolean changeable) {
         super(fragmentShader);
+        this.changeable = changeable;
+
+        framebuffer = setupFrameBuffer(null);
+    }
+
+    protected boolean processUniforms() {
+        for(Map.Entry<String, Object> entry : currentUniforms.entrySet()) {
+            if(processUniform(entry.getKey(), entry.getValue())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean processUniform(String name, Object value) {
+        return prevUniforms.containsKey(name) && !prevUniforms.get(name).equals(value);
+    }
+
+    public void changeUniform(String name, Object value) {
+        currentUniforms.put(name, value);
+    }
+
+    public void swapUniforms() {
+        prevUniforms = currentUniforms;
+        currentUniforms.clear();
     }
 
     public void startDraw(float partialTicks) {
         GlStateManager.enableAlpha();
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
-        framebuffer = setupFrameBuffer(framebuffer);
+
+        if(changeable || processUniforms()) {
+            framebuffer = setupFrameBuffer(framebuffer);
+        }
+
         framebuffer.framebufferClear();
         framebuffer.bindFramebuffer(true);
+
         entityShadows = mc.gameSettings.entityShadows;
         mc.gameSettings.entityShadows = false;
         mc.entityRenderer.setupCameraTransform(partialTicks, 0);

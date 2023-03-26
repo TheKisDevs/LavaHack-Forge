@@ -2,8 +2,6 @@ package com.kisman.cc.features.nocom.modules
 
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Module
-import com.kisman.cc.features.module.SubscribeMode
-import com.kisman.cc.features.module.Subscribes
 import com.kisman.cc.features.nocom.modules.tracker.TrackedPlayer
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -24,9 +22,9 @@ import net.minecraft.util.math.BlockPos
  * @since 12:26 of 28.08.2022
  */
 @Suppress("HasPlatformType")
-@Subscribes(
+/*@Subscribes(
     mode = SubscribeMode.ALPINE
-)
+)*/
 class NoComTrackerModule : Module(
     "Tracker",
     "tacks selected player.",

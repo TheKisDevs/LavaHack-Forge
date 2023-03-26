@@ -1,6 +1,9 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -12,7 +15,6 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.enums.dynamic.BlockEnum;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
@@ -69,14 +71,13 @@ public class FlattenRewrite extends Module {
     private final Setting web = register(placeGroup.add(new Setting("Web", this, false)));
     // will try to place inside the player, not underneath - Cubic
     private final Setting webOffset = register(placeGroup.add(new Setting("WebOffset", this, false).setVisible(web::getValBoolean)));
-    private final Setting block = register(new Setting("Block", this, BlockEnum.Blocks.Obsidian));
+    private final Setting enderChest = register(new Setting("Ender Chest", this, false));
 
     private final Setting keepY = register(new Setting("KeepY", this, true));
 
     private final Setting checkDown = register(new Setting("CheckDown", this, 2, 1, 8, true));
     private final Setting alwaysCheckDown = register(new Setting("AlwaysCheckDown", this, false));
 
-    private final Setting enemyRange = register(new Setting("EnemyRange", this, 8, 1, 15, false));
     private final Setting swapEnemy = register(new Setting("SwapEnemy", this, false));
     private final Setting predictCycles = register(new Setting("PredictCycles", this, 0, 0, 10, true).setVisible(() -> ((PlaceModeEnum.Modes) placeMode.getValEnum()).isPredictSupported()));
     private final Setting predictTicks = register(new Setting("PredictTicks", this, 2, 0, 20, true).setVisible(() -> ((PlaceModeEnum.Modes) placeMode.getValEnum()).isPredictSupported()));
@@ -107,7 +108,7 @@ public class FlattenRewrite extends Module {
     private BlockPos placeInfo = null;
 
     private Block block() {
-        return web.getValBoolean() ? Blocks.WEB : ((BlockEnum.Blocks) block.getValEnum()).getTask().doTask();
+        return web.getValBoolean() ? Blocks.WEB : (enderChest.getValBoolean() ? Blocks.ENDER_CHEST : Blocks.OBSIDIAN);
     }
 
     public FlattenRewrite() {

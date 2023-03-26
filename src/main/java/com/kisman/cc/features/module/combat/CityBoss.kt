@@ -44,7 +44,9 @@ class CityBoss : Module() {
     private val down = register(Setting("Down", this, 1.0, 0.0, 3.0, true))
     private val newVersion = register(Setting("New Version", this, false).setTitle("1.13"))
 //    private val smartDown = register(Setting("Smart Down", this, false))
-    private val mineMode = register(Setting("Mine Mode", this, MineMode.Client))
+    private val breaking = register(SettingGroup(Setting("Breaking", this)))
+    private val usePacketMine = register(breaking.add(Setting("Use Packet Mine", this, true)))
+    private val allowMultibreak = register(breaking.add(Setting("Allow Multi Break", this, false)))
 
     private val cases0 = register(SettingGroup(Setting("Cases", this)))
     private val simpleCase1 = register(cases0.add(Setting("Simple Case 1", this, true)))
@@ -86,9 +88,10 @@ class CityBoss : Module() {
     private val cases = mutableListOf<Case>()
     private var bestCase : Case? = null
 
-    private val posses = ArrayList<BlockPos>()
-    private val currentPosses = ArrayList<BlockPos>()
-    private val basePosses = ArrayList<BlockPos>()
+    private val posses = mutableListOf<BlockPos>()
+    private val currentPosses = mutableListOf<BlockPos>()
+    private val basePosses = mutableListOf<BlockPos>()
+    private val processingBlocks = mutableListOf<BlockPos>()
     private var processingBlock : BlockPos? = null
     private var baseBlock : BlockPos? = null
 
@@ -112,6 +115,7 @@ class CityBoss : Module() {
         clicked = false
         lastPos = null
         processingBlock = null
+        processingBlocks.clear()
     }
 
     private fun displayInfo(
@@ -169,10 +173,6 @@ class CityBoss : Module() {
     private fun mineBlock(
         pos : BlockPos?
     ) {
-//        if(lastPos != pos) {
-//            clicked = false
-//        }
-
         if (pos == null) {//TODO: can block be broken?
             lastPos = null
             return
@@ -180,11 +180,7 @@ class CityBoss : Module() {
 
         val result = mc.world.rayTraceBlocks(Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight().toDouble(), mc.player.posZ), Vec3d(pos.x + 0.5, pos.y - 0.5, pos.z + 0.5))
 
-        if(mineMode.valEnum == MineMode.Client) {
-            /*if(PacketMine.instance.isToggled) {
-                PacketMine.instance.isToggled = false
-            }*/
-
+        if(!usePacketMine.valBoolean) {
             if (mc.player.heldItemMainhand.getItem() !is ItemPickaxe) {
                 val slot = InventoryUtil.findFirstItemSlot(ItemPickaxe::class.java, 0, 9)
 
@@ -202,24 +198,13 @@ class CityBoss : Module() {
                 //Only by burrow miner
                 println("kill yourself <3")
             }
-        } else if(mineMode.valEnum == MineMode.PacketMine && (PacketMineRewrite3.instance!!.current() == null || PacketMineRewrite3.instance!!.current() != lastPos)) {
-            /*if(!PacketMine.instance.isToggled) {
-                PacketMine.instance.isToggled = true
-            }*/
-//            mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
-//            Kisman.EVENT_BUS.post(EventDamageBlock(pos, result?.sideHit ?: EnumFacing.UP))
-            /*mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
-            mc.player.swingArm(EnumHand.MAIN_HAND)
-            (mc as IMinecraft).invokeSendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)*/
-//            mc.playerController.clickBlock(pos, result?.sideHit ?: EnumFacing.UP)
-            /*if(PacketMineProvider.position != pos) {
-                PacketMineProvider.handleBlockClick(pos, result?.sideHit ?: EnumFacing.UP)
-            }*/
-            /*mc.player.swingArm(EnumHand.MAIN_HAND)
-            mc.playerController.onPlayerDamageBlock(pos, EnumFacing.UP)*/
-//            PacketMineProvider.posToMine = pos
-//            clicked = true
+        } else if(PacketMineRewrite3.instance!!.current() == null) {
+            if(
+                if(allowMultibreak.valBoolean) !PacketMineRewrite3.instance!!.queue().contains(pos)
+                else PacketMineRewrite3.instance!!.current() != lastPos
+            ) {
+                mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
+            }
         }
 
         lastPos = pos
@@ -275,6 +260,11 @@ class CityBoss : Module() {
                     } else if(block(pos1) != Blocks.AIR) {
                         processingBlock = pos1
                         mineBlock(pos1)
+
+                        if(usePacketMine.valBoolean && allowMultibreak.valBoolean) {
+                            processingBlocks.add(pos1)
+                        }
+
                         return@run
                     }
                 }
@@ -346,7 +336,17 @@ class CityBoss : Module() {
                     if (pos !is CrystalBlockPos) {
                         val pos1 = pos.add(case.pos)
 
-                        if (pos1 == processingBlock) {
+                        if (usePacketMine.valBoolean && allowMultibreak.valBoolean) {
+                            if(processingBlocks.contains(pos1)) {
+                                currentBlockRenderer.handleRenderWorldStatic(
+                                    currentBlockPattern,
+                                    pos1,
+                                    null
+                                )
+                            }
+
+                            continue
+                        } else if (pos1 == processingBlock) {
                             currentBlockRenderer.handleRenderWorld(
                                 currentBlockPattern,
                                 pos1,
@@ -367,9 +367,5 @@ class CityBoss : Module() {
                 }
             }
         }
-    }
-
-    enum class MineMode {
-        Client, PacketMine
     }
 }
