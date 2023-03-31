@@ -1,33 +1,40 @@
 package com.kisman.cc.features.module.combat;
 
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
-import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
+import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.entity.EntityUtil;
+import com.kisman.cc.util.Colour;
+import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
+import com.kisman.cc.util.manager.friend.FriendManager;
+import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.thread.ThreadUtils;
 import com.kisman.cc.util.world.BlockUtil2;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 // don't make this targetable because this will use another custom system
 // yes i am talking to you kisman
@@ -37,7 +44,7 @@ import java.util.List;
  */
 public class PistonAura extends Module {
 
-    //private final Setting enemyRange = register(new Setting("Enemy Range", this, 8, 1, 16, false));
+    private final Setting enemyRange = register(new Setting("Enemy Range", this, 8, 1, 16, false));
     private final SettingEnum<SwapEnum2.Swap> swap = register(new SettingEnum<>("Swap", this, SwapEnum2.Swap.Silent));
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("PlaceGroup", this).setTitle("Place")));
@@ -55,7 +62,7 @@ public class PistonAura extends Module {
     private final Setting breakRaytrace = breakGroup.add(new Setting("BreakRaytrace", this, false).setTitle("Raytrace"));
 
     public PistonAura(){
-        super("PistonAura", Category.COMBAT);
+        super("PistonAura", Category.COMBAT, true);
     }
 
     private enum PlaceMode {
@@ -70,14 +77,86 @@ public class PistonAura extends Module {
     //    Both
     //}
 
+    @Target
     private Entity target;
+
+    private PlaceInfo placeInfo = null;
+
+    private boolean canPlace = true;
+
+    private int stage = 0;
+
+    private final Set<BlockPos> tmpSet = new HashSet<>();
+
+    @Override
+    public void onEnable() {
+        placeInfo = null;
+        canPlace = true;
+        stage = 0;
+        Kisman.EVENT_BUS.subscribe(packetListener);
+    }
+
+    @Override
+    public void onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(packetListener);
+    }
+
+    private final Listener<PacketEvent.Receive> packetListener = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketExplosion){
+            if(placeInfo == null)
+                return;
+            SPacketExplosion packet = (SPacketExplosion) event.getPacket();
+            double pX = placeInfo.pistonPos.getX() + 0.5;
+            double pY = placeInfo.pistonPos.getY() + 0.5;
+            double pZ = placeInfo.pistonPos.getZ() + 0.5;
+            if(Math.sqrt(Math.pow(packet.posX - pX, 2) + Math.pow(packet.posY - pY, 2) + Math.pow(packet.posZ - pZ, 2)) <= 5){
+                canPlace = true;
+                stage = 0;
+            }
+        }
+    });
+
+    public static EntityPlayer getTarget(final float range, float wallRange) {
+        EntityPlayer currentTarget = null;
+        for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
+            final EntityPlayer player = mc.world.playerEntities.get(i);
+            if (!isntValid(player, range, wallRange)) {
+                if (currentTarget == null) currentTarget = player;
+                else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
+            }
+        }
+        return currentTarget;
+    }
+
+    public static boolean isntValid(final EntityLivingBase entity, final double range, double wallRange) {
+        return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.getName());
+    }
+
+    @SubscribeEvent
+    public void onRender(RenderWorldLastEvent event){
+        if(placeInfo == null)
+            return;
+        if(placeInfo.pistonPos != null)
+            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.pistonPos)), 2.0f, new Colour(0, 0, 255, 120), new Colour(0, 0, 255, 120), Rendering.Mode.BOX_OUTLINE);
+        if(placeInfo.crystalPos != null)
+            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.crystalPos)), 2.0f, new Colour(255, 0, 0, 120), new Colour(255, 0, 0, 120), Rendering.Mode.BOX_OUTLINE);
+        if(placeInfo.redstonePos != null)
+            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.redstonePos)), 2.0f, new Colour(0, 255, 0, 120), new Colour(0, 255, 0, 120), Rendering.Mode.BOX_OUTLINE);
+        for(BlockPos pos : tmpSet){
+            Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2.0f, new Colour(255, 255, 255, 120), new Colour(0, 255, 0, 120), Rendering.Mode.BOX_OUTLINE);
+        }
+    }
 
     @Override
     public void update() {
         if(mc.player == null || mc.world == null)
             return;
 
-        target = EnemyManagerKt.nearest();
+        target = getTarget(enemyRange.getValFloat(), enemyRange.getValFloat());
+
+        if(target == null){
+            return;
+        }
 
         int pistonSlot = InventoryUtil.getBlockInHotbar(Blocks.PISTON);
         if(pistonSlot == -1)
@@ -99,7 +178,87 @@ public class PistonAura extends Module {
             return;
         }
 
+        if(canPlace && placeDelay.getValDouble() == 0){
+            placeInfo = calculatePlace();
+            if(placeInfo == null)
+                return;
+            placePiston(placeInfo, pistonSlot);
+            placeRedstone(placeInfo, redstoneSlot);
+            placeCrystal(placeInfo, crystalSlot);
+            canPlace = false;
+            stage = 1;
+            return;
+        }
+        if(placeDelay.getValDouble() == 1){
+            if(canPlace){
+                placeInfo = calculatePlace();
+                if(placeInfo == null)
+                    return;
+                placePiston(placeInfo, pistonSlot);
+                canPlace = false;
+                stage = 1;
+                return;
+            }
+            if(stage == 1){
+                placeRedstone(placeInfo, redstoneSlot);
+                placeCrystal(placeInfo, crystalSlot);
+                stage = 2;
+                return;
+            }
+        }
+        if(placeDelay.getValDouble() > 1){
+            if(canPlace){
+                placeInfo = calculatePlace();
+                if(placeInfo == null)
+                    return;
+                placePiston(placeInfo, pistonSlot);
+                canPlace = false;
+                stage = 1;
+                return;
+            }
+            if(stage == 1){
+                placeCrystal(placeInfo, crystalSlot);
+                stage = 2;
+                return;
+            }
+            if(stage == 2){
+                placeRedstone(placeInfo, redstoneSlot);
+                stage = 3;
+                return;
+            }
+        }
 
+        if(
+                placeDelay.getValDouble() == 0 && stage == 1
+                || placeDelay.getValDouble() == 1 && stage == 2
+                || placeDelay.getValDouble() > 1 && stage == 3
+        ){
+            stage++;
+            new Thread(() -> {
+                final PlaceInfo info = placeInfo;
+                try {
+                    ThreadUtils.sleep(breakDelay.getValLong() * 50);
+                } catch (InterruptedException e) {
+                    Kisman.LOGGER.error("[PistonAura] Error breaking crystal", e);
+                }
+                AxisAlignedBB aabb = getAABB(info.pistonPos, info.pistonPos.offset(info.facing.getOpposite(), 2)).expand(0.1, 0.1, 0.1);
+                EntityEnderCrystal crystal = mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb).stream().findFirst().orElse(null);
+                if(crystal == null)
+                    return;
+                ChatUtility.info().printClientModuleMessage("here 2");
+                breakCrystal(crystal);
+            }).start();
+        }
+    }
+
+    private AxisAlignedBB getAABB(BlockPos pos1, BlockPos pos2){
+        double minX = Math.min(pos1.getX(), pos2.getX());
+        double minY = Math.min(pos1.getY(), pos2.getY());
+        double minZ = Math.min(pos1.getZ(), pos2.getZ());
+        double maxX = Math.max(pos1.getX() + 1, pos2.getX() + 1);
+        double maxY = Math.max(pos1.getY() + 1, pos2.getY() + 1);
+        double maxZ = Math.max(pos1.getZ() + 1, pos2.getZ() + 1);
+        return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     private void placeCrystal(PlaceInfo placeInfo, int crystalSlot){
@@ -109,7 +268,7 @@ public class PistonAura extends Module {
         }
         int oldSlot = mc.player.inventory.currentItem;
         swap.getValEnum().getTask().doTask(crystalSlot, false);
-        BlockUtil2.placeBlock(placeInfo.redstonePos, EnumHand.MAIN_HAND, true, false, placeRotate.getValBoolean());
+        BlockUtil2.placeBlock(placeInfo.crystalPos, EnumHand.MAIN_HAND, true, false, placeRotate.getValBoolean());
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 
@@ -152,12 +311,18 @@ public class PistonAura extends Module {
             float[] rots = calculateAngle(mc.player.getPositionVector().addVector(0, mc.player.eyeHeight, 0), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
             mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
         } else {
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, pitch, mc.player.onGround));
+            mc.player.rotationYaw = yaw;
+            mc.player.rotationPitch = pitch;
         }
         swap.getValEnum().getTask().doTask(pistonSlot, false);
         BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, false, false, false);
         swap.getValEnum().getTask().doTask(oldSlot, true);
-        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(oldRots[0], oldRots[1], mc.player.onGround));
+        if(place.getValEnum() == PlaceMode.Strict){
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(oldRots[0], oldRots[1], mc.player.onGround));
+        } else {
+            mc.player.rotationYaw = oldRots[0];
+            mc.player.rotationPitch = oldRots[1];
+        }
     }
 
     private void breakCrystal(EntityEnderCrystal crystal){
@@ -211,13 +376,13 @@ public class PistonAura extends Module {
                 continue;
             if(!isInDistance(redstonePos.pistonPos) || !isInDistance(redstonePos.redstonePos))
                 continue;
-            return new PlaceInfo(redstonePos.pistonPos, redstonePos.redstonePos, pos.up(), redstonePos.facing);
+            return new PlaceInfo(redstonePos.pistonPos, redstonePos.redstonePos, targetPos.offset(facing).up(), redstonePos.facing);
         }
         return null;
     }
 
     private boolean isInDistance(BlockPos pos){
-        return mc.player.getDistance(pos.getX() + 0.5, pos.getY() + mc.player.eyeHeight + 0.5, pos.getZ() + 0.5) <= placeRange.getValDouble();
+        return mc.player.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= placeRange.getValDouble();
     }
 
     private boolean isInDistance(Vec3d vec3d){
@@ -231,15 +396,30 @@ public class PistonAura extends Module {
         placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW().getOpposite()), facing));
         placeInfos.add(checkPlace(pos.up(), facing));
         placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW()), facing));
+        placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW().getOpposite()), facing));
         return placeInfos.stream()
+                .filter(Objects::nonNull)
                 .min(Comparator.comparingDouble(info -> mc.player.getDistance(info.pistonPos.getX() + 0.5, info.pistonPos.getY() + 0.5, info.pistonPos.getZ() + 0.5)))
                 .orElse(null);
     }
 
+    public static List<EnumFacing> getPossibleSides(BlockPos pos) {
+        final ArrayList<EnumFacing> facings = new ArrayList<>();
+        if (mc.world == null || pos == null) return facings;
+        for (EnumFacing side : EnumFacing.values()) {
+            BlockPos neighbour = pos.offset(side);
+            IBlockState blockState = mc.world.getBlockState(neighbour);
+            if (blockState != null && blockState.getBlock().canCollideCheck(blockState, false)) if (!blockState.getMaterial().isReplaceable()) facings.add(side);
+        }
+        return facings;
+    }
+
     private PlaceInfo checkPlace(BlockPos pos, EnumFacing facing){
+        tmpSet.add(pos);
         if(
                 !mc.world.getBlockState(pos.up()).getBlock().isReplaceable(mc.world, pos.up())
                 || !mc.world.getBlockState(pos.up().offset(facing.getOpposite())).getBlock().isReplaceable(mc.world, pos.up().offset(facing.getOpposite()))
+                || getPossibleSides(pos.up()).isEmpty()
         ){
             return null;
         }
