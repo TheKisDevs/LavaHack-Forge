@@ -107,6 +107,8 @@ public class ModuleManager {
 		add(new KillAuraRewrite());
 		add(new AutoCrystalRewrite());
 		add(new OffHand());
+		add(new PistonAura());
+		add(new PistonTest());
 		add(new Prison());
 		add(new Robot());
 		add(new SelfTrapRewrite());
