@@ -25,11 +25,16 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.network.ThreadQuickExitException;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
+import net.minecraft.network.play.server.SPacketDestroyEntities;
 import net.minecraft.network.play.server.SPacketExplosion;
+import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -46,6 +51,7 @@ public class PistonAura extends Module {
 
     private final Setting enemyRange = register(new Setting("Enemy Range", this, 8, 1, 16, false));
     private final SettingEnum<SwapEnum2.Swap> swap = register(new SettingEnum<>("Swap", this, SwapEnum2.Swap.Silent));
+    private final Setting cycleDelay = register(new Setting("Cycle Delay", this, 1, 0, 10, true));
 
     private final SettingGroup placeGroup = register(new SettingGroup(new Setting("PlaceGroup", this).setTitle("Place")));
     private final SettingEnum<PlaceMode> place = placeGroup.add(new SettingEnum<>("Place", this, PlaceMode.Flexible));
@@ -86,6 +92,8 @@ public class PistonAura extends Module {
 
     private int stage = 0;
 
+    private boolean thread = false;
+
     private final Set<BlockPos> tmpSet = new HashSet<>();
 
     @Override
@@ -93,6 +101,7 @@ public class PistonAura extends Module {
         placeInfo = null;
         canPlace = true;
         stage = 0;
+        thread = false;
         Kisman.EVENT_BUS.subscribe(packetListener);
     }
 
@@ -101,17 +110,30 @@ public class PistonAura extends Module {
         Kisman.EVENT_BUS.unsubscribe(packetListener);
     }
 
-    private final Listener<PacketEvent.Receive> packetListener = new Listener<>(event -> {
-        if(event.getPacket() instanceof SPacketExplosion){
+    private final Listener<PacketEvent.PostReceive> packetListener = new Listener<>(event -> {
+        if(event.getPacket() instanceof SPacketSoundEffect){
             if(placeInfo == null)
                 return;
-            SPacketExplosion packet = (SPacketExplosion) event.getPacket();
+            if(!thread)
+                return;
+            SPacketSoundEffect packet = (SPacketSoundEffect) event.getPacket();
+            if(packet.getCategory() != SoundCategory.BLOCKS || packet.getSound() != SoundEvents.ENTITY_GENERIC_EXPLODE)
+                return;
             double pX = placeInfo.pistonPos.getX() + 0.5;
             double pY = placeInfo.pistonPos.getY() + 0.5;
             double pZ = placeInfo.pistonPos.getZ() + 0.5;
-            if(Math.sqrt(Math.pow(packet.posX - pX, 2) + Math.pow(packet.posY - pY, 2) + Math.pow(packet.posZ - pZ, 2)) <= 5){
-                canPlace = true;
-                stage = 0;
+            ChatUtility.info().printClientModuleMessage("" + Math.sqrt(Math.pow(packet.getX() - pX, 2) + Math.pow(packet.getY() - pY, 2) + Math.pow(packet.getZ() - pZ, 2)));
+            if(Math.sqrt(Math.pow(packet.getX() - pX, 2) + Math.pow(packet.getY() - pY, 2) + Math.pow(packet.getZ() - pZ, 2)) <= 5){
+                thread = false;
+                new Thread(() -> {
+                    try {
+                        ThreadUtils.sleep(cycleDelay.getValLong() * 50);
+                    } catch (InterruptedException e) {
+                        Kisman.LOGGER.error("[PistonAura] Error resetting cycle", e);
+                    }
+                    canPlace = true;
+                    stage = 0;
+                }).start();
             }
         }
     });
@@ -132,6 +154,7 @@ public class PistonAura extends Module {
         return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.getName());
     }
 
+    /*
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
         if(placeInfo == null)
@@ -146,6 +169,7 @@ public class PistonAura extends Module {
             Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2.0f, new Colour(255, 255, 255, 120), new Colour(0, 255, 0, 120), Rendering.Mode.BOX_OUTLINE);
         }
     }
+     */
 
     @Override
     public void update() {
@@ -245,8 +269,8 @@ public class PistonAura extends Module {
                 EntityEnderCrystal crystal = mc.world.getEntitiesWithinAABB(EntityEnderCrystal.class, aabb).stream().findFirst().orElse(null);
                 if(crystal == null)
                     return;
-                ChatUtility.info().printClientModuleMessage("here 2");
                 breakCrystal(crystal);
+                thread = true;
             }).start();
         }
     }
@@ -263,19 +287,19 @@ public class PistonAura extends Module {
 
     private void placeCrystal(PlaceInfo placeInfo, int crystalSlot){
         if(crystalSlot == -1){
-            BlockUtil2.placeBlock(placeInfo.crystalPos, EnumHand.OFF_HAND, true, false, placeRotate.getValBoolean());
+            BlockUtil2.placeBlock2(placeInfo.crystalPos, EnumHand.OFF_HAND, true, false, placeRotate.getValBoolean(), true);
             return;
         }
         int oldSlot = mc.player.inventory.currentItem;
         swap.getValEnum().getTask().doTask(crystalSlot, false);
-        BlockUtil2.placeBlock(placeInfo.crystalPos, EnumHand.MAIN_HAND, true, false, placeRotate.getValBoolean());
+        BlockUtil2.placeBlock2(placeInfo.crystalPos, EnumHand.MAIN_HAND, false, false, placeRotate.getValBoolean(), true);
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 
     private void placeRedstone(PlaceInfo placeInfo, int redstoneSlot){
         int oldSlot = mc.player.inventory.currentItem;
         swap.getValEnum().getTask().doTask(redstoneSlot, false);
-        BlockUtil2.placeBlock(placeInfo.redstonePos, EnumHand.MAIN_HAND, false, false, placeRotate.getValBoolean());
+        BlockUtil2.placeBlock2(placeInfo.redstonePos, EnumHand.MAIN_HAND, false, false, placeRotate.getValBoolean(), true);
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 
@@ -311,18 +335,12 @@ public class PistonAura extends Module {
             float[] rots = calculateAngle(mc.player.getPositionVector().addVector(0, mc.player.eyeHeight, 0), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
             mc.player.connection.sendPacket(new CPacketPlayer.Rotation(rots[0], rots[1], mc.player.onGround));
         } else {
-            mc.player.rotationYaw = yaw;
-            mc.player.rotationPitch = pitch;
+            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(yaw, pitch, mc.player.onGround));
         }
         swap.getValEnum().getTask().doTask(pistonSlot, false);
-        BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, false, false, false);
+        BlockUtil2.placeBlock2(pos, EnumHand.MAIN_HAND, false, false, false, true);
         swap.getValEnum().getTask().doTask(oldSlot, true);
-        if(place.getValEnum() == PlaceMode.Strict){
-            mc.player.connection.sendPacket(new CPacketPlayer.Rotation(oldRots[0], oldRots[1], mc.player.onGround));
-        } else {
-            mc.player.rotationYaw = oldRots[0];
-            mc.player.rotationPitch = oldRots[1];
-        }
+        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(oldRots[0], oldRots[1], mc.player.onGround));
     }
 
     private void breakCrystal(EntityEnderCrystal crystal){
@@ -371,6 +389,12 @@ public class PistonAura extends Module {
             IBlockState state = mc.world.getBlockState(pos);
             if(state.getBlock() != Blocks.OBSIDIAN && state.getBlock() != Blocks.BEDROCK)
                 continue;
+            if(
+                    !mc.world.getBlockState(pos.up()).getBlock().isReplaceable(mc.world, pos.up())
+                    || !mc.world.getBlockState(pos.up(2)).getBlock().isReplaceable(mc.world, pos.up(2))
+            ){
+                continue;
+            }
             PlaceInfo redstonePos = getPlacePos(pos.offset(facing), facing);
             if(redstonePos == null)
                 continue;
@@ -391,16 +415,18 @@ public class PistonAura extends Module {
 
     private PlaceInfo getPlacePos(BlockPos pos, EnumFacing facing){
         List<PlaceInfo> placeInfos = new ArrayList<>();
-        placeInfos.add(checkPlace(pos, facing));
         placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW()), facing));
         placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW().getOpposite()), facing));
         placeInfos.add(checkPlace(pos.up(), facing));
         placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW()), facing));
         placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW().getOpposite()), facing));
-        return placeInfos.stream()
+        PlaceInfo placeInfo = placeInfos.stream()
                 .filter(Objects::nonNull)
                 .min(Comparator.comparingDouble(info -> mc.player.getDistance(info.pistonPos.getX() + 0.5, info.pistonPos.getY() + 0.5, info.pistonPos.getZ() + 0.5)))
                 .orElse(null);
+        if(placeInfo != null)
+            return placeInfo;
+        return checkPlace(pos, facing);
     }
 
     public static List<EnumFacing> getPossibleSides(BlockPos pos) {
