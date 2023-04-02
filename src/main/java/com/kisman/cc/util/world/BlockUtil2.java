@@ -142,6 +142,19 @@ public class BlockUtil2 {
         return true;
     }
 
+    public static boolean placeBlock2(BlockPos position, EnumHand hand, boolean packet, boolean raytrace, boolean rotate, boolean swing) {
+        if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
+        if (getPlaceableSide(position) == null) return false;
+        clickBlock(position, getPlaceableSide(position), hand, packet, rotate);
+        if(swing){
+            mc.player.swingArm(hand);
+        } else {
+            mc.player.connection.sendPacket(new CPacketAnimation(hand));
+        }
+        mc.rightClickDelayTimer = 4;
+        return true;
+    }
+
     public static EnumFacing raytraceFacing(BlockPos pos) {
         EnumFacing facing = null;
 
