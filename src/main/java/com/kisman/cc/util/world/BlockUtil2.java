@@ -144,8 +144,8 @@ public class BlockUtil2 {
 
     public static boolean placeBlock2(BlockPos position, EnumHand hand, boolean packet, boolean raytrace, boolean rotate, boolean swing) {
         if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
-        if (getPlaceableSide(position) == null) return false;
-        clickBlock(position, getPlaceableSide(position), hand, packet, rotate);
+        if (side(position) == null) return false;
+        clickBlock(position, side(position), hand, packet, rotate);
         if(swing){
             mc.player.swingArm(hand);
         } else {

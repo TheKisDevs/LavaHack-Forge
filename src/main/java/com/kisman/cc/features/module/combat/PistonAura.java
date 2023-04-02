@@ -4,33 +4,31 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.subsystem.subsystems.TargetsNearest;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.Colour;
+import com.kisman.cc.settings.util.RenderingRewritePattern;
+import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.render.Rendering;
+import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.thread.ThreadUtils;
 import com.kisman.cc.util.world.BlockUtil2;
-import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderCrystal;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.network.ThreadQuickExitException;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketUseEntity;
-import net.minecraft.network.play.server.SPacketDestroyEntities;
-import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -47,9 +45,14 @@ import java.util.*;
  * @author Cubic
  * @since 30.03.2023
  */
+@Targetable
+@TargetsNearest
+@ModuleInfo(
+        name = "PistonAura",
+        category = Category.COMBAT,
+        wip = true
+)
 public class PistonAura extends Module {
-
-    private final Setting enemyRange = register(new Setting("Enemy Range", this, 8, 1, 16, false));
     private final SettingEnum<SwapEnum2.Swap> swap = register(new SettingEnum<>("Swap", this, SwapEnum2.Swap.Silent));
     private final Setting cycleDelay = register(new Setting("Cycle Delay", this, 1, 0, 10, true));
 
@@ -57,18 +60,29 @@ public class PistonAura extends Module {
     private final SettingEnum<PlaceMode> place = placeGroup.add(new SettingEnum<>("Place", this, PlaceMode.Flexible));
     //TODO: For now only blocks are supported
     //private final SettingEnum<RedstoneMode> redstone = placeGroup.add(new SettingEnum<>("Redstone", this, RedstoneMode.Both));
-    private final Setting placeRange = placeGroup.add(new Setting("Place Range", this, 5, 1, 6, false));
-    private final Setting placeDelay = placeGroup.add(new Setting("Place Delay", this, 0, 0, 10, true));
+    private final Setting placeRange = placeGroup.add(new Setting("Place Range", this, 5, 1, 6, false).setTitle("Range"));
+    private final Setting placeDelay = placeGroup.add(new Setting("Place Delay", this, 0, 0, 10, true).setTitle("Delay"));
     private final Setting placeRotate = placeGroup.add(new Setting("PlaceRotate", this, false).setTitle("Rotate"));
     private final Setting placeRaytrace = placeGroup.add(new Setting("PlaceRaytrace", this, false).setTitle("Raytrace"));
 
     private final SettingGroup breakGroup = register(new SettingGroup(new Setting("BreakGroup", this).setTitle("Break")));
-    private final Setting breakDelay = breakGroup.add(new Setting("Break Delay", this, 4, 0, 20, true));
+    private final Setting breakDelay = breakGroup.add(new Setting("Break Delay", this, 4, 0, 20, true).setTitle("Delay"));
     private final Setting breakRotate = breakGroup.add(new Setting("BreakRotate", this, false).setTitle("Rotate"));
     private final Setting breakRaytrace = breakGroup.add(new Setting("BreakRaytrace", this, false).setTitle("Raytrace"));
 
+    private final SettingGroup renderers = register(new SettingGroup(new Setting("Renderers", this)));
+
+    private final SlideRenderingRewritePattern pistonPattern = new SlideRenderingRewritePattern(this).prefix("Piston").group(register(renderers.add(new SettingGroup(new Setting("Piston", this))))).preInit().init();
+    private final SlideRenderingRewritePattern crystalPattern = new SlideRenderingRewritePattern(this).prefix("Crystal").group(register(renderers.add(new SettingGroup(new Setting("Crystal", this))))).preInit().init();
+    private final SlideRenderingRewritePattern redstonePattern = new SlideRenderingRewritePattern(this).prefix("Redstone").group(register(renderers.add(new SettingGroup(new Setting("Redstone", this))))).preInit().init();
+    private final RenderingRewritePattern tmpRenderer = new RenderingRewritePattern(this).prefix("Tmp").group(register(renderers.add(new SettingGroup(new Setting("Tmp", this))))).preInit().init();
+
+    private final SlideRendererPattern pistonRenderer = new SlideRendererPattern();
+    private final SlideRendererPattern crystalRenderer = new SlideRendererPattern();
+    private final SlideRendererPattern redstoneRenderer = new SlideRendererPattern();
+
     public PistonAura(){
-        super("PistonAura", Category.COMBAT, true);
+        super.setDisplayInfo(() -> "[" + (target == null ? "no target no fun" : target.getName()) + "]");
     }
 
     private enum PlaceMode {
@@ -84,7 +98,7 @@ public class PistonAura extends Module {
     //}
 
     @Target
-    private Entity target;
+    public Entity target;
 
     private PlaceInfo placeInfo = null;
 
@@ -138,45 +152,21 @@ public class PistonAura extends Module {
         }
     });
 
-    public static EntityPlayer getTarget(final float range, float wallRange) {
-        EntityPlayer currentTarget = null;
-        for (int size = mc.world.playerEntities.size(), i = 0; i < size; ++i) {
-            final EntityPlayer player = mc.world.playerEntities.get(i);
-            if (!isntValid(player, range, wallRange)) {
-                if (currentTarget == null) currentTarget = player;
-                else if (mc.player.getDistanceSq(player) < mc.player.getDistanceSq(currentTarget)) currentTarget = player;
-            }
-        }
-        return currentTarget;
-    }
-
-    public static boolean isntValid(final EntityLivingBase entity, final double range, double wallRange) {
-        return (mc.player.getDistance(entity) > (mc.player.canEntityBeSeen(entity) ? range : wallRange)) || entity == mc.player || entity.getHealth() <= 0.0f || entity.isDead || FriendManager.instance.isFriend(entity.getName());
-    }
-
-    /*
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
-        if(placeInfo == null)
-            return;
-        if(placeInfo.pistonPos != null)
-            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.pistonPos)), 2.0f, new Colour(0, 0, 255, 120), new Colour(0, 0, 255, 120), Rendering.Mode.BOX_OUTLINE);
-        if(placeInfo.crystalPos != null)
-            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.crystalPos)), 2.0f, new Colour(255, 0, 0, 120), new Colour(255, 0, 0, 120), Rendering.Mode.BOX_OUTLINE);
-        if(placeInfo.redstonePos != null)
-            Rendering.draw(Rendering.correct(new AxisAlignedBB(placeInfo.redstonePos)), 2.0f, new Colour(0, 255, 0, 120), new Colour(0, 255, 0, 120), Rendering.Mode.BOX_OUTLINE);
-        for(BlockPos pos : tmpSet){
-            Rendering.draw(Rendering.correct(new AxisAlignedBB(pos)), 2.0f, new Colour(255, 255, 255, 120), new Colour(0, 255, 0, 120), Rendering.Mode.BOX_OUTLINE);
-        }
+        if(placeInfo == null) return;
+        if(placeInfo.pistonPos != null) pistonRenderer.handleRenderWorld(pistonPattern, placeInfo.pistonPos, null);
+        if(placeInfo.crystalPos != null) crystalRenderer.handleRenderWorld(crystalPattern, placeInfo.pistonPos, null);
+        if(placeInfo.redstonePos != null) redstoneRenderer.handleRenderWorld(redstonePattern, placeInfo.pistonPos, null);
+        for(BlockPos pos : tmpSet) tmpRenderer.draw(pos);
     }
-     */
 
     @Override
     public void update() {
         if(mc.player == null || mc.world == null)
             return;
 
-        target = getTarget(enemyRange.getValFloat(), enemyRange.getValFloat());
+        target = EnemyManagerKt.nearest();
 
         if(target == null){
             return;

@@ -4,8 +4,7 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.features.module.exploit.PacketEat;
-import com.kisman.cc.util.chat.cubic.ChatUtility;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import me.zero.alpine.listener.Listener;
@@ -15,12 +14,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.server.SPacketExplosion;
-import net.minecraft.network.play.server.SPacketSpawnObject;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Comparator;
 
+@ModuleInfo(
+        name = "PistonTest",
+        debug = true
+)
 public class PistonTest extends Module {
 
     public PistonTest(){
