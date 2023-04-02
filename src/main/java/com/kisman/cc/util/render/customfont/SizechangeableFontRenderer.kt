@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render.customfont
 
 import com.kisman.cc.features.module.client.CustomFontModule
+import com.kisman.cc.util.enums.Fonts
 import java.awt.Font
 import java.util.function.Supplier
 

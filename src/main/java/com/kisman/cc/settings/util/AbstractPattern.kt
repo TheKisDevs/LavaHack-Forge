@@ -2,6 +2,7 @@ package com.kisman.cc.settings.util
 
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingsList
 import com.kisman.cc.settings.types.SettingArray
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
@@ -33,9 +34,9 @@ abstract class AbstractPattern<T>(
         return this as T
     }
 
-    open fun group(group : SettingGroup) : T {
+    open fun group(group : SettingGroup) : AbstractPattern<T> {
         this.group = group
-        return this as T
+        return this
     }
 
     open fun prefix(prefix : String) : T {
@@ -64,6 +65,16 @@ abstract class AbstractPattern<T>(
         return setupSetting(array) as SettingArray<T>
     }
 
-    abstract fun preInit() : T
+    protected fun setupList(
+        list : SettingsList
+    ) : SettingsList {
+        for(setting in list.settings.values) {
+            setupSetting(setting)
+        }
+
+        return list
+    }
+
+    abstract fun preInit() : AbstractPattern<T>
     abstract fun init() : T
 }

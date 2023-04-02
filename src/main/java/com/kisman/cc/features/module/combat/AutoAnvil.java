@@ -4,8 +4,8 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -47,7 +47,7 @@ public class AutoAnvil extends Module {
             mc.player.connection.sendPacket(new CPacketHeldItemChange(oSlot));
             mc.player.inventory.currentItem = oSlot;
 
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
 
             mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
             mc.player.inventory.currentItem = oldSlot;
@@ -56,7 +56,7 @@ public class AutoAnvil extends Module {
         mc.player.connection.sendPacket(new CPacketHeldItemChange(aSlot));
         mc.player.inventory.currentItem = aSlot;
 
-        BlockUtil.placeBlock2(playerPos.up(2), EnumHand.MAIN_HAND, false, false);
+        BlockUtil2.placeBlock(playerPos.up(2), EnumHand.MAIN_HAND, false, false, false);
 
         mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
         mc.player.inventory.currentItem = oldSlot;

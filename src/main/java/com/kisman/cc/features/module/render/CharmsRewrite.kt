@@ -3,6 +3,7 @@ package com.kisman.cc.features.module.render
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
+import com.kisman.cc.features.module.render.charms.LogoutSpotsRewrite2
 import com.kisman.cc.features.module.render.charms.PopCharmsRewrite2
 import com.kisman.cc.settings.util.CharmsRewriteRendererPattern
 
@@ -16,6 +17,7 @@ import com.kisman.cc.settings.util.CharmsRewriteRendererPattern
     desc = "Modifies entity renderer.",
     category = Category.RENDER,
     modules = [
+        LogoutSpotsRewrite2::class,
         PopCharmsRewrite2::class
     ]
 )

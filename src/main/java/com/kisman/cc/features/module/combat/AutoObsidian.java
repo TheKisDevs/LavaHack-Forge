@@ -13,7 +13,6 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.Rendering;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.Block;
@@ -178,7 +177,7 @@ public class AutoObsidian extends Module {
         IBlockState state1 = mc.world.getBlockState(pos);
         if(!state1.getBlock().isReplaceable(mc.world, pos))
             return false;
-        if(BlockUtil.getPossibleSides(pos).isEmpty())
+        if(BlockUtil2.sides(pos).isEmpty())
             return false;
         IBlockState state2 = mc.world.getBlockState(pos.up());
         Block block = state2.getBlock();

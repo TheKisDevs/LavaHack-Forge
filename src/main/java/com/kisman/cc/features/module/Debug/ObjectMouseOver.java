@@ -7,8 +7,11 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.math.Trigonometric;
 import com.kisman.cc.util.render.Rendering;
-import com.kisman.cc.util.world.BlockUtil;
-import net.minecraft.util.math.*;
+import com.kisman.cc.util.world.BlockUtil2;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -28,7 +31,7 @@ public class ObjectMouseOver extends Module {
         if(!isToggled())
             return;
 
-        Vec3d eyePos = BlockUtil.getEyesPos();
+        Vec3d eyePos = BlockUtil2.eyes();
 
         Vec3d offset = Trigonometric.position(MathUtil.absNormalize(mc.player.rotationYaw, 360) + 90, mc.player.rotationPitch + 90, range.getValDouble());
         RayTraceResult rayTraceResult = mc.world.rayTraceBlocks(eyePos, eyePos.add(offset));

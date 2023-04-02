@@ -2,6 +2,8 @@ package com.kisman.cc.features.module.render.charms.popcharms
 
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.TimerUtils
+import com.kisman.cc.util.client.interfaces.IFakeEntity
+import com.kisman.cc.util.entity.EntityCopied
 import com.mojang.authlib.GameProfile
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.player.EntityPlayer
@@ -21,20 +23,12 @@ class EntityPopped(
     private val direction : EnumFacing,
     private val speed : Double,
     private val length : Long
-) : EntityOtherPlayerMP(
+) : EntityCopied(
     world,
-    profile
+    profile,
+    player
 ) {
     private val timer = TimerUtils()
-
-    private val swing = player.limbSwing
-    private val amount = player.limbSwingAmount
-    private val progress = player.swingProgress
-    private val amountPrev = player.prevLimbSwingAmount
-    private val progressPrev = player.prevSwingProgress
-    private val mainhand = player.heldItemMainhand!!
-    private val offhand = player.heldItemOffhand!!
-
     private var removed = false
 
     init {
@@ -45,14 +39,6 @@ class EntityPopped(
         mc.addScheduledTask {
             mc.world.addEntityToWorld(id, this)
         }
-    }
-
-    private fun sync() {
-        limbSwing = swing
-        limbSwingAmount = amount
-        swingProgress = progress
-        prevLimbSwingAmount = amountPrev
-        prevSwingProgress = progressPrev
     }
 
     override fun onEntityUpdate() {
@@ -76,22 +62,5 @@ class EntityPopped(
             posY = boundingBox.minY
             posZ = (boundingBox.minZ + boundingBox.maxZ) / 2.0
         }
-    }
-
-    override fun onUpdate() {
-        super.onUpdate()
-
-        sync()
-    }
-
-    override fun isSpectator() = false
-    override fun isCreative() = false
-
-    override fun getItemStackFromSlot(
-        slot : EntityEquipmentSlot
-    ) = when(slot) {
-        EntityEquipmentSlot.MAINHAND -> mainhand
-        EntityEquipmentSlot.OFFHAND -> offhand
-        else -> super.getItemStackFromSlot(slot)!!
     }
 }

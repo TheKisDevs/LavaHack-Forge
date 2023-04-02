@@ -12,7 +12,6 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.SurroundSupportModes;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.WorldUtilKt;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -110,7 +109,7 @@ public class AutoTrap extends Module {
         ArrayList<BlockPos> finalPosList = new ArrayList<>();
 
         for(BlockPos pos : startPosList) {
-            if(!supportBlocks.checkValString(SurroundSupportModes.None.name())) if(BlockUtil.getPlaceableSide(pos) == null || supportBlocks.checkValString(SurroundSupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
+            if(!supportBlocks.checkValString(SurroundSupportModes.None.name())) if(BlockUtil2.side(pos) == null || supportBlocks.checkValString(SurroundSupportModes.Static.name()) && BlockUtil2.isPositionPlaceable(pos, true, true)) finalPosList.add(pos.down());
             if(surroundPlacing.getValBoolean()) finalPosList.add(pos);
         }
 

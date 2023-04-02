@@ -1,8 +1,7 @@
 package com.kisman.cc.features.catlua.lua.utils;
 
-import com.kisman.cc.util.world.BlockUtil;
-import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.Globals;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -26,7 +25,7 @@ public class LuaInteractions implements Globals {
     }
 
     public boolean canBreak(BlockPos blockPos) {
-        return BlockUtil.canBlockBeBroken(blockPos);
+        return BlockUtil2.canBlockBeBroken(blockPos);
     }
 
     public boolean isPlaceable(BlockPos pos, boolean entityCheck) {

@@ -2,6 +2,7 @@ package com.kisman.cc.util.render.customfont
 
 import com.kisman.cc.features.module.client.CustomFontModule
 import com.kisman.cc.util.enums.FontStyles
+import com.kisman.cc.util.enums.Fonts
 import java.awt.Font
 import java.util.function.Supplier
 
@@ -41,7 +42,7 @@ open class ExtendedFontRenderer(
             }
         } else {
             y
-        }
+        } + offsetY
     }
 
     override fun drawChar(data: Array<CustomFont.CharData>, c: Char, x: Float, y: Float) {
@@ -87,19 +88,19 @@ open class ExtendedFontRenderer(
     override fun getStringHeight(text : String) : Int = (getHeight() + offset) * text.split("\n").size
 
     override fun drawString(text: String, x: Double, y: Double, color: Int, shadow: Boolean) : Float {
-        return getCurrentFont().drawString(text, x, getY(y.toInt()).toDouble(), color, shadow)
+        return getCurrentFont().drawString(text, x + offsetX, getY(y.toInt()).toDouble(), color, shadow)
     }
 
     override fun drawString(text: String, x: Double, y: Double, color: Int): Float {
-        return drawString(text, x, getY(y.toInt()).toDouble(), color, false)
+        return drawString(text, x + offsetX, getY(y.toInt()).toDouble(), color, false)
     }
 
     override fun drawCenteredString(text: String, x: Float, y: Float, color: Int) {
-        getCurrentFont().drawCenteredString(text, x, getY(y.toInt()).toFloat(), color)
+        getCurrentFont().drawCenteredString(text, x + offsetX, getY(y.toInt()).toFloat(), color)
     }
 
     override fun drawCenteredStringWithShadow(text: String, x: Float, y: Float, color: Int) {
-        getCurrentFont().drawCenteredStringWithShadow(text, x, getY(y.toInt()).toFloat(), color)
+        getCurrentFont().drawCenteredStringWithShadow(text, x + offsetX, getY(y.toInt()).toFloat(), color)
     }
 
     override fun getMultiLineOffset() : Int = offset

@@ -10,6 +10,9 @@ import java.awt.Font
 abstract class AbstractFontRenderer {
     @Throws(ArrayIndexOutOfBoundsException::class) abstract fun drawChar(data : Array<CharData>, c : Char, x : Float, y : Float)
 
+    @JvmField var offsetX = 0
+    @JvmField var offsetY = 0
+
     abstract fun getHeight() : Int
 
     abstract fun drawStringWithShadow(

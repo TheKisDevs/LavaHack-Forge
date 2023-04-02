@@ -12,7 +12,7 @@ import com.kisman.cc.util.enums.BurrowModes;
 import com.kisman.cc.util.enums.BurrowStages;
 import com.kisman.cc.util.enums.DiagonalDirections;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -119,7 +119,7 @@ public class Burrow2 extends Module {
         if(mc.world.getBlockState(pos).getBlock() == Blocks.AIR) {
             int oldSlot = mc.player.inventory.currentItem;
             swap(slot, false);
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
             swap(oldSlot, true);
         }
     }
@@ -184,9 +184,9 @@ public class Burrow2 extends Module {
             int oldSlot = mc.player.inventory.currentItem;
             swap(slot, false);
             for(BlockPos pos : SurroundRewrite.instance.getDynamicBlocksOffset(mc.player, oldPos.getY(), 0)) {
-                BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+                BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
 
-                if (placeUpperBlock.getValBoolean()) BlockUtil.placeBlock2(pos.up(), EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+                if (placeUpperBlock.getValBoolean()) BlockUtil2.placeBlock(pos.up(), EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
             }
             swap(oldSlot, true);
         } else {

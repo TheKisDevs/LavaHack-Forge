@@ -6,7 +6,6 @@ import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
-import com.kisman.cc.features.module.exploit.LogoutSpots;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
 import com.kisman.cc.features.module.movement.*;
@@ -167,7 +166,6 @@ public class ModuleManager {
 		add(new NoRender());
 		add(new PearlTracer());
 		add(new PlayerLook());
-		add(new PopCharms());
 		add(new ScreenTint());
 		add(new SelfCityESP());
 		add(new ShaderCharms());
@@ -242,7 +240,6 @@ public class ModuleManager {
 		//add(new HandMine()); deprecated
 		add(new HandMineRewrite());
 		add(new LiquidInteractRewrite());
-		add(new LogoutSpots());
 		add(new MiddleClick());
 		add(new NewChunks());
 //		add(new NoFallExploit());

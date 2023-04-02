@@ -1,5 +1,7 @@
 package com.kisman.cc.util.math;
 
+import net.minecraft.util.math.MathHelper;
+
 public class Animation {
 
     private final double begin;
@@ -45,5 +47,14 @@ public class Animation {
 
     public double getCurrent() {
         return current;
+    }
+
+    public static double animate(double target, double current, double speed) {
+        double dif = Math.max(target, current) - Math.min(target, current);
+        double factor = dif * MathHelper.clamp(speed, 0, 1);;
+        if (factor < 0.1) {
+            factor = 0.1;
+        }
+        return  target > current ? current + factor : current - factor;
     }
 }

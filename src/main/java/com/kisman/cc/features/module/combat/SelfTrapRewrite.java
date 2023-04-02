@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -121,7 +121,7 @@ public class SelfTrapRewrite extends Module {
             if(!mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos) || checkEntities(pos))
                 continue;
             swap.getValEnum().getTask().doTask(slot, false);
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+            BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
             swap.getValEnum().getTask().doTask(oldSlot, true);
         }
     }
@@ -164,7 +164,7 @@ public class SelfTrapRewrite extends Module {
             return Collections.emptyList();
         if(helpingBlocks.getValEnum() == HelpingBlocks.Full)
             return Arrays.stream(EnumFacing.HORIZONTALS).map(facing -> getPlayerPos().down().offset(facing)).collect(Collectors.toList());
-        return Arrays.stream(EnumFacing.HORIZONTALS).map(facing -> getPlayerPos().down().offset(facing)).filter(pos -> BlockUtil.getPossibleSides(pos.up()).isEmpty()).collect(Collectors.toList());
+        return Arrays.stream(EnumFacing.HORIZONTALS).map(facing -> getPlayerPos().down().offset(facing)).filter(pos -> BlockUtil2.sides(pos.up()).isEmpty()).collect(Collectors.toList());
     }
 
     private BlockPos getPlayerPos(){

@@ -1,5 +1,7 @@
 package com.kisman.cc.settings
 
+import com.kisman.cc.settings.util.AbstractPattern
+
 /**
  * @author _kisman_
  * @since 16:05 of 12.03.2023
@@ -9,22 +11,27 @@ class SettingsList(
     vararg settings0 : Any
 ) {
     @JvmField val settings = mutableMapOf<String, Setting>()
+    @JvmField val patterns = mutableMapOf<String, AbstractPattern<*>>()
 
     init {
         var key : String? = null
 
         for(setting in settings0) {
-            if(setting is String) {
-                key = setting
-            } else if(setting is Setting) {
-                settings[key!!] = setting
+            when (setting) {
+                is String -> key = setting
+                is Setting -> settings[key!!] = setting
+                is AbstractPattern<*> -> patterns[key!!] = setting
             }
         }
     }
 
     fun <T : Setting> get0(
         name : String
-    ) : T = this[name] as T
+    ) = this[name] as T
+
+    fun <T : AbstractPattern<T>> pattern(
+        name : String
+    ) = patterns[name] as T
 
     operator fun get(
         name : String

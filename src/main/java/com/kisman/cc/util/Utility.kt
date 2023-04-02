@@ -3,6 +3,7 @@
 package com.kisman.cc.util
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.gui.api.Draggable
 import com.kisman.cc.util.Globals.mc
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
@@ -11,16 +12,15 @@ import net.minecraft.client.renderer.EntityRenderer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.init.MobEffects
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
+import net.minecraft.potion.Potion
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import java.awt.SystemTray
-import java.awt.Toolkit
-import java.awt.TrayIcon
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -246,4 +246,70 @@ class GuiShaderEntry(
     val location : ResourceLocation
 ) {
     override fun toString() : String = name
+}
+
+fun fix(
+    draggable : Draggable
+) {
+    val sr = ScaledResolution(mc)
+
+    if(draggable.getX() < 0.0) {
+        draggable.setX(0.0)
+    }
+
+    if(draggable.getY() < 0.0) {
+        draggable.setY(0.0)
+    }
+
+    if(draggable.getX() > 0.0 && draggable.getX() + draggable.getW() > sr.scaledWidth) {
+        draggable.setX(sr.scaledWidth - draggable.getW())
+    }
+
+    if(draggable.getY() > 0.0 && draggable.getY() + draggable.getH() > sr.scaledHeight) {
+        draggable.setY(sr.scaledHeight - draggable.getH())
+    }
+}
+
+val potions = listOf(
+    MobEffects.SPEED,
+    MobEffects.SLOWNESS,
+    MobEffects.HASTE,
+    MobEffects.MINING_FATIGUE,
+    MobEffects.STRENGTH,
+    MobEffects.INSTANT_HEALTH,
+    MobEffects.INSTANT_DAMAGE,
+    MobEffects.JUMP_BOOST,
+    MobEffects.NAUSEA,
+    MobEffects.REGENERATION,
+    MobEffects.RESISTANCE,
+    MobEffects.FIRE_RESISTANCE,
+    MobEffects.WATER_BREATHING,
+    MobEffects.INVISIBILITY,
+    MobEffects.BLINDNESS,
+    MobEffects.NIGHT_VISION,
+    MobEffects.HUNGER,
+    MobEffects.WEAKNESS,
+    MobEffects.POISON,
+    MobEffects.WITHER,
+    MobEffects.HEALTH_BOOST,
+    MobEffects.ABSORPTION,
+    MobEffects.SATURATION,
+    MobEffects.GLOWING,
+    MobEffects.LEVITATION,
+    MobEffects.LUCK,
+    MobEffects.UNLUCK
+)
+
+fun findName(
+    uuid : UUID
+) : String? {
+    for(info in mc.player.connection.playerInfoMap) {
+        val profile = info.gameProfile
+
+        if(profile.id == uuid) {
+            return profile.name
+        }
+    }
+
+    return null
 }

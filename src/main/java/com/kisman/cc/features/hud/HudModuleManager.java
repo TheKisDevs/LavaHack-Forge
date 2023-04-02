@@ -3,8 +3,10 @@ package com.kisman.cc.features.hud;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.features.hud.modules.*;
+import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.util.ShaderPattern;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.enums.LinkedPlaces;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -18,6 +20,12 @@ public class HudModuleManager {
 	private final HudModule fakeModule = new FakeHudModule("Shaders");
 	public final ShaderPattern shaders = new ShaderPattern(fakeModule).init();
 
+	public final Setting offsetXSetting = new Setting("Offset X", null, 1, 0, 5, true).onChange(setting -> { offsetX = setting.getValInt(); });
+	public final Setting offsetYSetting = new Setting("Offset Y", null, 1, 0, 5, true).onChange(setting -> { offsetY = setting.getValInt(); });
+
+	public int offsetX = 1;
+	public int offsetY = 1;
+
 	public HudModuleManager() {
 		MinecraftForge.EVENT_BUS.register(this);
 		Kisman.instance.progressBar.steps++;
@@ -28,9 +36,9 @@ public class HudModuleManager {
 
 		add(new TwoBeeTwoTeeQueue());
 		add(new ArmorHUD());
-		add(new ArrayListModule());
+		add(ArrayList2.instance);
 		add(new BindList());
-		add(new Coords());
+		add(new Coords2());
 		add(new CrystalPerSecond2());
 		add(new CurrentConfig());
 		add(new Fps2());
@@ -39,7 +47,7 @@ public class HudModuleManager {
 		add(new Logo());
 		add(new PearlCooldown());
 		add(new Ping2());
-		add(new PotionHud());
+		add(new PotionHud2());
 		add(new PvpInfo());
 		add(new PvpResources());
 		add(new Radar());
@@ -68,6 +76,8 @@ public class HudModuleManager {
 
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent.Text event) {
+		for(LinkedPlaces place : LinkedPlaces.values()) place.refresh();
+
 		Runnable preNormalRender = () -> {};
 		Runnable shaderRender = () -> {};
 		Runnable postNormalRender = () -> {};

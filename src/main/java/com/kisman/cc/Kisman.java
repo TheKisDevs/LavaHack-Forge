@@ -166,7 +166,25 @@ public class Kisman {
             initializedFonts.set(true);
 
             LOGGER.info("Initialized fonts! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
+
+            timeStamp = System.currentTimeMillis();
+
+            LOGGER.info("Initializing ViaForge implementation!");
+
+            ViaForge.getInstance().start();
+
+            LOGGER.info("Initialized ViaForge implementation! It took " + timeStamp + " ms!");
         });
+
+        /*ThreadsKt.getExecutor().submit(() -> {
+            long timeStamp = System.currentTimeMillis();
+
+            LOGGER.info("Initializing ViaForge implementation!");
+
+            ViaForge.getInstance().start();
+
+            LOGGER.info("Initialized ViaForge implementation! It took " + timeStamp + " ms!");
+        });*/
 
         long timeStamp = System.currentTimeMillis();
 
@@ -254,21 +272,17 @@ public class Kisman {
         subSystemManager = new SubSystemManager();
         subSystemManager.init();
 
-        LOGGER.info("Initializing ViaForge implementation!");
-
-        ViaForge.getInstance().start();
-
         LOGGER.info("Initializing Schematica implementation!");
 
         Schematica.instance.init();
 
-        while (!initializedFonts.get()) {
+        /*while (!initializedFonts.get()) {
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }
+        }*/
 
         LOGGER.info("Initializing fonts: Part 2");
 

@@ -11,10 +11,8 @@ import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
 import com.kisman.cc.util.thread.ThreadUtils;
-import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -144,7 +142,8 @@ public class FireworkAura extends Module {
 
         swap.getValEnum().getTask().doTask(slot, false);
 
-        BlockUtil.placeBlock2(info.pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packetPlace.getValBoolean());
+        //TODO: BlockUtil2.placeBlock usage
+//        BlockUtil.placeBlock2(info.pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packetPlace.getValBoolean());
 
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }

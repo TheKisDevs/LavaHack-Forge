@@ -1,6 +1,8 @@
 package com.kisman.cc.util.enums
 
+import com.kisman.cc.util.Colour
 import com.kisman.cc.util.render.ColorUtils
+import kotlin.math.abs
 
 /**
  * @author _kisman_
@@ -13,20 +15,50 @@ enum class Gradients(
         override fun get(
             delay : Int,
             vararg values : Any
-        ) : Int = delay
+        ): Int = delay
     }),
     Rainbow(object : IGradient {
         override fun get(
             delay : Int,
             vararg values : Any
-        ) : Int = ColorUtils.injectAlpha(ColorUtils.rainbow(delay, values[0] as Float, 1f), 255).rgb
+        ) = if(values.size == 2) {
+            ColorUtils.injectAlpha(ColorUtils.rainbow(delay, values[0] as Float, values[1] as Float), 255).rgb
+        } else {
+            ColorUtils.injectAlpha(ColorUtils.rainbow(delay, values[0] as Float, values[1] as Float, values[2] as Float), 255).rgb
+        }
     }),
     Astolfo(object : IGradient {
         override fun get(
+            delay: Int,
+            vararg values: Any
+        ) = ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(delay), 255).rgb
+    }),
+    Pulsive(object : IGradient {
+        override fun get(
             delay : Int,
             vararg values : Any
-        ) : Int = ColorUtils.injectAlpha(ColorUtils.getAstolfoRainbow(delay), 255).rgb
+        ) = ColorUtils.twoColorEffect(values[0] as Colour, values[1] as Colour, delay, values[2] as Float).rgb
     })
+    ;
+
+    fun get(
+        delay : Int,
+        sat : Float,
+        bright : Float,
+        speed : Float?,
+        color1 : Colour,
+        color2 : Colour
+    ) = if (this == Rainbow) {
+        if(speed != null) {
+            getter.get(delay, sat, bright, speed)
+        } else {
+            getter.get(delay, sat, bright)
+        }
+    } else if (this == Pulsive) {
+        getter.get(delay, color1, color2, speed ?: 1f)
+    } else {
+        getter.get(delay)
+    }
 }
 
 interface IGradient {

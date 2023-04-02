@@ -6,9 +6,9 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.features.module.ModuleInstance;
-import com.kisman.cc.features.module.render.charms.popcharms.EntityPopped;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.util.client.interfaces.IFakeEntity;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.render.Render2DUtil;
 import com.kisman.cc.util.render.Rendering;
@@ -30,6 +30,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.HashMap;
 
+@SuppressWarnings("ConstantConditions")
 @ModuleInfo(
         name = "NameTags",
         category = Category.RENDER
@@ -64,7 +65,7 @@ public class NameTags extends Module {
     }
 
     private final Listener<RenderEntityEvent.All.Post> renderEntity = new Listener<>(event -> {
-        if(event.getEntity() instanceof EntityPlayer && !(event.getEntity() instanceof EntityPopped) && (event.getEntity() != mc.player || (self.getValBoolean() && mc.gameSettings.thirdPersonView != 0))) {
+        if(event.getEntity() instanceof EntityPlayer && !(event.getEntity() instanceof IFakeEntity) && (event.getEntity() != mc.player || (self.getValBoolean() && mc.gameSettings.thirdPersonView != 0))) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
 
             int ping = -1;

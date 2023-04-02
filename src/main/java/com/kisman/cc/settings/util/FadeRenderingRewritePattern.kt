@@ -28,17 +28,17 @@ class FadeRenderingRewritePattern(
 ) {
     //TODO: custom easings
 
-    private val filledColorFadeGroup = setupGroup(filledColorGroup.add(SettingGroup(Setting("Fade", module))))
+    private val filledColorFadeGroup = setupGroup(colors.filled.add(SettingGroup(Setting("Fade", module))))
     private val filledColorFadeLogic = setupEnum(filledColorFadeGroup.add(SettingEnum("Filled Color Fade Logic", module, defaultFadeLogic).setTitle("Logic")))
     private val filledColorFadeDelay = setupSetting(filledColorFadeGroup.add(Setting("Filled Color Fade Delay", module, 0.0, 0.0, 10000.0, NumberType.TIME).setTitle("Delay")))
 
-    private val outlineColorFadeGroup = setupGroup(outlineColorGroup.add(SettingGroup(Setting("Fade", module))))
+    private val outlineColorFadeGroup = setupGroup(colors.outline.add(SettingGroup(Setting("Fade", module))))
     private val outlineColorFadeLogic = setupEnum(outlineColorFadeGroup.add(SettingEnum("Outline Color Fade Logic", module, defaultFadeLogic).setTitle("Logic")))
     private val outlineColorFadeDelay = setupSetting(outlineColorFadeGroup.add(Setting("Outline Color Fade Delay", module, 0.0, 0.0, 10000.0, NumberType.TIME).setTitle("Delay")))
 
-    private val wireColorFadeGroup = setupGroup(wireColorGroup.add(SettingGroup(Setting("Fade", module))))
-    private val wireColorFadeLogic = setupEnum(wireColorFadeGroup.add(SettingEnum("Wire Color Fade Logic", module, defaultFadeLogic).setTitle("Logic")))
-    private val wireColorFadeDelay = setupSetting(wireColorFadeGroup.add(Setting("Wire Color Fade Delay", module, 0.0, 0.0, 10000.0, NumberType.TIME).setTitle("Delay")))
+//    private val wireColorFadeGroup = setupGroup(wireColorGroup.add(SettingGroup(Setting("Fade", module))))
+//    private val wireColorFadeLogic = setupEnum(wireColorFadeGroup.add(SettingEnum("Wire Color Fade Logic", module, defaultFadeLogic).setTitle("Logic")))
+//    private val wireColorFadeDelay = setupSetting(wireColorFadeGroup.add(Setting("Wire Color Fade Delay", module, 0.0, 0.0, 10000.0, NumberType.TIME).setTitle("Delay")))
 
     override fun init() : FadeRenderingRewritePattern {
         super.init()
@@ -46,7 +46,7 @@ class FadeRenderingRewritePattern(
         if(customFadeLogic) {
             module.register(filledColorFadeLogic)
             module.register(outlineColorFadeLogic)
-            module.register(wireColorFadeLogic)
+//            module.register(wireColorFadeLogic)
         }
 
         module.register(filledColorFadeGroup)
@@ -55,8 +55,8 @@ class FadeRenderingRewritePattern(
         module.register(outlineColorFadeGroup)
         module.register(outlineColorFadeDelay)
 
-        module.register(wireColorFadeGroup)
-        module.register(wireColorFadeDelay)
+//        module.register(wireColorFadeGroup)
+//        module.register(wireColorFadeDelay)
 
         return this
     }
@@ -83,12 +83,22 @@ class FadeRenderingRewritePattern(
     ) {
         draw(
             aabb,
-            getFilledColor1(),
-            getFilledColor2(),
-            getOutlineColor1(),
-            getOutlineColor2(),
-            getWireColor1(),
-            getWireColor2(),
+            colors.filledColor1.color(),
+            colors.filledColor2.color(),
+            colors.filledColor3.color(),
+            colors.filledColor4.color(),
+            colors.filledColor5.color(),
+            colors.filledColor6.color(),
+            colors.filledColor7.color(),
+            colors.filledColor8.color(),
+            colors.outlineColor1.color(),
+            colors.outlineColor2.color(),
+            colors.outlineColor3.color(),
+            colors.outlineColor4.color(),
+            colors.outlineColor5.color(),
+            colors.outlineColor6.color(),
+            colors.outlineColor7.color(),
+            colors.outlineColor8.color(),
             (mode.valEnum as RenderingRewriteModes).mode,
             timeStamp,
             range,
@@ -100,10 +110,20 @@ class FadeRenderingRewritePattern(
         aabb : AxisAlignedBB,
         filledColor1 : Colour,
         filledColor2 : Colour,
+        filledColor3 : Colour,
+        filledColor4 : Colour,
+        filledColor5 : Colour,
+        filledColor6 : Colour,
+        filledColor7 : Colour,
+        filledColor8 : Colour,
         outlineColor1 : Colour,
         outlineColor2 : Colour,
-        wireColor1 : Colour,
-        wireColor2 : Colour,
+        outlineColor3 : Colour,
+        outlineColor4 : Colour,
+        outlineColor5 : Colour,
+        outlineColor6 : Colour,
+        outlineColor7 : Colour,
+        outlineColor8 : Colour,
         mode : Rendering.Mode?,
         timeStamp : Long
     ) {
@@ -112,10 +132,20 @@ class FadeRenderingRewritePattern(
                 aabb,
                 filledColor1,
                 filledColor2,
+                filledColor3,
+                filledColor4,
+                filledColor5,
+                filledColor6,
+                filledColor7,
+                filledColor8,
                 outlineColor1,
                 outlineColor2,
-                wireColor1,
-                wireColor2,
+                outlineColor3,
+                outlineColor4,
+                outlineColor5,
+                outlineColor6,
+                outlineColor7,
+                outlineColor8,
                 mode,
                 timeStamp,
                 1.0f,
@@ -128,10 +158,20 @@ class FadeRenderingRewritePattern(
         aabb : AxisAlignedBB,
         filledColor1 : Colour,
         filledColor2 : Colour,
+        filledColor3 : Colour,
+        filledColor4 : Colour,
+        filledColor5 : Colour,
+        filledColor6 : Colour,
+        filledColor7 : Colour,
+        filledColor8 : Colour,
         outlineColor1 : Colour,
         outlineColor2 : Colour,
-        wireColor1 : Colour,
-        wireColor2 : Colour,
+        outlineColor3 : Colour,
+        outlineColor4 : Colour,
+        outlineColor5 : Colour,
+        outlineColor6 : Colour,
+        outlineColor7 : Colour,
+        outlineColor8 : Colour,
         mode : Rendering.Mode?,
         range : Float
     ) {
@@ -141,10 +181,20 @@ class FadeRenderingRewritePattern(
             aabb,
             filledColor1,
             filledColor2,
+            filledColor3,
+            filledColor4,
+            filledColor5,
+            filledColor6,
+            filledColor7,
+            filledColor8,
             outlineColor1,
             outlineColor2,
-            wireColor1,
-            wireColor2,
+            outlineColor3,
+            outlineColor4,
+            outlineColor5,
+            outlineColor6,
+            outlineColor7,
+            outlineColor8,
             mode,
             range,
             mc.player.getDistance(center.x, center.y, center.z).toFloat()
@@ -155,10 +205,20 @@ class FadeRenderingRewritePattern(
         aabb : AxisAlignedBB,
         filledColor1 : Colour,
         filledColor2 : Colour,
+        filledColor3 : Colour,
+        filledColor4 : Colour,
+        filledColor5 : Colour,
+        filledColor6 : Colour,
+        filledColor7 : Colour,
+        filledColor8 : Colour,
         outlineColor1 : Colour,
         outlineColor2 : Colour,
-        wireColor1 : Colour,
-        wireColor2 : Colour,
+        outlineColor3 : Colour,
+        outlineColor4 : Colour,
+        outlineColor5 : Colour,
+        outlineColor6 : Colour,
+        outlineColor7 : Colour,
+        outlineColor8 : Colour,
         mode : Rendering.Mode?,
         range : Float,
         distance : Float
@@ -168,10 +228,20 @@ class FadeRenderingRewritePattern(
                 aabb,
                 filledColor1,
                 filledColor2,
+                filledColor3,
+                filledColor4,
+                filledColor5,
+                filledColor6,
+                filledColor7,
+                filledColor8,
                 outlineColor1,
                 outlineColor2,
-                wireColor1,
-                wireColor2,
+                outlineColor3,
+                outlineColor4,
+                outlineColor5,
+                outlineColor6,
+                outlineColor7,
+                outlineColor8,
                 mode,
                 1L,
                 range,
@@ -184,10 +254,20 @@ class FadeRenderingRewritePattern(
         aabb : AxisAlignedBB,
         filledColor1 : Colour,
         filledColor2 : Colour,
+        filledColor3 : Colour,
+        filledColor4 : Colour,
+        filledColor5 : Colour,
+        filledColor6 : Colour,
+        filledColor7 : Colour,
+        filledColor8 : Colour,
         outlineColor1 : Colour,
         outlineColor2 : Colour,
-        wireColor1 : Colour,
-        wireColor2 : Colour,
+        outlineColor3 : Colour,
+        outlineColor4 : Colour,
+        outlineColor5 : Colour,
+        outlineColor6 : Colour,
+        outlineColor7 : Colour,
+        outlineColor8 : Colour,
         mode : Rendering.Mode?,
         timeStamp : Long,
         range : Float,
@@ -212,10 +292,20 @@ class FadeRenderingRewritePattern(
             aabb,
             modifyColor(filledColor1, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
             modifyColor(filledColor2, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor3, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor4, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor5, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor6, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor7, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
+            modifyColor(filledColor8, filledColorFadeDelay.valLong, filledColorFadeLogic.valEnum),
             modifyColor(outlineColor1, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
             modifyColor(outlineColor2, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
-            modifyColor(wireColor1, wireColorFadeDelay.valLong, wireColorFadeLogic.valEnum),
-            modifyColor(wireColor2, wireColorFadeDelay.valLong, wireColorFadeLogic.valEnum),
+            modifyColor(outlineColor3, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
+            modifyColor(outlineColor4, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
+            modifyColor(outlineColor5, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
+            modifyColor(outlineColor6, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
+            modifyColor(outlineColor7, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
+            modifyColor(outlineColor8, outlineColorFadeDelay.valLong, outlineColorFadeLogic.valEnum),
             mode,
             emptyList()
         )

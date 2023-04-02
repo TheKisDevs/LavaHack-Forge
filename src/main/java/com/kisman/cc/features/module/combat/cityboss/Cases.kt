@@ -4,7 +4,7 @@ import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.block
 import com.kisman.cc.util.render.left
 import com.kisman.cc.util.render.right
-import com.kisman.cc.util.world.BlockUtil
+import com.kisman.cc.util.world.BlockUtil2
 import net.minecraft.init.Blocks
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
@@ -182,7 +182,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2))) {
+                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil2.canBlockBeBroken(pos2))) {
                     return false
                 }
             }
@@ -201,7 +201,7 @@ enum class Cases {
             if(valid(pos1, newVersion)) {
                 val pos2 = pos.add(pos1)
 
-                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil.canBlockBeBroken(pos2))) {
+                if (block(pos) == Blocks.BEDROCK || (block(pos2) != Blocks.AIR && !BlockUtil2.canBlockBeBroken(pos2))) {
                     return false
                 }
             }

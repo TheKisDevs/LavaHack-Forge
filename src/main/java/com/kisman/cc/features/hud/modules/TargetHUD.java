@@ -4,10 +4,10 @@ import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.AnimationUtils;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.UtilityKt;
+import com.kisman.cc.util.math.Animation;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -188,7 +188,7 @@ public class TargetHUD extends HudModule {
         double healthWid = (target.getHealth() / target.getMaxHealth() * 120);
         healthWid = MathHelper.clamp(healthWid, 0.0D, 120.0D);
         double check = target.getHealth() < 18 && target.getHealth() > 1 ? 8 : 0;
-        hpBarWidth = AnimationUtils.animate(healthWid, hpBarWidth, 0.05);
+        hpBarWidth = Animation.animate(healthWid, hpBarWidth, 0.05);
         Render2DUtil.drawRectWH(x, y, 155, 60, new Color(20, 20, 20, 200).getRGB());
         mc.fontRenderer.drawStringWithShadow(target.getName(), x + 30, y + 4, color.getRGB());
         GlStateManager.pushMatrix();
@@ -333,14 +333,14 @@ public class TargetHUD extends HudModule {
 
         //draw cooldown slider
         double cooldownPercentage = MathHelper.clamp(target.getCooledAttackStrength(0), 0.1, 1);
-        cdBarWidth = AnimationUtils.animate(cooldownPercentage * maxSlidersWidth, cdBarWidth, 0.05);
+        cdBarWidth = Animation.animate(cooldownPercentage * maxSlidersWidth, cdBarWidth, 0.05);
         CustomFontUtil.drawStringWithShadow("Cooldown", x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 27 + 4 + 12, ColorUtils.astolfoColors(100, 100));
         drawSlider(x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight() * 2 + 27 + 6 + 12, cdBarWidth, CustomFontUtil.getFontHeight());
         count++;
 
         //draw health slider
         if(timer.passedMillis(15)) {
-            hpBarWidth = AnimationUtils.animate((target.getHealth() / target.getMaxHealth()) * maxSlidersWidth, hpBarWidth, 0.05);
+            hpBarWidth = Animation.animate((target.getHealth() / target.getMaxHealth()) * maxSlidersWidth, hpBarWidth, 0.05);
             timer.reset();
         }
         CustomFontUtil.drawStringWithShadow("Health", x + borderOffset, y + borderOffset * 3 + CustomFontUtil.getFontHeight() + 27 + 4 + (count * offset) + 12, ColorUtils.astolfoColors(100, 100));

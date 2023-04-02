@@ -5,6 +5,7 @@ import com.kisman.cc.gui.halq.Frame
 import com.kisman.cc.gui.halq.HalqGui
 import com.kisman.cc.gui.halq.components.Button
 import com.kisman.cc.gui.halq.components.sub.ColorButton
+import com.kisman.cc.gui.halq.components.sub.Slider
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.util.Colour
 
@@ -42,6 +43,30 @@ class HudSettingsFrame(
 
         components.add(Button(
             Kisman.instance.hudModuleManager.shaders.module,
+            x,
+            y,
+            offsetY,
+            count1,
+            0
+        ))
+
+        offsetY += HalqGui.height
+        count1++
+
+        components.add(Slider(
+            Kisman.instance.hudModuleManager.offsetXSetting,
+            x,
+            y,
+            offsetY,
+            count1,
+            0
+        ))
+
+        offsetY += HalqGui.height
+        count1++
+
+        components.add(Slider(
+            Kisman.instance.hudModuleManager.offsetYSetting,
             x,
             y,
             offsetY,

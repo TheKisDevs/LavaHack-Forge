@@ -69,7 +69,7 @@ fun sendInteractPacket(
 
     if (block !is BlockAir && block !is BlockLiquid) return
 
-    val side = BlockUtil.getFirstFacing(pos) ?: return
+    val side = BlockUtil2.side(pos) ?: return
 
     val adjacent = pos.offset(side)
     val opposite = side.opposite
@@ -84,7 +84,7 @@ fun sendInteractPacket(
         sneaking = true
     }
 
-    BlockUtil.rightClickBlock(adjacent, vec, EnumHand.MAIN_HAND, opposite, true)
+    BlockUtil2.rightClickBlock(adjacent, vec, EnumHand.MAIN_HAND, opposite, true)
     mc.player.swingArm(EnumHand.MAIN_HAND)
     mc.rightClickDelayTimer = 4
 

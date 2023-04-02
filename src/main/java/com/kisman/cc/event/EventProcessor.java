@@ -3,20 +3,15 @@ package com.kisman.cc.event;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventInput;
 import com.kisman.cc.event.events.EventResolutionUpdate;
-import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
 import com.kisman.cc.event.events.lua.EventClientChat;
 import com.kisman.cc.event.events.lua.EventClientTickUpdate;
 import com.kisman.cc.event.events.lua.EventRender2D;
 import com.kisman.cc.event.events.lua.EventRender3D;
-import com.kisman.cc.event.events.subscribe.TotemPopEvent;
 import com.kisman.cc.features.module.client.MainMenuModule;
 import com.kisman.cc.features.module.client.custommainmenu.CustomMainMenu;
 import com.kisman.cc.features.module.combat.AutoRer;
-import me.zero.alpine.listener.EventHandler;
-import me.zero.alpine.listener.Listener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -34,7 +29,6 @@ public class EventProcessor {
 
     public EventProcessor() {
         MinecraftForge.EVENT_BUS.register(this);
-        Kisman.EVENT_BUS.subscribe(totempop);
         Kisman.instance.progressBar.steps++;
     }
 
@@ -95,15 +89,6 @@ public class EventProcessor {
             } catch (Exception ignored) {}
         }
     }
-
-    @EventHandler
-    private final Listener<PacketEvent.Receive> totempop = new Listener<>(event -> {
-        if(event.getPacket() instanceof SPacketEntityStatus && ((SPacketEntityStatus) event.getPacket()).getOpCode() == 35) {
-            TotemPopEvent totemPopEvent = new TotemPopEvent(((SPacketEntityStatus) event.getPacket()).getEntity(mc.world));
-            MinecraftForge.EVENT_BUS.post(totemPopEvent);
-            if(totemPopEvent.isCanceled()) event.cancel();
-        }
-    });
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {

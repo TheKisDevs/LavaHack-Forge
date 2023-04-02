@@ -20,8 +20,8 @@ class TileEntityImplementation(
     private val renderer = RenderingRewritePattern(module).prefix(tile.name).group(group).preInit().init()
 
     init {
-        renderer.filledColor1.colour = tile.color
-        renderer.outlineColor1.colour = tile.color
+        renderer.colors.filledColor1.color.colour = tile.color
+        renderer.colors.outlineColor1.color.colour = tile.color
     }
 
     override fun valid(tile : TileEntity, callingFromDraw : Boolean?) : Boolean = renderer.isActive() && this.tile.validator.valid(tile) && (callingFromDraw == null || renderer.canRender(callingFromDraw))

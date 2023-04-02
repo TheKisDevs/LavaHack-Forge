@@ -7,7 +7,7 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
@@ -56,7 +56,7 @@ public class ArrowBlocker extends Module {
         double y = arrow.posX + (arrow.motionY * 0.77);
         double z = arrow.posZ + (arrow.motionZ * 0.89);
         BlockPos pos = new BlockPos(x, y, z);
-        if(BlockUtil.getPossibleSides(pos).isEmpty())
+        if(BlockUtil2.sides(pos).isEmpty())
             return;
         if(!mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos))
             return;
@@ -65,7 +65,7 @@ public class ArrowBlocker extends Module {
             return;
         int oldSlot = mc.player.inventory.currentItem;
         swap.getValEnum().getTask().doTask(slot, false);
-        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+        BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 

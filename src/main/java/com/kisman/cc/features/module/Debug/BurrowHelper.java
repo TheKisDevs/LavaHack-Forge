@@ -6,19 +6,16 @@ import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.combat.Burrow2;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.thread.ThreadUtils;
-import com.kisman.cc.util.world.BlockUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class BurrowHelper extends Module {
@@ -48,10 +45,11 @@ public class BurrowHelper extends Module {
         if(pos == null)
             return;
         pos = pos.down();
+        //TODO: BlockUtil2.placeBlock usage
         if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos)){
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
             mc.player.inventory.currentItem = slot;
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
+//            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
             mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
             mc.player.inventory.currentItem = oldSlot;
         }
@@ -59,7 +57,7 @@ public class BurrowHelper extends Module {
         if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos)){
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
             mc.player.inventory.currentItem = slot;
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
+//            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
             mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
             mc.player.inventory.currentItem = oldSlot;
         }
@@ -67,7 +65,7 @@ public class BurrowHelper extends Module {
         if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos)){
             mc.player.connection.sendPacket(new CPacketHeldItemChange(slot));
             mc.player.inventory.currentItem = slot;
-            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
+//            BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, true, false);
             mc.player.connection.sendPacket(new CPacketHeldItemChange(oldSlot));
             mc.player.inventory.currentItem = oldSlot;
         }

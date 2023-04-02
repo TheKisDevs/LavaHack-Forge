@@ -43,6 +43,10 @@ open class SettingGroup(
         for(setting in it.settings.values) {
             add(setting)
         }
+
+        for(pattern in it.patterns.values) {
+            pattern.group(this).preInit()
+        }
     }
 
     fun remove(

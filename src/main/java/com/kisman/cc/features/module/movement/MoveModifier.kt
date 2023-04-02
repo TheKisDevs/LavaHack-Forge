@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.movement
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventEntityControl
+import com.kisman.cc.event.events.EventPlayerMove
 import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
@@ -17,6 +18,7 @@ import com.kisman.cc.util.movement.gotoXZInverted
 import com.kisman.cc.util.movement.stop
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
+import net.minecraft.entity.MoverType
 import net.minecraft.init.Blocks
 import net.minecraft.init.MobEffects
 import net.minecraft.network.play.client.CPacketPlayer
@@ -25,6 +27,7 @@ import net.minecraft.network.play.client.CPacketPlayer
  * @author _kisman_
  * @since 12.05.2022
  */
+@Suppress("unused")
 @ModuleInfo(
     name = "MoveModifier",
     desc = "Extra movement features",
@@ -119,10 +122,12 @@ class MoveModifier : Module() {
     override fun onEnable() {
         Kisman.EVENT_BUS.subscribe(send)
         Kisman.EVENT_BUS.subscribe(entityControlListener)
+        Kisman.EVENT_BUS.subscribe(moveListener)
         lagTimer.reset()
     }
 
     override fun onDisable() {
+        Kisman.EVENT_BUS.unsubscribe(moveListener)
         Kisman.EVENT_BUS.unsubscribe(entityControlListener)
         Kisman.EVENT_BUS.unsubscribe(send)
 
@@ -166,7 +171,6 @@ class MoveModifier : Module() {
         doParkour()
         doFastLadder()
         doLevitationControl()
-        doInstant()
         doMotionLimiter()
     }
 
@@ -208,15 +212,6 @@ class MoveModifier : Module() {
             if(mc.player.motionY < motionY) {
                 mc.player.motionY = motionY
             }
-        }
-    }
-
-    private fun doInstant() {
-        if(instant.valBoolean && ((!mc.player.isInWater && !mc.player.isInLava) || instantLiquids.valBoolean) && !mc.player.isElytraFlying) {
-            val motions = MovementUtil.strafe2(MovementUtil.DEFAULT_SPEED)
-
-            mc.player.motionX = motions[0]
-            mc.player.motionZ = motions[1]
         }
     }
 
@@ -357,6 +352,16 @@ class MoveModifier : Module() {
 
     private val entityControlListener = Listener<EventEntityControl>(EventHook {
         if(entityControl.valBoolean) {
+            it.cancel()
+        }
+    })
+
+    private val moveListener = Listener<EventPlayerMove>(EventHook {
+        if(it.type == MoverType.SELF && instant.valBoolean && ((!mc.player.isInWater && !mc.player.isInLava) || instantLiquids.valBoolean) && !mc.player.isElytraFlying) {
+            val motions = MovementUtil.strafe(MovementUtil.DEFAULT_SPEED)
+
+            it.x = motions[0]
+            it.z = motions[1]
             it.cancel()
         }
     })

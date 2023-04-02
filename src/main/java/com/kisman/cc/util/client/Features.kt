@@ -1,14 +1,15 @@
-@file:Suppress("PrivatePropertyName", "FunctionName")
+@file:Suppress("PrivatePropertyName", "FunctionName", "PropertyName")
 
 package com.kisman.cc.util.client
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventInput
-import com.kisman.cc.features.hud.modules.ArrayListModule
+import com.kisman.cc.features.hud.AverageMultiLineHudModule
+import com.kisman.cc.features.hud.modules.ArrayList2
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.util.enums.BindType
-import com.kisman.cc.util.math.Animation
+import com.kisman.cc.util.math.animation.HudAnimation
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listenable
 import me.zero.alpine.listener.Listener
@@ -17,14 +18,17 @@ import org.lwjgl.input.Mouse
 
 interface IFeature : Listenable, IBindable
 
-abstract class DisplayableFeature : IFeature {
-    private val ENABLE_ANIMATION = ArrayListAnimation(false)//AnimationExtended({ ArrayListModule.ANIMATION_EASING }, { ArrayListModule.ANIMATION_LENGTH }, false)
-
-    private val DISABLE_ANIMATION = ArrayListAnimation(true)//AnimationExtended({ ArrayListModule.ANIMATION_EASING }, { ArrayListModule.ANIMATION_LENGTH }, true)
+open class AnimateableFeature(
+    module : AverageMultiLineHudModule? = null
+) {
+    open val ENABLE_ANIMATION = HudAnimation({ module ?: ArrayList2.instance }, false)
+    open val DISABLE_ANIMATION = HudAnimation({ module ?: ArrayList2.instance }, true)
 
     fun ENABLE_ANIMATION() = ENABLE_ANIMATION
     fun DISABLE_ANIMATION() = DISABLE_ANIMATION
+}
 
+abstract class DisplayableFeature : AnimateableFeature(), IFeature {
     abstract fun onInputEvent()
 
     private val onKey = Listener<EventInput.Keyboard>(EventHook {
@@ -67,20 +71,4 @@ abstract class DisplayableFeature : IFeature {
         Kisman.EVENT_BUS.subscribe(onKey)
         Kisman.EVENT_BUS.subscribe(onMouse)
     }
-}
-
-class ArrayListAnimation(
-    reverse : Boolean
-) : Animation(
-    if(reverse) 1.0 else 0.0,
-    if(reverse) 0.0 else 1.0,
-    750
-) {
-    override fun update() {
-        time = ArrayListModule.ANIMATION_LENGTH
-
-        super.update()
-    }
-
-    override fun getCurrent() : Double = ArrayListModule.ANIMATION_EASING.task.doTask(super.getCurrent())
 }

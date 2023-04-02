@@ -6,7 +6,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -121,7 +121,7 @@ public class Scaffold extends Module {
         if(down)
             placeBlock(last.down(), slot);
         BlockPos connector = getConnector(pos);
-        if(BlockUtil.getPossibleSides(down ? pos.down() : pos).isEmpty() && connector != null)
+        if(BlockUtil2.sides(down ? pos.down() : pos).isEmpty() && connector != null)
             placeBlock(down ? connector.down() : connector, slot);
         placeBlock(down ? pos.down() : pos, slot);
         if(!keepY.getValBoolean() && !down && newY > playerY)
@@ -210,7 +210,7 @@ public class Scaffold extends Module {
             return;
         int oldSlot = mc.player.inventory.currentItem;
         swap.getValEnum().getTask().doTask(slot, false);
-        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+        BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 
@@ -226,7 +226,7 @@ public class Scaffold extends Module {
     private BlockPos getConnector(BlockPos pos){
         return Stream.of(EnumFacing.HORIZONTALS)
                 .map(pos::offset)
-                .filter(blockPos -> !BlockUtil.getPossibleSides(blockPos).isEmpty())
+                .filter(blockPos -> !BlockUtil2.sides(blockPos).isEmpty())
                 .filter(blockPos -> !checkEntities(blockPos))
                 .min(Comparator.comparingDouble(blockPos -> mc.player.getDistance(blockPos.getX() + 0.5, blockPos.getY() + 1, blockPos.getZ() + 0.5)))
                 .orElse(null);

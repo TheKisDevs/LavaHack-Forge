@@ -7,8 +7,11 @@ import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.math.Trigonometric;
 import com.kisman.cc.util.render.Rendering;
-import com.kisman.cc.util.world.BlockUtil;
-import net.minecraft.util.math.*;
+import com.kisman.cc.util.world.BlockUtil2;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 public class Triangulation extends Module {
@@ -30,7 +33,7 @@ public class Triangulation extends Module {
         //pitch + 90
         //MathHelper.normalizeAngle(40, 360);
 
-        Vec3d vec = BlockUtil.getEyesPos();
+        Vec3d vec = BlockUtil2.eyes();
         Vec3d vec1 = Trigonometric.position(mc.player.rotationPitch, mc.player.rotationYaw, distance.getValDouble());
         RayTraceResult raytrace = mc.world.rayTraceBlocks(vec, vec.add(vec1));
         if(raytrace == null)

@@ -148,10 +148,6 @@ public class MovementUtil {
         mc.player.setPosition(mc.player.posX + (-Math.sin(yaw) * off), mc.player.posY, mc.player.posZ + (Math.cos(yaw) * off));
     }
 
-    private static float getRoundedMovementInput(float input) {
-        return (input > 0.0F) ? 1.0F : ((input < 0.0F) ? -1.0F : 0.0F);
-    }
-
     public static double[] strafe(double speed) {
         return strafe(mc.player, speed);
     }

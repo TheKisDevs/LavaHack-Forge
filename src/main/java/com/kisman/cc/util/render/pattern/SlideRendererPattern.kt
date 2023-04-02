@@ -192,12 +192,22 @@ open class SlideRendererPattern {
 
                 renderer.draw(
                     pos,
-                    if(pos is ColorableSlidePos) pos.colour1 else renderer.getFilledColor1(),
-                    if(pos is ColorableSlidePos) pos.colour2 else renderer.getFilledColor2(),
-                    if(pos is ColorableSlidePos) pos.colour3 else renderer.getOutlineColor1(),
-                    if(pos is ColorableSlidePos) pos.colour4 else renderer.getOutlineColor2(),
-                    if(pos is ColorableSlidePos) pos.colour5 else renderer.getWireColor1(),
-                    if(pos is ColorableSlidePos) pos.colour6 else renderer.getWireColor2(),
+                    if(pos is ColorableSlidePos) pos.colour1 else renderer.colors.filledColor1.color(),
+                    if(pos is ColorableSlidePos) pos.colour2 else renderer.colors.filledColor2.color(),
+                    if(pos is ColorableSlidePos) pos.colour3 else renderer.colors.filledColor3.color(),
+                    if(pos is ColorableSlidePos) pos.colour4 else renderer.colors.filledColor4.color(),
+                    if(pos is ColorableSlidePos) pos.colour5 else renderer.colors.filledColor5.color(),
+                    if(pos is ColorableSlidePos) pos.colour6 else renderer.colors.filledColor6.color(),
+                    if(pos is ColorableSlidePos) pos.colour7 else renderer.colors.filledColor7.color(),
+                    if(pos is ColorableSlidePos) pos.colour8 else renderer.colors.filledColor8.color(),
+                    if(pos is ColorableSlidePos) pos.colour9 else renderer.colors.outlineColor1.color(),
+                    if(pos is ColorableSlidePos) pos.colour10 else renderer.colors.outlineColor2.color(),
+                    if(pos is ColorableSlidePos) pos.colour11 else renderer.colors.outlineColor3.color(),
+                    if(pos is ColorableSlidePos) pos.colour12 else renderer.colors.outlineColor4.color(),
+                    if(pos is ColorableSlidePos) pos.colour13 else renderer.colors.outlineColor5.color(),
+                    if(pos is ColorableSlidePos) pos.colour14 else renderer.colors.outlineColor6.color(),
+                    if(pos is ColorableSlidePos) pos.colour15 else renderer.colors.outlineColor7.color(),
+                    if(pos is ColorableSlidePos) pos.colour16 else renderer.colors.outlineColor8.color(),
                     alphaCoeff
                 )
             }
@@ -294,12 +304,22 @@ open class SlideRendererPattern {
     ) : ColorableSlidePos? {
         val colorablePos = if(pos != null) ColorableSlidePos(
             pos,
-            renderer.getFilledColor1(),
-            renderer.getFilledColor2(),
-            renderer.getOutlineColor1(),
-            renderer.getOutlineColor2(),
-            renderer.getWireColor1(),
-            renderer.getWireColor2()
+            renderer.colors.filledColor1.color(),
+            renderer.colors.filledColor2.color(),
+            renderer.colors.filledColor3.color(),
+            renderer.colors.filledColor4.color(),
+            renderer.colors.filledColor5.color(),
+            renderer.colors.filledColor6.color(),
+            renderer.colors.filledColor7.color(),
+            renderer.colors.filledColor8.color(),
+            renderer.colors.outlineColor1.color(),
+            renderer.colors.outlineColor2.color(),
+            renderer.colors.outlineColor3.color(),
+            renderer.colors.outlineColor4.color(),
+            renderer.colors.outlineColor5.color(),
+            renderer.colors.outlineColor6.color(),
+            renderer.colors.outlineColor7.color(),
+            renderer.colors.outlineColor8.color()
         ) else null
 
         if(colorablePos != null) {

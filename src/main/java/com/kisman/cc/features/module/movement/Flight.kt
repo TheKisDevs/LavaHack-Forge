@@ -16,6 +16,8 @@ import com.kisman.cc.features.module.movement.fly.PacketFly
     name = "Flight",
     display = "Flight",
     category = Category.MOVEMENT,
+    toggled = true,
+    toggleable = false,
     modules = [
         BoatFly::class,
         ElytraFly::class,

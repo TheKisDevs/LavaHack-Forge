@@ -20,9 +20,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
-import static com.kisman.cc.util.world.BlockUtil.getPlaceableSide;
 
 @SuppressWarnings("ConstantConditions")
 public class BlockUtil2 {
@@ -122,7 +122,7 @@ public class BlockUtil2 {
                 return false;
             }
         }
-        if (sideCheck) return getPlaceableSide(position) != null;
+        if (sideCheck) return side(position) != null;
         return true;
     }
 
@@ -136,8 +136,8 @@ public class BlockUtil2 {
 
     public static boolean placeBlock(BlockPos position, EnumHand hand, boolean packet, boolean raytrace, boolean rotate) {
         if (!mc.world.getBlockState(position).getBlock().isReplaceable(mc.world, position)) return false;
-        if (getPlaceableSide(position) == null) return false;
-        clickBlock(position, getPlaceableSide(position), hand, packet, rotate);
+        if (side(position) == null) return false;
+        clickBlock(position, side(position), hand, packet, rotate);
         mc.player.connection.sendPacket(new CPacketAnimation(hand));
         return true;
     }
@@ -166,12 +166,44 @@ public class BlockUtil2 {
                 return false;
             }
         }
-        return !sideCheck || getPlaceableSide(position) != null;
+        return !sideCheck || side(position) != null;
     }
 
     public static boolean canBlockBeBroken(BlockPos pos) {
         IBlockState blockState = mc.world.getBlockState(pos);
         Block block = blockState.getBlock();
         return block.getBlockHardness(blockState, mc.world, pos) != -1;
+    }
+
+    public static Vec3d eyes() {
+        return new Vec3d(mc.player.posX, mc.player.posY + mc.player.getEyeHeight(), mc.player.posZ);
+    }
+
+    public static List<EnumFacing> sides(BlockPos pos) {
+        ArrayList<EnumFacing> facings = new ArrayList<>();
+
+        for(EnumFacing side : EnumFacing.values()) {
+            BlockPos offset = pos.offset(side);
+            IBlockState state = mc.world.getBlockState(offset);
+
+            if(state != null && state.getBlock().canCollideCheck(state, false) && !state.getMaterial().isReplaceable()) facings.add(side);
+        }
+
+        return facings;
+    }
+
+    public static EnumFacing side(BlockPos pos) {
+        return sides(pos).stream().findFirst().orElse(null);
+    }
+
+    public static void rightClickBlock(BlockPos pos, Vec3d vec, EnumHand hand, EnumFacing direction, boolean packet) {
+        if (packet) {
+            float f = (float)(vec.x - pos.getX());
+            float f2 = (float)(vec.y - pos.getY());
+            float f3 = (float)(vec.z - pos.getZ());
+            mc.player.connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f2, f3));
+        } else mc.playerController.processRightClickBlock(mc.player, mc.world, pos, direction, vec, hand);
+        mc.player.swingArm(EnumHand.MAIN_HAND);
+        mc.rightClickDelayTimer = 4;
     }
 }

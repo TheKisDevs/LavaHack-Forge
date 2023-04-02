@@ -3,13 +3,9 @@ package com.kisman.cc.features.module.misc;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.world.BlockUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 public class SelectionPlacer extends Module {
@@ -37,7 +33,8 @@ public class SelectionPlacer extends Module {
             return;
         if(!(mc.player.inventory.getStackInSlot(mc.player.inventory.currentItem).getItem() instanceof ItemBlock))
             return;
-        BlockUtil.placeBlock2(selection.curPos(), EnumHand.MAIN_HAND, false, false);
+        //TODO: BlockUtil2.placeBlock usage
+//        BlockUtil.placeBlock2(selection.curPos(), EnumHand.MAIN_HAND, false, false);
     }
 
     private void checkKeys(){

@@ -10,7 +10,6 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -93,7 +92,7 @@ public class Prison extends Module {
             return;
 
         BlockPos supportPos = targetPos.offset(enumFacing).down();
-        if(support.getValBoolean() && BlockUtil.getPossibleSides(supportPos).isEmpty())
+        if(support.getValBoolean() && BlockUtil2.sides(supportPos).isEmpty())
             list.add(0, supportPos);
 
         for(BlockPos pos : list){

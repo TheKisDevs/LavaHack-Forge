@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -46,7 +45,7 @@ public class Rendering {
     public enum RenderObject {
         BOX {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
                     drawGradientFilledBox(aabb, color1, color2);
                 } else {
@@ -57,7 +56,7 @@ public class Rendering {
         },
         OUTLINE {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
                     drawGradientBlockOutline(aabb, color1, color2, (float) values[0]);
                 } else {
@@ -69,7 +68,7 @@ public class Rendering {
         },
         WIRE {
             @Override
-            void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 drawWire(aabb, (float) values[0], color1, gradient ? color2 : color1);
                 /*glPushMatrix();
 
@@ -97,18 +96,44 @@ public class Rendering {
             private void drawDummyBox(AxisAlignedBB aabb) {
                 drawSelectionBox(aabb, DUMMY_COLOR.getColor());
             }
+        },
+        CHROMA_BOX {
+            @Override
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+                if(color5 == null) drawChromaBox2(aabb, color1, color2, color3, color4);
+                else drawChromaBox2(aabb, color1, color2, color3, color4, color5, color6, color7, color8);
+            }
+        },
+        CHROMA_OUTLINE {
+            @Override
+            void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+                if(color5 == null) drawChromaOutline2(aabb, (float) values[0], color1, color2, color3, color4);
+                else drawChromaOutline2(aabb, (float) values[0], color1, color2, color3, color4, color5, color6, color7, color8);
+            }
         }
 
         ;
 
-        abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values);
+        abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values);
         
         public void draw(AxisAlignedBB aabb, Color color, Object... values) {
-            draw(aabb, color, color, false, false, new ArrayList<>(), values);
+            draw(aabb, color, color, color, color, color, color, color, color, false, false, new ArrayList<>(), values);
         }
         
         public void draw(AxisAlignedBB aabb, Color color1, Color color2, Object... values) {
-            draw(aabb, color1, color2, true, false, new ArrayList<>(), values);
+            draw(aabb, color1, color2, color1, color2, color1, color2, color1, color2, true, false, new ArrayList<>(), values);
+        }
+
+        public void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Object... values) {
+            draw(aabb, color4, color3, color1, color4, color1, color2, color4, color3, false, false, new ArrayList<>(), values);
+        }
+
+        public void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, Object... values) {
+            draw(aabb, color1, color2, color3, color4, color5, color6, color7, color8, false, false, new ArrayList<>(), values);
+        }
+
+        public void draw(AxisAlignedBB aabb, Color color1, Color color2, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
+            draw(aabb, color1, color2, color1, color2, color1, color2, color1, color2, gradient, partial, sides, values);
         }
     }
 
@@ -126,7 +151,12 @@ public class Rendering {
         BOX_OUTLINE_GRADIENT(true, RenderObject.BOX, RenderObject.OUTLINE),
         BOX_WIRE_GRADIENT(true, RenderObject.BOX, RenderObject.WIRE),
         WIRE_OUTLINE_GRADIENT(true, RenderObject.OUTLINE, RenderObject.WIRE),
-        BOX_WIRE_OUTLINE_GRADIENT(true, RenderObject.BOX, RenderObject.OUTLINE, RenderObject.WIRE, RenderObject.BOX)
+        BOX_WIRE_OUTLINE_GRADIENT(true, RenderObject.BOX, RenderObject.OUTLINE, RenderObject.WIRE, RenderObject.BOX),
+        CHROMABOX(true, RenderObject.CHROMA_BOX),
+        CHROMAOUTLINE(true, RenderObject.CHROMA_OUTLINE),
+        CHROMABOX_CHROMAOUTLINE(true, RenderObject.CHROMA_BOX, RenderObject.CHROMA_OUTLINE),
+        CHROMABOX_OUTLINE(true, RenderObject.CHROMA_BOX, RenderObject.OUTLINE),
+        BOX_CHROMAOUTLINE(true, RenderObject.BOX, RenderObject.CHROMA_OUTLINE)
 
         ;
 
@@ -148,6 +178,50 @@ public class Rendering {
 
                     if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, partial, sides, values);
                     else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, partial, sides, values);
+
+                    if(gradient) restore();
+
+                    end(depth);
+                }
+            }
+        }
+
+        public void draw(
+                AxisAlignedBB aabb,
+                Color filledColor1,
+                Color filledColor2,
+                Color filledColor3,
+                Color filledColor4,
+                Color filledColor5,
+                Color filledColor6,
+                Color filledColor7,
+                Color filledColor8,
+                Color outlineColor1,
+                Color outlineColor2,
+                Color outlineColor3,
+                Color outlineColor4,
+                Color outlineColor5,
+                Color outlineColor6,
+                Color outlineColor7,
+                Color outlineColor8,
+                Color wireColor1,
+                Color wireColor2,
+                boolean depth,
+                boolean partial,
+                ArrayList<DirectionVertexes> sides,
+                Object... values
+        ) {
+            for(RenderObject object : objects) {
+                if(object == RenderObject.WIRE) object.draw(aabb, wireColor1, wireColor2, gradient, partial, sides, values);
+                else {
+                    start(depth);
+
+                    if(gradient) prepare();
+
+                    if (object == RenderObject.BOX) object.draw(aabb, filledColor1, filledColor2, gradient, partial, sides, values);
+                    else if (object == RenderObject.OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, gradient, partial, sides, values);
+                    else if (object == RenderObject.CHROMA_BOX) object.draw(aabb, filledColor1, filledColor2, filledColor3, filledColor4, filledColor5, filledColor6, filledColor7, filledColor8, gradient, partial, sides, values);
+                    else if (object == RenderObject.CHROMA_OUTLINE) object.draw(aabb, outlineColor1, outlineColor2, outlineColor3, outlineColor4, outlineColor5, outlineColor6, outlineColor7, outlineColor8, gradient, partial, sides, values);
 
                     if(gradient) restore();
 
@@ -739,194 +813,106 @@ public class Rendering {
         end();
     }
 
-    /**
-     * @author Cubic
-     */
-    public static void drawChrome(AxisAlignedBB bb, EnumFacing facing, Color c1, Color c2, Color c3, Color c4){
-        start();
+    public static void drawChromaOutline2(AxisAlignedBB bb, float width, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buf = tessellator.getBuffer();
-        buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        switch(facing){
-            case UP:
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-            case DOWN:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-            case NORTH:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-            case EAST:
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-            case SOUTH:
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-            case WEST:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-                break;
-        }
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(3, DefaultVertexFormats.POSITION_COLOR);
+        GL11.glLineWidth(width);
+        addChromaVertices(builder, bb, color1, color2, color3, color4, color5, color6, color7, color8, false);
         tessellator.draw();
-        end();
     }
 
-    /**
-     * WIP
-     * @author Cubic
-     */
-    public static void drawChromaOutline(AxisAlignedBB bb, EnumFacing facing, float lineWidth, Color c1, Color c2, Color c3, Color c4){
-        start();
+    public static void drawChromaOutline2(AxisAlignedBB bb, float width, Color color1, Color color2, Color color3, Color color4) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buf = tessellator.getBuffer();
-        GL11.glLineWidth(lineWidth);
-        buf.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-        switch(facing){
-            case UP:
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-            case DOWN:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-            case NORTH:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-            case SOUTH:
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-            case EAST:
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-            case WEST:
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-
-                buf.pos(bb.minX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-
-                buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha());
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-
-                buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c4.getAlpha());
-                buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha());
-                break;
-        }
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        GL11.glLineWidth(width);
+        addChromaVertices(builder, bb, color1, color2, color3, color4, false);
         tessellator.draw();
-        end();
     }
 
-    public static void drawChromaBox(AxisAlignedBB bb, Color c1, Color c2, Color c3, Color c4){
-        start();
+    public static void drawChromaBox2(AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8)  {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buf = tessellator.getBuffer();
-        buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-
-        // Up
-        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
-        // Down
-        buf.pos(bb.minX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
-        // North
-        buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
-        // South
-        buf.pos(bb.maxX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
-        // East
-        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.maxX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
-        // West
-        buf.pos(bb.minX, bb.minY, bb.minZ).color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.minY, bb.maxZ).color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.maxY, bb.maxZ).color(c3.getRed(), c3.getGreen(), c3.getBlue(), c3.getAlpha()).endVertex();
-        buf.pos(bb.minX, bb.maxY, bb.minZ).color(c4.getRed(), c4.getGreen(), c4.getBlue(), c3.getAlpha()).endVertex();
-
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        addChromaVertices(builder, bb, color1, color2, color3, color4, color5, color6, color7, color8, true);
         tessellator.draw();
-        end();
+    }
+
+    public static void drawChromaBox2(AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4)  {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder builder = tessellator.getBuffer();
+        builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        addChromaVertices(builder, bb, color1, color2, color3, color4, true);
+        tessellator.draw();
+    }
+
+    public static void addChromaVertices(BufferBuilder builder, AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4, boolean filled) {
+        addChromaVertices(builder, bb, color4, color3, color1, color4, color1, color2, color4, color3, filled);
+    }
+
+    public static void addChromaVertices(BufferBuilder builder, AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean filled) {
+        //bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
+
+        //        bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.minY,блл bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).coкакауlor(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.minY,ппнрпвм bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.minакцацкакцY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.акакmaxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.maxYаукаукаук, bb.maxZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.maмвамвамваxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.minY, bbмама.minZ).color(red1, green1, blue1, alpha1).endVertex();
+        //        bufferbuilder.pos(bb.maxX, bb.maсывxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
+
+        if(filled) {
+            builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.maxZ).color(color3.getRed(), color3.getGreen(), color3.getBlue(), color3.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.maxZ).color(color4.getRed(), color4.getGreen(), color4.getBlue(), color4.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.minZ).color(color5.getRed(), color5.getGreen(), color5.getBlue(), color5.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.maxZ).color(color8.getRed(), color8.getGreen(), color8.getBlue(), color8.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(color7.getRed(), color7.getGreen(), color7.getBlue(), color7.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.minZ).color(color6.getRed(), color6.getGreen(), color6.getBlue(), color6.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.minZ).color(color5.getRed(), color5.getGreen(), color5.getBlue(), color5.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.minZ).color(color6.getRed(), color6.getGreen(), color6.getBlue(), color6.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.minZ).color(color6.getRed(), color6.getGreen(), color6.getBlue(), color6.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(color7.getRed(), color7.getGreen(), color7.getBlue(), color7.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.maxZ).color(color3.getRed(), color3.getGreen(), color3.getBlue(), color3.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.maxZ).color(color4.getRed(), color4.getGreen(), color4.getBlue(), color4.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.maxZ).color(color3.getRed(), color3.getGreen(), color3.getBlue(), color3.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(color7.getRed(), color7.getGreen(), color7.getBlue(), color7.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.maxZ).color(color8.getRed(), color8.getGreen(), color8.getBlue(), color8.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.maxZ).color(color4.getRed(), color4.getGreen(), color4.getBlue(), color4.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.maxZ).color(color8.getRed(), color8.getGreen(), color8.getBlue(), color8.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.minZ).color(color5.getRed(), color5.getGreen(), color5.getBlue(), color5.getAlpha()).endVertex();
+        } else {
+            builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.maxZ).color(color4.getRed(), color4.getGreen(), color4.getBlue(), color4.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.maxZ).color(color3.getRed(), color3.getGreen(), color3.getBlue(), color3.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.minZ).color(color5.getRed(), color5.getGreen(), color5.getBlue(), color5.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.maxZ).color(color8.getRed(), color8.getGreen(), color8.getBlue(), color8.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.minY, bb.maxZ).color(color4.getRed(), color4.getGreen(), color4.getBlue(), color4.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.maxZ).color(color3.getRed(), color3.getGreen(), color3.getBlue(), color3.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(color7.getRed(), color7.getGreen(), color7.getBlue(), color7.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.maxZ).color(color8.getRed(), color8.getGreen(), color8.getBlue(), color8.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.maxZ).color(color7.getRed(), color7.getGreen(), color7.getBlue(), color7.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.minZ).color(color6.getRed(), color6.getGreen(), color6.getBlue(), color6.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();
+            builder.pos(bb.maxX, bb.maxY, bb.minZ).color(color6.getRed(), color6.getGreen(), color6.getBlue(), color6.getAlpha()).endVertex();
+            builder.pos(bb.minX, bb.maxY, bb.minZ).color(color5.getRed(), color5.getGreen(), color5.getBlue(), color5.getAlpha()).endVertex();
+        }
     }
 
     public static void drawBoxESP(Entity entity, float colorRed, float colorGreen, float colorBlue, float colorAlpha, float ticks) {

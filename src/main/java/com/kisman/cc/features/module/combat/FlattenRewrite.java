@@ -16,7 +16,6 @@ import com.kisman.cc.settings.util.SlideRenderingRewritePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -234,7 +233,7 @@ public class FlattenRewrite extends Module {
         int beginAdd = -1;
         for(int i = 0; i < checkDown.getValInt(); i++){
             BlockPos pos = new BlockPos(vec.x, vec.y - i - 1, vec.z);
-            if(BlockUtil.getPossibleSides(pos).isEmpty())
+            if(BlockUtil2.sides(pos).isEmpty())
                 continue;
             beginAdd = i + 1;
         }
@@ -345,7 +344,7 @@ public class FlattenRewrite extends Module {
     private static BlockPos getConnector(Entity entity, BlockPos pos){
         return Stream.of(EnumFacing.HORIZONTALS)
                 .map(pos::offset)
-                .filter(blockPos -> !BlockUtil.getPossibleSides(blockPos).isEmpty())
+                .filter(blockPos -> !BlockUtil2.sides(blockPos).isEmpty())
                 .filter(blockPos -> !checkEntities(blockPos))
                 .min(Comparator.comparingDouble(blockPos -> entity.getDistance(blockPos.getX() + 0.5, blockPos.getY() + 1, blockPos.getZ() + 0.5)))
                 .orElse(null);
@@ -354,7 +353,7 @@ public class FlattenRewrite extends Module {
     private static BlockPos getDamagePos(Entity entity, BlockPos pos){
         return Stream.of(EnumFacing.HORIZONTALS)
                 .map(pos::offset)
-                .filter(blockPos -> !BlockUtil.getPossibleSides(blockPos).isEmpty())
+                .filter(blockPos -> !BlockUtil2.sides(blockPos).isEmpty())
                 .filter(blockPos -> !checkEntities(blockPos))
                 .filter(blockPos -> !new AxisAlignedBB(blockPos ).intersects(entity.getEntityBoundingBox()))
                 .filter(blockPos -> mc.world.getBlockState(blockPos.up()).getBlock() == Blocks.AIR)
@@ -443,7 +442,7 @@ public class FlattenRewrite extends Module {
                 Entity entity = args.fetch(1);
                 BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
                 BlockPos connector = getConnector(entity, pos);
-                if(BlockUtil.getPossibleSides(pos).isEmpty() && connector != null)
+                if(BlockUtil2.sides(pos).isEmpty() && connector != null)
                     addIfAbsentAndReplaceable(connector);
                 addIfAbsentAndReplaceable(pos);
                 return null;
@@ -453,7 +452,7 @@ public class FlattenRewrite extends Module {
                 Entity entity = args.fetch(1);
                 BlockPos pos = new BlockPos(vec.x, vec.y, vec.z);
                 BlockPos connector = getConnector(entity, pos);
-                if(BlockUtil.getPossibleSides(pos).isEmpty() && connector != null)
+                if(BlockUtil2.sides(pos).isEmpty() && connector != null)
                     addIfAbsentAndReplaceable(connector);
                 addIfAbsentAndReplaceable(pos);
                 BlockPos damagePos = getDamagePos(entity, pos);

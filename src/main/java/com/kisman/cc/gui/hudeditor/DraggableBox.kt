@@ -3,16 +3,15 @@ package com.kisman.cc.gui.hudeditor
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.hud.HudModule
 import com.kisman.cc.gui.api.Component
-import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
+import com.kisman.cc.util.fix
 import com.kisman.cc.util.render.Render2DUtil
-import java.awt.Color
 
 /**
  * @author _kisman_
  * @since 14.05.2022
  */
 class DraggableBox(
-        val module : HudModule
+    val module : HudModule
 ) : Component {
     var dragX = 0
     var dragY = 0
@@ -28,7 +27,7 @@ class DraggableBox(
                 module.setY((mouseY - dragY).toDouble())
             }
 
-            DraggableCoordsFixer.fix(module)
+            fix(module)
 
             Render2DUtil.drawRectWH(module.getX(), module.getY(), module.getW(), module.getH(), Kisman.instance.halqHudGui.color.rgb)
         } else {

@@ -39,13 +39,17 @@ public class ColorUtils {
         return Colour.fromHSB(new float[] {new Random().nextFloat(), 1, 1}, 255);
     }
 
-    public static Colour twoColorEffect(final Colour color, final Colour color2, double delay) {
+    public static Colour twoColorEffect(Colour color, Colour color2, double delay) {
         if (delay > 1.0) {
             final double n2 = delay % 1.0;
             delay = (((int)delay % 2 == 0) ? n2 : (1.0 - n2));
         }
         final double n3 = 1.0 - delay;
         return new Colour((color.r * n3 + color2.r * delay),  (color.g * n3 + color2.g * delay), (color.b * n3 + color2.b * delay), (color.a * n3 + color2.a * delay));
+    }
+
+    public static Colour twoColorEffect(Colour color1, Colour color2, int delay, float speed) {
+        return twoColorEffect(color1, color2, ((System.currentTimeMillis() * speed) / 10L / 100.0 + 6 * delay) / 60.0);
     }
 
     public static Colour healthColor(float hp, float maxHP) {
@@ -112,7 +116,8 @@ public class ColorUtils {
     public static int getColor(int a, int r, int g, int b) {return a << 24 | r << 16 | g << 8 | b;}
     public static int getColor(int r, int g, int b) {return 255 << 24 | r << 16 | g << 8 | b;}
     public static int getColor(Color color) {return color.getRed() | color.getGreen() << 8 | color.getBlue() << 16 | color.getAlpha() << 24;}
-    public static Color rainbow(int delay, float s, float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);}
+    public static Color rainbow(int delay, float s, float b) {return Color.getHSBColor((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b);} //Color.getHSBColor((((System.currentTimeMillis()) % 11520L / 11520.0f) + (delay / 360f)) / 360 - (((System.currentTimeMillis()) % 11520L / 11520.0f) + (delay / 360f)) % 360, s, b);} // Color.getHSBColor((((System.currentTimeMillis()) % 11520L / 11520.0f) + (delay / 360f)) / 360 - (((System.currentTimeMillis()) % 11520L / 11520.0f) + (delay / 360f)) % 360, s, b);}
+    public static Color rainbow(int delay, float s, float b, float speed) {return Color.getHSBColor((((System.currentTimeMillis() + speed) % 11520L / 11520.0f) + (delay / 360f)) / 360 - (((System.currentTimeMillis() + speed) % 11520L / 11520.0f) + (delay / 360f)) % 360, s, b);} //Color.getHSBColor(Math.min((System.currentTimeMillis() - (System.currentTimeMillis() * speed) % 360 + delay) / 360f, 1f), s, b);}
     public static int getRed(int color) {return new Color(color).getRed();}
     public static int getGreen(int color) {return new Color(color).getGreen();}
     public static int getBlue(int color) {return new Color(color).getBlue();}
@@ -120,7 +125,7 @@ public class ColorUtils {
     public static Color rainbowRGB(int delay, float s, float b) {return new Color(getRed((Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b))), getGreen(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)), getBlue(Color.HSBtoRGB((System.currentTimeMillis() + delay) % 11520L / 11520.0f, s, b)));}
     public static int getColor(int brightness) {return ColorUtils.getColor(brightness, brightness, brightness, 255);}
     public static int getColor(int brightness, int alpha) {return ColorUtils.getColor(brightness, brightness, brightness, alpha);}
-    public static Color injectAlpha(final Color color, final int alpha) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);}
+    public static Color injectAlpha(Color color, int alpha) {return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);}
     public static Color injectAlpha(int color, int alpha) {return new Color(ColorUtils.getRed(color), ColorUtils.getGreen(color), ColorUtils.getBlue(color), alpha);}
     public static void glColor(Color color) {GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);}
 
@@ -189,7 +194,7 @@ public class ColorUtils {
         return 0xff000000 | ((rVal & 0xff) << 16) | ((gVal & 0xff) << 8) | (bVal & 0xff);
     }
 
-    public static Colour rainbow2(int hOffset, final int sat, final int bright, final int alpha, double speed){
+    public static Colour rainbow2(int hOffset, int sat, int bright, int alpha, double speed){
         double mod = 11520L / speed;
         double div = mod / 360;
         int hue = (int) ((System.currentTimeMillis() % mod) / div) + hOffset;
@@ -199,13 +204,18 @@ public class ColorUtils {
         return new Colour(rgb).withAlpha(alpha);
     }
 
-    public static Colour rainbow3(long millis, int hOffset, final int sat, final int bright, final int alpha, double speed){
+    public static Colour rainbow3(long millis, int hOffset, int sat, int bright, int alpha, double speed){
         double mod = 11529L / speed;
         double div = mod / 360;
         int hue = (int) ((millis % mod) / div) + hOffset;
-        if(hue > 360)
-            hue = hue - 360;
+        if(hue > 360) hue = hue - 360;
         int rgb = fromHSB(hue, sat, bright);
         return new Colour(rgb).withAlpha(alpha);
+    }
+
+    public static Colour twoColorEffect2(Colour color1, Colour color2, double speed) {
+        double diff = speed - speed % 1;
+
+        return new Colour(color1.r * diff + color2.r * (1 - diff), color1.g * diff + color2.g * (1 - diff), color1.b * diff + color2.b * (1 - diff), color1.a * diff + color2.a * (1 - diff));
     }
 }

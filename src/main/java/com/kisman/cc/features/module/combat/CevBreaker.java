@@ -1,13 +1,15 @@
 package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.entity.Entity;
@@ -135,7 +137,8 @@ public class CevBreaker extends Module {
             return;
         int oldSlot = mc.player.inventory.currentItem;
         ((SwapEnum2.Swap) trapSwap.getValEnum()).getTask().doTask(slot, false);
-        blockPos.forEach(pos -> BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean()));
+        //TODO: BlockUtil2.placeBlock usage
+//        blockPos.forEach(pos -> BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean()));
         ((SwapEnum2.Swap) trapSwap.getValEnum()).getTask().doTask(oldSlot, true);
     }
 

@@ -7,10 +7,10 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.manager.Managers;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.WorldUtilKt;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -97,7 +97,7 @@ public class Anchor extends Module {
                 } else if(mode.getValString().equals(Mode.Teleport.name())) {
                     if (!mc.player.onGround) this.jumped = mc.gameSettings.keyBindJump.isKeyDown();
         
-                    if (!this.jumped && mc.player.fallDistance < 0.5 && BlockUtil.isInHole() && mc.player.posY - getNearestBlockBelow() <= 1.125 && mc.player.posY - getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid(false)) {
+                    if (!this.jumped && mc.player.fallDistance < 0.5 && isInHole() && mc.player.posY - getNearestBlockBelow() <= 1.125 && mc.player.posY - getNearestBlockBelow() <= 0.95 && !EntityUtil.isOnLiquid() && !EntityUtil.isInLiquid(false)) {
                         if (!mc.player.onGround) ++this.packets;
                         if (!mc.player.onGround && !mc.player.isInsideOfMaterial(Material.WATER) && !mc.player.isInsideOfMaterial(Material.LAVA) && !mc.gameSettings.keyBindJump.isKeyDown() && !mc.player.isOnLadder() && this.packets > 0) {
                             final BlockPos blockPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
@@ -158,6 +158,52 @@ public class Anchor extends Module {
     public double getNearestBlockBelow() {
         for (double y = mc.player.posY; y > 0.0; y -= 0.001) if (!(mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock() instanceof BlockSlab) && mc.world.getBlockState(new BlockPos(mc.player.posX, y, mc.player.posZ)).getBlock().getDefaultState().getCollisionBoundingBox(mc.world, new BlockPos(0, 0, 0)) != null) return y;
         return -1.0;
+    }
+
+    private boolean isInHole() {
+        BlockPos blockPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+        IBlockState blockState = mc.world.getBlockState(blockPos);
+        return isBlockValid(blockState, blockPos);
+    }
+
+    private boolean isBlockValid(IBlockState blockState, BlockPos blockPos) {
+        return blockState.getBlock() == Blocks.AIR && mc.player.getDistanceSq(blockPos) >= 1.0 && mc.world.getBlockState(blockPos.up()).getBlock() == Blocks.AIR && mc.world.getBlockState(blockPos.up(2)).getBlock() == Blocks.AIR && (isBedrockHole(blockPos) || isObbyHole(blockPos) || isBothHole(blockPos) || isElseHole(blockPos));
+    }
+
+    public static boolean isObbyHole(BlockPos blockPos) {
+        for (BlockPos pos : getTouchingBlocks(blockPos)) {
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.OBSIDIAN) return false;
+        }
+        return true;
+    }
+
+    public static boolean isBedrockHole(BlockPos blockPos) {
+        for (BlockPos pos : getTouchingBlocks(blockPos)) {
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() == Blocks.AIR || touchingState.getBlock() != Blocks.BEDROCK) return false;
+        }
+        return true;
+    }
+
+    public static boolean isBothHole(BlockPos blockPos) {
+        for (BlockPos pos : getTouchingBlocks(blockPos)) {
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() == Blocks.AIR || (touchingState.getBlock() != Blocks.BEDROCK && touchingState.getBlock() != Blocks.OBSIDIAN)) return false;
+        }
+        return true;
+    }
+
+    public static boolean isElseHole(BlockPos blockPos) {
+        for (BlockPos pos : getTouchingBlocks(blockPos)) {
+            IBlockState touchingState = mc.world.getBlockState(pos);
+            if (touchingState.getBlock() == Blocks.AIR || !touchingState.isFullBlock()) return false;
+        }
+        return true;
+    }
+
+    public static BlockPos[] getTouchingBlocks(BlockPos blockPos) {
+        return new BlockPos[] { blockPos.north(), blockPos.south(), blockPos.east(), blockPos.west(), blockPos.down() };
     }
 
     public enum Mode {MovementStop, Motion, Teleport}

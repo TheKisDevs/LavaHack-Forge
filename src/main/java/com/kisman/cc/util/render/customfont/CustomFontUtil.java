@@ -131,6 +131,8 @@ public class CustomFontUtil {
     }
 
     public static void initFonts() {
+        //lexenddeca, consolas, sfui, verdana, futura, century: +1 x
+        //minecraftrus, futura, consolas: +1 y
         comfortaal30 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 30));
         comfortaal18 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 18));
         comfortaal10 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 10));
@@ -159,5 +161,18 @@ public class CustomFontUtil {
         jelleeb18 = new ExtendedFontRenderer(getFontTTF("jellee-bold", 18));
 
         minecraftRus13 = new ExtendedFontRenderer(getFontTTF("minecraft", 13));
+
+//        lexendDeca18.offsetX = -1;
+        consolas18.offsetX = -1;
+        consolas15.offsetX = -1;
+        sfui19.offsetX = -1;
+        verdana18.offsetX = -1;
+        futura20.offsetX = -1;
+        century18.offsetX = -1;
+
+        minecraftRus13.offsetY = 1;
+        futura20.offsetY = 1;
+        consolas18.offsetY = 1;
+        consolas15.offsetY = 1;
     }
 }

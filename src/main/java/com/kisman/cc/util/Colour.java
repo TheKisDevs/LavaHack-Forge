@@ -105,14 +105,38 @@ public class Colour implements Serializable {
     }
 
     public Colour(int color) {
-        this.r = (color >> 16) & 0xff; // ColorUtils.getRed(color);
-        this.g = (color >> 8) & 0xff; // ColorUtils.getGreen(color);
-        this.b = color & 0xff; // ColorUtils.getBlue(color);
-        this.a = (color >> 24) & 0xff; // ColorUtils.getAlpha(color);
+        this.r = (color >> 16) & 0xff;
+        this.g = (color >> 8) & 0xff;
+        this.b = color & 0xff;
+        this.a = (color >> 24) & 0xff;
         this.r1 = r / 255f;
         this.g1 = g / 255f;
         this.b1 = b / 255f;
         this.a1 = a / 255f;
+        fixColorRange();
+    }
+
+    public Colour(int color, int alpha) {
+        this.r = (color >> 16) & 0xff;
+        this.g = (color >> 8) & 0xff;
+        this.b = color & 0xff;
+        this.a = alpha;
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = a / 255f;
+        fixColorRange();
+    }
+
+    public Colour(int color, float alpha) {
+        this.r = (color >> 16) & 0xff;
+        this.g = (color >> 8) & 0xff;
+        this.b = color & 0xff;
+        this.a = (int) (alpha * 255f);
+        this.r1 = r / 255f;
+        this.g1 = g / 255f;
+        this.b1 = b / 255f;
+        this.a1 = alpha;
         fixColorRange();
     }
 

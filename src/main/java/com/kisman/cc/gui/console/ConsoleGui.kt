@@ -5,8 +5,8 @@ import com.kisman.cc.event.events.client.console.ConsoleMessageEvent
 import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.gui.KismanGuiScreen
 import com.kisman.cc.gui.api.Draggable
-import com.kisman.cc.gui.halq.util.DraggableCoordsFixer
 import com.kisman.cc.gui.selectionbar.SelectionBar
+import com.kisman.cc.util.fix
 import com.mojang.realmsclient.gui.ChatFormatting
 import me.zero.alpine.listener.EventHandler
 import me.zero.alpine.listener.EventHook
@@ -59,7 +59,7 @@ class ConsoleGui : KismanGuiScreen(), Draggable {
             y = mouseY - dragY
         }
 
-        DraggableCoordsFixer.fix(this)
+        fix(this)
 
         if(history.size >= 25) {
             history.removeAt(0)

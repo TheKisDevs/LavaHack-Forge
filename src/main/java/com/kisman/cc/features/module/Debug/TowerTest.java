@@ -2,8 +2,6 @@ package com.kisman.cc.features.module.Debug;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.util.world.BlockUtil;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 
 public class TowerTest extends Module {
@@ -37,8 +35,9 @@ public class TowerTest extends Module {
             return;
 
         BlockPos pos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-        if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos))
-            BlockUtil.placeBlock2(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).down(), EnumHand.MAIN_HAND, false, false);
+        //TODO: BlockUtil2.placeBlock usage
+//        if(mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos))
+//            BlockUtil.placeBlock2(new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ).down(), EnumHand.MAIN_HAND, false, false);
 
         if(mc.player.onGround){
             mc.player.jump();

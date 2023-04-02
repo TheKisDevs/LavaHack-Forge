@@ -3,7 +3,10 @@ package com.kisman.cc.features.module.combat;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventEntitySpawn;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -12,7 +15,6 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.HandModes;
-import com.kisman.cc.util.world.BlockUtil;
 import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.CrystalUtils;
 import me.zero.alpine.listener.Listener;
@@ -575,7 +577,7 @@ public class SurroundRewrite extends Module {
     }
 
     private List<BlockPos> getHelpingBlocks(BlockPos pos){
-        if(smartHelpingBlocks.getValBoolean() && !BlockUtil.getPossibleSides(pos).isEmpty())
+        if(smartHelpingBlocks.getValBoolean() && !BlockUtil2.sides(pos).isEmpty())
             return Collections.emptyList();
         return Collections.singletonList(pos.down());
     }
@@ -837,7 +839,7 @@ public class SurroundRewrite extends Module {
 
             for(Vec3d vec : vec3d) {
                 BlockPos pos = new BlockPos(vec.add(posVec));
-                if(instance.smartHelpingBlocks.getValBoolean() && vec.y < 0 && !BlockUtil.getPossibleSides(pos).isEmpty())
+                if(instance.smartHelpingBlocks.getValBoolean() && vec.y < 0 && !BlockUtil2.sides(pos).isEmpty())
                     continue;
                 list.add(pos);
             }

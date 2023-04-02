@@ -3,20 +3,19 @@ package com.kisman.cc.features.module.Debug;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.Colour;
-import com.kisman.cc.util.enums.DirectionVertexes;
 import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.awt.*;
+
 public class BlockOverlay extends Module {
 //    private final ChromaRenderingPattern rendering = new ChromaRenderingPattern(this).init();
-    private final RenderingRewritePattern renderer = new RenderingRewritePattern(this, true).init();
+//    private final RenderingRewritePattern renderer = new RenderingRewritePattern(this, true).init();
 
     /*
     private final Setting color1 = register(new Setting("Color1", this, "Color1", new Colour(255, 255, 255, 120)));
@@ -25,6 +24,9 @@ public class BlockOverlay extends Module {
      */
 
     private final Setting thing = register(new Setting("Thing", this, false));
+    private final Setting thing2 = register(new Setting("Thing2", this, false));
+    private final Setting thing3 = register(new Setting("Thing3", this, false));
+    private final Setting depth = register(new Setting("Depth", this, false));
     private final Setting mode = register(new Setting("Mode", this, Mode.Curve));
     private final Setting speed = register(new Setting("Speed", this, 20, 1, 100, true));
 
@@ -63,18 +65,24 @@ public class BlockOverlay extends Module {
         if(pos == null)
             return;
 
-        if(thing.getValBoolean()) {
+        /*if(thing.getValBoolean()) {
             renderer.draw(Rendering.correct(new AxisAlignedBB(pos)), DirectionVertexes.Xp, DirectionVertexes.Yp, DirectionVertexes.Zp);
 
             return;
-        }
+        }*/
 
 //        AxisAlignedBB aabb = Rendering.correct(new AxisAlignedBB(pos));
-        //EnumFacing facing = mc.objectMouseOver.sideHit;
+        if(thing.getValBoolean()) {
+            EnumFacing facing = mc.objectMouseOver.sideHit;
 
-        //rendering.drawBlockSide(pos, facing);
+//            rendering.drawBlockSide(pos, facing);
+        } else if(!thing3.getValBoolean()) {
+            Rendering.Mode.CHROMABOX.draw(Rendering.correct(mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)), new Color(255, 0, 0, 255), new Color(0, 255, 0, 255), new Color(0, 0, 255, 255), new Color(255, 255, 255, 255), thing2.getValBoolean() ? null : new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), depth.getValBoolean(), false, null);
+        } else {
+            Rendering.Mode.CHROMAOUTLINE.draw(Rendering.correct(mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)), new Color(255, 0, 0, 255), new Color(0, 255, 0, 255), new Color(0, 0, 255, 255), new Color(255, 255, 255, 255), thing2.getValBoolean() ? null : new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), new Color(-1), depth.getValBoolean(), false, null, 1f);
+        }
 
-        if(!canDraw)
+        /*if(!canDraw)
             return;
 
         double cur = System.currentTimeMillis() - start;
@@ -86,7 +94,7 @@ public class BlockOverlay extends Module {
         }
 
         AxisAlignedBB aabb = Rendering.correct(Rendering.scale(this.pos, mutateProgress(progress)));
-        Rendering.draw(aabb, 3.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);
+        Rendering.draw(aabb, 3.0f, new Colour(255, 255, 255, 120), Rendering.DUMMY_COLOR, Rendering.Mode.BOX_OUTLINE);*/
 
         /*long millis = System.currentTimeMillis();
 

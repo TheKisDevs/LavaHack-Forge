@@ -25,7 +25,8 @@ class BlockImplementation(
         module.addFlag(Supplier { renderer.canRender() })
 
         if(block.color != null) {
-            renderer.filledColor1.colour = block.color
+            renderer.colors.filledColor1.color.colour = block.color
+            renderer.colors.outlineColor1.color.colour = block.color
         }
     }
 

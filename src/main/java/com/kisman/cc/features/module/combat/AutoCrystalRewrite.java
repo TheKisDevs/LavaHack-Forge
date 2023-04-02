@@ -2,9 +2,10 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.*;
-import com.kisman.cc.features.subsystem.subsystems.Target;
-import com.kisman.cc.features.subsystem.subsystems.Targetable;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
@@ -13,7 +14,7 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.EntityUtil;
 import com.kisman.cc.util.manager.friend.FriendManager;
 import com.kisman.cc.util.thread.ThreadUtils;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import com.kisman.cc.util.world.CrystalUtils;
 import com.kisman.cc.util.world.WorldUtilKt;
 import com.mojang.authlib.GameProfile;
@@ -317,7 +318,7 @@ public class AutoCrystalRewrite extends Module {
     }
 
     private void placeCrystal(BlockPos pos){
-        RayTraceResult result = mc.world.rayTraceBlocks(BlockUtil.getEyesPos(), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+        RayTraceResult result = mc.world.rayTraceBlocks(BlockUtil2.eyes(), new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
         EnumFacing facing = result == null ? (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN) : (placeRaytrace.getValBoolean() ? result.sideHit : (strictFacing.getValBoolean() ? EnumFacing.UP : EnumFacing.DOWN));
         float[] oldRots = new float[]{mc.player.rotationYaw, mc.player.rotationPitch};
         //TODO: rotation enum

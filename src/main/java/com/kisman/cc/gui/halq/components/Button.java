@@ -68,6 +68,11 @@ public class Button extends ToggleableImplementation implements Openable, Module
                 offsetY += HalqGui.height;
                 comps.add(new ModeButton(mod.bindModeSetting, x, y, offsetY, count1++, layer + 1));
                 offsetY += HalqGui.height;
+
+                if(mod instanceof HudModule) {
+                    comps.add(new ModeButton(((HudModule) mod).placeSetting, x, y, offsetY, count1++, layer + 1));
+                    offsetY += HalqGui.height;
+                }
             }
 
             if (Kisman.instance.settingsManager.getSettingsByMod(mod) != null) {

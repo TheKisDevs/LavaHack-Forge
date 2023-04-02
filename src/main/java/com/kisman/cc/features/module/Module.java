@@ -4,11 +4,12 @@ import com.kisman.cc.Kisman;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.settings.Setting;
+import com.kisman.cc.settings.SettingsList;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.settings.types.SettingArray;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.settings.SettingsList;
+import com.kisman.cc.settings.util.AbstractPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
 import com.kisman.cc.util.StringUtils;
@@ -16,7 +17,6 @@ import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.client.DisplayableFeature;
 import com.kisman.cc.util.enums.BindType;
-import com.kisman.cc.util.settings.SettingLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
@@ -141,8 +141,6 @@ public class Module extends DisplayableFeature {
 
 		setmgr = Kisman.instance.settingsManager;
 
-		SettingLoader.load(this);
-
 		for(Field field : getClass().getDeclaredFields()) {
 			if(field.isAnnotationPresent(ModuleInstance.class)) {
 				try {
@@ -223,6 +221,7 @@ public class Module extends DisplayableFeature {
 
 	public SettingsList register(SettingsList list) {
 		for(Setting setting : list.settings.values()) register(setting);
+		for(AbstractPattern<?> pattern : list.patterns.values()) pattern.init();
 
 		return list;
 	}

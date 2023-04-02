@@ -10,7 +10,7 @@ import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -94,7 +94,7 @@ public class DamageIncreaser extends Module {
         if(!mc.world.getBlockState(pos).getBlock().isReplaceable(mc.world, pos) || checkEntities(pos))
             return;
         swap.getValEnum().getTask().doTask(slot, false);
-        BlockUtil.placeBlock2(pos, EnumHand.MAIN_HAND, rotate.getValBoolean(), packet.getValBoolean());
+        BlockUtil2.placeBlock(pos, EnumHand.MAIN_HAND, packet.getValBoolean(), false, rotate.getValBoolean());
         swap.getValEnum().getTask().doTask(oldSlot, true);
     }
 
@@ -116,7 +116,7 @@ public class DamageIncreaser extends Module {
             possibleBlockPositions.remove(targetPos.down().offset(predictFacing()));
         List<BlockPos> tempList = possibleBlockPositions.stream()
                 .filter(pos -> getDistance(mc.player, pos, 0) <= placeRange.getValDouble())
-                .filter(pos -> !BlockUtil.getPossibleSides(pos).isEmpty())
+                .filter(pos -> !BlockUtil2.sides(pos).isEmpty())
                 .filter(pos -> getBlock(pos.up()) == Blocks.AIR)
                 .filter(pos -> getBlock(pos.up(2)) == Blocks.AIR)
                 .filter(pos -> !target.getEntityBoundingBox().intersects(new AxisAlignedBB(pos.up())))

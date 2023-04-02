@@ -11,7 +11,7 @@ import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.client.collections.Pair;
 import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.dynamic.SwapEnum2;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -122,11 +122,11 @@ public class HoleKicker extends Module {
 
         swap.getValEnum().getTask().doTask(piston, false);
 
-        BlockUtil.placeBlock2(pair.getFirst(), EnumHand.MAIN_HAND, false, packetPlace.getValBoolean());
+        BlockUtil2.placeBlock(pair.getFirst(), EnumHand.MAIN_HAND, packetPlace.getValBoolean(), false, false);
 
         swap.getValEnum().getTask().doTask(redstone, false);
 
-        BlockUtil.placeBlock2(pair.getSecond(), EnumHand.MAIN_HAND, false, packetPlace.getValBoolean());
+        BlockUtil2.placeBlock(pair.getSecond(), EnumHand.MAIN_HAND, packetPlace.getValBoolean(), false, false);
 
         swap.getValEnum().getTask().doTask(old, true);
 
@@ -185,7 +185,7 @@ public class HoleKicker extends Module {
 
     private Pair<BlockPos> getPlacements(BlockPos pos, EnumFacing facing, RedstoneMode rm){
         BlockPos offset = pos.offset(facing);
-        if(BlockUtil.getPossibleSides(offset.up()).isEmpty())
+        if(BlockUtil2.sides(offset.up()).isEmpty())
             return null;
         offset = offset.up();
         if(rm == RedstoneMode.Block)
@@ -193,7 +193,7 @@ public class HoleKicker extends Module {
         BlockPos torchPos = null;
         for(EnumFacing enumFacing : Arrays.stream(EnumFacing.HORIZONTALS).filter(ef -> ef != facing.getOpposite()).collect(Collectors.toList())){
             BlockPos off = offset.offset(enumFacing);
-            if(BlockUtil.getPossibleSides(off).stream().anyMatch(side -> side != EnumFacing.UP))
+            if(BlockUtil2.sides(off).stream().anyMatch(side -> side != EnumFacing.UP))
                 torchPos = off;
         }
         if(torchPos == null)

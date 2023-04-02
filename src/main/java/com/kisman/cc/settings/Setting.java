@@ -450,8 +450,8 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public void setColour(Colour colour) {
-		this.onChange.invoke(this);
 		this.colour = colour;
+		this.onChange.invoke(this);
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 	}
@@ -460,13 +460,14 @@ public class Setting extends DisplayableFeature {
 		try {
 			return optionEnum.valueOf(optionEnum.getClass(), sval);
 		} catch(Exception ignored) {
+			sval = optionEnum.name();
 			return optionEnum;
 		}
 	}
 
 	public void setValEnum(Enum<?> enum_) {
-		this.onChange.invoke(this);
 		sval = enum_.name();
+		this.onChange.invoke(this);
 	}
 
 	public String getdString() {
@@ -546,8 +547,9 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public Setting setValString(String in){
-		this.onChange.invoke(this);
 		this.sval = in;
+		this.onChange.invoke(this);
+		this.getValEnum();
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 		return this;
@@ -579,8 +581,8 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public Setting setValBoolean(boolean in){
-		this.onChange.invoke(this);
 		this.bval = in;
+		this.onChange.invoke(this);
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 		return this;
@@ -610,8 +612,8 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public Setting setValDouble(double in){
-		this.onChange.invoke(this);
 		this.dval = in;
+		this.onChange.invoke(this);
 		EventSettingChange.Any event = new EventSettingChange.Any(this);
 		Kisman.EVENT_BUS.post(event);
 		return this;

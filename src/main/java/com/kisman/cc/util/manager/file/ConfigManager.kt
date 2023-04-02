@@ -121,6 +121,8 @@ class ConfigManager(
                     writer.newLine()
                     writer.write("${prefix}.${module.name}.y=${module.getY()}")
                     writer.newLine()
+                    writer.write("${prefix}.${module.name}.place=\"${module.placeSetting.valString}\"")
+                    writer.newLine()
                 }
 
                 if (Kisman.instance.settingsManager.getSettingsByMod(module) != null) {
@@ -360,6 +362,11 @@ class ConfigManager(
                                         hud.setY(java.lang.Double.parseDouble(split1[1]))
                                     } catch (ignored : Exception) {}
                                 }
+                                "place" -> {
+                                    try {
+                                        hud.placeSetting.valString = split1[1].split("\"")[1]
+                                    } catch(ignored : Exception) {}
+                                }
                                 config.settingsPrefix -> {
                                     val flag1 = split2[3].contains(":")
                                     val flag2 = if(split2.size > 4) split2[4].contains(":") else false
@@ -521,14 +528,13 @@ class ConfigManager(
                     }
                 }
             }
+
             for(hud in Kisman.instance.hudModuleManager.modules) {
                 writer.write("${config.hudModulesPrefix}.${hud.name}.toggle=${hud.isToggled}")
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.hold=${hud.hold}")
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.visible=${hud.isVisible}")
-                writer.newLine()
-                writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.key}")
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.key=${hud.getKeyboardKey()}")
                 writer.newLine()
@@ -539,6 +545,8 @@ class ConfigManager(
                 writer.write("${config.hudModulesPrefix}.${hud.name}.x=${hud.getX()}")
                 writer.newLine()
                 writer.write("${config.hudModulesPrefix}.${hud.name}.y=${hud.getY()}")
+                writer.newLine()
+                writer.write("${config.hudModulesPrefix}.${hud.name}.place=\"${hud.placeSetting.valString}\"")
                 writer.newLine()
                 if(Kisman.instance.settingsManager.getSettingsByMod(hud) != null) {
                     for(setting in Kisman.instance.settingsManager.getSettingsByMod(hud)) {

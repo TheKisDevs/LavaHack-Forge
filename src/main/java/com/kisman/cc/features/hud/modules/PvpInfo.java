@@ -42,6 +42,6 @@ public class PvpInfo extends ShaderableHudModule {
 //            count++;
         };
 
-        setH(11 * height);
+        setH(9 * height);
     }
 }

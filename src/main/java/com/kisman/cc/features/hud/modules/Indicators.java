@@ -3,11 +3,11 @@ package com.kisman.cc.features.hud.modules;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.client.CustomFontModule;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.*;
-import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.math.Animation;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
+import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -66,19 +66,19 @@ public class Indicators extends HudModule {
 
         //math
         double cooldownPercentage = MathHelper.clamp(mc.player.getCooledAttackStrength(0), 0.1, 1);
-        cooldownBarWidth = AnimationUtils.animate(cooldownPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), cooldownBarWidth, 0.05);
+        cooldownBarWidth = Animation.animate(cooldownPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), cooldownBarWidth, 0.05);
 
         double hurttimePercentage = MathHelper.clamp(mc.player.hurtTime, 0, 1);
-        hurttimeBarWidth = AnimationUtils.animate(hurttimePercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), hurttimeBarWidth, 0.05);
+        hurttimeBarWidth = Animation.animate(hurttimePercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), hurttimeBarWidth, 0.05);
         if(hurttimeBarWidth < 0) hurttimeBarWidth = 0;
 
         double speedPercentage = MathHelper.clamp(currSpeed / 2.4, 0.1, 1);
-        speedBarWidth = AnimationUtils.animate(speedPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), speedBarWidth, 0.05);
+        speedBarWidth = Animation.animate(speedPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), speedBarWidth, 0.05);
 
         double healthPercentage = mc.player.getHealth() / mc.player.getMaxHealth();
 
         if(timer.passedMillis(15L)) {
-            healthBarWidth = AnimationUtils.animate(healthPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), healthBarWidth, 0.05);
+            healthBarWidth = Animation.animate(healthPercentage * CustomFontUtil.getStringWidth(stringWithMaxLength), healthBarWidth, 0.05);
             timer.reset();
         }
 
@@ -144,19 +144,19 @@ public class Indicators extends HudModule {
 
         //math
         double cooldownPercentage = MathHelper.clamp(mc.player.getCooledAttackStrength(0), 0.1, 1);
-        cooldownBarWidth = AnimationUtils.animate(cooldownPercentage * 51, cooldownBarWidth, 0.05);
+        cooldownBarWidth = Animation.animate(cooldownPercentage * 51, cooldownBarWidth, 0.05);
 
         double hurttimePercentage = MathHelper.clamp(mc.player.hurtTime, 0, 1);
-        hurttimeBarWidth = AnimationUtils.animate(hurttimePercentage * 51, hurttimeBarWidth, 0.05);
+        hurttimeBarWidth = Animation.animate(hurttimePercentage * 51, hurttimeBarWidth, 0.05);
         if(hurttimeBarWidth < 0) hurttimeBarWidth = 0;
 
         double speedPercentage = MathHelper.clamp(currSpeed / 2.4, 0.1, 1);
-        speedBarWidth = AnimationUtils.animate(speedPercentage * 51, speedBarWidth, 0.05);
+        speedBarWidth = Animation.animate(speedPercentage * 51, speedBarWidth, 0.05);
 
         double healthPercentage = mc.player.getHealth() / mc.player.getMaxHealth();
 
         if(timer.passedMillis(15L)) {
-            healthBarWidth = AnimationUtils.animate(healthPercentage * 51, healthBarWidth, 0.05);
+            healthBarWidth = Animation.animate(healthPercentage * 51, healthBarWidth, 0.05);
             timer.reset();
         }
 

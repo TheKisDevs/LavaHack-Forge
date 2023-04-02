@@ -7,7 +7,7 @@ import com.kisman.cc.features.module.combat.blocker.BlockerModule;
 import com.kisman.cc.features.module.combat.blocker.modules.CrystalPushBlocker;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingGroup;
-import com.kisman.cc.util.world.BlockUtil;
+import com.kisman.cc.util.world.BlockUtil2;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
@@ -58,7 +58,7 @@ public class Blocker extends Module {
         return dynamicBlocks.stream()
                 .distinct()
                 .filter(pos -> mc.world.getBlockState(pos).getMaterial().isReplaceable())
-                .filter(pos -> !BlockUtil.getPossibleSides(pos).isEmpty())
+                .filter(pos -> !BlockUtil2.sides(pos).isEmpty())
                 .collect(Collectors.toList());
     }
 
