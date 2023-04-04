@@ -33,7 +33,7 @@ import kotlin.random.Random
 const val address = "161.97.78.143"
 const val port = 25563
 
-const val version = "2.0"
+const val version = "2.1"
 
 var loaded = false
 var versions = emptyArray<String>()
@@ -47,6 +47,8 @@ var canPressInstallButton = true
 
 var receivedVersionCheckAnswer = false
 var receivedVersions = false
+
+var CUSTOM_CLASSLOADER : CustomClassLoader? = null
 
 var status = "Idling"
     set(value) {
@@ -83,13 +85,14 @@ fun load(
         loaded = true
         canPressInstallButton = false
 
-//        loadIntoResourceCache(bytes)
         loadIntoCustomClassLoader(bytes)
         close()
         client!!.close()
-        AccountData.key = key
-        AccountData.properties = properties
-        AccountData.processors = processors.toInt()
+        CUSTOM_CLASSLOADER!!
+            .findClass("com.kisman.cc.util.AccountData")
+            .getMethod("set", String::class.java, String::class.java, Int::class.java)
+            .invoke(null, key, properties, processors.toInt())
+
         LavaHackLoaderCoreMod.resume()
     }
 
@@ -102,8 +105,12 @@ fun load(
                 "1" -> "Invalid key or HWID or Loader is outdated!"
                 "2" -> "Key and HWID is valid!"
                 "3" -> "You have no access for selected version!"
-                "4" -> "You have tried to dump/Already dumped LavaHack"
+                "4" -> "You have tried to dump/Successfully dumped LavaHack"
                 else -> "Invalid answer of \"getpublicjar\" command"
+            }
+
+            if(message == "3" || message == "1") {
+                canPressInstallButton = true
             }
         }
 
@@ -117,6 +124,7 @@ fun load(
 
     client = setupClient(messageProcessor)
     client.send("getpublicjar $key $version $properties $processors $versionToLoad")
+    canPressInstallButton = false
 
     LavaHackLoaderCoreMod.LOGGER.info("Trying to download classes...")
 
@@ -461,14 +469,14 @@ fun loadIntoCustomClassLoader(
         }
     }
 
-    CustomClassLoader(classes)
+    CUSTOM_CLASSLOADER = CustomClassLoader(classes)
 
     LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
 
     LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
 
     if(resources.isNotEmpty()) {
-        val tempFile = File.createTempFile("", ".lavahack${System.currentTimeMillis()}")
+        val tempFile = File.createTempFile("ong", ".lavahack${System.currentTimeMillis()}")
         val fos = FileOutputStream(tempFile)
         val jos = JarOutputStream(fos)
 
@@ -498,6 +506,8 @@ fun loadIntoCustomClassLoader(
 
     LavaHackLoaderCoreMod.LOGGER.info("Done!")
 
-    AccountData.firstLoadedClassName = firstClassName!!
-    AccountData.firstLoadedClassBytes = firstClassBytes!!
+    CUSTOM_CLASSLOADER!!
+        .findClass("com.kisman.cc.util.AccountData")
+        .getMethod("set", String::class.java, ByteArray::class.java)
+        .invoke(null, firstClassName!!, firstClassBytes!!)
 }

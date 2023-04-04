@@ -1,5 +1,6 @@
 package the.kis.devs.server.command
 
+import the.kis.devs.server.LOGGER
 import the.kis.devs.server.data.SocketMessage
 import the.kis.devs.server.encryption
 import the.kis.devs.server.websockets.WebSocket
@@ -24,11 +25,11 @@ abstract class Command(
         this.connection = connection
 
         for(message in execute(line, args)) {
-            println("Answer by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
+            LOGGER.print("Answer by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
 
             if(encryption && message.type == SocketMessage.Type.Text) {
                 message.text = "true ${Base64.getEncoder().encodeToString(message.text?.toByteArray())}"
-                println("Encoded answer by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
+                LOGGER.print("Encoded answer by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"${if(message.type == SocketMessage.Type.Text) message.text else message.file?.name}\"")
             }
 
             if(message.type == SocketMessage.Type.Text) {
@@ -42,6 +43,6 @@ abstract class Command(
     protected fun debug(
         message : String
     ) {
-        println("Debug message by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"$message\"")
+        LOGGER.print("Debug message by command \"$command\" from web socket \"${wsNameMap[connection]}\" is \"$message\"")
     }
 }

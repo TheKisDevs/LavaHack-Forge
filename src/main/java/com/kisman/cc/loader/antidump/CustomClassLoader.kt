@@ -7,12 +7,19 @@ package com.kisman.cc.loader.antidump
 class CustomClassLoader(
     private val lavahackCache : Map<String, ByteArray>
 ) : ClassLoader() {
+    private val lavahackClassCache = mutableMapOf<String, Class<*>>()
     public override fun findClass(
         name : String?
     ) : Class<*> = if(lavahackCache.contains(name)) {
-        val bytes = lavahackCache[name]!!
+        if(!lavahackClassCache.contains(name)) {
+            val bytes = lavahackCache[name]!!
 
-        defineClass(name, bytes, 0, bytes.size)
+            lavahackClassCache[name!!] = defineClass(name, bytes, 0, bytes.size).also {
+//                resolveClass(it)
+            }
+        }
+
+        lavahackClassCache[name]!!
     } else {
         super.findClass(name)
     }

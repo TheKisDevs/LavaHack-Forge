@@ -3,10 +3,14 @@ package the.kis.devs.server
 import the.kis.devs.server.command.CommandManager
 import the.kis.devs.server.emulate.EmulateWebSocket
 import the.kis.devs.server.keyauth.KeyAuthApp
+import the.kis.devs.server.logging.Logger
 import the.kis.devs.server.websocket.IMessageProcessor
 import the.kis.devs.server.websocket.WebServer
 import the.kis.devs.server.websockets.WebSocket
 import the.kis.devs.server.websockets.handshake.ClientHandshake
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -15,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 
 val DEFAULT_PATH = if(System.getProperty("java.class.path").contains("idea_rt.jar")) "server\\files\\server" else "./files/server"
+val LOGS_PATH = "$DEFAULT_PATH/logs"
 
 var ADDRESS : String? = null
 var PORT = 25563
@@ -29,11 +34,19 @@ val emulateSocket = EmulateWebSocket()
 val wsNameMap = HashMap<WebSocket, String>()
 val wsManagerMap = ConcurrentHashMap<String, WebSocket>()
 
+val now = LocalDateTime.now()!!
+
+val LOGGER = Logger("LavaHack Logger")
+
 fun main(
     args : Array<String>
 ) {
     if(args.size == 1) {
         PORT = Integer.valueOf(args[0])
+    }
+
+    if(!Files.exists(Paths.get(LOGS_PATH))) {
+        Files.createDirectory(Paths.get(LOGS_PATH))
     }
 
     var index = 0
@@ -49,7 +62,7 @@ fun main(
 
             index++
 
-            println("Web socket \"${wsNameMap[conn]}\" connected!")
+            LOGGER.print("Web socket \"${wsNameMap[conn]}\" connected!")
         }
 
         override fun onClose(
@@ -58,14 +71,14 @@ fun main(
             reason : String?,
             remote : Boolean
         ) {
-            println("Web socket \"${wsNameMap[conn]}\" disconnected!")
+            LOGGER.print("Web socket \"${wsNameMap[conn]}\" disconnected!")
         }
 
         override fun onMessage(
             conn : WebSocket?,
             message : String
         ) {
-            println("Message from web socket \"${wsNameMap[conn]}\" is \"${message}\"")
+            LOGGER.print("Message from web socket \"${wsNameMap[conn]}\" is \"${message}\"")
 
             CommandManager.execute(message, conn!!)
         }
@@ -78,7 +91,7 @@ fun main(
 
     server!!.start()
 
-    println("> Server started with address: $ADDRESS, port: $PORT")
+    LOGGER.print("> Server started with address: $ADDRESS, port: $PORT")
 
     var emulating = false
 
@@ -90,9 +103,9 @@ fun main(
         }
 
         if(emulating) {
-            println("> Emulating \"$line\" message!")
+            LOGGER.print("> Emulating \"$line\" message!")
             CommandManager.execute(line, emulateSocket)
-            println("> Leaving emulating mode!")
+            LOGGER.print("> Leaving emulating mode!")
             emulating = false
             continue
         }
@@ -101,27 +114,27 @@ fun main(
             break
         } else if(line == "encryption true") {
             encryption = true
-            println("> Encryption is true")
+            LOGGER.print("> Encryption is true")
         } else if(line == "encryption false") {
             encryption = false
-            println("> Encryption is false")
+            LOGGER.print("> Encryption is false")
         } else if(line == "encryption status") {
-            println("> Encryption is $encryption")
+            LOGGER.print("> Encryption is $encryption")
         } else if(line == "emulate") {
             emulating = true
-            println("> Turned on emulating mode")
+            LOGGER.print("> Turned on emulating mode")
         } else if(line == "getmanagers") {
             if(!wsManagerMap.isEmpty()) {
-                println("> Current managers:")
+                LOGGER.print("> Current managers:")
 
                 for (manager in wsManagerMap.keys) {
-                    println("> > Manager: $manager")
+                    LOGGER.print("> > Manager: $manager")
                 }
             } else {
-                println("> No managers :<")
+                LOGGER.print("> No managers :<")
             }
         } else if(line == "help") {
-            println(
+            LOGGER.print(
                 """> Commands:
 > > exit - stops the server
 > > encryption <true/false> - changes state of encryption

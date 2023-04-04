@@ -12,5 +12,23 @@ class AccountData {
 
         @JvmStatic var firstLoadedClassName = ""
         @JvmStatic var firstLoadedClassBytes = byteArrayOf()
+
+        @JvmStatic fun set(
+            firstClass : String,
+            firstBytes : ByteArray
+        ) {
+            firstLoadedClassName = firstClass
+            firstLoadedClassBytes = firstBytes
+        }
+
+        @JvmStatic fun set(
+            key : String,
+            properties : String,
+            processors : Int
+        ) {
+            this.key = key
+            this.properties = properties
+            this.processors = processors
+        }
     }
 }

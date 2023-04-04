@@ -55,10 +55,10 @@ class SettingsPage : Page("Settings") {
         val overwritingCheckBox = JCheckBox("Overwriting")
         overwritingCheckBox.setBounds(5, 5 + 25, 250, 25)
         overwritingCheckBox.preferredSize = Dimension(200, 25)
-        overwritingCheckBox.addMouseListener(CheckBoxFixer())
-        overwritingCheckBox.addActionListener {
-            FlatMaterialDarkerIJTheme.updateUI()
-        }
+//        overwritingCheckBox.addMouseListener(CheckBoxFixer())
+//        overwritingCheckBox.addActionListener {
+//            FlatMaterialDarkerIJTheme.updateUI()
+//        }
 
         fontableElements += overwritingCheckBox
 
@@ -68,10 +68,10 @@ class SettingsPage : Page("Settings") {
         val pingBypassServerCheckBox = JCheckBox("Ping Bypass Server")
         pingBypassServerCheckBox.setBounds(5, 5 + 25 + 25, 250, 25)
         pingBypassServerCheckBox.preferredSize = Dimension(200, 25)
-        pingBypassServerCheckBox.addMouseListener(CheckBoxFixer())
-        pingBypassServerCheckBox.addActionListener {
-            FlatMaterialDarkerIJTheme.updateUI()
-        }
+//        pingBypassServerCheckBox.addMouseListener(CheckBoxFixer())
+//        pingBypassServerCheckBox.addActionListener {
+//            FlatMaterialDarkerIJTheme.updateUI()
+//        }
 
         fontableElements += pingBypassServerCheckBox
 
@@ -85,7 +85,7 @@ class SettingsPage : Page("Settings") {
         fontComboBox.preferredSize = Dimension(200, 25)
         fontComboBox.addActionListener {
             currentFont = (fontComboBox.selectedItem as LoaderFont).font
-            FlatLaf.updateUI()
+//            FlatLaf.updateUI()
             updateUI()
             updateTabs()
         }
