@@ -7,19 +7,17 @@ import com.kisman.cc.features.schematica.schematica.api.ISchematic;
 import com.kisman.cc.features.schematica.schematica.client.printer.SchematicPrinter;
 import com.kisman.cc.features.schematica.schematica.client.renderer.RenderSchematic;
 import com.kisman.cc.features.schematica.schematica.client.world.SchematicWorld;
-import com.kisman.cc.features.schematica.schematica.command.client.CommandSchematicaReplace;
 import com.kisman.cc.features.schematica.schematica.handler.ConfigurationHandler;
 import com.kisman.cc.features.schematica.schematica.handler.client.*;
 import com.kisman.cc.features.schematica.schematica.reference.Reference;
 import com.kisman.cc.features.schematica.schematica.world.schematic.SchematicFormat;
+import com.kisman.cc.util.UtilityKt;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.io.File;
 
@@ -139,7 +137,7 @@ public class ClientProxy extends CommonProxy {
 
     public void preInit() {
         for (KeyBinding keyBinding : InputHandler.KEY_BINDINGS) {
-            ClientRegistry.registerKeyBinding(keyBinding);
+            UtilityKt.registerKeyBinding(keyBinding);
         }
     }
 
@@ -152,7 +150,8 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new OverlayHandler());
         MinecraftForge.EVENT_BUS.register(new WorldHandler());
 
-        ClientCommandHandler.instance.registerCommand(new CommandSchematicaReplace());
+        //TODO: rewrite replace command with our command system
+//        ClientCommandHandler.instance.registerCommand(new CommandSchematicaReplace());
     }
 
     public void postInit() {

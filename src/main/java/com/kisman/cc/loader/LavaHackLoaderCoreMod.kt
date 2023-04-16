@@ -20,6 +20,8 @@ class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
         } else {
             initLoader()
             suspend()
+//            Thread.currentThread().contextClassLoader = CUSTOM_CLASSLOADER
+//            println(Thread.currentThread().contextClassLoader::class.java.simpleName)
         }
 
         MixinBootstrap.init()
@@ -37,7 +39,7 @@ class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
     override fun getAccessTransformerClass() : String? = null
 
     companion object {
-        @JvmStatic private val thread = Thread.currentThread()
+        @JvmStatic val thread = Thread.currentThread()
         @JvmStatic fun resume() { thread.resume() }
         @JvmStatic fun suspend() { thread.suspend() }
 

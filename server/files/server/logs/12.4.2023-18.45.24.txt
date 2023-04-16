@@ -1,0 +1,4 @@
+<12.4.2023 18:45:28/LavaHack Server>: > Server started with address: null, port: 25563
+<12.4.2023 18:45:31/LavaHack Server>: > Turned on emulating mode
+<12.4.2023 18:45:34/LavaHack Server>: > Emulating "import the.kis.devs.server.wsNameMap" message!
+<12.4.2023 18:45:34/LavaHack Server>: > Leaving emulating mode!

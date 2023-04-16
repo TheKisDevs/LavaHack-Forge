@@ -9,6 +9,7 @@ import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.EntityRenderer
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
@@ -21,6 +22,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import org.apache.commons.lang3.ArrayUtils
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -312,4 +314,17 @@ fun findName(
     }
 
     return null
+}
+
+/**
+ * Fix of NoSuchMethodError: ClientRegistry.registerKeyBinding(KeyBinding)
+ *
+ * Only in loader environment
+ *
+ * Only with custom classloader
+ */
+fun registerKeyBinding(
+    key : KeyBinding
+) {
+    mc.gameSettings.keyBindings = ArrayUtils.add(mc.gameSettings.keyBindings, key)
 }

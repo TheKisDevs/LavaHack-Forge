@@ -12,17 +12,18 @@ import java.time.LocalDateTime
  * @since 16:45 of 02.04.2023
  */
 @Suppress("BlockingMethodInNonBlockingContext")
-class Logger(
+open class Logger(
     private val name : String
 ) {
     private val history = mutableListOf<String>()
     private val file = File("$LOGS_PATH/${now.dayOfMonth}.${now.monthValue}.${now.year}-${now.hour}.${now.minute}.${now.second}.txt")
 
+    open fun prefix() : String = ""
     fun print(
         text : String
     ) {
         LocalDateTime.now().also { it0 ->
-            "<${it0.dayOfMonth}.${it0.monthValue}.${it0.year} ${it0.hour}:${it0.minute}:${it0.second}/$name>: $text".also { it1 ->
+            "<${it0.dayOfMonth}.${it0.monthValue}.${it0.year} ${it0.hour}:${it0.minute}:${it0.second}/$name>${prefix()}: $text".also { it1 ->
                 println(it1)
 
                 if(!file.exists()) {

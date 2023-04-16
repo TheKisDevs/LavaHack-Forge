@@ -8,22 +8,30 @@ import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
 import com.kisman.cc.loader.antidump.runScanner
 import com.kisman.cc.loader.gui.*
+import com.kisman.cc.loader.mixins.ILoadController
 import com.kisman.cc.loader.websockets.IMessageProcessor
 import com.kisman.cc.loader.websockets.WebClient
 import com.kisman.cc.loader.websockets.data.SocketMessage
 import com.kisman.cc.loader.websockets.setupClient
-import com.kisman.cc.util.AccountData
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
+import net.minecraftforge.fml.common.FMLLog
+import net.minecraftforge.fml.common.LoadController
+import net.minecraftforge.fml.common.Loader
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.tree.ClassNode
+import org.spongepowered.asm.mixin.transformer.ClassInfo
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.nio.ByteBuffer
 import java.nio.file.Files
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import kotlin.concurrent.thread
-import kotlin.random.Random
 
 /**
  * @author _kisman_
@@ -81,7 +89,7 @@ fun load(
     fun processBytes(
         bytes : ByteArray
     ) {
-        status = "Successfully received LavaHack"
+        message("Successfully received LavaHack")
         loaded = true
         canPressInstallButton = false
 
@@ -92,7 +100,6 @@ fun load(
             .findClass("com.kisman.cc.util.AccountData")
             .getMethod("set", String::class.java, String::class.java, Int::class.java)
             .invoke(null, key, properties, processors.toInt())
-
         LavaHackLoaderCoreMod.resume()
     }
 
@@ -100,14 +107,14 @@ fun load(
         override fun processMessage(
             message : String
         ) {
-            status = when (message) {
+            message(when (message) {
                 "0" -> "Invalid arguments of \"getpublicjar\" command!"
                 "1" -> "Invalid key or HWID or Loader is outdated!"
                 "2" -> "Key and HWID is valid!"
                 "3" -> "You have no access for selected version!"
                 "4" -> "You have tried to dump/Successfully dumped LavaHack"
                 else -> "Invalid answer of \"getpublicjar\" command"
-            }
+            })
 
             if(message == "3" || message == "1") {
                 canPressInstallButton = true
@@ -126,14 +133,18 @@ fun load(
     client.send("getpublicjar $key $version $properties $processors $versionToLoad")
     canPressInstallButton = false
 
-    LavaHackLoaderCoreMod.LOGGER.info("Trying to download classes...")
+    message("Trying to download LavaHack")
+}
 
-    status = "Trying to download LavaHack"
+fun message(
+    message : String
+) {
+    status = message
+    LavaHackLoaderCoreMod.LOGGER.info(message)
 }
 
 fun createGui() {
-    LavaHackLoaderCoreMod.LOGGER.info("Creating the gui")
-
+    message("Creating the gui")
     create()
 
     for (log in oldLogs) {
@@ -143,6 +154,7 @@ fun createGui() {
 
 fun initLoader() {
     initProvider()
+    swapLoggers()
 
     thread {
         try {
@@ -248,7 +260,7 @@ private fun downloadLibraries() {
 }
 
 fun versionCheck(version : String) {
-    LavaHackLoaderCoreMod.LOGGER.info("VersionCheck was started!")
+    message("Checking if your loader is on latest version!")
 
     var client : WebClient? = null
 
@@ -258,14 +270,12 @@ fun versionCheck(version : String) {
         ) {
             LavaHackLoaderCoreMod.LOGGER.info("VersionCheck: raw answer is \"$message\"")
 
-            status = when (message) {
+            message(when (message) {
                 "0" -> "Invalid arguments of \"checkversion\" command!"
                 "1" -> "Your loader is outdated! Please update it!"
                 "2" -> "Loader is on latest version!"
-                else -> "kill yourself <3"
-            }
-
-            LavaHackLoaderCoreMod.LOGGER.info(status)
+                else -> "CANT PARSE ANSWER OF VERSIONCHECK COMMAND(\"$message\")"
+            })
 
             if (message != "2") {
                 Utility.unsafeCrash()
@@ -286,7 +296,7 @@ fun versionCheck(version : String) {
 }
 
 fun versions(version : String) {
-    LavaHackLoaderCoreMod.LOGGER.info("VersionsList was started!")
+    message("Getting version list")
 
     var client : WebClient? = null
 
@@ -295,19 +305,19 @@ fun versions(version : String) {
             message : String
         ) {
             LavaHackLoaderCoreMod.LOGGER.info("VersionsList: raw answer is \"$message\"")
-            when (message) {
-                "0" -> status = "Invalid arguments of \"getversions\" command!"
-                "1" -> status = "Invalid loader version!"
+            message(when (message) {
+                "0" -> "Invalid arguments of \"getversions\" command!"
+                "1" -> "Outdated loader!"
                 else -> {
                     if(message.startsWith("2")) {
-                        status = "Successfully received version list"
                         versions = message.split("|")[1].split("&").toTypedArray()
                         receivedVersions = true
+                        "Successfully received version list"
+                    } else {
+                        "CANT PARSE ANSWER OF GETVERSIONS COMMAND(\"$message\")"
                     }
                 }
-            }
-
-            LavaHackLoaderCoreMod.LOGGER.info(status)
+            })
 
             if(status != "Successfully received version list") {
                 Utility.unsafeCrash()
@@ -333,97 +343,14 @@ fun loadIntoClassLoader(bytes : ByteArray) {
     classLoader.addURL(tempFile.toURI().toURL())
 }
 
-fun loadIntoResourceCache(bytes : ByteArray) {
-    val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
-    resourceCacheField.isAccessible = true
-    val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
-    val resources = HashMap<String, ByteArray>()
-
-    LavaHackLoaderCoreMod.LOGGER.info("Injecting classes...")
-
-    status = "Injecting classes..."
-
-    var classesCount = 0
-    var resourcesCount = 0
-
-    var firstClassName : String? = null
-    var firstClassBytes : ByteArray? = null
-
-    ZipInputStream(bytes.inputStream()).use { zipStream ->
-        var zipEntry : ZipEntry?
-        while (zipStream.nextEntry.also { zipEntry = it } != null) {
-            var name = zipEntry!!.name
-            if (name.endsWith(".class")) {
-                LavaHackLoaderCoreMod.LOGGER.info("Injecting class \"${name.removeSuffix(".class")}\"")
-                name = name.removeSuffix(".class")
-                name = name.replace('/', '.')
-
-                if(name == "Main") {
-                    loadIntoClassLoader(zipStream.readBytes())
-                } else {
-                    resourceCache[name] = zipStream.readBytes()
-
-                    if(firstClassName == null) {
-                        firstClassName = name
-                        firstClassBytes = resourceCache[name]
-                    }
-                }
-
-                classesCount++
-                status = "Injecting $name"
-            } else if(Utility.validResource(name)) {
-                LavaHackLoaderCoreMod.LOGGER.info("Found new resource \"$name\"")
-                resources[name] = Utility.getBytesFromInputStream(zipStream)
-                resourcesCount++
-                status = "Found \"$name\" resource."
-            }
-        }
-    }
-
-    LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
-
-    LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
-
-    if(resources.isNotEmpty()) {
-        val tempFile = File.createTempFile("lavahackResources-${Random(5000)}", ".jar")
-        val fos = FileOutputStream(tempFile)
-        val jos = JarOutputStream(fos)
-
-        for(entry in resources.entries) {
-            status = "Injecting \"${entry.key}\" resource."
-            jos.putNextEntry(ZipEntry(entry.key))
-            jos.write(entry.value)
-            jos.closeEntry()
-        }
-
-        jos.close()
-        fos.close()
-
-        tempFile.deleteOnExit()
-
-        classLoader.addURL(tempFile.toURI().toURL())
-    }
-
-    LavaHackLoaderCoreMod.LOGGER.info("Setting resourceCache!")
-    status = "Setting \"resourceCache\""
-
-    resourceCacheField[classLoader] = resourceCache
-
-    status = "Done!"
-
-    LavaHackLoaderCoreMod.LOGGER.info("Done!")
-
-    AccountData.firstLoadedClassName = firstClassName!!
-    AccountData.firstLoadedClassBytes = firstClassBytes!!
-}
-
 fun loadIntoCustomClassLoader(
     bytes : ByteArray
 ) {
     val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
     resourceCacheField.isAccessible = true
-    val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
+//    val resourceCache = resourceCacheField[classLoader] as MutableMap<String, ByteArray>
     val classes = HashMap<String, ByteArray>()
+    val mixins = HashMap<String, ByteArray>()
     val resources = HashMap<String, ByteArray>()
 
     LavaHackLoaderCoreMod.LOGGER.info("Injecting classes...")
@@ -431,10 +358,45 @@ fun loadIntoCustomClassLoader(
     status = "Injecting classes..."
 
     var classesCount = 0
+    var mixinsCount = 0
     var resourcesCount = 0
 
-    var firstClassName : String? = null
-    var firstClassBytes : ByteArray? = null
+    var firstClassName = ""
+    var firstClassBytes = byteArrayOf()
+
+    val fromClassNode = ClassInfo::class.java
+        .getDeclaredMethod("fromClassNode", ClassNode::class.java).also {
+            it.isAccessible = true
+        }
+
+    /*val runTransformers = Class
+        .forName("net.minecraft.launchwrapper.LaunchClassLoader")
+        .getDeclaredMethod("runTransformers", String::class.java, String::class.java, ByteArray::class.java).also {
+            it.isAccessible = true
+        }*/
+
+    Class
+        .forName("net.minecraft.launchwrapper.LaunchClassLoader")
+        .getDeclaredField("DEBUG_FINER").also {it0 ->
+            it0.isAccessible = true
+
+            Field::class.java
+                .getDeclaredField("modifiers").also { it1 ->
+                    it1.isAccessible = true
+                }[it0] = it0.modifiers and Modifier.FINAL.inv()
+        }[null] = true
+
+
+    /*for(method in ClassInfo::class.java.declaredMethods) {
+        println(method.name + " " + method.parameterTypes.joinToString { it.name })
+    }*/
+
+    /*val constructor = ClassInfo::class.java
+        .getDeclaredConstructor(ClassNode::class.java).also {
+            it.isAccessible = true
+        }*/
+
+//    val cache = mutableMapOf<String, ClassInfo>()
 
     ZipInputStream(bytes.inputStream()).use { stream ->
         var entry : ZipEntry?
@@ -443,47 +405,64 @@ fun loadIntoCustomClassLoader(
             var name = entry!!.name
 
             if (name.endsWith(".class")) {
-                LavaHackLoaderCoreMod.LOGGER.info("Injecting class \"${name.removeSuffix(".class")}\"")
                 name = name.removeSuffix(".class")
                 name = name.replace('/', '.')
 
-                if(name.toLowerCase().contains("mixin")) {
-                    resourceCache[name] = stream.readBytes()
-
-                    if(firstClassName == null) {
-                        firstClassName = name
-                        firstClassBytes = resourceCache[name]
+                val bytes0 = stream.readBytes()//runTransformers.invoke(classLoader, name, name, stream.readBytes()) as ByteArray
+                //ClassNode classNode = new ClassNode();
+                //        ClassReader classReader = new ClassReader(classBytes);
+                //        classReader.accept(classNode, flags);
+                //        return classNode;
+                val node = ClassNode().also { it0 ->
+                    ClassReader(bytes0).also { it1 ->
+                        it1.accept(it0, 0)
                     }
-                } else {
-                    classes[name] = stream.readBytes()
                 }
 
-                classesCount++
-                status = "Injecting $name"
+//                val info = constructor.newInstance(node)
+
+//                cache[node.name] = constructor.newInstance(node)
+
+                fromClassNode.invoke(null, node)
+
+                if(name.toLowerCase().contains("mixin")) {
+                    mixins[name] = bytes0
+                    mixinsCount++
+                    message("Processing mixin $name")
+                } else {
+                    classes[name] = bytes0
+                    classesCount++
+                    message("Processing class $name")
+                }
+
+                if(firstClassName.isEmpty()) {
+                    firstClassName = name
+                    firstClassBytes = bytes0
+                }
             } else if(Utility.validResource(name)) {
-                LavaHackLoaderCoreMod.LOGGER.info("Found new resource \"$name\"")
                 resources[name] = Utility.getBytesFromInputStream(stream)
                 resourcesCount++
-                status = "Found \"$name\" resource."
+                message("Processing resource $name")
             }
         }
     }
 
-    CUSTOM_CLASSLOADER = CustomClassLoader(classes)
+    message("Processed $classesCount classes, $mixinsCount mixins, $resourcesCount resources")
+    message("Injecting $classesCount classes")
 
-    LavaHackLoaderCoreMod.LOGGER.info("Injected $classesCount classes, Found $resourcesCount resources")
+    CUSTOM_CLASSLOADER = CustomClassLoader(classes, mixins/*, classLoader.parent*/)
 
-    LavaHackLoaderCoreMod.LOGGER.info("Injecting resources...")
+    message("Injecting $resourcesCount resources")
 
     if(resources.isNotEmpty()) {
-        val tempFile = File.createTempFile("ong", ".lavahack${System.currentTimeMillis()}")
+        val tempFile = File.createTempFile("${System.currentTimeMillis()}", ".lavahack")
         val fos = FileOutputStream(tempFile)
         val jos = JarOutputStream(fos)
 
         Files.setAttribute(tempFile.toPath(), "dos:hidden", true)
 
         for(entry in resources.entries) {
-            status = "Injecting \"${entry.key}\" resource."
+            message("Injecting \"${entry.key}\" resource.")
             jos.putNextEntry(ZipEntry(entry.key))
             jos.write(entry.value)
             jos.closeEntry()
@@ -497,17 +476,53 @@ fun loadIntoCustomClassLoader(
         classLoader.addURL(tempFile.toURI().toURL())
     }
 
-    LavaHackLoaderCoreMod.LOGGER.info("Setting resourceCache!")
-    status = "Setting \"resourceCache\""
+    message("Injecting $mixinsCount mixins")
 
-    resourceCacheField[classLoader] = resourceCache
+    resourceCacheField[classLoader] = ConcurrentHashMap(mixins)
 
-    status = "Done!"
+    /*message("Injecting $classesCount/$mixinsCount classes/mixins to mixin cache")
 
-    LavaHackLoaderCoreMod.LOGGER.info("Done!")
+    val field = ClassInfo::class.java
+        .getDeclaredField("cache").also { it0 ->
+            it0.isAccessible = true
+
+            Field::class.java
+                .getDeclaredField("modifiers").also { it1 ->
+                    it1.isAccessible = true
+                }[it0] = it0.modifiers and Modifier.FINAL.inv()
+        }
+
+    cache.putAll(field[null] as Map<String, ClassInfo>)
+    field[null] = HashMap(cache)*/
+
+    message("Successfully loaded LavaHack")
 
     CUSTOM_CLASSLOADER!!
         .findClass("com.kisman.cc.util.AccountData")
         .getMethod("set", String::class.java, ByteArray::class.java)
-        .invoke(null, firstClassName!!, firstClassBytes!!)
+        .invoke(null, firstClassName, firstClassBytes)
+}
+
+/*fun swapModController() {
+    val controller = Loader::class.java
+        .getDeclaredField("modController").also {
+            it.isAccessible = true
+        }
+
+    controller[null] = LoadController(Loader.instance())
+    (controller[null] as ILoadController).forceActiveContainer(Loader.instance().minecraftModContainer)
+}*/
+
+fun swapLoggers() {
+    message("Swapping FML logger")
+
+    FMLLog::class.java
+        .getDeclaredField("log").also { it0 ->
+            it0.isAccessible = true
+
+            Field::class.java
+                .getDeclaredField("modifiers").also { it1 ->
+                    it1.isAccessible = true
+                }[it0] = it0.modifiers and Modifier.FINAL.inv()
+        }[null] = CustomFMLLogger()
 }

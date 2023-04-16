@@ -71,7 +71,7 @@ public class SecurityClassLoader extends LaunchClassLoader {
 
     @Override
     public void addClassLoaderExclusion(String toExclude) {
-        classLoader.addClassLoaderExclusion(toExclude);
+        classLoader. addClassLoaderExclusion(toExclude);
     }
 
     @Override

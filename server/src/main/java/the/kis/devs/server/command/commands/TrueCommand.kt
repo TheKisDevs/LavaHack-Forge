@@ -1,6 +1,5 @@
 package the.kis.devs.server.command.commands
 
-import the.kis.devs.server.LOGGER
 import the.kis.devs.server.data.SocketMessage
 import the.kis.devs.server.command.Command
 import the.kis.devs.server.command.CommandManager
@@ -21,7 +20,7 @@ object TrueCommand : Command(
         if(args.size == 2) {
             val decoded = Base64.getDecoder().decode(args[1]).toString(Charsets.UTF_8)
 
-            LOGGER.print("Decoded message from socket \"${wsNameMap[connection]}\": $decoded")
+            logger.print("Decoded message from socket \"${wsNameMap[connection]}\": $decoded")
 
             CommandManager.execute(decoded, connection!!)
 

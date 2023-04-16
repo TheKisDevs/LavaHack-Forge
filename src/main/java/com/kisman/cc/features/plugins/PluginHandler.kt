@@ -3,6 +3,7 @@ package com.kisman.cc.features.plugins
 import com.kisman.cc.Kisman
 import com.kisman.cc.features.plugins.managers.PluginManager
 import com.kisman.cc.features.plugins.utils.Environment
+import net.minecraft.launchwrapper.Launch
 import org.spongepowered.asm.mixin.Mixins
 
 /**
@@ -12,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixins
 class PluginHandler {
     init {
         Environment.loadEnvironment()
-        PluginManager.getInstance().createPluginConfigs(PluginManager::class.java.classLoader)
+        PluginManager.getInstance().createPluginConfigs(Launch.classLoader)
     }
 
     fun coreModInit() {
@@ -25,12 +26,16 @@ class PluginHandler {
         PluginManager.getInstance().instantiatePlugins()
 
         for(config in PluginManager.getInstance().configs.values) {
-            val module = ModulePlugin(config)
-            Kisman.instance.moduleManager.modules.add(module)
-            try {
-                module.plugin.init()
-            } catch(ignored : IncompatibleClassChangeError) {}
-            module.load()
+            ModulePlugin(config).also {
+                Kisman.instance.moduleManager.modules.add(it)
+
+                try {
+                    it.plugin.init()
+                } catch(_ : Throwable) { }
+
+                it.load()
+            }
+
         }
     }
 }

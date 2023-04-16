@@ -98,10 +98,6 @@ dependencies {
     }
     compile group: 'net.jodah', name: 'typetools', version: '0.6.3'
     compile group: "com.googlecode.json-simple", name: "json-simple", version: "1.1.1"
-    compile group: 'org.yaml', name: 'snakeyaml', version: '1.19'
-    compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
-        exclude group: 'com.google.guava', module: 'guava'
-    }
     shade 'com.neovisionaries:nv-websocket-client:2.14'
 
     compile group: 'org.json', name: 'json', version: '20210307'
@@ -149,13 +145,9 @@ reobf {
 
 shadowJar {
     dependencies {
-        include(dependency('com.yworks:yguard'))
         include(dependency('org.spongepowered:mixin'))
         include(dependency('net.jodah:typetools'))
         include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
-        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
-        include(dependency('org.yaml:snakeyaml'))
-        include(dependency('org.reflections:reflections'))
         include(dependency('org.javassist:javassist'))
         include(dependency('org.json:json'))
         include(dependency('com.viaversion:viaversion'))
@@ -172,7 +164,6 @@ shadowJar {
         include(dependency("org.jsoup:jsoup:1.11.3"))
         include(dependency('com.formdev:flatlaf:2.4'))
         include(dependency('com.formdev:flatlaf-intellij-themes:2.4'))
-//        include(dependency('org.telegram:telegraph:1.0'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
@@ -206,7 +197,8 @@ task privateJar(type : Jar, dependsOn : jar) {
 
 task publicJar(type : Jar, dependsOn : jar) {
     from(zipTree(shadowJar.archivePath)) {
-        include "com/kisman/cc/sockets/**"
+        include 'baritone/**'
+        include 'com/kisman/cc/sockets/**'
         include 'com/kisman/cc/ai/**'
         include 'com/kisman/cc/event/**'
         include 'com/kisman/cc/features/**'
@@ -234,7 +226,7 @@ task publicJar(type : Jar, dependsOn : jar) {
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
-        exclude 'baritone'
+        exclude 'baritone/**'
         exclude 'com/kisman/cc/ai/**'
         exclude 'com/kisman/cc/event/**'
         exclude 'com/kisman/cc/features/**'

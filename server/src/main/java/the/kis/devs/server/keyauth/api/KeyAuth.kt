@@ -7,6 +7,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import org.apache.http.impl.client.HttpClients
 import org.json.JSONObject
 import the.kis.devs.server.keyauth.user.UserData
+import the.kis.devs.server.util.fromIntellij
 import java.lang.Exception
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
@@ -81,6 +82,9 @@ class KeyAuth(
         key : String, 
         hwid : String
     ) : Boolean {
+        if(fromIntellij()) {
+            return true
+        }
         init()
 
         val response : HttpResponse<String>

@@ -55,14 +55,21 @@ object GetPublicJarCommand : Command(
                 } catch(_ : Exception) { }
             }
 
+            try {
+                args[4].toInt()
+            } catch(_ : NumberFormatException) {
+                logger.print("Value of processors cannot be casted to integer number!")
+                return listOf(SocketMessage("0"))
+            }
+
             val authAnswer = AuthCommand.execute("", listOf("auth", args[1], HWID(args[3], args[4].toInt()).hwid))//TODO: need try catch
 
-            debug("Auth command answer is ${authAnswer[0].text}")
+            logger.print("Auth command answer is ${authAnswer[0].text}")
 
             if(authAnswer[0].text == "2") {
                 val checkVersionAnswer = CheckVersionCommand.execute("", listOf("checkversion", args[2]))
 
-                debug("CheckVersion command answer is ${checkVersionAnswer[0].text}")
+                logger.print("CheckVersion command answer is ${checkVersionAnswer[0].text}")
 
                 if(checkVersionAnswer[0].text == "2") {
                     val versionIndex = args[5].replace("_", " ")
@@ -70,7 +77,7 @@ object GetPublicJarCommand : Command(
 
                     val getFileAnswer = GetFileCommand.execute("", listOf("getfile", "publicJar/$versionFile"))
 
-                    debug("GetFile command answer is ${getFileAnswer[0].text}")
+                    logger.print("GetFile command answer is ${getFileAnswer[0].text}")
 
                     if(getFileAnswer[0].text == "2") {
 

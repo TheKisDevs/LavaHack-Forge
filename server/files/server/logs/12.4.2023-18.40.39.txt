@@ -1,0 +1,10 @@
+<12.4.2023 18:40:44/LavaHack Server>: > Server started with address: null, port: 25563
+<12.4.2023 18:40:54/LavaHack Server>: > Commands:
+> > exit - stops the server
+> > encryption <true/false> - changes state of encryption
+> > encryption status - shows current value of "encryption" field
+> > help - shows this menu
+> > message <text> - sends <text> to all connections
+> > emulate - starts command emulating mode
+<12.4.2023 18:41:17/LavaHack Server>: > Turned on emulating mode
+<12.4.2023 18:42:0/LavaHack Server>: > Emulating "getpublicjar key clientver hwiddata processors ver" message!

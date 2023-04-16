@@ -1,0 +1,7 @@
+<12.4.2023 18:46:4/LavaHack Server>: > Server started with address: null, port: 25563
+<12.4.2023 18:46:7/LavaHack Server>: > Turned on emulating mode
+<12.4.2023 18:46:30/LavaHack Server>: > Emulating "getpublicjar key clientver hwiddata processors ver" message!
+<12.4.2023 18:46:34/LavaHack Server>: > Leaving emulating mode!
+<12.4.2023 18:46:44/LavaHack Server>: > Turned on emulating mode
+<12.4.2023 18:46:47/LavaHack Server>: > Emulating "getpublicjar key clientver hwiddata 1 ver" message!
+<12.4.2023 18:46:47/LavaHack Server>: > Leaving emulating mode!

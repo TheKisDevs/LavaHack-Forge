@@ -36,7 +36,7 @@ val wsManagerMap = ConcurrentHashMap<String, WebSocket>()
 
 val now = LocalDateTime.now()!!
 
-val LOGGER = Logger("LavaHack Logger")
+val LOGGER = Logger("LavaHack Server")
 
 fun main(
     args : Array<String>
