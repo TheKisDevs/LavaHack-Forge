@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HoleUtils {
 
@@ -49,6 +50,17 @@ public class HoleUtils {
     }
 
     public Hole getHole(BlockPos pos){
+        if(collideCheck(pos))
+            return null;
+        List<EnumFacing> facings = Stream.of(EnumFacing.HORIZONTALS).filter(facing -> !collideCheck(pos.offset(facing))).collect(Collectors.toList());
+        if(facings.size() == 0)
+            return getSingle(pos);
+        if(facings.size() == 1)
+            return getDouble(pos);
+        if(facings.size() == 2 && facings.get(0).getOpposite() != facings.get(1))
+            return getQuadruple(pos);
+        return null;
+        /*
         Hole single = getSingle(pos);
         Hole doubleHole = getDouble(pos);
         Hole quadruple = getQuadruple(pos);
@@ -59,6 +71,7 @@ public class HoleUtils {
         if(quadruple != null)
             return quadruple;
         return null;
+         */
     }
 
     public Hole getSingle(BlockPos pos){

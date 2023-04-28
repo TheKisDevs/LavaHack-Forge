@@ -61,6 +61,7 @@ import java.util.stream.Collectors;
 public class AutoCrystalRewrite extends Module {
 
     private final SettingEnum<Safety> safety = new SettingEnum<>("Safety", this, Safety.None).register();
+    private final Setting minMax = register(new Setting("MinMax", this, 1, 0, 2, false));
     private final Setting safetyBalance = register(new Setting("SafetyBalance", this, 2, 0, 10, false));
 
     //private final SettingEnum<SwapEnum2.Swap> swap = new SettingEnum<>("Switch", this, SwapEnum2.Swap.None).register();
@@ -297,11 +298,6 @@ public class AutoCrystalRewrite extends Module {
         inhibitCrystals.put(info.getCrystal(), System.currentTimeMillis());
         if(sync.getValEnum() == Sync.Attack)
             removeCrystal(info.getCrystal());
-        if(placeListCheck.getValBoolean()){
-            placedList = placedList.stream()
-                    .filter(placeInfo -> !placeInfo.blockPos.equals(new BlockPos(info.crystal.posX, info.crystal.posY - 1, info.crystal.posZ)))
-                    .collect(Collectors.toCollection(Vector::new));
-        }
         return true;
     }
 
@@ -447,6 +443,11 @@ public class AutoCrystalRewrite extends Module {
                 });
                 for(EntityEnderCrystal crystal : remove)
                     inhibitCrystals.remove(crystal);
+                if(placeListCheck.getValBoolean()){
+                    placedList = placedList.stream()
+                            .filter(placeInfo -> !placeInfo.blockPos.equals(new BlockPos(packet.getX(), packet.getY() - 1, packet.getZ())))
+                            .collect(Collectors.toCollection(Vector::new));
+                }
             }
         }
 
@@ -680,7 +681,7 @@ public class AutoCrystalRewrite extends Module {
                     continue;
             }
 
-            if(noPlaceSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() - mc.player.getAbsorptionAmount()))
+            if(noPlaceSuicide.getValBoolean() && selfDamage >= (mc.player.getHealth() + mc.player.getAbsorptionAmount()))
                 continue;
 
             damage = getSafetyDamage(damage, selfDamage);
@@ -711,7 +712,7 @@ public class AutoCrystalRewrite extends Module {
             case None:
                 return damage;
             case MinMax:
-                return damage - selfDamage;
+                return damage - (selfDamage * minMax.getValDouble());
             case Balance:
                 return (damage + (safetyBalance.getValDouble() * 0.5)) - (selfDamage + safetyBalance.getValDouble());
         }
@@ -817,6 +818,25 @@ public class AutoCrystalRewrite extends Module {
 
     private boolean isEntityInRange(Entity entity, double range, double wallRange){
         return mc.player.getDistance(entity) <= (mc.player.canEntityBeSeen(entity) ? range : wallRange);
+    }
+
+    private static Vec3d predictAccurate(EntityPlayer entity, int ticks){
+        EntityOtherPlayerMP player = new EntityOtherPlayerMP(mc.world, new GameProfile(entity.getUniqueID(), entity.getName()));
+        player.prevPosX = entity.prevPosX;
+        player.prevPosY = entity.prevPosY;
+        player.prevPosZ = entity.prevPosZ;
+        player.posX = entity.posX;
+        player.posZ = entity.posZ;
+        player.posY = entity.posY;
+        player.motionX = entity.motionX;
+        player.motionY = entity.motionY;
+        player.motionZ = entity.motionZ;
+        player.moveForward = entity.moveForward;
+        player.moveStrafing = entity.moveStrafing;
+        player.setHealth(100000);
+        for(int i = 0; i < ticks; i++)
+            player.onLivingUpdate();
+        return entity.getPositionVector();
     }
 
     private static EntityPlayer predict(EntityPlayer entity, int ticks){

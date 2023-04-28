@@ -108,7 +108,7 @@ public class PistonAura extends Module {
 
     private boolean thread = false;
 
-    private final Set<BlockPos> tmpSet = new HashSet<>();
+    //private final Set<BlockPos> tmpSet = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -124,7 +124,7 @@ public class PistonAura extends Module {
         Kisman.EVENT_BUS.unsubscribe(packetListener);
     }
 
-    private final Listener<PacketEvent.PostReceive> packetListener = new Listener<>(event -> {
+    private final Listener<PacketEvent.Receive> packetListener = new Listener<>(event -> {
         if(event.getPacket() instanceof SPacketSoundEffect){
             if(placeInfo == null)
                 return;
@@ -136,8 +136,7 @@ public class PistonAura extends Module {
             double pX = placeInfo.pistonPos.getX() + 0.5;
             double pY = placeInfo.pistonPos.getY() + 0.5;
             double pZ = placeInfo.pistonPos.getZ() + 0.5;
-            ChatUtility.info().printClientModuleMessage("" + Math.sqrt(Math.pow(packet.getX() - pX, 2) + Math.pow(packet.getY() - pY, 2) + Math.pow(packet.getZ() - pZ, 2)));
-            if(Math.sqrt(Math.pow(packet.getX() - pX, 2) + Math.pow(packet.getY() - pY, 2) + Math.pow(packet.getZ() - pZ, 2)) <= 5){
+            if(Math.sqrt(Math.pow(packet.getX() - pX, 2) + Math.pow(packet.getY() - pY, 2) + Math.pow(packet.getZ() - pZ, 2)) <= 6){
                 thread = false;
                 new Thread(() -> {
                     try {
@@ -150,8 +149,44 @@ public class PistonAura extends Module {
                 }).start();
             }
         }
+        /*
+        if(event.getPacket() instanceof SPacketDestroyEntities){
+            if(placeInfo == null)
+                return;
+            if(!thread)
+                return;
+            SPacketDestroyEntities packet = (SPacketDestroyEntities) event.getPacket();
+            double pX = placeInfo.pistonPos.getX() + 0.5;
+            double pY = placeInfo.pistonPos.getY() + 0.5;
+            double pZ = placeInfo.pistonPos.getZ() + 0.5;
+            boolean doIt = false;
+            for(int entityId : packet.getEntityIDs()){
+                Entity entity = mc.world.getEntityByID(entityId);
+                if(
+                        entity instanceof EntityEnderCrystal
+                        && Math.sqrt(Math.pow(entity.posX - pX, 2) + Math.pow(entity.posY - pY, 2) + Math.pow(entity.posZ - pZ, 2)) <= 5
+                ) {
+                    doIt = true;
+                    break;
+                }
+            }
+            if(!doIt)
+                return;
+            thread = false;
+            new Thread(() -> {
+                try {
+                    ThreadUtils.sleep(cycleDelay.getValLong() * 50);
+                } catch (InterruptedException e) {
+                    Kisman.LOGGER.error("[PistonAura] Error resetting cycle", e);
+                }
+                canPlace = true;
+                stage = 0;
+            }).start();
+        }
+         */
     });
 
+    /*
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
         if(placeInfo == null) return;
@@ -160,6 +195,7 @@ public class PistonAura extends Module {
         if(placeInfo.redstonePos != null) redstoneRenderer.handleRenderWorld(redstonePattern, placeInfo.pistonPos, null);
         for(BlockPos pos : tmpSet) tmpRenderer.draw(pos);
     }
+     */
 
     @Override
     public void update() {
@@ -404,19 +440,20 @@ public class PistonAura extends Module {
     }
 
     private PlaceInfo getPlacePos(BlockPos pos, EnumFacing facing){
+        BlockPos crystalPos = pos.up().offset(facing.getOpposite());
         List<PlaceInfo> placeInfos = new ArrayList<>();
-        placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW()), facing));
-        placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW().getOpposite()), facing));
-        placeInfos.add(checkPlace(pos.up(), facing));
-        placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW()), facing));
-        placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW().getOpposite()), facing));
+        placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW()), facing, crystalPos));
+        placeInfos.add(checkPlace(pos.offset(facing.rotateYCCW().getOpposite()), facing, crystalPos));
+        placeInfos.add(checkPlace(pos.up(), facing, crystalPos));
+        placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW()), facing, crystalPos));
+        placeInfos.add(checkPlace(pos.up().offset(facing.rotateYCCW().getOpposite()), facing, crystalPos));
         PlaceInfo placeInfo = placeInfos.stream()
                 .filter(Objects::nonNull)
                 .min(Comparator.comparingDouble(info -> mc.player.getDistance(info.pistonPos.getX() + 0.5, info.pistonPos.getY() + 0.5, info.pistonPos.getZ() + 0.5)))
                 .orElse(null);
         if(placeInfo != null)
             return placeInfo;
-        return checkPlace(pos, facing);
+        return checkPlace(pos, facing, crystalPos);
     }
 
     public static List<EnumFacing> getPossibleSides(BlockPos pos) {
@@ -430,8 +467,8 @@ public class PistonAura extends Module {
         return facings;
     }
 
-    private PlaceInfo checkPlace(BlockPos pos, EnumFacing facing){
-        tmpSet.add(pos);
+    private PlaceInfo checkPlace(BlockPos pos, EnumFacing facing, BlockPos crystalPos){
+        //tmpSet.add(pos);
         if(
                 !mc.world.getBlockState(pos.up()).getBlock().isReplaceable(mc.world, pos.up())
                 || !mc.world.getBlockState(pos.up().offset(facing.getOpposite())).getBlock().isReplaceable(mc.world, pos.up().offset(facing.getOpposite()))
@@ -449,26 +486,28 @@ public class PistonAura extends Module {
         EnumFacing horizontalFacing = EnumFacing.getHorizontal(MathHelper.floor((double)(rots[0] * 4.0F / 360.0F) + 0.5D) & 3);
         if(place.getValEnum() == PlaceMode.Strict && facing != horizontalFacing)
             return null;
-        BlockPos redstonePos = getRedstonePos(pos.up(), facing);
+        BlockPos redstonePos = getRedstonePos(pos.up(), facing, crystalPos);
+        ChatUtility.info().printClientModuleMessage("" + (redstonePos == null));
         if(redstonePos == null)
             return null;
         return new PlaceInfo(pos.up(), redstonePos, null, facing);
     }
 
-    private BlockPos getRedstonePos(BlockPos pos, EnumFacing facing){
-        if(placeDelay.getValDouble() > 1){
-            if(!mc.world.getBlockState(pos.offset(facing)).getBlock().isReplaceable(mc.world, pos.offset(facing)))
-                return null;
-            return raytrace(pos.offset(facing)) == null ? null : pos.offset(facing);
-        }
+    private BlockPos getRedstonePos(BlockPos pos, EnumFacing facing, BlockPos crystalPos){
+        AxisAlignedBB aabb = new AxisAlignedBB(
+                crystalPos.getX() + 0.5 - 1,
+                crystalPos.getY(),
+                crystalPos.getZ() + 0.5 - 1,
+                crystalPos.getX() + 0.5 + 1,
+                crystalPos.getY() + 1,
+                crystalPos.getZ() + 0.5 + 1
+        );
         for(EnumFacing enumFacing : EnumFacing.VALUES){
-            if(
-                    enumFacing == EnumFacing.DOWN
-                    || enumFacing == facing.getOpposite()
-            ){
+            if(enumFacing == facing.getOpposite())
                 continue;
-            }
             if(!mc.world.getBlockState(pos.offset(enumFacing)).getBlock().isReplaceable(mc.world, pos.offset(enumFacing)))
+                continue;
+            if(new AxisAlignedBB(pos.offset(enumFacing)).intersects(aabb))
                 continue;
             if(placeRaytrace.getValBoolean() && raytrace(pos.offset(enumFacing)) == null)
                 continue;

@@ -34,6 +34,7 @@ public class CustomFontUtil {
     public static AbstractFontRenderer verdana18 = null;
     public static AbstractFontRenderer jelleeb18 = null;
     public static AbstractFontRenderer minecraftRus13 = null;
+    public static AbstractFontRenderer poppinsRegular18 = null;
 
     public static ArrayList<Supplier<AbstractFontRenderer>> fonts = new ArrayList<>(Arrays.asList(
             () -> comfortaal30,
@@ -53,7 +54,8 @@ public class CustomFontUtil {
             () -> century18,
             () -> verdana18,
             () -> jelleeb18,
-            () -> minecraftRus13
+            () -> minecraftRus13,
+            () -> poppinsRegular18
     ));
 
     public static Font getFontTTF(String name, int size) {
@@ -161,6 +163,8 @@ public class CustomFontUtil {
         jelleeb18 = new ExtendedFontRenderer(getFontTTF("jellee-bold", 18));
 
         minecraftRus13 = new ExtendedFontRenderer(getFontTTF("minecraft", 13));
+
+        poppinsRegular18 = new ExtendedFontRenderer(getFontTTF("Poppins-Regular", 18));
 
 //        lexendDeca18.offsetX = -1;
         consolas18.offsetX = -1;
