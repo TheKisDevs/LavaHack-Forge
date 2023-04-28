@@ -34,7 +34,7 @@ public class HoleUtils {
 
 
     public List<Hole> getHoles(double range){
-        List<BlockPos> blocks = WorldUtilKt.sphere((int) range).stream().filter(pos -> !collideCheck(pos)).collect(Collectors.toList());
+        List<BlockPos> blocks = WorldUtilKt.sphere((int) range);
         List<Hole> holes = new ArrayList<>();
         Set<BlockPos> alreadyChecked = new HashSet<>();
         for(BlockPos pos : blocks){
@@ -143,27 +143,42 @@ public class HoleUtils {
             return null;
         Type type = null;
         int nullCount = 0;
-        List<BlockType> blockTypes = blocks.stream()
+        List<BlockTypeData> blockTypes = blocks.stream()
                 .map(BlockPos::down)
-                .map(this::getBlockType)
-                .filter(Objects::nonNull)
+                .map(pos -> new BlockTypeData(getBlockType(pos), pos))
+                .filter(data -> data.blockType != null)
                 .collect(Collectors.toList());
         if(blockTypes.size() == 4)
             type = Type.Quadruple;
         if(blockTypes.size() == 1)
             type = Type.UnsafeQuadruple;
+        if(blockTypes.size() == 2){
+            BlockPos pos1 = blockTypes.get(0).pos;
+            BlockPos pos2 = blockTypes.get(1).pos;
+            if(pos1.getX() == pos2.getX() || pos1.getY() == pos2.getY())
+                type = Type.UnsafeQuadruple;
+        }
         if(type == null)
             return null;
-        for(BlockType blockType : blockTypes){
-            if(blockType == null)
+        for(BlockTypeData blockTypeData : blockTypes){
+            if(blockTypeData.blockType == null)
                 continue;
-            safety = updateSafety(blockType, safety);
+            safety = updateSafety(blockTypeData.blockType, safety);
         }
         int accessibleCount = 0;
         for(BlockPos pos : blocks)
             if(isAccessible(pos))
                 accessibleCount++;
-        boolean valid = newProtocol ? accessibleCount == 4 : accessibleCount != 3;
+        boolean valid = newProtocol ? accessibleCount == 4 : accessibleCount != 3 && accessibleCount != 0;
+        int airCount = 0;
+        int blockCount = 0;
+        for(BlockPos pos : blocks){
+            if(collideCheck(pos.up(2)))
+                blockCount++;
+            if(!collideCheck(pos.up()))
+                airCount++;
+        }
+        valid |= blockCount < 4 && airCount == 4;
         if(!valid)
             return null;
         return new Hole(blocks, type, safety);
@@ -333,6 +348,26 @@ public class HoleUtils {
 
         public Safety getSafety() {
             return safety;
+        }
+    }
+
+    private static class BlockTypeData {
+
+        private final BlockType blockType;
+
+        private final BlockPos pos;
+
+        public BlockTypeData(BlockType blockType, BlockPos pos) {
+            this.blockType = blockType;
+            this.pos = pos;
+        }
+
+        public BlockType getBlockType() {
+            return blockType;
+        }
+
+        public BlockPos getPos() {
+            return pos;
         }
     }
 }
