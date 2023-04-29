@@ -20,5 +20,6 @@ enum class Fonts(
     SfUi(sfui19),
     Century(century18),
     JelleeBold(jelleeb18),
-    MinecraftRus(minecraftRus13)
+    MinecraftRus(minecraftRus13),
+    Poppins(poppinsRegular18)
 }
