@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Debug.futureshader.shaders.outline.OutlineShader
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.settings.Setting
-import com.kisman.cc.util.math.MathUtil
+import com.kisman.cc.util.math.interpolated
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -34,7 +34,7 @@ class FutureShader : Module("FutureShader", Category.DEBUG) {
 
         for(entity in mc.world.loadedEntityList) {
             if(entity == mc.player) continue
-            val vector = MathUtil.getInterpolatedRenderPos(entity, event.partialTicks)
+            val vector = interpolated(entity, event.partialTicks)
             Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject<Entity>(entity))!!.doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.partialTicks)
 
         }

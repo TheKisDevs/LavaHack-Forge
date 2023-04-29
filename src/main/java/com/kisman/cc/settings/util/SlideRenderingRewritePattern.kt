@@ -6,6 +6,7 @@ import com.kisman.cc.settings.types.SettingArray
 import com.kisman.cc.settings.types.SettingEnum
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.types.number.NumberType
+import com.kisman.cc.util.enums.AABBProgressModifiers
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.enums.dynamic.EasingEnum.Easing
 import java.util.function.Supplier
@@ -25,19 +26,20 @@ class SlideRenderingRewritePattern(
 
     @JvmField val movingLength = setupSetting(lengthsGroup.add(Setting("Moving Length", module, 400.0, 0.0, 1000.0, NumberType.TIME).setTitle("Moving")))
     @JvmField val fadeLength = setupSetting(lengthsGroup.add(Setting("Fade Length", module, 200.0, 0.0, 1000.0, NumberType.TIME).setTitle("Fade")))
-    @JvmField val alphaFadeLength = setupSetting(lengthsGroup.add(Setting("Alpha Fade Length", module, 0.0, 0.0, 1000.0, NumberType.TIME).setTitle("Alpha Fade")))
+    @JvmField val mutationLength = setupSetting(lengthsGroup.add(Setting("Mutation Length", module, 0.0, 0.0, 1000.0, NumberType.TIME).setTitle("Mutation")))
 
     private val easingGroup = setupGroup(slideGroup.add(SettingGroup(Setting("Easing", module))))
 
-    @JvmField val movingOutEasing = setupArray(easingGroup.add(SettingArray("Moving Out Easing", module, Easing.Linear, EasingEnum.outEasings).setTitle("Moving Out")))
-    @JvmField val fadeInEasing = setupArray(easingGroup.add(SettingArray("Fade In Easing", module, Easing.Linear, EasingEnum.inEasings).setTitle("Fade In")))
+    @JvmField val movingOutEasing = setupArray(easingGroup.add(SettingArray("Moving Out Easing", module, Easing.Linear, EasingEnum.allEasingsNormal).setTitle("Moving Out")))
+    @JvmField val fadeInEasing = setupArray(easingGroup.add(SettingArray("Fade In Easing", module, Easing.Linear, EasingEnum.allEasingsNormal).setTitle("Fade In")))
 
-    @JvmField val fadeOutEasing = setupArray(easingGroup.add(SettingArray("Fade Out Easing", module, Easing.Linear, EasingEnum.outEasings).setTitle("Fade Out")))
-    //    @JvmField val movingInEasing = setupArray(easingGroup.add(SettingArray("Moving In Easing", module, Easing.Linear, EasingEnum.inEasings).setTitle("Moving In")))
-    @JvmField val alphaFadeEasing = SettingEnum("Alpha Fade Easing", module, EasingEnum.EasingReverse.Linear).setTitle("Alpha Fade").also {
-        easingGroup.add(it)
-        setupEnum(it)
-    }
+    @JvmField val fadeOutEasing = setupArray(easingGroup.add(SettingArray("Fade Out Easing", module, Easing.Linear, EasingEnum.allEasingsNormal).setTitle("Fade Out")))
+    @JvmField val mutationEasing = setupArray(easingGroup.add(SettingArray("Mutation Easing", module, EasingEnum.EasingReverse.Linear, EasingEnum.allEasingsReverse).setTitle("Mutation")))
+
+    private val mutationGroup = setupGroup(slideGroup.add(SettingGroup(Setting("Mutation", module))))
+    @JvmField val alphaFadeMutation = setupSetting(mutationGroup.add(Setting("Mutation Alpha Fade", module, false).setTitle("Alpha")))
+    @JvmField val aabbMutation = setupSetting(mutationGroup.add(Setting("AABB Mutation", module, false).setTitle("AABB")))
+    @JvmField val aabbMutationLogic = setupEnum(mutationGroup.add(SettingEnum("AABB Mutation Logic", module, AABBProgressModifiers.CentredBox).setTitle("AABB")))
 
 
     override fun preInit() : SlideRenderingRewritePattern {
@@ -57,14 +59,16 @@ class SlideRenderingRewritePattern(
         module.register(lengthsGroup)
         module.register(movingLength)
         module.register(fadeLength)
-        module.register(alphaFadeLength)
+        module.register(mutationLength)
         module.register(easingGroup)
-//        module.register(movingInEasing)
         module.register(movingOutEasing)
         module.register(fadeInEasing)
         module.register(fadeOutEasing)
-        module.register(alphaFadeEasing)
-
+        module.register(mutationEasing)
+        module.register(mutationGroup)
+        module.register(alphaFadeMutation)
+        module.register(aabbMutation)
+        module.register(aabbMutationLogic)
 
         return this
     }

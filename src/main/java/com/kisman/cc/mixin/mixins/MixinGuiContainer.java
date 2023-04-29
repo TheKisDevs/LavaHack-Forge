@@ -1,8 +1,11 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.client.DevelopmentHelper;
-import com.kisman.cc.features.module.render.ContainerModifier;
+import com.kisman.cc.Kisman;
+import com.kisman.cc.event.events.EventRenderGui;
+import com.kisman.cc.features.module.client.guimodifier.DevelopmentHelper;
+import com.kisman.cc.features.module.client.guimodifier.ContainerModifier;
 import com.kisman.cc.gui.containermodifier.ItemESP;
+import com.kisman.cc.util.client.interfaces.IPositionableGui;
 import com.kisman.cc.util.enums.DevelopmentHelperSlotTypes;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -30,7 +33,7 @@ import java.util.Set;
 
 @SuppressWarnings({"unused", "IntegerDivisionInFloatingPointContext", "ConstantConditions"})
 @Mixin(value = GuiContainer.class, priority = 10000)
-public class MixinGuiContainer extends GuiScreen {
+public class MixinGuiContainer extends GuiScreen implements IPositionableGui {
     @Shadow protected int guiLeft, guiTop, xSize, ySize;
     @Shadow public Container inventorySlots;
     @Shadow private ItemStack draggedStack;
@@ -144,5 +147,37 @@ public class MixinGuiContainer extends GuiScreen {
                 flag = false;
             }
         }
+    }
+
+    @Inject(method = "drawScreen", at = @At("HEAD"))
+    private void drawScreenHeadHook(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        EventRenderGui.Pre event = new EventRenderGui.Pre();
+        Kisman.EVENT_BUS.post(event);
+    }
+
+    @Inject(method = "drawScreen", at = @At("RETURN"))
+    private void drawScreenReturnHook(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        EventRenderGui.Post event = new EventRenderGui.Post();
+        Kisman.EVENT_BUS.post(event);
+    }
+
+    @Override
+    public double x() {
+        return guiLeft;
+    }
+
+    @Override
+    public double y() {
+        return guiTop;
+    }
+
+    @Override
+    public double w() {
+        return xSize;
+    }
+
+    @Override
+    public double h() {
+        return ySize;
     }
 }

@@ -1,5 +1,6 @@
 package com.kisman.cc.settings
 
+import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.settings.util.AbstractPattern
 
 /**
@@ -7,8 +8,8 @@ import com.kisman.cc.settings.util.AbstractPattern
  * @since 16:05 of 12.03.2023
  */
 @Suppress("UNCHECKED_CAST")
-class SettingsList(
-    vararg settings0 : Any
+open class SettingsList(
+    inputs : List<Any>
 ) {
     @JvmField val settings = mutableMapOf<String, Setting>()
     @JvmField val patterns = mutableMapOf<String, AbstractPattern<*>>()
@@ -16,7 +17,7 @@ class SettingsList(
     init {
         var key : String? = null
 
-        for(setting in settings0) {
+        for(setting in inputs) {
             when (setting) {
                 is String -> key = setting
                 is Setting -> settings[key!!] = setting
@@ -25,7 +26,13 @@ class SettingsList(
         }
     }
 
-    fun <T : Setting> get0(
+    constructor(
+        vararg inputs : Any
+    ) : this(
+        inputs.toList()
+    )
+
+    open fun <T : Setting> get0(
         name : String
     ) = this[name] as T
 
@@ -33,7 +40,17 @@ class SettingsList(
         name : String
     ) = patterns[name] as T
 
-    operator fun get(
+    open operator fun get(
         name : String
     ) : Setting = settings[name]!!
+
+    class Groups(
+        vararg groups : Any
+    ) : SettingsList(
+        groups.toList()
+    ) {
+        override operator fun get(
+            name : String
+        ) : SettingGroup = super.get(name) as SettingGroup
+    }
 }

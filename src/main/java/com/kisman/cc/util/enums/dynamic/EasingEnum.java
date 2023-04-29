@@ -1,8 +1,8 @@
 package com.kisman.cc.util.enums.dynamic;
 
-import com.kisman.cc.util.client.providers.AbstractTaskProvider;
 import com.kisman.cc.util.ReflectionUtilsKt;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.client.providers.AbstractTaskProvider;
+import com.kisman.cc.util.math.MathKt;
 import org.cubic.dynamictask.AbstractTask;
 
 import java.lang.annotation.ElementType;
@@ -16,6 +16,11 @@ import java.util.ArrayList;
  * @since 12:05 of 04.08.2022
  */
 public class EasingEnum implements AbstractTaskProvider {
+    public static ArrayList<IEasing> allEasings = new ArrayList<>();
+
+    public static ArrayList<IEasing> allEasingsNormal = new ArrayList<>();
+    public static ArrayList<IEasing> allEasingsReverse = new ArrayList<>();
+
     public static ArrayList<Easing> inEasings = new ArrayList<>();
     public static ArrayList<Easing> outEasings = new ArrayList<>();
 
@@ -25,7 +30,7 @@ public class EasingEnum implements AbstractTaskProvider {
     @Target(ElementType.FIELD) @Retention(RetentionPolicy.RUNTIME) public @interface In {}
     @Target(ElementType.FIELD) @Retention(RetentionPolicy.RUNTIME) public @interface Out {}
 
-    private interface IEasing {
+    public interface IEasing {
         default double inc(float n) {
             if(n < 0) return 0;
             if(n > 1) return 1;
@@ -46,7 +51,7 @@ public class EasingEnum implements AbstractTaskProvider {
             if(n <= 0) return max;
             if(n >= 1) return min;
 
-            return MathUtil.lerp(min, max, dec0(n));
+            return MathKt.lerp(min, max, dec0(n));
         }
 
         default double dec(float n) {
@@ -62,7 +67,7 @@ public class EasingEnum implements AbstractTaskProvider {
     public enum Easing implements IEasing {
         @In @Out Linear(dd.task(arg -> arg.fetch(0))),
 
-        @In Curve(dd.task(arg -> MathUtil.curve(arg.fetch(0)))),
+        @In Curve(dd.task(arg -> MathKt.curve(arg.fetch(0)))),
 
         @In InSine(dd.task(arg -> 1.0 - Math.cos(((Double) arg.fetch(0) * Math.PI) / 2))),
         @Out OutSine(dd.task(arg -> Math.sin(((Double) arg.fetch(0) * Math.PI) / 2))),
@@ -165,5 +170,14 @@ public class EasingEnum implements AbstractTaskProvider {
             if(ReflectionUtilsKt.annotationCheck(easing, In.class)) inEasingsReverse.add(easing);
             if(ReflectionUtilsKt.annotationCheck(easing, Out.class)) outEasingsReverse.add(easing);
         }
+
+        allEasings.addAll(inEasings);
+        allEasings.addAll(outEasings);
+        allEasings.addAll(inEasingsReverse);
+        allEasings.addAll(outEasingsReverse);
+        allEasingsNormal.addAll(inEasings);
+        allEasingsNormal.addAll(outEasings);
+        allEasingsReverse.addAll(inEasingsReverse);
+        allEasingsReverse.addAll(outEasingsReverse);
     }
 }

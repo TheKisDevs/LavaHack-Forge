@@ -3,6 +3,7 @@ package com.kisman.cc.util.render.pattern
 import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
+import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.kisman.cc.util.math.toDelta
 import com.kisman.cc.util.math.vectors.i2d
@@ -16,6 +17,7 @@ import net.minecraft.util.math.Vec3d
  * @author _kisman_
  * @since 19:06 of 11.10.2022
  */
+@Suppress("BooleanLiteralArgument")
 open class SlideRendererPattern {
     @JvmField var lastBlockPos : BlockPos? = null
     @JvmField var prevPos : Vec3d? = null
@@ -70,7 +72,9 @@ open class SlideRendererPattern {
     open fun handleRenderWorld(
         movingLength : Float,
         fadeLength : Float,
-        alphaFadeLength : Float,
+        mutationLength : Float,
+        alphaFade : Boolean,
+        aabbMutation : Boolean,
         renderer : RenderingRewritePattern,
         pos : BlockPos?,
         text : String?
@@ -79,7 +83,9 @@ open class SlideRendererPattern {
         renderWorld(
             movingLength,
             fadeLength,
-            alphaFadeLength,
+            mutationLength,
+            alphaFade,
+            aabbMutation,
             renderer,
             text
         )
@@ -88,7 +94,7 @@ open class SlideRendererPattern {
     open fun handleRenderWorld(
         movingLength : Float,
         fadeLength : Float,
-        alphaFadeLength : Float,
+        mutationLength : Float,
         renderer : RenderingRewritePattern,
         aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
         pos : BlockPos?,
@@ -98,7 +104,9 @@ open class SlideRendererPattern {
         renderWorld(
             movingLength,
             fadeLength,
-            alphaFadeLength,
+            mutationLength,
+            false,
+            false,
             renderer,
             aabbModifier,
             text
@@ -115,7 +123,9 @@ open class SlideRendererPattern {
         renderWorld(
             renderer.movingLength.valFloat,
             renderer.fadeLength.valFloat,
-            renderer.alphaFadeLength.valFloat,
+            renderer.mutationLength.valFloat,
+            renderer.alphaFadeMutation.valBoolean,
+            renderer.aabbMutation.valBoolean,
             renderer,
             aabbModifier,
             text
@@ -130,7 +140,9 @@ open class SlideRendererPattern {
         handleRenderWorld(
             renderer.movingLength.valFloat,
             renderer.fadeLength.valFloat,
-            renderer.alphaFadeLength.valFloat,
+            renderer.mutationLength.valFloat,
+            renderer.alphaFadeMutation.valBoolean,
+            renderer.aabbMutation.valBoolean,
             renderer,
             pos,
             text
@@ -140,7 +152,9 @@ open class SlideRendererPattern {
     open fun renderWorld(
         movingLength : Float,
         fadeLength : Float,
-        alphaFadeLength : Float,
+        mutationLength : Float,
+        alphaFade : Boolean,
+        aabbMutation : Boolean,
         renderer : RenderingRewritePattern,
         aabbModifier : (AxisAlignedBB) -> AxisAlignedBB,
         text : String?
@@ -167,20 +181,21 @@ open class SlideRendererPattern {
             }
         }
 
-        if(alphaFadeLength != 0f) {
+        if(mutationLength != 0f && (alphaFade || aabbMutation)) {
             val keysToRemove = ArrayList<BlockPos>()
 
             for(entry in processedPossesList) {
                 val pos = entry.key
                 val time = entry.value
+                val bb = mc.world.getBlockState(pos).getSelectedBoundingBox(mc.world, pos)
 
                 if(multiplier == 0.0 && pos == currentPos) {
                     keysToRemove.add(pos)
                     continue
                 }
 
-                val alphaCoeff = alpha(
-                    alphaFadeLength,
+                val alphaCoeff = mutation(
+                    mutationLength,
                     renderer,
                     time
                 )
@@ -191,24 +206,24 @@ open class SlideRendererPattern {
                 }
 
                 renderer.draw(
-                    pos,
-                    if(pos is ColorableSlidePos) pos.colour1 else renderer.colors.filledColor1.color(),
-                    if(pos is ColorableSlidePos) pos.colour2 else renderer.colors.filledColor2.color(),
-                    if(pos is ColorableSlidePos) pos.colour3 else renderer.colors.filledColor3.color(),
-                    if(pos is ColorableSlidePos) pos.colour4 else renderer.colors.filledColor4.color(),
-                    if(pos is ColorableSlidePos) pos.colour5 else renderer.colors.filledColor5.color(),
-                    if(pos is ColorableSlidePos) pos.colour6 else renderer.colors.filledColor6.color(),
-                    if(pos is ColorableSlidePos) pos.colour7 else renderer.colors.filledColor7.color(),
-                    if(pos is ColorableSlidePos) pos.colour8 else renderer.colors.filledColor8.color(),
-                    if(pos is ColorableSlidePos) pos.colour9 else renderer.colors.outlineColor1.color(),
-                    if(pos is ColorableSlidePos) pos.colour10 else renderer.colors.outlineColor2.color(),
-                    if(pos is ColorableSlidePos) pos.colour11 else renderer.colors.outlineColor3.color(),
-                    if(pos is ColorableSlidePos) pos.colour12 else renderer.colors.outlineColor4.color(),
-                    if(pos is ColorableSlidePos) pos.colour13 else renderer.colors.outlineColor5.color(),
-                    if(pos is ColorableSlidePos) pos.colour14 else renderer.colors.outlineColor6.color(),
-                    if(pos is ColorableSlidePos) pos.colour15 else renderer.colors.outlineColor7.color(),
-                    if(pos is ColorableSlidePos) pos.colour16 else renderer.colors.outlineColor8.color(),
-                    alphaCoeff
+                    if(aabbMutation) mutate(mutationLength, renderer, time, bb) else bb,
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour1 else renderer.colors.filledColor1.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour2 else renderer.colors.filledColor2.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour3 else renderer.colors.filledColor3.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour4 else renderer.colors.filledColor4.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour5 else renderer.colors.filledColor5.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour6 else renderer.colors.filledColor6.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour7 else renderer.colors.filledColor7.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour8 else renderer.colors.filledColor8.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour9 else renderer.colors.outlineColor1.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour10 else renderer.colors.outlineColor2.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour11 else renderer.colors.outlineColor3.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour12 else renderer.colors.outlineColor4.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour13 else renderer.colors.outlineColor5.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour14 else renderer.colors.outlineColor6.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour15 else renderer.colors.outlineColor7.color(),
+                    if(pos is ColorableSlidePos && alphaFade) pos.colour16 else renderer.colors.outlineColor8.color(),
+                    if(alphaFade) alphaCoeff else 1.0
                 )
             }
 
@@ -221,32 +236,47 @@ open class SlideRendererPattern {
     open fun renderWorld(
         movingLength : Float,
         fadeLength : Float,
-        alphaFadeLength : Float,
+        mutationLength : Float,
+        alphaFade : Boolean,
+        aabbMutation : Boolean,
         renderer : RenderingRewritePattern,
         text : String?
     ) {
         renderWorld(
             movingLength,
             fadeLength,
-            alphaFadeLength,
+            mutationLength,
+            alphaFade,
+            aabbMutation,
             renderer,
             { it },
             text
         )
     }
 
-    protected fun alpha(
-        alphaFadeLength : Float,
+    protected fun mutation(
+        mutationLength : Float,
         renderer : RenderingRewritePattern,
         time : Long
-    ) : Double = if(alphaFadeLength != 0f) {
+    ) : Double = if(mutationLength != 0f) {
         if(renderer is SlideRenderingRewritePattern) {
-            renderer.alphaFadeEasing.valEnum.inc(toDelta(time, alphaFadeLength))
+            renderer.mutationEasing.valElement.inc(toDelta(time, mutationLength))
         } else {
-            EasingEnum.Easing.OutQuart.dec(toDelta(time, alphaFadeLength))
+            EasingEnum.Easing.OutQuart.dec(toDelta(time, mutationLength))
         }
     } else {
         1.0
+    }
+
+    protected fun mutate(
+        mutationLength : Float,
+        renderer : RenderingRewritePattern,
+        time : Long,
+        aabb : AxisAlignedBB
+    ) = if(mutationLength != 0f && renderer is SlideRenderingRewritePattern) {
+        renderer.aabbMutationLogic.valEnum.modifier.modify(aabb, mutation(mutationLength, renderer, time))
+    } else {
+        aabb
     }
 
     protected fun multiplier(
@@ -254,7 +284,7 @@ open class SlideRendererPattern {
         renderer : RenderingRewritePattern
     ) : Double = if(movingLength != 0f) {
         if(renderer is SlideRenderingRewritePattern) {
-            renderer.movingOutEasing.getValElement().inc(toDelta(lastUpdateTime, movingLength))
+            renderer.movingOutEasing.valElement.inc(toDelta(lastUpdateTime, movingLength))
         } else {
             EasingEnum.Easing.OutQuart.inc(toDelta(lastUpdateTime, movingLength))
         }
@@ -268,9 +298,9 @@ open class SlideRendererPattern {
     ) : Double = if(fadeLength != 0f) {
         if(renderer is SlideRenderingRewritePattern) {
             if(this.currentPos != null) {
-                renderer.fadeOutEasing.getValElement().inc(toDelta(startTime, fadeLength))
+                renderer.fadeOutEasing.valElement.inc(toDelta(startTime, fadeLength))
             } else {
-                renderer.fadeInEasing.getValElement().dec(toDelta(startTime, fadeLength))
+                renderer.fadeInEasing.valElement.dec(toDelta(startTime, fadeLength))
             }
         } else {
             if (this.currentPos != null) {

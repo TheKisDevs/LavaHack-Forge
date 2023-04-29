@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.render;
+package com.kisman.cc.features.module.client.guimodifier;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventRenderToolTip;
@@ -25,21 +25,21 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
+@ModuleInfo(
+        name = "ContainerModifier",
+        display = "Containers",
+        submodule = true
+)
 public class ContainerModifier extends Module {
     public Setting containerShadow = register(new Setting("Container Shadow", this, false));
     public Setting itemESP = register(new Setting("Item ESP", this, false));
 
     private final SettingGroup toolTip = register(new SettingGroup(new Setting("Tool Tip", this)));
     private final Setting shulkers = register(toolTip.add(new Setting("Shulkers", this, false)));
-    private final Setting scrollable = register(toolTip.add(new Setting("Scrollable", this, false)));
+    private final Setting scrollable = /*register*/(toolTip.add(new Setting("Scrollable", this, false)));
 
+    @ModuleInstance
     public static ContainerModifier instance;
-
-    public ContainerModifier() {
-        super("ContainerModifier", Category.RENDER);
-
-        instance = this;
-    }
 
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(tooltip);
@@ -89,8 +89,8 @@ public class ContainerModifier extends Module {
             mc.getRenderItem().zLevel = 300.0F;
 
             // That last bit looks awful, but basically it gets the color!
-            final Color color = new Color(((BlockShulkerBox) ((ItemShulkerBox) shulkerStack.getItem()).getBlock()).getColor().getColorValue());
-            final Color modifiedColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 150);
+            Color color = new Color(((BlockShulkerBox) ((ItemShulkerBox) shulkerStack.getItem()).getBlock()).getColor().getColorValue());
+            Color modifiedColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), 150);
 
             GuiScreen.drawRect(offsetX - 3, offsetT - 3, (int) (offsetX + width + 3), offsetT + height + 3, modifiedColor.getRGB());
 

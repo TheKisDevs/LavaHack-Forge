@@ -5,7 +5,7 @@ import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.combat.HoleFillerRewrite
 import com.kisman.cc.features.module.movement.HoleSnap
 import com.kisman.cc.features.module.movement.MoveModifier
-import com.kisman.cc.features.module.movement.Strafe
+import com.kisman.cc.features.module.movement.SpeedRewrite2
 import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.number.NumberType
@@ -22,7 +22,7 @@ import com.kisman.cc.util.world.distance
 )
 class MoveOutModule : Module() {
     private val useHoleFiller = register(Setting("Use HoleFiller", this, false))
-    private val useStrafe = register(Setting("Use Strafe", this, false))
+    private val useSpeed = register(Setting("Use Speed", this, false))
     private val useStep = register(Setting("Use Step", this, false))
     private val fasterStrafe = register(Setting("Faster Strafe", this, false))
     private val length = register(Setting("Length", this, 1000.0, 100.0, 10000.0, NumberType.TIME))
@@ -72,7 +72,7 @@ class MoveOutModule : Module() {
             mc.gameSettings.keyBindLeft.pressed = false
 
             HoleFillerRewrite.instance.isToggled = false
-            Strafe.instance.isToggled = false
+            SpeedRewrite2.instance!!.isToggled = false
             MoveModifier.instance!!.step.valBoolean = false
 
             if(useHoleSnap.valBoolean) {
@@ -94,8 +94,8 @@ class MoveOutModule : Module() {
             HoleFillerRewrite.instance.isToggled = true
         }
 
-        if(useStrafe.valBoolean) {
-            Strafe.instance.isToggled = true
+        if(useSpeed.valBoolean) {
+            SpeedRewrite2.instance!!.isToggled = true
         }
 
         if(useStep.valBoolean) {

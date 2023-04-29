@@ -24,7 +24,7 @@ abstract class ComponentImplementation(
         super.drawScreen(mouseX, mouseY)
 
         if(isMouseOnButton(mouseX, mouseY) && description != null && description!!.title.isNotEmpty()) {
-            HalqGui.currentDescription = description
+            HalqGui.drawComponent(description!!)
         }
     }
 

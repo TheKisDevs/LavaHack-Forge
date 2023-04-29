@@ -200,11 +200,6 @@ public class Button extends ToggleableImplementation implements Openable, Module
         return HalqGui.height + getSize() * HalqGui.height;
     }
 
-    public void setCount(int count) {
-        super.setCount(count);
-        description.setCount(count);
-    }
-
     public int getSize() {
         int i = 0;
         for(Component comp : comps) if(comp.visible()) i++;

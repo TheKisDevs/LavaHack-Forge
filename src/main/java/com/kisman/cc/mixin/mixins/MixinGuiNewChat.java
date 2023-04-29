@@ -2,7 +2,7 @@ package com.kisman.cc.mixin.mixins;
 
 import com.kisman.cc.features.module.misc.ChatModifier;
 import com.kisman.cc.features.module.render.NoRender;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.math.MathKt;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.gui.FontRenderer;
@@ -36,7 +36,7 @@ public class MixinGuiNewChat {
 
     private void updatePercentage(final long diff) {
         if (percentComplete < 1.0f) percentComplete += 0.004f * diff;
-        percentComplete = (float) MathUtil.clamp(percentComplete, 0.0, 1.0);
+        percentComplete = (float) MathKt.clamp(percentComplete, 0.0, 1.0);
     }
 
     @Inject(method = "drawChat", at = @At("HEAD"))
@@ -47,7 +47,7 @@ public class MixinGuiNewChat {
             this.prevMillis = current;
             this.updatePercentage(diff);
             float t = this.percentComplete;
-            this.animationPercent = (float) MathUtil.clamp(1.0f - --t * t * t * t, 0.0, 1.0);
+            this.animationPercent = (float) MathKt.clamp(1.0f - --t * t * t * t, 0.0, 1.0);
         }
     }
 

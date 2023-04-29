@@ -2,7 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.features.command.Command;
-import com.kisman.cc.util.StringUtils;
+import com.kisman.cc.util.UtilityKt;
 import org.jetbrains.annotations.NotNull;
 
 public class ClientNameCommand extends Command {
@@ -25,6 +25,6 @@ public class ClientNameCommand extends Command {
 
     @Override
     public void runCommand(@NotNull String s, @NotNull String[] args) {
-        NAME = StringUtils.merge(args, 0, args.length).toString();
+        NAME = UtilityKt.merge(args, 0, args.length).toString();
     }
 }

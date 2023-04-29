@@ -20,8 +20,6 @@ class LavaHackLoaderCoreMod : IFMLLoadingPlugin {
         } else {
             initLoader()
             suspend()
-//            Thread.currentThread().contextClassLoader = CUSTOM_CLASSLOADER
-//            println(Thread.currentThread().contextClassLoader::class.java.simpleName)
         }
 
         MixinBootstrap.init()

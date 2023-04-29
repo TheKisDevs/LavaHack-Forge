@@ -11,7 +11,7 @@ import com.kisman.cc.util.sr
  */
 @Suppress("unused")
 enum class LinkedPlaces(
-    private val modifier : IModifier,
+    val modifier : IModifier,
     val right : Boolean?,
     val reverse : Boolean?
 ) {
@@ -62,14 +62,36 @@ enum class LinkedPlaces(
             draggable.setX(sr.scaledWidth - draggable.getW() - Kisman.instance.hudModuleManager.offsetX)
             draggable.setY(sr.scaledHeight - height - draggable.getH())
         }
-    }, true, true)
+    }, true, true),
+    MiddleTop(object : IModifier {
+        override fun modify(
+            draggable : Draggable,
+            height : Double
+        ) {
+            val sr = sr()
+
+            draggable.setX(sr.scaledWidth / 2.0 - draggable.getW() / 2.0)
+            draggable.setY(height)
+        }
+    }, true, false),
+    MiddleBottom(object : IModifier {
+        override fun modify(
+            draggable : Draggable,
+            height : Double
+        ) {
+            val sr = sr()
+
+            draggable.setX(sr.scaledWidth / 2.0 - draggable.getW() / 2.0)
+            draggable.setY(sr.scaledHeight - height - draggable.getH())
+        }
+    }, true, false)
 
     ;
 
-    protected val modules = mutableSetOf<HudModule>()
+    val modules = mutableSetOf<HudModule>()
     protected val height : Double
         get() {
-            val offset = Kisman.instance.hudModuleManager.offsetY
+            val offset = Kisman.instance.hudModuleManager?.offsetY ?: 1
             var height = 0.0
 
             for(module in modules) {
@@ -105,7 +127,7 @@ enum class LinkedPlaces(
     }
 
     fun refresh() {
-        val offset = Kisman.instance.hudModuleManager.offsetY
+        val offset = Kisman.instance.hudModuleManager?.offsetY ?: 1
         var height = 0.0
 
         for(module in modules) {

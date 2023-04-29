@@ -5,6 +5,7 @@ package com.kisman.cc.util
 import com.kisman.cc.Kisman
 import com.kisman.cc.gui.api.Draggable
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.entity.EntityCopied
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.ScaledResolution
@@ -16,13 +17,15 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.MobEffects
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
-import net.minecraft.potion.Potion
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import org.apache.commons.lang3.ArrayUtils
+import org.lwjgl.input.Mouse
+import java.awt.Desktop
+import java.awt.Point
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.ObjectInputStream
@@ -32,6 +35,7 @@ import java.net.URI
 import java.net.URL
 import java.util.*
 import javax.swing.JOptionPane
+import kotlin.math.min
 
 /**
  * @author _kisman_
@@ -130,7 +134,7 @@ fun stringFixer(
 fun stackTrace(
     throwable : Throwable
 ) {
-    if(Kisman.runningFromIntelliJ()) {
+    if(fromIntellij()) {
         throwable.printStackTrace()
     }
 }
@@ -327,4 +331,97 @@ fun registerKeyBinding(
     key : KeyBinding
 ) {
     mc.gameSettings.keyBindings = ArrayUtils.add(mc.gameSettings.keyBindings, key)
+}
+
+fun copy(
+    from : EntityPlayer,
+    to : EntityCopied
+) {
+    to.copyLocationAndAnglesFrom(from)
+    to.rotationYaw = from.rotationYaw
+    to.rotationPitch = from.rotationPitch
+    to.rotationYawHead = from.rotationYawHead
+    to.renderYawOffset = from.renderYawOffset
+    to.prevRotationYaw = from.prevRotationYaw
+    to.prevRotationYawHead = from.prevRotationYawHead
+    to.prevRenderYawOffset = from.prevRenderYawOffset
+    to.setPositionAndRotationDirect(from.posX, from.posY, from.posZ, from.rotationYaw, from.rotationPitch, 0, false)
+    to.health = 20f
+    to.noClip = true
+    to.onLivingUpdate()
+}
+
+fun openLink(
+    link : String
+) {
+    try {
+        val desktop = Desktop.getDesktop()
+
+        if(desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            desktop.browse(URI(link))
+        }
+    } catch(_ : Throwable) { }
+}
+
+fun fromIntellij() = System.getProperty("java.class.path")!!.contains("idea_rt.jar")
+
+fun mouse() : Point {
+    var scale = mc.gameSettings.guiScale
+    var factor = 0
+
+    if(scale == 0) {
+        scale = 1000
+    }
+
+    while(factor < scale && mc.displayWidth / (factor + 1) >= 320 && mc.displayHeight / (factor + 1) >= 240) {
+        factor++
+    }
+
+    return Point(Mouse.getX() / factor, mc.displayHeight / factor - Mouse.getY() / factor - 1)
+}
+
+fun merge(
+    sequences : Array<CharSequence>,
+    off : Int,
+    len : Int
+) : CharSequence {
+    val builder = StringBuilder(sequences.size * 8)
+    val max = min(sequences.size, len)
+
+    for(i in off until max) {
+        builder.append(sequences[i])
+
+        if(i < max - 1) {
+            builder.append(' ')
+        }
+    }
+
+    return builder
+}
+
+fun string2int(
+    text : String
+) : Int {
+    var result = -1
+
+    for(char in text.chars()) {
+        result -= char
+    }
+
+    return result
+}
+
+const val FLOAT_REGEX = "^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+
+fun parseNumber(
+    text : String,
+    prev : Double
+) = if(text.matches(Regex(FLOAT_REGEX))) {
+    try {
+        java.lang.Double.parseDouble(text)
+    } catch(_ : Throwable) {
+        prev
+    }
+} else {
+    prev
 }

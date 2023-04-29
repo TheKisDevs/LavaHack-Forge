@@ -2,7 +2,6 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.util.entity.player.InventoryUtil;
@@ -24,11 +23,6 @@ import java.util.Comparator;
         debug = true
 )
 public class PistonTest extends Module {
-
-    public PistonTest(){
-        super("PistonTest", Category.COMBAT);
-    }
-
     private BlockPos pos = null;
     private boolean place = true;
     private int ticks = 0;

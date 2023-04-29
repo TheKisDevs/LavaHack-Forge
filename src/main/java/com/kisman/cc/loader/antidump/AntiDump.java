@@ -45,8 +45,8 @@ public class AntiDump {
             "-DproxyHost",
             "-DproxyPort",
             "-Djavax.net.ssl.trustStore",
-            "-Djavax.net.ssl.trustStorePassword",
-            "-noverify"
+            "-Djavax.net.ssl.trustStorePassword"
+//            "-noverify"
     };
 
     /* UnsafeProvider */
@@ -67,17 +67,17 @@ public class AntiDump {
         checkAddress = unsafe.allocateMemory(8);
         unsafe.putLong(checkAddress, 0xFFFFFFFFCDED249DL);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> unsafe.freeMemory(checkAddress)));
-        checkFlags();
+//        checkFlags();
     }
 
     public static long computeHash(){
         StringBuilder sb = new StringBuilder();
         long hash = 0;
-        for(int i = 0; i < 6; i++)
+        for(int i = 0; i < (int) (naughtyFlags.length / 2.0); i++)
             sb.append(naughtyFlags[i]);
         hash |= sb.toString().hashCode();
         sb = new StringBuilder();
-        for(int i = 6; i < 13; i++)
+        for(int i = 6; i < naughtyFlags.length; i++)
             sb.append(naughtyFlags[i]);
         hash <<= 16;
         hash |= sb.toString().hashCode();
@@ -94,7 +94,7 @@ public class AntiDump {
     public static boolean check(
             String key
     ) {
-        checkFlags();
+//        checkFlags();
         try {
             Field jvmField = ManagementFactory.getRuntimeMXBean().getClass().getDeclaredField("jvm");
             jvmField.setAccessible(true);

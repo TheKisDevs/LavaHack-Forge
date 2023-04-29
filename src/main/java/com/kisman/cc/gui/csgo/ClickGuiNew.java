@@ -16,7 +16,7 @@ import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.UtilityKt;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -315,18 +315,12 @@ public class ClickGuiNew extends KismanGuiScreen {
         drawDefaultBackground();
         drawScreenPre();
 
-        if(Config.instance.guiParticles.getValBoolean()) {
-            particleSystem.tick(10);
-            particleSystem.render();
-            particleSystem.onUpdate();
-        }
-
         for (ActionEventListener onRenderListener : onRenderListeners) onRenderListener.onActionEvent();
 
         window.setTitle(Kisman.getName() + " | " + Kisman.getVersion() + (Config.instance.guiRenderSize.getValBoolean() ? " | " + Kisman.instance.moduleManager.modules.size() + " modules" : ""));
 
         GL11.glPushMatrix();
-        Point point = MathUtil.calculateMouseLocation();
+        Point point = UtilityKt.mouse();
         window.mouseMoved(point.x * 2, point.y * 2);
         if(Config.instance.guiVisualPreview.getValBoolean()) window2.mouseMoved(point.x * 2, point.y * 2);
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);

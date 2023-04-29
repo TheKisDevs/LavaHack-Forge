@@ -18,7 +18,7 @@ class HolesList : ArrayList<BlockPos>() {
                 for (entity in mc.world.entityList) {
                     if (mc.world.getEntitiesInAABBexcluding(
                             entity,
-                            AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0),
+                            AxisAlignedBB(element),
                             null
                         ).size == 0
                     ) {

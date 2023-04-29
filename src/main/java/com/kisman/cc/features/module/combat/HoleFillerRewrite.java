@@ -1,6 +1,9 @@
 package com.kisman.cc.features.module.combat;
 
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Category;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
+import com.kisman.cc.features.module.ShaderableModule;
 import com.kisman.cc.features.module.combat.holefillerrewrite.HolesList;
 import com.kisman.cc.features.subsystem.subsystems.EnemyManagerKt;
 import com.kisman.cc.features.subsystem.subsystems.Target;
@@ -17,8 +20,7 @@ import com.kisman.cc.util.entity.player.InventoryUtil;
 import com.kisman.cc.util.enums.HandModes;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
 import com.kisman.cc.util.world.BlockUtil2;
-import com.kisman.cc.util.world.HoleUtil;
-import com.kisman.cc.util.world.WorldUtilKt;
+import com.kisman.cc.util.world.Holes;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
@@ -54,6 +56,7 @@ public class HoleFillerRewrite extends ShaderableModule {
     private final Setting bedrockHoles = register(holesGroup.add(new Setting("BedrockHoles", this, true).setTitle("Bebrock")));
     private final Setting singleHoles = register(holesGroup.add(new Setting("SingleHoles", this, true).setTitle("1x1")));
     private final Setting doubleHoles = register(holesGroup.add(new Setting("DoubleHoles", this, true).setTitle("2x1")));
+    private final Setting quadHoles = register(holesGroup.add(new Setting("Quad Holes", this, true).setTitle("2x2")));
     private final Setting customHoles = register(holesGroup.add(new Setting("CustomHoles", this, true).setTitle("Custom")));
     private final Setting blocks = register(logic.add(new Setting("Blocks", this, "Obsidian", Arrays.asList("Obsidian", "EnderChest"))));
     private final Setting swap = register(logic.add(new Setting("Switch", this, "Silent", Arrays.asList("None", "Vanilla", "Normal", "Packet", "Silent"))));
@@ -84,11 +87,9 @@ public class HoleFillerRewrite extends ShaderableModule {
 
     private List<BlockPos> holes = new ArrayList<>();
 
-    private final TimerUtils placeTimer = new TimerUtils();
+    private final TimerUtils placeTimer = timer();
 
     private final Set<BlockPos> placed = new HashSet<>(512);
-
-    private int lim = 0;
 
     private BlockPos placePos;
 
@@ -154,101 +155,29 @@ public class HoleFillerRewrite extends ShaderableModule {
 
     private List<BlockPos> getHoleBlocks(Entity entity){
         HolesList holes = new HolesList();
-        float range = entity.equals(mc.player) ? holeRange.getValFloat() : aroundEnemyRange.getValFloat();
-        Set<BlockPos> possibleHoles = getPossibleHoles(entity, range);
-        lim = 0;
-        if(singleHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.SINGLE), entityCheck.getValBoolean());
-        if(doubleHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.DOUBLE), entityCheck.getValBoolean());
-        if(customHoles.getValBoolean()) holes.addPosses(getHoleBlocksOfType(possibleHoles, HoleUtil.HoleType.CUSTOM), entityCheck.getValBoolean());
-        return holes;
-    }
+        double range = entity.equals(mc.player) ? holeRange.getValDouble() : aroundEnemyRange.getValDouble();
+        int lim = 0;
 
-    private List<BlockPos> getHoleBlocksOfType(Set<BlockPos> possibleHoles, HoleUtil.HoleType type){
-        List<BlockPos> holes = new ArrayList<>(32);
-        for(BlockPos pos : possibleHoles){
-            if(limit.getValInt() != 0 && lim > limit.getValInt())
-                break;
-            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
-            HoleUtil.HoleType holeType = holeInfo.getType();
-            HoleUtil.BlockSafety safety = holeInfo.getSafety();
-            if(holeType != type)
-                continue;
-            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && bedrockHoles.getValBoolean()){
-                List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
-                holes.addAll(blocks);
+        for(Holes.Hole hole : Holes.getHoles(range)) {
+            if(limit.getValInt() == 0 || lim <= limit.getValInt()) {
+                Holes.Type type = hole.getType();
+                Holes.Safety safety = hole.getSafety();
+
+                if (type == Holes.Type.Single && !singleHoles.getValBoolean()) continue;
+                if ((type == Holes.Type.Double || type == Holes.Type.UnsafeDouble) && !doubleHoles.getValBoolean()) continue;
+                if ((type == Holes.Type.Quadruple || type == Holes.Type.UnsafeQuadruple) && !quadHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Obsidian && !obsidianHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Bedrock && !bedrockHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Mix && !customHoles.getValBoolean()) continue;
+
+                List<BlockPos> blocks = splitAABB(hole.getAabb());
+
+                holes.addPosses(blocks, entityCheck.getValBoolean());
                 lim++;
-                continue;
             }
-            if(!obsidianHoles.getValBoolean())
-                continue;
-            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
-            holes.addAll(blocks);
-            lim++;
         }
+
         return holes;
-    }
-
-    /*
-    private List<BlockPos> getSingleHoleBlocks(Set<BlockPos> possibleHoles){
-        List<BlockPos> holes = new ArrayList<>(32);
-        for(BlockPos pos : possibleHoles){
-            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
-            HoleUtil.HoleType holeType = holeInfo.getType();
-            HoleUtil.BlockSafety safety = holeInfo.getSafety();
-            if(holeType != HoleUtil.HoleType.SINGLE)
-                continue;
-            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
-                continue;
-            if(!obsidianHoles.getValBoolean())
-                continue;
-
-            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
-            holes.addAll(blocks);
-        }
-        return holes;
-    }
-
-    private List<BlockPos> getDoubleHoleBlocks(Set<BlockPos> possibleHoles){
-        List<BlockPos> holes = new ArrayList<>(32);
-        for(BlockPos pos : possibleHoles){
-            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
-            HoleUtil.HoleType holeType = holeInfo.getType();
-            HoleUtil.BlockSafety safety = holeInfo.getSafety();
-            if(holeType != HoleUtil.HoleType.DOUBLE)
-                continue;
-            if(safety == HoleUtil.BlockSafety.UNBREAKABLE && !bedrockHoles.getValBoolean())
-                continue;
-            if(!obsidianHoles.getValBoolean())
-                continue;
-
-            List<BlockPos> blocks = splitAABB(holeInfo.getCentre());
-            holes.addAll(blocks);
-        }
-        return holes;
-    }
-     */
-
-    private Set<BlockPos> getPossibleHoles(Entity entity, float range){
-        Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList = WorldUtilKt.sphere(entity, (int) range);
-        for (BlockPos pos : blockPosList) {
-            AxisAlignedBB aabb = new AxisAlignedBB(pos);
-            if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())
-                continue;
-            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR))
-                possibleHoles.add(pos);
-        }
-        return possibleHoles;
-    }
-
-    private BlockPos getEntityPos(Entity entity){
-        return new BlockPos(entity.posX, entity.posY, entity.posZ);
     }
 
     private List<BlockPos> splitAABB(AxisAlignedBB aabb){

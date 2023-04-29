@@ -19,9 +19,11 @@ public class Description extends ShaderableImplementation implements Component {
     public void drawScreen(int mouseX, int mouseY) {
         int width = CustomFontUtil.getStringWidth(title);
 
-        Runnable shaderRunnable1 = () -> Render2DUtil.drawRectWH(mouseX + 10, mouseY + 10, width + 10, HalqGui.height, HalqGui.getGradientColour(getCount()).getRGB());
-        Runnable shaderRunnable2 = () -> CustomFontUtil.drawStringWithShadow(title, mouseX + 15, mouseY + 12.5, -1);
+        Runnable shaderRunnable2 = () -> {
+                Render2DUtil.drawRectWH(mouseX + 10, mouseY + 10, width + 10, HalqGui.height, HalqGui.descriptionColor.getRGB());
+                CustomFontUtil.drawStringWithShadow(title, mouseX + 15, mouseY + 12.5, -1);
+        };
 
-        shaderRender = new Bind<>(shaderRunnable1, shaderRunnable2);
+        shaderRender = new Bind<>(() -> {}, shaderRunnable2);
     }
 }

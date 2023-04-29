@@ -4,6 +4,7 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.TurnEvent
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import me.zero.alpine.listener.EventHandler
@@ -17,11 +18,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author _kisman_
  * @since 11:20 of 12.08.2022
  */
-class RotateModifier : Module(
-    "RotateModifier",
-    "Extra features of rotation system, like no pitch limit or free look",
-    Category.PLAYER
-) {
+@ModuleInfo(
+    name = "RotateModifier",
+    desc = "Extra rotation features",
+    category = Category.PLAYER,
+    beta = true
+)
+class RotateModifier : Module() {
     private val freeLook = register(Setting("Free Look", this, false))
 
     private val rotationLockGroup = register(SettingGroup(Setting("Rotation Lock", this)))

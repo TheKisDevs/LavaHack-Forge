@@ -20,26 +20,26 @@ import com.kisman.cc.util.math.MathKt;
 import com.kisman.cc.util.math.TrigonometryKt;
 import com.kisman.cc.util.movement.BaritoneHandlerKt;
 import com.kisman.cc.util.render.pattern.SlideRendererPattern;
-import com.kisman.cc.util.world.HoleUtil;
+import com.kisman.cc.util.world.Holes;
 import com.kisman.cc.util.world.WorldUtilKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @Targetable
@@ -52,7 +52,7 @@ public class HoleSnap extends Module {
     @ModuleInstance
     public static HoleSnap instance;
 
-    private final SettingEnum<Holes> holes = register(new SettingEnum<>("Holes", this, Holes.Both));
+    private final SettingEnum<Holes.Safety> holes = register(new SettingEnum<>("Holes", this, Holes.Safety.Mix));
     private final SettingEnum<HoleTypes> holeType = register(new SettingEnum<>("HoleType", this, HoleTypes.Single));
 
     private final Setting upperHoles = register(new Setting("UpperHoles", this, false));
@@ -90,12 +90,11 @@ public class HoleSnap extends Module {
     @Target
     public EntityPlayer target = null;
 
-    private final Set<AxisAlignedBB> bannedHoles = new HashSet<>();
+    private final Set<Holes.Hole> bannedHoles = new HashSet<>();
 
     private int ticks = 0;
     private int colissionTicks = 0;
-    private AxisAlignedBB hole = null;
-    private BlockPos hole0 = null;
+    private Holes.Hole hole = null;
 
     private float oldTickLength;
 
@@ -136,7 +135,7 @@ public class HoleSnap extends Module {
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
-        renderer.handleRenderWorld(pattern, hole0, null);
+        renderer.handleRenderWorld(pattern, hole == null ? null : hole.getHoleBlocks().get(0), null);
     }
 
     @EventHandler
@@ -182,12 +181,12 @@ public class HoleSnap extends Module {
         if(onStuck.getValEnum() != Stuck.None && colissionTicks > stuckTicks.getValInt()){
             if(onStuck.getValEnum() == Stuck.Toggle) toggle();
             else if(onStuck.getValEnum() == Stuck.NextHole) bannedHoles.add(hole);
-            else if(onStuck.getValEnum() == Stuck.Baritone) BaritoneHandlerKt.gotoPos(hole0);
+            else if(onStuck.getValEnum() == Stuck.Baritone) BaritoneHandlerKt.gotoPos(hole.getHoleBlocks().get(0));
         }
 
-        Vec3d center = getCenter(hole);
+        Vec3d center = getCenter(hole.getAabb());
 
-        if(snap.getValBoolean() && contains(hole, mc.player.getEntityBoundingBox().expand(0, snapBBScale.getValDouble(), 0))){
+        if(snap.getValBoolean() && contains(hole.getAabb(), mc.player.getEntityBoundingBox().expand(0, snapBBScale.getValDouble(), 0))){
             mc.player.connection.sendPacket(new CPacketPlayer.Position(center.x, mc.player.posY, center.z, mc.player.onGround));
             mc.player.setPosition(center.x, mc.player.posY, center.z);
             toggle();
@@ -205,7 +204,7 @@ public class HoleSnap extends Module {
             return;
         }
 
-        if(autoStep.getValBoolean() || hole.minY >= Math.floor(mc.player.posY))
+        if(autoStep.getValBoolean() || hole.getAabb().minY >= Math.floor(mc.player.posY))
             mc.player.stepHeight = 2f;
 
         double baseSpeed = EntityUtil.applySpeedEffect(mc.player, this.speed.getValDouble());
@@ -239,84 +238,41 @@ public class HoleSnap extends Module {
     }
 
     //Pretty bad implementation of my idea - _kisman_
-    private AxisAlignedBB findHole(){
+    private Holes.Hole findHole(){
         EntityPlayer entity = (nearestHoleToEnemy.getValBoolean() && target != null) ? target : mc.player;
-        Set<BlockPos> possibleHoles = getPossibleHoles(entity);
-        List<AxisAlignedBB> holes = new ArrayList<>();
-        HashMap<AxisAlignedBB, BlockPos> holes0 = new HashMap<>();
-        for(BlockPos pos : possibleHoles){
-            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
-            HoleUtil.HoleType holeType = holeInfo.getType();
-            HoleUtil.BlockSafety safety = holeInfo.getSafety();
-            if(holeType == HoleUtil.HoleType.NONE)
-                continue;
-            if(!this.holes.getValEnum().check(safety))
-                continue;
-            if(!this.holeType.getValEnum().check(holeType))
-                continue;
-            holes.add(holeInfo.getCentre());
-            holes0.put(holeInfo.getCentre(), holeInfo.posses.get(0));
+        ArrayList<Holes.Hole> list = new ArrayList<>();
+
+        for(Holes.Hole hole : Holes.getHoles(entity, holeRange.getValDouble())) {
+            Holes.Type type = hole.getType();
+            Holes.Safety safety = hole.getSafety();
+
+            if(safetyCheck(holes.getValEnum(), safety) && holeType.getValEnum().check(type)) list.add(hole);
         }
 
-        AxisAlignedBB aabb0 = holes.stream()
-                .filter(aabb -> aabb.minY < (upperHoles.getValBoolean() ? mc.player.posY + 2 : mc.player.posY))
-                .filter(aabb -> mc.player.posX - aabb.minY <= holeYRange.getValDouble())
-                .filter(aabb -> !bannedHoles.contains(aabb))
-                .min(Comparator.comparingDouble(aabb -> entity.getDistance(getCenter(aabb).x, getCenter(aabb).y, getCenter(aabb).z) + (aabb.minY >= Math.floor(mc.player.posY) ? balance.getValDouble() : 0)))
+        return list.stream()
+                .filter(hole -> hole.getAabb().minY < (upperHoles.getValBoolean() ? mc.player.posY + 2 : mc.player.posY))
+                .filter(hole -> mc.player.posX - hole.getAabb().minY <= holeYRange.getValDouble())
+                .filter(hole -> !bannedHoles.contains(hole))
+                .min(Comparator.comparingDouble(hole -> entity.getDistance(getCenter(hole.getAabb()).x, getCenter(hole.getAabb()).y, getCenter(hole.getAabb()).z) + (hole.getAabb().minY >= Math.floor(mc.player.posY) ? balance.getValDouble() : 0)))
                 .orElse(null);
-
-        hole0 = holes0.get(aabb0);
-
-        return aabb0;
     }
 
-    private Set<BlockPos> getPossibleHoles(EntityPlayer entity){
-        Set<BlockPos> possibleHoles = new HashSet<>();
-        List<BlockPos> blockPosList = WorldUtilKt.sphere(entity, holeRange.getValInt());
-        for (BlockPos pos : blockPosList) {
-            AxisAlignedBB aabb = new AxisAlignedBB(pos);
-            if(!mc.world.getEntitiesWithinAABB(Entity.class, aabb).isEmpty())
-                continue;
-            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR))
-                possibleHoles.add(pos);
-        }
-        return possibleHoles;
-    }
-
-    private enum Holes {
-        Obsidian(safety -> safety != HoleUtil.BlockSafety.UNBREAKABLE),
-        Bedrock(safety -> safety == HoleUtil.BlockSafety.UNBREAKABLE),
-        Both(safety -> true);
-
-        private final Predicate<HoleUtil.BlockSafety> check;
-
-        Holes(Predicate<HoleUtil.BlockSafety> check) {
-            this.check = check;
-        }
-
-        public boolean check(HoleUtil.BlockSafety safety){
-            return check.test(safety);
-        }
+    private boolean safetyCheck(Holes.Safety safety1, Holes.Safety safety2) {
+        return safety1 == Holes.Safety.Mix || safety1 == safety2;
     }
 
     private enum HoleTypes {
-        Single(type -> type == HoleUtil.HoleType.SINGLE),
-        Double(type -> type == HoleUtil.HoleType.DOUBLE),
-        Both(type -> type == HoleUtil.HoleType.SINGLE || type == HoleUtil.HoleType.DOUBLE);
+        Single(type -> type == Holes.Type.Single),
+        Double(type -> type == Holes.Type.Double || type == Holes.Type.UnsafeDouble),
+        Both(type -> Single.check(type) || Double.check(type));
 
-        private final Predicate<HoleUtil.HoleType> check;
+        private final Predicate<Holes.Type> check;
 
-        HoleTypes(Predicate<HoleUtil.HoleType> check) {
+        HoleTypes(Predicate<Holes.Type> check) {
             this.check = check;
         }
 
-        public boolean check(HoleUtil.HoleType holeType) {
+        public boolean check(Holes.Type holeType) {
             return check.test(holeType);
         }
     }

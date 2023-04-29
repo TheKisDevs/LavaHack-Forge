@@ -23,9 +23,7 @@ class PotionHud2 : AverageMultiLineHudModule(
     "PotionHud",
     "oh god"
 ) {
-//    private val map = mutableMapOf<PotionEffect, AnimateableFeature>()
     private val map1 = mutableMapOf<Potion, AnimateableFeature>()
-//    private var prev : List<PotionEffect> = emptyList()
 
     override fun onEnable() {
         super.onEnable()
@@ -40,10 +38,6 @@ class PotionHud2 : AverageMultiLineHudModule(
     override fun elements(
         elements : ArrayList<MultiLineElement>
     ) {
-        /*fun effect()  {
-            for(effect in mc.player.activePotionMap)
-        }*/
-
         for(potion in potions) {
             if(!map1.contains(potion)) {
                 map1[potion] = AnimateableFeature(this)
@@ -53,14 +47,6 @@ class PotionHud2 : AverageMultiLineHudModule(
 
             elements.add(MultiLineElement(map1[potion]!!, format(effect ?: PotionEffect(potion, 0, 0))) { mc.player.activePotionMap.contains(potion) })
         }
-
-        /*for(effect in prev) {
-            if(map.contains(effect) && !mc.player.activePotionEffects.contains(effect)) {
-                map.remove(effect)
-            }
-        }
-
-        prev = ArrayList(mc.player.activePotionEffects)*/
     }
 
     private fun format(

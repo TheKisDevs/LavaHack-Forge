@@ -1,11 +1,10 @@
-package com.kisman.cc.features.module.misc;
+package com.kisman.cc.features.module.misc.announcer;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.ModuleInfo;
-import com.kisman.cc.util.StringUtils;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
@@ -18,8 +17,9 @@ import java.util.Map;
 
 @ModuleInfo(
         name = "TotemPopCounter",
+        display = "Pops",
         desc = "count totem pops but better!",
-        category = Category.MISC
+        submodule = true
 )
 public class TotemPopCounterRewrite extends Module {
     private final Map<String, Integer> pops = new HashMap<>();
@@ -42,7 +42,7 @@ public class TotemPopCounterRewrite extends Module {
             if(entity instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) entity;
                 pops.put(player.getName(), pops.getOrDefault(player.getName(), 0) + 1);
-                ChatUtility.message().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", StringUtils.stringToInt(player.getName()) + moduleId);
+                ChatUtility.message().printClientMessage(player.getName() + " popped " + pops.get(player.getName()) + " totems!", UtilityKt.string2int(player.getName()) + moduleId);
             }
         }
     });

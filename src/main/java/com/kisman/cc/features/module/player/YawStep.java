@@ -4,7 +4,7 @@ import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
-import com.kisman.cc.util.math.Interpolation;
+import com.kisman.cc.util.math.MathKt;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -55,7 +55,7 @@ public class YawStep extends Module {
         yaw += (t - yaw);
         yaw -= 180.0f;
         mc.player.prevRotationYaw = mc.player.rotationYaw;
-        mc.player.rotationYaw = interpolate.getValBoolean() ? Interpolation.interpolateTo(mc.player.rotationYaw, yaw, mc.getRenderPartialTicks(), speed.getValFloat()) : yaw;
+        mc.player.rotationYaw = interpolate.getValBoolean() ? MathKt.interpolateTo(mc.player.rotationYaw, yaw, mc.getRenderPartialTicks(), speed.getValFloat()) : yaw;
 
         Entity entity = mc.player.getRidingEntity();
         if(entities.getValBoolean() && entity != null){

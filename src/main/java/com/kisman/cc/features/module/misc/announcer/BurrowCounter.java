@@ -1,7 +1,7 @@
-package com.kisman.cc.features.module.misc;
+package com.kisman.cc.features.module.misc.announcer;
 
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -12,13 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ModuleInfo(
+        name = "BurrowCounter",
+        display = "Burrows",
+        submodule = true
+)
 public class BurrowCounter extends Module {
     private final ConcurrentHashMap<EntityPlayer, Integer> players = new ConcurrentHashMap<>();
     private final List<EntityPlayer> anti_spam = new ArrayList<>();
-
-    public BurrowCounter() {
-        super("BurrowCounter", "BurrowCounter", Category.MISC);
-    }
 
     public void update() {
         if(mc.player == null || mc.world == null) return;

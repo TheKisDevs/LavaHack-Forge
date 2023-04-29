@@ -65,7 +65,7 @@ class BindList : HudModule(
             }
         }
 
-        list.sortWith(sort.getValElement().comparator)
+        list.sortWith(sort.valElement.comparator)
 
         for((count, element) in list.withIndex()) {
             CustomFontUtil.drawStringWithShadow(

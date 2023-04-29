@@ -1,7 +1,7 @@
 package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
-import com.kisman.cc.util.StringUtils;
+import com.kisman.cc.util.UtilityKt;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.Display;
 
@@ -23,6 +23,6 @@ public class DisplayTitleCommand extends Command {
 
     @Override
     public void runCommand(@NotNull String s, @NotNull String[] args) {
-        Display.setTitle(StringUtils.merge(args, 0, args.length).toString());
+        Display.setTitle(UtilityKt.merge(args, 0, args.length).toString());
     }
 }

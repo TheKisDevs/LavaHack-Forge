@@ -1,12 +1,16 @@
 package com.kisman.cc.gui
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.event.events.EventRenderGui
 import com.kisman.cc.features.module.client.Config
 import com.kisman.cc.gui.halq.HalqGui
+import com.kisman.cc.gui.particle.ParticleSystem
+import com.kisman.cc.util.client.interfaces.IPositionableGui
 import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.Render2DUtil
 import com.kisman.cc.util.render.objects.screen.AbstractGradient
 import com.kisman.cc.util.render.objects.screen.Vec4d
+import com.kisman.cc.util.sr
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -16,13 +20,17 @@ import java.awt.Color
  * @author _kisman_
  * @since 22:10 of 24.11.2022
  */
-open class KismanGuiScreen : GuiScreen() {
+open class KismanGuiScreen : GuiScreen(), IPositionableGui {
+    private var particles = ParticleSystem()
+
     override fun initGui() {
         super.initGui()
 
         if(Kisman.instance.selectionBar.isValid()) {
             Kisman.instance.selectionBar.initGui()
         }
+
+        particles = ParticleSystem()
     }
 
     override fun mouseClicked(
@@ -69,6 +77,15 @@ open class KismanGuiScreen : GuiScreen() {
 
     fun drawScreenPre() {
         drawGradientBackground()
+
+        if (Config.instance.guiParticles.valBoolean) {
+            particles.tick(10)
+            particles.render()
+            particles.onUpdate()
+        }
+
+        val event = EventRenderGui.Pre()
+        Kisman.EVENT_BUS.post(event)
     }
 
     private fun drawGradientBackground() {
@@ -113,4 +130,9 @@ open class KismanGuiScreen : GuiScreen() {
             }
         }
     }
+
+    override fun x() = 0.0
+    override fun y() = 0.0
+    override fun w() = sr().scaledWidth_double
+    override fun h() = sr().scaledHeight_double
 }

@@ -3,7 +3,6 @@ package com.kisman.cc.features.module.Debug;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -109,7 +108,7 @@ public class BlockOverlay extends Module {
         //render.getRenderBuilder().pos(pos).render();
     }
 
-    private double mutateProgress(double progress){
+    /*private double mutateProgress(double progress){
         switch ((Mode) mode.getValEnum()){
             case Curve:
                 return MathUtil.curve(progress);
@@ -125,7 +124,7 @@ public class BlockOverlay extends Module {
                 return MathUtil.curve(progress + 1.0);
         }
         return progress;
-    }
+    }*/
 
     enum Mode {
         Curve,

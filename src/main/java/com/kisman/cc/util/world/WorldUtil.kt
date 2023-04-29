@@ -355,6 +355,23 @@ fun dynamicBlocksSorted(
     return map
 }
 
+fun highlight(
+    centre : List<BlockPos>
+) : Set<BlockPos> {
+    val set = mutableSetOf<BlockPos>()
+
+    for(pos in centre) {
+        set.add(pos.north())
+        set.add(pos.south())
+        set.add(pos.west())
+        set.add(pos.east())
+    }
+
+    set.removeAll(centre.toSet())
+
+    return set
+}
+
 /*
 * private boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace, boolean newVerPlace, boolean newVerEntities) {
         if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {

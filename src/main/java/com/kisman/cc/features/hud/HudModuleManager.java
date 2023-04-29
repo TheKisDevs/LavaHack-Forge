@@ -54,7 +54,7 @@ public class HudModuleManager {
 		add(new ServerIp2());
 		add(new Speed());
 		add(new TargetHUD());
-		add(new TextRadar());
+		add(new TextRadar2());
 		add(new Tps2());
 		add(new Welcomer2());
 

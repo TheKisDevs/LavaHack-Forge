@@ -1,25 +1,20 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.player.FreeCamRewrite;
+import com.kisman.cc.features.module.exploit.NoGlitchBlocks;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.kisman.cc.features.module.exploit.NoGlitchBlocks;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Dynamic;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @SuppressWarnings("SameParameterValue")
 @Mixin(ItemBlock.class)
@@ -49,7 +44,7 @@ public class MixinItemBlock {
         return world.isRemote && NoGlitchBlocks.instance.isToggled() && NoGlitchBlocks.instance.noPlace() || this.placeBlockAt(stack, player, world, pos, facing, hitX, hitY, hitZ, state);
     }
 
-    private boolean mayPlace(World world,
+    /*private boolean mayPlace(World world,
                              Block blockIn,
                              BlockPos pos,
                              boolean skip,
@@ -61,9 +56,9 @@ public class MixinItemBlock {
         if (bb != Block.NULL_AABB && bb != null && !this.checkCollision(world, bb.offset(pos), placer)) return false;
         else if (state.getMaterial() == Material.CIRCUITS && blockIn == Blocks.ANVIL) return true;
         else return state.getBlock().isReplaceable(world, pos) && blockIn.canPlaceBlockOnSide(world, pos, sidePlacedOn);
-    }
+    }*/
 
-    private boolean checkCollision(World world,
+    /*private boolean checkCollision(World world,
                                    AxisAlignedBB bb,
                                    Entity entityIn)
     {
@@ -78,19 +73,19 @@ public class MixinItemBlock {
         }
 
         return true;
-    }
+    }*/
 
     /**
      * @author _kisman_
      * @reason kys
      */
-    @SideOnly(Side.CLIENT)
+    /*@SideOnly(Side.CLIENT)
     @Overwrite
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
         Block block = worldIn.getBlockState(pos).getBlock();
         if (block == Blocks.SNOW_LAYER && block.isReplaceable(worldIn, pos)) side = EnumFacing.UP;
         else if (!block.isReplaceable(worldIn, pos)) pos = pos.offset(side);
         return FreeCamRewrite.instance.isToggled() ? mayPlace(worldIn, this.block, pos, false, side, null) : worldIn.mayPlace(this.block, pos, false, side, null);
-    }
+    }*/
 }
 

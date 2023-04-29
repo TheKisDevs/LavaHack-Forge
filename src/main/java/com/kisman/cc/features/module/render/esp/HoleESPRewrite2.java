@@ -10,17 +10,15 @@ import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.util.client.interfaces.Drawable;
 import com.kisman.cc.util.enums.FadeLogic;
 import com.kisman.cc.util.render.objects.world.Box;
-import com.kisman.cc.util.world.HoleUtil;
-import com.kisman.cc.util.world.WorldUtilKt;
-import net.minecraft.init.Blocks;
+import com.kisman.cc.util.world.Holes;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 @ModuleInfo(
         name = "HoleESPRewrite2",
@@ -37,6 +35,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
 
     private final Setting sHoles = register(new Setting("Single", this, true).setTitle("1x1"));
     private final Setting dHoles = register(new Setting("Double", this, true).setTitle("2x1"));
+    private final Setting qHoles = register(new Setting("Quad", this, false).setTitle("2x2"));
 
     private final Setting range = register(new Setting("Range", this, 12.0, 1.0, 20.0, false));
 
@@ -59,7 +58,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
     private static final Comparator<AxisAlignedBB> comparator = (o1, o2) -> Double.compare(mc.player.getDistanceSq(o2.getCenter().x, o2.getCenter().y, o2.getCenter().z), mc.player.getDistanceSq(o1.getCenter().x, o1.getCenter().y, o1.getCenter().z));
 
     // sorted map solves flickering problem i hope
-    private Map<AxisAlignedBB, Type> map = new TreeMap<>(comparator);
+    private Map<AxisAlignedBB, Holes.Safety> map = new TreeMap<>(comparator);
     private Map<AxisAlignedBB, Long> timeStamps = new TreeMap<>(comparator);
 
     @ModuleInstance
@@ -81,7 +80,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
     public void onRender(RenderWorldLastEvent event) {
         threads.update(this::doHoleESPLogic);
 
-        if(rendererFor(Type.OBSIDIAN).canRender() || rendererFor(Type.BEDROCK).canRender() || rendererFor(Type.CUSTOM).canRender()) {
+        if(rendererFor(Holes.Safety.Obsidian).canRender() || rendererFor(Holes.Safety.Bedrock).canRender() || rendererFor(Holes.Safety.Mix).canRender()) {
             doHoleESP(false);
         }
     }
@@ -93,7 +92,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
 
     private void doHoleESPLogic() {
         mc.addScheduledTask(() -> {
-            Map<AxisAlignedBB, Type> holes = getHoles();
+            Map<AxisAlignedBB, Holes.Safety> holes = getHoles();
             Map<AxisAlignedBB, Long> timeStamps = new TreeMap<>(comparator);
 
             for(AxisAlignedBB bb : holes.keySet()) timeStamps.put(bb, System.currentTimeMillis());
@@ -104,107 +103,65 @@ public class HoleESPRewrite2 extends Module implements Drawable {
     }
 
     public void doHoleESP(boolean callingFromDraw/*i will need it later...*/) {
-        Map<AxisAlignedBB, Type> renderNormally = new TreeMap<>(comparator);
+        Map<AxisAlignedBB, Holes.Safety> renderNormally = new TreeMap<>(comparator);
         renderNormally.putAll(map);
-        for(Map.Entry<AxisAlignedBB, Type> entry : renderNormally.entrySet()) {
+        for(Map.Entry<AxisAlignedBB, Holes.Safety> entry : renderNormally.entrySet()) {
             AxisAlignedBB bb = entry.getKey();
-            Type type = entry.getValue();
+            Holes.Safety safety = entry.getValue();
             Vec3d center = Box.byAABB(bb).center();
             try {
-                if((callingFromDraw && !rendererFor(type).canRender()) || (!callingFromDraw && rendererFor(type).canRender())) rendererFor(type).draw(bb, timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
+                if((callingFromDraw && !rendererFor(safety).canRender()) || (!callingFromDraw && rendererFor(safety).canRender())) rendererFor(safety).draw(bb, timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
             } catch(Exception ignored) {}
         }
     }
 
-    private Map<AxisAlignedBB, Type> getHoles(){
-        Map<AxisAlignedBB, Type> holes = new TreeMap<>(comparator);
-        List<BlockPos> possibleHoles = getPossibleHoles(range.getValFloat());
+    private Map<AxisAlignedBB, Holes.Safety> getHoles(){
+        Map<AxisAlignedBB, Holes.Safety> holes = new TreeMap<>(comparator);
         int lim = 0;
-        for(BlockPos pos : possibleHoles){
-            if(limit.getValInt() != 0 && lim > limit.getValInt()) break;
 
-            HoleUtil.HoleInfo holeInfo = HoleUtil.isHole(pos, false, false);
-            HoleUtil.HoleType holeType = holeInfo.getType();
+        for(Holes.Hole hole : Holes.getHoles(range.getValDouble())) {
+            if(limit.getValInt() == 0 || lim <= limit.getValInt()) {
+                Holes.Type type = hole.getType();
+                Holes.Safety safety = wrapSafety(hole.getSafety(), type);
 
-            if(holeType == HoleUtil.HoleType.NONE) continue;
+                if (ignoreOwn.getValBoolean() && hole.getHoleBlocks().contains(mc.player.getPosition())) continue;
+                if (type == Holes.Type.Single && !sHoles.getValBoolean()) continue;
+                if (type == Holes.Type.Double && !dHoles.getValBoolean()) continue;
+                if (type == Holes.Type.Quadruple && !qHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Obsidian && !oHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Bedrock && !bHoles.getValBoolean()) continue;
+                if (safety == Holes.Safety.Mix && !cHoles.getValBoolean()) continue;
 
-            if(holeType == HoleUtil.HoleType.SINGLE && !sHoles.getValBoolean()) continue;
-            if(holeType == HoleUtil.HoleType.DOUBLE && !dHoles.getValBoolean()) continue;
+                AxisAlignedBB bb = adjust(hole.getAabb(), safety);
 
-            HoleUtil.BlockSafety holeSafety = holeInfo.getSafety();
-            AxisAlignedBB centerBlock = holeInfo.getCentre();
-
-            if(centerBlock == null) return holes;
-
-            Type type;
-
-            if (holeSafety == HoleUtil.BlockSafety.UNBREAKABLE) {
-                type = Type.BEDROCK;
-            } else {
-                type = Type.OBSIDIAN;
+                holes.put(bb, safety);
+                lim++;
             }
-            if (holeType == HoleUtil.HoleType.CUSTOM) {
-                type = Type.CUSTOM;
-            }
-
-            if(type == Type.OBSIDIAN && !oHoles.getValBoolean()) continue;
-            if(type == Type.BEDROCK && !bHoles.getValBoolean()) continue;
-            if(type == Type.CUSTOM && !cHoles.getValBoolean()) continue;
-
-            AxisAlignedBB bb = adjust(holeInfo.getCentre(), type);
-
-            if(!holes.containsKey(bb))
-                holes.put(bb, type);
-
-            lim++;
         }
 
         return holes;
     }
 
-    private List<BlockPos> getPossibleHoles(float range){
-        List<BlockPos> possibleHoles = new ArrayList<>(64);
-        List<BlockPos> blockPosList = WorldUtilKt.sphere((int) range);
-        blockPosList = blockPosList.stream().sorted((o1, o2) -> {
-            double a = o1.distanceSq(mc.player.posX, mc.player.posY, mc.player.posZ);
-            double b = o2.distanceSq(mc.player.posX, mc.player.posY, mc.player.posZ);
-            return Double.compare(a, b);
-        }).collect(Collectors.toList());
-        BlockPos playerPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-        for (BlockPos pos : blockPosList) {
-            if(ignoreOwn.getValBoolean() && playerPos == pos)
-                continue;
-            if (!mc.world.getBlockState(pos).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, -1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR))
-                continue;
-            if (mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR))
-                possibleHoles.add(pos);
-        }
-        return possibleHoles;
+    private Holes.Safety wrapSafety(Holes.Safety safety, Holes.Type type) {
+        if(type == Holes.Type.UnsafeDouble || type == Holes.Type.UnsafeQuadruple) return Holes.Safety.Mix;
+        if(safety != Holes.Safety.Bedrock) return Holes.Safety.Obsidian;
+
+        return safety;
     }
 
-    private AxisAlignedBB adjust(AxisAlignedBB bb, Type type){
+    private AxisAlignedBB adjust(AxisAlignedBB bb, Holes.Safety safety){
         double maxY;
 
-        if(type == Type.OBSIDIAN) maxY = bb.minY + oHeight.getValDouble();
-        else if(type == Type.BEDROCK) maxY = bb.minY + bHeight.getValDouble();
+        if(safety == Holes.Safety.Obsidian) maxY = bb.minY + oHeight.getValDouble();
+        else if(safety == Holes.Safety.Bedrock) maxY = bb.minY + bHeight.getValDouble();
         else maxY = bb.minY + cHeight.getValDouble();
 
         return new AxisAlignedBB(bb.minX, bb.minY, bb.minZ, bb.maxX, maxY, bb.maxZ);
     }
 
-    private FadeRenderingRewritePattern rendererFor(Type type) {
-        if(type == Type.BEDROCK) return bedrockRenderer;
-        if(type == Type.CUSTOM) return customRenderer;
+    private FadeRenderingRewritePattern rendererFor(Holes.Safety safety) {
+        if(safety == Holes.Safety.Bedrock) return bedrockRenderer;
+        if(safety == Holes.Safety.Mix) return customRenderer;
         return obbyRenderer;
-    }
-
-    private enum Type {
-        OBSIDIAN,
-        BEDROCK,
-        CUSTOM
     }
 }

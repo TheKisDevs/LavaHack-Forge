@@ -26,6 +26,7 @@ public class GuiModule extends Module {
     public final Setting background = register(colorGroup.add(new Setting("Background", this, true).setTitle("Background")));
     public final Setting backgroundColor = register(colorGroup.add(new Setting("Background Color", this, "Background", new Colour(30, 30, 30, 121)).setVisible(background::getValBoolean)));
     public final Setting hoverColor = register(colorGroup.add(new Setting("Hover Color", this, "Hover", new Colour(255, 255, 255, 60))));
+    public final Setting descriptionColor = register(colorGroup.add(new Setting("Description Color", this, "Description", new Colour(0, 0, 0, 120))));
     public final Setting componentHeight = register(new Setting("Component Height", this, 13, 1, 30, true));
     public final Setting headerOffset = register(new Setting("Header Offset", this, 5, 0, 20, true));
     public final Setting shadow = register(new Setting("Shadow", this, true));

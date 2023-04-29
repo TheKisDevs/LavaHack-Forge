@@ -37,9 +37,9 @@ public class BoatFly extends Module {
         else e.motionY = hover.getValBoolean() && mc.player.ticksExisted % 2 == 0 ? glideSpeed.getValDouble() : -glideSpeed.getValDouble();
         if (MovementUtil.isMoving()) {
             if(!extraCalc.getValBoolean()) {
-                double[] dir = MovementUtil.forward(speed.getValDouble());
-                e.motionX = dir[0];
-                e.motionZ = dir[1];
+                double[] motions = MovementUtil.strafe(speed.getValDouble());
+                e.motionX = motions[0];
+                e.motionZ = motions[1];
             } else {
                 float dir = MovementUtil.getDirection();
                 mc.player.motionX -= (MathHelper.sin(dir) * speed.getValFloat());

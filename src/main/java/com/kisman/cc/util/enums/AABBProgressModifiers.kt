@@ -41,7 +41,7 @@ enum class AABBProgressModifiers(
             aabb.minY,
             aabb.minZ,
             aabb.maxX,
-            aabb.maxY - (aabb.maxY - aabb.minY) * percent,
+            aabb.maxY - (aabb.maxY - aabb.minY) * (1 - percent),
             aabb.maxZ
         )
     }),

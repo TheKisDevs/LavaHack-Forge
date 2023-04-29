@@ -13,7 +13,6 @@ import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.components.Description;
 import com.kisman.cc.gui.halq.components.Header;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
-import com.kisman.cc.gui.particle.ParticleSystem;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.UtilityKt;
@@ -42,6 +41,7 @@ public class HalqGui extends KismanGuiScreen {
     public static Colour primaryColor = new Colour(Color.RED);
     public static Colour backgroundColor = new Colour(30, 30, 30, 121);
     public static Colour outlineColor = new Colour(Color.BLACK);
+    public static Colour descriptionColor = new Colour(0, 0, 0, 120);
     public static Colour test2Color = new Colour(30, 30, 30, 121);
     public static Colour hoverColor = new Colour(255, 255, 255, 60);
     public static boolean background = true,
@@ -96,21 +96,18 @@ public class HalqGui extends KismanGuiScreen {
     //frames list
     public final ArrayList<Frame> frames = new ArrayList<>();
 
-    //particles
-    public ParticleSystem particleSystem;
-
     /**
      * {@link com.kisman.cc.gui.mainmenu.gui.KismanMainMenuGui}
      */
     private GuiScreen lastGui = null;
 
     public static Component currentComponent = null;
-    public static Description currentDescription = null;
     public static int mouseX = -1;
     public static int mouseY = -1;
 
     private static Runnable shaderableThing = () -> {};
     private static Runnable postRenderThing = () -> {};
+    private static Runnable postRenderThing2 = () -> {};
 
     public HalqGui(GuiScreen lastGui) {
         this();
@@ -127,9 +124,7 @@ public class HalqGui extends KismanGuiScreen {
         setLastGui(lastGui);
     }
 
-    public HalqGui(@SuppressWarnings("unused") boolean notFullInit) {
-        this.particleSystem = new ParticleSystem();
-    }
+    public HalqGui(@SuppressWarnings("unused") boolean notFullInit) {}
 
     public HalqGui() {
         this(true);
@@ -145,12 +140,6 @@ public class HalqGui extends KismanGuiScreen {
     public void init() {
         SelectionBar.Guis.ClickGui.getOpen0().invoke();
         Kisman.instance.selectionBar.setReinit(true);
-    }
-
-    @Override
-    public void initGui() {
-        super.initGui();
-        particleSystem = new ParticleSystem();
     }
 
     protected SelectionBar.Guis gui() {
@@ -205,6 +194,7 @@ public class HalqGui extends KismanGuiScreen {
         animationAlpha = GuiModule.instance.animationAlpha.getValBoolean();
         animationBothSide = GuiModule.instance.animationBothSide.getValBoolean();
         searchSettings = GuiModule.instance.searchSettings.getValBoolean();
+        descriptionColor = GuiModule.instance.descriptionColor.getColour();
 
         mouseX /= scale;
         mouseY /= scale;
@@ -217,18 +207,10 @@ public class HalqGui extends KismanGuiScreen {
 
         drawDefaultBackground();
         drawScreenPre();
-
-        if(Config.instance.guiParticles.getValBoolean()) {
-            particleSystem.tick(10);
-            particleSystem.render();
-            particleSystem.onUpdate();
-        }
-
         scrollWheelCheck();
 
         shaderableThing = () -> {};
         postRenderThing = () -> {};
-        currentDescription = null;
 
         GL11.glPushMatrix();
         GL11.glScaled(scale, scale, 1);
@@ -250,8 +232,6 @@ public class HalqGui extends KismanGuiScreen {
             GuiModule.instance.shaders.start();
 
             shaderableThing.run();
-
-            if(currentDescription != null) currentDescription.drawScreen(mouseX, mouseY);
 
             GuiModule.instance.shaders.end();
 
@@ -574,7 +554,12 @@ public class HalqGui extends KismanGuiScreen {
     public static void drawComponent(Component component) {
         component.drawScreen(mouseX, mouseY);
 
-        boolean flag = !(component instanceof Header) && !(component instanceof Description);
+        if(component instanceof Description) {
+            addPostRender2Runnable(((Description) component).shaderRender().getSecond());
+            return;
+        }
+
+        boolean flag = !(component instanceof Header);
 
         if(component instanceof ShaderableImplementation) {
             ShaderableImplementation shaderable = (ShaderableImplementation) component;
@@ -609,6 +594,10 @@ public class HalqGui extends KismanGuiScreen {
         postRenderThing = UtilityKt.compare(postRenderThing, runnable);
     }
 
+    private static void addPostRender2Runnable(Runnable runnable) {
+        postRenderThing2 = UtilityKt.compare(postRenderThing2, runnable);
+    }
+
     public static void drawRectWH(double x, double y, double w, double h, int color, double coeff, boolean state) {
         //TODO: vertical animation
         boolean flag = false;
@@ -639,4 +628,46 @@ public class HalqGui extends KismanGuiScreen {
     public enum LocateMode {
         Center, Left
     }
+
+    @Override
+    public double y() {
+        double min = 0.0;
+
+        for(Frame frame : frames) {
+            double y = frame.y;
+
+            if(y < min) min = y;
+        }
+
+        return min;
+    }
+
+    private double doIterateH(Component component) {
+        int h = component.getRawHeight();
+
+        if(component instanceof Openable) {
+            Openable openable = (Openable) component;
+
+            for(Component component0 : openable.getComponents()) h += doIterateH(component0);
+        }
+
+        return h;
+    }
+
+    /*@Override
+    public double h() {
+        double min = 0.0;
+        double max = 0.0;
+
+        for(Frame frame : frames) {
+            double y = frame.y;
+            double h = HalqGui.height;
+
+            for(Component component : frame.components) h += doIterateH(component);
+            if(y < min) min = y;
+            if(h > max) max = h;
+        }
+
+        return max + Math.abs(min);
+    }*/
 }

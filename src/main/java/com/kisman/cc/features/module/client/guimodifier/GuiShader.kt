@@ -1,7 +1,7 @@
-package com.kisman.cc.features.module.client
+package com.kisman.cc.features.module.client.guimodifier
 
-import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.gui.KismanGuiScreen
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingArray
@@ -15,11 +15,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author _kisman_
  * @since 21:43 of 01.03.2023
  */
-class GuiShader : Module(
-    "GuiShader",
-    "Allows to turn on any of built-in gui shaders",
-    Category.CLIENT
-) {
+@ModuleInfo(
+    name = "GuiShader",
+    display = "Shaders",
+    desc = "Allows to turn on any of built-in gui shaders.",
+    submodule = true
+)
+class GuiShader : Module() {
     private val shader = register(SettingArray("Shader", this, GuiShaderEntry("blur", ResourceLocation("shaders/post/blur.json")), guiShaders()))
     private val minecraftGuis = register(Setting("Minecraft Guis", this, true))
     private val lavahackGuis = register(Setting("LavaHack Guis", this, true))
@@ -33,7 +35,7 @@ class GuiShader : Module(
         fun processGui() {
             if(mc.player != null && mc.world != null) {
                 if (gui != null) {
-                    mc.entityRenderer.loadShader(shader.getValElement().location)
+                    mc.entityRenderer.loadShader(shader.valElement.location)
                 } else {
                     try {
                         mc.entityRenderer.stopUseShader()

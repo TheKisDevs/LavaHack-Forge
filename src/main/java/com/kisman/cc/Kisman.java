@@ -57,18 +57,11 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 import sun.misc.Unsafe;
 
-import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-@SuppressWarnings("BusyWait")
 public class Kisman {
     public static final String HASH = RandomStringUtils.random(10, true, true);
 
@@ -95,7 +88,7 @@ public class Kisman {
      */
     public static final boolean ASSUME_REMAPPED = false;
 
-    public static boolean remapped = !runningFromIntelliJ() || checkRemapped();
+    public static boolean remapped = !UtilityKt.fromIntellij() || checkRemapped();
     public static boolean canInitializateCatLua = false;
     public static boolean callingFromGameLoop = false;
 
@@ -154,8 +147,6 @@ public class Kisman {
 
         LOGGER.info("Initializing LavaHack " + VERSION);
 
-        AtomicBoolean initializedFonts = new AtomicBoolean(false);
-
         ThreadsKt.getExecutor().submit(() -> {
             long timeStamp = System.currentTimeMillis();
 
@@ -163,20 +154,10 @@ public class Kisman {
 
             CustomFontUtil.initFonts();
 
-            initializedFonts.set(true);
-
             LOGGER.info("Initialized fonts! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
-
-            timeStamp = System.currentTimeMillis();
-
-            LOGGER.info("Initializing ViaForge implementation!");
-
-            ViaForge.getInstance().start();
-
-            LOGGER.info("Initialized ViaForge implementation! It took " + timeStamp + " ms!");
         });
 
-        /*ThreadsKt.getExecutor().submit(() -> {
+        ThreadsKt.getExecutor().submit(() -> {
             long timeStamp = System.currentTimeMillis();
 
             LOGGER.info("Initializing ViaForge implementation!");
@@ -184,7 +165,7 @@ public class Kisman {
             ViaForge.getInstance().start();
 
             LOGGER.info("Initialized ViaForge implementation! It took " + timeStamp + " ms!");
-        });*/
+        });
 
         long timeStamp = System.currentTimeMillis();
 
@@ -276,14 +257,6 @@ public class Kisman {
 
         Schematica.instance.init();
 
-        /*while (!initializedFonts.get()) {
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }*/
-
         LOGGER.info("Initializing fonts: Part 2");
 
         CustomFontUtil.setupTextures();
@@ -340,36 +313,6 @@ public class Kisman {
         return VERSION;
     }
 
-    public static void initDirs() throws IOException {
-        if (!Files.exists(Paths.get(fileName))) {
-            Files.createDirectories(Paths.get(fileName));
-            LOGGER.info("Root dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + imagesName))) {
-            Files.createDirectories(Paths.get(fileName + imagesName));
-            LOGGER.info("Images dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + luaName))) {
-            Files.createDirectories(Paths.get(fileName + luaName));
-            LOGGER.info("Lua dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + mappingName))) {
-            Files.createDirectories(Paths.get(fileName + mappingName));
-            LOGGER.info("Mapping dir created");
-        }
-        if (!Files.exists(Paths.get(fileName + pluginsName))) {
-            Files.createDirectories(Paths.get(fileName + pluginsName));
-            LOGGER.info("Plugins dir created");
-        }
-    }
-
-    public static void openLink(String link) {
-        try {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) desktop.browse(new URI(link));
-        } catch (IOException | URISyntaxException e) {e.printStackTrace();}
-    }
-
     //lua
     public static void reloadGUIs() {
         if(instance.halqGui == null) return;
@@ -382,10 +325,6 @@ public class Kisman {
         if(flag) {
             mc.displayGuiScreen(instance.halqGui);
         }
-    }
-
-    public static boolean runningFromIntelliJ() {
-        return System.getProperty("java.class.path").contains("idea_rt.jar");
     }
 
     /**

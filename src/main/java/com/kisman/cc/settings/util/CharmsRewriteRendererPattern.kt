@@ -6,6 +6,7 @@ import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.Globals.mc
+import com.kisman.cc.util.client.interfaces.IDrawableEntity
 import com.kisman.cc.util.clone
 import com.kisman.cc.util.enums.CharmsRewriteModes
 import com.kisman.cc.util.enums.CharmsRewriteEntityTypes
@@ -184,9 +185,6 @@ class CharmsRewriteRendererPattern(
         return null
     }
 
-    /**
-     * For players, monsters, animals, crystals
-     */
     fun doRender(
         entity : Entity,
         model : ModelBase,
@@ -307,12 +305,22 @@ class CharmsRewriteRendererPattern(
                     1.0
                 }
 
+                val alphaModifier = if(entity is IDrawableEntity) {
+                    when(mode) {
+                        CharmsRewriteTypeModes.Model -> entity.modelAlpha()
+                        CharmsRewriteTypeModes.Wire -> entity.wireAlpha()
+                        else -> 1f
+                    }
+                } else {
+                    1f
+                }
+
                 clone(
                     getSettingByType(
                         (if (mode == CharmsRewriteTypeModes.Wire) (if(entity is EntityPlayer && FriendManager.instance.isFriend(entity)) CharmsRewriteTypes.WireFriendColor else CharmsRewriteTypes.WireColor) else (if(entity is EntityPlayer && FriendManager.instance.isFriend(entity)) CharmsRewriteTypes.ModelFriendColor else CharmsRewriteTypes.ModelColor)),
                         entity
                     )?.colour
-                )?.also { it.alpha = (it.alpha * alphaFactor).toInt().coerceIn(0, 255) }?.glColor()
+                )?.also { it.alpha = (it.alpha * alphaFactor * alphaModifier).toInt().coerceIn(0, 255) }?.glColor()
             }
         } else {
             glColor4f(1f, 1f, 1f, 1f)

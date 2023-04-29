@@ -34,7 +34,7 @@ class EntityPoppable(
             it.count = 1
         }
     } else {
-        super.getItemStackFromSlot(slot)!!
+        super.getItemStackFromSlot(slot)
     }
 
     override fun getTotalArmorValue() = mc.player.totalArmorValue

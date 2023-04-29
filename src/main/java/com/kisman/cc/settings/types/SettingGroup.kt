@@ -13,6 +13,16 @@ open class SettingGroup(
         this.setVisible(setting.visibleSupplier)
     }
 
+    open fun addAll(
+        vararg settings : Setting
+    ) : SettingGroup {
+        for(setting in settings) {
+            add(setting)
+        }
+
+        return this
+    }
+
     open fun add(setting : Setting) : Setting {
         setting.parent_ = this
         settings.add(setting)

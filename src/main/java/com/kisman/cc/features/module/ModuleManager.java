@@ -124,12 +124,12 @@ public class ModuleManager {
 		add(new ClientFixer());
 		add(new Config());
 		add(CustomFontModule.instance);
-		add(new DevelopmentHelper());
+//		add(new DevelopmentHelper());
 		add(new DiscordRPCModule());
 		add(new ForgeBypass());
 		add(FriendHighlight.INSTANCE);
 		add(new GuiModule());
-		add(new GuiShader());
+		add(new GuiModifier());
 		add(new MainMenuModule());
 		add(NoSpoof.INSTANCE);
 		add(new Optimizer());
@@ -145,7 +145,7 @@ public class ModuleManager {
 		add(new Breadcrumbs());
 		add(new BreakHighlight());
 		add(CharmsRewrite.INSTANCE);
-		add(new ContainerModifier());
+//		add(new ContainerModifier());
 		add(new CrystalModifier());
 		add(new CrystalSafeBlocks());
 		add(new DamageESP());
@@ -191,6 +191,7 @@ public class ModuleManager {
 		add(new HoleSnap());
 		add(new Jesus());
 		add(new MoveModifier());
+		add(new NoChunkUnload());
 		add(new NoFall());
 		add(new NoPushOutBlock());
 		add(new NoRotate());
@@ -201,10 +202,10 @@ public class ModuleManager {
 		add(new Scaffold());
 		add(new SkyBlockFarmer());
 		add(new SoftScaffold());
-		add(new Speed());
+		add(new SpeedRewrite2());
 //		add(SpeedRewrite.INSTANCE);
 		add(new Spider());
-		add(new Strafe());
+//		add(new Strafe());
 		//player
 		add(new AirPlace());
 		add(AntiDesync.INSTANCE);
@@ -218,7 +219,7 @@ public class ModuleManager {
 		add(new CameraClip());
 		add(new ChorusDelay());
 		add(new ChorusPredict());
-		add(new FreeCamRewrite());
+		add(new FreeCamRewrite2());
 		add(Interaction.INSTANCE);
 		add(new Octopus());
 		add(new PacketFeatures());
@@ -256,11 +257,12 @@ public class ModuleManager {
 		add(new TickShiftTeleport());
 		add(new TraceTeleport());
 		//misc
+		add(new Announcer());
 		add(new AntiRegear());
 		add(new AntiSpammer());
 		add(new AutoEZ());
 		add(new AutoLog());
-		add(new BurrowCounter());
+//		add(new BurrowCounter());
 		add(new ChatModifier());
 		//add(new DDOSModule());
 		add(new FakePlayer());
@@ -274,9 +276,9 @@ public class ModuleManager {
 		add(new PortalsModifier());
 		add(new SlotMapper());
 		add(new Spammer());
-		add(new TotemPopCounterRewrite());
+//		add(new TotemPopCounterRewrite());
 		add(new Translate());
-		add(new VisualRange());
+//		add(new VisualRange());
 		add(new Weather());
 		add(new XCarry());
 

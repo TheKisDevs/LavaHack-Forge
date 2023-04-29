@@ -1,10 +1,11 @@
 package com.kisman.cc.features.module.movement;
 
+import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
-import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.minecraft.Packets;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.util.minecraft.PacketsKt;
 import me.zero.alpine.listener.EventHandler;
 import me.zero.alpine.listener.Listener;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
@@ -16,28 +17,26 @@ import java.util.Vector;
  * @author Cubic
  * @since 13.8.2022
  */
+@ModuleInfo(
+        name = "NoChunkUnload",
+        category = Category.MOVEMENT
+)
 public class NoChunkUnload extends Module {
-
-    private final Setting packetsPerTick = register(new Setting("PacketsPerTicks", this, 5, 1, 50, true));
-    private final Setting unlimited = register(new Setting("Unlimited", this, false));
-
-    public NoChunkUnload(){
-        super("NoChunkUnload", Category.MOVEMENT, true);
-    }
-
     public List<SPacketUnloadChunk> packets = new Vector<>();
 
     @Override
     public void onEnable(){
         super.onEnable();
+        Kisman.EVENT_BUS.subscribe(listener);
         packets.clear();
     }
 
     @Override
     public void onDisable(){
         super.onDisable();
+        Kisman.EVENT_BUS.unsubscribe(listener);
         for(SPacketUnloadChunk packet : packets)
-            Packets.processPacket(packet);
+            PacketsKt.processPacket(packet);
         packets.clear();
     }
 

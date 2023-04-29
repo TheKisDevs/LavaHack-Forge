@@ -5,6 +5,7 @@ import com.kisman.cc.features.module.client.PingBypass;
 import com.kisman.cc.features.pingbypass.gui.GuiAddPingBypass;
 import com.kisman.cc.features.pingbypass.gui.GuiButtonPingBypassOptions;
 import com.kisman.cc.gui.alts.AltManagerGUI;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.gui.GuiButton;
@@ -54,10 +55,10 @@ public class KismanMainMenuGui extends GuiScreen {
                 mc.displayGuiScreen(Kisman.instance.halqGui.setLastGui(this));
                 break;
             case 2:
-                Kisman.openLink("https://discord.gg/GRAbsr6Cf4");
+                UtilityKt.openLink("https://discord.gg/GRAbsr6Cf4");
                 break;
             case 3:
-                Kisman.openLink("https://www.youtube.com/channel/UCWxQLRT9CXqcK6YyiKHrrNw");
+                UtilityKt.openLink("https://www.youtube.com/channel/UCWxQLRT9CXqcK6YyiKHrrNw");
                 break;
             case 4:
                 mc.displayGuiScreen(Kisman.instance.viaForgeGui.setLastGui(this));

@@ -11,7 +11,7 @@ import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.enums.TracersEntityTypes
 import com.kisman.cc.util.enums.TracersModes
 import com.kisman.cc.util.enums.TracersSettingTypes
-import com.kisman.cc.util.math.MathUtil
+import com.kisman.cc.util.math.interpolate
 import com.kisman.cc.util.math.toRadians
 import com.kisman.cc.util.render.Rendering.release
 import com.kisman.cc.util.render.Rendering.setup
@@ -111,7 +111,7 @@ class TracersPattern(
                 if (mode.valEnum != TracersModes.None) {
                     val eyes = Vec3d(0.0, 0.0, 1.0).rotatePitch(-toRadians(mc.player.rotationPitch)).rotateYaw(toRadians(-mc.player.rotationYaw))
 
-                    val interpolation = MathUtil.interpolateEntity(entity, mc.renderPartialTicks)
+                    val interpolation = interpolate(entity, mc.renderPartialTicks)
 
                     val x = interpolation.x - mc.renderManager.viewerPosX
                     val y = interpolation.y + (entity.boundingBox.maxY - entity.boundingBox.minY) / 2 - mc.renderManager.viewerPosY

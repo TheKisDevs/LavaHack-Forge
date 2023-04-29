@@ -75,7 +75,7 @@ abstract class AverageMultiLineHudModule(
         var count0 = 0
 
         elements(elements)
-        elements.sortWith(sort.getValElement().comparator)
+        elements.sortWith(sort.valElement.comparator)
 
         if(reverse.valBoolean) {
             elements.reverse()
@@ -164,6 +164,7 @@ abstract class AverageMultiLineHudModule(
 
         setW(maxLength + offsetX * 2)
         setH(height * count0.toDouble())
+        place.refresh()
         fix(this)
     }
 }

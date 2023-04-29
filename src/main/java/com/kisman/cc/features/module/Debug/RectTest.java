@@ -3,7 +3,6 @@ package com.kisman.cc.features.module.Debug;
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.math.MathUtil;
 import com.kisman.cc.util.render.Rendering;
 import com.kisman.cc.util.render.cubicgl.CubicGL;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -89,7 +88,7 @@ public class RectTest extends Module {
         CubicGL.scissors(x2, y2, x1, (int) (y1 + 200.0 - (progress * 200.0)));
     }
 
-    private double mutateProgress(double progress){
+    /*private double mutateProgress(double progress){
         switch ((Modes) mode.getValEnum()){
             case Curve:
                 return MathUtil.curve(progress);
@@ -97,7 +96,7 @@ public class RectTest extends Module {
                 return Math.sin(progress * (Math.PI / 2.0));
         }
         return progress;
-    }
+    }*/
 
     enum Modes {
         Linear,

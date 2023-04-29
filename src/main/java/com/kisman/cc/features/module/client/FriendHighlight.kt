@@ -37,7 +37,7 @@ object FriendHighlight : Module() {
         var modified = line
 
         for(friend in FriendManager.instance.friends) {
-            modified = modified.replace(friend, "${style.getValElement().original}${color.getValElement().original}$friend${TextFormatting.RESET}", true)
+            modified = modified.replace(friend, "${style.valElement.original}${color.valElement.original}$friend${TextFormatting.RESET}", true)
         }
 
         return modified

@@ -6,12 +6,16 @@ import com.kisman.cc.util.enums.BindType
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.util.client.interfaces.IBindable
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.util.enums.LinkedPlaces
 import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.fromColorConfig
 import com.kisman.cc.util.toColorConfig
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.streams.toList
 
 /**
  * @author _kisman_, Cubic (only a few tweaks)
@@ -36,6 +40,22 @@ class ConfigManager(
     val hudEditorPrefix = "hud_editor"
     val friendsPrefix = "friend"
 
+    fun createDirectories() {
+        fun createDirectory(
+            name : String
+        ) {
+            if(!Files.exists(Paths.get(Kisman.fileName + name))) {
+                Files.createDirectory(Paths.get(Kisman.fileName + name))
+                Kisman.LOGGER.info("Creating ${Kisman.fileName + name} directory!")
+            }
+        }
+
+        createDirectory(Kisman.imagesName)
+        createDirectory(Kisman.luaName)
+        createDirectory(Kisman.mappingName)
+        createDirectory(Kisman.pluginsName)
+    }
+
 
     abstract class Saver(
         val config : ConfigManager
@@ -44,7 +64,7 @@ class ConfigManager(
         fun init(
             vararg objects : Any
         ) {
-            Kisman.initDirs()
+            config.createDirectories()
 
             fileCheck()
 
@@ -179,9 +199,9 @@ class ConfigManager(
     ) {
         @Throws(IOException::class)
         fun init() {
-            Kisman.currentConfig = config.name;
+            Kisman.currentConfig = config.name
 
-            Kisman.initDirs()
+            config.createDirectories()
 
             if(!Files.exists(Paths.get(config.path + config.name + config.suffix))) {
                 return
@@ -447,6 +467,28 @@ class ConfigManager(
                             "color" -> {
                                 Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour = fromColorConfig(split1[1], Kisman.instance.halqHudGui.settingsFrame.colorSetting.colour)
                             }
+                            "place" -> {
+                                try {
+                                    val place : LinkedPlaces? = LinkedPlaces.values().toList().stream().filter { it.toString() == split2[2] }.findFirst().orElse(null)
+
+                                    if(place != null) {
+                                        val modules = split1[1].split("|")
+                                        val list = mutableListOf<HudModule>()
+
+
+                                        for(name in modules) {
+                                            for(module in place.modules) {
+                                                if(name == module.name && !list.contains(module)) {
+                                                    list.add(module)
+                                                }
+                                            }
+                                        }
+
+                                        place.modules.removeAll(place.modules)
+                                        place.modules.addAll(list)
+                                    }
+                                } catch(_ : Exception) {}
+                            }
                         }
                     }
                     config.friendsPrefix -> {
@@ -597,6 +639,11 @@ class ConfigManager(
 
             writer.write("${config.hudEditorPrefix}.color=${toColorConfig(Kisman.instance.halqHudGui.color)}")
             writer.newLine()
+
+            for(place in LinkedPlaces.values()) {
+                writer.write("${config.hudEditorPrefix}.place.$place=${place.modules.stream().map { it.name }.toList().joinToString("|")}")
+                writer.newLine()
+            }
 
             if(FriendManager.instance.friends.isNotEmpty()) {
                 for(friend in FriendManager.instance.friends) {

@@ -13,7 +13,7 @@ import com.kisman.cc.util.client.collections.Pair;
 import com.kisman.cc.util.client.interfaces.Drawable;
 import com.kisman.cc.util.enums.Shaders;
 import com.kisman.cc.util.manager.friend.FriendManager;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.math.MathKt;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.shader.ShaderHelperKt;
 import kotlin.Unit;
@@ -139,11 +139,11 @@ public class ShaderCharms extends Module {
     public static HashMap<Drawable, Pair<Supplier<Boolean>>> modules = new HashMap<>();
     private final HashMap<Drawable, Boolean> modulesToRender = new HashMap<>();
 
-    public void onEnable() {
+    /*public void onEnable() {
         super.onEnable();
-        threads.reset();
-        modulesToRender.clear();
-    }
+//        threads.reset();
+//        modulesToRender.clear();
+    }*/
 
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent event) {
@@ -425,7 +425,7 @@ public class ShaderCharms extends Module {
 
                 if(flag2) {
                     for (Entity entity : entities) {
-                        Vec3d vector = MathUtil.getInterpolatedRenderPos(entity, event.getPartialTicks());
+                        Vec3d vector = MathKt.interpolated(entity, event.getPartialTicks());
                         Objects.requireNonNull(mc.getRenderManager().getEntityRenderObject(entity)).doRender(entity, vector.x, vector.y, vector.z, entity.rotationYaw, event.getPartialTicks());
                     }
                 }

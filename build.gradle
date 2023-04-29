@@ -115,7 +115,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.formdev:flatlaf:2.4'
     compile 'com.formdev:flatlaf-intellij-themes:2.4'
-//    compile 'org.telegram:telegraph:1.0'
+    compile 'org.yaml:snakeyaml:1.32'
 }
 
 processResources {
@@ -164,6 +164,7 @@ shadowJar {
         include(dependency("org.jsoup:jsoup:1.11.3"))
         include(dependency('com.formdev:flatlaf:2.4'))
         include(dependency('com.formdev:flatlaf-intellij-themes:2.4'))
+        include(dependency('org.yaml:snakeyaml:1.32'))
     }
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
@@ -218,6 +219,11 @@ task publicJar(type : Jar, dependsOn : jar) {
         include 'assets/kismancc/**'
         include 'Main.class'
         include 'me/**'
+        include 'com/viaversion/**'
+        include 'us/myles/**'
+        include 'assets/viaversion/**'
+        include 'assets/viabackwards/**'
+        include 'org/yaml/**'
     }
     baseName = ''
     version = ''
@@ -247,6 +253,11 @@ task loaderJar(type: Jar, dependsOn: shadowJar) {
         exclude 'Main.class'
         exclude 'me/**'
         exclude 'ghost/classes/**'
+        exclude 'com/viaversion/**'
+        exclude 'us/myles/**'
+        exclude 'assets/viaversion/**'
+        exclude 'assets/viabackwards/**'
+        exclude 'org/yaml/**'
     }
     manifest {
         attributes(

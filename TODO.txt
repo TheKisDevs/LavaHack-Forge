@@ -4,7 +4,6 @@ Remove shadow rects(gui thing)
 Shaders for CityBoss
 Rewrite Spammer
 Rewrite AutoLog
-Fix description components
 Remove WIP and DEBUG categories if we have loader environment
 Cool animation for multiline hud modules
 Glow for hud modules
@@ -31,3 +30,10 @@ Silent for PacketMine -> MultiBreak
 Fix time logic of fade pattern used in HoleESP
 Wire renderer
 -> Rewrite replace command of schematica with our command system
+Finish RotateModifier
+Finish FreeCamRewrite
+-> Fix description boxes
+-> Rewrite TextRadar
+-> Test ArrayList
+-> Test ElytraFly
+Remove MixinBlockRenderDispatcher

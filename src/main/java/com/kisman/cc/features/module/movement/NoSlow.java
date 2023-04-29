@@ -131,7 +131,6 @@ public class NoSlow extends Module {
                     mc.player.motionZ *= 5;
                     mc.player.motionX /= 3.1495;
                     mc.player.motionZ /= 3.1495;
-                    MovementUtil.strafe(0.1245f);
 
                     if(mc.gameSettings.keyBindBack.isKeyDown()) {
                         mc.player.jumpMovementFactor = 0.08f;
@@ -141,7 +140,6 @@ public class NoSlow extends Module {
                             mc.player.motionZ *= -5;
                             mc.player.motionX /= -3.1495;
                             mc.player.motionZ /= -3.1495;
-                            MovementUtil.strafe(0.1245f);
                         }
                     }
                 }
@@ -164,8 +162,13 @@ public class NoSlow extends Module {
         if (mc.player.isHandActive() && !mc.player.isRiding() && itemsTest.getValBoolean()) {
             if (mc.player.ticksExisted % 2 == 0) {
                 if (mc.player.onGround) {
-                    if (!mc.player.isSprinting()) MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
-                    else MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.21);
+                    double[] motions;
+
+                    if (!mc.player.isSprinting()) motions = MovementUtil.strafe(MovementUtil.WALK_SPEED - 0.2);//MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.2);
+                    else motions = MovementUtil.strafe(MovementUtil.WALK_SPEED - 0.21);//MovementUtil.setMotion(MovementUtil.WALK_SPEED - 0.21);
+
+                    mc.player.motionX = motions[0];
+                    mc.player.motionZ = motions[1];
                 } else {
                     mc.player.motionX *= 0.9f;
                     mc.player.motionZ *= 0.9f;

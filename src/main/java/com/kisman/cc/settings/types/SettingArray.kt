@@ -18,18 +18,20 @@ class SettingArray<T>(
     name,
     module
 ) {
+    val valElement : T
+        get() = value
     init {
         mode = "Combo"
         setupBinders(options)
     }
 
-    fun getValElement() : T = value
+    /*fun getValElement() : T = value
 
     fun setValElement(t : T) : SettingArray<T> {
         value = t
 
         return this
-    }
+    }*/
 
     override fun getValString() : String = value.toString()
 

@@ -156,9 +156,10 @@ class MoveModifier : Module() {
             mc.player.ridingEntity.stepHeight = (if(entityStep.valBoolean) entityStepVal.valFloat else 0.5f)
 
             if(entitySpeed.valBoolean) {
-                val dir = MovementUtil.forward(entitySpeedVal.valDouble)
-                mc.player.ridingEntity.motionX = dir[0]
-                mc.player.ridingEntity.motionZ = dir[1]
+                val motions = MovementUtil.strafe(entitySpeedVal.valDouble)
+
+                mc.player.ridingEntity.motionX = motions[0]
+                mc.player.ridingEntity.motionZ = motions[1]
             }
         }
 

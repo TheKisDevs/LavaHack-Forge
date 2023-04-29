@@ -1,21 +1,11 @@
 package com.kisman.cc.mixin.mixins;
 
-import com.kisman.cc.features.module.player.FreeCamRewrite;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemEndCrystal;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mixin(ItemEndCrystal.class)
 public class MixinItemEnderCrystal {
-    @Redirect(
+    /*@Redirect(
             method = "onItemUse",
             at = @At(
                     value = "INVOKE",
@@ -45,6 +35,6 @@ public class MixinItemEnderCrystal {
         }
 
         return entities;
-    }
+    }*/
 
 }

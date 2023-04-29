@@ -5,8 +5,9 @@ import com.kisman.cc.event.events.PacketEvent
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.render.charms.logoutspots.EntityLogged
-import com.kisman.cc.util.StringUtils
+import com.kisman.cc.util.copy
 import com.kisman.cc.util.findName
+import com.kisman.cc.util.string2int
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.network.play.server.SPacketPlayerListItem
@@ -50,19 +51,8 @@ class LogoutSpotsRewrite2 : Module() {
                                 val player = mc.world.getPlayerEntityByUUID(entry.profile.id)
 
                                 if (player != null) {
-                                    EntityLogged(mc.world, entry.profile, player, moduleId + StringUtils.stringToInt(player.name) + Random().nextInt()).also { it1 ->
-                                        it1.copyLocationAndAnglesFrom(player)
-                                        it1.rotationYaw = player.rotationYaw
-                                        it1.rotationPitch = player.rotationPitch
-                                        it1.rotationYawHead = player.rotationYawHead
-                                        it1.renderYawOffset = player.renderYawOffset
-                                        it1.prevRotationYaw = player.prevRotationYaw
-                                        it1.prevRotationYawHead = player.prevRotationYawHead
-                                        it1.prevRenderYawOffset = player.prevRenderYawOffset
-                                        it1.setPositionAndRotationDirect(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch, 0, false)
-                                        it1.health = 20f
-                                        it1.noClip = true
-                                        it1.onLivingUpdate()
+                                    EntityLogged(mc.world, entry.profile, player, moduleId + string2int(player.name) + Random().nextInt()).also {
+                                        copy(player, it)
                                     }
                                 }
                             }

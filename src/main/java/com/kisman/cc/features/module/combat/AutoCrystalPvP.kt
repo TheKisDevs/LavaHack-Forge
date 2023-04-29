@@ -16,7 +16,6 @@ import com.kisman.cc.util.movement.MovementUtil
 import com.kisman.cc.util.movement.active
 import com.kisman.cc.util.movement.gotoPos
 import com.kisman.cc.util.world.CrystalUtils
-import com.kisman.cc.util.world.HoleUtil
 import com.kisman.cc.util.world.sphere
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
@@ -352,9 +351,10 @@ object AutoCrystalPvP : Module() {
         val holes = ArrayList<BlockPos>()
         
         for(hole in getPossibleHoles(target, 6f)) {
-            val info = HoleUtil.isHole(hole, false, true)
+//            val info = HoleUtil.isHole(hole, false, true)
 
-            if(info.type == HoleUtil.HoleType.NONE) continue
+            //TODO: rewrite it with using Holes
+//            if(info.type == HoleUtil.HoleType.NONE) continue
 
             holes.add(hole)
         }

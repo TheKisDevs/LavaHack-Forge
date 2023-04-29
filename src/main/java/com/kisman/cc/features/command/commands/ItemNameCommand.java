@@ -2,7 +2,7 @@ package com.kisman.cc.features.command.commands;
 
 import com.kisman.cc.features.command.Command;
 import com.kisman.cc.features.module.misc.ItemRenamer;
-import com.kisman.cc.util.StringUtils;
+import com.kisman.cc.util.UtilityKt;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +43,7 @@ public class ItemNameCommand extends Command {
             complete("Successfully reset: " + originalName);
             return;
         }
-        String full = StringUtils.merge(args, 1, args.length).toString();
+        String full = UtilityKt.merge(args, 1, args.length).toString();
         ItemRenamer.NAME_MAP.put(item, full);
         complete("Successfully changed name to: " + full);
     }

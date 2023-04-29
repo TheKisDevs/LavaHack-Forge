@@ -6,7 +6,7 @@ import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.settings.Setting;
-import com.kisman.cc.util.StringUtils;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.client.collections.Bind;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.Render2DUtil;
@@ -89,7 +89,7 @@ public class Slider extends ShaderableImplementation implements Component, Setti
         if(typing) {
             if(key == Keyboard.KEY_RETURN) {
                 typing = false;
-                if(!customValue.isEmpty()) setting.setValDouble(StringUtils.parseNumber(customValue, setting.getValDouble()));
+                if(!customValue.isEmpty()) setting.setValDouble(UtilityKt.parseNumber(customValue, setting.getValDouble()));
                 return;
             }
 

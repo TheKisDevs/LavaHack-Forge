@@ -2,8 +2,8 @@ package com.kisman.cc.features.module.combat.autorer
 
 import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.module.combat.AutoRer
-import com.kisman.cc.features.module.render.charms.popcharms.EntityPopped
 import com.kisman.cc.features.subsystem.subsystems.nearest
+import com.kisman.cc.util.client.interfaces.IFakeEntity
 import com.kisman.cc.util.entity.EntityUtil
 import com.kisman.cc.util.entity.TargetFinder
 import com.kisman.cc.util.enums.AutoRerTargetFinderLogic
@@ -39,8 +39,8 @@ class AutoRerTargetFinder(
         var minHealth = 50f
         var maxDamage = 0.5f
 
-        for(player in mc.world.loadedEntityList) {
-            if (player !is EntityPlayer || player is EntityPopped || (AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka") && !EntityUtil.antibotCheck(player))) {
+        for(player in mc.world.playerEntities ?: ArrayList()) {
+            if (player !is EntityPlayer || player is IFakeEntity || (AntiBot.instance.isToggled && AntiBot.instance.mode.checkValString("Zamorozka") && !EntityUtil.antibotCheck(player))) {
                 continue
             }
 

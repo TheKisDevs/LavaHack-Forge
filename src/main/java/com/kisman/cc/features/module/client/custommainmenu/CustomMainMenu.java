@@ -45,9 +45,6 @@ public class CustomMainMenu {
             "bruh",
             "made by Cubic#1411",
             "zenov is still crying",
-            "hitmanqq lost his mum",
-            "NOpig is mad",
-            "_fastol_ pls leave crystal pvp",
             "future gold $$$",
             "erta haxe 1 8.7",
             "The Return",
@@ -60,7 +57,12 @@ public class CustomMainMenu {
             "Latty Craft Community",
             "mKisGen",
             "LameLands",
-            "Your place to talk"
+            "Your place to talk",
+            "kapibara",
+            "LavaHruk",
+            "Discord server got termed",
+            "Kisman got termed",
+            "LavaHack"
     };
 
     public static void update() {

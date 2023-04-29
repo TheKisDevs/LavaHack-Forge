@@ -2,12 +2,11 @@ package com.kisman.cc.features.module.render.charms.popcharms
 
 import com.kisman.cc.util.Globals.mc
 import com.kisman.cc.util.TimerUtils
-import com.kisman.cc.util.client.interfaces.IFakeEntity
+import com.kisman.cc.util.client.interfaces.IDrawableEntity
 import com.kisman.cc.util.entity.EntityCopied
+import com.kisman.cc.util.enums.dynamic.EasingEnum
 import com.mojang.authlib.GameProfile
-import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.util.EnumFacing
 import net.minecraft.world.World
 
@@ -22,14 +21,17 @@ class EntityPopped(
     private val id : Int,
     private val direction : EnumFacing,
     private val speed : Double,
-    private val length : Long
-) : EntityCopied(
+    private val lengths : Triple<Long, Long, Long>,
+    private val easings : Triple<EasingEnum.IEasing, EasingEnum.IEasing, EasingEnum.IEasing>
+) : IDrawableEntity,
+    EntityCopied(
     world,
     profile,
     player
 ) {
     private val timer = TimerUtils()
     private var removed = false
+    private val start = System.currentTimeMillis()
 
     init {
         timer.reset()
@@ -42,7 +44,7 @@ class EntityPopped(
     }
 
     override fun onEntityUpdate() {
-        if(timer.passedMillis(length)) {
+        if(timer.passedMillis(lengths.first)) {
             if(!removed) {
                 mc.addScheduledTask {
                     mc.world.removeEntityFromWorld(id)
@@ -63,4 +65,24 @@ class EntityPopped(
             posZ = (boundingBox.minZ + boundingBox.maxZ) / 2.0
         }
     }
+
+    private fun modify(
+        length : Long,
+        easing : EasingEnum.IEasing
+    ) : Long = (easing.task.doTask((System.currentTimeMillis() - start).toDouble() / length.toDouble()) * length).toLong()
+
+    private fun alpha(
+        length : Long,
+        easing : EasingEnum.IEasing
+    ) = if(timer.passedMillis(length)) {
+        val diff = (lengths.first - length).toDouble()
+
+        easing.task.doTask((System.currentTimeMillis() - start).toDouble() / diff).toFloat()
+    } else {
+        1f
+    }
+
+    override fun modelAlpha() = alpha(lengths.second, easings.second)
+
+    override fun wireAlpha() = alpha(lengths.third, easings.third)
 }

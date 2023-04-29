@@ -6,7 +6,7 @@ import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.movement.MoveModifier
-import com.kisman.cc.features.module.movement.Speed
+import com.kisman.cc.features.module.movement.SpeedRewrite2
 import com.kisman.cc.features.subsystem.subsystems.HoleProcessor
 import com.kisman.cc.settings.Setting
 import com.kisman.cc.settings.types.SettingGroup
@@ -427,7 +427,7 @@ class Robot : Module() {
             if(mc.player.getDistanceSq(excludeYPos) < 6) {
                 //TODO: instant(ground) speed
             } else if(!needsOnGround) {
-                Speed.instance.isToggled = true
+                SpeedRewrite2.instance!!.isToggled = true
                 //TODO: speed usage
             }
         }
@@ -1032,9 +1032,10 @@ class Robot : Module() {
         player : EntityPlayer
     ) : Boolean = isSafe && isPlayerSafe(player) && mc.player.getDistance(player) < 1f
 
+    //TODO: rewrite it with using Holes
     private fun isPlayerSafe(
         player : EntityPlayer
-    ) : Boolean = HoleUtil.isInHole(player, false, true)//Holes.getHole(player.position) != null
+    ) : Boolean = false//HoleUtil.isInHole(player, false, true)//Holes.getHole(player.position) != null
 
     private fun isTowering(
         player : EntityPlayer

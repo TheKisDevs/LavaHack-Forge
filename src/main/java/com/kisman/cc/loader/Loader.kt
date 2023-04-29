@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
@@ -8,7 +6,6 @@ import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
 import com.kisman.cc.loader.antidump.runScanner
 import com.kisman.cc.loader.gui.*
-import com.kisman.cc.loader.mixins.ILoadController
 import com.kisman.cc.loader.websockets.IMessageProcessor
 import com.kisman.cc.loader.websockets.WebClient
 import com.kisman.cc.loader.websockets.data.SocketMessage
@@ -16,8 +13,6 @@ import com.kisman.cc.loader.websockets.setupClient
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraftforge.fml.common.FMLLog
-import net.minecraftforge.fml.common.LoadController
-import net.minecraftforge.fml.common.Loader
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.mixin.transformer.ClassInfo
@@ -450,7 +445,7 @@ fun loadIntoCustomClassLoader(
     message("Processed $classesCount classes, $mixinsCount mixins, $resourcesCount resources")
     message("Injecting $classesCount classes")
 
-    CUSTOM_CLASSLOADER = CustomClassLoader(classes, mixins/*, classLoader.parent*/)
+    CUSTOM_CLASSLOADER = CustomClassLoader(classes, mixins)
 
     message("Injecting $resourcesCount resources")
 
@@ -480,21 +475,6 @@ fun loadIntoCustomClassLoader(
 
     resourceCacheField[classLoader] = ConcurrentHashMap(mixins)
 
-    /*message("Injecting $classesCount/$mixinsCount classes/mixins to mixin cache")
-
-    val field = ClassInfo::class.java
-        .getDeclaredField("cache").also { it0 ->
-            it0.isAccessible = true
-
-            Field::class.java
-                .getDeclaredField("modifiers").also { it1 ->
-                    it1.isAccessible = true
-                }[it0] = it0.modifiers and Modifier.FINAL.inv()
-        }
-
-    cache.putAll(field[null] as Map<String, ClassInfo>)
-    field[null] = HashMap(cache)*/
-
     message("Successfully loaded LavaHack")
 
     CUSTOM_CLASSLOADER!!
@@ -502,16 +482,6 @@ fun loadIntoCustomClassLoader(
         .getMethod("set", String::class.java, ByteArray::class.java)
         .invoke(null, firstClassName, firstClassBytes)
 }
-
-/*fun swapModController() {
-    val controller = Loader::class.java
-        .getDeclaredField("modController").also {
-            it.isAccessible = true
-        }
-
-    controller[null] = LoadController(Loader.instance())
-    (controller[null] as ILoadController).forceActiveContainer(Loader.instance().minecraftModContainer)
-}*/
 
 fun swapLoggers() {
     message("Swapping FML logger")

@@ -12,8 +12,8 @@ import com.kisman.cc.settings.types.SettingGroup;
 import com.kisman.cc.settings.util.AbstractPattern;
 import com.kisman.cc.settings.util.MultiThreaddableModulePattern;
 import com.kisman.cc.settings.util.RenderingRewritePattern;
-import com.kisman.cc.util.StringUtils;
 import com.kisman.cc.util.TimerUtils;
+import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.client.DisplayableFeature;
 import com.kisman.cc.util.enums.BindType;
@@ -137,7 +137,7 @@ public class Module extends DisplayableFeature {
 		this.category = category;
 		this.toggled = false;
 		this.subscribes = subscribes;
-		this.moduleId = StringUtils.stringToInt(name);
+		this.moduleId = UtilityKt.string2int(name);
 
 		setmgr = Kisman.instance.settingsManager;
 
@@ -220,10 +220,14 @@ public class Module extends DisplayableFeature {
 	}
 
 	public SettingsList register(SettingsList list) {
-		for(Setting setting : list.settings.values()) register(setting);
+		for(Setting setting : list.settings.values()) if(setting.parent_ == null) register(setting);
 		for(AbstractPattern<?> pattern : list.patterns.values()) pattern.init();
 
 		return list;
+	}
+
+	public SettingsList.Groups register(SettingsList.Groups list) {
+		return (SettingsList.Groups) register((SettingsList) list);
 	}
 
 	public boolean isPingBypassModule() {

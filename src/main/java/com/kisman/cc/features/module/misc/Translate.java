@@ -2,6 +2,7 @@ package com.kisman.cc.features.module.misc;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.kisman.cc.util.net.translate.Translator;
 import net.minecraftforge.client.event.ClientChatEvent;
@@ -18,17 +19,17 @@ import java.util.stream.Collectors;
 /**
  * @author Konas's Developers
  */
+@ModuleInfo(
+        name = "Translate",
+        category = Category.MISC,
+        wip = true
+)
 public class Translate extends Module {
-
     private static final ReentrantLock mutex = new ReentrantLock();
 
     private boolean translatedMessageIncoming = false;
 
     public static String targetLanguage = null;
-
-    public Translate(){
-        super("Translate", Category.MISC);
-    }
 
     @Override
     public void onEnable() {

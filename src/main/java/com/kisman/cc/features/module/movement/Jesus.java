@@ -15,15 +15,18 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Arrays;
 
+@ModuleInfo(
+        name = "Jesus",
+        category = Category.MOVEMENT
+)
 public class Jesus extends Module {
     private final Setting mode = register(new Setting("Mode", this, "Matrix", Arrays.asList("Matrix", "Matrix 6.3", "MatrixPixel", "Solid", "Entity")));
     private final SettingGroup speeds = register(new SettingGroup(new Setting("Speeds", this)));
-    private final Setting speedPixel = register(speeds.add(new Setting("Speed Pixel", this, 4, 1, 10, true)));
+    private final Setting speedPixel = register(speeds.add(new Setting("Speed Pixel", this, 4, 1, 10, false)));
     private final Setting speedMatrix = register(speeds.add(new Setting("Speed Matrix", this, 0.6f, 0, 1, false)));
     private final Setting speedSolid = register(speeds.add(new Setting("Speed Solid", this, 1, 0, 2, false)));
 
     public Jesus() {
-        super("Jesus", Category.MOVEMENT);
         super.setDisplayInfo(() -> "[" + mode.getValString() + "]");
     }
 
@@ -72,12 +75,17 @@ public class Jesus extends Module {
                 mc.player.motionY = 0.2;
             } else if (EntityUtil.isFluid(0)) {
                 EntityUtil.setTimer(0.8f);
-                MovementUtil.hClip(1.2);
+                hClip(1.2);
                 mc.player.motionX = 0;
                 mc.player.motionZ = 0;
             }
         } else if(mode.checkValString("MatrixPixel")) {
-            if (EntityUtil.isFluid(-0.1)) MovementUtil.strafe(speedPixel.getValInt());
+            if (EntityUtil.isFluid(-0.1)) {
+                double[] motions = MovementUtil.strafe(speedPixel.getValDouble());
+
+                mc.player.motionX = motions[0];
+                mc.player.motionZ = motions[1];
+            }
             if (EntityUtil.isFluid(0.0000001)) {
                 mc.player.fallDistance = 0.0f;
                 mc.player.motionX = 0.0;
@@ -89,6 +97,11 @@ public class Jesus extends Module {
             mc.player.motionY = 0.08500000238418583F;
             mc.player.ridingEntity.motionY = 0.08500000238418583F;
         }
+    }
+
+    private void hClip(double off) {
+        double yaw = Math.toRadians(mc.player.rotationYaw);
+        mc.player.setPosition(mc.player.posX + (-Math.sin(yaw) * off), mc.player.posY, mc.player.posZ + (Math.cos(yaw) * off));
     }
 
     @EventHandler private final Listener<PacketEvent.Send> listener = new Listener<>(event -> {if((mode.checkValString("Matrix 6.3") || mode.checkValString("MatrixPixel")) && event.getPacket() instanceof CPacketPlayer && EntityUtil.isFluid(0.3)) ((CPacketPlayer) event.getPacket()).onGround = false;});

@@ -1,6 +1,7 @@
 package com.kisman.cc.util.render.cubicgl;
 
 import com.kisman.cc.util.render.Rendering;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -11,6 +12,8 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.kisman.cc.util.Globals.mc;
 
 public class CubicGL {
 
@@ -73,6 +76,17 @@ public class CubicGL {
         buf.pos(vertex2D.getX1(), vertex2D.getY2(), 0);
         tessellator.draw();
         run("shadeModelEnd", shadeModel);
+    }
+
+    public static void scale(double x, double y, double w, double h, double scale) {
+        ScaledResolution sr = new ScaledResolution(mc);
+
+        GL11.glScaled((sr.getScaledWidth() * scale) / 2.0 - (w * scale) / 2.0, (sr.getScaledHeight() * scale) / 2.0 - (h * scale) / 2.0, 0.0);
+        GL11.glScaled(scale, scale, scale);
+//        GL11.glTranslated(x - (w * scale) / 2 + sr.getScaledWidth() / (2.0 * scale), y - (h * scale) / 2 + sr.getScaledHeight() / (2.0 * scale), 0);
+//        GL11.glTranslated(x + (w * scale) / 2, y + (h * scale) / 2, 0.0);
+//        GL11.glTranslated(-(w * scale) / 2.0, (h * scale) / 2.0, 0.0);
+//        GL11.glScaled(sr.getScaledWidth() / 2.0 - w / 2.0, sr.getScaledHeight() / 2.0 - h / 2.0, 0.0);
     }
 
     private static final Map<String, Map<Integer, AbstractTask<Integer>>> tasks = new ConcurrentHashMap<>();

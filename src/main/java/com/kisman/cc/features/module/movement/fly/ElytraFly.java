@@ -2,14 +2,17 @@ package com.kisman.cc.features.module.movement.fly;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.EventPlayerTravel;
-import com.kisman.cc.features.module.*;
+import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.math.MathUtil;
-import me.zero.alpine.listener.*;
+import com.kisman.cc.util.math.TrigonometryKt;
+import com.kisman.cc.util.movement.MovementUtil;
+import me.zero.alpine.listener.EventHandler;
+import me.zero.alpine.listener.Listener;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.*;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.network.play.client.CPacketEntityAction;
 
@@ -95,7 +98,7 @@ public class ElytraFly extends Module {
     });
 
     private void handleNormalPacketModeElytra(EventPlayerTravel travel) {
-        double[] dir = MathUtil.directionSpeedNoForward(speed.getValDouble());
+        double[] dir = MovementUtil.strafe(speed.getValDouble());
 
         if (mc.player.movementInput.jump) mc.player.motionY = speed.getValDouble();
         if (mc.player.movementInput.sneak) mc.player.motionY = -speed.getValDouble();
@@ -113,7 +116,7 @@ public class ElytraFly extends Module {
 
             if (motionSq > 1.0) return;
             else {
-                double[] dir = MathUtil.directionSpeedNoForward(speed.getValDouble());
+                double[] dir = MovementUtil.strafe(speed.getValDouble());
 
                 mc.player.motionX = dir[0];
                 mc.player.motionY = -(glideSpeed.getValDouble() / 10000f);
@@ -128,7 +131,7 @@ public class ElytraFly extends Module {
 
         travel.cancel();
 
-        double[] dir = MathUtil.directionSpeed(speed.getValDouble());
+        double[] dir = MovementUtil.strafe(speed.getValDouble());
 
         if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0) {
             mc.player.motionX = dir[0];
@@ -145,7 +148,7 @@ public class ElytraFly extends Module {
     }
 
     private void handleControlMode(EventPlayerTravel event) {
-        final double[] dir = MathUtil.directionSpeed(speed.getValDouble());
+        final double[] dir = MovementUtil.strafe(speed.getValDouble());
 
         if (mc.player.movementInput.moveStrafe != 0 || mc.player.movementInput.moveForward != 0) {
             mc.player.motionX = dir[0];
@@ -158,7 +161,7 @@ public class ElytraFly extends Module {
             mc.player.motionZ = 0;
         }
 
-        mc.player.motionY = (-MathUtil.degToRad(mc.player.rotationPitch)) * mc.player.movementInput.moveForward;
+        mc.player.motionY = (-TrigonometryKt.toRadians(mc.player.rotationPitch)) * mc.player.movementInput.moveForward;
 
         mc.player.prevLimbSwingAmount = 0;
         mc.player.limbSwingAmount = 0;

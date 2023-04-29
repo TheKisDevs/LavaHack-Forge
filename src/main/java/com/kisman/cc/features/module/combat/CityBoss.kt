@@ -59,8 +59,9 @@ class CityBoss : Module() {
 //    private val minDMG = register(damages.add(Setting("Min DMG", this, 10.0, 0.0, 20.0, true)))
 //    private val maxSelfDMG = register(damages.add(Setting("Max Self DMG", this, 7.0, 0.0, 20.0, true)))
 
-    private val debug1 = register(Setting("Debug 1", this, false))
-    private val debug2 = register(Setting("Debug 2", this, false))
+    private val trapping = /*register*/(Setting("Trapping", this, false))
+    //TODO: rewrite burrow miner
+    private val burrow = /*register*/(Setting("Burrow", this, false))
 //    private val debug3 = register(Setting("Debug 3", this, false))
 
     private val autorerSync = register(SettingGroup(Setting("Auto ReR Sync", this)))
@@ -152,11 +153,11 @@ class CityBoss : Module() {
             return
         }
 
-        if(canBeBurrowed(player!!) && debug1.valBoolean) {
+        if(canBeBurrowed(player!!) && trapping.valBoolean) {
             // TODO: auto trap action
             displayInfo("Trapping")
         } else {
-            if(isBurrowed(player!!) && debug2.valBoolean) {
+            if(isBurrowed(player!!) && burrow.valBoolean) {
                 displayInfo("Mining burrow")
                 mineBlock(entityPosition(player!!))
             } else {
@@ -198,13 +199,13 @@ class CityBoss : Module() {
                 //Only by burrow miner
                 println("kill yourself <3")
             }
-        } else if(PacketMineRewrite3.instance!!.current() == null) {
-            if(
-                if(allowMultibreak.valBoolean) !PacketMineRewrite3.instance!!.queue().contains(pos)
-                else PacketMineRewrite3.instance!!.current() != lastPos
-            ) {
+        } else if(PacketMineRewrite3.instance!!.current() == null || !PacketMineRewrite3.instance!!.queue().contains(pos)) {
+//            if(
+//                if(allowMultibreak.valBoolean) !PacketMineRewrite3.instance!!.queue().contains(pos)
+//                else PacketMineRewrite3.instance!!.current() != lastPos
+//            ) {
                 mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
-            }
+//            }
         }
 
         lastPos = pos

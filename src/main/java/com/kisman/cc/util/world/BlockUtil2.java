@@ -3,7 +3,7 @@ package com.kisman.cc.util.world;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.settings.util.EasingsPattern;
 import com.kisman.cc.util.entity.player.InventoryUtil;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.math.MathKt;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -89,7 +89,7 @@ public class BlockUtil2 {
     }
 
     public static double getBreakingProgress(BlockPos pos, ItemStack stack, long start) {
-        return MathUtil.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
+        return MathKt.clamp(1 - ((System.currentTimeMillis() - start) / (double) InventoryUtil.time(pos, stack)), 0, 1);
     }
 
     public static AxisAlignedBB getMutableProgressBB2(BlockPos pos, ItemStack stack, long start, EasingsPattern scalier) {

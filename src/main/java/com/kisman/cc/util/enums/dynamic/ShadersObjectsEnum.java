@@ -1,7 +1,7 @@
 package com.kisman.cc.util.enums.dynamic;
 
 import com.kisman.cc.util.enums.ShadersObjectTypes;
-import com.kisman.cc.util.math.MathUtil;
+import com.kisman.cc.util.math.MathKt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
@@ -43,7 +43,7 @@ public class ShadersObjectsEnum {
     );
 
     private static void drawEntity(ArgumentFetcher arg) {
-        Vec3d vector = MathUtil.getInterpolatedRenderPos(arg.fetch(1), arg.fetch(0));
+        Vec3d vector = MathKt.interpolated(arg.fetch(1), arg.fetch(0));
         mc.getRenderManager().getEntityRenderObject(arg.fetch(1)).doRender(
                 arg.fetch(1),
                 vector.x,

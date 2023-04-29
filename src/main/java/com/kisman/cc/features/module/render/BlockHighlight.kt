@@ -10,7 +10,6 @@ import com.kisman.cc.settings.util.RenderingRewritePattern
 import com.kisman.cc.settings.util.SlideRenderingRewritePattern
 import com.kisman.cc.util.Colour
 import com.kisman.cc.util.math.vectors.bb.ColorableSlideBB
-import com.kisman.cc.util.math.vectors.xyz.ColorableSlidePos
 import com.kisman.cc.util.render.Rendering
 import com.kisman.cc.util.render.objects.world.Box
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
@@ -72,13 +71,15 @@ class BlockHighlight : ShaderableModule() {
                 renderWorld(
                     renderer.movingLength.valFloat,
                     renderer.fadeLength.valFloat,
-                    renderer.alphaFadeLength.valFloat,
+                    renderer.mutationLength.valFloat,
+                    renderer.alphaFadeMutation.valBoolean,
+                    renderer.aabbMutation.valBoolean,
                     renderer,
                     null
                 )
             }
 
-            if(renderer.alphaFadeLength.valFloat != 0f) {
+            if(renderer.mutationLength.valFloat != 0f) {
                 val multiplier = multiplier(renderer.movingLength.valFloat, renderer)
                 val keysToRemove = ArrayList<AxisAlignedBB>()
 
@@ -91,8 +92,8 @@ class BlockHighlight : ShaderableModule() {
                         continue
                     }
 
-                    val alphaCoeff = alpha(
-                        renderer.alphaFadeLength.valFloat,
+                    val alphaCoeff = mutation(
+                        renderer.mutationLength.valFloat,
                         renderer,
                         time
                     )
@@ -103,24 +104,24 @@ class BlockHighlight : ShaderableModule() {
                     }
 
                     renderer.draw(
-                        bb_,
-                        if(bb_ is ColorableSlideBB) bb_.colour1 else renderer.colors.filledColor1.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour2 else renderer.colors.filledColor2.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour3 else renderer.colors.filledColor3.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour4 else renderer.colors.filledColor4.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour5 else renderer.colors.filledColor5.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour6 else renderer.colors.filledColor6.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour7 else renderer.colors.filledColor7.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour8 else renderer.colors.filledColor8.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour9 else renderer.colors.outlineColor1.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour10 else renderer.colors.outlineColor2.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour11 else renderer.colors.outlineColor3.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour12 else renderer.colors.outlineColor4.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour13 else renderer.colors.outlineColor5.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour14 else renderer.colors.outlineColor6.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour15 else renderer.colors.outlineColor7.color(),
-                        if(bb_ is ColorableSlideBB) bb_.colour16 else renderer.colors.outlineColor8.color(),
-                        alphaCoeff
+                        if(renderer.aabbMutation.valBoolean) mutate(renderer.mutationLength.valFloat, renderer, time, bb_) else bb_,
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour1 else renderer.colors.filledColor1.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour2 else renderer.colors.filledColor2.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour4 else renderer.colors.filledColor4.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour3 else renderer.colors.filledColor3.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour5 else renderer.colors.filledColor5.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour6 else renderer.colors.filledColor6.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour7 else renderer.colors.filledColor7.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour8 else renderer.colors.filledColor8.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour9 else renderer.colors.outlineColor1.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour10 else renderer.colors.outlineColor2.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour11 else renderer.colors.outlineColor3.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour12 else renderer.colors.outlineColor4.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour13 else renderer.colors.outlineColor5.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour14 else renderer.colors.outlineColor6.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour15 else renderer.colors.outlineColor7.color(),
+                        if(bb_ is ColorableSlideBB && renderer.alphaFadeMutation.valBoolean) bb_.colour16 else renderer.colors.outlineColor8.color(),
+                        if(renderer.alphaFadeMutation.valBoolean) alphaCoeff else 1.0
                     )
                 }
 
