@@ -481,7 +481,7 @@ class Robot : Module() {
         target : EntityPlayer,
         force : Boolean,
         forceRadius : Double
-    ) : BlockPos? = HoleProcessor.holes.keys.stream().filter {
+    ) : BlockPos? = null/*HoleProcessor.holes.keys.stream().filter {
                 canEnter(it)
                 && lastHole != it
                 && if(force) {
@@ -503,7 +503,7 @@ class Robot : Module() {
         b
     }, {
         TreeMap<Double, BlockPos>()
-    })).values.firstOrNull()
+    })).values.firstOrNull()*/
 
     private fun performHoleOperation(
         operation : RobotHoleOperation,
