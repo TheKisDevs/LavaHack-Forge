@@ -44,16 +44,6 @@ public class Holes {
     }
 
     public static Hole getHole(BlockPos pos){
-        /*if(collideCheck(pos))
-            return null;
-        List<EnumFacing> facings = Stream.of(EnumFacing.HORIZONTALS).filter(facing -> !collideCheck(pos.offset(facing))).collect(Collectors.toList());
-        if(facings.size() == 0)
-            return getSingle(pos);
-        if(facings.size() == 1)
-            return getDouble(pos);
-        if(facings.size() == 2 && facings.get(0).getOpposite() != facings.get(1))
-            return getQuadruple(pos);
-        return null;*/
         if(collideCheck(pos, true))
             return null;
         if(!collideCheck(pos.down(), false))
@@ -119,18 +109,6 @@ public class Holes {
                 pos.add(delta1).add(delta2)
         );
 
-        /*EnumFacing firstFacing = getFacing(pos, offsets.get(0));
-        EnumFacing secondFacing = getFacing(pos, offsets.get(1));
-        if(firstFacing == null || secondFacing == null)
-            return null;
-        firstFacing = firstFacing.getOpposite();
-        secondFacing = secondFacing.getOpposite();
-        List<BlockPos> list = Arrays.asList(
-                pos,
-                pos.offset(firstFacing),
-                pos.offset(secondFacing),
-                pos.offset(firstFacing).offset(secondFacing)
-        );*/
         boolean accessible = false;
         for(BlockPos blockPos : list) {
             if (!isAccessible(blockPos))
@@ -155,10 +133,6 @@ public class Holes {
                 || collideCheck(list.get(2).up(), false)
                 || collideCheck(list.get(3).up(), false))) type = Type.UnsafeQuadruple;
         Set<BlockPos> offsetList = WorldUtilKt.highlight(list);
-        /*List<BlockPos> offsetList = new ArrayList<>();
-        for(BlockPos blockPos : list)
-            offsetList.addAll(Stream.of(EnumFacing.HORIZONTALS).map(blockPos::offset).collect(Collectors.toList()));
-        offsetList.removeAll(list);*/
         Safety safety = null;
         for(BlockPos blockPos : offsetList) {
             if (!isHoleBlock(blockPos))
@@ -167,147 +141,7 @@ public class Holes {
             safety = updateSafety(getBlockType(blockPos), safety);
         }
 
-        /*for(BlockPos blockPos : offsetList)
-            safety = updateSafety(getBlockType(blockPos), safety);*/
-//        if(safety == null)
-//            return null;
         return safety == null ? null : new Hole(list, type, safety);
-    }
-
-    /*public static EnumFacing getFacing(BlockPos pos, BlockPos blockPos){
-        for(EnumFacing facing : EnumFacing.HORIZONTALS)
-            if(pos.offset(facing) == blockPos)
-                return facing;
-        return null;
-    }*/
-
-    public static Hole getSingle(BlockPos pos){
-        if(collideCheck(pos, true))
-            return null;
-        List<BlockPos> blocks = Arrays.stream(EnumFacing.HORIZONTALS).map(pos::offset).collect(Collectors.toList());
-        blocks.add(pos.down());
-        Safety safety = getSafety(blocks);
-        if(safety == null || !isAccessible(pos)) return null;
-        return new Hole(Collections.singletonList(pos), Type.Single, safety);
-    }
-
-    public static Hole getDouble(BlockPos pos){
-        if(collideCheck(pos, true))
-            return null;
-        List<BlockPos> surround = Arrays.stream(EnumFacing.HORIZONTALS)
-                .map(pos::offset)
-                .filter(position -> !collideCheck(position, true))
-                .collect(Collectors.toList());
-        if(surround.size() != 1)
-            return null;
-        BlockPos otherPos = surround.get(0);
-        List<BlockPos> holeBlocks = Arrays.stream(EnumFacing.HORIZONTALS)
-                .map(pos::offset)
-                .collect(Collectors.toList());
-        holeBlocks.addAll(
-                Arrays.stream(EnumFacing.HORIZONTALS)
-                        .map(otherPos::offset)
-                        .collect(Collectors.toList())
-        );
-        holeBlocks.remove(pos);
-        holeBlocks.remove(otherPos);
-        Safety safety = getSafety(holeBlocks);
-        if(safety == null)
-            return null;
-        Safety safety1 = updateSafety(getBlockType(pos.down()), safety);
-        Safety safety2 = updateSafety(getBlockType(otherPos.down()), safety);
-        if(safety1 == null && safety2 == null)
-            return null;
-        Type type = (safety1 == null || safety2 == null) ? Type.UnsafeDouble : Type.Double;
-        boolean valid = newProtocol ? isAccessible(pos) && isAccessible(otherPos) : isAccessible(pos) || isAccessible(otherPos);
-        if(!valid)
-            return null;
-        return new Hole(Arrays.asList(pos, otherPos), type, safety2 == null ? safety1 : safety2);
-    }
-
-    public static Hole getQuadruple(BlockPos pos){
-        List<List<BlockPos>> configurations = getQuadrupleConfigurations(pos);
-        for(List<BlockPos> list : configurations){
-            Hole hole = getQuadrupleHole(list);
-            if(hole != null)
-                return hole;
-        }
-        return null;
-    }
-
-    private static Hole getQuadrupleHole(List<BlockPos> blocks){
-        if(!collideCheck(blocks))
-            return null;
-        List<BlockPos> holeBlocks = new ArrayList<>();
-        for(BlockPos pos : blocks)
-            holeBlocks.addAll(Arrays.stream(EnumFacing.HORIZONTALS).map(pos::offset).collect(Collectors.toList()));
-        holeBlocks.removeAll(blocks);
-        Safety safety = getSafety(holeBlocks);
-        if(safety == null)
-            return null;
-        Type type = null;
-        List<BlockTypeData> blockTypes = blocks.stream()
-                .map(BlockPos::down)
-                .map(pos -> new BlockTypeData(getBlockType(pos), pos))
-                .filter(data -> data.blockType != null)
-                .collect(Collectors.toList());
-        if(blockTypes.size() == 4)
-            type = Type.Quadruple;
-        if(blockTypes.size() == 1)
-            type = Type.UnsafeQuadruple;
-        if(blockTypes.size() == 2){
-            BlockPos pos1 = blockTypes.get(0).pos;
-            BlockPos pos2 = blockTypes.get(1).pos;
-            if(pos1.getX() == pos2.getX() || pos1.getY() == pos2.getY())
-                type = Type.UnsafeQuadruple;
-        }
-        if(type == null)
-            return null;
-        for(BlockTypeData blockTypeData : blockTypes){
-            if(blockTypeData.blockType == null)
-                continue;
-            safety = updateSafety(blockTypeData.blockType, safety);
-        }
-        int accessibleCount = 0;
-        for(BlockPos pos : blocks)
-            if(isAccessible(pos))
-                accessibleCount++;
-        boolean valid = newProtocol ? accessibleCount == 4 : accessibleCount != 3 && accessibleCount != 0;
-        int airCount = 0;
-        int blockCount = 0;
-        for(BlockPos pos : blocks){
-            if(collideCheck(pos.up(2), true))
-                blockCount++;
-            if(!collideCheck(pos.up(), true))
-                airCount++;
-        }
-        valid |= blockCount < 4 && airCount == 4;
-        return !valid ? null : new Hole(blocks, type, safety);
-    }
-
-    private static List<List<BlockPos>> getQuadrupleConfigurations(BlockPos pos){
-        List<List<BlockPos>> list = new ArrayList<>();
-        for(EnumFacing facing : EnumFacing.HORIZONTALS){
-            EnumFacing secondFacing = facing.rotateY();
-            list.add(Arrays.asList(
-                    pos,
-                    pos.offset(facing),
-                    pos.offset(secondFacing),
-                    pos.offset(facing).offset(secondFacing)
-            ));
-        }
-        return list;
-    }
-
-    public static Safety getSafety(List<BlockPos> blocks){
-        Safety safety = null;
-        for(BlockPos pos : blocks) {
-            BlockType type = getBlockType(pos);
-            if(type == null)
-                return null;
-            safety = updateSafety(getBlockType(pos), safety);
-        }
-        return safety;
     }
 
     public static Safety updateSafety(BlockType blockType, Safety previousSafety){
@@ -340,11 +174,6 @@ public class Holes {
 
     public static boolean isAccessible(BlockPos pos){
         return !collideCheck(pos.up(1), true) && !collideCheck(pos.up(2), true);
-    }
-
-    public static boolean collideCheck(List<BlockPos> posses) {
-        for(BlockPos pos : posses) if(collideCheck(pos, false)) return false;
-        return true;
     }
 
     public static boolean collideCheck(BlockPos pos, boolean liquid){
@@ -435,26 +264,6 @@ public class Holes {
 
         public Safety getSafety() {
             return safety;
-        }
-    }
-
-    private static class BlockTypeData {
-
-        private final BlockType blockType;
-
-        private final BlockPos pos;
-
-        public BlockTypeData(BlockType blockType, BlockPos pos) {
-            this.blockType = blockType;
-            this.pos = pos;
-        }
-
-        public BlockType getBlockType() {
-            return blockType;
-        }
-
-        public BlockPos getPos() {
-            return pos;
         }
     }
 }
