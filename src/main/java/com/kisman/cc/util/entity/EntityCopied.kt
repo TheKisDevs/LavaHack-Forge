@@ -53,8 +53,9 @@ open class EntityCopied(
     ) = when(slot) {
         EntityEquipmentSlot.MAINHAND -> mainhand
         EntityEquipmentSlot.OFFHAND -> offhand
-        else -> super.getItemStackFromSlot(slot)!!
+        else -> super.getItemStackFromSlot(slot)
     }
 
     override fun showNameTag() = false
+    override fun collideWithNearbyEntities() { }
 }

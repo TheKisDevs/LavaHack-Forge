@@ -7,5 +7,6 @@ class PlaceInfo(
     var target : EntityLivingBase?,
     var blockPos : BlockPos?,
     var selfDamage : Float,
-    var targetDamage : Float
+    var targetDamage : Float,
+    @JvmField var canPlace : Boolean
 )

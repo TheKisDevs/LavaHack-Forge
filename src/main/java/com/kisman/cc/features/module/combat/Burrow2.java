@@ -2,6 +2,8 @@ package com.kisman.cc.features.module.combat;
 
 import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
+import com.kisman.cc.features.module.ModuleInstance;
 import com.kisman.cc.features.module.movement.CornerClip;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
@@ -28,6 +30,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 
 //TODO: crystal breaker
+@ModuleInfo(
+        name = "Burrow",
+        category = Category.COMBAT
+)
 public class Burrow2 extends Module {
     private final Setting mode = register(new Setting("Mode", this, BurrowModes.CrystalPvPcc));
     private final Setting reconfigCornerClip = register(new Setting("Reconfig Corner Clip", this, false).setVisible(() -> mode.getValEnum() != BurrowModes.Normal));
@@ -53,12 +59,8 @@ public class Burrow2 extends Module {
     private final Setting setBack = register(new Setting("SetBack", this, false));
     private final Setting placeUpperBlock = register(new Setting("Place Upper Block", this, false));
 
+    @ModuleInstance
     public static Burrow2 instance;
-
-    public Burrow2(){
-        super("Burrow", Category.COMBAT);
-        instance = this;
-    }
 
     private BlockPos oldPos = null;
 
@@ -68,7 +70,7 @@ public class Burrow2 extends Module {
     private final ArrayList<BlockPos> toPlace = new ArrayList<>();
     private final ArrayList<BlockPos> placed = new ArrayList<>();
 
-    private final TimerUtils placeTimer = new TimerUtils();
+    private final TimerUtils placeTimer = timer();
 
     private void reconfigCornerClip() {
         CornerClip.instance.timeout.setValDouble(1);

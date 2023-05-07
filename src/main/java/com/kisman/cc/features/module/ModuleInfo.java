@@ -1,5 +1,6 @@
 package com.kisman.cc.features.module;
 
+import com.kisman.cc.features.subsystem.subsystems.Targetable;
 import org.lwjgl.input.Keyboard;
 
 import java.lang.annotation.ElementType;
@@ -37,4 +38,6 @@ public @interface ModuleInfo {
     boolean submodule() default false;
 
     Class<? extends Module>[] modules() default { };
+
+    Targetable targetable() default @Targetable(nearest = true, real = false);
 }

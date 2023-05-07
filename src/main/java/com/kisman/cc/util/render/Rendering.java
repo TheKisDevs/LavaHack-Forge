@@ -43,7 +43,7 @@ public class Rendering {
     public static final Colour DUMMY_COLOR = new Colour(0, 0, 0, 0);
 
     public enum RenderObject {
-        BOX {
+        BOX(7) {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
@@ -54,7 +54,7 @@ public class Rendering {
                 }
             }
         },
-        OUTLINE {
+        OUTLINE(3) {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(gradient) {
@@ -66,7 +66,7 @@ public class Rendering {
                 }
             }
         },
-        WIRE {
+        WIRE(3) {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 drawWire(aabb, (float) values[0], color1, gradient ? color2 : color1);
@@ -97,14 +97,14 @@ public class Rendering {
                 drawSelectionBox(aabb, DUMMY_COLOR.getColor());
             }
         },
-        CHROMA_BOX {
+        CHROMA_BOX(7) {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(color5 == null) drawChromaBox2(aabb, color1, color2, color3, color4);
                 else drawChromaBox2(aabb, color1, color2, color3, color4, color5, color6, color7, color8);
             }
         },
-        CHROMA_OUTLINE {
+        CHROMA_OUTLINE(3) {
             @Override
             void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values) {
                 if(color5 == null) drawChromaOutline2(aabb, (float) values[0], color1, color2, color3, color4);
@@ -113,6 +113,12 @@ public class Rendering {
         }
 
         ;
+
+        public final int GL_MODE;
+
+        RenderObject(int mode) {
+            GL_MODE = mode;
+        }
 
         abstract void draw(AxisAlignedBB aabb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean gradient, boolean partial, ArrayList<DirectionVertexes> sides, Object... values);
         
@@ -229,6 +235,18 @@ public class Rendering {
                 }
             }
         }
+    }
+
+    public static void updateTessellator(Tessellator current) {
+        tessellator = current;
+    }
+
+    public static void resetTessellator() {
+        tessellator = Tessellator.getInstance();
+    }
+
+    public static void resetBuffer() {
+        bufferbuilder = tessellator.getBuffer();
     }
 
     public static void start(boolean depth) {
@@ -504,7 +522,6 @@ public class Rendering {
         float red1 = (float) startColor.getRed() / 255.0f;
         float green1 = (float) startColor.getGreen() / 255.0f;
         float blue1 = (float) startColor.getBlue() / 255.0f;
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
@@ -543,13 +560,8 @@ public class Rendering {
         float red1 = (float) startColor.getRed() / 255.0f;
         float green1 = (float) startColor.getGreen() / 255.0f;
         float blue1 = (float) startColor.getBlue() / 255.0f;
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        //bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
-        //bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
         bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
@@ -672,7 +684,6 @@ public class Rendering {
         float red1 = (float) startColor.getRed() / 255.0f;
         float green1 = (float) startColor.getGreen() / 255.0f;
         float blue1 = (float) startColor.getBlue() / 255.0f;
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
@@ -711,7 +722,6 @@ public class Rendering {
         float green1 = (float)endColor.getGreen() / 255.0f;
         float blue1 = (float)endColor.getBlue() / 255.0f;
         float alpha1 = (float)endColor.getAlpha() / 255.0f;
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
@@ -755,7 +765,6 @@ public class Rendering {
         int blue3 = c3.getBlue();
         int alpha3 = c3.getAlpha();
         start();
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buf = tessellator.getBuffer();
         buf.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
@@ -814,7 +823,6 @@ public class Rendering {
     }
 
     public static void drawChromaOutline2(AxisAlignedBB bb, float width, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8) {
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(3, DefaultVertexFormats.POSITION_COLOR);
         GL11.glLineWidth(width);
@@ -823,7 +831,6 @@ public class Rendering {
     }
 
     public static void drawChromaOutline2(AxisAlignedBB bb, float width, Color color1, Color color2, Color color3, Color color4) {
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
         GL11.glLineWidth(width);
@@ -832,7 +839,6 @@ public class Rendering {
     }
 
     public static void drawChromaBox2(AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8)  {
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
         addChromaVertices(builder, bb, color1, color2, color3, color4, color5, color6, color7, color8, true);
@@ -840,7 +846,6 @@ public class Rendering {
     }
 
     public static void drawChromaBox2(AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4)  {
-        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuffer();
         builder.begin(7, DefaultVertexFormats.POSITION_COLOR);
         addChromaVertices(builder, bb, color1, color2, color3, color4, true);
@@ -852,24 +857,6 @@ public class Rendering {
     }
 
     public static void addChromaVertices(BufferBuilder builder, AxisAlignedBB bb, Color color1, Color color2, Color color3, Color color4, Color color5, Color color6, Color color7, Color color8, boolean filled) {
-        //bufferbuilder.pos(bb.minX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.minY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
-
-        //        bufferbuilder.pos(bb.maxX, bb.minY, bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.minY,блл bb.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.maxZ).coкакауlor(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.minY,ппнрпвм bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.minакцацкакцY, bb.maxZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.акакmaxY, bb.maxZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.maxYаукаукаук, bb.maxZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.maмвамвамваxY, bb.minZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.minY, bbмама.minZ).color(red1, green1, blue1, alpha1).endVertex();
-        //        bufferbuilder.pos(bb.maxX, bb.maсывxY, bb.minZ).color(red, green, blue, alpha).endVertex();
-        //        bufferbuilder.pos(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).endVertex();
-
         if(filled) {
             builder.pos(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
             builder.pos(bb.maxX, bb.minY, bb.minZ).color(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha()).endVertex();

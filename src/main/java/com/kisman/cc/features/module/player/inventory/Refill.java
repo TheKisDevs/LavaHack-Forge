@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.player;
+package com.kisman.cc.features.module.player.inventory;
 
 import com.kisman.cc.features.module.*;
 import com.kisman.cc.settings.Setting;
@@ -7,6 +7,10 @@ import net.minecraft.init.*;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.*;
 
+@ModuleInfo(
+        name = "Refill",
+        submodule = true
+)
 public class Refill extends Module {
     private final Setting[] settings = new Setting[]{
             new Setting("One", this, ItemMode.None),
@@ -33,8 +37,6 @@ public class Refill extends Module {
     };
 
     public Refill() {
-        super("Refill", Category.PLAYER);
-
         setmgr.rSetting(settings[0]);
         setmgr.rSetting(settings[1]);
         setmgr.rSetting(settings[2]);

@@ -1,7 +1,7 @@
-package com.kisman.cc.features.module.player;
+package com.kisman.cc.features.module.player.rotatemodifier;
 
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.settings.types.SettingEnum;
 import com.kisman.cc.util.math.MathKt;
@@ -10,6 +10,10 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 
+@ModuleInfo(
+        name = "YawStep",
+        submodule = true
+)
 public class YawStep extends Module {
 
     private final SettingEnum<Mode> mode = new SettingEnum<>("Mode", this, Mode.Section).register();
@@ -22,16 +26,9 @@ public class YawStep extends Module {
 
     private int ignoreTicks = 0;
 
-    public YawStep(){
-        super("YawStep", Category.PLAYER);
-    }
-
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
         if(mc.player == null || mc.world == null)
-            return;
-
-        if(!isToggled())
             return;
 
         if(mc.mouseHelper.deltaX != 0 || mc.mouseHelper.deltaY != 0 || isAnyMouseButtonDown()){

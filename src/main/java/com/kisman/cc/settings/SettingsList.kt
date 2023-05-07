@@ -36,7 +36,7 @@ open class SettingsList(
         name : String
     ) = this[name] as T
 
-    fun <T : AbstractPattern<T>> pattern(
+    fun <T> pattern(
         name : String
     ) = patterns[name] as T
 

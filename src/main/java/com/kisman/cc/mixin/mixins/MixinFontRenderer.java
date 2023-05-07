@@ -82,13 +82,12 @@ public class MixinFontRenderer {
     private void drawStringHook(String text, float x, float y, int color, boolean dropShadow, CallbackInfoReturnable<Integer> cir) {
         if(Kisman.instance.moduleManager != null) {
             String text0 = FriendHighlight.INSTANCE.modifyLine(text);
-            boolean flag = Changer.INSTANCE.getShadowTextModifier().getValBoolean();
             enableAlpha();
             resetStyles();
 
             if (dropShadow) {
                 cir.setReturnValue(Math.max(
-                        renderString(text0, x + (flag ? Changer.INSTANCE.getShadowX().getValFloat() : 1), y + (flag ? Changer.INSTANCE.getShadowY().getValFloat() : 1), color, true),
+                        renderString(text0, x + (float) Changer.fontShadowX, y + (float) Changer.fontShadowY, color, true),
                         renderString(text0, x, y, color, false)
                 ));
                 cir.cancel();

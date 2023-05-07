@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
+//TODO: Finish using custom tessellator
 @ModuleInfo(
         name = "HoleESPRewrite2",
         display = "Holes",
@@ -44,15 +45,15 @@ public class HoleESPRewrite2 extends Module implements Drawable {
     private final Setting ignoreOwn = register(new Setting("IgnoreOwnHole", this, false));
 
     private final SettingGroup obbyRendererGroup = register(new SettingGroup(new Setting("Obby", this)));
-    private final FadeRenderingRewritePattern obbyRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Obsidian").group(obbyRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern obbyRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false, true).prefix("Obsidian").group(obbyRendererGroup).preInit().init();
     private final Setting oHeight = register(new Setting("HeightObsidian", this, 1.0, 0.0, 1.0, false));
 
     private final SettingGroup bedrockRendererGroup = register(new SettingGroup(new Setting("Bedrock", this)));
-    private final FadeRenderingRewritePattern bedrockRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Bedrock").group(bedrockRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern bedrockRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false, true).prefix("Bedrock").group(bedrockRendererGroup).preInit().init();
     private final Setting bHeight = register(new Setting("HeightBedrock", this, 1.0, 0.0, 1.0, false));
 
     private final SettingGroup customRendererGroup = register(new SettingGroup(new Setting("Custom", this)));
-    private final FadeRenderingRewritePattern customRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false).prefix("Custom").group(customRendererGroup).preInit().init();
+    private final FadeRenderingRewritePattern customRenderer = new FadeRenderingRewritePattern(this, FadeLogic.Distance, false, true).prefix("Custom").group(customRendererGroup).preInit().init();
     private final Setting cHeight = register(new Setting("Height", this, 1.0, 0.0, 1.0, false));
 
     private static final Comparator<AxisAlignedBB> comparator = (o1, o2) -> Double.compare(mc.player.getDistanceSq(o2.getCenter().x, o2.getCenter().y, o2.getCenter().z), mc.player.getDistanceSq(o1.getCenter().x, o1.getCenter().y, o1.getCenter().z));
@@ -102,7 +103,21 @@ public class HoleESPRewrite2 extends Module implements Drawable {
         });
     }
 
-    public void doHoleESP(boolean callingFromDraw/*i will need it later...*/) {
+    /*private void processSafety(Holes.Safety safety, boolean callingFromDraw) {
+        try {
+            if((callingFromDraw && !rendererFor(safety).canRender()) || (!callingFromDraw && rendererFor(safety).canRender())) rendererFor(safety).drawTessellator();
+        } catch(Exception ignored) {}
+    }*/
+
+    public void doHoleESP(boolean callingFromDraw) {
+//        processSafety(Holes.Safety.Obsidian, callingFromDraw);
+//        processSafety(Holes.Safety.Bedrock, callingFromDraw);
+//        processSafety(Holes.Safety.Mix, callingFromDraw);
+        /*try {
+            if((callingFromDraw && !rendererFor(safety).canRender()) || (!callingFromDraw && rendererFor(safety).canRender())) rendererFor(safety).draw(bb, timeStamps.get(bb), range.getValFloat(), (float) mc.player.getDistance(center.x, center.y, center.z));
+        } catch(Exception ignored) {}*/
+
+
         Map<AxisAlignedBB, Holes.Safety> renderNormally = new TreeMap<>(comparator);
         renderNormally.putAll(map);
         for(Map.Entry<AxisAlignedBB, Holes.Safety> entry : renderNormally.entrySet()) {
@@ -115,7 +130,7 @@ public class HoleESPRewrite2 extends Module implements Drawable {
         }
     }
 
-    private Map<AxisAlignedBB, Holes.Safety> getHoles(){
+    private /*void*/Map<AxisAlignedBB, Holes.Safety> getHoles() {
         Map<AxisAlignedBB, Holes.Safety> holes = new TreeMap<>(comparator);
         int lim = 0;
 
@@ -133,6 +148,15 @@ public class HoleESPRewrite2 extends Module implements Drawable {
                 if (safety == Holes.Safety.Mix && !cHoles.getValBoolean()) continue;
 
                 AxisAlignedBB bb = adjust(hole.getAabb(), safety);
+                /*Vec3d centre = Box.byAABB(bb).center();
+
+                rendererFor(safety).startTessellator();
+                rendererFor(safety).draw(bb, timeStamps.get(bb), range.getValFloat() * range.getValFloat(), (float) mc.player.getDistanceSq(centre.x, centre.y, centre.z));
+                rendererFor(safety).endTessellator();*/
+
+                if(!timeStamps.containsKey(bb)) {
+                    timeStamps.put(bb, System.currentTimeMillis());
+                }
 
                 holes.put(bb, safety);
                 lim++;

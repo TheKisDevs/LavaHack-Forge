@@ -244,7 +244,7 @@ class ConfigManager(
                                 }
                                 "visible" -> {
                                     try {
-                                        module.visible = java.lang.Boolean.parseBoolean(split1[1])
+                                        module.visible = module.toggleable && java.lang.Boolean.parseBoolean(split1[1])
                                     } catch (ignored : Exception) {}
                                 }
                                 "key" -> {

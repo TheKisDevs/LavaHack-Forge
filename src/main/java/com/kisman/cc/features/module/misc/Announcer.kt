@@ -3,10 +3,7 @@ package com.kisman.cc.features.module.misc
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
 import com.kisman.cc.features.module.ModuleInfo
-import com.kisman.cc.features.module.misc.announcer.BurrowCounter
-import com.kisman.cc.features.module.misc.announcer.LogNotify
-import com.kisman.cc.features.module.misc.announcer.TotemPopCounterRewrite
-import com.kisman.cc.features.module.misc.announcer.VisualRange
+import com.kisman.cc.features.module.misc.announcer.*
 
 /**
  * @author _kisman_
@@ -21,6 +18,7 @@ import com.kisman.cc.features.module.misc.announcer.VisualRange
         BurrowCounter::class,
         LogNotify::class,
         TotemPopCounterRewrite::class,
+        TraceTeleport::class,
         VisualRange::class
     ]
 )

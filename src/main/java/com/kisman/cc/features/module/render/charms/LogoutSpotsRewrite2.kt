@@ -43,10 +43,6 @@ class LogoutSpotsRewrite2 : Module() {
 
                     if(name != null) {
                         when (packet.action) {
-                            /*SPacketPlayerListItem.Action.ADD_PLAYER -> {
-
-                            }*/
-
                             SPacketPlayerListItem.Action.REMOVE_PLAYER -> {
                                 val player = mc.world.getPlayerEntityByUUID(entry.profile.id)
 

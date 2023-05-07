@@ -13,17 +13,21 @@ import com.kisman.cc.util.client.interfaces.Drawable
 import com.kisman.cc.util.enums.DirectionVertexes
 import com.kisman.cc.util.enums.Gradients
 import com.kisman.cc.util.render.ColorUtils
+import com.kisman.cc.util.render.CustomTessellator
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import java.util.*
 import java.util.function.Supplier
 
+//TODO: Finish using custom tessellator
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 open class RenderingRewritePattern(
     module : Module,
-    private val canPartial : Boolean
+    private val canPartial : Boolean = false,
+    /*private val */customTessellator : Boolean = false
 ) : AbstractPattern<RenderingRewritePattern>(
     module
 ) {
@@ -31,6 +35,7 @@ open class RenderingRewritePattern(
         module : Module
     ) : this(
         module,
+        false,
         false
     )
 
@@ -47,6 +52,12 @@ open class RenderingRewritePattern(
     val partial = setupSetting(Setting("Partial", module, false))
 
     val colors = RenderingRewriteColorsPattern(module)
+
+    private val tessellator = if(customTessellator) {
+        CustomTessellator(2097152)
+    } else {
+        null
+    }
 
     override fun preInit() : RenderingRewritePattern {
         if(group != null) {
@@ -128,6 +139,22 @@ open class RenderingRewritePattern(
         }
 
         return this
+    }
+
+    open fun startTessellator() {
+        Rendering.updateTessellator(tessellator)
+        Rendering.resetBuffer()
+    }
+
+    open fun endTessellator() {
+        Rendering.resetTessellator()
+        Rendering.resetBuffer()
+    }
+
+    open fun drawTessellator() {
+        tessellator?.draw = true
+        tessellator?.draw()
+        tessellator?.draw = false
     }
 
     open fun isActive() : Boolean = mode.valEnum != RenderingRewriteModes.None
@@ -527,6 +554,28 @@ class RenderingRewriteColorsPattern(
         return this
     }
 
+    override fun prefix(
+        prefix : String
+    ) : RenderingRewriteColorsPattern {
+        filledColor1.prefix(prefix)
+        filledColor2.prefix(prefix)
+        filledColor3.prefix(prefix)
+        filledColor4.prefix(prefix)
+        filledColor5.prefix(prefix)
+        filledColor6.prefix(prefix)
+        filledColor7.prefix(prefix)
+        filledColor8.prefix(prefix)
+        outlineColor1.prefix(prefix)
+        outlineColor2.prefix(prefix)
+        outlineColor3.prefix(prefix)
+        outlineColor4.prefix(prefix)
+        outlineColor5.prefix(prefix)
+        outlineColor6.prefix(prefix)
+        outlineColor7.prefix(prefix)
+        outlineColor8.prefix(prefix)
+
+        return super.prefix(prefix)
+    }
 }
 
 //TODO: rainbow with custom speed
@@ -534,20 +583,16 @@ class RenderingRewriteColorPattern(
     module : Module,
     colors : SettingGroup,
     rainbow : SettingGroup,
-    name : String,
+    private val name : String,
     title : String
 ) : AbstractPattern<RenderingRewriteColorPattern>(
     module
 ) {
-    val color = colors.add(Setting(name, module, Colour(255, 0, 0, 255)).setTitle(title))
+    val color = setupSetting(colors.add(Setting(name, module, Colour(255, 0, 0, 255)).setTitle(title)))
     private val rainbow0 = setupGroup(rainbow.add(SettingGroup(Setting(title, module))))
     private val gradient = setupList(rainbow0.add(SettingsList("mode", Setting("Gradient Mode", module, Gradients.None).setTitle("Mode"), "diff", Setting("Gradient Diff", module, 1.0, 0.0, 360.0, NumberType.TIME).setTitle("Diff"))))
     private val astolfo = setupSetting(rainbow0.add(Setting("Astolfo", module, false)))
     private val pulsive = setupList(rainbow0.add(SettingGroup(Setting("Pulsive", module)).add(SettingsList("color1", Setting("Pulsive Color 1", module, Colour(255, 0, 0, 255)).setTitle("First"), "color2", Setting("Pulsive Color 2", module, Colour(0, 0, 255, 255)).setTitle("Second")))))
-
-    init {
-        prefix(name)
-    }
 
     override fun preInit() : AbstractPattern<RenderingRewriteColorPattern> {
         return this
@@ -561,6 +606,12 @@ class RenderingRewriteColorPattern(
         module.register(pulsive)
 
         return this
+    }
+
+    override fun prefix(
+        prefix : String
+    ) : RenderingRewriteColorPattern {
+        return super.prefix("$prefix $name")
     }
 
     fun color() = color(1)

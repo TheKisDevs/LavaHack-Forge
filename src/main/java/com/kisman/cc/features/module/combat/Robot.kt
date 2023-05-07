@@ -362,7 +362,7 @@ class Robot : Module() {
                 enabledAura = false
             }
 
-            if(!autoTrap.valBoolean || (AutoTrap.instance.isToggled && enabledTrap)) {
+            if(!autoTrap.valBoolean || (AutoTrapRewrite.instance!!.isToggled && enabledTrap)) {
                 disableTrap()
                 enabledTrap = false
             }
@@ -609,7 +609,7 @@ class Robot : Module() {
                     switchedToSword = true
                 }
 
-                if(autoTrap.valBoolean && isEnemyInSameHole(target) && !isTrapped(target) && !AutoTrap.instance.isToggled) {
+                if(autoTrap.valBoolean && isEnemyInSameHole(target) && !isTrapped(target) && !AutoTrapRewrite.instance!!.isToggled) {
                     enableTrap()
                     enabledTrap = true
                 }
@@ -633,7 +633,7 @@ class Robot : Module() {
                         moveOutHole()
                         isMoving = true
                     } else {
-                        if(autoTrap.valBoolean && isEnemyInSameHole(target) && !AutoTrap.instance.isToggled) {
+                        if(autoTrap.valBoolean && isEnemyInSameHole(target) && !AutoTrapRewrite.instance!!.isToggled) {
                             enableTrap()
                             enabledTrap = true
                         }
@@ -966,11 +966,11 @@ class Robot : Module() {
     }
 
     private fun enableTrap() {
-        AutoTrap.instance.isToggled = true
+        AutoTrapRewrite.instance!!.isToggled = true
     }
 
     private fun disableTrap() {
-        AutoTrap.instance.isToggled = false
+        AutoTrapRewrite.instance!!.isToggled = false
     }
 
     private fun enableFiller() {

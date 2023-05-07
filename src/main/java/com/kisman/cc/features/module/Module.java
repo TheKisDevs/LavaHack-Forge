@@ -252,7 +252,7 @@ public class Module extends DisplayableFeature {
 		} catch(Exception e) {
 			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in enable method. Disabling!");
 			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from enable method from " + getName() + ". Disabling!", e);
-			e.printStackTrace();
+			Kisman.LOGGER.error(e.getCause());
 			flag = true;
 		}
 
@@ -271,7 +271,7 @@ public class Module extends DisplayableFeature {
 		} catch(Exception e) {
 			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " in disable method.");
 			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from disable method from " + getName() + ". Disabling!", e);
-			e.printStackTrace();
+			Kisman.LOGGER.error(e.getCause());
 		}
 
 		if(subscribes) MinecraftForge.EVENT_BUS.unregister(this);
@@ -284,7 +284,7 @@ public class Module extends DisplayableFeature {
 		} catch(Exception e) {
 			if(mc.player != null && mc.world != null) ChatUtility.error().printClientModuleMessage("Received " + e.getClass().getSimpleName() + " from update method. Disabling!");
 			Kisman.LOGGER.error("Received " + e.getClass().getSimpleName() + " from update method from " + getName() + ". Disabling!", e);
-			e.printStackTrace();
+			Kisman.LOGGER.error(e.getCause());
 			setToggled(false);
 		}
 	}
@@ -338,7 +338,7 @@ public class Module extends DisplayableFeature {
 
 	public String toDisplayString() {
 		if(submodule) {
-			return parent.toDisplayString() + "->" + displayName;
+			return (parent == null ? "NULL" : parent.toDisplayString()) + "->" + displayName;
 		} else {
 			return displayName;
 		}

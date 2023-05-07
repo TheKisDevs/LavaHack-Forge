@@ -1,7 +1,7 @@
-package com.kisman.cc.features.module.player;
+package com.kisman.cc.features.module.player.rotatemodifier;
 
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.math.MathKt;
 import net.minecraft.entity.Entity;
@@ -9,6 +9,10 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 
+@ModuleInfo(
+        name = "YawLock",
+        submodule = true
+)
 public class YawLock extends Module {
 
     private final Setting diagonal = register(new Setting("Diagonals", this, true));
@@ -19,16 +23,9 @@ public class YawLock extends Module {
 
     private int ignoreTicks = 0;
 
-    public YawLock(){
-        super("YawLock", Category.PLAYER);
-    }
-
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event){
         if(mc.player == null || mc.world == null)
-            return;
-
-        if(!isToggled())
             return;
 
         if(mc.mouseHelper.deltaX != 0 || mc.mouseHelper.deltaY != 0 || isAnyMouseButtonDown()){

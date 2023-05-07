@@ -155,10 +155,8 @@ public class Kisman {
             CustomFontUtil.initFonts();
 
             LOGGER.info("Initialized fonts! It took " + (System.currentTimeMillis() - timeStamp) + " ms!");
-        });
 
-        ThreadsKt.getExecutor().submit(() -> {
-            long timeStamp = System.currentTimeMillis();
+            timeStamp = System.currentTimeMillis();
 
             LOGGER.info("Initializing ViaForge implementation!");
 

@@ -9,6 +9,7 @@ import com.kisman.cc.features.module.combat.autorer.AutoRerTargetFinder;
 import com.kisman.cc.features.module.combat.autorer.BreakInfo;
 import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.features.module.combat.autorer.modules.Crystals;
+import com.kisman.cc.features.module.player.inventory.OffHand;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -89,8 +90,6 @@ public class AutoRer extends ShaderableModule {
     public final Setting multiThreaddedTargetGetter = register(multiThreadGettersGroup.add(new Setting("MT Target Getter", this, false).setTitle("Target")));
     private final Setting multiThreaddedCrystalGetter = register(multiThreadGettersGroup.add(new Setting("MT Crystal Getter", this, false).setTitle("Break Pos")));
     private final Setting mtcgDelay = register(multiThreadGroup.add(new Setting("MT CG Delay", this, 15.0, 0.0, 100.0, NumberType.TIME).setTitle("Delay")));
-    //TODO: usage where??
-    private final Setting wallRangeUsage = register(optimization.add(new Setting("Wall Range Usage", this, true)));
 
     private final SettingGroup stages = register(main.add(new SettingGroup(new Setting("Stages", this))));
     private final Setting calcStage = register(stages.add(new Setting("Calc Stage", this, EventMode.Tick).setTitle("Calc")));
@@ -156,22 +155,23 @@ public class AutoRer extends ShaderableModule {
     private final Setting raytrace = register(place_.add(new Setting("Ray Trace", this, false)));
 
     private final Setting break_ = register(break__.add(new Setting("Break", this, true)));
-    private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority").setVisible(break_::getValBoolean)));
-    private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop).setVisible(break_::getValBoolean)));
-    private final Setting clientSide = register(break__.add(new Setting("Client Side", this, ClientSideMode.None).setVisible(break_::getValBoolean)));
-    private final Setting clientSideWhen = register(break__.add(new Setting("Client Side On", this, ClientSideWhen.Break).setVisible(break_::getValBoolean)));
-    private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false).setVisible(break_::getValBoolean)));
-    private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break").setVisible(break_::getValBoolean)));
-    private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setTitle("Packet").setVisible(break_::getValBoolean)));
+    private final Setting breakPriority = register(break__.add(new Setting("Break Priority", this, BreakPriority.Damage).setTitle("Priority")));
+    private final Setting friend_ = register(break__.add(new Setting("Friend", this, FriendMode.AntiTotemPop)));
+    private final Setting clientSide = register(break__.add(new Setting("Client Side", this, ClientSideMode.None)));
+    private final Setting clientSideWhen = register(break__.add(new Setting("Client Side On", this, ClientSideWhen.Break)));
+    private final Setting removeAfterAttack = register(break__.add(new Setting("Remove After Attack", this, false)));
+    private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break")));
+    private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setTitle("Packet")));
+    private final Setting breakSpam = register(break__.add(new Setting("Break Spam", this, 1, 1, 6, true).setTitle("Spam")));
 
-    private final Setting delayMode = register(delay.add(new Setting("Delay Mode", this, DelayMode.Default).setTitle("Mode")));
+    private final Setting delayMode = /*register*/(/*delay.add*/(new Setting("Delay Mode", this, DelayMode.Default).setTitle("Mode")));
     private final Setting pingSmartMultiplier = register(delay.add(new Setting("Ping Smart Multi", this, 0, 0, 3, false)));
     private final SettingGroup defaultDelayGroup = register(delay.add(new SettingGroup(new Setting("Default", this))));
     private final Setting placeDelay = register(defaultDelayGroup.add(new Setting("Place Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Place")));
     private final Setting silentPlaceDelay = register(defaultDelayGroup.add(new Setting("Silent Place Delay", this, 0, 0, 1000, NumberType.TIME).setTitle("Silent Place")));
     private final Setting breakDelay = register(defaultDelayGroup.add(new Setting("Break Delay", this, 0, 0, 2000, NumberType.TIME).setTitle("Break")));
     //TODO: finish from-to delays
-    private final SettingGroup fromToDelayGroup = /*register*/(delay.add(new SettingGroup(new Setting("From To", this))));
+    private final SettingGroup fromToDelayGroup = /*register*/(/*delay.add*/(new SettingGroup(new Setting("From To", this))));
     private final Setting fromPlaceToBreakDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From P To B")));
     private final Setting fromBreakToPlaceDelay = register(fromToDelayGroup.add(new Setting("From Place To Break Delay", this, 50, 0, 2000, NumberType.TIME).setTitle("From B To P")));
     private final Setting clearDelay = register(delay.add(new Setting("Clear Delay", this, 500, 0, 2000, NumberType.TIME).setTitle("Clear")));
@@ -204,7 +204,7 @@ public class AutoRer extends ShaderableModule {
     private final AtomicReference<BreakInfo> crystalWithMaxDamage = new AtomicReference<>();
     @Target
     public static EntityPlayer currentTarget;
-    public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0), renderPos;
+    public PlaceInfo placePos = new PlaceInfo(null, null, 0, 0, false);
     private BreakInfo breakPos = new BreakInfo(null, 0, 0, false);
     private Entity lastHitEntity = null;
     public boolean rotating;
@@ -229,7 +229,6 @@ public class AutoRer extends ShaderableModule {
     private final AutoRerTargetFinder targets = new AutoRerTargetFinder(targetLogic.getSupplierEnum0(), placeRange.getSupplierFloat(), this, targetRange.getSupplierDouble(), () -> 50L, () -> multiThreaddedTargetGetter.getValBoolean() || multiThreaddedSphereGetter.getValBoolean());
 
     public AutoRer() {
-        super();
         super.setDisplayInfo(() -> "[" + (currentTarget == null ? "no target no fun" : currentTarget.getName()) + "]");
     }
 
@@ -262,13 +261,13 @@ public class AutoRer extends ShaderableModule {
     }
 
     private void handlePlacement() {
-        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst()) return;
+        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst() || !placePos.canPlace) return;
 
         handlePlaceFull();
     }
 
     private void handleBreakment()  {
-        if(breakPos == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
+        if(breakPos == null || breakPos.getCrystal() == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
 
         handleBreakFull();
     }
@@ -309,7 +308,6 @@ public class AutoRer extends ShaderableModule {
         crystalWithMaxDamage.set(null);
         currentTarget = null;
         rotating = false;
-        renderPos = null;
         lastBroken = true;
     }
 
@@ -533,7 +531,7 @@ public class AutoRer extends ShaderableModule {
     });
 
     private PlaceInfo placeInfo(EntityLivingBase target, BlockPos pos, boolean terrain) {
-        return new PlaceInfo(target, pos, WorldUtilKt.damageByCrystal(terrain, pos, 0), WorldUtilKt.damageByCrystal(target, terrain, pos, 0));
+        return new PlaceInfo(target, pos, WorldUtilKt.damageByCrystal(terrain, pos, 0), WorldUtilKt.damageByCrystal(target, terrain, pos, 0), true);
     }
 
     private boolean isSemiSafe(EntityPlayer player) {
@@ -590,11 +588,17 @@ public class AutoRer extends ShaderableModule {
         return armorBreakerState.getValBoolean() && InventoryUtil.isArmorUnderPercent(currentTarget, armorBreaker.getValInt());
     }
 
+    private boolean collideCheck(BlockPos base, boolean newVerEntities, boolean check) {
+        BlockPos pos = base.up();
+
+        return mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + (newVerEntities ? 0 : (check ? 2 : 1)), pos.getZ() + 1), entity -> true).size() == 0;
+    }
+
     private boolean canPlaceCrystal(BlockPos pos, boolean check, boolean entity, boolean multiPlace, boolean firePlace, boolean newVerPlace, boolean newVerEntities) {
         if(mc.world.getBlockState(pos).getBlock().equals(Blocks.BEDROCK) || mc.world.getBlockState(pos).getBlock().equals(Blocks.OBSIDIAN)) {
-            if (!mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.AIR) && !(firePlace && mc.world.getBlockState(pos.add(0, 1, 0)).getBlock().equals(Blocks.FIRE))) return false;
-            if (!newVerPlace && !mc.world.getBlockState(pos.add(0, 2, 0)).getBlock().equals(Blocks.AIR)) return false;
-            BlockPos boost = pos.add(0, 1, 0);
+            if (!mc.world.getBlockState(pos.up()).getBlock().equals(Blocks.AIR) && !(firePlace && mc.world.getBlockState(pos.up()).getBlock().equals(Blocks.FIRE))) return false;
+            if (!newVerPlace && !mc.world.getBlockState(pos.up(2)).getBlock().equals(Blocks.AIR)) return false;
+            BlockPos boost = pos.up();
             return !entity || mc.world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(boost.getX(), boost.getY(), boost.getZ(), boost.getX() + 1, boost.getY() + (newVerEntities ? 0 : (check ? 2 : 1)), boost.getZ() + 1), e -> !(e instanceof EntityEnderCrystal) || multiPlace).size() == 0;
         }
         return false;
@@ -672,7 +676,7 @@ public class AutoRer extends ShaderableModule {
             }
         }
 
-        this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage);
+        this.placePos = new PlaceInfo(currentTarget, placePos, (float) selfDamage_, (float) maxDamage, collideCheck(placePos, newVerEntities.getValBoolean(), secondCheck.getValBoolean()));
     }
 
     private float getHeuristic(float targetDamage, float selfDamage){
@@ -914,8 +918,10 @@ public class AutoRer extends ShaderableModule {
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
 
-        if(packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(breakPos.getCrystal()));
-        else mc.playerController.attackEntity(mc.player, breakPos.getCrystal());
+        for(int i = 0; i < breakSpam.getValInt(); i++) {
+            if (packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(breakPos.getCrystal()));
+            else mc.playerController.attackEntity(mc.player, breakPos.getCrystal());
+        }
 
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         if(clientSideWhen.getValEnum() == ClientSideWhen.Break){
@@ -999,7 +1005,7 @@ public class AutoRer extends ShaderableModule {
     public enum ClientSideMode { None, RemoveEntity, SetDead, Both }
     public enum ClientSideWhen { Break, Place, Sound }
     public enum Heuristics { Damage, MinMax, Safety }
-    public enum EventMode { /*Motion, */Update, Tick, RenderTick, Render3D, Motion/*, Thread*/ }
+    public enum EventMode { Update, Tick, RenderTick, Render3D, Motion/*, Thread*/ }
 
     public enum AntiCevBreakerVectors {
         Cev(Collections.singletonList(new Vec3i(0, 2, 0))),

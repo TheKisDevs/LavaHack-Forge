@@ -9,13 +9,15 @@ import com.kisman.cc.features.subsystem.subsystems.Targetable
 import com.kisman.cc.features.subsystem.subsystems.Target
 import com.kisman.cc.features.subsystem.subsystems.nearest
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingsList
 import com.kisman.cc.settings.types.SettingGroup
-import com.kisman.cc.settings.util.ObbyPlacementPattern
-import com.kisman.cc.settings.util.RenderingRewritePattern
-import com.kisman.cc.settings.util.SlideRenderingRewritePattern
+import com.kisman.cc.settings.types.number.NumberType
+import com.kisman.cc.settings.util.*
 import com.kisman.cc.util.block
 import com.kisman.cc.util.entity.player.InventoryUtil
+import com.kisman.cc.util.render.left
 import com.kisman.cc.util.render.pattern.SlideRendererPattern
+import com.kisman.cc.util.render.right
 import com.kisman.cc.util.world.dynamicBlocksSorted
 import com.kisman.cc.util.world.entityPosition
 import net.minecraft.entity.player.EntityPlayer
@@ -83,6 +85,9 @@ class CityBoss : Module() {
     private val placementState = register(placementGroup.add(Setting("Base Placement", this, false).setTitle("State")))
     private val placementPattern = ObbyPlacementPattern(this, true).group(placementGroup).preInit().init()
 
+//    private val crystals = register(register(SettingGroup(Setting("Crystal Placement", this))).add(SettingsList("state", Setting("Crystal Placement State", this, false).setTitle("State"), "rotate", Setting("Crystal Placement Rotate", this, false).setTitle("Rotate"), "packet", Setting("Crystal Placement Packet", this, false).setTitle("Packet"), "swap", SettingEnum("Crystal Placement Swap", this, SwapEnum2.Swap.Silent).setTitle("Swap"))))
+    private val crystals = register(register(SettingGroup(Setting("Crystal Placement", this))).add(SettingsList("state", Setting("Crystal Placement State", this, false).setTitle("State"), "delay", Setting("Crystal Placement Delay", this, 100.0, 0.0, 1000.0, NumberType.TIME).setTitle("Delay"), "pattern", CrystalPlacementPattern(this).prefix("Crystal Placement"))))
+
     private var clicked = false
     private var lastPos : BlockPos? = null
 
@@ -94,6 +99,7 @@ class CityBoss : Module() {
     private val basePosses = mutableListOf<BlockPos>()
     private val processingBlocks = mutableListOf<BlockPos>()
     private var processingBlock : BlockPos? = null
+    private var processingFacing : EnumFacing? = null
     private var baseBlock : BlockPos? = null
 
     private val currentBlockRenderer = SlideRendererPattern()
@@ -110,6 +116,8 @@ class CityBoss : Module() {
         Cases.RightDiagonalCase to rightDiagonalCase
     )
 
+    private val crystalPlacementTimer = timer()
+
     override fun onEnable() {
         super.onEnable()
         player = null
@@ -117,18 +125,13 @@ class CityBoss : Module() {
         lastPos = null
         processingBlock = null
         processingBlocks.clear()
+        processingFacing = null
     }
 
     private fun displayInfo(
         info : String
     ) {
-        displayInfo = "[${
-            if (player == null) {
-                info
-            } else {
-                "${player!!.name} | $info"
-            }
-        }]"
+        displayInfo = "[${player?.name ?: "no target no fun"} | $info]"
     }
 
     override fun update() {
@@ -139,6 +142,7 @@ class CityBoss : Module() {
         basePosses.clear()
 
         processingBlock = null
+        processingFacing = null
 
         player = if(autorerTargetSync.valBoolean) {
             AutoRer.currentTarget
@@ -169,12 +173,44 @@ class CityBoss : Module() {
         if(placementState.valBoolean && baseBlock != null) {
             placementPattern.placeBlockSwitch(baseBlock!!, Blocks.OBSIDIAN)
         }
+
+        if(crystals["state"].valBoolean && processingBlock != null && processingFacing != null && crystalPlacementTimer.passedMillis(crystals["delay"].valLong)) {
+            fun offset(
+                pos : BlockPos,
+                facing : EnumFacing
+            ) : BlockPos? {
+                fun valid(
+                    pos : BlockPos
+                ) : Boolean {
+                    val current = block(pos)
+                    val down = block(pos.down())
+
+                    return current == Blocks.AIR && (down == Blocks.BEDROCK || down == Blocks.OBSIDIAN)
+                }
+
+                valid(pos.offset(facing)).also { if(it) return pos.offset(facing) }
+                valid(pos.up()).also { if(it) return pos.up() }
+                valid(pos.offset(facing.right())).also { if(it) return pos.offset(facing.right()) }
+                valid(pos.offset(facing.left())).also { if(it) return pos.offset(facing.left()) }
+
+                return null
+            }
+
+            val offset = offset(processingBlock!!, processingFacing!!)
+
+            if(offset != null) {
+                val crystal = offset.down()
+
+                crystalPlacementTimer.reset()
+                crystals.pattern<CrystalPlacementPattern>("pattern").placeCrystal(crystal)
+            }
+        }
     }
 
     private fun mineBlock(
         pos : BlockPos?
     ) {
-        if (pos == null) {//TODO: can block be broken?
+        if (pos == null) {
             lastPos = null
             return
         }
@@ -200,12 +236,7 @@ class CityBoss : Module() {
                 println("kill yourself <3")
             }
         } else if(PacketMineRewrite3.instance!!.current() == null || !PacketMineRewrite3.instance!!.queue().contains(pos)) {
-//            if(
-//                if(allowMultibreak.valBoolean) !PacketMineRewrite3.instance!!.queue().contains(pos)
-//                else PacketMineRewrite3.instance!!.current() != lastPos
-//            ) {
-                mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
-//            }
+            mc.playerController.onPlayerDamageBlock(pos, result?.sideHit ?: EnumFacing.UP)
         }
 
         lastPos = pos
@@ -213,20 +244,22 @@ class CityBoss : Module() {
 
     private fun canBeBurrowed(
         player : EntityPlayer
-    ) : Boolean = mc.world.getBlockState(entityPosition(player).up().up()).block == Blocks.AIR
+    ) : Boolean = block(entityPosition(player).up(2)) == Blocks.AIR
 
     private fun isBurrowed(
         player : EntityPlayer
-    ) : Boolean = mc.world.getBlockState(player.position).block != Blocks.AIR
+    ) : Boolean = block(entityPosition(player)) != Blocks.AIR
 
     private fun processPlayer(
         player : EntityPlayer
     ) {
         val posses0 = dynamicBlocksSorted(player)
         var minObbis = Int.MAX_VALUE
+        var minDistance = Double.MAX_VALUE
 
         cases.clear()
         bestCase = null
+        processingFacing = null
 
         for(entry in posses0) {
             val facing = entry.key!!
@@ -239,10 +272,13 @@ class CityBoss : Module() {
                     if(case != null) {
                         cases.add(Case(case, pos1, facing).also {
                             val obbis = case.howManyObbis(facing, pos1, newVersion.valBoolean)
+                            val distance = case.distanceSq(facing, pos1)
 
-                            if(obbis < minObbis) {
+                            if(obbis < minObbis && distance < minDistance) {
                                 bestCase = it
+                                processingFacing = facing
                                 minObbis = obbis
+                                minDistance = distance
                             }
                         })
                     }

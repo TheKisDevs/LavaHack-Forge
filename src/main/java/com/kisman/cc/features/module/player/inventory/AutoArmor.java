@@ -1,31 +1,35 @@
- package com.kisman.cc.features.module.combat;
+ package com.kisman.cc.features.module.player.inventory;
 
- import com.kisman.cc.features.module.Category;
-import com.kisman.cc.features.module.Module;
-import com.kisman.cc.settings.Setting;
-import com.kisman.cc.settings.types.number.NumberType;
-import com.kisman.cc.util.TimerUtils;
-import com.kisman.cc.util.entity.player.InventoryUtil;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemStack;
+ import com.kisman.cc.features.module.Module;
+ import com.kisman.cc.features.module.ModuleInfo;
+ import com.kisman.cc.settings.Setting;
+ import com.kisman.cc.settings.types.number.NumberType;
+ import com.kisman.cc.util.TimerUtils;
+ import com.kisman.cc.util.entity.player.InventoryUtil;
+ import net.minecraft.client.gui.inventory.GuiContainer;
+ import net.minecraft.client.renderer.InventoryEffectRenderer;
+ import net.minecraft.enchantment.Enchantment;
+ import net.minecraft.enchantment.EnchantmentHelper;
+ import net.minecraft.init.Items;
+ import net.minecraft.inventory.ClickType;
+ import net.minecraft.item.ItemArmor;
+ import net.minecraft.item.ItemStack;
 
-import java.util.HashMap;
-import java.util.List;
+ import java.util.HashMap;
+ import java.util.List;
 
+@ModuleInfo(
+        name = "AutoArmor",
+        desc = "ebate srate lox!",
+        submodule = true
+)
  public class AutoArmor extends Module {
      private final Setting delay = register(new Setting("Delay", this, 0, 0, 100, NumberType.TIME));
      private final Setting noThorns = register(new Setting("No Thorns", this, true));
 
-     private final TimerUtils timer = new TimerUtils();
+     private final TimerUtils timer = timer();
 
      public AutoArmor() {
-         super("AutoArmor", "ebate srate lox!", Category.COMBAT);
          super.setDisplayInfo(() -> "[" + delay.getValInt() + "]");
      }
 

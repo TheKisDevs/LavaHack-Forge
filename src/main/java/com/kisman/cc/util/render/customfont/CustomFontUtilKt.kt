@@ -61,11 +61,11 @@ class CustomFontUtilKt {
         }
 
         fun getShadowX() : Double {
-            return if(Changer.shadowTextModifier.valBoolean) Changer.shadowX.valDouble else 1.0
+            return Changer.fontShadowX
         }
 
         fun getShadowY() : Double {
-            return if(Changer.shadowTextModifier.valBoolean) Changer.shadowY.valDouble else 1.0
+            return Changer.fontShadowY
         }
 
         fun setMultiLineOffset(

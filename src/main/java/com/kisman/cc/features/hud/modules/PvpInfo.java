@@ -3,6 +3,7 @@ package com.kisman.cc.features.hud.modules;
 import com.kisman.cc.features.hud.ShaderableHudModule;
 import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.movement.SpeedRewrite2;
+import com.kisman.cc.features.module.player.inventory.OffHand;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.util.text.TextFormatting;
@@ -30,7 +31,7 @@ public class PvpInfo extends ShaderableHudModule {
             count++;
             drawStringWithShadow(TextFormatting.GRAY + "SURR: " + (SurroundRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
             count++;
-            drawStringWithShadow(TextFormatting.GRAY + "AT: " + (AutoTrap.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
+            drawStringWithShadow(TextFormatting.GRAY + "AT: " + (AutoTrapRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
             count++;
             drawStringWithShadow(TextFormatting.GRAY + "HF: " + (HoleFillerRewrite.instance.toggled ? TextFormatting.GREEN + "ON" : TextFormatting.RED + "OFF"), getX(), count * height + y, -1);
             count++;

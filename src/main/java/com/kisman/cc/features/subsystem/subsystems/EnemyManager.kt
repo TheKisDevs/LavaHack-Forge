@@ -2,6 +2,7 @@ package com.kisman.cc.features.subsystem.subsystems
 
 import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventUpdateEntity
+import com.kisman.cc.features.module.ModuleInfo
 import com.kisman.cc.features.module.combat.AntiBot
 import com.kisman.cc.features.subsystem.SubSystem
 import com.kisman.cc.util.client.interfaces.IFakeEntity
@@ -99,7 +100,7 @@ object EnemyManager : SubSystem("Enemy Manager") {
         listeners(updateEntity)
 
         for(module in Kisman.instance.moduleManager.targetableModules) {
-            if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java)) {
+            if(!module::class.java.isAnnotationPresent(TargetsNearest::class.java) && module::class.java.getAnnotation(ModuleInfo::class.java)?.targetable?.nearest != true) {
                 enemies.add(module.enemySupplier)
             }
         }
@@ -114,6 +115,6 @@ object EnemyManager : SubSystem("Enemy Manager") {
 fun nearest() : EntityPlayer? = EnemyManager.nearest()//For kotlin modules
 //fun nearestEntity() : Entity? = EnemyManager.nearestEntity()//For kotlin modules
 
-annotation class Targetable
+annotation class Targetable(val nearest : Boolean = false, val real : Boolean = true)
 annotation class Target
 annotation class TargetsNearest

@@ -42,7 +42,6 @@ enum class SpeedModes(
         private val strict = register(Setting("Strict", null, false), "Strafe")
         private val sprint = register(Setting("Sprint", null, false), "Strafe")
         private val boost = register(Setting("Boost", null, false), "Strafe")
-        private val fastFall = register(Setting("Fast Fall", null, false), "Strafe")
 
         private var currentSpeed = 0.0
         private var prevMotion = 0.0
@@ -98,14 +97,10 @@ enum class SpeedModes(
 
             if(stage != 1 || (mc.player.moveForward == 0f || mc.player.moveStrafing == 0f)) {
                 if(stage == 2 && (mc.player.moveForward != 0f || mc.player.moveStrafing != 0f)) {
-                    var jumpSpeed = if(mc.player.isPotionActive(MobEffects.JUMP_BOOST)) {
+                    val jumpSpeed = if(mc.player.isPotionActive(MobEffects.JUMP_BOOST)) {
                         (mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST)!!.amplifier + 1) * 0.1
                     } else {
                         0.0
-                    }
-
-                    if(mc.player.onGround && fastFall.valBoolean) {
-                        jumpSpeed = -(1 + 0.3999)
                     }
 
                     mc.player.motionY = 0.3999 + jumpSpeed

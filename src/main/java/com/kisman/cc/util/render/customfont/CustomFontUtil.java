@@ -133,8 +133,6 @@ public class CustomFontUtil {
     }
 
     public static void initFonts() {
-        //lexenddeca, consolas, sfui, verdana, futura, century: +1 x
-        //minecraftrus, futura, consolas: +1 y
         comfortaal30 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 30));
         comfortaal18 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 18));
         comfortaal10 = new ExtendedFontRenderer(getFontTTF("comfortaa-light", 10));
@@ -164,9 +162,8 @@ public class CustomFontUtil {
 
         minecraftRus13 = new ExtendedFontRenderer(getFontTTF("minecraft", 13));
 
-        poppinsRegular18 = new ExtendedFontRenderer(getFontTTF("Poppins-Regular", 18));
+        poppinsRegular18 = new ExtendedFontRenderer(getFontTTF("poppins-regular", 18));
 
-//        lexendDeca18.offsetX = -1;
         consolas18.offsetX = -1;
         consolas15.offsetX = -1;
         sfui19.offsetX = -1;

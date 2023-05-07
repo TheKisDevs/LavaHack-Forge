@@ -320,14 +320,14 @@ public class FlattenRewrite extends Module {
     }
 
     private static void addIfAbsentAndReplaceable(BlockPos pos){
-        if(!isReplaceable(pos) || instance.blocks.contains(pos))
+        if(!isReplaceable(pos) || instance.blocks.contains(pos) || mc.world.getBlockState(pos).getBlock() != Blocks.AIR)
             return;
         instance.blocks.add(pos);
     }
 
     private static void addAllIfAbsent(List<BlockPos> list){
         for (BlockPos pos : list) {
-            if (!instance.blocks.contains(pos))
+            if (!instance.blocks.contains(pos) && mc.world.getBlockState(pos).getBlock() == Blocks.AIR)
                 instance.blocks.add(pos);
         }
     }

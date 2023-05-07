@@ -1,4 +1,4 @@
-package com.kisman.cc.features.module.exploit;
+package com.kisman.cc.features.module.misc.announcer;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.PacketEvent;
@@ -11,13 +11,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketEntityTeleport;
 
+@ModuleInfo(
+        name = "TraceTeleport",
+        display = "Teleports",
+        submodule = true
+)
 public class TraceTeleport extends Module {
     private final Setting onlyPlayers = register(new Setting("Only Players", this, true));
     
-    public TraceTeleport() {
-        super("TraceTeleport", "", Category.EXPLOIT);
-    }
-
     public void onEnable() {
         Kisman.EVENT_BUS.subscribe(receive);
     }

@@ -22,10 +22,24 @@ import kotlin.math.min
 class FadeRenderingRewritePattern(
     module : Module,
     private val defaultFadeLogic : FadeLogic,
-    private val customFadeLogic : Boolean
+    private val customFadeLogic : Boolean,
+    private val customTessellator : Boolean
 ) : RenderingRewritePattern(
-    module
+    module,
+    false,
+    customTessellator
 ) {
+    constructor(
+        module : Module,
+        defaultFadeLogic : FadeLogic,
+        customFadeLogic : Boolean
+    ) : this(
+        module,
+        defaultFadeLogic,
+        customFadeLogic,
+        false
+    )
+
     //TODO: custom easings
 
     private val filledColorFadeGroup = setupGroup(colors.filled.add(SettingGroup(Setting("Fade", module))))

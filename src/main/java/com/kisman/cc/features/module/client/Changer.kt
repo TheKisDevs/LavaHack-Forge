@@ -62,9 +62,9 @@ object Changer : Module("Changer", "Changes your minecraft", Category.CLIENT) {
 
     //Shadow Text Modifier settings
     private val shadowTextModifierGroup = register(SettingGroup(Setting("Shadow Text Mod", this)))
-    val shadowTextModifier = register(shadowTextModifierGroup.add(Setting("Shadow Text Modifier", this, false).setTitle("Modify")))
-    val shadowX = register(shadowTextModifierGroup.add(Setting("Shadow X", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))
-    val shadowY = register(shadowTextModifierGroup.add(Setting("Shadow Y", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))
+    private val shadowTextModifier = register(shadowTextModifierGroup.add(Setting("Shadow Text Modifier", this, false).setTitle("Modify")))
+    private val shadowX = register(shadowTextModifierGroup.add(Setting("Shadow X", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))
+    private val shadowY = register(shadowTextModifierGroup.add(Setting("Shadow Y", this, 1.0, 0.0, 2.0, false).setVisible(shadowTextModifier)))
 
     //Timer settings
     private val timerGroup = register(SettingGroup(Setting("Timer", this)))
@@ -73,6 +73,21 @@ object Changer : Module("Changer", "Changes your minecraft", Category.CLIENT) {
 
     private var circle = 0
     private var oldFov = 0F
+
+    @JvmField var fontShadowX = 1.0
+    @JvmField var fontShadowY = 1.0
+
+    init {
+        shadowTextModifier.onChange {
+            if(it.valBoolean) {
+                fontShadowX = shadowX.valDouble
+                fontShadowY = shadowY.valDouble
+            } else {
+                fontShadowX = 1.0
+                fontShadowY = 1.0
+            }
+        }
+    }
 
     override fun onEnable() {
         super.onEnable()

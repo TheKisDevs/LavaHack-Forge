@@ -1,7 +1,7 @@
-package com.kisman.cc.features.module.player;
+package com.kisman.cc.features.module.player.inventory;
 
-import com.kisman.cc.features.module.Category;
 import com.kisman.cc.features.module.Module;
+import com.kisman.cc.features.module.ModuleInfo;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.TimerUtils;
 import net.minecraft.init.Items;
@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@ModuleInfo(
+        name = "Replenish",
+        submodule = true
+)
 public class Replenish extends Module {
 
     private final Setting mode = register(new Setting("Mode", this, "Amount", Arrays.asList("Amount", "Percent")));
@@ -24,11 +28,7 @@ public class Replenish extends Module {
     private final Setting stackPercent = register(new Setting("Percent", this, 10, 0, 99, true).setVisible(() -> stackThresholdMode.getValString().equals("Percent")));
     private final Setting strict = register(new Setting("Strict", this, true));
 
-    public Replenish(){
-        super("Replenish", Category.PLAYER);
-    }
-
-    private final TimerUtils timer = new TimerUtils();
+    private final TimerUtils timer = timer();
 
     @Override
     public void onEnable(){

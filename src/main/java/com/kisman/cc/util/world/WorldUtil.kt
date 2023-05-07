@@ -293,30 +293,34 @@ fun center(
     )
 }
 
-fun dynamicBlocks(
+fun feetBlocks(
     entity : Entity
-) : List<BlockPos> {
-    val list0 = mutableListOf<BlockPos>()
-    val list1 = mutableListOf<BlockPos>()
-
+) = mutableSetOf<BlockPos>().also {
     val aabb = entity.boundingBox
 
     val diffX = (aabb.maxX - aabb.minX) / 2
     val diffZ = (aabb.maxZ - aabb.minZ) / 2
 
-    BlockPos(entity.posX + diffX, entity.posY, entity.posZ + diffZ).also { if(!list0.contains(it)) list0.add(it) }
-    BlockPos(entity.posX + diffX, entity.posY, entity.posZ - diffZ).also { if(!list0.contains(it)) list0.add(it) }
-    BlockPos(entity.posX - diffX, entity.posY, entity.posZ + diffZ).also { if(!list0.contains(it)) list0.add(it) }
-    BlockPos(entity.posX - diffX, entity.posY, entity.posZ - diffZ).also { if(!list0.contains(it)) list0.add(it) }
+    it.add(BlockPos(entity.posX + diffX, entity.posY, entity.posZ + diffZ))
+    it.add(BlockPos(entity.posX + diffX, entity.posY, entity.posZ - diffZ))
+    it.add(BlockPos(entity.posX - diffX, entity.posY, entity.posZ + diffZ))
+    it.add(BlockPos(entity.posX - diffX, entity.posY, entity.posZ - diffZ))
+}
 
-    for(pos in list0) {
-        pos.north().also { if(!list0.contains(it)) list1.add(it) }
-        pos.south().also { if(!list0.contains(it)) list1.add(it) }
-        pos.west().also { if(!list0.contains(it)) list1.add(it) }
-        pos.east().also { if(!list0.contains(it)) list1.add(it) }
+fun dynamicBlocks(
+    entity : Entity
+) : List<BlockPos> {
+    val base = feetBlocks(entity)
+    val list = mutableListOf<BlockPos>()
+
+    for(pos in base) {
+        pos.north().also { if(!base.contains(it)) list.add(it) }
+        pos.south().also { if(!base.contains(it)) list.add(it) }
+        pos.west().also { if(!base.contains(it)) list.add(it) }
+        pos.east().also { if(!base.contains(it)) list.add(it) }
     }
 
-    return list1
+    return list
 }
 
 fun dynamicBlocksSorted(
@@ -370,6 +374,48 @@ fun highlight(
     set.removeAll(centre.toSet())
 
     return set
+}
+
+fun canCollide(
+    pos : BlockPos,
+    liquid : Boolean
+) : Boolean {
+    val state = state(pos)
+
+    return state.block.canCollideCheck(state, liquid)
+}
+
+fun canCollide(
+    pos : BlockPos
+) = canCollide(pos, false)
+
+fun canPlace(
+    centre : BlockPos
+) : Boolean {
+    for(facing in EnumFacing.values()) {
+        val pos = centre.offset(facing)
+
+        if(canCollide(pos)) {
+            return true
+        }
+    }
+
+    return false
+}
+
+fun helpingBlock(
+    centre : BlockPos,
+    validator : (BlockPos) -> Boolean
+) : BlockPos? {
+    for(facing in EnumFacing.values()) {
+        val pos = centre.offset(facing)
+
+        if(validator(pos) && canCollide(pos) && canPlace(pos)) {
+            return pos
+        }
+    }
+
+    return null
 }
 
 /*

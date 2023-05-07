@@ -29,7 +29,7 @@ enum class Cases {
             facing : EnumFacing
         ) : List<BlockPos> {
             return listOf<BlockPos>(
-                BlockPos.ORIGIN.offset(facing),
+                SurroundBlockPos(BlockPos.ORIGIN.offset(facing)),
                 BlockPos.ORIGIN.offset(facing).offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing).up(),
                 CrystalBlockPos(BlockPos.ORIGIN.offset(facing).offset(facing).down())
@@ -41,7 +41,7 @@ enum class Cases {
             facing : EnumFacing
         ) : List<BlockPos> {
             return listOf<BlockPos>(
-                BlockPos.ORIGIN.offset(facing),
+                SurroundBlockPos(BlockPos.ORIGIN.offset(facing)),
                 `1-13-BlockPos`(BlockPos.ORIGIN.offset(facing).up()),
                 CrystalBlockPos(BlockPos.ORIGIN.offset(facing).down())
             )
@@ -52,7 +52,7 @@ enum class Cases {
             facing : EnumFacing
         ) : List<BlockPos> {
             return listOf<BlockPos>(
-                BlockPos.ORIGIN.offset(facing),
+                SurroundBlockPos(BlockPos.ORIGIN.offset(facing)),
                 BlockPos.ORIGIN.offset(facing).offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing),
                 BlockPos.ORIGIN.offset(facing).offset(facing).offset(facing).up(),
@@ -64,7 +64,7 @@ enum class Cases {
         override fun posses(
             facing : EnumFacing
         ) : List<BlockPos> = listOf<BlockPos>(
-            BlockPos.ORIGIN.offset(facing),
+            SurroundBlockPos(BlockPos.ORIGIN.offset(facing)),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.left()).offset(facing).up(),
@@ -75,7 +75,7 @@ enum class Cases {
         override fun posses(
             facing : EnumFacing
         ) : List<BlockPos> = listOf<BlockPos>(
-            BlockPos.ORIGIN.offset(facing),
+            SurroundBlockPos(BlockPos.ORIGIN.offset(facing)),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing),
             BlockPos.ORIGIN.offset(facing).offset(facing.right()).offset(facing).up(),
@@ -221,5 +221,20 @@ enum class Cases {
         }
 
         return posses
+    }
+
+    fun distanceSq(
+        facing : EnumFacing,
+        centre : BlockPos
+    ) : Double {
+        for(offset in posses(facing)) {
+            if(offset is SurroundBlockPos) {
+                val pos = centre.add(offset)
+
+                return mc.player.getDistanceSq(pos)
+            }
+        }
+
+        return Double.NaN
     }
 }

@@ -17,13 +17,9 @@ Armor thing for PopCharms/LogoutSpots
 Rewrite hole processor
 AntiCity
 -> Improve CityBoss block miner
--> Fix problem with right top linked place with multiline modules
 -> Fix problem with HoleSnap caused by logic of player move event
-Fade thing for PopCharms
 Renderer for Surround
 Improve CrystalPvPHelper -> MoveOut for cc
--> Fix bug when enemy manager targets LogoutSpots entities
--> Move Speed to WIP
 -> Guide of chroma colors
 Silent for PacketMine -> MultiBreak
 -> Fix crash of hold binds caused by changing bind type to hold
@@ -31,9 +27,12 @@ Fix time logic of fade pattern used in HoleESP
 Wire renderer
 -> Rewrite replace command of schematica with our command system
 Finish RotateModifier
-Finish FreeCamRewrite
--> Fix description boxes
--> Rewrite TextRadar
--> Test ArrayList
+Finish FreeCamRewrite2
 -> Test ElytraFly
 Remove MixinBlockRenderDispatcher
+Improve PistonAura
+Move AntiBow to Avoid
+-> Finish BlockESP
+-> CrystalFinder subsystem(uses entity update event)
+-> Cache of block states(uses event of BlockRenderDispatcher to update cache)
+-> Finish custom classloader

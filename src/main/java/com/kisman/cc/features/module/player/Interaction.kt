@@ -4,25 +4,25 @@ import com.kisman.cc.Kisman
 import com.kisman.cc.event.events.EventBlockReachDistance
 import com.kisman.cc.event.events.EventRenderGetEntitiesINAABBexcluding
 import com.kisman.cc.event.events.PacketEvent
-import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.features.module.Category
 import com.kisman.cc.features.module.Module
+import com.kisman.cc.features.module.combat.KillAuraRewrite
 import com.kisman.cc.settings.Setting
+import com.kisman.cc.settings.SettingsList
 import com.kisman.cc.settings.types.SettingGroup
+import com.kisman.cc.util.manager.friend.FriendManager
 import com.kisman.cc.util.world.BlockUtil2
 import me.zero.alpine.listener.EventHook
 import me.zero.alpine.listener.Listener
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemPickaxe
-import net.minecraft.network.play.client.CPacketPlayerDigging
-import net.minecraft.network.play.client.CPacketPlayerTryUseItem
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock
-import net.minecraft.network.play.client.CPacketUseEntity
+import net.minecraft.network.play.client.*
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.EnumHand
 import net.minecraft.util.math.BlockPos
@@ -41,6 +41,7 @@ object Interaction : Module(
     private val bowSpamGroup = register(items.add(SettingGroup(Setting("Bow Spam", this))))
     private val bowSpamState = register(bowSpamGroup.add(Setting("Bow Spam State", this, false).setTitle("State")))
     private val bowSpamLength = register(bowSpamGroup.add(Setting("Bow Spam Length", this, 3.0, 3.0, 21.0, true).setTitle("Length")))
+    private val criticals = register(items.add(register(SettingGroup(Setting("Criticals", this))).add(SettingsList("state", Setting("Criticals State", this, false).setTitle("State"), "strict", Setting("Criticals Strict", this, false).setTitle("Strict"), "ka", Setting("Criticals Only KA", this, false).setTitle("With KillAura")))))
 
     private val blocks = register(SettingGroup(Setting("Blocks", this))) as SettingGroup
 
@@ -53,6 +54,7 @@ object Interaction : Module(
     private val noInteract = register(blocks.add(SettingGroup(Setting("No Interact", this).setVisible { noInteractVal.valBoolean })))
     @JvmField val reach : Setting = register(blocks.add(Setting("Reach", this, false)))
     @JvmField val reachDistance : Setting = register(blocks.add(Setting("Reach Distance", this, 5.0, 1.0, 10.0, true).setVisible { reach.valBoolean }))
+    private val autoMine = register(blocks.add(Setting("Auto Mine", this, false)))
 
     private val fastUse = register(SettingGroup(Setting("Fast Use", this)))
 
@@ -106,11 +108,20 @@ object Interaction : Module(
         doFastUse()
         doPacketCrystal()
         doBowSpam()
+        doAutoMine()
     }
 
     @SubscribeEvent fun onLeftClickBlock(event : PlayerInteractEvent.LeftClickBlock) {
         if(fastBreak.valBoolean && mc.playerController.curBlockDamageMP + BlockUtil2.getHardness(event.pos) >= 1) {
             mc.player.connection.sendPacket(CPacketPlayerDigging(CPacketPlayerDigging.Action.STOP_DESTROY_BLOCK, event.pos, mc.objectMouseOver.sideHit))
+        }
+    }
+
+    private fun doAutoMine() {
+        if(autoMine.valBoolean) {
+            val result = mc.objectMouseOver ?: return
+
+            mc.playerController.onPlayerDamageBlock(result.blockPos, result.sideHit)
         }
     }
 
@@ -213,6 +224,30 @@ object Interaction : Module(
         if(packet is CPacketPlayerTryUseItemOnBlock && roofInteract.valBoolean) {
             if(packet.pos.y >= 255 && packet.direction == EnumFacing.UP) {
                 mc.player.connection.sendPacket(CPacketPlayerTryUseItemOnBlock(packet.pos, EnumFacing.DOWN, packet.hand, packet.facingX, packet.facingY, packet.facingZ))
+            }
+        }
+
+        if(packet is CPacketUseEntity && criticals["state"].valBoolean) {
+            if(packet.action == CPacketUseEntity.Action.ATTACK && mc.player.onGround && !mc.player.isInWater && !mc.player.isInLava && !mc.player.isInWeb && (!criticals["ka"].valBoolean || KillAuraRewrite.instance!!.isToggled)) {
+                val entity = packet.getEntityFromWorld(mc.world)
+
+                if(entity is EntityLivingBase) {
+                    val x = mc.player.posX
+                    val y = mc.player.posY
+                    val z = mc.player.posZ
+
+                    if(criticals["strict"].valBoolean) {
+                        mc.player.connection.sendPacket(CPacketPlayer.Position(x, y + 0.07, z, false))
+                        mc.player.connection.sendPacket(CPacketPlayer.Position(x, y + 0.08, z, false))
+                        mc.player.connection.sendPacket(CPacketPlayer.Position(x, y, z, false))
+                    }
+
+                    mc.player.connection.sendPacket(CPacketPlayer.Position(x, y + 0.05, z, false))
+                    mc.player.connection.sendPacket(CPacketPlayer.Position(x, y, z, false))
+                    mc.player.connection.sendPacket(CPacketPlayer.Position(x, y + 0.012, z, false))
+                    mc.player.connection.sendPacket(CPacketPlayer.Position(x, y, z, false))
+                    mc.player.onCriticalHit(entity)
+                }
             }
         }
     })

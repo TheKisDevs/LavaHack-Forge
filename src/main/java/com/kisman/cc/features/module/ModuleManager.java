@@ -8,6 +8,7 @@ import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
 import com.kisman.cc.features.module.exploit.*;
 import com.kisman.cc.features.module.misc.*;
+import com.kisman.cc.features.module.misc.announcer.TraceTeleport;
 import com.kisman.cc.features.module.movement.*;
 import com.kisman.cc.features.module.player.*;
 import com.kisman.cc.features.module.render.*;
@@ -77,24 +78,25 @@ public class ModuleManager {
 		//combat
 //		add(new AutoCrystal());
 		add(new AntiBot());
-		add(new AntiBow());
+//		add(new AntiBow());
+		add(new AntiCity());
 //		add(new AntiTrap());
 		add(new AutoAnchor());
 		add(new AutoAnvil());
-		add(new AutoArmor());
+//		add(new AutoArmor());
 		add(AutoCrystalPvP.INSTANCE);
 		add(new AutoObsidian());
 		add(new AutoQuiver());
 		add(new AutoRer());
-		add(new AutoTrap());
+		add(new AutoTrapRewrite());
 		add(new Avoid());
 		add(new Blocker());
-		add(new BowAimBot());
+//		add(new BowAimBot());
 //		add(new BreakAlert());
 		add(new Burrow2());
 		add(new CevBreaker());
 		add(new CityBoss());
-		add(new Criticals());
+//		add(new Criticals());
 		add(new CrystalFiller());
 		add(new CrystalPvPHelper2());
 		add(new DamageIncreaser());
@@ -105,7 +107,7 @@ public class ModuleManager {
 		add(new HoleKicker());
 		add(new KillAuraRewrite());
 		add(new AutoCrystalRewrite());
-		add(new OffHand());
+//		add(new OffHand());
 		add(new PistonAura());
 		add(new PistonTest());
 		add(new Prison());
@@ -211,9 +213,10 @@ public class ModuleManager {
 		add(AntiDesync.INSTANCE);
 		add(new AntiHunger());
 		add(new ArrowBlocker());
+//		add(new AutoArmor());
 		add(new AutoEat());
 		add(new AutoEatRewrite());
-		add(new AutoMine());
+//		add(new AutoMine());
 		add(new AutoMount());
 		add(new AutoRespawn());
 		add(new CameraClip());
@@ -221,16 +224,17 @@ public class ModuleManager {
 		add(new ChorusPredict());
 		add(new FreeCamRewrite2());
 		add(Interaction.INSTANCE);
+		add(new InventoryModule());
 		add(new Octopus());
 		add(new PacketFeatures());
 		add(new PearlBypass());
-		add(new Refill());
-		add(new Replenish());
+//		add(new Refill());
+//		add(new Replenish());
 		add(new RotateModifier());
 		add(new SilentXp());
 		add(new Velocity());
-		add(new YawLock());
-		add(new YawStep());
+//		add(new YawLock());
+//		add(new YawStep());
 		//exploit
 		add(new AntiVanish());
 		add(new BookFormatModule());
@@ -293,7 +297,7 @@ public class ModuleManager {
 		modules.add(module);
 		Kisman.LOGGER.info("Registering " + module.getName() + " module!");
 
-		if(module.getClass().isAnnotationPresent(Targetable.class)) {
+		if(module.getClass().isAnnotationPresent(Targetable.class) || (module.getClass().isAnnotationPresent(ModuleInfo.class) && module.getClass().getAnnotation(ModuleInfo.class).targetable().real())) {
 			targetableModules.add(module);
 		}
 
