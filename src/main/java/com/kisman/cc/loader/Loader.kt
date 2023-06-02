@@ -1,6 +1,7 @@
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
+import com.kisman.cc.cubic.CubicLoader
 import com.kisman.cc.loader.LavaHackLoaderCoreMod.Companion.loaded
 import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
@@ -495,4 +496,100 @@ fun swapLoggers() {
                     it1.isAccessible = true
                 }[it0] = it0.modifiers and Modifier.FINAL.inv()
         }[null] = CustomFMLLogger()
+}
+
+/**
+ * Work in progress :)
+ * @author Cubic
+ */
+fun loadCubic(
+    bytes : ByteArray
+) {
+    CubicLoader.init()
+
+    val resourceCacheField = LaunchClassLoader::class.java.getDeclaredField("resourceCache")
+    resourceCacheField.isAccessible = true
+    val mixins = HashMap<String, ByteArray>()
+    val resources = HashMap<String, ByteArray>()
+
+    LavaHackLoaderCoreMod.LOGGER.info("Injecting classes...")
+
+    status = "Injecting classes..."
+
+    var mixinsCount = 0
+    var resourcesCount = 0
+
+    val fromClassNode = ClassInfo::class.java
+        .getDeclaredMethod("fromClassNode", ClassNode::class.java).also {
+            it.isAccessible = true
+        }
+
+    Class
+        .forName("net.minecraft.launchwrapper.LaunchClassLoader")
+        .getDeclaredField("DEBUG_FINER").also {it0 ->
+            it0.isAccessible = true
+
+            Field::class.java
+                .getDeclaredField("modifiers").also { it1 ->
+                    it1.isAccessible = true
+                }[it0] = it0.modifiers and Modifier.FINAL.inv()
+        }[null] = true
+
+    ZipInputStream(bytes.inputStream()).use { stream ->
+        var entry : ZipEntry?
+
+        while (stream.nextEntry.also { entry = it } != null) {
+            var name = entry!!.name
+
+            if (name.endsWith(".class")) {
+                name = name.removeSuffix(".class")
+                name = name.replace('/', '.')
+
+                val bytes0 = stream.readBytes()
+                val node = ClassNode().also { it0 ->
+                    ClassReader(bytes0).also { it1 ->
+                        it1.accept(it0, 0)
+                    }
+                }
+
+                fromClassNode.invoke(null, node)
+
+                CubicLoader.load(name, bytes0)
+            } else if(Utility.validResource(name)) {
+                resources[name] = Utility.getBytesFromInputStream(stream)
+                resourcesCount++
+                message("Processing resource $name")
+            }
+        }
+    }
+
+    message("Injecting $resourcesCount resources")
+
+    if(resources.isNotEmpty()) {
+        val tempFile = File.createTempFile("${System.currentTimeMillis()}", ".lavahack")
+        val fos = FileOutputStream(tempFile)
+        val jos = JarOutputStream(fos)
+
+        Files.setAttribute(tempFile.toPath(), "dos:hidden", true)
+
+        for(entry in resources.entries) {
+            message("Injecting \"${entry.key}\" resource.")
+            jos.putNextEntry(ZipEntry(entry.key))
+            jos.write(entry.value)
+            jos.closeEntry()
+        }
+
+        jos.close()
+        fos.close()
+
+        tempFile.deleteOnExit()
+
+        classLoader.addURL(tempFile.toURI().toURL())
+    }
+
+    message("Injecting $mixinsCount mixins")
+
+    resourceCacheField[classLoader] = ConcurrentHashMap(mixins)
+
+    message("Successfully loaded LavaHack")
 }
