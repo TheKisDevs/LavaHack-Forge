@@ -1,11 +1,9 @@
-package com.kisman.cc.cubic;
+package com.kisman.cc.loader.cubic;
 
-import com.kisman.cc.loader.LavaHackLoaderCoreMod;
-import com.kisman.cc.loader.LoaderKt;
+import com.kisman.cc.loader.cubic.CubicMap;
 import com.kisman.cc.loader.antidump.AntiDump;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import org.apache.commons.io.IOUtils;
 import sun.reflect.Reflection;
 
 import java.lang.reflect.Field;
@@ -35,14 +33,14 @@ public class CubicLoader {
             Field f1 = LaunchClassLoader.class.getDeclaredField("cachedClasses");
             f1.setAccessible(false);
             ConcurrentHashMap<String, Class<?>> cachedClasses = (ConcurrentHashMap<String, java.lang.Class<?>>) f1.get(Launch.classLoader);
-            f1.set(Launch.classLoader, new ClassCache(cachedClasses));
+            f1.set(Launch.classLoader, new com.kisman.cc.loader.cubic.ClassCache(cachedClasses));
 
             // disable debugging
             setStaticFinalField(LaunchClassLoader.class.getDeclaredField("DEBUG_FINER"), false);
             setStaticFinalField(LaunchClassLoader.class.getDeclaredField("DEBUG_SAVE"), false);
         } catch (Exception e) {
         }
-        Launch.classLoader.registerTransformer(ClassTransformer.class.getName());
+        Launch.classLoader.registerTransformer(com.kisman.cc.loader.cubic.ClassTransformer.class.getName());
     }
 
     private static void setStaticFinalField(Field field, Object value){
@@ -59,7 +57,7 @@ public class CubicLoader {
     public static void load(String className, byte[] bytes){
         cache.put(className, new byte[0]);
         map.put(className, () -> {
-            if(Reflection.getCallerClass(3) != ClassTransformer.class){
+            if(Reflection.getCallerClass(3) != com.kisman.cc.loader.cubic.ClassTransformer.class){
                 // some tries to dump us :(
                 AntiDump.dumpDetected();
                 return new byte[0];

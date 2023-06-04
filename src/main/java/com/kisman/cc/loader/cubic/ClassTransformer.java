@@ -1,6 +1,6 @@
-package com.kisman.cc.cubic;
+package com.kisman.cc.loader.cubic;
 
-import com.kisman.cc.loader.LavaHackLoaderCoreMod;
+import com.kisman.cc.loader.cubic.CubicLoader;
 import com.kisman.cc.loader.antidump.AntiDump;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;

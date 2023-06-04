@@ -1,4 +1,4 @@
-package com.kisman.cc.cubic;
+package com.kisman.cc.loader.cubic;
 
 import java.util.Collection;
 import java.util.Set;

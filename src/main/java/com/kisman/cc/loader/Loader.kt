@@ -1,7 +1,7 @@
 package com.kisman.cc.loader
 
 import com.kisman.cc.Kisman
-import com.kisman.cc.cubic.CubicLoader
+import com.kisman.cc.loader.cubic.CubicLoader
 import com.kisman.cc.loader.LavaHackLoaderCoreMod.Companion.loaded
 import com.kisman.cc.loader.antidump.CustomClassLoader
 import com.kisman.cc.loader.antidump.initProvider
@@ -11,7 +11,6 @@ import com.kisman.cc.loader.websockets.IMessageProcessor
 import com.kisman.cc.loader.websockets.WebClient
 import com.kisman.cc.loader.websockets.data.SocketMessage
 import com.kisman.cc.loader.websockets.setupClient
-import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraftforge.fml.common.FMLLog

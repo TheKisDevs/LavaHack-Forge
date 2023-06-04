@@ -1,5 +1,6 @@
-package com.kisman.cc.cubic;
+package com.kisman.cc.loader.cubic;
 
+import com.kisman.cc.loader.cubic.CubicLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentHashMap;
