@@ -11,6 +11,7 @@ import com.kisman.cc.loader.websockets.IMessageProcessor
 import com.kisman.cc.loader.websockets.WebClient
 import com.kisman.cc.loader.websockets.data.SocketMessage
 import com.kisman.cc.loader.websockets.setupClient
+import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.Launch.classLoader
 import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraftforge.fml.common.FMLLog
@@ -89,10 +90,14 @@ fun load(
         loaded = true
         canPressInstallButton = false
 
-        loadIntoCustomClassLoader(bytes)
+        loadCubic(bytes)
         close()
         client!!.close()
-        CUSTOM_CLASSLOADER!!
+        //CUSTOM_CLASSLOADER!!
+        //    .findClass("com.kisman.cc.util.AccountData")
+        //    .getMethod("set", String::class.java, String::class.java, Int::class.java)
+        //    .invoke(null, key, properties, processors.toInt())
+        classLoader
             .findClass("com.kisman.cc.util.AccountData")
             .getMethod("set", String::class.java, String::class.java, Int::class.java)
             .invoke(null, key, properties, processors.toInt())
@@ -519,10 +524,8 @@ fun loadCubic(
     var mixinsCount = 0
     var resourcesCount = 0
 
-    val fromClassNode = ClassInfo::class.java
-        .getDeclaredMethod("fromClassNode", ClassNode::class.java).also {
-            it.isAccessible = true
-        }
+    var firstClassName = ""
+    var firstClassBytes = byteArrayOf()
 
     Class
         .forName("net.minecraft.launchwrapper.LaunchClassLoader")
@@ -546,15 +549,13 @@ fun loadCubic(
                 name = name.replace('/', '.')
 
                 val bytes0 = stream.readBytes()
-                val node = ClassNode().also { it0 ->
-                    ClassReader(bytes0).also { it1 ->
-                        it1.accept(it0, 0)
-                    }
-                }
-
-                fromClassNode.invoke(null, node)
 
                 CubicLoader.load(name, bytes0)
+
+                if(firstClassName.isEmpty()) {
+                    firstClassName = name
+                    firstClassBytes = bytes0
+                }
             } else if(Utility.validResource(name)) {
                 resources[name] = Utility.getBytesFromInputStream(stream)
                 resourcesCount++
@@ -592,4 +593,9 @@ fun loadCubic(
     resourceCacheField[classLoader] = ConcurrentHashMap(mixins)
 
     message("Successfully loaded LavaHack")
+
+    classLoader
+        .findClass("com.kisman.cc.util.AccountData")
+        .getMethod("set", String::class.java, ByteArray::class.java)
+        .invoke(null, firstClassName, firstClassBytes)
 }
