@@ -4,6 +4,7 @@
 
 package com.kisman.cc.loader.gui
 
+import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialDarkerIJTheme
 import com.kisman.cc.loader.gui.page.Page
 import com.kisman.cc.loader.gui.page.pages.ConsolePage
@@ -49,6 +50,8 @@ fun create() {
             fontCache += font.fontName
         }
     }
+
+    UIManager.setLookAndFeel(FlatDarkFlatIJTheme())
 
 //    FlatMaterialDarkerIJTheme.setup()
 

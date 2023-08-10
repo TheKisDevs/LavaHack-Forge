@@ -202,7 +202,7 @@ public class AntiDump {
         return classWriter.toByteArray();
     }
 
-    private static void dumpDetected() {
+    public static void dumpDetected() {
         try {unsafe.putAddress(0, 0);} catch (Exception ignored) {}
         FMLCommonHandler.instance().exitJava(0, false); // Shutdown.
         Error error = new Error();
