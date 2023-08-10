@@ -91,6 +91,7 @@ public class ModuleManager {
 		add(new AutoTrapRewrite());
 		add(new Avoid());
 		add(new Blocker());
+		add(new BlockerRewrite());
 //		add(new BowAimBot());
 //		add(new BreakAlert());
 		add(new Burrow2());

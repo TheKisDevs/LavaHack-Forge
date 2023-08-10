@@ -20,14 +20,14 @@ abstract class AbstractPattern<T>(
     var prefix : String? = null
     var group : SettingGroup? = null
 
-    private val allSettings = ArrayList<Setting>()
-    private val settings = ArrayList<Setting>()
-    private val groups = ArrayList<SettingGroup>()
+    val _allSettings = ArrayList<Setting>()
+    val _settings = ArrayList<Setting>()
+    val _groups = ArrayList<SettingGroup>()
 
     open fun visible(visible : Supplier<Boolean>) : T {
         this.visible = visible
 
-        for(setting in settings) {
+        for(setting in _settings) {
             setting.setVisible(visible)
         }
 
@@ -42,7 +42,7 @@ abstract class AbstractPattern<T>(
     open fun prefix(prefix : String) : T {
         this.prefix = prefix
 
-        for(setting in settings) {
+        for(setting in _settings) {
             setting.name = "$prefix ${setting.name}"
         }
 
@@ -54,11 +54,11 @@ abstract class AbstractPattern<T>(
     }
 
     protected fun setupSetting(setting : Setting) : Setting {
-        return setting.also { settings.add(it) ; allSettings.add(it) }
+        return setting.also { _settings.add(it) ; _allSettings.add(it) }
     }
 
     protected fun setupGroup(group : SettingGroup) : SettingGroup {
-        return (group.setVisible(visible) as SettingGroup).also { groups.add(it) ; allSettings.add(it) }
+        return (group.setVisible(visible) as SettingGroup).also { _groups.add(it) ; _allSettings.add(it) }
     }
 
     protected fun <T> setupArray(array : SettingArray<T>) : SettingArray<T> {

@@ -16,7 +16,6 @@ import com.kisman.cc.util.render.ColorUtils
 import com.kisman.cc.util.render.CustomTessellator
 import com.kisman.cc.util.render.Rendering
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import java.util.*
@@ -51,7 +50,11 @@ open class RenderingRewritePattern(
     val shaderSecondLayer = setupSetting(shaderGroup.add(Setting("Shader Second Layer", module, false).setTitle("Second Layer")))
     val partial = setupSetting(Setting("Partial", module, false))
 
-    val colors = RenderingRewriteColorsPattern(module)
+    val colors = RenderingRewriteColorsPattern(module).also {
+        _allSettings.addAll(it._allSettings)
+        _settings.addAll(it._settings)
+        _groups.addAll(it._groups)
+    }
 
     private val tessellator = if(customTessellator) {
         CustomTessellator(2097152)

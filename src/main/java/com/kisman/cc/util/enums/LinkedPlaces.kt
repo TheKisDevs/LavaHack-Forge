@@ -84,7 +84,18 @@ enum class LinkedPlaces(
             draggable.setX(sr.scaledWidth / 2.0 - draggable.getW() / 2.0)
             draggable.setY(sr.scaledHeight - height - draggable.getH())
         }
-    }, true, false)
+    }, true, false),
+    FreeRight(object : IModifier {
+        override fun modify(
+            draggable : Draggable,
+            height : Double
+        ) {
+            val sr = sr()
+
+            draggable.setX(sr.scaledWidth - draggable.getW() - Kisman.instance.hudModuleManager.offsetX)
+        }
+
+    }, true, null)
 
     ;
 

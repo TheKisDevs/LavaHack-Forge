@@ -10,6 +10,7 @@ import com.kisman.cc.features.module.combat.autorer.BreakInfo;
 import com.kisman.cc.features.module.combat.autorer.PlaceInfo;
 import com.kisman.cc.features.module.combat.autorer.modules.Crystals;
 import com.kisman.cc.features.module.player.inventory.OffHand;
+import com.kisman.cc.features.subsystem.subsystems.EnemyManager;
 import com.kisman.cc.features.subsystem.subsystems.RotationSystem;
 import com.kisman.cc.features.subsystem.subsystems.Target;
 import com.kisman.cc.features.subsystem.subsystems.Targetable;
@@ -42,6 +43,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketSoundEffect;
@@ -163,6 +165,7 @@ public class AutoRer extends ShaderableModule {
     private final Setting antiCevBreakerMode = register(break__.add(new Setting("Anti Cev Breaker", this, AntiCevBreakerMode.None).setTitle("Anti Cev Break")));
     private final Setting packetBreak = register(break__.add(new Setting("Packet Break", this, false).setTitle("Packet")));
     private final Setting breakSpam = register(break__.add(new Setting("Break Spam", this, 1, 1, 6, true).setTitle("Spam")));
+    private final Setting strictCheck = register(break__.add(new Setting("Strict Check", this, false)));
 
     private final Setting delayMode = /*register*/(/*delay.add*/(new Setting("Delay Mode", this, DelayMode.Default).setTitle("Mode")));
     private final Setting pingSmartMultiplier = register(delay.add(new Setting("Ping Smart Multi", this, 0, 0, 3, false)));
@@ -247,9 +250,11 @@ public class AutoRer extends ShaderableModule {
         BlockPos nullPos = canCrystals() ? Crystals.instance.getPos() : null;
 
         if (currentTarget == null || nullPos != null) {
-            placePos.setBlockPos(nullPos);
-            breakPos = null;
-            return;
+            if(nullPos == null || (canPlaceCrystal(nullPos, true) && collideCheck(nullPos, newVerEntities.getValBoolean(), secondCheck.getValBoolean()))) {
+                placePos.setBlockPos(nullPos);
+                breakPos = null;
+                return;
+            }
         }
 
         doCalculatePlace();
@@ -261,13 +266,13 @@ public class AutoRer extends ShaderableModule {
     }
 
     private void handlePlacement() {
-        if(!place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst() || !placePos.canPlace) return;
+        if(currentTarget == null || !place.getValBoolean() || !getTimer(false).passedMillis(getDelay(false)) || (placePos.getBlockPos() == null && fastCalc.getValBoolean()) || placeStrictSync() || placePos.getBlockPos() == null || (!getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.OBSIDIAN) && !getBlockState(placePos.getBlockPos()).getBlock().equals(Blocks.BEDROCK)) || (sync.getValBoolean() && placedList.contains(placePos)) || !damageSyncHandler.canPlace(placePos.getTargetDamage(), currentTarget).getFirst() || !placePos.canPlace || !canPlaceCrystal(placePos.getBlockPos(), multiPlace.getValBoolean())) return;
 
         handlePlaceFull();
     }
 
     private void handleBreakment()  {
-        if(breakPos == null || breakPos.getCrystal() == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
+        if(currentTarget == null || breakPos == null || breakPos.getCrystal() == null || (timingMode.getValEnum() != TimingMode.Adaptive && breakPos.getCrystal().ticksExisted < sequentialBreakDelay.getValInt()) || !damageSyncHandler.canBreak(breakPos.getTargetDamage(), currentTarget).getFirst()) return;
 
         handleBreakFull();
     }
@@ -323,7 +328,7 @@ public class AutoRer extends ShaderableModule {
     public void update() {
         if(mc.player == null || mc.world == null || mc.isGamePaused) return;
 
-        currentTarget = targets.updateAndGet();
+        currentTarget = EnemyManager.INSTANCE.nearest();
 
         if(calcStage.getValEnum() == EventMode.Tick) handleCalc();
         if(logicStage.getValEnum() == EventMode.Tick) handleLogic();
@@ -604,6 +609,15 @@ public class AutoRer extends ShaderableModule {
         return false;
     }
 
+    private boolean canPlaceCrystal(BlockPos pos, boolean multiplace) {
+        BlockPos playerPosition = WorldUtilKt.playerPosition();
+
+        if(thirdCheck.getValBoolean() && !isPosValid(pos)) return false;
+        if(ncpCheck.getValBoolean() && playerPosition.getY() == pos.getY()) return false;
+
+        return canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiplace, firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean());
+    }
+
     private void calculatePlace() {
         double maxDamage = 0.5;
         double selfDamage_ = 0;
@@ -648,11 +662,9 @@ public class AutoRer extends ShaderableModule {
             }
         }
 
-        BlockPos playerPosition = WorldUtilKt.playerPosition();
-
         for(BlockPos pos : sphere) {
-            if((thirdCheck.getValBoolean() && !isPosValid(pos)) || (antidesync && exclusion.contains(pos)) || (ncpCheck.getValBoolean() && playerPosition.getY() == pos.getY())) continue;
-            if(canPlaceCrystal(pos, secondCheck.getValBoolean(), true, multiplace, firePlace.getValBoolean(), newVerPlace.getValBoolean(), newVerEntities.getValBoolean())) {
+            if(antidesync && exclusion.contains(pos)) continue;
+            if(canPlaceCrystal(pos, multiplace)) {
                 float targetDamage = calculateDamage(pos, currentTarget);
 
                 Bind<Boolean, Float> targetResult = damageSyncHandler.canPlace(targetDamage, currentTarget);
@@ -915,14 +927,17 @@ public class AutoRer extends ShaderableModule {
         if(rotateLogic.getValEnum() == RotateLogic.Break || rotateLogic.getValEnum() == RotateLogic.Both) RotationSystem.handleRotate(breakPos.getCrystal());
 
         lastHitEntity = breakPos.getCrystal();
+        boolean sprinting = mc.player.isSprinting();
 
         if(swingLogic.getValEnum() == SwingLogic.Pre) swing();
+        if(strictCheck.getValBoolean() && sprinting) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.STOP_SPRINTING));
 
         for(int i = 0; i < breakSpam.getValInt(); i++) {
             if (packetBreak.getValBoolean()) mc.player.connection.sendPacket(new CPacketUseEntity(breakPos.getCrystal()));
             else mc.playerController.attackEntity(mc.player, breakPos.getCrystal());
         }
 
+        if(strictCheck.getValBoolean() && sprinting) mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
         if(swingLogic.getValEnum() == SwingLogic.Post) swing();
         if(clientSideWhen.getValEnum() == ClientSideWhen.Break){
             doClientSide(breakPos.getCrystal());

@@ -53,6 +53,9 @@ abstract class AverageMultiLineHudModule(
 
             if(it.valEnum.reverse != null) {
                 reverse.valBoolean = it.valEnum.reverse!!
+            }
+
+            if(it.valEnum.right != null) {
                 orientation.valEnum = if (it.valEnum.right!!) {
                     Orientations.Right
                 } else {
