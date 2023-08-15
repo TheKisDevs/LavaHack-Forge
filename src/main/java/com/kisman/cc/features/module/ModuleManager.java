@@ -172,7 +172,6 @@ public class ModuleManager {
 		add(new ScreenTint());
 		add(new SelfCityESP());
 		add(new ShaderCharms());
-		add(new Shaders());
 		add(new SmallShield());
 		add(new SmartCityESP());
 		add(new SpawnsESP());
