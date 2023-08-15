@@ -10,8 +10,6 @@ import com.kisman.cc.features.hud.HudModuleManager;
 import com.kisman.cc.features.module.ModuleManager;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.features.module.client.CustomFontModule;
-import com.kisman.cc.features.nocom.NoComModuleManager;
-import com.kisman.cc.features.nocom.gui.NoComGui;
 import com.kisman.cc.features.plugins.PluginHandler;
 import com.kisman.cc.features.plugins.managers.PluginManager;
 import com.kisman.cc.features.rpc.RPC;
@@ -94,7 +92,6 @@ public class Kisman {
     private static Minecraft mc;
 
     public ModuleManager moduleManager;
-    public NoComModuleManager noComModuleManager;
     public FriendManager friendManager;
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
@@ -103,7 +100,6 @@ public class Kisman {
     public ConsoleGui consoleGui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
-    public NoComGui noComGui;
     public ViaForgeGui viaForgeGui;
     public SelectionBar selectionBar;
     public MusicGui musicGui;
