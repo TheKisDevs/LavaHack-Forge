@@ -73,9 +73,7 @@ abstract class FramebufferShader(
     }
 
     private fun setupFramebuffer(framebuffer : Framebuffer?) : Framebuffer {
-        if(framebuffer != null) {
-            framebuffer?.deleteFramebuffer()
-        }
+        framebuffer?.deleteFramebuffer()
 
         return Framebuffer(
             mc.displayWidth,

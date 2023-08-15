@@ -9,8 +9,8 @@ import net.minecraft.util.EnumFacing
 fun EnumFacing.left() : EnumFacing = if(this == EnumFacing.EAST) {
     EnumFacing.NORTH
 } else if(this == EnumFacing.NORTH) {
-    EnumFacing.EAST
-} else if(this == EnumFacing.EAST) {
+    EnumFacing.WEST
+} else if(this == EnumFacing.WEST) {
     EnumFacing.SOUTH
 } else if(this == EnumFacing.SOUTH) {
     EnumFacing.EAST
