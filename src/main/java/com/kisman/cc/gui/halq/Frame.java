@@ -83,13 +83,6 @@ public class Frame {
                 }
             }
         } else {
-            if(!Kisman.instance.scriptManager.scripts.isEmpty()) {
-                for (Module script : Kisman.instance.scriptManager.scripts) {
-                    components.add(new Button(script, x, y, offsetY, count1++, 0));
-                    offsetY += HalqGui.height;
-                }
-            }
-
             for(Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
                 if(mod instanceof ModulePlugin) {
                     components.add(new Button(mod, x, y, offsetY, count1++, 0));
@@ -119,11 +112,6 @@ public class Frame {
             if (!cat.equals(Category.LUA)) {
                 for (Module mod : Kisman.instance.moduleManager.getModulesInCategory(cat)) {
                     components.add(new Button(mod, x, y, offsetY, count1++, 0));
-                    offsetY += HalqGui.height;
-                }
-            } else {
-                for (Module script : Kisman.instance.scriptManager.scripts) {
-                    components.add(new Button(script, x, y, offsetY, count1++, 0));
                     offsetY += HalqGui.height;
                 }
             }

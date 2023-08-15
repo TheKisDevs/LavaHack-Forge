@@ -7,7 +7,6 @@ import com.kisman.cc.gui.console.ConsoleGui;
 import com.kisman.cc.util.chat.cubic.ChatUtility;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.util.text.TextFormatting;
-import org.luaj.vm2.ast.Str;
 
 import java.util.Comparator;
 import java.util.List;

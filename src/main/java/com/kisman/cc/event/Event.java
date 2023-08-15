@@ -3,8 +3,6 @@ package com.kisman.cc.event;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.util.client.collections.Bind;
 import me.zero.alpine.event.type.Cancellable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -59,7 +57,7 @@ public class Event extends Cancellable {
         PERI
     }
 
-    public LuaValue toLua() {return CoerceJavaToLua.coerce(this);}
+
     public String getName() {return "other_event";}
     public boolean isPre() {return era.equals(Era.PRE);}
     public boolean isPost() {return era.equals(Era.POST);}

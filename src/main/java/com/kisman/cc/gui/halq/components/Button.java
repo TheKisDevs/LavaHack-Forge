@@ -1,7 +1,6 @@
 package com.kisman.cc.gui.halq.components;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.hud.HudModule;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
@@ -15,7 +14,6 @@ import com.kisman.cc.gui.api.Openable;
 import com.kisman.cc.gui.api.ToggleableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.halq.components.sub.*;
-import com.kisman.cc.gui.halq.components.sub.lua.LuaActionButton;
 import com.kisman.cc.gui.halq.components.sub.plugins.PluginActionButton;
 import com.kisman.cc.gui.halq.util.LayerControllerKt;
 import com.kisman.cc.gui.hudeditor.DraggableBox;
@@ -50,11 +48,7 @@ public class Button extends ToggleableImplementation implements Openable, Module
         int offsetY = offset + HalqGui.height;
         int count1 = 0;
 
-        if(mod instanceof ModuleScript) {
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.RELOAD, x, y, offsetY, count1++, layer + 1));
-            offsetY += HalqGui.height;
-            comps.add(new LuaActionButton((ModuleScript) mod, LuaActionButton.Action.UNLOAD, x, y, offsetY, count1++, layer + 1));
-        } else if(mod instanceof ModulePlugin) {
+        if(mod instanceof ModulePlugin) {
             comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.LOAD, x, y, offsetY, count1++, layer + 1));
             offsetY += HalqGui.height;
             comps.add(new PluginActionButton((ModulePlugin) mod, PluginActionButton.Action.UNLOAD, x, y, offsetY, count1++, layer + 1));

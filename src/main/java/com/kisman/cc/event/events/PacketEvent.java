@@ -1,7 +1,5 @@
 package com.kisman.cc.event.events;
 
-import com.kisman.cc.Kisman;
-import com.kisman.cc.features.catlua.util.PacketUtil;
 import com.kisman.cc.event.Event;
 import net.minecraft.network.Packet;
 
@@ -29,7 +27,6 @@ public class PacketEvent extends Event {
 		}
 
 		public boolean is(String packet) {
-			if(Kisman.remapped) return PacketUtil.cache.containsKey(packet) && PacketUtil.cache.get(packet).getSimpleName().equalsIgnoreCase(getPacket().getClass().getSimpleName());
 			return getPacket().getClass().getSimpleName().equalsIgnoreCase(packet);
 		}
 	}
@@ -44,7 +41,6 @@ public class PacketEvent extends Event {
 		}
 
 		public boolean is(String packet) {
-			if(Kisman.remapped) return PacketUtil.cache.containsKey(packet) && PacketUtil.cache.get(packet).getSimpleName().equalsIgnoreCase(getPacket().getClass().getSimpleName());
 			return getPacket().getClass().getSimpleName().equalsIgnoreCase(packet);
 		}
 	}

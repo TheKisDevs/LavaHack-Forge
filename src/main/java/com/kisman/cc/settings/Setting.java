@@ -3,7 +3,6 @@ package com.kisman.cc.settings;
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.settings.EventSettingChange;
 import com.kisman.cc.features.Binder;
-import com.kisman.cc.features.catlua.lua.settings.LuaSetting;
 import com.kisman.cc.features.module.Module;
 import com.kisman.cc.features.module.client.Config;
 import com.kisman.cc.settings.types.number.NumberType;
@@ -637,7 +636,7 @@ public class Setting extends DisplayableFeature {
 	}
 
 	public Setting setType(String type) {
-		numberType = LuaSetting.getNumberTypeByName(type);
+		numberType = NumberType.valueOf(type);
 		return this;
 	}
 

@@ -3,9 +3,6 @@ package com.kisman.cc;
 import com.kisman.cc.event.EventProcessor;
 import com.kisman.cc.event.KismanEventBus;
 import com.kisman.cc.features.aiimprovements.AIImprovementsMod;
-import com.kisman.cc.features.catlua.ScriptManager;
-import com.kisman.cc.features.catlua.mapping.ForgeMappings;
-import com.kisman.cc.features.catlua.mapping.Remapper3000;
 import com.kisman.cc.features.command.CommandManager;
 import com.kisman.cc.features.command.commands.ClientNameCommand;
 import com.kisman.cc.features.command.commands.ClientVersionCommand;
@@ -121,11 +118,6 @@ public class Kisman {
     public PluginManager pluginManager;
     public SubSystemManager subSystemManager;
 
-    //catlua
-    public Remapper3000 remapper3000;
-    public ForgeMappings forgeMappings;
-    public ScriptManager scriptManager;
-
     //Config
     public ConfigManager configManager;
 
@@ -221,11 +213,6 @@ public class Kisman {
 
         //load 2d shaders
         ShaderShell.init();
-
-        //catlua
-        remapper3000 = new Remapper3000();
-        remapper3000.init();
-        scriptManager = new ScriptManager();
 
         LOGGER.info("Initializing guis: Part 1");
 

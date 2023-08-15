@@ -2,7 +2,6 @@ package com.kisman.cc.features.module;
 
 import com.kisman.cc.Kisman;
 import com.kisman.cc.event.events.client.loadingscreen.progressbar.EventProgressBar;
-import com.kisman.cc.features.catlua.module.ModuleScript;
 import com.kisman.cc.features.module.Debug.*;
 import com.kisman.cc.features.module.client.*;
 import com.kisman.cc.features.module.combat.*;
@@ -315,7 +314,7 @@ public class ModuleManager {
 	}
 
 	public Module getModule(String name, boolean scripts, boolean plugins) {
-		for (Module m : this.modules) if ((plugins || !(m instanceof ModulePlugin)) && (scripts || !(m instanceof ModuleScript)) && (m.getName().equalsIgnoreCase(name) || m.displayName.equalsIgnoreCase(name))) return m;
+		for (Module m : this.modules) if ((plugins || !(m instanceof ModulePlugin)) && (m.getName().equalsIgnoreCase(name) || m.displayName.equalsIgnoreCase(name))) return m;
 		return null;
 	}
 	

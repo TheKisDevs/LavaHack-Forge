@@ -70,7 +70,6 @@ public class EventProcessor {
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        Kisman.instance.scriptManager.runCallback("tick");
         Kisman.EVENT_BUS.post(new EventClientTickUpdate());
         if(oldWidth != mc.displayWidth || oldHeight != mc.displayHeight) {
             oldWidth = mc.displayWidth;

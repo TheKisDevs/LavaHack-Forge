@@ -76,7 +76,6 @@ public class EventManager implements EventBus {
     @SuppressWarnings("unchecked")
     @Override
     public void post(Object event) {
-        if(event instanceof Event && Kisman.instance.scriptManager != null && Kisman.instance.init && Kisman.canInitializateCatLua) Kisman.instance.scriptManager.runCallback("events", (( Event ) event).toLua());
         List<Listener> listeners = SUBSCRIPTION_MAP.get(event.getClass());
 
         if(listeners != null) {
@@ -128,7 +127,6 @@ public class EventManager implements EventBus {
 
     @Override
     public void postReversed(Object event) {
-        if(event instanceof Event && Kisman.instance.scriptManager != null && Kisman.instance.init) Kisman.instance.scriptManager.runCallback("events", (( Event ) event).toLua());
         List<Listener> listeners = SUBSCRIPTION_MAP.get(event.getClass());
         if (listeners != null) {
             Collections.reverse(listeners);
