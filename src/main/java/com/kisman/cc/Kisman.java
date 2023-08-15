@@ -18,7 +18,6 @@ import com.kisman.cc.features.subsystem.SubSystemManager;
 import com.kisman.cc.features.viaforge.ViaForge;
 import com.kisman.cc.features.viaforge.gui.ViaForgeGui;
 import com.kisman.cc.gui.console.ConsoleGui;
-import com.kisman.cc.gui.csgo.ClickGuiNew;
 import com.kisman.cc.gui.halq.Frame;
 import com.kisman.cc.gui.halq.HalqGui;
 import com.kisman.cc.gui.hudeditor.HalqHudGui;
@@ -96,7 +95,6 @@ public class Kisman {
     public HudModuleManager hudModuleManager;
     public SettingsManager settingsManager;
     public ThreadManager threadManager;
-    public ClickGuiNew clickGuiNew;
     public ConsoleGui consoleGui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
@@ -243,7 +241,6 @@ public class Kisman {
 
         LOGGER.info("Initializing guis: Part 2");
 
-        clickGuiNew = new ClickGuiNew();
         halqGui = new HalqGui();
         halqGui.init();
         viaForgeGui = new ViaForgeGui();

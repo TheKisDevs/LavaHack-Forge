@@ -146,7 +146,6 @@ class SelectionBar(
             init0 = { x : Int, y : Int -> Kisman.instance.halqGui.searchBar.init(x, y) },
             additions0 = { listOf(Kisman.instance.halqGui.searchBar) }
         ),
-        CSGOGui("CSGO Gui", { Kisman.instance.clickGuiNew }, { !Kisman.instance.haveLoader }),
         HudEditor("Hud Editor", { Kisman.instance.halqHudGui }),
         Music("Music", { Kisman.instance.musicGui }),
         Console("Console", { Kisman.instance.consoleGui })

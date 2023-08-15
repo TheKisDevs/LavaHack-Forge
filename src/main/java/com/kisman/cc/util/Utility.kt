@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "LocalVariableName")
 
 package com.kisman.cc.util
 
@@ -424,4 +424,19 @@ fun parseNumber(
     }
 } else {
     prev
+}
+
+fun formatTime(
+    _l : Long
+) : String? {
+    var l = _l
+    val minutes = l / 1000 / 60
+    l -= minutes * 1000 * 60
+    val seconds = l / 1000
+    l -= seconds * 1000
+    val sb = StringBuilder()
+    if (minutes != 0L) sb.append(minutes).append("min ")
+    if (seconds != 0L) sb.append(seconds).append("s ")
+    if (l != 0L || minutes == 0L && seconds == 0L) sb.append(l).append("ms ")
+    return sb.substring(0, sb.length - 1)
 }

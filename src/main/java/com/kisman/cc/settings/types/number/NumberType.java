@@ -1,6 +1,6 @@
 package com.kisman.cc.settings.types.number;
 
-import com.kisman.cc.gui.csgo.Utils;
+import com.kisman.cc.util.UtilityKt;
 
 import java.util.Locale;
 import java.util.function.Function;
@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public enum NumberType {
     PERCENT(number -> String.format(Locale.ENGLISH, "%.1f%%", number.floatValue())),
-    TIME(number -> Utils.Companion.formatTime(number.longValue())),
+    TIME(number -> UtilityKt.formatTime(number.longValue())),
     DECIMAL(number -> String.format(Locale.ENGLISH, "%.4f", number.floatValue())),
     INTEGER(number -> Long.toString(number.longValue()));
 
