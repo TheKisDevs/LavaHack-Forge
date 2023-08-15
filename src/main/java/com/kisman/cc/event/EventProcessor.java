@@ -91,7 +91,6 @@ public class EventProcessor {
 
     @SubscribeEvent
     public void onRender(RenderGameOverlayEvent.Text event) {
-        Kisman.instance.scriptManager.runCallback("hud");
         Kisman.EVENT_BUS.post(new EventRender2D(event.getPartialTicks()));
     }
 
