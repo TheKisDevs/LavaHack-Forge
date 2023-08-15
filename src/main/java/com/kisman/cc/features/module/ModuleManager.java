@@ -136,7 +136,6 @@ public class ModuleManager {
 		add(NoSpoof.INSTANCE);
 		add(new Optimizer());
 		add(new PauseBaritone());
-		add(PingBypass.INSTANCE);
 		add(new Printer());
 		add(new SchematicaModule());
 		add(new ViaForgeModule());

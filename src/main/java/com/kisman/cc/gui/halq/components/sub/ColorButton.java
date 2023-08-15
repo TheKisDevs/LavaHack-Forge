@@ -6,7 +6,6 @@ import com.kisman.cc.gui.api.Component;
 import com.kisman.cc.gui.api.SettingComponent;
 import com.kisman.cc.gui.api.shaderable.ShaderableImplementation;
 import com.kisman.cc.gui.halq.HalqGui;
-import com.kisman.cc.pingbypass.server.input.Mouse;
 import com.kisman.cc.settings.Setting;
 import com.kisman.cc.util.Colour;
 import com.kisman.cc.util.render.ColorUtils;
@@ -16,6 +15,7 @@ import com.kisman.cc.util.render.objects.screen.Icons;
 import com.kisman.cc.util.render.objects.screen.Vec4d;
 import net.minecraft.client.gui.Gui;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;

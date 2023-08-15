@@ -29,8 +29,6 @@ import com.kisman.cc.gui.mainmenu.gui.MainMenuController;
 import com.kisman.cc.gui.music.MusicGui;
 import com.kisman.cc.gui.selectionbar.SelectionBar;
 import com.kisman.cc.loader.LavaHackInterface;
-import com.kisman.cc.pingbypass.server.features.modules.PingBypassModuleManager;
-import com.kisman.cc.pingbypass.server.gui.PingBypassGui;
 import com.kisman.cc.settings.SettingsManager;
 import com.kisman.cc.util.AccountDataCheckerKt;
 import com.kisman.cc.util.UtilityKt;
@@ -105,7 +103,6 @@ public class Kisman {
     public ConsoleGui consoleGui;
     public HalqGui halqGui;
     public HalqHudGui halqHudGui;
-    public PingBypassGui pingBypassGui;
     public NoComGui noComGui;
     public ViaForgeGui viaForgeGui;
     public SelectionBar selectionBar;
@@ -187,7 +184,6 @@ public class Kisman {
         settingsManager = new SettingsManager();
         moduleManager = new ModuleManager();
         threadManager = new ThreadManager();
-        PingBypassModuleManager.INSTANCE.init();
 //        noComModuleManager = new NoComModuleManager();
         hudModuleManager = new HudModuleManager();
 
@@ -219,8 +215,6 @@ public class Kisman {
         //gui's
         consoleGui = new ConsoleGui();
         halqHudGui = new HalqHudGui();
-        pingBypassGui = new PingBypassGui();
-//        noComGui = new NoComGui();
 
         mainMenuController = new MainMenuController();
         mainMenuController.init();

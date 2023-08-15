@@ -146,8 +146,6 @@ class SelectionBar(
             init0 = { x : Int, y : Int -> Kisman.instance.halqGui.searchBar.init(x, y) },
             additions0 = { listOf(Kisman.instance.halqGui.searchBar) }
         ),
-        PingBypassGui("Ping Bypass", { Kisman.instance.pingBypassGui }, { !Kisman.instance.haveLoader }),
-//        NoComGui("No Com", { Kisman.instance.noComGui }, { !Kisman.instance.haveLoader }),
         CSGOGui("CSGO Gui", { Kisman.instance.clickGuiNew }, { !Kisman.instance.haveLoader }),
         HudEditor("Hud Editor", { Kisman.instance.halqHudGui }),
         Music("Music", { Kisman.instance.musicGui }),

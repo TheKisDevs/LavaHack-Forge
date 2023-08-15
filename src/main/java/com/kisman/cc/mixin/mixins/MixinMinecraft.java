@@ -12,8 +12,6 @@
  import com.kisman.cc.features.module.player.AntiDesync;
  import com.kisman.cc.features.module.player.Interaction;
  import com.kisman.cc.mixin.accessors.IMinecraft;
- import com.kisman.cc.pingbypass.server.PingBypassServer;
- import com.kisman.cc.pingbypass.server.input.Keyboard;
  import com.kisman.cc.util.minecraft.MouseHandlerKt;
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.entity.EntityPlayerSP;
@@ -220,30 +218,6 @@
   private void onBlockUse(CallbackInfo ci, EnumHand var1[], int var2, int var3, EnumHand enumhand, ItemStack itemstack, BlockPos blockpos, int i, EnumActionResult enumactionresult) {
    // rightClickMouse is only for the main player
    BaritoneAPI.getProvider().getPrimaryBaritone().getGameEventHandler().onBlockInteract(new BlockInteractEvent(blockpos, BlockInteractEvent.Type.USE));
-  }
-
-  @Inject(
-          method = "runTickKeyboard",
-          at = @At(
-                  value = "INVOKE_ASSIGN",
-                  target = "org/lwjgl/input/Keyboard.getEventKeyState()Z",
-                  remap = false))
-  private void runTickKeyboardHook(CallbackInfo callbackInfo) {
-   Kisman.EVENT_BUS.post(new KeyboardEvent(Keyboard.getEventKeyState(),
-           Keyboard.getEventKey(),
-           Keyboard.getEventCharacter()));
-  }
-
-  @Inject(
-          method = "runTick",
-          at = @At(
-                  value = "FIELD",
-                  target = "Lnet/minecraft/client/Minecraft;world" +
-                          ":Lnet/minecraft/client/multiplayer/WorldClient;",
-                  ordinal = 4,
-                  shift = At.Shift.BEFORE))
-  public void post_keyboardTickHook(CallbackInfo info) {
-   if (!PingBypassServer.INSTANCE.getServer()) Kisman.EVENT_BUS.post(new KeyboardEvent.Post());
   }
 
   @Inject(

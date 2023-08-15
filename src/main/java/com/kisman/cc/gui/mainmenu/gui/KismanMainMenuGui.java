@@ -1,16 +1,12 @@
 package com.kisman.cc.gui.mainmenu.gui;
 
 import com.kisman.cc.Kisman;
-import com.kisman.cc.features.module.client.PingBypass;
-import com.kisman.cc.features.pingbypass.gui.GuiAddPingBypass;
-import com.kisman.cc.features.pingbypass.gui.GuiButtonPingBypassOptions;
 import com.kisman.cc.gui.alts.AltManagerGUI;
 import com.kisman.cc.util.UtilityKt;
 import com.kisman.cc.util.render.ColorUtils;
 import com.kisman.cc.util.render.customfont.CustomFontUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.text.TextFormatting;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
@@ -69,13 +65,6 @@ public class KismanMainMenuGui extends GuiScreen {
             case 6:
                 mc.displayGuiScreen(lastGui);
                 break;
-            case 7:
-                PingBypass.INSTANCE.toggle();
-                pingBypassButton.displayString = getDisplayString();
-                break;
-            case 8:
-                mc.displayGuiScreen(new GuiAddPingBypass(this));
-                break;
         }
     }
 
@@ -97,13 +86,6 @@ public class KismanMainMenuGui extends GuiScreen {
         buttonList.add(new GuiButton(4, width / 2 - 100, y + offset * 4, 98, 20, "Version"));
         buttonList.add(new GuiButton(5, width / 2 + 2, y + offset * 4, 98, 20, "Alts"));
 
-        pingBypassButton = addButton(new GuiButton(7, width / 2 - (122 / 2), y + offset * 5, 100, 20, getDisplayString()));
-        buttonList.add(new GuiButtonPingBypassOptions(8, width / 2 - (122 / 2) + 100 + 2, y + offset * 5));
-
         buttonList.add(new GuiButton(6, width / 2 - 100, y + offset * 7, "Back"));
-    }
-
-    private String getDisplayString() {
-        return "PingBypass: " + (PingBypass.INSTANCE.isToggled() ? TextFormatting.GREEN + "On" : TextFormatting.RED + "Off");
     }
 }
