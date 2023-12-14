@@ -162,7 +162,6 @@ public class ModuleManager {
 //		add(new ItemESPRewrite());
 		add(new JumpCircle());
 //		add(new LogoutSpots());
-		add(new MotionBlur());
 		add(new NameTags());
 //		add(new NoBobbing());
 //		add(new NoCrosshair());
