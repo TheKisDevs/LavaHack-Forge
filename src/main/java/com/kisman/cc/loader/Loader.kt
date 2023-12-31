@@ -34,7 +34,7 @@ import kotlin.concurrent.thread
  * @since 12:33 of 04.07.2022
  */
 
-const val address = "161.97.78.143"
+const val address = "иди нахуй"
 const val port = 25563
 
 const val version = "2.1"
