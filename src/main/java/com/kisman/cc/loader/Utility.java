@@ -58,7 +58,7 @@ public class Utility {
     }
 
     public static void unsafeCrash() {
-        Unsafe unsafe = null;
+        /*Unsafe unsafe = null;
         try {
             Field f = Unsafe.class.getDeclaredField( "theUnsafe");
             f.setAccessible(true);
@@ -80,7 +80,7 @@ public class Utility {
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             unsafe.putAddress(0L, 0L);
             unsafe.freeMemory(0L);
-        }
+        }*/
     }
 
     public static String properties() {
